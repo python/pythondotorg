@@ -26,6 +26,10 @@ And then it's the standard:
     $ pip install -r requirements.txt
     $ ./manage.py syncdb
 
+You may need to specify the pip version, even with the virtualenv activated:
+
+    $ pip-3.3 install -r requirements.txt
+
 This expects a local database named "python.org". If you need to change it:
 
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
