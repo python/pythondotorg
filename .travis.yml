@@ -1,13 +1,10 @@
 language: python
 python:
-  - "3.3"
+  - "3.2"
 before_install:
   - sudo apt-get update -qq
 install:
   - pip install --use-mirrors -r requirements.txt
-services:
-  - mongodb
-  - memcached
 before_script:
   - psql -c 'create database python.org_test;' -U postgres
 script:
