@@ -1,6 +1,8 @@
 python.org
 ==========
 
+[![Build Status](https://magnum.travis-ci.com/proevo/pythondotorg.png?token=rzZWMj7qjjfKoW211CMz)](http://magnum.travis-ci.com/proevo/pythondotorg)
+
 The new python.org!
 
 Getting going
