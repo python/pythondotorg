@@ -34,3 +34,12 @@ This expects a local database named "python.org". If you need to change it:
 
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
+Running tests
+-------------
+
+Install `coverage` (`pip install coverage`), then::
+
+    $ coverage run manage.py test
+    $ coverage report
+
+Generate an HTML report with `coverage html` if you like.

@@ -1,8 +1,9 @@
 *.log
 *.pot
 *.pyc
-local_settings.py
 __pycache__
 .vagrant
 build
 ENV
+.coverage
+htmlcov

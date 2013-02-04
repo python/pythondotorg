@@ -66,7 +66,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+    'boxes',
 )
+
+### Testing
+
+TEST_RUNNER = 'discover_runner.DiscoverRunner'
 
 ### Logging
 
