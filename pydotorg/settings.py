@@ -68,6 +68,8 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'boxes',
+    'cms',
+    'pages',
 )
 
 ### Testing
