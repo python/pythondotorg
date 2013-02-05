@@ -41,7 +41,7 @@ class ContentManageableModelAdmin(admin.ModelAdmin):
         # be there if the child class didn't manually declare fieldsets.
         fieldsets = super().get_fieldsets(request, obj)
         for name, fieldset in fieldsets:
-            for f in ('created', 'udpated', 'creator'):
+            for f in ('created', 'updated', 'creator'):
                 if f in fieldset['fields']:
                     fieldset['fields'].remove(f)
 
