@@ -1,4 +1,8 @@
 from django.contrib import admin
+from cms.admin import ContentManageableModelAdmin
 from .models import Box
 
-admin.site.register(Box)
+class BoxAdmin(ContentManageableModelAdmin):
+    pass
+
+admin.site.register(Box, BoxAdmin)

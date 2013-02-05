@@ -9,12 +9,13 @@ These should also not be used for single pages, for that see the pages app.
 """
 
 from django.db import models
+from cms.models import ContentManageable
 
-class Box(models.Model):
+class Box(ContentManageable):
     label = models.SlugField(max_length=100, unique=True)
     content = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         return self.label
 
     class Meta:
