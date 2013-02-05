@@ -34,6 +34,12 @@ This expects a local database named "python.org". If you need to change it:
 
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
+### Python 3.3 and OSX 10.8.2
+
+Homebrew's recipe for python3.3 has some difficulty installing distribute 
+and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/) 
+may work better, if you're having trouble.
+
 Running tests
 -------------
 
