@@ -1,0 +1,42 @@
+{
+  "name": "postgresql",
+  "description": "Installs and configures postgresql for clients or servers",
+  "long_description": "Description\n===========\n\nInstalls and configures PostgreSQL as a client or a server.\n\nRequirements\n============\n\n## Platforms\n\n* Debian, Ubuntu\n* Red Hat/CentOS/Scientific (6.0+ required) - \"EL6-family\"\n* Fedora\n* SUSE\n\nTested on:\n\n* Ubuntu 10.04, 11.10\n* Red Hat 6.1, Scientific 6.1\n\n## Cookboooks\n\nRequires Opscode's `openssl` cookbook for secure password generation.\n\nRequires a C compiler and development headers in order to build the\n`pg` RubyGem to provide Ruby bindings so they're available in other\ncookbooks.\n\nOpscode's `build-essential` cookbook provides this functionality on\nDebian, Ubuntu, and EL6-family.\n\nWhile not required, Opscode's `database` cookbook contains resources\nand providers that can interact with a PostgreSQL database. This\ncookbook is a dependency of that one.\n\nAttributes\n==========\n\nThe following attributes are set based on the platform, see the\n`attributes/default.rb` file for default values.\n\n* `node['postgresql']['version']` - version of postgresql to manage\n* `node['postgresql']['dir']` - home directory of where postgresql\n  data and configuration lives.\n\nThe following attributes are generated in\n`recipe[postgresql::server]`.\n\n* `node['postgresql']['password']['postgres']` - randomly generated\n  password by the `openssl` cookbook's library.\n* `node['postgresql']['ssl']` - whether to enable SSL (off for version\n  8.3, true for 8.4).\n\nRecipes\n=======\n\ndefault\n-------\n\nIncludes the client recipe.\n\nclient\n------\n\nInstalls postgresql client packages and development headers during the\ncompile phase. Also installs the `pg` Ruby gem during the compile\nphase so it can be made available for the `database` cookbook's\nresources, providers and libraries.\n\nserver\n------\n\nIncludes the `server_debian` or `server_redhat` recipe to get the\nappropriate server packages installed and service managed. Also\nmanages the configuration for the server:\n\n* generates a strong default password (via `openssl`) for `postgres`\n* sets the password for postgres\n* manages the `pg_hba.conf` file.\n\nserver\\_debian\n--------------\n\nInstalls the postgresql server packages, manages the postgresql\nservice and the postgresql.conf file.\n\nserver\\_redhat\n--------------\n\nManages the postgres user and group (with UID/GID 26, per RHEL package\nconventions), installs the postgresql server packages, initializes the\ndatabase and manages the postgresql service, and manages the\npostgresql.conf file.\n\nResources/Providers\n===================\n\nSee the [database](http://community.opscode.com/cookbooks/database)\nfor resources and providers that can be used for managing PostgreSQL\nusers and databases.\n\nUsage\n=====\n\nOn systems that need to connect to a PostgreSQL database, add to a run\nlist `recipe[postgresql]` or `recipe[postgresql::client]`.\n\nThis does install the `pg` RubyGem, which has native C extensions, so\nthat the resources and providers can be used in the `database`\ncookbook, or elsewhere in the same Chef run. Use Opscode's\n`build-essential` cookbook to make sure the proper build tools are\ninstalled so the C extensions can be compiled.\n\nOn systems that should be PostgreSQL servers, use\n`recipe[postgresql::server]` on a run list. This recipe does set a\npassword and expect to use it. It performs a node.save when Chef is\nnot running in `solo` mode. If you're using `chef-solo`, you'll need\nto set the attribute `node['postgresql']['password']['postgres']` in\nyour node's `json_attribs` file or in a role.\n\nChanges/Roadmap\n==============\n\n## v0.99.2:\n\n* [COOK-916] - use < (with float) for version comparison.\n\n## v0.99.0:\n\n* Better support for Red Hat-family platforms\n* Integration with database cookbook\n* Make sure the postgres role is updated with a (secure) password\n\nLicense and Author\n==================\n\nAuthor:: Joshua Timberman (<joshua@opscode.com>)\nAuthor:: Lamont Granquist (<lamont@opscode.com>)\n\nLicensed under the Apache License, Version 2.0 (the \"License\");\nyou may not use this file except in compliance with the License.\nYou may obtain a copy of the License at\n\n    http://www.apache.org/licenses/LICENSE-2.0\n\nUnless required by applicable law or agreed to in writing, software\ndistributed under the License is distributed on an \"AS IS\" BASIS,\nWITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\nSee the License for the specific language governing permissions and\nlimitations under the License.\n",
+  "maintainer": "Opscode, Inc.",
+  "maintainer_email": "cookbooks@opscode.com",
+  "license": "Apache 2.0",
+  "platforms": {
+    "ubuntu": ">= 0.0.0",
+    "debian": ">= 0.0.0",
+    "fedora": ">= 0.0.0",
+    "suse": ">= 0.0.0",
+    "redhat": ">= 6.0",
+    "centos": ">= 6.0",
+    "scientific": ">= 6.0"
+  },
+  "dependencies": {
+    "openssl": ">= 0.0.0"
+  },
+  "recommendations": {
+  },
+  "suggestions": {
+  },
+  "conflicting": {
+  },
+  "providing": {
+  },
+  "replacing": {
+  },
+  "attributes": {
+  },
+  "groupings": {
+  },
+  "recipes": {
+    "postgresql": "Includes postgresql::client",
+    "postgresql::client": "Installs postgresql client package(s)",
+    "postgresql::server": "Installs postgresql server packages, templates",
+    "postgresql::server_redhat": "Installs postgresql server packages, redhat family style",
+    "postgresql::server_debian": "Installs postgresql server packages, debian family style"
+  },
+  "version": "0.99.2"
+}

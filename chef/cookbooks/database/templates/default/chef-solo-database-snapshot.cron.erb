@@ -1,0 +1,10 @@
+# Managed by Chef
+# m h  dom mon dow   command
+# Keep 1 day of hourly, 7 days of daily, 4 weeks of weekly and 1 year of monthly snapshots
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+<% cs = "chef-solo -j #{@json_attribs} -c #{@config_file}" %>
+00 * * * * root <%= cs %>
+15 0 * * * root <%= cs %>
+30 0 * * 0 root <%= cs %>
+45 0 1 * * root <%= cs %>
+

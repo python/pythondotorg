@@ -1,0 +1,6 @@
+default["staples"]["database"]["user"] = "vagrant"
+default["staples"]["database"]["host"] = "127.0.0.1"
+default["staples"]["database"]["port"] = "5432"
+default["staples"]["database"]["password"] = "vagrant"
+default["staples"]["database"]["name"] = "staples_development"
+default["staples"]["settings_file"] = "development"
