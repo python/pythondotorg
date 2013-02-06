@@ -5,10 +5,10 @@ env:
   - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org
 before_install:
   - sudo apt-get update -qq
-before_script:
-  - psql -c 'create database python.org;' -U postgres
 install:
   - pip install --use-mirrors -r requirements.txt
   - pip install --use-mirrors -r test-requirements.txt
+before_script:
+  - psql -c 'create database "python.org";' -U postgres
 script:
   - python manage.py test
