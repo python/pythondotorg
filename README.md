@@ -40,6 +40,15 @@ Homebrew's recipe for python3.3 has some difficulty installing distribute
 and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/) 
 may work better, if you're having trouble.
 
+### Using Vagrant
+
+You can ignore the above instructions by using [Vagrant](http://www.vagrantup.com/). After installing:
+
+    $ vagrant up
+    $ vagrant ssh
+
+The box will be provisioned by Chef with Python 3.3, a virtualenv set up with requirements installed, and a database ready to use. The virtualenv is activated upon login. You will need to run `./manage.py createsuperuser` to use the admin.
+
 Running tests
 -------------
 
