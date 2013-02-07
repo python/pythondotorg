@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+{% block body_classes %}inner{% endblock body_classes %}
+
+{% block content_classes %}with-left-sidebar{% endblock content_classes %}
+
+{% block breadcrumbs %}
+<ul class="breadcrumbs menu">
+    <li><a href="#">Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
+    <li>This Page</li>
+</ul> 
+{% endblock breadcrumbs %}
+
+{% block left_sidebar %}
+<aside class="left-sidebar" role="secondary">
+  
+    <div class="section-navigation sidebar-widget">
+        <!-- navigation for this section... all siblings should be included -->
+        <ul class="section-nav menu" role="menu" aria-hidden="false">
+            <li class="tier-1 element-1" role="treeitem"><a href="inner.php">History / Mission</a></li>
+            <li class="tier-1 element-2" role="treeitem"><a href="inner.php">Applications</a></li>
+            <li class="tier-1 element-3" role="treeitem"><a href="inner.php">Statistics</a></li>
+            <li class="tier-1 element-4" role="treeitem"><a href="inner.php">Quotes</a></li>
+            <li class="tier-1 element-5" role="treeitem"><a href="inner.php">Media / CI</a></li>
+        </ul>
+    </div>
+    
+    <div class="twitter-widget sidebar-widget">
+        <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
+        <script type="text/javascript">// <![CDATA[
+        new TWTR.Widget({
+          version: 2,
+          type: 'profile',
+          rpp: 3,
+          interval: 30000,
+          width: 'auto',
+          height: 300,
+          theme: {
+            shell: {
+              background: '#f2f2f2',
+              color: '#666666'
+            },
+            tweets: {
+              background: '#f2f2f2',
+              color: '#666666',
+              links: '#3776ab'
+            }
+          },
+          features: {
+            scrollbar: false,
+            loop: false,
+            live: false,
+            behavior: 'all'
+          }
+        }).render().setUser('ThePSF').start();
+        // ]]></script>
+    </div>
+    
+    <div class="psf-sidebar-widget sidebar-widget">
+        <h3 class="widget-title">The PSF</h3>
+        <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
+    </div>
+</aside>
+{% endblock left_sidebar %}

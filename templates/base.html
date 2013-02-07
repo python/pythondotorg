@@ -1,0 +1,481 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
+<!--[if IE 7]>         <html class="no-js ie7 lt-ie8 lt-ie9">      <![endif]-->
+<!--[if IE 8]>         <html class="no-js ie8 lt-ie9">             <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en">              <!--<![endif]-->
+
+
+<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website# article: http://ogp.me/ns/article#">
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="format-detection" content="telephone=no"><!-- Auto detect off. Remember to use <a href="tel:401-555-1212"> to format phone numbers that you want phones to detect -->
+    <meta http-equiv="cleartype" content="on">
+    
+    <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
+    
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
+    <!-- 16px x 32em = 512px -->
+    
+    <!--[if (lte IE 8)&(!IEMobile)]>
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">
+    <![endif]-->
+    
+    <!-- Place icon files in the root if possible (let browsers look for them where they expect them to be)
+    <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ STATIC_URL }}apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL }}apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ STATIC_URL }}apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}apple-touch-icon-precomposed.png">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}img/apple-touch-icon-precomposed.png">-->
+    
+    <!-- Tile icon for Win8 (144x144 + tile color)
+    <meta name="msapplication-TileImage" content="{{ STATIC_URL }}img/touch/apple-touch-icon-144x144-precomposed.png">
+    <meta name="msapplication-TileColor" content="#222222"> -->
+    <!-- Did you include a humans.txt file? -->
+    <link rel="author" href="{{ STATIC_URL }}humans.txt" />
+    
+    <!-- SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page -->
+    <meta property="og:site_name" content="Python RWD Wireframes" />
+    <meta property="og:type" content="website" />
+    
+    <title>Python RWD Wireframes</title>
+    <meta property="og:title" content="Python RWD Wireframes" />
+    
+    <meta name="description" content="">
+    <meta name="og:description" content="">
+    <!-- For articles, single view, use the following: 
+    <meta property="og:article:published_time" content="" />
+    <meta property="og:article:modified_time" content="" />
+    <meta property="og:article:author" content="" />
+    <meta property="og:article:section" content="" /> A high-level section name. E.g. Technology
+    <meta property="og:article:tag" content="" /> Tag words associated with this article
+    -->
+    <meta property="og:url" content="" /> <!-- permalink to the curent page -->
+    <meta property="og:image" content="" /> <!-- If no specific image is part of the content, we should specify a default -->
+    <meta property="og:video" content="" />
+
+</head>
+
+<body {% block body_attributes %}{% endblock %}>
+    
+    
+    <!-- Sister Site Links -->
+    <div id="top" class="top-bar do-not-print">
+    
+        <nav class="meta-navigation container" role="navigation">
+            
+            <!-- Allow Screen readers (hidden for all others) to skip the navigation and get to the main content -->
+            <div class="skip-link screen-reader-text">
+                <a href="#content" title="Skip to content">Skip to content</a>
+            </div>
+            
+            <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
+            <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down-3"><span>&#9660;</span></span> Close</a>
+            
+            <ul class="menu" role="tree">
+                <li class="python-meta selected" role="treeitem"><a href="index.php" title="Python.org"><span class="pointer"></span>Python<span class="say-no-more">.org</span></a></li>
+                <li class="psf-meta" role="treeitem"><a href="psf-landing.php" title="The Python Software Foundation"><span class="pointer"></span>PSF<span class="say-no-more">.python.org</span></a></li>
+                <li class="docs-meta" role="treeitem"><a href="#" title="Docs.python.org"><span class="pointer"></span>Docs<span class="say-no-more">.python.org</span></a></li>
+                <li class="pypi-meta" role="treeitem"><a href="#" title="PyPI.python.org"><span class="pointer"></span>PyPI<span class="say-no-more">.python.org</span></a></li>
+                <li class="jobs-meta" role="treeitem"><a href="jobs.php" title="Jobs.python.org"><span class="pointer"></span>Jobs<span class="say-no-more">.python.org</span></a></li>
+                <li class="shop-meta" role="treeitem"><a href="#" title="Shop.python.org"><span class="pointer"></span>Shop<span class="say-no-more">.python.org</span></a></li>
+            </ul>
+            
+            <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> The Python Network</a>
+            
+        </nav>
+        
+    </div>
+    
+    
+    <div id="test-window-size"></div>
+    
+    
+    <!-- Header elements -->
+    <header class="main-header" role="banner">
+        <div class="container">
+            
+            <h1 class="site-headline">
+                <a href="index.php">
+                    <img src="{{ STATIC_URL }}img/python-top-logo2.png" alt="python&trade;">
+                </a>
+            </h1>
+            
+            <div class="options-bar do-not-print">
+            
+                <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a>
+                
+                <form class="search-the-site" action="#" method="get">
+                    <fieldset title="Search Python.org">
+                        
+                        <span aria-hidden="true" class="icon-search"></span>
+                        
+                        <label class="screen-reader-text" for="search-field">Search This Site</label>
+                        <input id="s" name="s" type="search" role="textbox" class="search-field" placeholder="Search" tabindex="1">
+                                        
+                        <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
+                            GO
+                        </button>
+                        
+                        <!-- I heard IE needs this in order to have the form submit by pressing the enter key. True? -->
+                        <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
+                    
+                    </fieldset>
+                </form>
+                
+                <span class="breaker"></span>
+                
+                <div class="adjust-font-size">
+                    <a class="font-size-smaller" href="#">A</a>
+                    <a class="font-size-larger" href="#">A</a>
+                </div>
+                
+                <div class="winkwink-nudgenudge">
+                    <ul class="navigation menu" aria-label="Social Media Navigation">
+                        <li class="tier-1 element-1 last" aria-haspopup="true">
+                            <a href="#">Socialize</a>
+                            <ul class="subnav">
+                                <li class="tier-2 element-1" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span> Facebook</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span> @ThePSF</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span> GitHub</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-irc"></span> IRC on Freenode</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                
+            </div><!-- end options-bar -->
+            
+            
+            <nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+                    {% block main_navigation %}
+                    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+                    <li id="about" class="tier-1 element-1" aria-haspopup="true">
+                        <a href="about.php">About</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="about.php">About</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">History / Mission</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Applications</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Statistics</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Quotes</a></li>
+                            <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Media / CI</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="downloads" class="tier-1 element-2" aria-haspopup="true">
+                        <a href="download.php">Downloads</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="download.php">Downloads</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Releases</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Mac OSX</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Windows</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Linux</a></li>
+                            <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Others</a></li>
+                            <li class="tier-2 element-6" role="treeitem"><a href="inner.php">License</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="documentation" class="tier-1 element-3" aria-haspopup="true">
+                        <a href="documentation.php">Documentation</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="documentation.php">Documentation</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Docs</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Audio/Visual Talks</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Beginner&rsquo;s Guide</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Developer&rsquo;s Guide</a></li>
+                            <li class="tier-2 element-5" role="treeitem"><a href="inner.php">FAQ</a></li>
+                            <li class="tier-2 element-6" role="treeitem"><a href="inner.php">Non-english Docs</a></li>
+                            <li class="tier-2 element-7" role="treeitem"><a href="inner.php">PEP Index</a></li>
+                            <li class="tier-2 element-8" role="treeitem"><a href="inner.php">Security</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="community" class="tier-1 element-4" aria-haspopup="true">
+                        <a href="community.php">Community</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="community.php">Community</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Diversity</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">IRC</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Mailing List</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Python Conference</a></li>
+                            <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Special Interest Groups</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="success-stories" class="tier-1 element-5" aria-haspopup="true">
+                        <a href="success-stories.php">Success Stories</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="success-stories.php">Success Stories</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="#" title="Arts Category">Arts</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="#" title="Business Category">Business</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="#" title="Education Category">Education</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="#" title="Engineering Category">Engineering</a></li>
+                            <li class="tier-2 element-5" role="treeitem"><a href="#" title="Government Category">Government</a></li>
+                            <li class="tier-2 element-6" role="treeitem"><a href="#" title="Scientific Category">Scientific</a></li>
+                            <li class="tier-2 element-7" role="treeitem"><a href="#" title="Software Development Category">Software Development</a></li>
+                            <li class="tier-2 element-8" role="treeitem"><a href="inner.php">Activity Feed</a></li>
+                            <li class="tier-2 element-9" role="treeitem"><a href="inner.php">Submit Yours!</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="blog" class="tier-1 element-6" aria-haspopup="true">
+                        <a href="blog.php">Blog</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="blog.php">Blog</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Newest Posts</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Categories</a></li>
+                        </ul>
+                    </li>
+
+                    <li id="events" class="tier-1 element-7 last" aria-haspopup="true">
+                        <a href="events.php">Events</a>
+                        <ul class="subnav menu" role="menu" aria-hidden="true">
+                            <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                <a href="events.php">Events</a>
+                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                            </li>
+                            <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Upcoming</a></li>
+                            <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Past Events</a></li>
+                            <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Python Conference</a></li>
+                            <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Release Schedule</a></li>
+                        </ul>
+                    </li>
+                    </ul>
+                    {% endblock main_navigation %}
+            </nav>
+
+            {% block header_content %}
+            {% endblock header_content %}
+
+            
+
+         </div><!-- end .container -->
+    </header>
+    
+    
+    <div id="content" class="content-wrapper">
+        <!-- Main Content Column -->
+        <div class="container">
+            
+            <section class="main-content {% block content_classes %}{% endblock %}" role="main">
+
+                {% block breadcrumbs %}
+                {% endblock breadcrumbs %}
+
+                {% block content %}
+                {% endblock content %}
+
+            </section>
+            
+            {% block left_sidebar %}
+            {% endblock left_sidebar %}
+            
+            
+        </div><!-- end .container -->
+    </div><!-- end #content .content-wrapper -->
+
+
+    
+    <!-- Footer and social media list -->
+    <footer id="site-map" class="main-footer" role="navigation">
+        <div class="main-footer-links">
+        <div class="container">
+            
+            {% block footer_sitemap %}
+            <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
+
+            <ul class="sitemap navigation menu do-not-print" role="tree">
+                <li class="tier-1 element-1">
+                    <a href="about.php">About</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">History / Mission</a></li>
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Applications</a></li>
+                        <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Statistics</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Quotes</a></li>
+                        <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Media / CI</a></li>
+                        <li class="tier-2 element-6" role="treeitem"><a href="inner.php">Python Software Foundation</a></li>
+                    </ul>
+                </li>
+                
+                <li class="tier-1 element-2">
+                    <a href="download.php">Downloads</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Releases</a></li>
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Mac OSX</a></li>
+                        <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Windows</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Linux</a></li>
+                        <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Others</a></li>
+                        <li class="tier-2 element-6" role="treeitem"><a href="inner.php">License</a></li>
+                    </ul>
+                </li>
+                
+                <li class="tier-1 element-3">
+                    <a href="documentation.php">Documentation</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Docs.python.org</a></li>
+                        <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Audio/Visual Talks</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Beginner&rsquo;s Guide</a></li>
+                        <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Developer&rsquo;s Guide</a></li>
+                        <li class="tier-2 element-6" role="treeitem"><a href="inner.php">FAQ</a></li>
+                        <li class="tier-2 element-7" role="treeitem"><a href="inner.php">Non-english Docs</a></li>
+                        <li class="tier-2 element-8" role="treeitem"><a href="inner.php">PEP Index</a></li>
+                        <li class="tier-2 element-9" role="treeitem"><a href="inner.php">Security</a></li>
+                    </ul>
+                </li>
+                
+                <li class="tier-1 element-4">
+                    <a href="community.php">Community</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Diversity</a></li>
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">IRC</a></li>
+                        <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Mailing List</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Python Conference</a></li>
+                        <li class="tier-2 element-5" role="treeitem"><a href="inner.php">Special Interest Groups</a></li>
+                    </ul>
+                </li>
+                
+                <li class="tier-1 element-5">
+                    <a href="success-stories.php">Success Stories</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Browse All</a></li>
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Categories</a></li>
+                        <li class="tier-2 element-3" role="treeitem"><a href="inner.php">Activity Feed</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Submit Yours!</a></li>
+                    </ul>
+                </li>
+                
+                <li class="tier-1 element-6 last">
+                    <a href="blog.php">Blog</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-1" role="treeitem"><a href="inner.php">Newest Posts</a></li>
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Categories</a></li>
+                    </ul>
+                    <a href="events.php">Events</a>
+                    <ul class="subnav menu">
+                        <li class="tier-2 element-2" role="treeitem"><a href="inner.php">Past Events</a></li>
+                        <li class="tier-2 element-4" role="treeitem"><a href="inner.php">Release Schedule</a></li>
+                    </ul>
+                </li>
+            </ul>
+
+
+
+            <!--
+            <ul class="footer-links navigation menu do-not-print" role="tree">
+                <li class="tier-1 element-1"><a href="inner.php">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
+                <li class="tier-1 element-2"><a href="inner.php">Diversity <span class="say-no-more">Initiatives</span></a></li>
+                <li class="tier-1 element-3"><a href="inner.php"><span class="say-no-more">Website</span> Colophon</a></li>
+            </ul>
+
+
+            <div class="copyright">
+                <p>
+                    <span class="pre">Copyright &copy; 1990-2013.</span> 
+                    <span class="pre">Python Software Foundation.</span>
+                    <a class="pre" href="#">Legal Statements.</a>
+                </p>
+            </div>
+            -->
+
+            <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
+            {% endblock footer_sitemap %}          
+            
+            <!-- Testing only for small screens - Delete later -->
+            <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
+            <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
+            <div class="jump-link test-suite inlinesvg-test">Inline SVG support <span class="yes">Yes</span><span class="no">No</span></div>
+            <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
+        </div><!-- end .container -->
+        </div> <!-- end .main-footer-links -->
+        
+        
+        
+        <div class="site-base">
+            <div class="container">
+                <ul class="footer-links navigation menu do-not-print" role="tree">
+                    <li class="tier-1 element-1"><a href="#">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
+                    <li class="tier-1 element-2"><a href="#">Diversity <span class="say-no-more">Initiatives</span></a></li>
+                    <li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>
+                </ul>
+                
+                <div class="copyright">
+                    <p><small>
+                        <span class="pre">Copyright &copy;1990-2013.</span> 
+                        <span class="pre">Python Software Foundation.</span>
+                        <a class="pre" href="#">Legal Statements.</a>
+                    </small></p>
+                </div>
+                
+                <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
+                
+                
+                <!-- Testing only for small screens - Delete later -->
+                <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
+                <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
+                <div class="jump-link test-suite inlinesvg-test">Inline SVG support <span class="yes">Yes</span><span class="no">No</span></div>
+                <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
+            </div><!-- end .container -->
+        
+        </div><!-- end .site-base -->
+            
+    </footer>
+    
+    
+    <div id="nojs" class="do-not-print">
+        <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
+    </div>
+    
+    <!--[if lt IE 8]>
+    <div id="oldie-warning" class="do-not-print">
+        <p><strong>Notice:</strong> Your browser is <em>ancient</em> and <a href="http://www.ie6countdown.com/">Microsoft agrees</a>. <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience a better web.</p>
+    </div>
+    <![endif]-->
+    
+    {% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
+    <script src="//maps.google.com/maps/api/js?sensor=false"></script>
+    
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/script.js"></script>
+    
+    <!-- Asynchronous Analytics snippet
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'XX-XXXXXXX-X']);
+    _gaq.push(['_trackPageview']);
+    
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>-->
+    {% endblock javascript %}
+
+</body>
+</html>

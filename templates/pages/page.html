@@ -1,4 +1,8 @@
-{# MASSIVE FIXME: REAL TEMPLATES :) #}
+{% extends "inner.html" %}
 
+{% block content %}
+<div class="text">
 <h1>{{ page.title }}</h1>
 {{ page.content|safe }}
+</div>
+{% endblock content %}
