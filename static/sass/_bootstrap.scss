@@ -1,0 +1,417 @@
+/* ! ==== Bootstrap elements ==== */
+
+/* navigation() function :
+
+Complicated = navigation( "bar", "horizontal", 6, true, 8, true, 5 );
+
+<ul class="navigation horizontal bar menu" role="tree">
+    <li class="tier-1"><a href="#">Sample Link 1</a>
+        <ul class="subnav menu">
+            <li class="tier-2" role="treeitem"><a href="#">Child Link 1</a>
+            <ul class="subsubnav menu">
+                <li class="tier-3" role="treeitem"><a href="#">Sub Child Link 1</a></li> 
+*/
+
+/* Set some variables here to make things easier to change */
+$nav-bgcolor : $secondary;
+$nav-bgcolor-light : lighten( $secondary, 5% ); 
+$nav-bgcolor-lighter : lighten( $secondary, 10% ); 
+$nav-contrast : contrast-color( $nav-bgcolor ); 
+
+.horizontal {
+    display: block; 
+    
+    & > li {
+        display: inline-block;
+        vertical-align: top; 
+        
+        .oldie & {
+            display: inline;
+        }  
+    }
+    a {
+        display: block; 
+    }
+}
+
+.bar {
+    background-color: $nav-bgcolor; 
+    overflow: visible; 
+    text-align: center; 
+    
+    li {
+        position: relative; 
+        white-space: nowrap; 
+        
+        & > a {
+            font-family: $alt-font;
+        }
+    }
+    a {
+        padding: .5em .75em .4em; 
+        color: $nav-contrast; 
+        background-color: transparent; 
+        
+        &:hover, &:focus {
+            color: contrast-color( $nav-contrast ); 
+            background-color: $nav-bgcolor-light;
+        }
+    }
+    .subnav {
+        position: absolute; top: 2.25em; left: -999em;  
+        text-align: left; 
+        background-color: $nav-bgcolor-light; 
+        @include box-shadow( .125em .125em .25em rgba( #000, 0.2 )  ); 
+        
+        a {
+            font-family: $default-font; 
+            @include adjust-font-size( 14px ); 
+            
+            &:hover, &:focus {
+                background-color: $nav-bgcolor;
+            }
+        }
+    }
+    .tier-1:hover .subnav {
+        left: 0; 
+    }
+    .tier-1:last-child:hover .subnav {
+        left: auto; 
+        right: 0; 
+    }
+    .subsubnav {
+        position: absolute; top: 0; left: -999em; 
+        background-color: $nav-bgcolor-lighter; 
+        @include box-shadow( .125em .125em .25em rgba( #000, 0.2 )  ); 
+    }
+    .tier-2:hover .subsubnav {
+        left: 100%;
+    }
+    .tier-1:last-child .tier-2:hover .subsubnav {
+        left: auto; 
+        right: 100%; 
+    }
+}
+
+/* Horizontal but plain : navigation( "plain", "horizontal", 6, true, 8, false, 0 )
+
+<ul class="navigation horizontal plain menu" role="tree">
+    <li class="tier-1"><a href="#">Sample Link 1</a>
+        <ul class="subnav menu">
+            <li class="tier-2" role="treeitem"><a href="#">Child Link 1</a></li>
+            <li class="tier-2" role="treeitem"><a href="#">Child Link 2</a></li>
+            <li class="tier-2" role="treeitem"><a href="#">Child Link 3</a></li>
+        </ul>
+    </li>
+*/
+.horizontal.plain {
+    
+    & > li {
+        padding-bottom: rhythm(.75); 
+        
+        & > a {
+            font-weight: bold; 
+        }
+    }
+}
+
+
+/* Simpler vertical version : navigation( "plain", "vertical", 3, false, 0, false, 0 )
+
+<ul class="navigation vertical plain menu" role="tree">
+    <li class="tier-1"><a href="#">Sample Link 1</a></li>
+    <li class="tier-1"><a href="#">Sample Link 2</a></li>
+    <li class="tier-1"><a href="#">Sample Link 3</a></li>
+</ul>
+*/
+.vertical {
+    display: block; 
+    
+    & > li {
+        display: block; 
+    }
+    a {
+        display: block; 
+    }
+}
+
+/* row_of_links() function :
+<span class="row-of-links"><a class="row-link" href="#">Example 1</a> | <a class="row-link" href="#">Example 2</a></span> */
+.row-of-links {
+    
+    .row-link {
+        
+    }
+    .separator {
+        
+    }
+}
+
+
+/* breadcrumbs() function :
+
+<ul class="breadcrumbs horizontal menu">
+    <li><a href="#">Example 1</a><span class="separator">&raquo;</span></li>
+    <li><a href="#">Example 2</a><span class="separator">&raquo;</span></li>
+    <li class="active">This Page</li>
+</ul>*/
+.breadcrumbs {
+    
+    
+    li {
+        
+    }
+    a {
+        display: inline-block; 
+    }
+    .separator {
+        margin: 0 .25em; 
+        font-size: px2em(20px); 
+    }
+    .active {
+        font-weight: bold; 
+    }
+}
+
+/* pagination() function :
+
+<div class="pagination">
+    <ul class="horizontal menu">
+        <li><a class="prev-link" href="#">Prev</a></li>
+        <li class="active"><a href="#">1</a></li>
+        <li><a href="#">2</a></li>
+        <li class="last"><a class="next-link" href="#">Next</a></li>
+    </ul>
+</div>*/
+.pagination {
+    padding-top: rhythm(); 
+    text-align: center; 
+    
+    ul {
+        margin: 0 auto; 
+    }
+    li {
+        
+    }
+    a {
+        color: $grey;
+        display: inline-block; 
+        text-decoration: none; 
+        padding: .2em .6em .1em; 
+        margin-right: px2em(4px);
+        background-color: $grey-lightest;  
+        border: 1px solid $grey-lighter; 
+        
+        &:hover, &:focus {
+            color: contrast-color( $link-color ); 
+            background-color: $link-color;
+        }
+    }
+    .prev-link {
+        background-color: transparent; 
+        border: 0; 
+        
+        &:hover, &:focus {
+            color: $link-color ; 
+            background-color: transparent;
+        }
+    }
+    .next-link {
+        @extend .prev-link; 
+    }
+    .active {
+        
+        a {
+            color: contrast-color( $secondary ); 
+            background-color: $secondary; 
+            
+            &:hover, &:focus {
+                cursor: default; 
+                color: contrast-color( $secondary ); 
+                background-color: $secondary; 
+            }
+        }
+    }
+}
+
+
+/* lipsum_image() function :
+
+<div class="placeholder-image"><img src="http://placehold.it/640x320" alt="Placeholder image from placehold.it" /></div> */
+.placeholder-image {
+    margin-bottom: rhythm(0.75);
+}
+
+/* generate_calendar() function : 
+
+<div class="calendar quickview">
+    <div class="month">
+    	<h4 class="monthname">September</h4>
+    	<a id="prev-month" class="prev-month" href="#" title="View previous month">◀</a>
+    	<a id="next-month" class="next-month" href="#" title="View next month">▶</a>
+    </div>
+    
+    <div class="days">
+        <span class="day-name"><abbr title="Sunday">S</abbr></span>
+        <span class="day-name"><abbr title="Monday">M</abbr></span>
+        <span class="day-name"><abbr title="Tuesday">T</abbr></span>
+        <span class="day-name"><abbr title="Wednesday">W</abbr></span>
+        <span class="day-name"><abbr title="Thursday">T</abbr></span>
+        <span class="day-name"><abbr title="Friday">F</abbr></span>
+        <span class="day-name last"><abbr title="Saturday">S</abbr></span>
+    </div>
+    <div class="week">
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day blank"><span>&nbsp;</span></span>
+        <span class="day last">1</span>
+    </div>
+    <div class="week">
+        <span class="day">16</span>
+        <span class="day">17</span>
+        <span class="day event"><a class="calendar-link" href="#">18</a></span>
+        <span class="day today event"><a class="calendar-link" href="#">19</a></span>
+        <span class="day event"><a class="calendar-link" href="#">20</a></span>
+        <span class="day">21</span>
+        <span class="day blank last"><span>&nbsp;</span></span>
+    </div>
+</div>*/
+
+.calendar {
+    
+}
+    .quickview {
+        
+        .month {
+            position: relative; 
+        }
+            .monthname {
+                text-align: center; 
+            }
+            .prev-month {
+                position: absolute; 
+                top: 0; left: 0; 
+            }
+            .next-month {
+                position: absolute; 
+                top: 0; right: 0; 
+            }
+        .days, .week {
+            border-width: 0 1px 1px 1px; 
+            border-style: solid; 
+            border-color: $grey-lighter $grey-lightest; 
+            border-left-color: rgba( #000, .1 ); 
+            border-right-color: rgba( #000, .1 ); 
+            border-bottom-color: rgba( #000, .2 ); 
+            @include pie-clearfix(); 
+            
+            span {
+                display: inline-block; 
+                //float: left; 
+                width: 14.285714%; 
+                
+                text-align: center; 
+                @include box-sizing( border-box ); 
+                
+                a {
+                    display: block; 
+                    text-align: center; 
+                }
+                .last {
+                    //float: right; 
+                }
+            }
+        }
+        .days {
+            border-bottom-width: 2px;
+            border-bottom-color: rgba( #000, .2 );  
+        }
+            .day-name {
+                font-weight: bold; 
+                border-right: 1px solid $grey-lightest; 
+                border-right-color: rgba( #000, .1 ); 
+                
+                abbr {
+                    border-bottom: 0; 
+                }
+                &.last {
+                    border-right: 0; 
+                }
+            }
+        .week {
+            
+        }
+            .day {
+                border-right: 1px solid $grey-lightest; 
+                border-right-color: rgba( #000, .1 ); 
+                padding: .3em 0 .2em; 
+                
+                &.last {
+                    border-right: 0; 
+                }
+            }
+            .today {
+                background-color: $secondary; 
+            }
+            .event {
+                padding: 0; 
+                
+                a {
+                    text-align: center; 
+                    padding: .3em 0 .2em; 
+                    background-color: $primary; 
+                    
+                    &:hover, &:focus {
+                        color: contrast-color( $primary ); 
+                        background-color: $primary; 
+                    }
+                }
+            }
+            .today.event a {
+                color: contrast-color( $secondary ); 
+                background-color: $secondary; 
+                
+                &:hover, &:focus {
+                    color: contrast-color( $primary ); 
+                    background-color: $primary; 
+                }
+            }
+    }
+
+/* Form elements and functions for textinput(), textarea(), submit(), etc... */
+/*<form>
+    <legend>These are what some form elements look like</legend>
+    
+    <fieldset name="First and Last Name">
+        <label for="first-name-input">First Name</label>
+        <input type="text" class="text-input " id="first-name-input" name="first-name-input" placeholder="First Name" value="">                            
+        <label for="last-name-input">Last Name</label>
+        <input type="text" class="text-input " id="last-name-input" name="last-name-input" placeholder="Last Name" value="">                        
+    </fieldset>
+    
+    <fieldset name="Additional Contact Information">
+        <label for="email-input">Email</label>
+        <input type="email" class="text-input " id="email-input" name="email-input" placeholder="Email" value="">                            
+        <label for="phone-optional-input">Phone (optional)</label>
+        <input type="tel" class="text-input " id="phone-optional-input" name="phone-optional-input" placeholder="Phone (optional)" value="">                        
+    </fieldset>
+    
+    <fieldset name="Message">
+        <label for="message-input" class="always-show">Message</label>
+        <textarea class="text-area " id="message-textarea" name="message-textarea"></textarea>                            
+    </fieldset>
+    
+    <fieldset name="Opt-Ins">
+        <label for="receive-our-newsletter-input" class="always-show"><input type="checkbox" name="receive-our-newsletter-input" checked>Receive our Newsletter?</label>                        
+    </fieldset>
+    
+    <input type="submit" class="form-submit " id="submit-submit-form" name="submit-submit-form" value="Submit Form">                        
+    <input type="reset" class="form-reset " id="reset-reset" name="reset-reset" value="Reset">                        
+</form>*/
+
+.text-area {
+    min-height: 6em; 
+}

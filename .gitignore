@@ -7,3 +7,9 @@ build
 ENV
 .coverage
 htmlcov
+
+static-root
+.sass-cache
+/static/stylesheets/mq.css
+/static/stylesheets/no-mq.css
+/static/stylesheets/style.css

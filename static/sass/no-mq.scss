@@ -1,0 +1,37 @@
+@import "base";
+@import "functions";
+@import "mixins";
+
+/* Mixin for media query parts */
+@import "layout";
+
+
+@include min_width_400(); 
+
+
+/* - - - Larger than 520px - - - many basic styles for larger screens are here */
+@include min_width_520();
+
+@include min_width_640(); 
+
+@include min_width_800();
+
+@include horizontal_nav(); 
+
+@include min_width_940();
+
+
+/* Additional media query contents that we want to deliver to non-media query enabled browsers */
+
+//@include min_width_60em(); 
+
+
+/* ! ===== lt-IE9 rules ===== */
+.container {
+    width: px2em( 960px ); 
+}
+
+.main-navigation li > a {
+    padding-left: 1.25em; 
+    padding-right: 1.25em; 
+}

@@ -1,0 +1,107 @@
+@import "base";
+@import "functions";
+@import "mixins";
+
+/* Mixins for media query parts */
+@import "layout";
+
+
+/* 
+ * We "label" the body with strings that correspond to js functions that we want to fire. 
+ * A window.resize() event checks this label and functions fire when conditions are met 
+ *
+ * The nice part is, these labels can be strings with more than one item in them. 
+ * As many JS functions that we want to fire at different widths can be controlled with tese labels.
+ */
+
+
+/* - - - Smaller than 400px - - - */
+@media (max-width: px2em( 399px )) {
+
+    @include max_width_399(); 
+
+}
+
+/* - - - Larger than 400px - - - */
+@media (min-width: px2em( 400px )) {
+    
+    body:after {
+        content: 'animatebody'; 
+        display: none; 
+    }
+    @include min_width_400(); 
+
+}
+
+
+/* - - - Larger than 520px - - - */
+@media (min-width: px2em( 520px )) {
+    
+    body:after {
+        content: 'animatebody'; 
+        display: none; 
+    }
+    @include min_width_520(); 
+
+}
+
+
+/* - - - Larger than 640px - - - */
+@media (min-width: px2em( 640px )) {
+    
+    body:after {
+        content: ''; 
+        display: none; 
+    }
+    @include min_width_640(); 
+
+}
+
+
+/* - - - Larger than 640px, less that 940px - - - */
+@media (min-width: px2em( 640px )) and (max-width: px2em( 940px )) {
+    
+    body:after {
+        content: ''; 
+        display: none; 
+    }
+    @include stacked_nav(); 
+
+}
+
+
+/* - - - Larger than 800px - - - */
+@media (min-width: px2em( 800px )) {
+    
+    body:after {
+        content: 'local_meetup_map'; 
+        display: none; 
+    }
+    @include min_width_800(); 
+
+}
+
+
+/* - - - Larger than 940px - - - */
+@media (min-width: px2em( 940px )) {
+
+    body:after {
+        content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map'; 
+        display: none; 
+    }
+    
+    @include horizontal_nav(); 
+    
+    @include min_width_940();
+}
+
+/* - - - Larger than 1024px - - - */
+@media (min-width: px2em( 1024px )) {
+
+    body:after {
+        content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map'; 
+        display: none; 
+    }
+    
+    @include min_width_1024();
+}

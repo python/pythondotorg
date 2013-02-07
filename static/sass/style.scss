@@ -1,0 +1,2019 @@
+@import "base";
+@import "functions";
+@import "mixins";
+
+@include html5boilerplate_reset; 
+
+/* 
+ * Main CSS styles for linear content. Design for Mobile first! 
+ * 
+ * Use attribute selectors when it makes sense: 
+ * [class*=wrapper] means any class that is exactly "wrapper". Not as useful as these: 
+ * See http://24ways.org/2012/a-harder-working-class/
+ * [class*=pod] means any class containing the expression "pod"
+ * [href^=http] means any href that starts with "http"
+ * [href$=pdf] means any href that ends in "pdf"
+ */
+
+
+/* 
+ * KNOWN Bugs and rendering issues
+ *
+ * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing. 
+ */
+ 
+
+
+
+
+/* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
+
+body {
+   color: $default-color;
+   font: normal 100%/1.625 $default-font;
+   
+    /* Label the body with our media query parameters. Then check with JS to coordinate @media changes */
+    &:after {
+        content: 'small'; 
+        display: none; 
+    }
+}
+
+header, nav, section, article, aside, footer, div, li {
+    @include pe-box-sizing( border-box ); 
+}
+
+a, a:active, a:visited, a:hover, a:visited:hover { 
+	color: $link-color;
+	text-decoration: none;
+}
+
+/*modernizr*/ .touch a[href^="tel:"] {
+    border-bottom: 1px dotted $default-color; 
+}
+
+a img { display: block; }
+
+/* Set the highlight colors. These selection declarations have to be separate */
+::-moz-selection { background: $link-color; color: #fff; text-shadow: none; }
+::selection { background: $link-color; color: #fff; text-shadow: none; }
+a:link { -webkit-tap-highlight-color: $link-hover; }
+
+img, embed, object, video {
+	max-width: 100%
+}
+
+img {
+    margin: 0 auto; 
+}
+
+.giga { @include adjust-font-size( 40px ); }
+.mega { @include adjust-font-size( 36px ); }
+.kilo { @include adjust-font-size( 32px ); }
+
+h1, .alpha, h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
+    line-height: 1.5; 
+}
+
+h1, .alpha {
+    color: $grey;
+    font-family: $alt-font-bold;
+    line-height: 1.2em;
+    @include trailer(.25);
+    @include fontface-adjust( 28px ); 
+}
+
+h2, .beta {
+    color: $grey-dark;
+    font-family: $alt-font-bold;
+    @include leader(.5); 
+    @include trailer(.25);
+    @include fontface-adjust( 24px );
+}
+
+h3, .chi {
+    color: $default-color;
+    font-family: $alt-font;
+    @include leader(1); 
+    @include trailer(.25);
+    @include fontface-adjust( 21px ); 
+}
+
+h4, .delta {
+    color: $grey;
+    font-size: px2em( 15px );
+    font-weight: bold; 
+    @include leader(.75); 
+    @include trailer(.25);
+}
+
+h5, .epsilon {
+    color: $grey;
+    font-weight: bold; 
+    text-transform: uppercase; 
+    @include leader(1); 
+}
+
+h6, .gamma {
+    color: $grey;
+    font-weight: bold; 
+    @include leader(1); 
+}
+
+p, ul, ol, dl, blockquote, address, table {
+    font-size: px2em( 14px );
+    line-height: 1.55em;
+    margin-bottom: rhythm(0.5);
+}
+
+ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
+    margin-bottom: 0; 
+}
+
+blockquote {
+    font: italic px2em( 18px ) Georgia, serif;
+    line-height: 1.55em;
+    padding: rhythm(.25) 1.25em 0;
+    position: relative;
+    
+    /*&:before, &:after {
+        color: $grey-light; 
+        font-style: normal; 
+        font-size: px2em( 36px );
+        position: absolute;
+    }
+    
+    &:before {
+        content: "“";
+        top: .375em; 
+        left: 0;
+    }
+    
+    &:after {
+        content: "”";
+        line-height: 0;
+        vertical-align: bottom;
+        bottom: 0; 
+        right: 0;
+    }*/
+    
+    footer {
+        font: normal px2em( 14px, 18px ) $default-font;
+    }
+}
+
+
+form {
+    @include pie-clearfix(); 
+}
+
+label {
+    display: block; 
+    @include leader( .5 ); 
+    
+    /*modernizr*/ .placeholder & {
+        display: none; 
+    }
+    /*modernizr*/ .placeholder &.always-show {
+        display: block; 
+    }
+}
+
+input, textarea {
+    width: 100%;
+    padding: .65em;
+    margin-bottom: rhythm( .5 ); 
+    border: 1px solid $grey-lighter; 
+    @include border-radius(); 
+    @include pe-box-sizing( border-box ); 
+}
+
+input[type=checkbox], input[type=radio] {
+    width: auto; 
+    border: none; 
+}
+
+input {
+    /*modernizr*/ .no-touch &:focus {
+        @include box-shadow( 0px 0px 10px rgba( 0,0,0,0.2 ) ); 
+    }
+    /*modernizr*/ .no-touch &[required=required]:focus {
+        @include box-shadow( 0px 0px 10px rgba( 255,0,0,0.3 ) );
+    }
+}
+
+::-webkit-input-placeholder  { color: $grey-light; font-style: italic; }
+input:-moz-placeholder { color: $grey-light; font-style: italic; }
+
+/* Not a mistake... I repeat a.button and .button so I do not need to add !important to the color declaration */
+input[type=submit], input[type=reset], input[type=button], button, a.button, .button {
+    @extend %button-style;
+}
+
+input[type=reset] {
+    @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
+    @include pe-border( $color-top: $grey-lighter, $color-bottom: darken( $grey-light, 10% ) ); 
+    
+    &:hover, &:focus, &:active {
+        color: $white; 
+        @include vertical-gradient( $grey-light, lighten( $grey-light, 10% ) );
+    }
+}
+
+abbr, dfn {
+    border-bottom: 1px dotted $blue;
+}
+
+
+
+
+
+/* ===== LOCAL EXTENDABLE STYLES ===== 
+ *
+ * "Local" mixins can be used with the @extend operative 
+ * if the rule name has a % in front of it, it will not be output as part of the file, only if called with @extend
+ * Unfortunately, the @extend operative does not work inside a media query or mix-in
+ *
+ * Example: %horizontal-nav-with-drop-downs { }
+ */
+
+/* Color Areas: use for consistency */
+%blue-colorspace {
+    background-color: darken($blue, 15%);
+    @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
+    @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03) );
+}
+
+%blue-colorbox {
+    @extend %blue-colorspace;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+    
+    .button {
+        @extend %button-style-yellow;
+    }
+}
+
+%grey-colorspace {
+    background-color: $grey-lightest;
+    @include vertical-gradient( $grey-lightest, darken($grey-lightest, 5%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
+}
+
+%grey-colorbox {
+    @extend %grey-colorspace;
+    border: 1px solid $grey-lighter;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
+/* Buttons */
+%button-style {
+    background-color: lighten($grey-light, 20%);
+    @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
+    @include pe-border( $color-top: $grey-lighter, $color-right: $grey-lighter, $color-bottom: $grey-light, $color-left: $grey-lighter );
+    @include border-radius();
+    @include box-shadow( 1px 1px 1px rgba(0, 0, 0, 0.05) , inset 0 0 5px rgba(255, 255, 255, 0.5) );
+    color: darken($grey, 10%) !important;
+    cursor: pointer;
+    display: block;
+    font-weight: normal;
+    margin-bottom: rhythm(.25);
+    padding: .4em .75em .35em;
+    text-align: left;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    white-space: nowrap;
+    // width: auto;
+    
+    &:hover, &:focus, &:active {
+        background-color: inherit;
+        color: darken($grey, 30%) !important;
+        @include vertical-gradient( lighten( $grey-light, 30% ), lighten($grey-light, 25%) );
+    }
+}
+
+%button-style-yellow {
+    @extend %button-style;
+    background-color: lighten($yellow, 10%);
+    @include vertical-gradient( lighten($yellow, 10%), $yellow );
+    @include pe-border( $color-top: darken($yellow, 20%), $color-right: darken($yellow, 20%), $color-bottom: darken($yellow, 20%), $color-left: darken($yellow, 20%) );
+    
+    &:hover, &:active {
+        background-color: inherit;
+        @include vertical-gradient( lighten($yellow, 20%), $yellow );
+    }
+}
+
+%button-style-blue {
+    @extend %button-style;
+    background-color: $blue;
+    @include vertical-gradient($blue, darken($blue, 10%) );
+    @include pe-border( $color-top: lighten($blue, 5%), $color-right: $blue, $color-bottom: $blue, $color-left: lighten($blue, 5%) );
+    @include box-shadow( inset 0 0 5px rgba($blue, 0.2) );
+    color: $grey-lightest !important;
+    text-shadow: none;
+    
+    &:hover, &:active {
+        background: inherit;
+        @include vertical-gradient(darken($blue, 5%), darken($blue, 15%) );
+        color: $grey-lighterest !important;
+    }
+}
+
+%link-style {
+    // border-bottom: 1px dotted lighten($blue, 30%);
+    border-bottom: 1px solid lighten($yellow, 10%);
+    text-decoration: none;
+    
+    &:hover, &:focus {
+        border-bottom: 1px solid $yellow;
+    }
+}
+
+%link-style-on-blue {
+
+}
+
+
+
+
+/* ===== HELPFUL CLASSES ===== */
+
+/* A useful class that helps control how lines might break. Use carefully and always test. */
+.pre {
+    white-space: nowrap; 
+}
+
+/* Our own little class for progressive text. Yes, it is a Monty Python reference */
+.say-no-more {
+    display: none; 
+    visibility: hidden;  
+}
+
+/* Styling for a series of angle brackets... >>> */
+.prompt {
+    font-family: $alt-font;
+    font-size: 120%;
+    letter-spacing: -.0625em; 
+}
+
+/* Used on "Read More" or "More" links (duh)  */
+.readmore, .give-me-more a {
+    white-space: nowrap; 
+    text-decoration: none !important; 
+    
+    &:before {
+        @extend .prompt; 
+        content: ">>>"; 
+        margin-right: .25em; 
+    }
+}
+
+               
+
+
+
+/* ! ===== ICONS =====
+    
+    Pull the final icon set out of fonts.scss when ready
+    
+    Use the following CSS code if you want to use data attributes for inserting your icons. It requires less CSS 
+    When inserting an icon in HTML, use this format on the element: data-icon="&#x0022;"
+    Cut and paste from the master glyphs set in /fonts
+
+[class^="icon-"]:before, [class*=" icon-"]:before {
+	font-family: 'IcoMoon';
+	font-style: normal;
+	margin-right: 0.75em;
+	speak: none;
+	vertical-align: bottom;
+	unicode-range: U+e021;
+}
+
+icon declarations
+.icon-clock:before {
+	content: "\e021";
+} */
+
+
+
+
+
+/* ===== MAJOR PAGE ELEMENTS ===== */
+
+/*<div id="top" class="top-bar">*/
+
+%hovered-state {
+    @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
+    color: $white;
+    
+    &:before {
+        left: 50%;
+    }
+}
+
+.top-bar {
+    color: #bbb; 
+    background-color: $darkerblue;
+    border-bottom: 1px solid $darkblue;
+   
+    .container {
+       
+    }
+    
+    a {
+        position: relative; 
+        display: block; 
+        color: $grey-light; 
+        background: transparent; 
+        text-align: center;
+        @include adjust-font-size( 16px ); 
+        padding: .5em .75em .4em; 
+        
+        /* no fallback for .no-generatedcontent. This is a progressive enhancement */
+        &:before {
+            @include pointer( .5em );
+            top: 0; 
+            left: -999em; 
+            margin-left: -.25em; 
+        }
+        
+        &:hover, &:focus {
+            @extend %hovered-state; 
+        }
+    }
+    
+    li {
+        border-top: 3px solid $blue; 
+    }
+    
+    .python-meta, .python-meta a:before { border-top-color: $blue; }
+    .psf-meta, .psf-meta a:before { border-top-color: $psf; }
+    .docs-meta, .docs-meta a:before { border-top-color: $yellow; }
+    .pypi-meta, .pypi-meta a:before { border-top-color: $green; }
+    .jobs-meta, .jobs-meta a:before { border-top-color: $purple; }
+    .shop-meta, .shop-meta a:before { border-top-color: $red; }
+    
+    .selected a {
+        @extend %hovered-state;
+    }
+}
+
+.meta-navigation { 
+    text-align: center; 
+    
+    /*ul*/ .menu {
+        margin-bottom: 0; 
+    }
+    .say-no-more {
+        display: inline; 
+        visibility: visible; 
+    }
+    .jump-link {
+        background-color: darken( $darkerblue, 7% );
+    }
+}
+
+
+
+
+
+
+
+/*<header id="top" class="main-header" role="banner">*/
+
+/* Used in both the main-header and the header-banner */
+.main-header {
+    @extend %blue-colorspace;
+    // background: top left repeat-x image-url("background-gradient.png") #477ca8;
+    // @include vertical-gradient( darken( $blue, 20% ), darken($blue, 10%) );
+    border-top: 1px solid #191919;
+    border-bottom: 1px solid #444;
+    // @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.05), inset 0 0 20px rgba(0, 0, 0, 0.05) );
+    // padding: rhythm(.5) 0;
+    
+    .container {
+        text-align: center; 
+        padding: .75em 1em;
+    }
+}
+
+/*h1*/ .site-headline {
+    color: $white;
+    margin: 0.15em auto 0.2em;
+     
+    a {
+        display: block; 
+        margin: 0 auto;
+        
+        img {
+            width: 254px * .75; 
+            height: 82px * .75; 
+        }
+        
+        /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+        .lt-ie9 & {
+            width: 254px * .75; 
+            height: 82px * .75;
+        }
+    }
+}
+
+
+
+$optionsbar-text: #bbb;
+
+.options-bar {
+    width: 100%; 
+    color: $optionsbar-text; 
+    margin-bottom: rhythm( .75 ); 
+    @include border-radius(); 
+    border-top: 1px solid lighten( $darkerblue, 8% );
+    border-bottom: 1px solid darken( $darkerblue, 12% );
+    background-color: $darkerblue; 
+    line-height: 1em;
+    
+    form, div {
+        padding: 0.35em 0.2em 0.3em;
+        vertical-align: middle;
+    }
+    
+    .breaker {
+        @include breaker_bar(); 
+        border-top: 1px solid darken( $darkerblue, 12% ); 
+        border-bottom: 1px solid lighten( $darkerblue, 8% );
+    }
+}
+
+.jump-to-menu, .search-the-site, .icon-search, input#s, .search-button, .adjust-font-size, .winkwink-nudgenudge {
+    @include pe-inline-block(); 
+}
+
+.jump-to-menu, .search-the-site, .adjust-font-size {
+    margin-right: -.35em; 
+}
+
+a.jump-to-menu {
+    color: $optionsbar-text; 
+    padding: .45em .75em .35em;
+    border-right: 1px solid darken( $darkerblue, 12% );
+    vertical-align: middle;
+    
+    &:hover, &:focus {
+        color: $white;
+    }
+}
+
+.menu-icon {
+    display: inline-block; 
+    font-size: px2em( 20px ); 
+    margin: -.125em -.125em 0 0; 
+}
+
+/*form*/ .search-the-site {
+    text-align: left; 
+    padding: .35em .2em .3em;
+    border-left: 1px solid lighten( $darkerblue, 8% );
+    
+    .icon-search {
+        margin-left: .5em; 
+    }
+}
+
+/*input*/ .search-field {
+    width: 4.5em; 
+    margin-bottom: 0; 
+    color: $optionsbar-text;
+    background-color: transparent; 
+    border: none; 
+    @include border-radius( 0px ); 
+    margin: .125em 0; 
+    padding: .4em 0 .3em; 
+    
+    &::-webkit-input-placeholder { color: $optionsbar-text; font-style: normal; }
+    &:-moz-placeholder { color: $optionsbar-text; font-style: normal; }
+    
+    &:focus {
+        background-color: $white; 
+        color: $default-color; 
+        padding: .4em .5em .3em; 
+        
+        // removed this line because it was making the height fluctuate on focus:
+        // @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); 
+    }
+    
+    &:blur {
+        color: $optionsbar-text;
+    }
+}
+
+.search-button {
+    /* Small screens (phones) have their own form controls */
+    display: none; 
+    @extend %button-style-blue;
+    // color: $optionsbar-text;
+    // @include reset-gradient( lighten($darkerblue, 8%) ); 
+    // border: 0;
+    // @include pe-border( $color-top: lighten($darkerblue, 8%), $color-bottom: darken($darkerblue, 8%) ); 
+    // @include border-radius(); 
+    margin-right: 0.2em;
+    margin-bottom: 0;
+    text-shadow: none;
+    // @include box-shadow( none );
+    
+    &:hover, &:focus, &:active {
+        // color: $white; 
+        // @include reset-gradient( lighten($darkerblue, 15%) ); 
+    }
+}
+
+.adjust-font-size {
+    font-weight: bold; 
+    border-right: 1px solid darken( $darkerblue, 12% );
+    
+    a {
+        color: $optionsbar-text; 
+        display: inline-block;
+        
+        &:hover, &:active {
+            color: $white;
+        }
+    }
+}
+
+.font-size-smaller {
+    font-size: 90%; 
+    padding: .55em .4em .45em .75em; 
+    margin-right: -.35em; 
+}
+
+.font-size-larger {
+    font-size: 110%; 
+    padding: .45em .75em .3em .25em;
+}
+
+.winkwink-nudgenudge {
+    @include horizontal_nav_base();
+    @include horizontal_nav_dropdowns(); 
+    border-left: 1px solid lighten( $darkerblue, 8% );
+    
+    a {
+        color: $optionsbar-text; 
+        background-color: transparent; 
+    }
+    
+    .tier-1 {
+        float: none; 
+        
+        &:hover > a {
+            color: #555; 
+            background-color: $grey-lighter; 
+        }
+    }
+    
+    .subnav {
+        background-color: $grey-lighter; 
+        
+        a {
+            color: #555;
+            
+            &:hover, &:focus {
+                color: $grey-lightest; 
+                background-color: $grey-light; 
+            }
+        }
+    }
+}
+
+
+
+/* ! Main navigation – In layout and mixins, as we don't display it here. */
+.main-navigation {
+    display: none;
+    margin-bottom: 1px;
+}
+
+
+
+/* ! Header banner, present on most landing pages */
+/*<div class="header-banner">
+    <div class="featured-success-story">
+        <h1 class="call-to-action"><a href="#">Python is powerful... and fast</a>. <a href="#">Python plays well with others</a>. <a href="#">Python runs everywhere</a>. <a href="#">Python is friendly... and easy to learn</a>. <a href="#">Python is Open</a>.</h1>
+        <p>These are some of the reasons people who use Python would rather not use anything else.</p>
+    </div>
+</div>*/
+
+.header-banner {
+    clear: both;
+    @include pie-clearfix;
+    margin: 0 1px;
+    position: relative;
+    // text-align: left;
+    
+    /* temporary slideshow placeholder */
+    .home & {
+        background: #222;
+        @include box-shadow( inset 0 0 30px rgba(0, 0, 0, 1) ); 
+        margin: 0 auto; 
+        max-width: 960px;
+    }
+    
+    img {
+        display: block; 
+        margin: 0 auto; 
+    }
+    
+    p {
+        color: $grey-lightest;
+        max-width: 450px;
+    
+        & a:not(.button) {
+            color: $yellow;
+            @include pe-border( $color-bottom: lighten($blue, 12%) );
+            
+            &:hover, &:focus {
+                color: #fff;
+                @include pe-border( $color-bottom: lighten($blue, 18%) );
+                // text-shadow: 0 0 3px rgba( darken($yellow, 10%), 0.5);
+            }
+        }
+    }
+    
+    .button, a.button {
+        @extend %button-style-yellow;
+    }
+    
+    a.readmore {
+        color: $yellow;
+    }
+}
+
+.slide-code, .slide-copy {
+    text-align: left;
+}
+
+.slide-code {
+    background: $darkerblue;
+    overflow: auto;
+    
+    code {
+        color: $grey;
+        font-size: px2em( 14px );
+        padding: 20px 30px;
+        
+        span, strong {
+            white-space: nowrap;
+        }
+        
+        span {
+            color: $grey-lighter;
+        }
+        
+        strong {
+            color: #00cc00;
+            font-weight: normal;
+        }
+    }
+}
+
+.slide-copy {
+    background: darken($blue, 22%);
+    padding: 20px;
+    
+    h1 {
+        color: $yellow;
+        margin-bottom: .25em;
+    }
+}
+
+.introduction {
+    font-family: $alt-font-bold;
+    font-size: px2em( 20px );
+    @include leader(.5); 
+    @include trailer(.5);
+    text-align: left; 
+    color: $grey-lighter;
+    padding: 0.25em 0.5em;
+    
+    p {
+        line-height: 1.4em;
+        margin-bottom: 0; 
+    }
+    
+    a, a:link, a:visited {
+        color: $yellow; 
+        text-decoration: underline;
+        
+        &:hover, &:focus {
+            color: #fff;
+        }
+    }
+    
+    .breaker {
+        display: none; 
+    }
+}
+
+.about-banner, .download-for-current-os, .documentation-banner, .latest-blog-post, .featured-event, .jobs-intro {
+    text-align: left; 
+    // padding: rhythm( .75 ) 0 rhythm( 1.25 );
+    
+    p:last-child {
+        // margin-bottom: 0; 
+    }
+}
+
+.featured-success-story {
+    padding: rhythm( .75 ) 0 0;
+}
+
+/*h1*/ .call-to-action {
+    color: $yellow;
+    @include fontface-adjust( 20px );
+    line-height: 1.25em;
+    @include leader( .25 );
+    @include trailer( .25 );
+    
+    a {
+        color: $yellow; 
+        border-bottom: 2px dotted $blue; 
+        // border-bottom-color: rgba( $yellow, .4 );
+        line-height: 1.35em;
+        
+        &:hover, &:focus {
+            color: $grey-lightest; 
+            text-decoration: none; 
+        }
+    } 
+}
+
+.content-wrapper {
+    background-color: #fcfcfc;
+    // border-top: 1px solid #333;
+    @include vertical-gradient( #fcfcfc, #f9f9f9 );
+    // @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.1) );
+    // padding: 0 0 .5em 0;
+    padding: 0; 
+    
+    .container {
+        padding: 0.25em;
+    }
+}
+
+
+
+.main-content {
+    color: $grey;
+    
+    a:not(.button) {
+        @extend %link-style;
+        display: inline;
+    }
+}
+
+.main-content, 
+.sidebar-widget,
+.right-sidebar {
+    // padding-top: rhythm( .75 );  /* move to larger mq */
+    padding-bottom: rhythm( .75 );
+    
+    li {
+        line-height: 1.55em;
+        margin: rhythm(0.15) 0;
+    }
+    
+    a, a:active, a:visited { 
+    	// color: $link-color;
+    	text-decoration: underline;
+    }
+    
+    a:hover, a:visited:hover { 
+    	color: $link-hover; 
+    	// text-decoration: none;
+    }
+    
+    nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .prompt {
+        text-decoration: none; 
+    }
+    
+    ul:not(.menu) {
+        
+        /*modernizr*/ .generatedcontent & li {
+            list-style: none; 
+        }
+        /*modernizr*/ .generatedcontent & li:before {
+            content:'\25A0'; /* square */
+            display: block;
+            position: relative;
+            max-width: 0px;
+            max-height: 0px;
+            left: -1em;
+            top: -.125em;
+            color: #bbb;
+            font-size: 1em;
+        }
+        /*modernizr*/ .generatedcontent & li ul li:before {
+            content:'\2022'; /* solid round */
+            top: 0;
+            font-size: 1.125em;
+        }
+    }
+    &.with-left-sidebar {
+        
+    }
+    &.with-right-sidebar {
+        
+    }
+}
+
+.documentation-help {}
+
+.row {}
+
+.row-title {
+    border-top: 5px solid darken($grey-lighterest, 10%);
+    padding: 0.75em 1em 0.5em;
+}
+
+
+
+
+
+/* ===== WIDGET STYLES ===== */
+
+%widget {
+    border-top: 5px solid $grey-lightest; // default fallback
+    margin-bottom: 0.25em;
+    padding: 1.25em;
+    
+    h4 {
+        border-top: 1px solid $grey-lightest;
+        margin-top: 1.75em;
+        padding-top: 0.5em;
+    }
+    
+    p, ul {
+        
+        &:last-child {
+            margin-bottom: 0;
+        }
+    }
+    
+    li > a {
+        display: inline-block; 
+    }
+}
+
+.small-widget, .medium-widget, .sidebar-widget {
+    @extend %widget;
+}
+
+.widget-title, .listing-company {
+    line-height: 1.25em;
+    margin: 0 0 0.1em; 
+    @include fontface-adjust( 20px ); /* like an h3, even though we mark it up as an h2 */
+    
+    .main-content &, .main-content .give-me-more {
+        
+        a {
+            border-bottom: none;
+            
+            &:hover {
+                border-bottom: none;
+            }
+        }
+    }
+    
+    .prompt {
+        display: none; // show this at first breakpoint
+    }
+    
+    & > span {
+        color: $grey-light;
+        margin-right: .25em; 
+    }
+}
+
+/* Section Specific Widget Colorways */
+
+.small-widget, .medium-widget, .sidebar-widget {
+    
+    .python & {
+        border-top: 4px solid lighten($blue, 20%);
+    }
+    
+    .psf-home & {
+        border-top: 5px solid $grey-lighter;
+    }
+    
+    .docs & {
+        border-top: 5px solid $yellow;
+    }
+    
+    .pypl & {
+        border-top: 5px solid $green;
+    }
+    
+    .jobs & {
+        border-top: 5px solid lighten($purple, 20%);
+    }
+    
+    .shop & {
+        border-top: 5px solid $red;
+    }
+}
+
+/* Section Specific Widget Icon Colorways */
+
+.widget-title, .listing-company {
+    
+    & > span {
+        
+        .python & {
+            color: $blue;
+        }
+        
+        .psf-home & {
+            color: $grey-light;
+        }
+        
+        .jobs & {
+            color: $purple;
+        }
+    }
+    
+    /*
+    .home & > span {
+        color: $blue;
+    }
+    
+    .psf-home & > span {
+        color: $grey-light;
+    }
+    
+    .docs & > span {}
+    */
+}
+
+/* Specific Widget Styles */
+
+.psf-widget, .python-needs-you-widget, .download-list-widget, .mapped-events {
+    .widget-title {
+        // margin-bottom: 0;
+    }
+}
+
+.get-started-widget {}
+
+.download-widget {
+    
+    p:last-child a {
+        white-space: nowrap; 
+    }
+}
+
+.documentation-widget {}
+
+.jobs-widget {}
+
+
+
+
+
+%indent-time-elements {
+    
+    li {
+        border-top: 1px solid $grey-lighter;
+        padding-left: 4em;
+        padding-top: rhythm(0.25);
+        padding-bottom: rhythm(0.25);
+        position: relative;
+        
+        time {
+            position: absolute; 
+            top: 50%;
+            left: 0;
+            margin-top: -.75em;
+        }
+    }
+}
+
+.time-posted {
+    display: block;
+    font-size: px2em(14px);
+    font-style: italic;
+    margin-bottom: .75em;
+}
+    
+.download-list-widget {
+    @extend .small-widget;
+}
+
+.blog-widget {
+    @extend %indent-time-elements;
+}
+
+.blog-name {
+    display: block;
+    font-style: italic;
+    font-weight: bold;
+    letter-spacing: 0.01em;
+}
+
+.event-widget {
+    @extend %indent-time-elements; 
+}
+
+.most-recent-events {
+    @extend .small-widget;
+}
+
+.success-stories-widget {
+    // border-top: 0; 
+    
+    blockquote {
+        background-color: lighten($yellow, 15%);
+        @include vertical-gradient( lighten($yellow, 15%), lighten($yellow, 10%) );
+        @include border-radius;
+        color: $grey;
+        @include adjust-font-size( 16px );
+        line-height: 1.4em;
+        padding: rhythm(.4) 1em rhythm(.5);
+        position: relative;
+        
+        &:after {
+            @include pointer( .6em ); 
+            bottom: -1.1em; 
+            left: 20%; 
+            border-top-color: lighten($yellow, 10%); 
+        }
+    }
+    
+    .quote-from {
+        @include pie-clearfix;
+        
+        td {
+            padding: 8px;
+            vertical-align: middle;
+        }
+        
+        img {
+            // padding-right: 1em;
+            max-height: 50px;
+        }
+        
+        p {
+            font-size: px2em( 14px );
+            margin-bottom: 0;
+        }
+    }
+}
+
+.statistics-widget {
+    padding-left: .75em; 
+    
+    .stat {
+        background: lighten($blue, 50%);
+        @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
+        border: 1px solid lighten($blue, 40%);
+        @include border-radius;
+        padding: 0.7em 1em 0.875em;
+    }
+    
+    .number {
+        color: $grey;
+        font-size: px2em( 42px );
+        line-height: 1em;
+        margin-top: 0;
+        margin-bottom: .05em;
+        text-align: center;
+    }
+    .explanation {
+        font-family: $alt-font-italic;
+        font-size: px2em( 18px );
+        line-height: 1.2em;
+        margin-bottom: 0;
+        text-align: center; 
+    }
+}
+
+.triple-widget {
+    @extend .small-widget; 
+}
+
+.shrubbery {
+    position: relative; 
+    
+    .give-me-more {
+        color: $grey-lighter;
+        display: none;
+        position: absolute;
+        top: .25em; right: .25em;
+        
+        a {
+            color: $grey-light;
+            
+            &:hover, &:active {
+                color: $grey;
+            }
+        }
+    }
+}
+    
+    
+    
+/* PEP Widget */
+.pep-widget {
+    @extend %grey-colorbox;
+    
+    .widget-title {
+        @include fontface-adjust( 18px );
+        color: lighten($grey, 5%);
+        margin-bottom: 0.35em;
+        
+        a {
+            color: $blue;
+            text-decoration: none;
+            
+            &:hover, &:active {
+                color: $darkblue;
+            }
+        }
+    }
+    
+    tr {
+        background-color: $grey-lighterest;
+        border-top: 1px solid $grey-lighter;
+        line-height: 1.2em;
+        margin: 0;
+        
+        &:hover, &:active {
+            background-color: lighten($grey-lighterest, 5%);
+            color: $grey-darker;
+        }
+    }
+    
+    td {
+        line-height: 1.35em;
+        padding: 8px;
+        vertical-align: middle;
+        
+        &:first-child {
+            text-align: right;
+            width: 40px;
+        }
+    }
+    
+    .pep-number {
+        color: $grey; 
+        font-weight: bold; 
+    }
+    
+    a {
+        text-decoration: none;
+    }
+}
+
+.rss-link {
+    @extend .pre;
+    // margin-left: 0.5em;
+    line-height: 1em;
+    
+    .main-content & {
+        text-decoration: none; 
+    }
+    span:before {
+        color: $orange; 
+    }
+}
+
+/* Success Stories landing page */
+.featured-success-story {
+    // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
+    background: url('../img/success-glow2.png') center -230px no-repeat;
+    
+    img {
+        // background: $white;
+        // @include border-radius(50px);
+        // @include box-shadow( 0 0 10px rgba($white, 1.0), 0 0 20px rgba($white, 0.5) );
+        padding: 10px 30px;
+    }
+    
+    /*blockquote*/ .success-quote {
+        color: $yellow; 
+        font-size: px2em( 26px ); 
+        line-height: 1.5; 
+        //padding: rhythm(.25) 1.25em 0;
+        position: static;
+        text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
+        
+        &:before, &:after {
+            // color: darken($yellow, 20%);
+            color: lighten($blue, 10%);
+            font-style: normal; 
+            font-size: px2em( 32px );
+            line-height: 0;
+            vertical-align: text-bottom;
+            position: static;
+        }
+        &:before {
+            content: "“";
+            top: auto; left: auto;
+            margin-left: -.2em;
+        }
+        &:after {
+            content: "”";
+            bottom: auto; right: auto;
+            margin-right: -.2em;
+        }
+    }
+}
+
+a.activity-feed {
+    border-bottom: none;
+    font-size: px2em( 12px ); 
+    text-decoration: none;
+    
+    span {
+        margin-right: .25em;
+    }
+}
+    
+p.quote-by {
+    color: $grey-lightest;
+    margin-bottom: 0;
+}
+p.quote-by-organization {
+    color: $grey-lightest;
+}
+
+.newest-success-stories {
+    padding-top: rhythm( .75 ); 
+    
+    .widget-title {
+        position: relative; 
+    }
+}
+
+/* Blog landing page */
+
+/*h2*/ .welcome-message {
+    font-family: $default-font; /* style like an h4 */
+    font-size: px2em( 18px );
+    // font-weight: bold;
+    color: darken($yellow, 10%); 
+    @include leader( 0 ); 
+    @include trailer( .5 ); 
+    
+    .fontface & {
+        font-size: px2em( 18px ); 
+    }
+}
+
+.latest-blog-post, .featured-event {
+    
+    .call-to-action {
+        
+    }
+    
+    .date-posted, .event-date {
+        color: lighten( $grey-light, 6% );
+    }
+    
+    p.excerpt {
+        max-width: none;
+    }
+    
+    .readmore {
+        color: $yellow; 
+        text-decoration: none; 
+        
+        &:hover, &:focus {
+            color: $white; 
+        }
+    }
+}
+
+.most-recent-posts {
+    @extend .small-widget; 
+    @extend %indent-time-elements;
+    
+    li time {
+        position: relative;
+    }
+}
+
+.subscribe-widget {
+    
+}
+
+.subscription-channels {
+    
+}
+    
+/* ! Events landing page */
+
+.most-recent-events {
+    
+    .menu {
+        
+    }
+}
+
+/*h3*/ .just-missed {
+    @include leader( .75 ); 
+    color: $blue; 
+}
+
+.list-recent-events, .list-recent-posts {
+    border-top: 1px solid #ddd; 
+    
+    li {
+        border-bottom: 1px solid #ddd;
+        padding: 0 0 0.75em;
+        position: relative;
+    }
+    
+    .event-title {
+        font-size: px2em(20px);
+        line-height: 1.3em;
+        @include leader(.25);
+        // margin-bottom: 0;
+    }
+}
+
+/* Community landing page */
+.community-success-stories {
+    
+    blockquote {
+        padding: 0;
+        color: $grey;
+        line-height: 1.5; 
+    }
+}
+
+.python-weekly {
+    background-color: $grey-lighterest;
+    @include border-radius(0 0 8px 8px);
+    padding: .75em 1em;
+    
+    form {
+        // background-color: $grey-lighterest; 
+        // padding: .5em; 
+        // margin-bottom: .25em;
+    }
+}
+
+/*ul*/ .twitter-stream {
+    
+    li {
+        background-color: $grey-lighterest; 
+        line-height: 1.3; 
+        padding: .5em; 
+        margin-bottom: .25em; 
+        
+        .view-on-twitter {
+            font-weight: bold;
+            font-size: px2em( 12px, 14px );
+        }
+    }
+}
+
+.twitteruser {
+    font-weight: bold; 
+}
+
+.twittermention {
+    color: $blue; 
+}
+
+.mapped-events {
+    border-top: 3px solid $grey-lightest;
+    
+    .medium-widget {
+        border-top: 0;
+        margin-bottom: 0;
+    }
+}
+
+.tag-wrapper {
+    display: block; 
+    
+    /*a*/ .tag {
+        white-space: nowrap; 
+        color: $grey; 
+        font-size: px2em( 13px ); 
+        vertical-align: baseline; 
+        padding: .2em .4em .1em; 
+        background-color: $grey-lightest; 
+        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $grey-lighter ); 
+        
+        &:hover, &:focus {
+            color: $default-color; 
+            background-color: darken( $grey-lightest, 8% ); 
+            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $grey-lighter, 8% ) ); 
+        }
+    }
+}
+
+.github-widget {
+    
+}
+
+.git-avatar, .git-repo {
+    display: inline-block; 
+    vertical-align: bottom; 
+}
+
+.git-avatar {
+    margin-right: .5em; 
+}
+
+.git-repo {
+    padding-bottom: .25em; 
+}
+    
+/* Stylized lists of items, used on Downloads and others */
+/* <ol class="list-row-container menu">
+        <li>
+            <span class="release-number"><a href="#?to-download">Python 3.3.0</a></span> 
+            <span class="release-date">September 29, 2012</span> 
+            <span class="release-download"><a href="#?to-download" class="icon-download">Download</a></span> 
+            <span class="release-enhancements"><a href="#?to-features">Features and Improvements</a></span>
+        </li>
+    </ol>*/
+
+.list-row-headings {
+    font-weight: bold;
+    padding: .5em .5em .4em .75em;;
+    margin-right: 1.25em;
+    
+    span {
+    
+    }
+}
+
+.list-row-container {
+    border: 1px solid $grey-lighter;
+    
+    li {
+        padding: .5em .5em .4em .75em;
+        margin-right: 0;
+        
+        &:nth-child(odd) {
+            background-color: $grey-lighterest; 
+        }
+    }
+    
+    a {
+        // padding: .25em .5em; 
+        // margin: -.25em; 
+    }
+}
+
+.release-number, .release-date, .release-download, .release-enhancements {
+    display: block;
+    // @include inline-block();
+    // margin-right: -4px;
+}
+
+.release-number {
+    font-weight: bold;
+}
+
+.download-list-widget {
+    
+    .list-row-headings, .list-row-container li {
+        font-size: px2em( 14px ); 
+    }
+    
+    /*modernizr*/ .no-touch & .list-row-container {
+        height: 16.75em; 
+        overflow-y: scroll; 
+    }
+}
+
+
+
+/* Blue Widgets */
+
+.psf-widget, .python-needs-you-widget {
+    @extend %blue-colorbox;
+    // padding: 1em; 
+    // margin-bottom: 1.5em; 
+    
+    /*
+    .button {
+        @extend %button-style-yellow;
+    }
+    */
+    
+    .main-content & a:not(.button) {
+        border-bottom: none;
+        color: $yellow;
+        text-decoration: none; 
+        
+        &:hover, &:focus {
+            color: lighten($yellow, 20%); 
+        }
+    }
+    
+    .widget-title, .readmore, .readmore:before {
+        border-bottom: none;
+        color: $yellow;
+        text-decoration: none;
+        
+        &:hover, &:focus {
+            color: #fff; 
+        }
+    }
+    
+    .widget-title {
+        a, a:link, a:hover, a:visited, a:active {
+            border-bottom: none;
+        }
+    }
+    
+    p {
+        color: $grey-lighter; 
+    }
+    
+    /*p*/ .click-these {
+        margin-bottom: 0; 
+    }
+}
+
+.pep-widget, .psf-widget {
+    
+    .widget-title .prompt {
+        // display: none;
+    }
+}
+        
+
+
+/* ! Feedback messages and alert levels */
+/* <div class="alert level-low">
+        <p>Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
+    </div>*/
+
+.alert {
+    padding: .75em 1em .65em; 
+    margin-bottom: rhythm( .75 ); 
+    @include border-radius(); 
+    
+    p {
+        margin-bottom: 0; 
+    }
+    
+    a {
+        // color: $default-color; 
+        // margin-left: .25em;
+        text-decoration: underline; 
+        
+        &:hover, &:focus {
+            color: $grey-darker; 
+            // text-decoration: none; 
+        }
+    }
+}
+
+.level-general {
+    background-color: lighten($blue, 50%);
+    border: 1px solid lighten($blue, 40%); 
+}
+
+.level-notice {
+    background-color: lighten( $yellow, 50% ); 
+    border: 2px solid $yellow; 
+}
+
+.level-warning {
+    /* orange? */
+}
+
+.level-error {
+    /* red? */
+}
+
+.level-success {
+    /* green? */
+}
+
+
+
+/*<aside class="main-sidebar | right-sidebar | left-sidebar">*/ 
+.main-sidebar {
+     
+}
+.left-sidebar {
+    
+    .sidebar-widget {
+        padding-top: 0; 
+        margin-bottom: rhythm( .5 ); 
+    }
+    
+    .twitter-widget {
+        padding: 0;
+    }
+    
+    .twtr-doc {
+        padding: .75em;
+    }
+}
+
+.right-sidebar {
+    
+}
+.sidebar-widget {
+     
+}
+
+/* <li>
+    <h2 class="listing-company">
+        <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
+        <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
+    </h2>
+    <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
+    <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
+    <span class="listing-posted">10 December 2012</span>
+</li>*/
+
+.list-recent-jobs {
+    
+    li {
+        padding: rhythm( .5 ) .5em; 
+    }
+}
+
+/*h2*/ .listing-company {
+    
+    .listing-new {
+        display: inline-block; 
+        color: $white; 
+        background-color: $red; 
+        font-size: px2em( 14px, 24px );
+        text-transform: uppercase; 
+        letter-spacing: .0625em; 
+        padding: .45em .5em 0; 
+        margin-right: .25em; 
+    }
+    
+    .listing-location {
+        
+        a {
+            color: $grey-light; 
+            
+            &:hover, &:focus {
+                color: $blue; 
+            }
+        }
+    }
+}
+
+.listing-company-category, .listing-job-type, .listing-posted {
+    clear: both;
+    display: block; 
+}
+
+/* Inner pages */
+.breadcrumbs {
+    padding: .5em;
+    border-bottom: 1px solid $grey-lighter; 
+    
+    li {
+        display: inline-block; 
+        
+        .ie7 & {
+            display: inline; 
+        }
+    }
+    
+    .prompt {
+        margin-left: .5em; 
+    }
+}
+
+.section-navigation {
+    border-top: 3px solid lighten($blue, 20%); 
+    background-color: lighten( $blue, 48% ); 
+    padding: rhythm( .75 ) .75em rhythm( .5 ); 
+}
+
+.section-nav {
+    margin-bottom: 0; 
+    
+    a {
+        display: block; 
+        padding: .3em 0 .2em; 
+    }
+}
+
+.psf-sidebar-widget {
+    color: $grey-lighterest; 
+    @include vertical-gradient( darken( $blue, 10% ), $blue ); 
+    
+    .widget-title {
+        color: $yellow; 
+        margin-top: rhythm( .25 ); 
+        
+        a {
+            color: $yellow; 
+            
+            &:hover, &:focus {
+                color: $white; 
+            }
+        }
+    }
+    
+    p {
+        margin-bottom: 0;
+    }
+}
+
+.text {
+    padding: .5em 1em;
+}
+
+
+/* <footer id="site-map" class="main-footer" role="navigation"> */
+
+%footer-anchor-style {
+    display: block; 
+    text-align: center; 
+    padding: .5em .75em .4em; 
+}
+
+.main-footer {
+    background-color: $grey-lightest;
+    border-top: 1px solid darken($grey-lightest, 5%);
+    // @include box-shadow( inset 0 0 20px rgba(0, 0, 0, 0.025) );
+    clear: both;
+    color: $grey;
+    
+    .container {
+        padding: 0 .75em .75em;
+    }
+    
+    a {
+        color: $grey; 
+        
+        &:hover, &:focus {
+            color: $default-color; 
+        }
+    }
+    
+    .jump-link {
+        @extend %footer-anchor-style; 
+        background-color: darken( $grey-lightest, 2% );
+    }
+    
+    a.jump-link {
+        margin: .75em 0; 
+        @include pe-border( $color-top: $grey-lightest, $color-bottom: darken( $grey-lightest, 4% ) );
+        
+        &:hover, &:focus {
+            background-color: darken( $grey-lightest, 4% );
+            @include pe-border( $color-top: darken( $grey-lightest, 2% ), $color-bottom: darken( $grey-lightest, 6% ) );
+        }
+    }
+}
+
+.sitemap, .footer-links {
+    
+    a {
+        @extend %footer-anchor-style; 
+    }
+}
+
+.sitemap {
+    padding-bottom: .5em; 
+    
+    .tier-1 {
+        margin-bottom: rhythm(.75); 
+        
+        & > a {
+            color: $link-color; 
+            padding: .4em .5em .3em;
+            font-family: $alt-font-bold;
+            font-size: px2em(20px);
+            @include leader(.5); 
+            @include trailer(0);
+            // @include fontface-adjust( 20px );
+            
+            &:hover, &:focus {
+                color: $grey-darker; 
+            }
+        }
+    }
+    
+    .subnav {
+        font-size: px2em(16px);
+        margin-bottom: 0; 
+        @include pe-border( $color-bottom: $grey-lighter, $color-top: darken( $grey-lightest, 3% ) );
+        
+        li {
+            @include pe-border( $color-top: $grey-lighter, $color-bottom: darken( $grey-lightest, 3% ) ); 
+        }
+        a:hover, a:focus {
+            // background-color: lighten( $grey-lightest, 2% ); 
+            background-color: rgba($grey-lightest, 0.5);
+        }
+    }
+}
+
+.site-base {
+    @extend %blue-colorspace;
+    border-top: 1px solid #111;
+    
+    .container {
+        padding: 1em;
+    }
+}
+
+.footer-links {
+    margin-bottom: 0.5em;
+    
+    a {
+        // color: $yellow;
+        // color: $grey-lighter;
+        color: lighten($blue, 25%);
+        font-family: $alt-font-bold;
+        @include fontface-adjust( 18px );
+        
+        &:hover, &:focus {
+            // color: $grey-lighterest;
+            color: lighten($yellow, 30%);
+            // text-decoration: underline;
+            text-shadow: 0 0 5px rgba( $yellow, 0.2);
+        }
+    }
+}
+
+.copyright {
+    clear: both;
+    color: lighten($blue, 20%);
+    font-size: px2em( 12px );
+    text-align: center; 
+    /* padding-top: 1.5em; */
+    margin-bottom: 0;
+    // text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    
+    a {
+        border-bottom: 1px dotted lighten($blue, 10%);
+        color: lighten($blue, 20%);
+        // text-decoration: underline;
+        
+        &:hover, &:focus {
+            color: $white;
+            text-decoration: none;
+        }
+    }
+}
+
+
+
+/* ! ==== No JS warning message... more of a suggestion, really ==== */
+@include no_js_warning;
+
+
+/* ! Test objects – can be deleted later */
+
+.container {
+    //@include susy-grid-background(); 
+}
+
+#test-window-size {
+    background-color: rgba(200, 200, 200, 0.1);
+    color: #999;
+    // @include text-shadow( 1px 1px 2px rgba( #000, .8 ) ); 
+	font-family: Verdana, sans-serif;
+	font-size: px2em(12px);
+	line-height: 1em;
+	padding: 3px;
+	position: fixed; top: 2px; right: 2px;
+	z-index: 10000;
+}
+
+
+@include html5boilerplate_helpers(); 
+
+@include html5boilerplate_print(); 
+
+
+/* 
+ * When we want to review the markup for W3 and similar errors, turn some of these on 
+ * Uses :not selectors a bunch, so only modern browsers will support them
+ */
+@import "debug";
+@include modernizr_links;
+//@include debug_links;
+//@include debug_images;
+//@include debug_misc;
+@include debug_deprecated;
+//@include debug_empty;
+
+/* Keep this at the bottom since it will create a huge set of data */
+@import "fonts";

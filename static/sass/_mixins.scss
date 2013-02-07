@@ -1,0 +1,169 @@
+@mixin embossed_text {
+	@include text-shadow( 0 1px 1px rgba(255,255,255,0.8), 0 -1px 1px rgba(0,0,0,0.2)  ); 
+}
+
+@mixin inset_box_base( $style: light ) {
+    display: inline-block; 
+    padding: .5em .75em .4em; 
+    margin-botttom: 5px; 
+    line-height: 1; 
+    @include border-radius(); 
+    
+    @if $style == light {
+            // @include box-shadow( 0 1px 1px #ffffff, 0 1px 2px rgba(153,153,153,0.5) inset, 0 2px 4px rgba(153,153,153,0.5) );
+            @include box-shadow( inset 0 1px 2px rgba(153,153,153,0.5) );
+            // background: center repeat url("../img/whitenoise-5per.png") #ccc;
+            background: #ccc;
+            
+            &:hover, &:focus, &:active {
+                // background-color: #e6e6e6;
+                background: #d6d6d6;
+            }
+        }
+    @if $style == dark {
+            @include box-shadow( 0 1px 1px rgba(255,255,255,0.4), 0 1px 2px rgba(0,0,0,0.8) inset, 0 2px 3px rgba(0,0,0,0.8) ); 
+            // background: center repeat url("../img/whitenoise-5per.png") #444;
+            background: #444;
+            
+            &:hover, &:focus, &:active {
+                background-color: #222;
+            }
+        }
+}
+
+/* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
+@mixin breaker_bar() {
+    display: block; 
+    width: 100%; 
+    height: 1px; 
+    font-size: 1px; 
+    line-height: 1px;
+}
+
+/* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+@mixin pointer( $size ) {
+    position: absolute; 
+    content: ""; 
+    width: 0; 
+    height: 0; 
+    border-style: solid; 
+    border-width: $size; 
+    border-color: transparent; 
+}
+
+/* Base styles for a navigation mixin */
+@mixin horizontal_nav_base() {
+    text-align: center; 
+    overflow: visible; 
+    
+    /*ul*/ .menu {
+        margin-bottom: 0; 
+    }
+    .tier-1 , .tier-2 {
+        
+        /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */
+        & > a {
+            display: block; 
+            padding: .5em 1.5em .4em 1em; 
+            position: relative; 
+        }
+    }
+    /*li*/ .tier-1 {
+        display: block; 
+        width: 100%; 
+        
+        & > a {
+            text-align: center;
+        }
+    }
+    /*li*/ .tier-2 {
+        
+        & > a {
+            text-align: left;
+        }
+    }
+}
+
+/* Base styles for a navigation with dropdowns mixin */
+@mixin horizontal_nav_dropdowns() {
+    
+    /*ul*/ .menu {
+        @include pie-clearfix(); 
+    }
+    .tier-1 {
+        position: relative; 
+        
+        .no-touch &:hover .subnav, .no-touch &:focus .subnav, .touch & .subnav.touched {
+            left: 0; 
+        }
+        &.last:hover .subnav, &.last:focus .subnav, .touch &.last .subnav.touched {
+            left: auto; 
+            right: 0; 
+        }
+    }
+    .subnav {
+        position: absolute; top: 100%; left: -999em;  
+        z-index: 100; 
+        text-align: left; 
+        // @include box-shadow( .125em .125em .25em rgba( #000, 0.3 )  ); 
+        
+        .no-touch & {
+            min-width: 100%; 
+        }
+        .touch & {
+            /* On touch devices, the width of the subnav is not being set by the contents of .close-subnav, the first LI */
+            top: 120%;
+            border: 4px solid $white; 
+            @include box-shadow( 0 .25em .75em rgba( #000, 0.6 )  ); 
+            
+            &:before {
+                @include pointer( .75em ); 
+                top: -1.5em; left: 1em; 
+            	display: block; 
+                border-color: transparent transparent $white transparent; 
+            }
+        }
+    }
+    .touch & .tier-1.last .subnav:before {
+        left: auto; 
+        right: 1em; 
+    }
+    .tier-2 {
+        display: block;
+        min-width: 100%; 
+        
+        a {
+            white-space: nowrap; 
+        }
+        
+        /* <li class="tier-2 element-0 close-subnav" role="treeitem">
+                <a href="about.php">About</a>
+                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+            </li> 
+        /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
+        &.close-subnav {
+            display: none; 
+            text-align: left; 
+            white-space: nowrap; 
+            
+            a {
+                display: inline-block; 
+                margin-right: -.375em; 
+                font-weight: bold; 
+                @include pe-box-sizing( border-box ); 
+            }
+            .close-for-touch {
+                color: $red; 
+                font-weight: normal; 
+                font-size: px2em( 20px ); 
+                text-align: center; 
+                padding: 0 .5em;
+                margin-right: 0; 
+                @include text-shadow( -1px 0 0 $white ); 
+            }
+            /*modernizr*/ .js.touch & {
+                display: block; 
+            }
+        }
+    }
+}

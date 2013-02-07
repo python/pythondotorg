@@ -1,0 +1,1209 @@
+/* ********************************
+
+    NOTE
+    
+    MQs should be broken up a bit more. 
+    Take advantage of min & max at the same time to avoid having to reset styles from one breakpoint to another 
+
+/* ********************************/
+
+
+/* 
+ * ! ===== START Media Queries ===== 
+ *
+ * Define media queries here as mix-ins. Deliver the ones we want inside of complete mqs in mq.scss
+ * Alternately, deliver the rule-sets that we want to IE7 and 8 to render 
+ * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss. 
+ *
+ * Column structure =  
+ * 
+ *  Susy mix-ins:
+ *  @include span-columns(3 omega, 12); 
+ *  @include omega; 
+ *  @include prefix(3); 3 columns of padding before
+ *  @include suffix(3); 3 columns of padding after
+ *  @include pad(3,3); 3 columns of padding on each side
+ *  @include pre(3); 3 columns of margin before
+ *  @include post(3); 3 columns of margin after
+ *  @include squish(3,3); 3 columns of margin on each side
+ *  @include pull(2); Uses negative margin to pull an element out of the flow
+ *  columns(2); raw math for 2 cols of width and any gutters contained within
+ *  gutter(6); raw math for gutter width
+ */
+
+
+/* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
+@mixin stacked_nav() {
+    
+    a.jump-to-menu {
+        display: none; 
+    }
+    .search-the-site {
+        border-left: 0; 
+    }
+    .main-navigation {
+        border-top: 0;
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+        display: block; 
+        @include horizontal_nav_dropdowns(); 
+        text-align: center; 
+        
+        .tier-1 {
+            float: left; 
+            width: 33.333333%;
+            // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+            
+            &.element-6, &.element-7 {
+                width: 16.6666665%;
+            }
+            &.element-1 {
+                @include border-top-left-radius( 8px );
+                
+                & > a { @include border-top-left-radius( 7px ); }
+            }
+            &.element-3 {
+                @include border-top-right-radius( 8px ); border-right: 0;
+                
+                & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+            }
+            
+            // &.element-4 { @include border-bottom-left-radius( 8px ); }
+            // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
+        }
+        .tier-2 {
+            
+            & > a {
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            }
+        }
+        .close-subnav {
+             @include pe-border( $color-bottom: rgba( #666, .2 ) );
+        }
+        .close-for-touch {
+            @include pe-border( $color-left: rgba( #666, .2 ) );
+        }
+    }
+}
+
+
+/* ! ===== Ruleset for a single row of main navigation ===== */
+@mixin horizontal_nav() {
+    
+    a.jump-to-menu {
+        display: none; 
+    }
+    .search-the-site {
+        border-left: 0; 
+    }
+    .main-navigation {
+        @include border-radius(8px);
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+        display: block; 
+        margin: 0 -.75em;
+        text-align: center; 
+        @include horizontal_nav_dropdowns();
+        font-size: px2em( 18px );
+        
+        .menu {
+            text-align: center; 
+        }
+        .tier-1 {
+            border-top: 0;
+            border-bottom: 0;
+            @include pe-inline-block(); 
+            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
+            width: auto; 
+            margin: 0 -.3em 0 0; 
+            @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+            
+            &.element-1 {
+                border-left: 0; 
+            }
+            &.last {
+                border-right: 0; 
+            }
+        }
+        .tier-1 > a {
+            // font-weight: bold;
+            padding: .65em 1.25em .55em;
+            // text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+        .tier-2 {
+            
+        }
+        .close-subnav {
+            @include pe-border( $color-bottom: rgba( #666, .2 ) );
+             
+            a {
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            }
+            .close-for-touch {
+                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+            }
+        }
+    }
+}
+
+
+/* ! ===== Smaller than 400px ===== */
+@mixin max_width_399() {
+    
+    .search-field:focus {
+        width: 9em;
+    }
+}
+
+
+/* ! ===== Larger than 400px ===== */
+@mixin min_width_400() {
+    
+    .options-bar .breaker {
+        display: none;  
+    }
+    .adjust-font-size {
+        border-left: 1px solid lighten( $darkerblue, 8% );
+    }
+    .search-the-site {
+        border-right: 1px solid darken( $darkerblue, 12% );
+    }
+    /*.subnav li*/ .super-navigation {
+        display: none; 
+    }
+    
+    .introduction {
+        font-size: px2em( 22px );
+    }
+    
+    .content-wrapper {
+        .container {
+            padding: 1em 1.5em;
+        }
+    }
+    
+    .shrubbery {
+        .give-me-more {
+            display: block;
+        }
+    }
+    
+    .widget-title, .listing-company {
+        
+        .prompt {
+            display: inline;
+        }
+    }
+    
+    input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
+        display: inline-block !important;
+        width: auto;
+    }
+}
+
+
+/* ! ===== Larger than 520px ===== */
+@mixin min_width_520() {
+    
+    body {
+        text-rendering: optimizeLegibility; 
+        /* @include transition( all .3s ease-in-out ); makes the media query changes animate */
+    }
+    
+    p, ul, ol, dl, blockquote, address, table {
+        font-size: px2em( 15px );
+    }
+    
+    .meta-navigation, 
+    .main-header, 
+    .main-navigation,
+    .content-wrapper, 
+    .main-footer {
+        /* These elements are full width */
+        clear: both; 
+    }
+    
+    .container {
+        max-width: px2em( 1200px );
+        width: 100%; 
+        margin: 0 auto; 
+        padding: 0;
+        @include pie-clearfix(); 
+    }
+    
+    .introduction {
+        font-size: px2em( 24px );
+    }
+    
+    .success-stories-widget blockquote {
+        font-size: px2em(18px);
+        padding: 1em 1.4em 1.3em;
+    }
+}
+
+/* ! ===== Larger than 640px ===== */
+@mixin min_width_640() {
+    
+    p {
+        font-size: px2em(16px);
+    }
+    
+    .meta-navigation {
+        text-align: left;
+        
+        .say-no-more {
+            display: none; 
+            visibility: hidden;  
+        }
+        .jump-link {
+            display: none; 
+        }
+        li {
+            float: left; 
+            width: 16.6666667%; /* 6 columns */
+            /* width: 14.2857142857%; 7 columns */
+        	border-left: 1px solid lighten( $darkerblue, 5% ); 
+        	border-right: 1px solid darken( $darkerblue, 7% ); 
+        }
+        a {
+            
+        }
+    }
+    .site-headline {
+        float: left; 
+    }
+    .options-bar {
+        float: right; 
+        width: auto;  
+    }
+    .search-field {
+        @include transition( width .3s ease-in-out ); 
+    }
+    .search-field:focus {
+        width: 8em;
+        margin-right: .5em;
+    }
+    /*modernizr*/ .no-touch .search-button {
+        display: inline-block; 
+    }
+    
+    .slide-copy {
+        padding: 30px 40px;
+        
+        p {
+            font-size: px2em(16px);
+        }
+    }
+    
+    .introduction {
+        // font-size: px2em( 22px ); 
+        padding: 0 1em;
+    }
+    
+    .call-to-action {
+        @include fontface-adjust( 26px );
+    }
+    
+    /* Header-banners (not home) */
+    .header-banner {
+        padding: 1em;
+        
+        .home & {
+            padding: 0;
+        }
+    }
+    .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
+        @include pad( 1,1 ); 
+    }
+    
+    /*<nav class="main-navigation" role="navigation">*/
+    .main-navigation {
+        clear: both; 
+        @include horizontal_nav_base();  
+        @include border-radius( 8px 8px 0 0 ); 
+        
+        /*ul*/ & > .menu {
+            
+        }
+        .tier-1 {
+            
+        }
+        .tier-2 {
+            font-size: px2em( 14px );
+        }
+        .subnav {
+            // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
+        }
+    }
+    
+    /* 
+     * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
+     * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097 
+     */
+    $names: python, psf, jobs;
+    $colors: $blue, $psf, $purple;
+    
+    @for $i from 1 through length($names) {
+    
+        $this-color: nth($colors, $i); 
+        
+        .#{nth($names, $i)}-navigation {
+            @include vertical-gradient( $this-color, adjust-lightness( $this-color, -8 ), 30%, 95% );
+            border-top: 1px solid lighten($this-color, 15%);
+            border-bottom: 1px solid darken($this-color, 25%);
+            
+            .tier-1 {
+                @include pe-border( $color-top: lighten($this-color, 10%), $color-left: lighten($this-color, 10%), $color-bottom: darken($this-color, 20%), $color-right: darken($this-color, 10%) );
+                
+                & > a {
+                    color: $grey-lightest;
+                    background-color: transparent;
+                    @include pe-border( $color-top: transparent, $color-bottom: transparent );
+                    letter-spacing: 0.01em;
+                    
+                    &:hover, &:focus, .tier-1:hover > a {
+                        color: $white;
+                        @include vertical-gradient( darken($this-color, 4%), darken($this-color, 8%) );
+                        @include pe-border( $color-top: $this-color, $color-bottom: darken($this-color, 8%) );
+                    }
+                }    
+            }
+            
+            .subnav {
+                @include pe-border( $color-top: darken($this-color, 25%) );
+                @include vertical-gradient( lighten( $this-color, 38% ), lighten( $this-color, 45% ) );
+                @include box-shadow( inset 0 0 20px rgba($this-color, 0.15) );
+            }
+            
+            .tier-2 {
+                // background-color: lighten( $this-color, 50% );
+                
+                & > a {
+                    color: rgba($grey-dark, 0.9);
+                    @include pe-border( $color-top: rgba($this-color, 0.25), $color-bottom: transparent );
+                    
+                    &:hover, &:focus {
+                        background: rgba(255, 255, 255, 0.35);
+                        color: rgba($grey-darker, 0.9); 
+                    }
+                }
+                
+                &:last-child > a {
+                    @include pe-border( $color-bottom: rgba($this-color, 0.25) );
+                }
+            }
+            
+            .selected > a {
+                color: $white; 
+                @include vertical-gradient( darken($this-color, 10%), darken($this-color, 15%) );
+                // text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+            }
+            
+            .super-navigation {
+                color: $grey;
+                display: none;
+                @include pe-border( $color-right: rgba($this-color, 0.25), $color-bottom: rgba($this-color, 0.25), $color-left: rgba($this-color, 0.25) );
+                @include vertical-gradient( lighten($this-color, 60%), lighten($this-color, 50%));
+                
+                a:not(.button) {
+                    color: $this-color; 
+                    
+                    &, &:hover, &:focus {
+                        background-color: transparent; 
+                    }
+                    &:hover, &:focus {
+                        color: $link-hover; 
+                    }
+                }
+                
+                h4 {
+                    color: darken($this-color, 5%);
+                    font-family: $alt-font-bold;
+                    font-weight: normal;
+                    font-size: px2em( 22px );
+                    line-height: 1.25em;
+                }
+            }
+        }
+    }/* end @for */
+    
+    /* Main content with sidebars */
+    .main-content { 
+        
+        &.with-left-sidebar {
+            @include span-columns( 8 omega ); 
+        }
+        &.with-right-sidebar {
+            @include span-columns( 8 ); 
+        }
+    }
+    /*aside*/ .left-sidebar {
+        @include span-columns( 4 );
+        margin-top: 1em; 
+    }
+    /*aside*/ .right-sidebar {
+        @include span-columns( 4 omega );
+    }
+    
+    .left-sidebar, .right-sidebar {
+        
+        .small-widget, .medium-widget, .triple-widget {
+             @include reset-columns(); 
+         }
+    }
+    
+    .documentation-help {
+        // @include squish( 0,4 );
+        // text-align: center; 
+    }
+    
+    /* Widgets in main content */
+    .row {
+        @include pie-clearfix();
+        margin-bottom: 1em;
+    }
+    .small-widget, .medium-widget, .triple-widget, .most-recent-posts, .pep-widget {
+        // padding: 0.75em;
+        // padding: 1em 2em;
+    }
+    .small-widget {
+        @include span-columns( 6 ); 
+        
+        &:nth-child(2), &.last {
+            margin-right: 0; 
+        }
+    } 
+    .triple-widget {
+        @include span-columns( 4 ); 
+        
+        &.last {
+            margin-right: 0; 
+        }
+    }
+    .most-recent-posts {
+        @include span-columns( 9 ); 
+    }
+    
+    .pep-widget, .psf-widget {
+        padding: 1.5em 1.75em;
+    }
+    
+    .pep-widget {
+        clear: both; 
+        
+        /* === 4 columns
+        li {
+            @include span-columns( 6 ); 
+            
+            &:nth-child(2), &.last {
+                margin-right: 0; 
+            }
+            .lt-ie9 &.last {
+                float: right; 
+                margin-right: 0; 
+            }
+        }
+        === end */
+    }
+    .psf-widget {
+        clear: both;
+    }
+    
+    /* Jobs landing page */
+    .listing-company-category:before {
+        content: "Category: "; 
+        color: $grey; 
+    }
+    .listing-job-type:before {
+        content: "Looking for: "; 
+        color: $grey; 
+    }
+    
+    .release-number, .release-date, .release-download, .release-enhancements {
+        -moz-box-orient: vertical;
+        display: inline-block;
+        margin-right: -4px;
+        vertical-align: middle;
+    }
+    
+    .release-number {
+        width: 20%;
+    }
+    
+    .release-date {
+        width: 30%;
+    }
+    
+    .release-download {
+        width: 25%;
+    }
+    
+    .release-enhancements {
+        width: 25%;
+    }
+    
+    
+    /* Footer */
+    .main-footer .jump-link {
+        display: none; 
+    }
+    .sitemap {
+        
+        .tier-1 {
+            float: left; 
+            width: columns( 6 ) + gutter()/2; 
+            
+            &:nth-child(odd) {
+                clear: left; 
+                border-right: 1px solid $grey-lighter; 
+            }
+            &:nth-child(even) {
+                border-left: 1px solid $grey-lighter; 
+            }
+        }
+    }
+    .footer-links {
+        clear: both; 
+        /* background: top center no-repeat image-url("footer-radial-shadow.jpg") transparent; */
+        text-align: center; 
+        
+        li {
+            display: inline-block; 
+        }
+    }
+}
+
+/* ! ===== Larger than 800px ===== */
+@mixin min_width_800() {
+    
+    .main-header {
+        
+    }
+    
+    /* TEMPORARY. Move further down later after testing. */
+    /* Supernavs in main-navigation */
+    /*<li id="downloads" class="tier-1 element-2 with-supernav" aria-haspopup="true">
+        <a href="download.php">Downloads</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
+            <li class="super-navigation">
+                <h2>Download for Mac OSX</h2>
+                <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
+                </p><p>
+                    <a class="button">Python 3.3.0</a> 
+                    <a class="button">Python 2.7.3</a>
+                </p>
+            </li></ul>
+    </li>*/
+    /*li*/ .with-supernav {
+        
+        .subnav {
+            border-right: 1px solid rgba( #666, .3 ); 
+        }
+    }
+    
+    /*.subnav li*/ 
+    .super-navigation {
+        display: block; 
+        position: absolute; /* relative to the containing LI */
+        top: 0;
+        width: 28em; 
+        min-height: 100%; 
+        text-align: left;
+        padding: 1.5em 1.75em; 
+        @include pe-border( $color-top: rgba( #fff, .8 ), $color-left: rgba( #fff, .8 ) ); 
+        // @include box-shadow( .1875em .1875em .375em rgba( #000, 0.3 ) ); 
+        
+        .main-navigation & a:not(.button) {
+            padding: 0; 
+            border: none; 
+            
+            &:hover, &:focus {
+                border: none; 
+                background: transparent; 
+            }
+        } 
+        h2, h3, h4, h5 {
+            margin-top: 0; 
+        }
+        
+        #community & h4, #blog & h4, #events & h4 {
+            margin-bottom: 0;
+        }
+        
+        p.date-posted {
+            color: $grey;
+            font-size: pxtoem( 10px ) !important;
+            font-style: italic;
+        }
+        
+        p.excert {
+            font-size: pxtoem( 10px );
+            line-height: 1.3em;
+        }
+        
+        p.quote-by {
+            color: $blue;
+        }
+    }
+    .tier-1.element-1, .tier-1.element-2, .tier-1.element-3 {
+        .super-navigation {
+            left: 100.25%;
+        }
+    }
+    .tier-1.element-4, .tier-1.element-5, .tier-1.element-6, .tier-1.element-7 {
+        .super-navigation {
+            left: -28em;
+        }
+    }
+    /* END */
+    
+    
+    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+    .lt-ie9 .site-headline a, .site-headline a img {
+        width: 254px * .88; 
+        height: 82px * .88; 
+    }
+    
+    .site-headline {
+        margin: rhythm( .175 ) 0; 
+    }
+    
+    .options-bar {
+        margin: rhythm( .5 ) 0; 
+    }
+    .search-field {
+        background: $white;
+        padding: .4em .5em .3em;
+        margin-right: .5em;
+        width: 11em;
+        
+        &:focus {
+            width: 15em;
+        }
+    }
+    
+    .slide-code, .slide-copy {
+        float: left;
+        min-height: 300px;
+        width: 50%;
+    }
+    
+    .introduction {
+        // font-size: px2em( 24px );
+        text-align: center; 
+        
+        .breaker {
+            @include breaker_bar();  
+        }
+    }
+    
+    /* Header-banners */
+    .about-banner, .download-for-current-os, .documentation-banner, 
+    //.welcome-to-the-foundation 
+    {
+        @include pad( 1,4 ); 
+        min-height: 15em; 
+    }
+    .about-banner {
+        // background: 96% 1em no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
+        background: 96% 0 no-repeat image-url("python-logo-large3.png") transparent;
+    }
+    .download-for-current-os {
+        background: 97% -30px no-repeat image-url("download-arrow_trans24.png") transparent;
+        // margin-bottom: - rhythm( 1.25 );
+    }
+    .documentation-banner {
+        background: 101% -20px no-repeat image-url("docs-filecab_trans24.png") transparent;
+        // margin-bottom: - rhythm( 1.25 ); 
+    }
+    .welcome-to-the-foundation {
+        padding-top: 1em;
+        padding-bottom: 1em;
+    }
+    
+    /* Blog landing page */
+    /*h2*/ .welcome-message {
+        text-align: left; 
+        position: absolute; 
+        left: 0; 
+        @include leader( .325 ); 
+        width: columns( 3 );
+    }
+    .latest-blog-post, .featured-event, .jobs-intro {
+        position: relative; 
+        text-align: left;
+        
+        .call-to-action {
+            @include pre( 4 ); 
+        }
+        .date-posted, .event-date {
+            position: absolute; 
+            left: 0; 
+            width: columns( 4 ); 
+        }
+        .excerpt {
+            @include pre( 4 );
+        }
+    }
+    
+    /* Main content with sidebars */
+    .main-content { 
+        
+        &.with-left-sidebar {
+            @include span-columns( 9 omega ); 
+        }
+        &.with-right-sidebar {
+            @include span-columns( 9 ); 
+        }
+    }
+    /*aside*/ .left-sidebar {
+        @include span-columns( 3 );
+    }
+    /*aside*/ .right-sidebar {
+        @include span-columns( 3 omega );
+    }
+    
+    .documentation-help {
+        // @include squish( 1,5 );
+    }
+        .featured-success-story {
+            
+            /*blockquote*/ .success-quote {
+                // font-size: px2em( 32px ); 
+                
+                &:before, &:after {
+                    font-size: px2em( 38px );
+                }
+            }
+        }
+        .quote-by, .quote-by-organization {
+            @include pe-inline-block; 
+        }
+        .quote-by-organization:before {
+            content: ", "; 
+            margin-left: -.25em; 
+        }
+        .activity-feed {
+            position: absolute; 
+            right: 0; 
+        }
+        .psf-widget {
+            min-height: 14em; 
+            position: relative; 
+            
+            .shiny-python-logo {
+                position: absolute; 
+                top: 0.5em; 
+                // left: columns( 8.25 ); 
+                right: 1em;
+                width: 210px; 
+                height: 210px; 
+                // background: top left no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
+                background: top left no-repeat image-url("python-logo-large3.png") transparent;
+            }
+            .widget-title, p {
+                @include post( 4 ); 
+            }
+        }
+    .triple-widget {
+        @include span-columns( 4 ); 
+        
+        &.last {
+            margin-right: 0; 
+        }
+    }
+        
+    /* ! Events landing page */
+    .most-recent-events {
+        
+        .menu {
+            
+        }
+    }
+        .list-recent-events, .list-recent-posts {
+            
+            li {
+                
+            }
+            .event-title, p {
+                @include pre( 3 ); 
+            }
+            time {
+                position: absolute; 
+                top: .3em; left: 0; 
+                width: columns( 3 ); 
+            }
+        }
+    
+    /* <li>
+            <h2 class="listing-company">
+                <span class="listing-company-name">
+                    <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
+                </span>
+                <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
+            </h2>
+            <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
+            <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
+            <span class="listing-posted">10 December 2012</span>
+        </li>*/
+        .list-recent-jobs {
+            
+            li {
+                @include pie-clearfix(); 
+            }
+        }
+        /*h2*/ .listing-company {
+            
+            .listing-company-name {
+                @include span-columns( 7 ); 
+                
+                a:hover:after, a:focus:after {
+                    color: $grey; 
+                    content: " View Details"; 
+                    font-size: .75em; 
+                }
+            }
+            .listing-location {
+                @include span-columns( 5 omega );
+                text-align: right; 
+            }
+        }
+        .listing-company-category, .listing-job-type {
+            
+            a {
+                white-space: nowrap; 
+            }
+        }
+        .listing-posted {
+            @include span-columns( 6 );
+            margin-right: 0;
+        }
+        .listing-company-category {
+            @include span-columns( 6 omega ); 
+            text-align: right; 
+        }
+    
+    /* Footer */
+    .sitemap, .footer-links, .copyright {
+        font-size: px2em( 14px ); 
+    }
+    .sitemap {
+        
+        .tier-1 {
+            width: columns( 4 ) + gutter()/2; 
+            border-left: 0; 
+            border-right: 0; 
+            
+            &:nth-child(odd) {
+                clear: none; 
+                border-right: 0; 
+            }
+            &.element-1, &.element-4, &.element-7, &.element-10 {
+                border-right: 1px solid darken( $grey-lightest, 3% ); 
+            }
+            &.element-1, &.element-2, &.element-4, &.element-5, &.element-7, &.element-8 {
+                border-right: 1px solid darken( $grey-lightest, 3% ); 
+            }
+            &.element-2, &.element-3, &.element-5, &.element-6, &.element-8, &.element-9 {
+                border-left: 1px solid lighten( $grey-lightest, 4% ); 
+            }
+        }
+    }
+    .footer-links {
+        
+        .say-no-more {
+            display: inline; 
+            visibility: visible; 
+        }
+    }
+}
+
+/* ! ===== Larger than 940px ===== */
+@mixin min_width_940() {
+    
+    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+    .lt-ie9 .site-headline a, .site-headline a img {
+        width: 254px; 
+        height: 82px; 
+    }
+        .search-field {
+            width: 14em;
+            
+            &:focus {
+                width: 18em;
+                margin-right: .5em;
+            }
+        }
+    
+    .main-header {
+        // test image
+        // background: top center image-url("underwater-art-80.jpg") $blue;
+    }
+    
+    .options-bar {
+        margin: rhythm( .75 ) 0; 
+    }
+    
+    
+    /* BRING BACK THE SUPERNAV STUFF HERE */
+    
+    .super-navigation .menu {
+        text-align: left;
+    }
+    
+    /* Header-banners */
+    .about-banner, .download-for-current-os, .documentation-banner, 
+    //.welcome-to-the-foundation 
+    {
+        @include pad( 1,4 ); 
+    }
+        .about-banner {
+            // background: 88% 1em no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
+            background: 88% 0 no-repeat image-url("python-logo-large3.png") transparent;
+        }
+        .download-for-current-os {
+            // background: 90% 0 no-repeat image-url("download-arrow_trans24.png") transparent; 
+        }
+        .documentation-banner {
+            // background: 92% 0 no-repeat image-url("docs-filecab_trans24.png") transparent;
+        }
+        .featured-success-story {
+            .success-quote {
+                @include pre( 1 );
+                @include post( 1 );
+            }
+        }
+    
+    /* Main content with sidebars */
+    .main-content { 
+        
+        &.with-left-sidebar {
+            @include pad( .5, .5 ); 
+        }
+        &.with-right-sidebar {
+             
+        }
+    }
+    /*aside*/ .left-sidebar {
+        
+    }
+    /*aside*/ .right-sidebar {
+        
+    }
+    
+    /* Widgets in main content */
+    .small-widget, .medium-widget, .psf-widget, .python-needs-you-widget, .documentation-help {
+        
+        p, li {
+            font-size: px2em( 15px ); 
+        }
+    }
+    .small-widget {
+        @include span-columns( 3 ); 
+        
+        &:nth-child(2) {
+            margin-right: gutter(); 
+        }
+    }
+    .medium-widget {
+        @include span-columns( 6 ); 
+    }
+    .small-widget.last, .medium-widget.last {
+        float: right; 
+        margin-right: 0; 
+    }
+    .blog-widget, .event-widget, .most-recent-posts {
+                
+        li {
+            padding-left: 7em; 
+        }
+        .say-no-more {
+            display: inline; 
+            visibility: visible; 
+        }
+    }
+    .success-stories-widget {
+                
+        blockquote {
+            // @include adjust-font-size( 24px );  
+        }
+    }
+    .statistics-widget {
+        
+        .number {
+            // font-size: px2em( 72px ); 
+        }
+    }
+    .pep-widget, .psf-widget, .python-needs-you-widget {
+        padding: 1.5em 1.75em;
+    }
+    .psf-widget, .python-needs-you-widget {
+        // min-height: 14em;
+        
+        .shiny-python-logo {
+            // top: 1em; 
+            // left: columns( 8 ); 
+        }
+        .widget-title, p {
+            @include post( 3 ); 
+        }
+    }
+    
+    .mapped-events {
+        
+        h2 {
+            margin-top: .5em;
+        }
+    }
+    
+    /* Community landing page */
+    .tag-wrapper {
+        display: inline; 
+    }
+    
+    /* Blog landing page */
+    /*h2*/ .welcome-message {
+        width: columns( 3 );
+    }
+    .latest-blog-post, .featured-event, .jobs-intro {
+        
+        .call-to-action {
+            @include pre( 3 ); 
+        }
+        .date-posted, .event-date {
+            width: columns( 3 ); 
+        }
+        .excerpt {
+            @include pre( 3 );
+        }
+    }
+    .most-recent-posts {
+        
+    }
+        .subscribe-widget {
+            
+        }
+            .subscription-channels {
+                
+                li {
+                    @include pe-inline-block(); 
+                    width: 30%; 
+                }
+            }
+    .pep-widget {
+        
+        .widget-title {
+            position: relative; 
+            padding-right: 6em;
+        }
+        
+        /* === 3 cols
+        li {
+            @include span-columns( 3 ); 
+            
+            &:nth-child(2) {
+                margin-right: gutter(); 
+            }
+        }
+        === end */
+    }
+        .rss-link {
+            position: absolute; 
+            top: 0; right: 0; 
+        }
+    
+    /* Footer */
+    .main-footer-links {
+        
+        .container {
+            padding: 0 2em 0.75em;
+        }
+    }
+    
+    .sitemap {
+        
+        a {
+            text-align: left; 
+        }
+        .tier-1 {
+            width: 16.666%; 
+            border: 0; 
+            
+            &.element-1, &.element-2, &.element-3, &.element-4, &.element-5, &.element-6, &.element-7, &.element-8, &.element-9, &.element-10 {
+                border: 0; 
+            }
+        }
+        .subnav, .subnav li {
+            border: 0; 
+        }
+    }
+    
+    .footer-links {
+        
+        a {
+            padding: 0.3em 0.75em;
+        }
+    }
+}
+
+
+/* ! ===== Larger than 1024px ===== */
+@mixin min_width_1024() {
+    
+    /* Header banners */
+    .temp-arrow {
+        background: url('../img/temp-arrow.png') 0 0 no-repeat;
+        position: absolute;
+        top: 150px;
+        right:-50px;
+        height: 100px;
+        width: 50px;
+    }
+    
+    .latest-blog-post, .featured-event, .jobs-intro {
+        
+        .call-to-action {
+            @include squish( 3, 1 ); 
+        }
+        .excerpt {
+            @include squish( 3, 1 );
+        }
+    }
+    
+    .psf-widget {
+        .widget-title, p {
+            @include post( 4 ); 
+        }
+    }
+    
+    .mapped-events {
+        
+        h2 {
+            margin-top: 1em;
+        }
+    }
+    
+    /* Main content with sidebars */
+    .main-content { 
+        
+        &.with-left-sidebar {
+            @include pad( 1, 1 ); 
+        }
+        &.with-right-sidebar {
+             
+        }
+    }
+    /*aside*/ .left-sidebar {
+        
+    }
+    /*aside*/ .right-sidebar {
+
+    }
+    
+    /* Footer */
+    .main-footer-links {
+        
+        .container {
+            padding: 0 3em 0.75em;
+        }
+    }
+}
