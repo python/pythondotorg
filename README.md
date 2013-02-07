@@ -1,7 +1,7 @@
 python.org
 ==========
 
-[![Build Status](https://magnum.travis-ci.com/proevo/pythondotorg.png?token=rzZWMj7qjjfKoW211CMz)](http://magnum.travis-ci.com/proevo/pythondotorg)
+[![Build Status](https://next.travis-ci.com/proevo/pythondotorg.png?token=rzZWMj7qjjfKoW211CMz&branch=master)](https://next.travis-ci.com/proevo/pythondotorg)
 
 The new python.org!
 
