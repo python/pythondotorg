@@ -49,3 +49,10 @@ Install `coverage` (`pip install coverage`), then::
     $ coverage report
 
 Generate an HTML report with `coverage html` if you like.
+
+Compiling stylesheets
+---------------------
+
+To compile the stylesheets, you will need compass (`gem install compass`). Then:
+
+    $ compass compile static
