@@ -338,8 +338,8 @@
      * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
      * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097 
      */
-    $names: python, psf, jobs;
-    $colors: $blue, $psf, $purple;
+    $names: python, psf, docs, pypl, jobs, shop;
+    $colors: $blue, $psf, $yellow, $green, $purple, $red;
     
     @for $i from 1 through length($names) {
     

@@ -1,11 +1,9 @@
-{% extends "landing.html" %}
+{% extends "base.html" %}
 
 {% block body_attributes %}class="python success-stories"{% endblock %}
 
 {% block header_content %}
-            <div class="header-banner">
                 <div class="featured-success-story">
-                    
                     <img src="{{ STATIC_URL }}img/google-trans.png" alt="Google">
                     
                     <blockquote class="success-quote">
@@ -16,7 +14,6 @@
                         <p class="quote-by-organization">YouTube.com</p>
                     </footer>
                 </div>
-        	</div>
 {% endblock header_content %}
 
 

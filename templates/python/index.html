@@ -1,10 +1,8 @@
-{% extends "landing.html" %}
+{% extends "base.html" %}
 
 {% block body_attributes %}class="python home"{% endblock %}
 
 {% block header_content %}
-    <div class="header-banner do-not-print">
-        
         <div class="slideshow">
             <div class="slide-code">
                 <code style="display: block;">
@@ -29,15 +27,13 @@
         </div>
         
         <div class="temp-arrow"></div>
-                                                
-    </div>
-    
-    
-    
-    <div class="introduction">
-        <p>Python is a programming language that lets you work quickly <span class="breaker"></span>and integrate systems more effectively. <a class="readmore" href="#">Learn More</a></p>
-    </div>
 {% endblock header_content %}
+
+{% block intro_copy %}
+        <div class="introduction">
+            <p>Python is a programming language that lets you work quickly <span class="breaker"></span>and integrate systems more effectively. <a class="readmore" href="#">Learn More</a></p>
+        </div>
+{% endblock %}
 
 
 

@@ -44,7 +44,7 @@
     <meta property="og:site_name" content="Python RWD Wireframes" />
     <meta property="og:type" content="website" />
     
-    <title>Python RWD Wireframes</title>
+    <title>{% block page_title %}Python RWD Wireframes{% endblock %}</title>
     <meta property="og:title" content="Python RWD Wireframes" />
     
     <meta name="description" content="">
@@ -79,12 +79,12 @@
             <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down-3"><span>&#9660;</span></span> Close</a>
             
             <ul class="menu" role="tree">
-                <li class="python-meta selected" role="treeitem"><a href="#fixme-home" title="Python.org"><span class="pointer"></span>Python<span class="say-no-more">.org</span></a></li>
-                <li class="psf-meta" role="treeitem"><a href="#fixme-psf" title="The Python Software Foundation"><span class="pointer"></span>PSF<span class="say-no-more">.python.org</span></a></li>
-                <li class="docs-meta" role="treeitem"><a href="#" title="Docs.python.org"><span class="pointer"></span>Docs<span class="say-no-more">.python.org</span></a></li>
-                <li class="pypi-meta" role="treeitem"><a href="#" title="PyPI.python.org"><span class="pointer"></span>PyPI<span class="say-no-more">.python.org</span></a></li>
-                <li class="jobs-meta" role="treeitem"><a href="#fixme-jobs" title="Jobs.python.org"><span class="pointer"></span>Jobs<span class="say-no-more">.python.org</span></a></li>
-                <li class="shop-meta" role="treeitem"><a href="#" title="Shop.python.org"><span class="pointer"></span>Shop<span class="say-no-more">.python.org</span></a></li>
+                <li class="python-meta selected" role="treeitem"><a href="/" title="Python.org"><span class="pointer"></span>Python<span class="say-no-more">.org</span></a></li>
+                <li class="psf-meta" role="treeitem"><a href="/psf-landing" title="The Python Software Foundation"><span class="pointer"></span>PSF<span class="say-no-more">.python.org</span></a></li>
+                <li class="docs-meta" role="treeitem"><a href="/docs-landing" title="Docs.python.org"><span class="pointer"></span>Docs<span class="say-no-more">.python.org</span></a></li>
+                <li class="pypi-meta" role="treeitem"><a href="/pypl-landing" title="PyPI.python.org"><span class="pointer"></span>PyPI<span class="say-no-more">.python.org</span></a></li>
+                <li class="jobs-meta" role="treeitem"><a href="/jobs-landing" title="Jobs.python.org"><span class="pointer"></span>Jobs<span class="say-no-more">.python.org</span></a></li>
+                <li class="shop-meta" role="treeitem"><a href="/shop-landing" title="Shop.python.org"><span class="pointer"></span>Shop<span class="say-no-more">.python.org</span></a></li>
             </ul>
             
             <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> The Python Network</a>
@@ -153,7 +153,7 @@
             </div><!-- end options-bar -->
             
             
-            <nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+            <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
                     {% block main_navigation %}
                     <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
                     <li id="about" class="tier-1 element-1" aria-haspopup="true">
@@ -267,11 +267,14 @@
                     </ul>
                     {% endblock main_navigation %}
             </nav>
-
-            {% block header_content %}
-            {% endblock header_content %}
-
             
+            <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
+                {% block header_content %}
+                {% endblock %}
+            </div>
+            
+            {% block intro_copy %}
+            {% endblock %}
 
          </div><!-- end .container -->
     </header>
