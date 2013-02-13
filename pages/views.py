@@ -3,7 +3,7 @@ from .models import Page
 
 class PageView(DetailView):
     # FIXME: probably should allow custom templates via template_name_field.
-    template_name = 'pages/page.html'
+    template_name = 'python/inner.html'
 
     context_object_name = 'page'
 
