@@ -71,7 +71,7 @@ on_resize(function() {
     
     /* Load a supernav into the About dropdown */
     if ( mq_tag.indexOf("about_supernav") !=-1 && ! about_supernav_loaded ) {
-        $.get("components/largemenu-about.html",
+        $.get("supernav-python-about",
             function(data){
              $('li#about .subnav').append( data );
             }, "html");
@@ -82,7 +82,7 @@ on_resize(function() {
     
     /* Load a supernav into the Downloads dropdown */
     if ( mq_tag.indexOf("downloads_supernav") !=-1 && ! downloads_supernav_loaded ) {
-        $.get("components/largemenu-downloads.html",
+        $.get("supernav-python-downloads",
             function(data){
              $('li#downloads .subnav').append( data ); 
             }, "html"); 
@@ -93,7 +93,7 @@ on_resize(function() {
     
     /* Load a supernav into the Documentation dropdown */
     if ( mq_tag.indexOf("documentation_supernav") !=-1 && ! documentation_supernav_loaded ) {
-        $.get("components/largemenu-documentation.html",
+        $.get("supernav-python-documentation",
             function(data){
              $('li#documentation .subnav').append( data ); 
             }, "html"); 
@@ -104,7 +104,7 @@ on_resize(function() {
     
     /* Load a supernav into the Community dropdown */
     if ( mq_tag.indexOf("community_supernav") !=-1 && ! community_supernav_loaded ) {
-        $.get("components/largemenu-community.html",
+        $.get("supernav-python-community",
             function(data){
              $('li#community .subnav').append( data ); 
             }, "html"); 
@@ -115,7 +115,7 @@ on_resize(function() {
     
     /* Load a supernav into the Success-stories dropdown */
     if ( mq_tag.indexOf("successstories_supernav") !=-1 && ! successstories_supernav_loaded ) {
-        $.get("components/largemenu-success-stories.html",
+        $.get("supernav-python-success-stories",
             function(data){
              $('li#success-stories .subnav').append( data ); 
             }, "html"); 
@@ -126,7 +126,7 @@ on_resize(function() {
     
     /* Load a supernav into the Blog dropdown */
     if ( mq_tag.indexOf("blog_supernav") !=-1 && ! blog_supernav_loaded ) {
-        $.get("components/largemenu-blog.html",
+        $.get("supernav-python-blog",
             function(data){
              $('li#blog .subnav').append( data ); 
             }, "html"); 
@@ -137,7 +137,7 @@ on_resize(function() {
     
     /* Load a supernav into the Events dropdown */
     if ( mq_tag.indexOf("events_supernav") !=-1 && ! events_supernav_loaded ) {
-        $.get("components/largemenu-events.html",
+        $.get("supernav-python-events",
             function(data){
              $('li#events .subnav').append( data ); 
             }, "html"); 
