@@ -1,0 +1,132 @@
+{% extends "landing.html" %}
+
+{% block body_attributes %}class="python documentation"{% endblock %}
+
+{% block header_content %}
+            <div class="header-banner">
+                <div class="documentation-banner">
+                    <h1 class="call-to-action">Python&rsquo;s standard documentation is substantial; download a copy, watch a tutorial or browse the docs.</h1>
+                    <p>Get started below, or look further down for more documentation types and subjects. </p>
+                    <p class="download-buttons">
+                        <a class="button" href="#">Python 3.x Docs</a> 
+                        <a class="button" href="#">Python 2.x Docs</a>
+                    </p>
+                    
+                    <p>See also <a href="#">Complete Documentation by Version</a> and <a href="#">Should I use Python 2 or 3</a>? </p>
+                </div>
+            </div>
+{% endblock header_content %}
+
+
+
+{% block content %}
+                <div class="row">
+        		    
+        		    <div class="small-widget beginner-widget">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-book"></span>Beginner</h2>
+                        <ul> 
+                            <li><a href="#">Beginner&rsquo;s Guide to Python</a></li>
+                            <li><a href="#">Should I use Python 2 or 3?</a></li>
+                            <li><a href="#">Python FAQs</a></li>
+                            <li><a href="#">5-minute Screencasts</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="small-widget moderate-widget">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-copy"></span>Moderate</h2>
+                        <ul> 
+                            <li><a href="#">Python Periodicals</a></li>
+                            <li><a href="#">Quick Reference (offsite)</a></li>
+                            <li><a href="#">New Style Classes</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="small-widget advanced-widget">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-newspaper"></span>Advanced</h2>
+                        <ul>
+                            <li><a href="#">Hitchhiker&rsquo;s Guide to creating &amp; distributing Python Packages</a></li>
+                            <li><a href="#">In-development Docs</a></li>
+                            <li><a href="#">Guido&rsquo;s Essays and Presentations</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="small-widget general-widget last">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-paper"></span>General</h2>
+                        <ul> 
+                            <li><a href="#">Non-english Documentation</a></li>
+                            <li><a href="#">PEP Index</a></li>
+                            <li><a href="#">Audio/Visual Talks</a></li>
+                            <li><a href="#">Slideshow collections</a></li>
+                            <li><a href="#">Developer&rsquo;s Guide</a></li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                
+                <div class="row">
+                
+                    <div id="docs-by-version" class="medium-widget">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-drawer-2"></span>Python 3.x Resources</h2>
+                        <ul>
+                            <li><a href="#">Browse Python 3.3.0 Documentation</a> - <a href="#">(Module Index)</a> 
+                                <ul>
+                                    <li><a href="#">What's new in Python 3.3</a></li>
+                                    <li><a href="#">Tutorial</a></li>
+                                    <li><a href="#">Library Reference</a></li>
+                                    <li><a href="#">Language Reference</a></li>
+                                    <li><a href="#">Extending and Embedding</a></li>
+                                    <li><a href="#">Python/C API</a></li>
+                                    <li><a href="#">Using Python</a></li>
+                                    <li><a href="#">Python HOWTOs</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Search the online docs</a></li>
+                            <li><a href="#">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="medium-widget last">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-drawer-2"></span>Python 2.x Resources</h2>
+                        <ul>
+                            <li><a href="#">Browse Current Documentation</a> - <a href="#">(Module Index)</a> 
+                                <ul>
+                                    <li><a href="#">What's new in Python 2.7</a></li>
+                                    <li><a href="#">Tutorial</a></li>
+                                    <li><a href="#">Library Reference</a></li>
+                                    <li><a href="#">Language Reference</a></li>
+                                    <li><a href="#">Extending and Embedding</a></li>
+                                    <li><a href="#">Python/C API</a></li>
+                                    <li><a href="#">Using Python</a></li>
+                                    <li><a href="#">Python HOWTOs</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="#">Search the online docs</a></li>
+                            <li><a href="#">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
+                        </ul>
+                    </div>
+                    
+                </div>
+                
+                <div class="alert level-general documentation-help">
+                    <p><span class="prompt">&gt;&gt;&gt;</span> Not sure where to go? <a href="#">Try the Help Page</a>. </p>
+                </div>
+                
+                
+                <div class="python-needs-you-widget">
+                    
+                    <h2 class="widget-title">
+                        <span class="prompt">&gt;&gt;&gt;</span> <a href="#">Python Needs You</a>
+                    </h2>
+                    <p>Open source software is made better when users can contribute to bugs and enhancements. Python strongly encourages community involvement in improving the software. <a href="#">Learn more</a> </p>
+                    <p class="click-these">
+                        <a class="button" href="#">Contribute to Python</a>
+                        <a class="button" href="#">Developer FAQ</a>
+                    </p>
+                    
+                </div>
+                
+                
+                
+                {% include 'components/pep-widget.html' %}
+{% endblock content %}

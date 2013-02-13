@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
-{% block body_classes %}inner{% endblock body_classes %}
+{% block body_attributes %}class="python inner"{% endblock %}
 
-{% block content_classes %}with-left-sidebar{% endblock content_classes %}
+
 
 {% block breadcrumbs %}
 <ul class="breadcrumbs menu">
@@ -10,6 +10,58 @@
     <li>This Page</li>
 </ul> 
 {% endblock breadcrumbs %}
+
+
+
+{% block content_classes %}with-left-sidebar{% endblock content_classes %}
+
+{% block content %}
+            <div class="text">
+                <h1>Heading 1</h1>
+        		<p><strong>Lorem ipsum dolor sit amet,</strong> consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. <abbr title="sample of an abbr">Excepteur sint occaecat cupidatat non proident</abbr>, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        		
+        		<h2>Heading 2</h2>
+        		<p><em>Lorem ipsum dolor sit amet,</em> consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        		
+        		<h3>Heading 3</h3>
+        		<ul>
+        			<li><a href="#">Lorem ipsum dolor sit amet</a> </li>
+        			<li>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+            			<ul>
+            			 <li>Lorem ipsum dolor sit amet</li>
+            			 <li>Ut enim ad minim veniam</li>
+            			</ul>
+        			</li>
+        			<li><a href="#">Ut enim ad minim veniam</a>, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</li>
+        		</ul>
+        		
+        		<h4>Heading 4</h4>
+        		<blockquote>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</blockquote>
+        		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+        		<ol>
+        			<li>Lorem ipsum dolor sit amet <small>you know the rest...</small></li>
+        			<li>Consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</li>
+            			<ol>
+            			 <li>Lorem ipsum dolor sit amet</li>
+            			 <li>Ut enim ad minim veniam
+                			 <ol>
+                			 <li>Lorem ipsum dolor sit amet</li>
+                			 <li>Ut enim ad minim veniam</li>
+                			</ol>
+            			 </li>
+            			 <li>Lorem ipsum dolor sit amet</li>
+            			</ol>
+        			<li>Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </li>
+        		</ol>
+        		<p><del>Lorem ipsum dolor sit amet</del> <ins>Lorem ipsum dolor sit amet</ins>, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <pre>
+                <code>This is a pre tag.</code> We style it just in case someone uses it. Let&rsquo;s make sure a long line of text inside a pre will not break anything.
+                </pre>
+        		<p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+{% endblock content %}
+
+
 
 {% block left_sidebar %}
 <aside class="left-sidebar" role="secondary">

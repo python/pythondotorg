@@ -1,0 +1,91 @@
+{% extends "landing.html" %}
+
+{% block body_attributes %}class="python about"{% endblock %}
+
+{% block header_content %}
+            <div class="header-banner">
+                <div class="about-banner">
+                    <h1 class="call-to-action">
+                        <a href="#">Python is powerful... and fast</a>; <br>
+                        <a href="#">plays well with others</a>; <br>
+                        <a href="#">runs everywhere</a>; <br>
+                        <a href="#">is friendly &amp; easy to learn</a>; <br>
+                        <a href="#">is Open</a>.
+                    </h1>
+                    
+                    <p>These are some of the reasons people who use Python would rather not use anything else.</p>
+                </div>
+        	</div>
+{% endblock header_content %}
+
+
+
+{% block content %}
+                <div class="row">
+        		    
+        		    <div class="medium-widget success-story-category">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-switch"></span>Getting Started</h2>
+                        <p>An experienced programmer in any language (whatever it may be) can pick up Python very quickly. It&rsquo;s also easy for beginners to use and learn, so don&rsquo;t be afraid to jump in!</p>
+                        <ul>
+                            <li><a href="#">Beginner&rsquo;s Guide, Programmers</a></li>
+                            <li><a href="#">Beginner&rsquo;s Guide, Non-Programmers</a></li>
+                            <li><a href="#">Beginner&rsquo;s Guide, Download &amp; Installation</a></li>
+                            <li><a href="#">Code sample and snippets for Beginners</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="medium-widget success-story-category last">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-thumbs-up"></span>Friendly &amp; Easy to Learn</h2>
+                        <p>The community maintains a wiki, hosts international and local conferences, runs development sprints, and contributes to online code repositories. Documentation, integrated into the language and online tutorials are designed to make you productive quickly.</p>
+                        <ul>
+                            <li><a href="#">Python Community</a></li>
+                            <li><a href="#">Local community Workshops</a></li>
+                            <li><a href="#">Python Documentation</a></li>
+                            <li><a href="#">Python Books</a></li>
+                        </ul>
+                    </div>
+                
+                </div>
+                
+                
+                
+                <div class="row">
+                
+                    <div class="medium-widget success-story-category">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-heart"></span>Applications</h2>
+                        <p>The <a href="#">Python Package Index (PyPI)</a> hosts thousands of third party modules for Python. Python can be used for a wide array of purposes. Here are a few topics: </p>
+                        <ul>
+                            <li><a href="#">Web and Internet Development</a></li>
+                            <li><a href="#">Database Access</a></li>
+                            <li><a href="#">Desktop GUIs</a></li>
+                            <li><a href="#">Scientific &amp; Numeric</a></li>
+                            <li><a href="#">Education</a></li>
+                            <li><a href="#">Network Programming</a></li>
+                            <li><a href="#">Software &amp; Game Development</a></li>
+                        </ul>
+                    </div>
+                    
+                    <div class="medium-widget success-story-category last">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-code"></span>Open-source</h2>
+                        <p>The Python implementation is under an open source license that makes it freely usable and distributable, even for commercial use. The <a href="#">Python license</a> is administered by the <a href="#">Python Software Foundation</a>.</p>
+                        <ul>
+                            <li><a href="#">Learn more about Licenses</a></li>
+                            <li><a href="#">Learn more about the Foundation</a></li>
+                        </ul>
+                    </div>
+                
+                </div>
+                
+                
+                
+                <div class="alert level-general">
+                    <p>Can&rsquo;t find what you&rsquo;re looking for? <a href="#">Try our comprehensive Help section</a></p>
+                </div>
+                
+                
+                
+                {% include 'components/medium-widgets.html' %}
+                
+                {% include 'components/psf-widget.html' %}
+                
+{% endblock content %}
