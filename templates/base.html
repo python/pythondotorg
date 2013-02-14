@@ -154,118 +154,121 @@
             
             
             <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
-                    {% block main_navigation %}
+                {% block main_navigation %}
                     <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-                    <li id="about" class="tier-1 element-1" aria-haspopup="true">
-                        <a href="/about">About</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/about">About</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">History / Mission</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">Applications</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="/inner">Statistics</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="/inner">Quotes</a></li>
-                            <li class="tier-2 element-5" role="treeitem"><a href="/inner">Media / CI</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="downloads" class="tier-1 element-2" aria-haspopup="true">
-                        <a href="/download">Downloads</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/download">Downloads</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">Releases</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">Mac OSX</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="/inner">Windows</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="/inner">Linux</a></li>
-                            <li class="tier-2 element-5" role="treeitem"><a href="/inner">Others</a></li>
-                            <li class="tier-2 element-6" role="treeitem"><a href="/inner">License</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="documentation" class="tier-1 element-3" aria-haspopup="true">
-                        <a href="/documentation">Documentation</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/documentation">Documentation</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">Docs</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">Audio/Visual Talks</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="/inner">Beginner&rsquo;s Guide</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="/inner">Developer&rsquo;s Guide</a></li>
-                            <li class="tier-2 element-5" role="treeitem"><a href="/inner">FAQ</a></li>
-                            <li class="tier-2 element-6" role="treeitem"><a href="/inner">Non-english Docs</a></li>
-                            <li class="tier-2 element-7" role="treeitem"><a href="/inner">PEP Index</a></li>
-                            <li class="tier-2 element-8" role="treeitem"><a href="/inner">Security</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="community" class="tier-1 element-4" aria-haspopup="true">
-                        <a href="/community">Community</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/community">Community</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">Diversity</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">IRC</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="/inner">Mailing List</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="/inner">Python Conference</a></li>
-                            <li class="tier-2 element-5" role="treeitem"><a href="/inner">Special Interest Groups</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="success-stories" class="tier-1 element-5" aria-haspopup="true">
-                        <a href="/success-stories">Success Stories</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/success-stories">Success Stories</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="#" title="Arts Category">Arts</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="#" title="Business Category">Business</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="#" title="Education Category">Education</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="#" title="Engineering Category">Engineering</a></li>
-                            <li class="tier-2 element-5" role="treeitem"><a href="#" title="Government Category">Government</a></li>
-                            <li class="tier-2 element-6" role="treeitem"><a href="#" title="Scientific Category">Scientific</a></li>
-                            <li class="tier-2 element-7" role="treeitem"><a href="#" title="Software Development Category">Software Development</a></li>
-                            <li class="tier-2 element-8" role="treeitem"><a href="/inner">Activity Feed</a></li>
-                            <li class="tier-2 element-9" role="treeitem"><a href="/inner">Submit Yours!</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="blog" class="tier-1 element-6" aria-haspopup="true">
-                        <a href="/blog">Blog</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/blog">Blog</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">Newest Posts</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">Categories</a></li>
-                        </ul>
-                    </li>
-
-                    <li id="events" class="tier-1 element-7 last" aria-haspopup="true">
-                        <a href="/events">Events</a>
-                        <ul class="subnav menu" role="menu" aria-hidden="true">
-                            <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                <a href="/events">Events</a>
-                                <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                            </li>
-                            <li class="tier-2 element-1" role="treeitem"><a href="/inner">Upcoming</a></li>
-                            <li class="tier-2 element-2" role="treeitem"><a href="/inner">Past Events</a></li>
-                            <li class="tier-2 element-3" role="treeitem"><a href="/inner">Python Conference</a></li>
-                            <li class="tier-2 element-4" role="treeitem"><a href="/inner">Release Schedule</a></li>
-                        </ul>
-                    </li>
+                        
+                        <!-- figure out how to add class .selected to current page li -->
+                        
+                        <li id="about" class="tier-1 element-1" aria-haspopup="true"> 
+                            <a href="/about">About</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/about">About</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">History / Mission</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Applications</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Statistics</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Quotes</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Media / CI</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="downloads" class="tier-1 element-2" aria-haspopup="true">
+                            <a href="/download">Downloads</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/download">Downloads</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Releases</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Mac OSX</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Windows</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Linux</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Others</a></li>
+                                <li class="tier-2 element-6" role="treeitem"><a href="/inner">License</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="documentation" class="tier-1 element-3" aria-haspopup="true">
+                            <a href="/documentation">Documentation</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/documentation">Documentation</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Docs</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Audio/Visual Talks</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Beginner&rsquo;s Guide</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Developer&rsquo;s Guide</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">FAQ</a></li>
+                                <li class="tier-2 element-6" role="treeitem"><a href="/inner">Non-english Docs</a></li>
+                                <li class="tier-2 element-7" role="treeitem"><a href="/inner">PEP Index</a></li>
+                                <li class="tier-2 element-8" role="treeitem"><a href="/inner">Security</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="community" class="tier-1 element-4" aria-haspopup="true">
+                            <a href="/community">Community</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/community">Community</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Diversity</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">IRC</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Mailing List</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Python Conference</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Special Interest Groups</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="success-stories" class="tier-1 element-5" aria-haspopup="true">
+                            <a href="/success-stories">Success Stories</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/success-stories">Success Stories</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="#" title="Arts Category">Arts</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="#" title="Business Category">Business</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="#" title="Education Category">Education</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="#" title="Engineering Category">Engineering</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="#" title="Government Category">Government</a></li>
+                                <li class="tier-2 element-6" role="treeitem"><a href="#" title="Scientific Category">Scientific</a></li>
+                                <li class="tier-2 element-7" role="treeitem"><a href="#" title="Software Development Category">Software Development</a></li>
+                                <li class="tier-2 element-8" role="treeitem"><a href="/inner">Activity Feed</a></li>
+                                <li class="tier-2 element-9" role="treeitem"><a href="/inner">Submit Yours!</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="blog" class="tier-1 element-6" aria-haspopup="true">
+                            <a href="/blog">Blog</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/blog">Blog</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Newest Posts</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Categories</a></li>
+                            </ul>
+                        </li>
+    
+                        <li id="events" class="tier-1 element-7 last" aria-haspopup="true">
+                            <a href="/events">Events</a>
+                            <ul class="subnav menu" role="menu" aria-hidden="true">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a href="/events">Events</a>
+                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Upcoming</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Past Events</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Python Conference</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Release Schedule</a></li>
+                            </ul>
+                        </li>
                     </ul>
-                    {% endblock main_navigation %}
+                {% endblock main_navigation %}
             </nav>
             
             <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
