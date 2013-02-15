@@ -323,4 +323,12 @@ function getViewport() {
 $('#test-window-size').html(''+getViewport()+'');
 $(window).resize(function() {
 	$('#test-window-size').html(''+getViewport()+'');
-}); 
+});
+
+
+/*
+ * add class to nav element of current url
+ */
+$(function() {
+    $('#mainnav li.tier-1 > a[href^="/' + location.pathname.split("/")[1] + '"]').parent('li').addClass('selected');
+});
