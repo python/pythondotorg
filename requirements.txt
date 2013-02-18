@@ -1,9 +1,10 @@
-https://www.djangoproject.com/download/1.5c1/tarball/
-psycopg2==2.4.5
 dj-database-url==0.2.1
 django-discover-runner==0.3
+docutils==0.10
+https://www.djangoproject.com/download/1.5c1/tarball/
+Markdown==2.2.1
+psycopg2==2.4.5
 
 # My fork of django-markupfield, adding Py3 support. Can be removed when
 # https://github.com/jamesturk/django-markupfield/pull/13 is merged.
 git+git://github.com/jacobian/django-markupfield.git
-
