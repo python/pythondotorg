@@ -32,6 +32,18 @@ class ContentManagableAdminTests(unittest.TestCase):
             ['f1', 'created', 'updated']
         )
 
+    def test_get_fieldsets(self):
+        admin = self.make_admin(fieldsets=[(None, {'fields': ['foo', 'created']})])
+        fieldsets = admin.get_fieldsets(request=mock.Mock())
+
+        # Check that "created" is removed from the specified fieldset and moved
+        # into the automatic one.
+        self.assertEqual(
+            fieldsets,
+            [(None, {'fields': ['foo']}),
+             ('CMS metadata', {'fields': ['creator', 'created', 'updated'], 'classes': ('collapse',)})]
+        )
+
     def test_save_model(self):
         admin = self.make_admin()
         request = mock.Mock()
