@@ -7,10 +7,14 @@ positioned into the URL structure using the nav app.
 """
 
 import re
-from django.db import models
+from django.conf import settings
 from django.core import validators
+from django.db import models
+from markupfield.fields import MarkupField
 from cms.models import ContentManageable
 from .managers import PageManager
+
+DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 PAGE_PATH_RE = re.compile(r"""
     ^
@@ -32,7 +36,7 @@ is_valid_page_path = validators.RegexValidator(
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
     path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True)
-    content = models.TextField()
+    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=True)
 
     objects = PageManager()

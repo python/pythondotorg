@@ -8,7 +8,7 @@ register = template.Library()
 @register.simple_tag
 def box(label):
     try:
-        return Box.objects.only('content').get(label=label).content
+        return Box.objects.only('content').get(label=label).content.rendered
     except Box.DoesNotExist:
         log.warn('box not found: label=%s', label)
         return ''

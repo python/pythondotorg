@@ -16,7 +16,7 @@ class TemplateTagTests(TestCase):
 
     def test_tag(self):
         r = self.render('{% load boxes %}{% box "test" %}')
-        self.assertEqual(r, self.box.content)
+        self.assertEqual(r, self.box.content.rendered)
 
     def test_tag_invalid_label(self):
         r = self.render('{% load boxes %}{% box "missing" %}')
