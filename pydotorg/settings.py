@@ -35,6 +35,7 @@ STATIC_ROOT = os.path.join(BASE, 'static-root')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE, 'static'),)
+STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 ### Templates
 
@@ -69,6 +70,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'pipeline',
     'south',
 
     'boxes',
@@ -105,3 +107,5 @@ LOGGING = {
         },
     }
 }
+
+from .pipeline import *

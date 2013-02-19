@@ -12,3 +12,4 @@ git+git://github.com/jacobian/django-markupfield.git
 # Aymeric's branch of South with Python 3 support. Can be removed when this
 # is merged into master.
 https://bitbucket.org/aaugustin/south-python3/get/a23d01c06065.zip
+django-pipeline==1.3.3

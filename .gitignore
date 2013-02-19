@@ -10,6 +10,9 @@ htmlcov
 
 static-root
 .sass-cache
+/static/sass/mq.css
+/static/sass/no-mq.css
+/static/sass/style.css
 /static/stylesheets/mq.css
 /static/stylesheets/no-mq.css
 /static/stylesheets/style.css
