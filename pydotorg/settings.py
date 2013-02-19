@@ -35,7 +35,7 @@ STATIC_ROOT = os.path.join(BASE, 'static-root')
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = (os.path.join(BASE, 'static'),)
-STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 ### Templates
 
