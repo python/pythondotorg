@@ -34,7 +34,7 @@ This expects a local database named "python.org". If you need to change it:
 
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
-To compile anc compress static media, you will need compass and yui-compressor:
+To compile and compress static media, you will need compass and yui-compressor:
     
     $ bundle install
     $ brew install yuicompressor
