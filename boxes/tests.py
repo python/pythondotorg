@@ -6,10 +6,11 @@ from .models import Box
 
 logging.disable(logging.CRITICAL)
 
-class TemplateTagTests(TestCase):
+class BaseTestCase(TestCase):
     def setUp(self):
         self.box = Box.objects.create(label='test', content='test content')
 
+class TemplateTagTests(BaseTestCase):
     def render(self, tmpl, **context):
         t = template.Template(tmpl)
         return t.render(template.Context(context))
@@ -21,3 +22,10 @@ class TemplateTagTests(TestCase):
     def test_tag_invalid_label(self):
         r = self.render('{% load boxes %}{% box "missing" %}')
         self.assertEqual(r, '')
+
+class ViewTests(BaseTestCase):
+    urls = 'boxes.urls'
+
+    def test_box_view(self):
+        r = self.client.get('/test/')
+        self.assertContains(r, self.box.content.rendered)

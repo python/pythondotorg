@@ -7,7 +7,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # homepage
     url(r'^$', TemplateView.as_view(template_name="python/index.html"), name='home'),
-    
+
     # python section landing pages
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
     url(r'^download/$', TemplateView.as_view(template_name="python/download.html"), name='download'),
@@ -17,14 +17,14 @@ urlpatterns = patterns('',
     url(r'^blog/$', TemplateView.as_view(template_name="python/blog.html"), name='blog'),
     url(r'^events/$', TemplateView.as_view(template_name="python/events.html"), name='events'),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
-    
+
     # other section landing pages
     url(r'^psf-landing/$', TemplateView.as_view(template_name="psf/index.html"), name='psf-landing'),
     url(r'^docs-landing/$', TemplateView.as_view(template_name="docs/index.html"), name='docs-landing'),
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^jobs-landing/$', TemplateView.as_view(template_name="jobs/index.html"), name='jobs-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
-    
+
     # supernav menus
     url(r'^supernav-python-about/$', TemplateView.as_view(template_name="components/supernav-python-about.html"), name='supernav-python-about'),
     url(r'^supernav-python-downloads/$', TemplateView.as_view(template_name="components/supernav-python-downloads.html"), name='supernav-python-downloads'),
@@ -33,9 +33,13 @@ urlpatterns = patterns('',
     url(r'^supernav-python-success-stories/$', TemplateView.as_view(template_name="components/supernav-python-success-stories.html"), name='supernav-python-success-stories'),
     url(r'^supernav-python-blog/$', TemplateView.as_view(template_name="components/supernav-python-blog.html"), name='supernav-python-blog'),
     url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
-    
+
+    url(r'^box/', include('boxes.urls')),
+
     # admin
     url(r'^admin/', include(admin.site.urls)),
+
+    # Fall back on CMS'd pages as the last resort.
     url(r'', include('pages.urls')),
 )
 
