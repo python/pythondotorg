@@ -49,5 +49,5 @@ PIPELINE_COMPILERS = (
 PIPELINE_SASS_BINARY = 'cd %s && exec /usr/bin/env sass'  % os.path.join(BASE, 'static')
 PIPELINE_SASS_ARGUMENTS = '--quiet --compass --scss -I $(dirname $(dirname $(gem which susy)))/sass'
 
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
