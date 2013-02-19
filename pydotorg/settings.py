@@ -79,7 +79,7 @@ INSTALLED_APPS = (
 ### Testing
 
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
-
+TEST_DISCOVER_TOP_LEVEL = BASE
 ### Logging
 
 LOGGING = {
