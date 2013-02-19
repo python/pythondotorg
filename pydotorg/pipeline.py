@@ -39,8 +39,20 @@ PIPELINE_JS = {
             'js/plugins.js',
             'js/script.js',
         ),
-        'output_filename': 'js/main.js',
-    }
+        'output_filename': 'js/main-min.js',
+    },
+    'IE8': {
+        'source_filenames': (
+            'js/plugins/IE8.js',
+        ),
+        'output_filename': 'js/plugins/IE8-min.js',
+    },
+    'getComputedStyle': {
+        'source_filenames': (
+            'js/plugins/getComputedStyle-min.js',
+        ),
+        'output_filename': 'js/plugins/getComputedStyle-min.js',
+    },
 }
 
 PIPELINE_COMPILERS = (

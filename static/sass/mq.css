@@ -1019,6 +1019,17 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
     /*ul*/
+    /*modernizr*/
+    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
+            <a class="close-for-touch" href="#">Close Menu</a> 
+            <a class="close-for-touch close-graphic" href="#">&times;</a>
+        </li>
+        or
+        <li class="tier-2 element-0 close-subnav" role="treeitem">
+            <a href="/about">About</a>
+            <a class="close-for-touch close-graphic" href="#">&times;</a>
+        </li>
+    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
     text-align: center; }
     .main-navigation .menu {
       *zoom: 1; }
@@ -1027,7 +1038,8 @@
         display: table;
         clear: both; }
     .main-navigation .tier-1 {
-      position: relative; }
+      position: relative;
+      /*modernizr*/ }
       .no-touch .main-navigation .tier-1:hover .subnav, .no-touch .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
         left: 0; }
       .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .touch .main-navigation .tier-1.last .subnav.touched {
@@ -1038,13 +1050,13 @@
       top: 100%;
       left: -999em;
       z-index: 100;
-      text-align: left; }
+      text-align: left;
+      /*modernizr*/
+      /*modernizr*/ }
       .no-touch .main-navigation .subnav {
         min-width: 100%; }
       .touch .main-navigation .subnav {
-        /* On touch devices, the width of the subnav is not being set by the contents of .close-subnav, the first LI */
         top: 120%;
-        border: 4px solid white;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
@@ -1065,36 +1077,34 @@
       right: 1em; }
     .main-navigation .tier-2 {
       display: block;
-      min-width: 100%;
-      /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-              <a href="about.php">About</a>
-              <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-          </li> 
-      /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */ }
+      min-width: 100%; }
       .main-navigation .tier-2 a {
         white-space: nowrap; }
-      .main-navigation .tier-2.close-subnav {
-        display: none;
-        text-align: left;
-        white-space: nowrap;
-        /*modernizr*/ }
-        .main-navigation .tier-2.close-subnav a {
-          display: inline-block;
-          margin-right: -.375em;
-          font-weight: bold;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box; }
-        .main-navigation .tier-2.close-subnav .close-for-touch {
-          color: #b55863;
-          font-weight: normal;
-          font-size: 1.25em;
-          text-align: center;
-          padding: 0 0.5em;
-          margin-right: 0;
-          text-shadow: -1px 0 0 white; }
-        .js.touch .main-navigation .tier-2.close-subnav {
-          display: block; }
+    .main-navigation .close-subnav {
+      display: none;
+      text-align: left;
+      white-space: nowrap;
+      position: relative;
+      /*modernizr*/ }
+      .js.touch .main-navigation .close-subnav {
+        display: block; }
+      .main-navigation .close-subnav > a {
+        display: block;
+        padding-right: 3.25em;
+        font-weight: bold; }
+      .main-navigation .close-subnav .close-graphic {
+        display: block;
+        color: #b55863;
+        font-size: 1.875em;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-align: center;
+        width: 1.6em;
+        padding: 0.18em 0 0.25em;
+        background: rgba(255, 255, 255, 0.2);
+        text-shadow: -1px 0 0 white; }
     .main-navigation .tier-1 {
       float: left;
       width: 33.333333%; }
@@ -1119,11 +1129,7 @@
           border-top-right-radius: 7px;
           border-right: 0; }
     .main-navigation .tier-2 > a {
-      border-right: 1px solid rgba(255, 255, 255, 0.8); }
-    .main-navigation .close-subnav {
-      border-bottom: 1px solid rgba(102, 102, 102, 0.2); }
-    .main-navigation .close-for-touch {
-      border-left: 1px solid rgba(102, 102, 102, 0.2); } }
+      border-right: 1px solid rgba(255, 255, 255, 0.8); } }
 /* - - - Larger than 800px - - - */
 @media (min-width: 50em) {
   body:after {
@@ -1410,7 +1416,7 @@
 /* - - - Larger than 940px - - - */
 @media (min-width: 58.75em) {
   body:after {
-    content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map';
+    content: 'load_supernavs local_meetup_map';
     display: none; }
 
   a.jump-to-menu {
@@ -1432,6 +1438,17 @@
     margin: 0 -0.75em;
     text-align: center;
     /*ul*/
+    /*modernizr*/
+    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
+            <a class="close-for-touch" href="#">Close Menu</a> 
+            <a class="close-for-touch close-graphic" href="#">&times;</a>
+        </li>
+        or
+        <li class="tier-2 element-0 close-subnav" role="treeitem">
+            <a href="/about">About</a>
+            <a class="close-for-touch close-graphic" href="#">&times;</a>
+        </li>
+    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
     font-size: 1.125em; }
     .main-navigation .menu {
       *zoom: 1; }
@@ -1440,7 +1457,8 @@
         display: table;
         clear: both; }
     .main-navigation .tier-1 {
-      position: relative; }
+      position: relative;
+      /*modernizr*/ }
       .no-touch .main-navigation .tier-1:hover .subnav, .no-touch .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
         left: 0; }
       .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .touch .main-navigation .tier-1.last .subnav.touched {
@@ -1451,13 +1469,13 @@
       top: 100%;
       left: -999em;
       z-index: 100;
-      text-align: left; }
+      text-align: left;
+      /*modernizr*/
+      /*modernizr*/ }
       .no-touch .main-navigation .subnav {
         min-width: 100%; }
       .touch .main-navigation .subnav {
-        /* On touch devices, the width of the subnav is not being set by the contents of .close-subnav, the first LI */
         top: 120%;
-        border: 4px solid white;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
@@ -1478,36 +1496,34 @@
       right: 1em; }
     .main-navigation .tier-2 {
       display: block;
-      min-width: 100%;
-      /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-              <a href="about.php">About</a>
-              <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-          </li> 
-      /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */ }
+      min-width: 100%; }
       .main-navigation .tier-2 a {
         white-space: nowrap; }
-      .main-navigation .tier-2.close-subnav {
-        display: none;
-        text-align: left;
-        white-space: nowrap;
-        /*modernizr*/ }
-        .main-navigation .tier-2.close-subnav a {
-          display: inline-block;
-          margin-right: -.375em;
-          font-weight: bold;
-          -webkit-box-sizing: border-box;
-          -moz-box-sizing: border-box;
-          box-sizing: border-box; }
-        .main-navigation .tier-2.close-subnav .close-for-touch {
-          color: #b55863;
-          font-weight: normal;
-          font-size: 1.25em;
-          text-align: center;
-          padding: 0 0.5em;
-          margin-right: 0;
-          text-shadow: -1px 0 0 white; }
-        .js.touch .main-navigation .tier-2.close-subnav {
-          display: block; }
+    .main-navigation .close-subnav {
+      display: none;
+      text-align: left;
+      white-space: nowrap;
+      position: relative;
+      /*modernizr*/ }
+      .js.touch .main-navigation .close-subnav {
+        display: block; }
+      .main-navigation .close-subnav > a {
+        display: block;
+        padding-right: 3.25em;
+        font-weight: bold; }
+      .main-navigation .close-subnav .close-graphic {
+        display: block;
+        color: #b55863;
+        font-size: 1.875em;
+        font-weight: bold;
+        position: absolute;
+        top: 0;
+        right: 0;
+        text-align: center;
+        width: 1.6em;
+        padding: 0.18em 0 0.25em;
+        background: rgba(255, 255, 255, 0.2);
+        text-shadow: -1px 0 0 white; }
     .main-navigation .menu {
       text-align: center; }
     .main-navigation .tier-1 {
@@ -1531,13 +1547,9 @@
         border-right: 0; }
     .main-navigation .tier-1 > a {
       padding: 0.65em 1.25em 0.55em; }
-    .main-navigation .close-subnav {
-      border-bottom: 1px solid rgba(102, 102, 102, 0.2); }
-      .main-navigation .close-subnav a {
-        border-right: 1px solid rgba(255, 255, 255, 0.8); }
-      .main-navigation .close-subnav .close-for-touch {
-        border-right: 1px solid transparent;
-        border-left: 1px solid rgba(102, 102, 102, 0.2); }
+
+  .navigation .close-subnav {
+    border-top: 0; }
 
   /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
   .lt-ie9 .site-headline a, .site-headline a img {
@@ -1675,7 +1687,7 @@
 /* - - - Larger than 1024px - - - */
 @media (min-width: 64em) {
   body:after {
-    content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map';
+    content: 'load_supernavs local_meetup_map';
     display: none; }
 
   /* Header banners */

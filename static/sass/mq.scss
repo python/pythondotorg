@@ -86,7 +86,7 @@
 @media (min-width: px2em( 940px )) {
 
     body:after {
-        content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map'; 
+        content: 'load_supernavs local_meetup_map'; 
         display: none; 
     }
     
@@ -99,7 +99,7 @@
 @media (min-width: px2em( 1024px )) {
 
     body:after {
-        content: 'about_supernav downloads_supernav documentation_supernav community_supernav successstories_supernav blog_supernav events_supernav local_meetup_map'; 
+        content: 'load_supernavs local_meetup_map'; 
         display: none; 
     }
     

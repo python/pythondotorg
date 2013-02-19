@@ -76,11 +76,13 @@
                 @include pe-border( $color-right: rgba( #fff, .8 ) );
             }
         }
+    }
+    .navigation {
         .close-subnav {
-             @include pe-border( $color-bottom: rgba( #666, .2 ) );
+             // @include pe-border( $color-bottom: rgba( #666, .2 ) );
         }
         .close-for-touch {
-            @include pe-border( $color-left: rgba( #666, .2 ) );
+            // @include pe-border( $color-left: rgba( #666, .2 ) );
         }
     }
 }
@@ -131,14 +133,17 @@
         .tier-2 {
             
         }
+    }
+    .navigation {
         .close-subnav {
-            @include pe-border( $color-bottom: rgba( #666, .2 ) );
+            border-top: 0;
+            // @include pe-border( $color-bottom: rgba( #666, .2 ) );
              
             a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
+                // @include pe-border( $color-right: rgba( #fff, .8 ) );
             }
             .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+                // @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
             }
         }
     }

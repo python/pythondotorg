@@ -957,76 +957,70 @@ a.jump-to-menu {
   margin-bottom: 0;
   text-shadow: none; }
 
-.adjust-font-size {
-  font-weight: bold;
-  border-right: 1px solid #070a0c; }
-  .adjust-font-size a {
-    color: #bbbbbb;
-    display: inline-block; }
-    .adjust-font-size a:hover, .adjust-font-size a:active {
-      color: white; }
-
-.font-size-smaller {
-  font-size: 90%;
-  padding: 0.55em 0.4em 0.45em 0.75em;
-  margin-right: -.35em; }
-
-.font-size-larger {
-  font-size: 110%;
-  padding: 0.45em 0.75em 0.3em 0.25em; }
-
-.winkwink-nudgenudge {
+.adjust-font-size, .winkwink-nudgenudge {
   text-align: center;
   overflow: visible;
   /*ul*/
   /*li*/
   /*li*/
   /*ul*/
+  /*modernizr*/
+  /* <li class="tier-2 element-0 close-subnav" role="treeitem">
+          <a class="close-for-touch" href="#">Close Menu</a> 
+          <a class="close-for-touch close-graphic" href="#">&times;</a>
+      </li>
+      or
+      <li class="tier-2 element-0 close-subnav" role="treeitem">
+          <a href="/about">About</a>
+          <a class="close-for-touch close-graphic" href="#">&times;</a>
+      </li>
+  /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
   border-left: 1px solid #2d3e4d; }
-  .winkwink-nudgenudge .menu {
+  .adjust-font-size .menu, .winkwink-nudgenudge .menu {
     margin-bottom: 0; }
-  .winkwink-nudgenudge .tier-1, .winkwink-nudgenudge .tier-2 {
+  .adjust-font-size .tier-1, .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-1, .winkwink-nudgenudge .tier-2 {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
-    .winkwink-nudgenudge .tier-1 > a, .winkwink-nudgenudge .tier-2 > a {
+    .adjust-font-size .tier-1 > a, .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-1 > a, .winkwink-nudgenudge .tier-2 > a {
       display: block;
       padding: 0.5em 1.5em 0.4em 1em;
       position: relative; }
-  .winkwink-nudgenudge .tier-1 {
+  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
     display: block;
     width: 100%; }
-    .winkwink-nudgenudge .tier-1 > a {
+    .adjust-font-size .tier-1 > a, .winkwink-nudgenudge .tier-1 > a {
       text-align: center; }
-  .winkwink-nudgenudge .tier-2 > a {
+  .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-2 > a {
     text-align: left; }
-  .winkwink-nudgenudge .menu {
+  .adjust-font-size .menu, .winkwink-nudgenudge .menu {
     *zoom: 1; }
-    .winkwink-nudgenudge .menu:after {
+    .adjust-font-size .menu:after, .winkwink-nudgenudge .menu:after {
       content: "";
       display: table;
       clear: both; }
-  .winkwink-nudgenudge .tier-1 {
-    position: relative; }
-    .no-touch .winkwink-nudgenudge .tier-1:hover .subnav, .no-touch .winkwink-nudgenudge .tier-1:focus .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav.touched {
+  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
+    position: relative;
+    /*modernizr*/ }
+    .no-touch .adjust-font-size .tier-1:hover .subnav, .no-touch .adjust-font-size .tier-1:focus .subnav, .touch .adjust-font-size .tier-1 .subnav.touched, .no-touch .winkwink-nudgenudge .tier-1:hover .subnav, .no-touch .winkwink-nudgenudge .tier-1:focus .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav.touched {
       left: 0; }
-    .winkwink-nudgenudge .tier-1.last:hover .subnav, .winkwink-nudgenudge .tier-1.last:focus .subnav, .touch .winkwink-nudgenudge .tier-1.last .subnav.touched {
+    .adjust-font-size .tier-1.last:hover .subnav, .adjust-font-size .tier-1.last:focus .subnav, .touch .adjust-font-size .tier-1.last .subnav.touched, .winkwink-nudgenudge .tier-1.last:hover .subnav, .winkwink-nudgenudge .tier-1.last:focus .subnav, .touch .winkwink-nudgenudge .tier-1.last .subnav.touched {
       left: auto;
       right: 0; }
-  .winkwink-nudgenudge .subnav {
+  .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
     position: absolute;
     top: 100%;
     left: -999em;
     z-index: 100;
-    text-align: left; }
-    .no-touch .winkwink-nudgenudge .subnav {
+    text-align: left;
+    /*modernizr*/
+    /*modernizr*/ }
+    .no-touch .adjust-font-size .subnav, .no-touch .winkwink-nudgenudge .subnav {
       min-width: 100%; }
-    .touch .winkwink-nudgenudge .subnav {
-      /* On touch devices, the width of the subnav is not being set by the contents of .close-subnav, the first LI */
+    .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
       top: 120%;
-      border: 4px solid white;
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
-      .touch .winkwink-nudgenudge .subnav:before {
+      .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
         position: absolute;
         content: "";
         width: 0;
@@ -1038,56 +1032,64 @@ a.jump-to-menu {
         left: 1em;
         display: block;
         border-color: transparent transparent white transparent; }
-  .touch .winkwink-nudgenudge .tier-1.last .subnav:before {
+  .touch .adjust-font-size .tier-1.last .subnav:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before {
     left: auto;
     right: 1em; }
-  .winkwink-nudgenudge .tier-2 {
+  .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-2 {
     display: block;
-    min-width: 100%;
-    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a href="about.php">About</a>
-            <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-        </li> 
-    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */ }
-    .winkwink-nudgenudge .tier-2 a {
+    min-width: 100%; }
+    .adjust-font-size .tier-2 a, .winkwink-nudgenudge .tier-2 a {
       white-space: nowrap; }
-    .winkwink-nudgenudge .tier-2.close-subnav {
-      display: none;
-      text-align: left;
-      white-space: nowrap;
-      /*modernizr*/ }
-      .winkwink-nudgenudge .tier-2.close-subnav a {
-        display: inline-block;
-        margin-right: -.375em;
-        font-weight: bold;
-        -webkit-box-sizing: border-box;
-        -moz-box-sizing: border-box;
-        box-sizing: border-box; }
-      .winkwink-nudgenudge .tier-2.close-subnav .close-for-touch {
-        color: #b55863;
-        font-weight: normal;
-        font-size: 1.25em;
-        text-align: center;
-        padding: 0 0.5em;
-        margin-right: 0;
-        text-shadow: -1px 0 0 white; }
-      .js.touch .winkwink-nudgenudge .tier-2.close-subnav {
-        display: block; }
-  .winkwink-nudgenudge a {
+  .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
+    display: none;
+    text-align: left;
+    white-space: nowrap;
+    position: relative;
+    /*modernizr*/ }
+    .js.touch .adjust-font-size .close-subnav, .js.touch .winkwink-nudgenudge .close-subnav {
+      display: block; }
+    .adjust-font-size .close-subnav > a, .winkwink-nudgenudge .close-subnav > a {
+      display: block;
+      padding-right: 3.25em;
+      font-weight: bold; }
+    .adjust-font-size .close-subnav .close-graphic, .winkwink-nudgenudge .close-subnav .close-graphic {
+      display: block;
+      color: #b55863;
+      font-size: 1.875em;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      right: 0;
+      text-align: center;
+      width: 1.6em;
+      padding: 0.18em 0 0.25em;
+      background: rgba(255, 255, 255, 0.2);
+      text-shadow: -1px 0 0 white; }
+  .adjust-font-size a, .winkwink-nudgenudge a {
     color: #bbbbbb;
     background-color: transparent; }
-  .winkwink-nudgenudge .tier-1 {
+  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
     float: none; }
-    .winkwink-nudgenudge .tier-1:hover > a {
+    .adjust-font-size .tier-1:hover > a, .winkwink-nudgenudge .tier-1:hover > a {
       color: #555;
       background-color: #caccce; }
-  .winkwink-nudgenudge .subnav {
-    background-color: #caccce; }
-    .winkwink-nudgenudge .subnav a {
+  .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
+    background-color: #caccce;
+    /*modernizr*/ }
+    .adjust-font-size .subnav a, .winkwink-nudgenudge .subnav a {
       color: #555; }
-      .winkwink-nudgenudge .subnav a:hover, .winkwink-nudgenudge .subnav a:focus {
+      .adjust-font-size .subnav a:hover, .adjust-font-size .subnav a:focus, .winkwink-nudgenudge .subnav a:hover, .winkwink-nudgenudge .subnav a:focus {
         color: #e6e8ea;
         background-color: #999999; }
+    .adjust-font-size .subnav .text-reset, .winkwink-nudgenudge .subnav .text-reset {
+      color: #888; }
+    .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
+      top: 125%;
+      border: 3px solid #666666; }
+      .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
+        border-color: transparent transparent #666666 transparent; }
+  .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
+    border-bottom: 1px solid #999999; }
 
 /* ! Main navigation – In layout and mixins, as we don't display it here. */
 .main-navigation {
@@ -2250,6 +2252,7 @@ Since we are importing the data of the entire font, try to make sure only the ne
   font-style: normal; }
 
 /* Use the following CSS code if you want to have a class per icon */
+/* These calls are very expensive to make, so, in the end, declare every icon class here specifically, do not use [^=] or [*=} selectors */
 [class^="icon-"]:before, [class*=" icon-"]:before {
   font-family: 'IcoMoon-Full';
   font-style: normal;

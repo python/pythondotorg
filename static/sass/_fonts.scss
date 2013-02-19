@@ -36,6 +36,8 @@ Since we are importing the data of the entire font, try to make sure only the ne
 
 
 /* Use the following CSS code if you want to have a class per icon */
+
+/* These calls are very expensive to make, so, in the end, declare every icon class here specifically, do not use [^=] or [*=} selectors */
 [class^="icon-"]:before, [class*=" icon-"]:before {
 	font-family: 'IcoMoon-Full';
 	font-style: normal;
