@@ -34,6 +34,11 @@ This expects a local database named "python.org". If you need to change it:
 
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
+To compile and compress static media, you will need compass and yui-compressor:
+    
+    $ bundle install
+    $ brew install yuicompressor
+
 ### Python 3.3 and OSX 10.8.2
 
 Homebrew's recipe for python3.3 has some difficulty installing distribute 
@@ -58,10 +63,3 @@ Install `coverage` (`pip install coverage`), then::
     $ coverage report
 
 Generate an HTML report with `coverage html` if you like.
-
-Compiling stylesheets
----------------------
-
-To compile the stylesheets, you will need compass (`gem install compass`). Then:
-
-    $ compass compile static

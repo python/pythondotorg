@@ -1,4 +1,4 @@
-<!doctype html>
+{% load compressed %}<!doctype html>
 <!--[if lt IE 7]>      <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
 <!--[if IE 7]>         <html class="no-js ie7 lt-ie8 lt-ie9">      <![endif]-->
 <!--[if IE 8]>         <html class="no-js ie8 lt-ie9">             <![endif]-->
@@ -19,11 +19,18 @@
 
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
 
+    {% compressed_css 'style' %}
+    {% compressed_css 'mq' %}
+    {% comment %}
+    {# equivalent to: #}
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
+    {% endcomment %}
 
     <!--[if (lte IE 8)&(!IEMobile)]>
-    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">
+    {% compressed_css 'no-mq' %}
+    {# equivalent to: #}
+    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
     <![endif]-->
 
     <!-- Place icon files in the root if possible (let browsers look for them where they expect them to be)
@@ -481,15 +488,23 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
 
+    {% compressed_js 'main.js' %}
+    {% comment %}
+    {# equivalent to: #}
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/script.js"></script>
+    {% endcomment %}
     
     <!--[if lte IE 7]>
-    <script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>
+    {% compressed_js 'IE8' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
     <![endif]-->
     
     <!--[if lte IE 8]>
-    <script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>
+    {% compressed_js 'getComputedStyle' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
     <![endif]-->
     
     <!-- Asynchronous Analytics snippet
