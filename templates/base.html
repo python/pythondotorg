@@ -21,6 +21,7 @@
     {% compressed_css 'style' %}
     {% compressed_css 'mq' %}
     {% comment %}
+    {# equivalent to: #}
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
     {% endcomment %}
@@ -472,6 +473,7 @@
 
     {% compressed_js 'main' %}
     {% comment %}
+    {# equivalent to: #}
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/script.js"></script>
     {% endcomment %}
