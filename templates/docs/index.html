@@ -5,16 +5,18 @@
 {% block body_attributes %}class="docs"{% endblock %}
 
 
-
 {% block main-nav_attributes %}docs-navigation{% endblock %}
 
-{# block main_navigation #}{# endblock #}
-
+{% comment %}
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "docs-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+{% endcomment %}
 
 
 {% block header_content %}
 {% endblock header_content %}
-
 
 
 {% block content %}

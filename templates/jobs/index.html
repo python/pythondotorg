@@ -5,13 +5,13 @@
 {% block body_attributes %}class="jobs"{% endblock %}
 
 
-
 {% block main-nav_attributes %}jobs-navigation{% endblock %}
 
-{% block main_navigation %}
-    {% include 'components/jobs-navigation.html' %}
-{% endblock %}
 
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "jobs-meta" template "sitetree/submenu.html" %}
+{% endblock %}
 
 
 {% block header_content %}
@@ -28,7 +28,7 @@
 
 {% block content %}
                 <div class="row">
-        		    
+
                     <ol class="list-recent-jobs list-row-container menu">
                         <li>
                             <h2 class="listing-company">
@@ -41,7 +41,7 @@
                             <span class="listing-posted"><time datetime="2012-12-10">10 December 2012</time></span>
                             <span class="listing-company-category"><a href="#to-jobs-by-category" title="More jobs in Video production">Video production</a></span>
                         </li>
-                        
+
                         <li>
                             <h2 class="listing-company">
                                 <span class="listing-company-name">
@@ -53,7 +53,7 @@
                             <span class="listing-posted"><time datetime="2012-12-10">10 December 2012</time></span>
                             <span class="listing-company-category"><a href="#to-jobs-by-category" title="More jobs in Game Production">Game Production</a></span>
                         </li>
-                        
+
                         <li>
                             <h2 class="listing-company">
                                 <span class="listing-company-name">
@@ -65,8 +65,8 @@
                             <span class="listing-posted"><time datetime="2012-12-10">10 December 2012</time></span>
                             <span class="listing-company-category"><a href="#to-jobs-by-category" title="More Open Government jobs">Open Government</a></span>
                         </li>
-                        
-                        
+
+
                         <li>
                             <h2 class="listing-company">
                                 <span class="listing-company-name">
@@ -100,8 +100,8 @@
                             <span class="listing-posted"><time datetime="2012-12-09">9 December 2012</time></span>
                             <span class="listing-company-category"><a href="#to-jobs-by-category" title="More Open Government jobs">Open Government</a></span>
                         </li>
-                        
-                        
+
+
                         <li>
                             <h2 class="listing-company">
                                 <span class="listing-company-name">
@@ -137,7 +137,7 @@
                         </li>
                     </ol>
 
-                
+
                 </div>
 {% endblock content %}
 
@@ -145,25 +145,25 @@
 
 {% block right_sidebar %}
             <aside class="right-sidebar">
-            
+
                 <div class="sidebar-widget">
                     <h3 class="widget-title">Submit a Job</h3>
-                    <p>Have a job that our community would be interested in? Please <a href="#">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job existing postings or to add new ones to their profile.</p> 
+                    <p>Have a job that our community would be interested in? Please <a href="#">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job existing postings or to add new ones to their profile.</p>
                 </div>
-                
+
                 <div class="sidebar-widget">
                     <h3 class="widget-title">Featured Companies</h3>
                     <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
                     <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
                     <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
-                    <p>Want your jobs to be featured? <a href="#">Find out more</a>.</p> 
+                    <p>Want your jobs to be featured? <a href="#">Find out more</a>.</p>
                 </div>
-                
+
                 <div class="sidebar-widget">
                     <h3 class="widget-title">Stay up-to-date</h3>
-                    <p><a href="#"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p> 
-                    <p><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Follow via Twitter</a></p> 
+                    <p><a href="#"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
+                    <p><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Follow via Twitter</a></p>
                 </div>
-            
+
             </aside>
 {% endblock right_sidebar %}

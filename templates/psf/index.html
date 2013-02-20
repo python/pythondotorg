@@ -5,13 +5,12 @@
 {% block body_attributes %}class="psf"{% endblock %}
 
 
-
 {% block main-nav_attributes %}psf-navigation{% endblock %}
 
 {% block main_navigation %}
-    {% include 'components/psf-navigation.html' %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
-
 
 
 {% block header-banner_attributes %}do-not-print{% endblock %}
@@ -23,49 +22,48 @@
 {% endblock header_content %}
 
 
-
 {% block content %}
                 <div class="row">
-        		    
+
         		    <div class="small-widget membership-widget">
                         <h2 class="widget-title">Become a Member</h2>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
                         <p><a href="#">Membership FAQ</a></p>
                     </div>
-                    
+
                     <div class="small-widget donate-widget">
                         <h2 class="widget-title">Donate</h2>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
                         <p><a href="#">How to Contribute</a></p>
                     </div>
-                    
+
                     <div class="small-widget volunteer-widget">
                         <h2 class="widget-title">Volunteer</h2>
                         <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
                         <p><a href="#">How to Volunteer</a></p>
                     </div>
-                    
+
                     <div class="small-widget loa-widget last">
                         <h2 class="widget-title">League of Awesome</h2>
                         <p>Thanks to these companies for their volunteer services. </p>
                         <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
                         <p><a href="#">More Awesomeness</a></p>
                     </div>
-                
+
                 </div>
-        		
-        		
+
+
         		<div class="row">
-                
+
                     <div class="medium-widget grants-widget">
                         <h2 class="widget-title">PSF Grants Program</h2>
                         <p>The Python Software Foundation welcomes grant proposals for projects related to the development of Python, Python-related technology, and educational resources.</p>
                         <p><a class="button" href="#">Proposal Guidelines</a></p>
                         <p><a class="button" href="#">Grant FAQs & Samples</a></p>
                     </div>
-                    
+
                     <div class="medium-widget news-wiki-widget last">
-                        
+
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF News </h2>
                             <p class="give-me-more"><a href="#" title="More PSF News">More</a></p>
@@ -81,8 +79,8 @@
                             <p class="give-me-more"><a href="#" title="Enter PSF Wiki">Enter</a></p>
                             <p><strong class="uppercase">MEMBERS ONLY:</strong> The PSF Members&rsquo; Wiki is provided for collaboration amongst PSF members on internal projects. Become a member to see what exciting things we have in store for the Python family.</p>
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
 {% endblock content %}
