@@ -14,3 +14,9 @@ before_script:
 script:
   - coverage run manage.py test
   - coverage report --fail-under=90
+notifications:
+    irc:
+        channels:
+            - "irc.freenode.net#revsys-hq"
+        on_success: change
+        on_failure: always
