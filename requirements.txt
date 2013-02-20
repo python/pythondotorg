@@ -9,6 +9,10 @@ psycopg2==2.4.5
 # https://github.com/jamesturk/django-markupfield/pull/13 is merged.
 git+git://github.com/jacobian/django-markupfield.git
 
+# My fork of django-sitetree, adding Py3 support. Can be removed when
+# TODO: add ticket url here
+-e git+git://github.com/jefftriplett/django-sitetree.git
+
 # Aymeric's branch of South with Python 3 support. Can be removed when this
 # is merged into master.
 https://bitbucket.org/aaugustin/south-python3/get/a23d01c06065.zip
