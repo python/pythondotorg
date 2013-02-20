@@ -629,32 +629,7 @@ a.jump-to-menu {
     }
 }
 
-.adjust-font-size {
-    font-weight: bold; 
-    border-right: 1px solid darken( $darkerblue, 12% );
-    
-    a {
-        color: $optionsbar-text; 
-        display: inline-block;
-        
-        &:hover, &:active {
-            color: $white;
-        }
-    }
-}
-
-.font-size-smaller {
-    font-size: 90%; 
-    padding: .55em .4em .45em .75em; 
-    margin-right: -.35em; 
-}
-
-.font-size-larger {
-    font-size: 110%; 
-    padding: .45em .75em .3em .25em;
-}
-
-.winkwink-nudgenudge {
+.adjust-font-size, .winkwink-nudgenudge {
     @include horizontal_nav_base();
     @include horizontal_nav_dropdowns(); 
     border-left: 1px solid lighten( $darkerblue, 8% );
@@ -684,8 +659,25 @@ a.jump-to-menu {
                 background-color: $grey-light; 
             }
         }
+        .text-reset {
+            color: #888; 
+        }
+        /*modernizr*/ .touch & {
+            top: 125%;
+            border: 3px solid $grey; 
+            
+            &:before {
+                border-color: transparent transparent $grey transparent; 
+            }
+        }
+    }
+    .close-subnav {
+        @include pe-border( $color-bottom: $grey-light ); 
     }
 }
+    .text-shrink { }
+    .text-grow { }
+    .text-reset { }
 
 
 

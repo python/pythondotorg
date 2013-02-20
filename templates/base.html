@@ -1,29 +1,37 @@
 <!doctype html>{% load sitetree %}
+{% load compressed %}<!doctype html>
 <!--[if lt IE 7]>      <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
 <!--[if IE 7]>         <html class="no-js ie7 lt-ie8 lt-ie9">      <![endif]-->
 <!--[if IE 8]>         <html class="no-js ie8 lt-ie9">             <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en">              <!--<![endif]-->
 
-
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website# article: http://ogp.me/ns/article#">
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
+    
+    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
-    <meta name="format-detection" content="telephone=no"><!-- Auto detect off. Remember to use <a href="tel:401-555-1212"> to format phone numbers that you want phones to detect -->
+    <meta name="format-detection" content="telephone=no">
     <meta http-equiv="cleartype" content="on">
 
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
 
+    {% compressed_css 'style' %}
+    {% compressed_css 'mq' %}
+    {% comment %}
+    {# equivalent to: #}
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
-    <!-- 16px x 32em = 512px -->
+    {% endcomment %}
 
     <!--[if (lte IE 8)&(!IEMobile)]>
-    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">
+    {% compressed_css 'no-mq' %}
+    {# equivalent to: #}
+    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
     <![endif]-->
 
     <!-- Place icon files in the root if possible (let browsers look for them where they expect them to be)
@@ -120,8 +128,20 @@
                 <span class="breaker"></span>
 
                 <div class="adjust-font-size">
-                    <a class="font-size-smaller" href="#">A</a>
-                    <a class="font-size-larger" href="#">A</a>
+                    <ul class="navigation menu" aria-label="Adjust Text Size on Page">
+                        <li class="tier-1 element-1 last" aria-haspopup="true">
+                            <a href="#"><strong><small>A</small> A</strong></a>
+                            <ul class="subnav">
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a class="close-for-touch" href="#">Close Menu</a> 
+                                    <a class="close-for-touch close-graphic" href="#">&times;</a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</li>
+                                <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="winkwink-nudgenudge">
@@ -129,10 +149,15 @@
                         <li class="tier-1 element-1 last" aria-haspopup="true">
                             <a href="#">Socialize</a>
                             <ul class="subnav">
-                                <li class="tier-2 element-1" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span> Facebook</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span> @ThePSF</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span> GitHub</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-irc"></span> IRC on Freenode</a></li>
+                                <li class="tier-2 element-0 close-subnav" role="treeitem">
+                                    <a class="close-for-touch" href="#">Close Menu</a> 
+                                    <a class="close-for-touch close-graphic" href="#">&times;</a>
+                                </li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span> Google+</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span> Facebook</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span> @ThePSF</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span> GitHub</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-irc"></span> IRC on Freenode</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -339,11 +364,26 @@
     {% block javascript %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
-    <script src="//maps.google.com/maps/api/js?sensor=false"></script>
 
+    {% compressed_js 'main.js' %}
+    {% comment %}
+    {# equivalent to: #}
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/script.js"></script>
-
+    {% endcomment %}
+    
+    <!--[if lte IE 7]>
+    {% compressed_js 'IE8' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
+    <![endif]-->
+    
+    <!--[if lte IE 8]>
+    {% compressed_js 'getComputedStyle' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
+    <![endif]-->
+    
     <!-- Asynchronous Analytics snippet
     <script type="text/javascript">
     var _gaq = _gaq || [];
