@@ -8,7 +8,9 @@ before_install:
 install:
   - pip install --quiet --use-mirrors -r requirements.txt
   - pip install --quiet --use-mirrors -r test-requirements.txt
+  - pip install --quiet --use-mirrors coverage
 before_script:
   - psql -c 'create database "python.org";' -U postgres
 script:
-  - python manage.py test
+  - coverage run manage.py test
+  - coverage report --fail-under=90
