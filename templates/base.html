@@ -1,4 +1,4 @@
-<!doctype html>
+<!doctype html>{% load sitetree %}
 <!--[if lt IE 7]>      <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
 <!--[if IE 7]>         <html class="no-js ie7 lt-ie8 lt-ie9">      <![endif]-->
 <!--[if IE 8]>         <html class="no-js ie8 lt-ie9">             <![endif]-->
@@ -62,7 +62,6 @@
 
 <body {% block body_attributes %}{% endblock %}>
 
-
     <!-- Sister Site Links -->
     <div id="top" class="top-bar do-not-print">
 
@@ -76,14 +75,7 @@
             <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
             <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down-3"><span>&#9660;</span></span> Close</a>
 
-            <ul class="menu" role="tree">
-                <li class="python-meta selected" role="treeitem"><a href="/" title="Python.org"><span class="pointer"></span>Python<span class="say-no-more">.org</span></a></li>
-                <li class="psf-meta" role="treeitem"><a href="/psf-landing" title="The Python Software Foundation"><span class="pointer"></span>PSF<span class="say-no-more">.python.org</span></a></li>
-                <li class="docs-meta" role="treeitem"><a href="/docs-landing" title="Docs.python.org"><span class="pointer"></span>Docs<span class="say-no-more">.python.org</span></a></li>
-                <li class="pypi-meta" role="treeitem"><a href="/pypl-landing" title="PyPI.python.org"><span class="pointer"></span>PyPI<span class="say-no-more">.python.org</span></a></li>
-                <li class="jobs-meta" role="treeitem"><a href="/jobs-landing" title="Jobs.python.org"><span class="pointer"></span>Jobs<span class="say-no-more">.python.org</span></a></li>
-                <li class="shop-meta" role="treeitem"><a href="/shop-landing" title="Shop.python.org"><span class="pointer"></span>Shop<span class="say-no-more">.python.org</span></a></li>
-            </ul>
+            {% sitetree_menu from "main" include "trunk" template "sitetree/menu_top.html" %}
 
             <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> The Python Network</a>
 
@@ -91,9 +83,7 @@
 
     </div>
 
-
     <div id="test-window-size"></div>
-
 
     <!-- Header elements -->
     <header class="main-header" role="banner">
@@ -150,120 +140,9 @@
 
             </div><!-- end options-bar -->
 
-
             <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
                 {% block main_navigation %}
-                    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-
-                        <li id="about" class="tier-1 element-1" aria-haspopup="true">
-                            <a href="/about">About</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/about">About</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">History / Mission</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Applications</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Statistics</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Quotes</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Media / CI</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="downloads" class="tier-1 element-2" aria-haspopup="true">
-                            <a href="/download">Downloads</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/download">Downloads</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Releases</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Mac OSX</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Windows</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Linux</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Others</a></li>
-                                <li class="tier-2 element-6" role="treeitem"><a href="/inner">License</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="documentation" class="tier-1 element-3" aria-haspopup="true">
-                            <a href="/documentation">Documentation</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/documentation">Documentation</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Docs</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Audio/Visual Talks</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Beginner&rsquo;s Guide</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Developer&rsquo;s Guide</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">FAQ</a></li>
-                                <li class="tier-2 element-6" role="treeitem"><a href="/inner">Non-english Docs</a></li>
-                                <li class="tier-2 element-7" role="treeitem"><a href="/inner">PEP Index</a></li>
-                                <li class="tier-2 element-8" role="treeitem"><a href="/inner">Security</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="community" class="tier-1 element-4" aria-haspopup="true">
-                            <a href="/community">Community</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/community">Community</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Diversity</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">IRC</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Mailing List</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Python Conference</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="/inner">Special Interest Groups</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="success-stories" class="tier-1 element-5" aria-haspopup="true">
-                            <a href="/success-stories">Success Stories</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/success-stories">Success Stories</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="#" title="Arts Category">Arts</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="#" title="Business Category">Business</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="#" title="Education Category">Education</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="#" title="Engineering Category">Engineering</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="#" title="Government Category">Government</a></li>
-                                <li class="tier-2 element-6" role="treeitem"><a href="#" title="Scientific Category">Scientific</a></li>
-                                <li class="tier-2 element-7" role="treeitem"><a href="#" title="Software Development Category">Software Development</a></li>
-                                <li class="tier-2 element-8" role="treeitem"><a href="/inner">Activity Feed</a></li>
-                                <li class="tier-2 element-9" role="treeitem"><a href="/inner">Submit Yours!</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="blog" class="tier-1 element-6" aria-haspopup="true">
-                            <a href="/blog">Blog</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/blog">Blog</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Newest Posts</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Categories</a></li>
-                            </ul>
-                        </li>
-
-                        <li id="events" class="tier-1 element-7 last" aria-haspopup="true">
-                            <a href="/events">Events</a>
-                            <ul class="subnav menu" role="menu" aria-hidden="true">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a href="/events">Events</a>
-                                    <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="/inner">Upcoming</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="/inner">Past Events</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="/inner">Python Conference</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="/inner">Release Schedule</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+                    {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
                 {% endblock main_navigation %}
             </nav>
 
@@ -277,7 +156,6 @@
 
          </div><!-- end .container -->
     </header>
-
 
     <div id="content" class="content-wrapper">
         <!-- Main Content Column -->
@@ -302,8 +180,6 @@
 
         </div><!-- end .container -->
     </div><!-- end #content .content-wrapper -->
-
-
 
     <!-- Footer and social media list -->
     <footer id="site-map" class="main-footer" role="navigation">
