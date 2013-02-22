@@ -1,0 +1,12 @@
+{% load sitetree %}
+
+<ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+    {% for item in sitetree_items %}
+    <li id="{{ item.alias }}" class="tier-1 element-{{ forloop.counter }}" aria-haspopup="true">
+        <a href="{% sitetree_url for item %}" title="{{ item.hint|default:'' }}" class="{{ item.is_current|yesno:' current_item selected,' }}{{ item.in_current_branch|yesno:' selected,' }}">{{ item.title_resolved }}</a>
+        {% if item.has_children %}
+            {% sitetree_children of item for menu template "sitetree/submenu_children.html" %}
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>

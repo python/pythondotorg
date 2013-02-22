@@ -11,6 +11,10 @@ https://www.djangoproject.com/download/1.5c2/tarball/
 # django-markupfield with Py3 support. Can be removed when 1.1 is released.
 git+git://github.com/jamesturk/django-markupfield.git@70dc74
 
+# My fork of django-sitetree, adding Py3 support. Can be removed when
+# https://github.com/idlesign/django-sitetree/pull/93
+git+git://github.com/jefftriplett/django-sitetree.git
+
 # Aymeric's branch of South with Python 3 support. Can be removed when this
 # is merged into master.
 https://bitbucket.org/aaugustin/south-python3/get/a23d01c06065.zip
