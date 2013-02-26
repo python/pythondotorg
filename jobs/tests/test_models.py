@@ -1,8 +1,9 @@
 from django.test import TestCase
-
-from ..models import Job, JobCategory, Company
-
 from django.utils import timezone
+
+from companies.models import Company
+
+from ..models import Job, JobCategory
 
 
 class JobsModelsTests(TestCase):

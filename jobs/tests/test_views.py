@@ -1,8 +1,10 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
+from companies.models import Company
+
 from .. import admin     # coverage FTW
-from ..models import Job, JobCategory, JobType, Company
+from ..models import Job, JobCategory, JobType
 
 
 class JobsViewTests(TestCase):
