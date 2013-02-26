@@ -16,8 +16,8 @@ from django.utils import timezone
 
 
 class ContentManageable(models.Model):
-    created = models.DateTimeField(default=timezone.now)
-    updated = models.DateTimeField()
+    created = models.DateTimeField(default=timezone.now, blank=True)
+    updated = models.DateTimeField(blank=True)
 
     # We allow creator to be null=True so that we can, if we must, create a
     # ContentManageable object in a context where we don't have a creator (i.e.
@@ -26,7 +26,7 @@ class ContentManageable(models.Model):
     # object we'll get an error. This is a reasonable compromise that lets us
     # track creators fairly well without neccisarily over-enforcing it in places
     # where it'd be invasive.
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', null=True, blank=True)
 
     def save(self, **kwargs):
         self.updated = timezone.now()
