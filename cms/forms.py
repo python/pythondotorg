@@ -4,25 +4,19 @@ from django import forms
 
 
 class ContentManageableModelForm(forms.ModelForm):
-    created = forms.DateTimeField(required=False)
-    updated = forms.DateTimeField(required=False)
-    creator = forms.ModelChoiceField(settings.AUTH_USER_MODEL, required=False, widget=forms.widgets.TextInput())
+    class Meta:
+        fields = []
 
     def __init__(self, request=None, *args, **kwargs):
         self.request = request
         super().__init__(*args, **kwargs)
 
-    def clean_created(self):
-        if self.instance is not None:
-            return self.instance.created
-        return timezone.now()
+    def save(self, commit=True):
+        obj = super().save(commit=False)
 
-    def clean_updated(self):
-        return timezone.now()
-
-    def creator(self):
-        if self.instance is not None:
-            return self.instance.creator
         if self.request is not None and self.request.user.is_authenticated():
-            return self.request.user
-        return None
+            obj.creator = self.request.user
+
+        if commit:
+            obj.save()
+        return obj
