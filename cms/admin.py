@@ -1,5 +1,10 @@
 from django.contrib import admin
 
+
+class NameSlugAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+
+
 class ContentManageableModelAdmin(admin.ModelAdmin):
     """
     Base ModelAdmin class for any model that uses ContentManageable.

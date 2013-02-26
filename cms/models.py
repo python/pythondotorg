@@ -33,3 +33,11 @@ class ContentManageable(models.Model):
 
     class Meta:
         abstract = True
+
+
+class NameSlugModel(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField()
+
+    class Meta:
+        abstract = True
