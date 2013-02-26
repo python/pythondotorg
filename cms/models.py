@@ -14,6 +14,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+
 class ContentManageable(models.Model):
     created = models.DateTimeField(default=timezone.now)
     updated = models.DateTimeField()
@@ -37,7 +38,10 @@ class ContentManageable(models.Model):
 
 class NameSlugModel(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField()
+    slug = models.SlugField(unique=True)
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return self.name
