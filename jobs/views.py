@@ -1,8 +1,9 @@
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, CreateView
 from django.utils import timezone
 
 import datetime
 
+from .forms import JobForm
 from .models import Job
 
 
@@ -37,3 +38,16 @@ class JobDetail(DetailView):
         threshold = timezone.now() - datetime.timedelta(days=90)
 
         return Job.objects.select_related().filter(created__gt=threshold)
+
+
+class JobCreate(CreateView):
+    model = Job
+    form_class = JobForm
+
+    def get_success_url(self):
+        return self.object.get_absolute_url()
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs['request'] = self.request
+        return kwargs

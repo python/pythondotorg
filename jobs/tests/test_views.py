@@ -53,3 +53,30 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+
+    def test_job_create(self):
+        url = reverse('jobs:job_create')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {
+            'category': self.job_category.pk,
+            'job_types': [self.job_type.pk],
+            'company': 'StudioNow',
+            'city': 'San Diego',
+            'region': 'CA',
+            'country': 'USA',
+            'description': 'Lorem ipsum dolor sit amet'
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+
+        jobs = Job.objects.filter(company='StudioNow')
+        self.assertEqual(len(jobs), 1)
+
+        job = jobs[0]
+        self.assertNotEqual(job.created, None)
+        self.assertNotEqual(job.updated, None)
+        self.assertEqual(job.creator, None)

@@ -1,5 +1,3 @@
-{# ===== JOBS LANDING PAGE ===== #}
-
 {% extends "base.html" %}
 
 {% block body_attributes %}class="jobs"{% endblock %}
@@ -27,25 +25,11 @@
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block content %}
-                <div class="row">
-
-                    <ol class="list-recent-jobs list-row-container menu">
-                        {% for object in object_list %}
-                        <li>
-                            <h2 class="listing-company">
-                                <span class="listing-company-name">
-                                    {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<a href="{{ object.get_absolute_url }}">{{ object.company }}</a>
-                                </span>
-                                <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
-                            </h2>
-                            <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More Front-end Developer jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
-                            <span class="listing-posted"><time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></span>
-                            <span class="listing-company-category"><a href="{% url 'jobs:job_list_category' slug=object.category.slug %}" title="More jobs in {{ object.category.name }}">{{ object.category.name }}</a></span>
-                        </li>
-                        {% endfor %}
-                    </ol>
-
-                </div>
+<form action="" method="post">
+{% csrf_token %}
+{{ form.as_p }}
+<p><input type="submit" name="Submit" value=""></p>
+</form>
 {% endblock content %}
 
 

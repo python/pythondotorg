@@ -28,7 +28,7 @@ class Job(ContentManageable):
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100)
-    location_slug = models.SlugField()
+    location_slug = models.SlugField(max_length=350, editable=False)
 
     description = models.TextField()
 
