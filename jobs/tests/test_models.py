@@ -1,19 +1,24 @@
 from django.test import TestCase
 
-from ..models import Job, JobCategory
+from ..models import Job, JobCategory, Company
 
 from django.utils import timezone
 
 
 class JobsModelsTests(TestCase):
     def setUp(self):
+        company = Company.objects.create(
+            name='Kulfun Games',
+            slug='kulfun-games',
+        )
+
         job_category = JobCategory.objects.create(
             name='Game Production',
             slug='game-production'
         )
 
         self.job = Job.objects.create(
-            company='Kulfun Games',
+            company=company,
             description='Lorem ipsum dolor sit amet',
             category=job_category,
             city='Memphis',

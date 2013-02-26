@@ -17,13 +17,16 @@ class JobCategory(NameSlugModel):
     pass
 
 
+class Company(NameSlugModel):
+    pass
+
+
 class Job(ContentManageable):
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
     category = models.ForeignKey(JobCategory)
     job_types = models.ManyToManyField(JobType)
-
-    company = models.CharField(max_length=100)
+    company = models.ForeignKey(Company)
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)

@@ -21,6 +21,11 @@ class JobListType(JobList):
         return super().get_queryset().filter(job_types__slug=self.kwargs['slug'])
 
 
+class JobListCompany(JobList):
+    def get_queryset(self):
+        return super().get_queryset().filter(company__slug=self.kwargs['slug'])
+
+
 class JobListCategory(JobList):
     def get_queryset(self):
         return super().get_queryset().filter(category__slug=self.kwargs['slug'])
