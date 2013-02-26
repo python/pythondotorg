@@ -20,9 +20,9 @@ class JobCategory(NameSlugModel):
 class Job(ContentManageable):
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
-    category = models.ForeignKey(JobCategory)
-    job_types = models.ManyToManyField(JobType)
-    company = models.ForeignKey('companies.Company')
+    category = models.ForeignKey(JobCategory, related_name='jobs')
+    job_types = models.ManyToManyField(JobType, related_name='jobs')
+    company = models.ForeignKey('companies.Company', related_name='jobs')
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
