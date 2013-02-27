@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python success-stories"{% endblock %}
+
+{% block content %}
+todo: detail.html
+
+<h1>{{ story.name }}</h1>
+
+{{ story.content.rendered|safe }}
+
+{% endblock content %}

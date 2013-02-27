@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+
+{% block body_attributes %}class="python success-stories"{% endblock %}
+
+
+{% block header_content %}
+    <div class="featured-success-story">
+        <img src="{{ STATIC_URL }}img/google-trans.png" alt="Google">
+
+        <blockquote class="success-quote">
+            Python allows us to produce maintainable features in record times, with a minimum of developers.
+        </blockquote>
+        <footer>
+            <p class="quote-by"><cite>Cuong Do, Software Architect</cite></p>
+            <p class="quote-by-organization">YouTube.com</p>
+        </footer>
+    </div>
+{% endblock header_content %}
+
+
+{% block content %}
+    <div class="row">
+        {% for story in object_list %}
+            <div class="medium-widget success-story {% if forloop.last == True %}last{% endif %}">
+                <div class="shrubbery">
+                    <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
+                    <h2 class="widget-title">{{ story.name }}</h2>
+                    <p class="success-quote">{{ story.pull_quote }} <a class="readmore" href="{{ story.get_absolute_url }}">Read more</a></p>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    {% load successstories %}
+    {% get_story_categories as story_categories %}
+
+    <div class="row newest-success-stories">
+
+        <div class="row-title">
+            <h2 class="widget-title">
+                <span aria-hidden="true" class="icon-comment"></span>Newest success stories by category
+                <a class="activity-feed" href="#"><span class="icon-list"></span>View as Activity Feed</a>
+            </h2>
+        </div>
+
+        {% for story_category in story_categories %}
+            <div class="small-widget success-story-category {% if forloop.counter|divisibleby:"4" %}last{% endif %}">
+                <h3 class="widget-title">{{ story_category.name }}</h3>
+                {% get_stories_by_category category_slug=story_category.slug as category_stories %}
+                {% for story in category_stories %}
+                    <p><a href="{{ story.get_absolute_url }}">{{ story.name }}</a></p>
+                {% endfor %}
+                <p><a class="readmore" href="{{ story_category.get_absolute_url }}">See All</a></p>
+            </div>
+
+            {% if forloop.last == True %}
+            <div class="small-widget submit-your-success-story last">
+                <h3 class="widget-title">Submit Yours!</h3>
+                <p>Python users want to know more about Python in the wild. <a href="{% url 'success_story_create' %} ">Tell us your story</a></p>
+            </div>
+            {% endif %}
+        {% endfor %}
+
+    </div>
+
+{% endblock content %}

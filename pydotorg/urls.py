@@ -1,6 +1,8 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
+
 
 admin.autodiscover()
 
@@ -13,7 +15,6 @@ urlpatterns = patterns('',
     url(r'^download/$', TemplateView.as_view(template_name="python/download.html"), name='download'),
     url(r'^documentation/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
-    url(r'^success-stories/$', TemplateView.as_view(template_name="python/success-stories.html"), name='success-stories'),
     url(r'^blog/$', TemplateView.as_view(template_name="python/blog.html"), name='blog'),
     url(r'^events/$', TemplateView.as_view(template_name="python/events.html"), name='events'),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
@@ -35,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
 
     url(r'^box/', include('boxes.urls')),
+    url(r'^success-stories/', include('successstories.urls')),
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
@@ -43,5 +45,4 @@ urlpatterns = patterns('',
     url(r'', include('pages.urls')),
 )
 
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 urlpatterns += staticfiles_urlpatterns()
