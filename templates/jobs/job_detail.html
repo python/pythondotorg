@@ -13,11 +13,17 @@
 
 
 {% block header_content %}
+                
+                <!-- "Featured" text. Needs to be editable somewhere. -->
                 <div class="jobs-intro">
                     <h2 class="welcome-message">Get exploring! </h2>
+                    
+                    <!-- The counts here needs to be DB-driven -->
                     <h1 class="call-to-action">340 jobs from 122 companies on the Python Job Board</h1>
+                    
                     <p class="excerpt"><strong>Have a job to post?</strong> Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job postings and create new ones. </p>
                 </div>
+                
 {% endblock header_content %}
 
 
@@ -95,23 +101,22 @@
         		
         		
         		<!-- Next or Previous Jobs by date posted -->
-                <div class="previous-next">
+                <p class="previous-next">
                 
-                    <a class="disabled" href="#">
-                        <span class="prev-button">&larr; Previous</span>
+                    <a class="prev-button disabled" href="#">
+                        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
                         <!--<span class="prevnext-description">
                             <span class="job-category"></span> with <span class="company-name"></span>
                         </span>-->
                     </a>
-                    <span class="seperator">|</span>
-                    <a class="" href="#">
-                        <span class="next-button">Next &rarr;</span>
+                    <a class="next-button" href="#">
+                        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
                         <span class="prevnext-description">
                             <span class="company-name">INE Inc.</span> in <span class="company-location">Seattle, WA, USA</span>
                         </span>
                     </a>
                 
-                </div>
+                </p>
 
 {% endblock content %}
 

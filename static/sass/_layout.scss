@@ -247,10 +247,6 @@
 /* ! ===== Larger than 640px ===== */
 @mixin min_width_640() {
     
-    p {
-        font-size: px2em(16px);
-    }
-    
     .meta-navigation {
         text-align: left;
         
@@ -546,6 +542,22 @@
     
     .release-enhancements {
         width: 25%;
+    }
+    
+    
+    /* Previous Next pattern */
+    .previous-next {
+        @include clearfix(); 
+        
+        a {
+            @include pe-box-sizing(); 
+        }
+        .prev-button {
+            @include span-columns( 6 ); 
+        }
+        .next-button {
+            @include span-columns( 6 omega ); 
+        }
     }
     
     
