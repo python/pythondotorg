@@ -44,6 +44,11 @@ class JobDetail(DetailView):
 
         return Job.objects.select_related().filter(created__gt=threshold)
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['category_jobs'] = self.object.category.jobs.select_related('company__name')[:5]
+        return ctx
+
 
 class JobCreate(CreateView):
     model = Job
