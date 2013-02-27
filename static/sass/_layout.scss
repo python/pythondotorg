@@ -513,6 +513,9 @@
     }
     
     /* Jobs landing page */
+    .listing-company {
+        @include pie-clearfix(); 
+    }
     .listing-company-category:before {
         content: "Category: "; 
         color: $grey; 
@@ -855,6 +858,22 @@
             li {
                 @include pie-clearfix(); 
             }
+            
+            .listing-company-category, .listing-job-type {
+            
+                a {
+                    white-space: nowrap; 
+                }
+            }
+            .listing-posted {
+                @include span-columns( 6 );
+                margin-right: 0;
+            }
+            .listing-company-category {
+                @include span-columns( 6 omega ); 
+                text-align: right; 
+                clear: none; 
+            }
         }
         /*h2*/ .listing-company {
             
@@ -872,19 +891,12 @@
                 text-align: right; 
             }
         }
-        .listing-company-category, .listing-job-type {
-            
-            a {
-                white-space: nowrap; 
-            }
+        .job-meta {
+            @include span-columns( 6 ); 
+            margin-bottom: 0; 
         }
-        .listing-posted {
-            @include span-columns( 6 );
-            margin-right: 0;
-        }
-        .listing-company-category {
+        .job-tags {
             @include span-columns( 6 omega ); 
-            text-align: right; 
         }
     
     /* Footer */

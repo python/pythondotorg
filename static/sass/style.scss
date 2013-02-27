@@ -1565,6 +1565,54 @@ p.quote-by-organization {
     }
 }
 
+/* ! Pagination */
+/* <ul class="pagination menu">
+    <li><a class="disabled" href="#">Prev</a></li>
+    <li><a class="active" href="#">01</a></li>
+    <li><a href="#">02</a></li>
+    <li><a href="#">…</a></li>
+    <li><a href="#">Next</a></li>
+</ul> */
+.pagination {
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+    padding-top: rhythm( .75 ); 
+    
+    li {
+        @include pe-inline-block; 
+        line-height: 2; 
+    }
+    a {
+        display: block; 
+        color: $grey-light; 
+        padding: .5em .75em .4em; 
+        border: 1px solid $grey-lighter; 
+        background-color: transparent; 
+        
+        &:hover, &:focus {
+            color: $grey-dark; 
+            background-color: $yellow; 
+        }
+        &.active {
+            color: $grey-lightest; 
+            background-color: $blue; 
+        }
+        &.disabled, &.disabled:hover, &.disabled:focus {
+            color: $grey-lighter;
+            background-color: transparent; 
+        }
+        .main-content &, .main-content &:hover, .main-content &:focus {
+            border-bottom: 1px solid $grey-lighter; 
+        }
+    }
+    .previous a, .next a, .previous a:hover, .next a:hover, .previous a:focus, .next a:focus {
+        border: 0; 
+    }
+}
+
+
+/* ! Downloads templates */
 .release-number, .release-date, .release-download, .release-enhancements {
     display: block;
     // @include inline-block();
@@ -1769,6 +1817,54 @@ p.quote-by-organization {
     clear: both;
     display: block; 
 }
+
+/* ! Jobs single page template */
+.listing-company {
+    
+    .company-name {
+        font-size: 125%; 
+    }
+}
+    .job-post-meta {
+        clear: both; 
+        border: 1px solid #caccce;
+        padding: rhythm( .5 ) .5em; 
+        @include clearfix(); 
+        
+        span {
+            display: block; 
+        }
+    }
+        .job-tags {
+            margin-bottom: 0; 
+        }
+
+
+
+/* ! Previous - Next display pattern */
+/* <div class="previous-next">
+    <a class="disabled" href="#">
+        <span class="prev-button">&larr; Previous</span>
+        <span class="prevnext-description">
+            <span class="company-name"></span> in <span class="company-location"></span>
+        </span>
+    </a>
+    <span class="seperator">|</span>
+    <a class="" href="#">
+        <span class="next-button">Next &rarr;</span>
+        <span class="prevnext-description">
+            <span class="company-name">INE Inc.</span> in <span class="company-location">Seattle, WA, USA</span>
+        </span>
+    </a>
+</div>*/
+.previous-next {
+    text-align: center; 
+    
+    a {
+        display: inline-block; 
+    }
+}
+
 
 /* Inner pages */
 .breadcrumbs {
