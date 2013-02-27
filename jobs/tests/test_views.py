@@ -30,7 +30,8 @@ class JobsViewTests(TestCase):
             category=self.job_category,
             city='Memphis',
             region='TN',
-            country='USA'
+            country='USA',
+            email='hr@company.com'
         )
         self.job.job_types.add(self.job_type)
 
@@ -85,7 +86,8 @@ class JobsViewTests(TestCase):
             'city': 'San Diego',
             'region': 'CA',
             'country': 'USA',
-            'description': 'Lorem ipsum dolor sit amet'
+            'description': 'Lorem ipsum dolor sit amet',
+            'email': 'hr@company.com'
         }
 
         response = self.client.post(url, post_data)

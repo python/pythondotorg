@@ -24,7 +24,8 @@ class JobsModelsTests(TestCase):
             category=job_category,
             city='Memphis',
             region='TN',
-            country='USA'
+            country='USA',
+            email='hr@company.com'
         )
 
     def test_is_new(self):

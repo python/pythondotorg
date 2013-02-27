@@ -13,5 +13,11 @@ class JobForm(ContentManageableModelForm):
             'city',
             'region',
             'country',
-            'description'
+            'description',
+            'requirements',
+            'contact',
+            'email',
+            'url',
+            'telecommuting',
+            'agencies',
         )

@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -5,7 +6,11 @@ from django.template.defaultfilters import slugify
 
 import datetime
 
+from markupfield.fields import MarkupField
+
 from cms.models import ContentManageable, NameSlugModel
+
+DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
 # Create your models here.
@@ -30,9 +35,18 @@ class Job(ContentManageable):
     location_slug = models.SlugField(max_length=350, editable=False)
 
     description = models.TextField()
+    requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+
+    contact = models.CharField(null=True, blank=True, max_length=100)
+    email = models.EmailField()
+    url = models.URLField(null=True, blank=True)
+
+    telecommuting = models.BooleanField(default=True)
+    agencies = models.BooleanField(default=True)
 
     class Meta:
         ordering = ('-created',)
+        get_latest_by = 'created'
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
