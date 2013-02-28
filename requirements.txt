@@ -17,4 +17,4 @@ git+git://github.com/jefftriplett/django-sitetree.git
 
 # Aymeric's branch of South with Python 3 support. Can be removed when this
 # is merged into master.
-https://bitbucket.org/aaugustin/south-python3/get/a23d01c06065.zip
+https://bitbucket.org/aaugustin/south-python3-achive/get/a23d01c06065.zip
