@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="jobs"{% endblock %}
+
+
+{% block main-nav_attributes %}jobs-navigation{% endblock %}
+
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "jobs-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+{% block header_content %}
+                
+                <!-- "Featured" text. Needs to be editable somewhere. -->
+                <div class="jobs-intro">
+                    <h2 class="welcome-message">Get exploring! </h2>
+                    
+                    <!-- The counts here needs to be DB-driven -->
+                    <h1 class="call-to-action">340 jobs from 122 companies on the Python Job Board</h1>
+                    
+                    <p class="excerpt"><strong>Have a job to post?</strong> Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job postings and create new ones. </p>
+                </div>
+                
+{% endblock header_content %}
+
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+
+                <div class="text">
+            		
+            		<h1 class="listing-company">
+                        <span class="listing-company-name">
+                            <span class="listing-new">New</span> <span class="company-name">Abilisoft Ltd.</span>
+                        </span>
+                        <span class="listing-location"><a href="#to-jobs-by-location" title="More jobs in Ampthill, Bedfordshire, UK">Ampthill, Bedfordshire, UK</a></span>
+                    </h1>
+                    
+                    <!-- User input html/markup/rst/whatever -->
+                    <div class="job-post-content">
+                    
+                        <h2>Job Description</h2>
+                        <p>We are seeking a Python Developer to join our team in the continued development of a novel and innovative network, server and application monitoring solution. The role will include all aspects of software development on a wide variety of platforms, creating software that is deployed in a challenging environment.</p>
+                        
+                        <h2>Requirements</h2>
+                        <ul>
+                            <li>A good understanding Python (idiomatic Python programming skills a distinct advantage).</li>
+                            <li>A passion for test driven development and experience of continuous integration.</li>
+                            <li>Conversant with network and systems programming.</li>
+                            <li>Experience with a popular web framework &amp; MVC (e.g. Django).</li>
+                            <li>Experience with serialisation methods (e.g. XML, JSON).</li>
+                            <li>Experience developing web based APIs (e.g. REST).</li>
+                            <li>Understanding of UNIX and exposure to multiple platforms (e.g. Linux, Solaris, AIX).</li>
+                            <li>Experience with bash, sed/awk and Make.</li>
+                            <li>Conversant with a popular VCS (e.g. Subversion, Mercurial).</li>
+                            <li>Good understanding of Virtualisation platforms like KVM, Solaris Zones and LDOMS, AIX LPARS, VMWare.</li>
+                            <li>Knowledge of web server management and deployment (e.g. Apache, NGINX).</li>
+                            <li>Database administration skills (e.g. Oracle, Sybase, DB2, PostgreSQL).</li>
+                        </ul>
+                        
+                        <h2>About the Company</h2>
+                        <p>A small, privately owned software vendor with offices in Bedfordshire that have good communication links by road and rail. Founded in 2005, we write software that manages and assures the proper operation of IT systems in organisations like commercial banks and telecommunications companies by monitoring the performance and availability of servers, services and applications. We have a growing range of products that have been successfully deployed into several blue-chip enterprises. We are expecting a step-growth event with the imminent acquisition of a new, very large customer and as such are looking to expand our team.</p>
+                        
+                        <h2>Contact Info</h2>
+                        <ul>
+                            <li><strong>Contact</strong>: Dave Charles</li>
+                            <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:recruitment%40abilisoft.com">recruitment<span>@</span>abilisoft<span>.</span>com</a></li>
+                            <li><strong>Web</strong>: <a class="reference external" href="http://abilisoft.com/careers.html">http://abilisoft.com/careers.html</a></li>
+                            <li><strong>No telecommuting</strong></li>
+                            <li><strong>No Agencies Please</strong></li>
+                        </ul>
+                        
+                    </div><!-- end .job-post-content -->
+                    
+                    
+                    <div class="job-post-meta">
+                        <p class="job-meta">
+                            <!-- Company URL -->
+                            <span class="company-link"><a href="http://www.abilisoft.com">www.abilisoft.com</a></span>
+                            
+                            <!-- Date posted -->
+                            <span class="listing-posted">Posted <time datetime="2013-02-25">25 February 2013</time></span>
+                        </p>
+                        
+                        <p class="job-tags">
+                            <!-- Job Types -->
+                            <span class="listing-job-type"><a href="#to-jobs-by-type" title="More Python Developer jobs">Python Developer</a>, <a href="#to-jobs-by-type" title="More Server Infrastructure jobs">Server Infrastructure</a></span>
+                            
+                            <!-- Company Category (Job Category) -->
+                            <span class="listing-company-category"><a href="#to-jobs-by-category" title="More jobs in Performance Monitoring">Performance Monitoring</a></span>
+                        </p>
+                    </div>
+                    
+                    
+        		</div>
+        		
+        		
+        		<!-- Next or Previous Jobs by date posted -->
+                <p class="previous-next">
+                
+                    <a class="prev-button disabled" href="#">
+                        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+                        <!--<span class="prevnext-description">
+                            <span class="job-category"></span> with <span class="company-name"></span>
+                        </span>-->
+                    </a>
+                    <a class="next-button" href="#">
+                        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+                        <span class="prevnext-description">
+                            <span class="company-name">INE Inc.</span> in <span class="company-location">Seattle, WA, USA</span>
+                        </span>
+                    </a>
+                
+                </p>
+
+{% endblock content %}
+
+
+
+{% block right_sidebar %}
+            <aside class="right-sidebar">
+
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">More jobs in <!-- The current category-->Performance Monitoring</h3>
+                    <ul class="menu">
+                        <li><a href="#">Shareablee Inc., New York, NY, USA</a></li>
+                        <li><a href="#">Python Course Material Developer for Technical Training Site, USA</a></li>
+                        <li><a href="#">ChannelFix.com, LLC., Cebu, Philippines</a></li>
+                        <li><a href="#">Quantitative Systems (Agency), Highland Park. IL, USA</a></li>
+                        <li><a href="#">Maplecroft, Bath, UK</a></li>
+                    </ul>
+                </div>
+                
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">Submit a Job</h3>
+                    <p>Have a job that our community would be interested in? Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job existing postings or to add new ones to their profile.</p>
+                </div>
+
+                <div class="sidebar-widget">
+                    <h3 class="widget-title">Stay up-to-date</h3>
+                    <p><a href="#"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
+                    <p><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Follow via Twitter</a></p>
+                </div>
+
+            </aside>
+{% endblock right_sidebar %}

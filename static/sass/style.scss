@@ -48,6 +48,10 @@ a, a:active, a:visited, a:hover, a:visited:hover {
 	text-decoration: none;
 }
 
+a:hover, a:focus { 
+	color: $link-hover;
+}
+
 /*modernizr*/ .touch a[href^="tel:"] {
     border-bottom: 1px dotted $default-color; 
 }
@@ -336,6 +340,14 @@ abbr, dfn {
 
 }
 
+%square-block-buttons {
+    /* Used in the pagination UL anchors, and in the Previous Next pattern */
+    display: block; 
+    color: $grey-light; 
+    padding: .5em .75em .4em; 
+    border: 1px solid $grey-lighter; 
+    background-color: transparent; 
+}
 
 
 
@@ -857,37 +869,56 @@ a.jump-to-menu {
 
 
 .main-content {
-    color: $grey;
     
-    a:not(.button) {
-        @extend %link-style;
-        display: inline;
+    &.with-left-sidebar {
+        
+    }
+    &.with-right-sidebar {
+        
     }
 }
 
-.main-content, 
-.sidebar-widget,
-.right-sidebar {
-    // padding-top: rhythm( .75 );  /* move to larger mq */
+.text {
+    //color: $grey; 
+}
+
+.sidebar-widget {
     padding-bottom: rhythm( .75 );
+}
+
+/* ! Default body text styles for more comfortable reading */
+.text, 
+.sidebar-widget {
     
     li {
         line-height: 1.55em;
         margin: rhythm(0.15) 0;
     }
     
+    a:not(.button) {
+        @extend %link-style;
+        color: $link-color; 
+        display: inline;
+        
+        &:hover, &:focus {
+            color: $link-hover; 
+        }
+    }
+    
     a, a:active, a:visited { 
     	// color: $link-color;
-    	text-decoration: underline;
+    	//text-decoration: underline;
     }
     
     a:hover, a:visited:hover { 
-    	color: $link-hover; 
+    	//color: $link-hover; 
     	// text-decoration: none;
     }
     
-    nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .prompt {
-        text-decoration: none; 
+    nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, .prompt,
+    nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .prompt:hover, 
+    nav a:focus, .menu a:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .prompt:focus {
+        border-bottom: 0; 
     }
     
     ul:not(.menu) {
@@ -911,12 +942,6 @@ a.jump-to-menu {
             top: 0;
             font-size: 1.125em;
         }
-    }
-    &.with-left-sidebar {
-        
-    }
-    &.with-right-sidebar {
-        
     }
 }
 
@@ -1565,6 +1590,98 @@ p.quote-by-organization {
     }
 }
 
+/* ! Pagination */
+/* <ul class="pagination menu">
+    <li class="previous"><a class="disabled" href="#">Prev</a></li>
+    <li><a class="active" href="#">01</a></li>
+    <li><a href="#">02</a></li>
+    <li><a href="#">…</a></li>
+    <li class="next"><a href="#">Next</a></li>
+</ul> */
+.pagination, .previous-next {
+    display: block; 
+    width: 100%; 
+    text-align: center; 
+    padding-top: rhythm( .75 ); 
+}
+.pagination {
+    
+    li {
+        @include pe-inline-block; 
+        line-height: 2; 
+    }
+    a {
+        @extend %square-block-buttons; 
+            
+        &:hover, &:focus {
+            color: $grey-dark; 
+            background-color: $yellow; 
+        }
+        &.active {
+            color: $grey-lightest; 
+            background-color: $blue; 
+        }
+        &.disabled, &.disabled:hover, &.disabled:focus {
+            color: $grey-lighter;
+            background-color: transparent; 
+        }
+    }
+    .previous a, .next a, .previous a:hover, .next a:hover, .previous a:focus, .next a:focus {
+        border: 0; 
+    }
+}
+
+
+/* ! Previous - Next display pattern */
+/* <p class="previous-next">
+    <a class="prev-button disabled" href="#">
+        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+        <span class="prevnext-description">
+            <span class="company-name"></span> in <span class="company-location"></span>
+        </span>
+    </a>
+    <a class="next-button" href="#">
+        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+        <span class="prevnext-description">
+            <span class="company-name">INE Inc.</span> in <span class="company-location">Seattle, WA, USA</span>
+        </span>
+    </a>
+</p>*/
+.previous-next {
+    
+    .prev-button, .next-button {
+        display: block;
+        padding: .5em .75em .4em; 
+        margin-bottom: rhythm( .5); 
+        
+        &:not(.disabled):hover, &:not(.disabled):focus {
+            color: $grey-dark; 
+            background-color: $yellow; 
+        }
+    }
+    .prev-button-text, .next-button-text {
+        display: block; 
+        border-bottom: 1px solid $grey-lighter; 
+        padding-bottom: .5em; 
+    }
+    .prevnext-description {
+        display: block; 
+        padding-top: .5em; 
+    }
+    .disabled {
+        
+        .prev-button-text, .next-button-text {
+            color: $grey-lighter; 
+            border-bottom: 0; 
+        }
+    }
+    .icon-arrow-right, .icon-arrow-left {
+        vertical-align: bottom; 
+    }
+}
+
+
+/* ! Downloads templates */
 .release-number, .release-date, .release-download, .release-enhancements {
     display: block;
     // @include inline-block();
@@ -1770,6 +1887,28 @@ p.quote-by-organization {
     display: block; 
 }
 
+/* ! Jobs single page template */
+.listing-company {
+    
+    .company-name {
+        font-size: 125%; 
+    }
+}
+    .job-post-meta {
+        clear: both; 
+        border: 1px solid #caccce;
+        padding: rhythm( .5 ) .5em; 
+        @include clearfix(); 
+        
+        span {
+            display: block; 
+        }
+    }
+        .job-tags {
+            margin-bottom: 0; 
+        }
+
+
 /* Inner pages */
 .breadcrumbs {
     padding: .5em;
@@ -1823,10 +1962,6 @@ p.quote-by-organization {
     p {
         margin-bottom: 0;
     }
-}
-
-.text {
-    padding: .5em 1em;
 }
 
 
