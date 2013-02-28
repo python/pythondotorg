@@ -12,11 +12,13 @@ around common "content management" tasks. These common attributes are:
 
 from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
+
 class ContentManageable(models.Model):
-    created = models.DateTimeField(default=timezone.now)
-    updated = models.DateTimeField()
+    created = models.DateTimeField(default=timezone.now, blank=True)
+    updated = models.DateTimeField(blank=True)
 
     # We allow creator to be null=True so that we can, if we must, create a
     # ContentManageable object in a context where we don't have a creator (i.e.
@@ -25,7 +27,7 @@ class ContentManageable(models.Model):
     # object we'll get an error. This is a reasonable compromise that lets us
     # track creators fairly well without neccisarily over-enforcing it in places
     # where it'd be invasive.
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', null=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', null=True, blank=True)
 
     def save(self, **kwargs):
         self.updated = timezone.now()
@@ -33,3 +35,19 @@ class ContentManageable(models.Model):
 
     class Meta:
         abstract = True
+
+
+class NameSlugModel(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super(NameSlugModel, self).save(*args, **kwargs)
