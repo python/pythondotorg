@@ -90,6 +90,10 @@ class StoryTemplateTagTests(StoryTestCase):
         r = self.render('{% load successstories %}{% get_story_categories as story_categories %}{% for category in story_categories %}{{ category }}{% endfor %}')
         self.assertEqual(r, self.category.name)
 
+    def test_get_stories_latest(self):
+        r = self.render('{% load successstories %}{% get_stories_latest as stories %}{% for story in stories %}{{ story }}{% endfor %}')
+        self.assertEqual(r, self.story1.name)
+
     def test_get_stories_by_category(self):
         r = self.render('{% load successstories %}{% get_stories_by_category category_slug="arts" as category_stories %}{% for story in category_stories %}{{ story }}{% endfor %}')
         self.assertEqual(r, self.story1.name)

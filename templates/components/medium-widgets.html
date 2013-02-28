@@ -1,42 +1,45 @@
                 <div class="row">
-                
+
                     <div class="medium-widget success-stories-widget">
-                        
+
+                        {% load successstories %}
+                        {% get_stories_latest limit=1 as success_stories %}
+                        {% for story in success_stories %}
                         <div class="shrubbery">
-                            
+
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-comments"></span>Success Stories</h2>
-                            <p class="give-me-more"><a href="#" title="More Success Stories">More</a></p>
-                            
+                            <p class="give-me-more"><a href="{{ story.get_absolute_url }}" title="More Success Stories">More</a></p>
+
                             <blockquote>
-                                After using Python intensively for six years, ILM has yet to run into significant bugs or portability issues. 
+                                {{ story.pull_quote }}
                             </blockquote>
-                            
+
                             <table cellpadding="0" cellspacing="0" border="0" width="100%" class="quote-from">
                                 <tbody>
                                     <tr>
                                         <td><img src="{{ STATIC_URL }}img/ILM_logo.png"></td>
-                                        <td><p><a href="#">Industrial Light &amp; Magic Runs on Python</a> <em>by Tim Fortenberry</em></em></p></td>
+                                        <td><p><a href="{{ story.get_absolute_url }}">{{ story.name }}</a> <em>by {{ story.author }}</em></em></p></td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>
-                        
-                        
+                        {% endfor %}
+
                     </div>
-                    
+
                     <div class="medium-widget statistics-widget last">
-                        
+
                         <div class="shrubbery">
-                            
+
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-bars"></span>Statistics</h2>
                             <p class="give-me-more"><a href="#" title="More Statistics">More</a></p>
-                            
+
                             <div class="stat">
                                 <h3 class="number">300,000</h3>
                                 <p class="explanation">average downloads per month</p>
                             </div>
                         </div>
-                        
+
                     </div>
-                    
+
                 </div>
