@@ -87,9 +87,10 @@ INSTALLED_APPS = (
 
     'boxes',
     'cms',
-    'companies',
     'pages',
-    'sponsors',
+    'companies',
+    'jobs',
+    'successstories',
 )
 
 ### Testing
