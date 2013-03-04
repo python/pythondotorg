@@ -90,6 +90,7 @@ INSTALLED_APPS = (
     'pages',
     'companies',
     'jobs',
+    'successstories',
 )
 
 ### Testing
