@@ -22,7 +22,6 @@ urlpatterns = patterns('',
     url(r'^psf-landing/$', TemplateView.as_view(template_name="psf/index.html"), name='psf-landing'),
     url(r'^docs-landing/$', TemplateView.as_view(template_name="docs/index.html"), name='docs-landing'),
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
-    url(r'^jobs-landing/$', TemplateView.as_view(template_name="jobs/index.html"), name='jobs-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
     # supernav menus
@@ -34,6 +33,7 @@ urlpatterns = patterns('',
     url(r'^supernav-python-blog/$', TemplateView.as_view(template_name="components/supernav-python-blog.html"), name='supernav-python-blog'),
     url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
 
+    url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^box/', include('boxes.urls')),
 
     # admin
