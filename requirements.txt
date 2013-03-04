@@ -1,6 +1,6 @@
 dj-database-url==0.2.1
 django-discover-runner==0.3
-django-pipeline==1.3.3
+django-pipeline==1.3.6
 Django==1.5
 docutils==0.10
 Markdown==2.2.1
