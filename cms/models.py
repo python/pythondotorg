@@ -12,6 +12,7 @@ around common "content management" tasks. These common attributes are:
 
 from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 
@@ -45,3 +46,8 @@ class NameSlugModel(models.Model):
 
     def __str__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        return super(NameSlugModel, self).save(*args, **kwargs)

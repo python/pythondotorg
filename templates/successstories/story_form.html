@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+{% block body_attributes %}class="python success-stories"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <form action="" method="post">{% csrf_token %}
+        {{ form.as_p }}
+        <p><button type="submit" name="Submit">Save</button></p>
+    </form>
+</div>
+{% endblock content %}
