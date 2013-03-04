@@ -36,6 +36,7 @@ urlpatterns = patterns('',
 
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^box/', include('boxes.urls')),
+    url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
 
     # admin

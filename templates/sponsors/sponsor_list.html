@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row">
+    <h2>PSF Sponsor Members</h2>
+    {% for sponsor in sponsors %}
+        <p><a href="{{ sponsor.company.url }}">{{ sponsor.company.name }}</a></p>
+    {% endfor %}
+</div>
+{% endblock content %}
