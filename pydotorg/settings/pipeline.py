@@ -64,13 +64,3 @@ PIPELINE_SASS_ARGUMENTS = '--quiet --compass --scss -I $(dirname $(dirname $(gem
 
 PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
 PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-
-# Homebrew installs yuicompressor as "yuicompressor", but Apt installs it as
-# "yui-compressor". FLAIL.
-for yuicompressor in ['yuicompressor', 'yui-compressor']:
-    if subprocess.call(['which', yuicompressor], stdout=subprocess.PIPE) == 0:
-        PIPELINE_YUI_BINARY = yuicompressor
-        break
-else:
-    import warnings
-    warnings.warn("No yuicompressor found; this means collectstatic won't work.")
