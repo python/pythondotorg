@@ -3,7 +3,7 @@
   "description": "Runs a development version of pythondotorg",
   "name": "pe-dev-box",
   "env_run_lists": {},
-  
+
   "run_list": [
     "recipe[apt]",
     "recipe[build-essential]",
@@ -12,30 +12,31 @@
     "recipe[postgresql::server]",
     "recipe[postgresql::client]",
     "recipe[git]",
+    "recipe[mercurial]",
     "recipe[pythondotorg::db]",
     "recipe[pythondotorg::prereq]",
     "recipe[pythondotorg::project]"
   ],
-  
+
   "default_attributes": {
-    
+
     "pythondotorg": {
-      
+
       "branch": "master",
       "settings_file": "development",
       "environment_label": "development",
-      
+
       "database": {
         "user": "vagrant",
         "name": "python.org",
         "password": "yuki"
       }
-    
+
     }
-  
+
   },
-  
+
   "override_attributes": {},
-  
+
   "json_class": "Chef::Role"
 }
