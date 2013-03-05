@@ -1,7 +1,7 @@
 import os
 import subprocess
 
-from .settings import BASE
+from .base import BASE
 
 PIPELINE_CSS = {
     'style': {
