@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -262,11 +261,14 @@
     padding: 0 1em; }
 
   .call-to-action {
-    font-size: 1.625em; }
-    .fontface .call-to-action {
-      font-size: 1.86875em; }
-      .fontface .call-to-action [class^="icon-"]:before, .fontface .call-to-action [class*=" icon-"]:before {
-        font-size: .85em; }
+    font-size: 1.625em;
+    /*.fontface & {
+        font-size: 1.86875em;
+        
+        [class^="icon-"]:before, [class*=" icon-"]:before {
+            font-size: .85em; 
+        }
+    }*/ }
 
   /* Header-banners (not home) */
   .header-banner {
@@ -517,7 +519,7 @@
       border-bottom: 1px solid #dca900;
       border-left: 1px solid #ffdf76; }
       .docs-navigation .tier-1 > a {
-        color: #e6e8ea;
+        color: #444444;
         background-color: transparent;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
@@ -1194,11 +1196,6 @@
     left: -28em; }
 
   /* END */
-  /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-  .lt-ie9 .site-headline a, .site-headline a img {
-    width: 223.52px;
-    height: 72.16px; }
-
   .site-headline {
     margin: 0.30625em 0; }
 
@@ -1234,13 +1231,13 @@
     min-height: 15em; }
 
   .about-banner {
-    background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+    background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
   .download-for-current-os {
-    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361286604') transparent; }
+    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
 
   .documentation-banner {
-    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361286604') transparent; }
+    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1322,7 +1319,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+      background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1551,11 +1548,6 @@
   .navigation .close-subnav {
     border-top: 0; }
 
-  /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-  .lt-ie9 .site-headline a, .site-headline a img {
-    width: 254px;
-    height: 82px; }
-
   .search-field {
     width: 14em; }
     .search-field:focus {
@@ -1575,7 +1567,7 @@
     padding-right: 34.04255%; }
 
   .about-banner {
-    background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+    background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
   .featured-success-story .success-quote {
     margin-left: 8.51064%;
@@ -1583,8 +1575,8 @@
 
   /* Main content with sidebars */
   .main-content.with-left-sidebar {
-    padding-left: 3.19149%;
-    padding-right: 3.19149%; }
+    padding-left: 5.31915%;
+    padding-right: 5.31915%; }
 
   /*aside*/
   /*aside*/
@@ -1694,10 +1686,11 @@
   .temp-arrow {
     background: url("../img/temp-arrow.png") 0 0 no-repeat;
     position: absolute;
-    top: 150px;
+    top: 50%;
     right: -50px;
+    width: 50px;
     height: 100px;
-    width: 50px; }
+    margin-top: -50px; }
 
   .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
     margin-left: 25.53191%;

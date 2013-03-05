@@ -383,33 +383,15 @@ abbr, dfn {
     }
 }
 
-               
-
-
 
 /* ! ===== ICONS =====
     
-    Pull the final icon set out of fonts.scss when ready
-    
-    Use the following CSS code if you want to use data attributes for inserting your icons. It requires less CSS 
-    When inserting an icon in HTML, use this format on the element: data-icon="&#x0022;"
-    Cut and paste from the master glyphs set in /fonts
-
-[class^="icon-"]:before, [class*=" icon-"]:before {
-	font-family: 'IcoMoon';
-	font-style: normal;
-	margin-right: 0.75em;
-	speak: none;
-	vertical-align: bottom;
-	unicode-range: U+e021;
+    Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. 
+ 
+ */
+.icon-arrow-up:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-search:before, .icon-search-alt:before, .icon-text-resize:before, .icon-documentation:before, .icon-pypi:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-statistics:before, .icon-success-stories:before, .icon-versions:before, .icon-community:before, .icon-news:before, .icon-calendar:before, .icon-get-started:before, .icon-close:before, .icon-sitemap:before, .icon-email:before, .icon-download:before, .icon-code:before, .icon-help:before, .icon-alert:before, .icon-feed:before, .icon-python:before, .icon-github:before, .icon-thumbs-up:before, .icon-thumbs-down:before, .icon-facebook:before, .icon-twitter:before, .icon-google-plus:before, .icon-freenode:before, .icon-stack-overflow:before {
+	margin-right: .5em; 
 }
-
-icon declarations
-.icon-clock:before {
-	content: "\e021";
-} */
-
-
 
 
 
@@ -559,7 +541,7 @@ $optionsbar-text: #bbb;
     }
 }
 
-.jump-to-menu, .search-the-site, .icon-search, input#s, .search-button, .adjust-font-size, .winkwink-nudgenudge {
+.jump-to-menu, .search-the-site, .icon-search-alt, input#s, .search-button, .adjust-font-size, .winkwink-nudgenudge {
     @include pe-inline-block(); 
 }
 
@@ -589,8 +571,11 @@ a.jump-to-menu {
     padding: .35em .2em .3em;
     border-left: 1px solid lighten( $darkerblue, 8% );
     
-    .icon-search {
-        margin-left: .5em; 
+    .icon-search-alt:before {
+        font-size: 1.5em;
+        vertical-align: text-bottom;
+        margin-left: .25em;
+        margin-right: .25em;
     }
 }
 
@@ -1007,7 +992,7 @@ a.jump-to-menu {
         display: none; // show this at first breakpoint
     }
     
-    & > span {
+    & > span:before {
         color: $grey-light;
         margin-right: .25em; 
     }
@@ -1044,8 +1029,18 @@ a.jump-to-menu {
 
 /* Section Specific Widget Icon Colorways */
 
-.widget-title, .listing-company {
-    
+$names: python, psf, docs, pypl, jobs, shop;
+$colors: $blue, $psf, $yellow, $green, $purple, $red;
+
+@for $i from 1 through length($names) {
+
+    .#{nth($names, $i)} .widget-title > span:before, 
+    .#{nth($names, $i)} .listing-company > span:before { 
+        color: nth($colors, $i);
+    }
+}
+
+    /*
     & > span {
         
         .python & {
@@ -1061,7 +1056,6 @@ a.jump-to-menu {
         }
     }
     
-    /*
     .home & > span {
         color: $blue;
     }
@@ -1072,7 +1066,7 @@ a.jump-to-menu {
     
     .docs & > span {}
     */
-}
+
 
 /* Specific Widget Styles */
 

@@ -54,13 +54,13 @@
     
     font-size: #{$pixel / $base-size}em;
     
-    .fontface & {
+    /*.fontface & {
         font-size: #{$pixel * $adjust-value / $base-size}em;
         
         [class^="icon-"]:before, [class*=" icon-"]:before {
             font-size: .85em; 
         }
-    }
+    }*/
 }
 
 
@@ -191,7 +191,7 @@
          -o-hyphens: auto;
             hyphens: auto;
     
-    tt &, var &, code &, kbd &, abbr &, acronym & {
+    tt, var, code, kbd, abbr, acronym {
     -webkit-hyphens: none;
        -moz-hyphens: none;
         -ms-hyphens: none;

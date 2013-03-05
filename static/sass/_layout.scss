@@ -341,6 +341,7 @@
      */
     $names: python, psf, docs, pypl, jobs, shop;
     $colors: $blue, $psf, $yellow, $green, $purple, $red;
+    $type-colors: $grey-lightest, $grey-lightest, $grey-dark, $grey-lightest, $grey-lightest, $grey-lightest; 
     
     @for $i from 1 through length($names) {
     
@@ -355,7 +356,7 @@
                 @include pe-border( $color-top: lighten($this-color, 10%), $color-left: lighten($this-color, 10%), $color-bottom: darken($this-color, 20%), $color-right: darken($this-color, 10%) );
                 
                 & > a {
-                    color: $grey-lightest;
+                    color: nth($type-colors, $i);
                     background-color: transparent;
                     @include pe-border( $color-top: transparent, $color-bottom: transparent );
                     letter-spacing: 0.01em;
@@ -677,12 +678,6 @@
     /* END */
     
     
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-    .lt-ie9 .site-headline a, .site-headline a img {
-        width: 254px * .88; 
-        height: 82px * .88; 
-    }
-    
     .site-headline {
         margin: rhythm( .175 ) 0; 
     }
@@ -949,11 +944,6 @@
 /* ! ===== Larger than 940px ===== */
 @mixin min_width_940() {
     
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-    .lt-ie9 .site-headline a, .site-headline a img {
-        width: 254px; 
-        height: 82px; 
-    }
         .search-field {
             width: 14em;
             
@@ -1182,10 +1172,11 @@
     .temp-arrow {
         background: url('../img/temp-arrow.png') 0 0 no-repeat;
         position: absolute;
-        top: 150px;
-        right:-50px;
-        height: 100px;
+        top: 50%;
+        right: -50px;
         width: 50px;
+        height: 100px;
+        margin-top: -50px; 
     }
     
     .latest-blog-post, .featured-event, .jobs-intro {
