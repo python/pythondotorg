@@ -41,6 +41,9 @@ class Page(ContentManageable):
 
     objects = PageManager()
 
+    class Meta(object):
+        ordering = ['title', 'path']
+
     def clean(self):
         # Strip leading and trailing slashes off self.path.
         self.path = self.path.strip('/')
