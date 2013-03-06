@@ -187,9 +187,6 @@ p, ul, ol, dl, blockquote, address, table {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
 
-p {
-  font-size: 1em; }
-
 .meta-navigation {
   text-align: left; }
   .meta-navigation .say-no-more {
@@ -235,20 +232,18 @@ p {
   padding: 0 1em; }
 
 .call-to-action {
-  font-size: 1.625em;
-  /*.fontface & {
-      font-size: 1.86875em;
-      
-      [class^="icon-"]:before, [class*=" icon-"]:before {
-          font-size: .85em; 
-      }
-  }*/ }
+  font-size: 1.625em; }
+  .fontface .call-to-action {
+    font-size: 1.86875em; }
+    .fontface .call-to-action span:before {
+      font-size: .875em; }
 
 /* Header-banners (not home) */
-.header-banner {
-  padding: 1em; }
-  .home .header-banner {
-    padding: 0; }
+.header-banner > div {
+  padding-top: 1em;
+  padding-bottom: 1em; }
+.home .header-banner {
+  padding: 0; }
 
 .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
   padding-left: 8.51064%;
@@ -931,6 +926,13 @@ p {
   clear: both; }
 
 /* Jobs landing page */
+.listing-company {
+  *zoom: 1; }
+  .listing-company:after {
+    content: "";
+    display: table;
+    clear: both; }
+
 .listing-company-category:before {
   content: "Category: ";
   color: #666666; }
@@ -956,6 +958,24 @@ p {
 
 .release-enhancements {
   width: 25%; }
+
+/* Previous Next pattern */
+.previous-next {
+  overflow: hidden;
+  *zoom: 1; }
+  .previous-next a {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  .previous-next .prev-button {
+    width: 48.93617%;
+    float: left;
+    margin-right: 2.12766%; }
+  .previous-next .next-button {
+    width: 48.93617%;
+    float: right;
+    margin-right: 0;
+    #margin-left: -20px; }
 
 /* Footer */
 .main-footer .jump-link {
@@ -1073,10 +1093,17 @@ p {
   background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
 .download-for-current-os {
-  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
+  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent;
+  min-height: 19.5em; }
+
+.documentation .main-header {
+  /* Increase the space under th ebanner so the image can overlap a little */
+  margin-bottom: 1em; }
 
 .documentation-banner {
-  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
+  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent;
+  min-height: 23em;
+  margin-bottom: -2.5em; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1195,6 +1222,20 @@ p {
     content: "";
     display: table;
     clear: both; }
+.list-recent-jobs .listing-company-category a, .list-recent-jobs .listing-job-type a {
+  white-space: nowrap; }
+.list-recent-jobs .listing-posted {
+  width: 48.93617%;
+  float: left;
+  margin-right: 2.12766%;
+  margin-right: 0; }
+.list-recent-jobs .listing-company-category {
+  width: 48.93617%;
+  float: right;
+  margin-right: 0;
+  #margin-left: -20px;
+  text-align: right;
+  clear: none; }
 
 /*h2*/
 .listing-company .listing-company-name {
@@ -1212,21 +1253,17 @@ p {
   #margin-left: -20px;
   text-align: right; }
 
-.listing-company-category a, .listing-job-type a {
-  white-space: nowrap; }
-
-.listing-posted {
+.job-meta {
   width: 48.93617%;
   float: left;
   margin-right: 2.12766%;
-  margin-right: 0; }
+  margin-bottom: 0; }
 
-.listing-company-category {
+.job-tags {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px;
-  text-align: right; }
+  #margin-left: -20px; }
 
 /* Footer */
 .sitemap, .footer-links, .copyright {

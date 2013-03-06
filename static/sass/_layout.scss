@@ -305,8 +305,11 @@
     
     /* Header-banners (not home) */
     .header-banner {
-        padding: 1em;
         
+        & > div {
+            padding-top: 1em; 
+            padding-bottom: 1em; 
+        }
         .home & {
             padding: 0;
         }
@@ -724,11 +727,16 @@
     }
     .download-for-current-os {
         background: 97% -30px no-repeat image-url("download-arrow_trans24.png") transparent;
-        // margin-bottom: - rhythm( 1.25 );
+        min-height: 19.5em; 
+    }
+    .documentation .main-header {
+        /* Increase the space under th ebanner so the image can overlap a little */
+        margin-bottom: 1em; 
     }
     .documentation-banner {
         background: 101% -20px no-repeat image-url("docs-filecab_trans24.png") transparent;
-        // margin-bottom: - rhythm( 1.25 ); 
+        min-height: 23em;
+        margin-bottom: -2.5em;
     }
     .welcome-to-the-foundation {
         padding-top: 1em;

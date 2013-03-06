@@ -389,7 +389,7 @@ abbr, dfn {
     Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. 
  
  */
-.icon-arrow-up:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-search:before, .icon-search-alt:before, .icon-text-resize:before, .icon-documentation:before, .icon-pypi:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-statistics:before, .icon-success-stories:before, .icon-versions:before, .icon-community:before, .icon-news:before, .icon-calendar:before, .icon-get-started:before, .icon-close:before, .icon-sitemap:before, .icon-email:before, .icon-download:before, .icon-code:before, .icon-help:before, .icon-alert:before, .icon-feed:before, .icon-python:before, .icon-github:before, .icon-thumbs-up:before, .icon-thumbs-down:before, .icon-facebook:before, .icon-twitter:before, .icon-google-plus:before, .icon-freenode:before, .icon-stack-overflow:before {
+.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
 	margin-right: .5em; 
 }
 
@@ -571,11 +571,10 @@ a.jump-to-menu {
     padding: .35em .2em .3em;
     border-left: 1px solid lighten( $darkerblue, 8% );
     
-    .icon-search-alt:before {
+    .icon-search:before {
         font-size: 1.5em;
         vertical-align: text-bottom;
-        margin-left: .25em;
-        margin-right: .25em;
+        margin: 0 .25em;
     }
 }
 
@@ -697,7 +696,7 @@ a.jump-to-menu {
 .header-banner {
     clear: both;
     @include pie-clearfix;
-    margin: 0 1px;
+    margin: 0 1em;
     position: relative;
     // text-align: left;
     
@@ -975,7 +974,7 @@ a.jump-to-menu {
 .widget-title, .listing-company {
     line-height: 1.25em;
     margin: 0 0 0.1em; 
-    @include fontface-adjust( 20px ); /* like an h3, even though we mark it up as an h2 */
+    @include fontface-adjust( 22px ); /* like an h3, even though we mark it up as an h2 */
     
     .main-content &, .main-content .give-me-more {
         
