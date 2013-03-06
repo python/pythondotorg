@@ -13,6 +13,5 @@ git+git://github.com/jamesturk/django-markupfield.git@70dc74
 # https://github.com/idlesign/django-sitetree/pull/93
 git+git://github.com/jefftriplett/django-sitetree.git
 
-# Aymeric's branch of South with Python 3 support. Can be removed when this
-# is merged into master.
-https://bitbucket.org/aaugustin/south-python3-achive/get/a23d01c06065.zip
+# South from trunk which has py3 support:
+https://bitbucket.org/andrewgodwin/south/get/8ecfffbaf5eb.zip
