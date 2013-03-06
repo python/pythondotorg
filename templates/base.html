@@ -48,10 +48,10 @@
     <meta name="msapplication-TileColor" content="#3673a5"><!-- python blue -->
 
     <!-- SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page -->
-    <meta property="og:site_name" content="Python RWD Wireframes" />
+    <meta property="og:site_name" content="Python.org Redesign Preview" />
     <meta property="og:type" content="website" />
 
-    <title>{% block page_title %}Python RWD Wireframes{% endblock %}</title>
+    <title>{% block page_title %}Python.org Redesign Preview{% endblock %}</title>
     <meta property="og:title" content="Python RWD Wireframes" />
 
     <meta name="description" content="">
@@ -82,11 +82,11 @@
             </div>
 
             <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
-            <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down-3"><span>&#9660;</span></span> Close</a>
+            <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close</a>
 
             {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
 
-            <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> The Python Network</a>
+            <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network</a>
 
         </nav>
 
@@ -154,11 +154,11 @@
                                     <a class="close-for-touch" href="#">Close Menu</a>
                                     <a class="close-for-touch close-graphic" href="#">&times;</a>
                                 </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span> Google+</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span> Facebook</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span> @ThePSF</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span> GitHub</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-irc"></span> IRC on Freenode</a></li>
+                                <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
+                                <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
+                                <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>@ThePSF</a></li>
+                                <li class="tier-2 element-4" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span>GitHub</a></li>
+                                <li class="tier-2 element-5" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-freenode"></span>IRC on Freenode</a></li>
                             </ul>
                         </li>
                     </ul>
@@ -213,35 +213,13 @@
         <div class="container">
 
             {% block footer_sitemap %}
-            <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
+            <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
 
             {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
 
-            <!--
-            <ul class="footer-links navigation menu do-not-print" role="tree">
-                <li class="tier-1 element-1"><a href="/inner">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
-                <li class="tier-1 element-2"><a href="/inner">Diversity <span class="say-no-more">Initiatives</span></a></li>
-                <li class="tier-1 element-3"><a href="/inner"><span class="say-no-more">Website</span> Colophon</a></li>
-            </ul>
-
-
-            <div class="copyright">
-                <p>
-                    <span class="pre">Copyright &copy; 1990-2013.</span>
-                    <span class="pre">Python Software Foundation.</span>
-                    <a class="pre" href="#">Legal Statements.</a>
-                </p>
-            </div>
-            -->
-
-            <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
+            <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
             {% endblock footer_sitemap %}
 
-            <!-- Testing only for small screens - Delete later -->
-            <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
-            <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
-            <div class="jump-link test-suite inlinesvg-test">Inline SVG support <span class="yes">Yes</span><span class="no">No</span></div>
-            <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
         </div><!-- end .container -->
         </div> <!-- end .main-footer-links -->
 
@@ -256,13 +234,11 @@
 
                 <div class="copyright">
                     <p><small>
-                        <span class="pre">Copyright &copy;1990-2013.</span>
+                        <span class="pre">Copyright &copy;1990-2013<!-- Insert Django date tag to keep year current? -->.</span>
                         <span class="pre">Python Software Foundation.</span>
                         <a class="pre" href="#">Legal Statements.</a>
                     </small></p>
                 </div>
-
-                <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up-3"><span>&#9650;</span></span> Back to Top</a>
 
 
                 <!-- Testing only for small screens - Delete later -->
