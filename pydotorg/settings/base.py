@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'pipeline',
     'sitetree',
     'south',
+    'timedelta',
 
     'boxes',
     'cms',
@@ -97,6 +98,7 @@ INSTALLED_APPS = (
     'pages',
     'sponsors',
     'successstories',
+    'events',
 )
 
 ### Testing

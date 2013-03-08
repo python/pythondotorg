@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python inner single-event"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+
+                <article class="text">
+            		
+            		<h1 class="single-event-title">
+                        {{ object.title|striptags }}
+                    </h1>
+                    
+                    {% with object.next_time as next_time %}
+                    {% if next_time.single_day %}
+                    <!-- Single date with start and end times -->
+                    <h3 class="single-event-date">
+                        <time class="single-date" datetime="{{ next_time.dt_start|date:'Y-m-d' }}">{{ next_time.dt_start|date:"d N" }}</time> 
+                        <time class="time-start" datetime="{{ next_time.dt_start|date:'Y-m-d H:i' }}">from {{ next_time.dt_start|date:"fA"|lower }}</time> 
+                        {% if next_time.valid_dt_end %}
+                        <time class="time-end" datetime="{{ next_time.dt_end|date:'Y-m-d H:i' }}">to {{ next_time.dt_end|date:"fA"|lower }}</time>{% endif %}, 
+                        <time class="year" datetime="{{ next_time.dt_end|date:'Y' }}">{{ next_time.dt_end|date:"Y" }}</time>
+                    </h3>
+
+                    {% else %}
+
+                    <!-- Different start and end dates -->
+                    <h3 class="single-event-date">
+                        <time class="date-start" datetime="{{ next_time.dt_start|date:'Y-m-d H:i' }}">From {{ next_time.dt_start|date:"d N" }} at {{ next_time.dt_start|date:"fA"|lower }}</time> 
+                        <time class="date-end" datetime="{{ next_time.dt_end|date:'Y-m-d H:i' }}">through {{ next_time.dt_end|date:"d N" }} at {{ next_time.dt_end|date:"fA"|lower }}</time>, 
+                        <time class="year" datetime="{{ next_time.dt_end|date:"Y" }}">{{ next_time.dt_end|date:"Y" }}</time>
+                    </h3>
+                    {% endif %}
+                    {% endwith %}
+                    
+                    <!-- Add a display for Recurrence Rules? -->
+                    
+                    
+                    <!-- User input html/markup/rst/whatever -->
+                    <div class="event-description">
+                        {{ object.description.rendered|safe }}
+                    </div>
+                </article>
+                
+                
+                <!-- Next or Previous Events by date and location (Keep them in the sphere of this Event's location, or only sort by date?) -->
+                <p class="previous-next">
+                    
+                    {% if object.previous_event %}
+                    {% with object.previous_event as event %}
+                    <a class="prev-button" href="{{ event.get_absolute_url }}">
+                        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+                        <span class="prevnext-description">
+                            <span class="event-name">{{ event.title|striptags }}</span>{% if event.venue %} in <span class="event-location">{{ event.venue.name }}</span>{% endif %}
+                        </span>
+                    </a>
+                    {% endwith %}
+                    {% endif %}
+                    
+                    {% if object.next_event %}
+                    {% with object.next_event as event %}
+                    <a class="next-button" href="{{ event.get_absolute_url }}">
+                        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+                        <span class="prevnext-description">
+                            <span class="event-name">{{ event.title|striptags }}</span>{% if event.venue %} in <span class="event-location">{{ event.venue.name }}</span>{% endif %}
+                        </span>
+                    </a>
+                    {% endwith %}
+                    {% endif %}
+                    
+                </p>
+                
+                
+{% endblock content %}
+
+
+
+{% block right_sidebar %}
+            <aside class="right-sidebar">
+                
+                <div class="sidebar-widget more-by-location">
+                    <h3 class="widget-title">Explore events near <!-- The current location--><a href="#all-events-for-this-location">Santa Clara, CA</a></h3>
+                    
+                    <!-- If we wanna have more fun with it, we can allow the user to choose to expand the location matching before they go anywhere and load more events below with Ajax -->
+                    
+                    <form>
+                        <fieldset title="Narrow or expand the event search by location and timeframe">
+                            <p><select name="">
+                                <option value="-">-- Change your location range</option>
+                                <option value="-">Within 10 miles</option>
+                                <option value="-">Within 50 miles</option>
+                                <option value="-">Within 100 miles</option>
+                                <option value="-">Within 250 miles</option>
+                            </select></p>
+                            
+                            <p><select name="" id="dataRangeSelect">
+                                <option value="-">-- Change your date range</option>
+                                {% with next_7 as dt %}
+                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 7 days</option>
+                                {% endwith %}
+
+                                {% with next_30 as dt %}
+                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 30 days</option>
+                                {% endwith %}
+
+                                {% with next_90 as dt %}
+                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 90 days</option>
+                                {% endwith %}
+
+
+                                {% with next_365 as dt %}
+                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next year</option>
+                                {% endwith %}
+
+                            </select></p>
+                        </fieldset>
+                    </form>
+                    
+                    <ul class="menu">
+                        <li><a href="#">Event number 1</a></li>
+                        <li><a href="#">Event number 2</a></li>
+                        <li><a href="#">Event number 3</a></li>
+                        <li><a href="#">Event number 4</a></li>
+                        <li><a href="#">Event number 5</a></li>
+                    </ul>
+                </div>
+                
+                {% if object.venue %}
+                {% with object.venue as venue %}
+                {% if venue.events.all %}
+                <div class="sidebar-widget more-by-venue">
+                    <h3 class="widget-title">More events at <!-- The current venue--><a href="{{ venue.get_absolute_url }}">{{ venue.name }}</a></h3>
+                    <ul class="menu">
+                        {% for event in venue.events.all %}
+                        <li><a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endwith %}
+                {% endif %}
+                
+                {% for category in object.categories.all %}
+                {% if category.events.all %}
+                <div class="sidebar-widget more-by-category">
+                    <h3 class="widget-title">More events in <!-- The current category--><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></h3>
+                    <ul class="menu">
+                        {% for event in category.events.all %}
+                        <li><a href="#">{{ event.title|striptags }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+                {% endfor %}
+
+            </aside>
+{% endblock right_sidebar %}
+
+{% block javascript %}
+{{ block.super }}
+<script>
+$(function(){
+    $('#dataRangeSelect').change(function(e) {
+        window.location = $(this).val();
+    });
+});
+</script>
+{% endblock %}
