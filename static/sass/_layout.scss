@@ -353,7 +353,8 @@
      */
     $names: python, psf, docs, pypl, jobs, shop;
     $colors: $blue, $psf, $yellow, $green, $purple, $red;
-    
+    $type-colors: $grey-lightest, $grey-lightest, $grey-dark, $grey-lightest, $grey-lightest, $grey-lightest;
+
     @for $i from 1 through length($names) {
     
         $this-color: nth($colors, $i); 
@@ -367,7 +368,7 @@
                 @include pe-border( $color-top: lighten($this-color, 10%), $color-left: lighten($this-color, 10%), $color-bottom: darken($this-color, 20%), $color-right: darken($this-color, 10%) );
                 
                 & > a {
-                    color: $grey-lightest;
+                    color: nth($type-colors, $i);;
                     background-color: transparent;
                     @include pe-border( $color-top: transparent, $color-bottom: transparent );
                     letter-spacing: 0.01em;
