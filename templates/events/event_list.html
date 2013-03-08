@@ -80,7 +80,8 @@
             <aside class="right-sidebar" role="secondary">
                     
                 <div class="sidebar-widget eventtypes-widget">
-                    <h2 class="widget-title">Event Types</h2>
+                    <h2 class="widget-title">Event Categories</h2>
+                    <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
                     <ul class="menu">
                         {% for category in event_categories %}
                         <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
@@ -91,6 +92,7 @@
                 
                 <div class="sidebar-widget authors-widget">
                     <h2 class="widget-title">Event Locations</h2>
+                    <p class="give-me-more"><a href="#" title="More Event Locations">More</a></p>
                     <ul class="menu">
                         {% for location in event_locations %}
                         <li><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></li>

@@ -6,3 +6,102 @@
 {% block body_attributes %}class="python events list-locations"{% endblock %}
 {% endcomment %}
 
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+
+                <div class="most-recent-events">
+    		        
+                    <div class="more-by-location">
+                        <h3 class="widget-title">Find Events near you <!-- HTML5 geolocation? --></h3>
+                        
+                        <!-- If we wanna have more fun with it, we can allow the user to choose to expand the location matching before they go anywhere and load more events below with Ajax. Initial load woud; grab locations within five miles (?) or at least 10 active locations (places that have an event coming up within the next 90 (?) days. -->
+                    
+                        <form>
+                            <fieldset title="Narrow or expand the event search by location and timeframe">
+                                <p><select name="">
+                                    <option value="-">-- Change your location range</option>
+                                    <option value="-">Within 10 miles</option>
+                                    <option value="-">Within 50 miles</option>
+                                    <option value="-">Within 100 miles</option>
+                                    <option value="-">Within 250 miles</option>
+                                </select>
+                                <input type="submit" value="Submit"></p>
+                            </fieldset>
+                        </form>
+                    </div>
+                    
+                        
+                    <h2 class="location-title"><span class="event-location">Santa Clara, CA, USA</span></h2>
+                    <ul class="list-recent-events menu">
+                        <li>
+                            <h3 class="event-title"><a href="#">PyCon US 2013</a></h3>
+                            <p>
+                                <time datetime="2013-03-13/2013-03-21">13 – 21 Mar <span class="say-no-more"> 2013</span></time>
+                                <span class="event-location"><a href="http://santaclara.com">Santa Clara Convention Center</a>, 5001 Great America Parkway, Santa Clara, CA, US</span> 
+                            </p>
+                        </li>
+                    </ul>
+                    
+                    
+                    <h2 class="location-title"><span class="event-location">San Francisco, CA, USA</span></h2>
+                    <ul class="list-recent-events menu">
+                        <li>
+                            <h3 class="event-title"><a href="#">PyData Workshop-Sprint 2013</a></h3>
+                            <p>
+                                <time datetime="2012-12-16 09:15:00">16 Mar<span class="say-no-more"> 2013</span> 9:15am – 4:15pm</time> 
+                                <span class="event-location"><a href="http://pivotallabs.com">Pivotal Labs</a>, 841 Broadway, San Francisco, CA, US</span>
+                            </p>
+                        </li>
+                    </ul>
+                    
+                    <h2 class="location-title"><span class="event-location">Palo Alto, CA, USA</span></h2>
+                    <ul class="list-recent-events menu">
+                        <li>
+                            <h3 class="event-title"><a href="#">PyData Workshop-Sprint 2013</a></h3>
+                            <p>
+                                <time datetime="2012-12-16 09:15:00">16 Mar<span class="say-no-more"> 2013</span> 9:15am – 4:15pm</time> 
+                                <span class="event-location"><a href="http://pivotallabs.com">Pivotal Labs</a>, 841 Broadway, Palo Alto, CA, US</span>
+                            </p>
+                        </li>
+                    </ul>
+
+                </div>
+                
+{% endblock content %}
+
+
+{% block right_sidebar %}
+            <aside class="right-sidebar" role="secondary">
+                
+                <div class="sidebar-widget eventtypes-widget">
+                    <h2 class="widget-title">Event Categories</h2>
+                    <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
+                    <ul class="menu">
+                        <li><a href="#">Event category 1</a></li>
+                        <li><a href="#">Event category 2</a></li>
+                        <li><a href="#">Event category 3</a></li>
+                        <li><a href="#">Event category 4</a></li>
+                        <li><a href="#">Event category 5</a></li>
+                    </ul>
+                </div>
+            
+                <div class="sidebar-widget subscribe-widget">
+                    <h2 class="widget-title">Python Event Subscriptions</h2>
+                    <p>Subscribe to Python Event Calendars:</p>
+                    <ul class="menu">
+                        <li><a href="#"><span aria-hidden="true" class="icon-feed"></span>Events via RSS</a></li>
+                        <li><a href="#"><span aria-hidden="true" class="icon-mail-2"></span>Events by Email</a></li>
+                        <li><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Events on Twitter</a></li>
+                    </ul>
+                    <p>Subscribe to Local Python Calendars:</p>
+                    <ul class="menu">
+                        <li><a href="#"><span aria-hidden="true" class="icon-feed"></span>List of RSS feeds by Locality</a></li>
+                        <li><a href="#"><span aria-hidden="true" class="icon-mail-2"></span>List of Email feeds by Locality</a></li>
+                    </ul>
+                </div>
+                
+            </aside>
+{% endblock right_sidebar %}
