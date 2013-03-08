@@ -7,7 +7,7 @@ before_install:
   - sudo apt-get update -qq
 install:
   - pip install --quiet --use-mirrors -r requirements.txt
-  - pip install --quiet --use-mirrors -r test-requirements.txt
+  - pip install --quiet --use-mirrors -r dev-requirements.txt
   - pip install --quiet --use-mirrors coverage
 before_script:
   - psql -c 'create database "python.org";' -U postgres
