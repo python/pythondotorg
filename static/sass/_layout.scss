@@ -305,17 +305,22 @@
     
     /* Header-banners (not home) */
     .header-banner {
+        padding: 1em;
         
-        & > div {
-            padding-top: 1em; 
-            padding-bottom: 1em; 
-        }
-        .home & {
+        .home &, .inner & {
             padding: 0;
         }
     }
     .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
         @include pad( 1,1 ); 
+    }
+    
+    .main-header {
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            position: relative; 
+            z-index: 10;  
+        }
     }
     
     /*<nav class="main-navigation" role="navigation">*/
@@ -336,6 +341,10 @@
         .subnav {
             // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
         }
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            margin-bottom: -1.75em; 
+        }
     }
     
     /* 
@@ -344,7 +353,6 @@
      */
     $names: python, psf, docs, pypl, jobs, shop;
     $colors: $blue, $psf, $yellow, $green, $purple, $red;
-    $type-colors: $grey-lightest, $grey-lightest, $grey-dark, $grey-lightest, $grey-lightest, $grey-lightest; 
     
     @for $i from 1 through length($names) {
     
@@ -359,7 +367,7 @@
                 @include pe-border( $color-top: lighten($this-color, 10%), $color-left: lighten($this-color, 10%), $color-bottom: darken($this-color, 20%), $color-right: darken($this-color, 10%) );
                 
                 & > a {
-                    color: nth($type-colors, $i);
+                    color: $grey-lightest;
                     background-color: transparent;
                     @include pe-border( $color-top: transparent, $color-bottom: transparent );
                     letter-spacing: 0.01em;
@@ -429,6 +437,14 @@
             }
         }
     }/* end @for */
+    
+    
+    .content-wrapper {
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            padding-top: 1.75em; 
+        }
+    }
     
     /* Main content with sidebars */
     .main-content { 
@@ -681,6 +697,12 @@
     /* END */
     
     
+    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+    .lt-ie9 .site-headline a, .site-headline a img {
+        width: 254px * .88; 
+        height: 82px * .88; 
+    }
+    
     .site-headline {
         margin: rhythm( .175 ) 0; 
     }
@@ -727,16 +749,11 @@
     }
     .download-for-current-os {
         background: 97% -30px no-repeat image-url("download-arrow_trans24.png") transparent;
-        min-height: 19.5em; 
-    }
-    .documentation .main-header {
-        /* Increase the space under th ebanner so the image can overlap a little */
-        margin-bottom: 1em; 
+        // margin-bottom: - rhythm( 1.25 );
     }
     .documentation-banner {
         background: 101% -20px no-repeat image-url("docs-filecab_trans24.png") transparent;
-        min-height: 23em;
-        margin-bottom: -2.5em;
+        // margin-bottom: - rhythm( 1.25 ); 
     }
     .welcome-to-the-foundation {
         padding-top: 1em;
@@ -952,6 +969,11 @@
 /* ! ===== Larger than 940px ===== */
 @mixin min_width_940() {
     
+    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+    .lt-ie9 .site-headline a, .site-headline a img {
+        width: 254px; 
+        height: 82px; 
+    }
         .search-field {
             width: 14em;
             
@@ -1010,6 +1032,9 @@
              
         }
     }
+        .single-event-title {
+            @include fontface-adjust( 32px );  
+        }
     /*aside*/ .left-sidebar {
         
     }
@@ -1180,11 +1205,10 @@
     .temp-arrow {
         background: url('../img/temp-arrow.png') 0 0 no-repeat;
         position: absolute;
-        top: 50%;
-        right: -50px;
-        width: 50px;
+        top: 150px;
+        right:-50px;
         height: 100px;
-        margin-top: -50px; 
+        width: 50px;
     }
     
     .latest-blog-post, .featured-event, .jobs-intro {
@@ -1213,13 +1237,16 @@
     /* Main content with sidebars */
     .main-content { 
         
-        &.with-left-sidebar {
+        .inner &.with-left-sidebar {
             @include pad( 1, 1 ); 
         }
         &.with-right-sidebar {
              
         }
     }
+        .event-description, .job-description {
+            @include pad( 1,1 ); 
+        }
     /*aside*/ .left-sidebar {
         
     }

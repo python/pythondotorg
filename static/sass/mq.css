@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -261,19 +262,24 @@
     font-size: 1.625em; }
     .fontface .call-to-action {
       font-size: 1.86875em; }
-      .fontface .call-to-action span:before {
-        font-size: .875em; }
+      .fontface .call-to-action [class^="icon-"]:before, .fontface .call-to-action [class*=" icon-"]:before {
+        font-size: .85em; }
 
   /* Header-banners (not home) */
-  .header-banner > div {
-    padding-top: 1em;
-    padding-bottom: 1em; }
-  .home .header-banner {
-    padding: 0; }
+  .header-banner {
+    padding: 1em; }
+    .home .header-banner, .inner .header-banner {
+      padding: 0; }
 
   .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
     padding-left: 8.51064%;
     padding-right: 8.51064%; }
+
+  .main-header {
+    /* Shorten the amount of blue space under the nav on inner pages */ }
+    .inner .main-header {
+      position: relative;
+      z-index: 10; }
 
   /*<nav class="main-navigation" role="navigation">*/
   .main-navigation {
@@ -288,7 +294,8 @@
     -ms-border-radius: 8px 8px 0 0;
     -o-border-radius: 8px 8px 0 0;
     border-radius: 8px 8px 0 0;
-    /*ul*/ }
+    /*ul*/
+    /* Shorten the amount of blue space under the nav on inner pages */ }
     .main-navigation .menu {
       margin-bottom: 0; }
     .main-navigation .tier-1, .main-navigation .tier-2 {
@@ -306,6 +313,8 @@
       text-align: left; }
     .main-navigation .tier-2 {
       font-size: 0.875em; }
+    .inner .main-navigation {
+      margin-bottom: -1.75em; }
 
   /* 
    * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
@@ -514,7 +523,7 @@
       border-bottom: 1px solid #dca900;
       border-left: 1px solid #ffdf76; }
       .docs-navigation .tier-1 > a {
-        color: #444444;
+        color: #e6e8ea;
         background-color: transparent;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
@@ -870,6 +879,11 @@
         line-height: 1.25em; }
 
   /* end @for */
+  .content-wrapper {
+    /* Shorten the amount of blue space under the nav on inner pages */ }
+    .inner .content-wrapper {
+      padding-top: 1.75em; }
+
   /* Main content with sidebars */
   .main-content.with-left-sidebar {
     width: 65.95745%;
@@ -1216,6 +1230,11 @@
     left: -28em; }
 
   /* END */
+  /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+  .lt-ie9 .site-headline a, .site-headline a img {
+    width: 223.52px;
+    height: 72.16px; }
+
   .site-headline {
     margin: 0.30625em 0; }
 
@@ -1254,17 +1273,10 @@
     background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
   .download-for-current-os {
-    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent;
-    min-height: 19.5em; }
-
-  .documentation .main-header {
-    /* Increase the space under th ebanner so the image can overlap a little */
-    margin-bottom: 1em; }
+    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
 
   .documentation-banner {
-    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent;
-    min-height: 23em;
-    margin-bottom: -2.5em; }
+    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1585,6 +1597,11 @@
   .navigation .close-subnav {
     border-top: 0; }
 
+  /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+  .lt-ie9 .site-headline a, .site-headline a img {
+    width: 254px;
+    height: 82px; }
+
   .search-field {
     width: 14em; }
     .search-field:focus {
@@ -1612,8 +1629,15 @@
 
   /* Main content with sidebars */
   .main-content.with-left-sidebar {
-    padding-left: 5.31915%;
-    padding-right: 5.31915%; }
+    padding-left: 3.19149%;
+    padding-right: 3.19149%; }
+
+  .single-event-title {
+    font-size: 2em; }
+    .fontface .single-event-title {
+      font-size: 2.3em; }
+      .fontface .single-event-title [class^="icon-"]:before, .fontface .single-event-title [class*=" icon-"]:before {
+        font-size: .85em; }
 
   /*aside*/
   /*aside*/
@@ -1723,11 +1747,10 @@
   .temp-arrow {
     background: url("../img/temp-arrow.png") 0 0 no-repeat;
     position: absolute;
-    top: 50%;
+    top: 150px;
     right: -50px;
-    width: 50px;
     height: 100px;
-    margin-top: -50px; }
+    width: 50px; }
 
   .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
     margin-left: 25.53191%;
@@ -1743,7 +1766,11 @@
     margin-top: 1em; }
 
   /* Main content with sidebars */
-  .main-content.with-left-sidebar {
+  .inner .main-content.with-left-sidebar {
+    padding-left: 8.51064%;
+    padding-right: 8.51064%; }
+
+  .event-description, .job-description {
     padding-left: 8.51064%;
     padding-right: 8.51064%; }
 

@@ -71,11 +71,11 @@ img {
     margin: 0 auto; 
 }
 
-.giga { @include adjust-font-size( 40px ); }
-.mega { @include adjust-font-size( 36px ); }
-.kilo { @include adjust-font-size( 32px ); }
+.giga { @include fontface-adjust( 48px ); }
+.mega { @include fontface-adjust( 40px ); }
+.kilo { @include fontface-adjust( 36px ); }
 
-h1, .alpha, h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
+h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
     line-height: 1.5; 
 }
 
@@ -90,13 +90,13 @@ h1, .alpha {
 h2, .beta {
     color: $grey-dark;
     font-family: $alt-font-bold;
-    @include leader(.5); 
+    @include leader(.75); 
     @include trailer(.25);
     @include fontface-adjust( 24px );
 }
 
 h3, .chi {
-    color: $default-color;
+    color: $grey-darker;
     font-family: $alt-font;
     @include leader(1); 
     @include trailer(.25);
@@ -124,21 +124,38 @@ h6, .gamma {
     @include leader(1); 
 }
 
-p, ul, ol, dl, blockquote, address, table {
+p, ul, ol, dl, address, table {
     font-size: px2em( 14px );
-    line-height: 1.55em;
+    line-height: 1.625em;
     margin-bottom: rhythm(0.5);
 }
 
 ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
+    font-size: 1em; 
     margin-bottom: 0; 
 }
 
 blockquote {
     font: italic px2em( 18px ) Georgia, serif;
-    line-height: 1.55em;
-    padding: rhythm(.25) 1.25em 0;
+    line-height: 2; 
+    padding: rhythm(.75) 1em rhythm(.75) 3em;
+    border-top: 3px solid lighten( $yellow, 20% ); 
+    border-bottom: 3px solid lighten( $yellow, 20% ); 
+    margin-bottom: rhythm(0.75);
     position: relative;
+    
+    &:before, &:after {
+        color: $grey-lighter; 
+        font-style: normal; 
+        font-size: 4em;
+        position: absolute;
+    }
+    
+    &:before {
+        content: "“";
+        top: -.25em; 
+        left: 0;
+    }
     
     /*&:before, &:after {
         color: $grey-light; 
@@ -243,8 +260,8 @@ abbr, dfn {
 
 /* Color Areas: use for consistency */
 %blue-colorspace {
-    background-color: darken($blue, 15%);
     @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
+    background-color: darken($blue, 15%);
     @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03) );
 }
 
@@ -260,7 +277,6 @@ abbr, dfn {
 }
 
 %grey-colorspace {
-    background-color: $grey-lightest;
     @include vertical-gradient( $grey-lightest, darken($grey-lightest, 5%) );
     @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
 }
@@ -272,6 +288,20 @@ abbr, dfn {
     padding: 1.25em;
     @include pie-clearfix();
 }
+
+%yellow-colorspace {
+    @include vertical-gradient( lighten( $yellow, 30%), lighten( $yellow, 20%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
+}
+
+%yellow-colorbox {
+    @extend %yellow-colorspace;
+    border: 1px solid darken( $yellow, 6% );
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
 
 /* Buttons */
 %button-style {
@@ -863,7 +893,12 @@ a.jump-to-menu {
 }
 
 .text {
+    margin-top: rhythm( .75 ); 
     //color: $grey; 
+    
+    .giga, .mega, .kilo {
+        color: $blue; 
+    }
 }
 
 .sidebar-widget {
@@ -875,9 +910,15 @@ a.jump-to-menu {
 .sidebar-widget {
     
     li {
-        line-height: 1.55em;
+        line-height: 1.625em;
         margin: rhythm(0.15) 0;
     }
+    
+    form {
+        line-height: 1.625em;
+        margin-bottom: rhythm(0.5);
+    }
+
     
     a:not(.button) {
         @extend %link-style;
@@ -1454,6 +1495,40 @@ p.quote-by-organization {
     }
 }
 
+    /* Event single page */
+    .single-event-title {
+        
+    }
+        .single-event-date {
+            @extend %yellow-colorbox; 
+            /* resets as this is an H3 element and it behaves differently */
+            margin-top: .75em;
+            margin-bottom: 1.25em; 
+            padding: .5em .75em; 
+            
+            .date-start { }
+            .date-end { }
+            .single-date { }
+            .time-start { }
+            .time-end { }
+            .year { }
+        }
+        .event-description {
+            padding: rhythm( .75 ) 0; 
+        }
+        
+        .more-by-location {
+            @extend %grey-colorspace; 
+            margin-bottom: 0; 
+        }
+        .more-by-category {
+            
+        }
+        .more-by-venue {
+            
+        }
+
+
 /* Community landing page */
 .community-success-stories {
     
@@ -1671,6 +1746,12 @@ p.quote-by-organization {
     .icon-arrow-right, .icon-arrow-left {
         vertical-align: bottom; 
     }
+    
+    /* Special rules for specific templates */
+    .single-event & {
+        margin-top: rhythm( .75 ); 
+        border-top: 1px solid $grey-lighter; 
+    }
 }
 
 
@@ -1887,6 +1968,9 @@ p.quote-by-organization {
         font-size: 125%; 
     }
 }
+    .job-description {
+        
+    }
     .job-post-meta {
         clear: both; 
         border: 1px solid #caccce;
