@@ -53,9 +53,8 @@ class FeedbackViewTests(TestCase):
             'country': 'United States',
             'feedback_categories': [self.feature_category_2.pk, self.feature_category_3.pk],
             'issue_type': self.issue_type_2.pk,
-            'comment': 'The site is great!'
         }
 
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['form'].errors['email'], ['This field is required.'])
+        self.assertEqual(response.context['form'].errors['comment'], ['This field is required.'])

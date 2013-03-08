@@ -19,11 +19,11 @@ class IssueType(NameSlugModel):
 
 
 class Feedback(models.Model):
-    name = models.CharField(max_length=200)
-    email = models.EmailField()
-    country = models.CharField(max_length=100)
-    feedback_categories = models.ManyToManyField(FeedbackCategory, related_name='feedbacks')
-    issue_type = models.ForeignKey(IssueType, related_name='feedbacks')
+    name = models.CharField(max_length=200, null=True, blank=True)
+    email = models.EmailField(null=True, blank=True)
+    country = models.CharField(max_length=100, null=True, blank=True)
+    feedback_categories = models.ManyToManyField(FeedbackCategory, related_name='feedbacks', null=True, blank=True)
+    issue_type = models.ForeignKey(IssueType, related_name='feedbacks', null=True, blank=True)
     referral_url = models.URLField(null=True, blank=True)
     comment = models.TextField()
     created = models.DateTimeField(default=timezone.now, blank=True)
