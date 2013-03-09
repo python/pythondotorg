@@ -83,6 +83,11 @@ class EventCategoryList(ListView):
     model = EventCategory
     paginate_by = 30
 
+    def get_context_data(self, **kwargs):
+        kwargs['event_categories'] = EventCategory.objects.all()[:10]
+
+        return super().get_context_data(**kwargs)
+
 
 class EventLocationList(ListView):
     model = EventLocation
