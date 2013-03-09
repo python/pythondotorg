@@ -1521,6 +1521,11 @@ p.quote-by-organization {
             @extend %grey-colorspace; 
             margin-bottom: 0; 
         }
+        
+        .most-recent-events .more-by-location {
+            @extend %grey-colorbox; 
+        }
+        
         .more-by-category {
             
         }

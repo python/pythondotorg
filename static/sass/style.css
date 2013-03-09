@@ -626,7 +626,7 @@ abbr, dfn {
     display: table;
     clear: both; }
 
-.pep-widget, .more-by-location {
+.pep-widget, .most-recent-events .more-by-location, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -639,12 +639,12 @@ abbr, dfn {
   -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
 
-.pep-widget {
+.pep-widget, .most-recent-events .more-by-location {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
   padding: 1.25em;
   *zoom: 1; }
-  .pep-widget:after {
+  .pep-widget:after, .most-recent-events .more-by-location:after {
     content: "";
     display: table;
     clear: both; }
