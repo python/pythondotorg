@@ -19,7 +19,10 @@ class JobType(NameSlugModel):
 
 
 class JobCategory(NameSlugModel):
-    pass
+
+    class Meta(object):
+        verbose_name = 'job category'
+        verbose_name_plural = 'job categories'
 
 
 class Job(ContentManageable):

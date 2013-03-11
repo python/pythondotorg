@@ -48,7 +48,6 @@
     height: 0; 
     border-style: solid; 
     border-width: $size; 
-    border-color: transparent; 
 }
 
 /* Base styles for a navigation mixin */
@@ -93,10 +92,14 @@
     .tier-1 {
         position: relative; 
         
-        /*modernizr*/ .no-touch &:hover .subnav, .no-touch &:focus .subnav, .touch & .subnav.touched {
+        /*modernizr*/ &:hover .subnav, &:focus .subnav, .touch & .subnav.touched {
             left: 0; 
         }
-        &.last:hover .subnav, &.last:focus .subnav, .touch &.last .subnav.touched {
+        &.last:hover .subnav, &.last:focus .subnav, 
+        &.element-5:hover .subnav, &.element-5:focus .subnav, &.element-5:hover .subnav.touched,  
+        &.element-6:hover .subnav, &.element-6:focus .subnav, &.element-6:hover .subnav.touched,
+        &.element-7:hover .subnav, &.element-7:focus .subnav, &.element-7:hover .subnav.touched,
+        &.element-8:hover .subnav, &.element-8:focus .subnav, &.element-8:hover .subnav.touched, {
             left: auto; 
             right: 0; 
         }
@@ -105,25 +108,27 @@
         position: absolute; top: 100%; left: -999em;  
         z-index: 100; 
         text-align: left; 
-        // @include box-shadow( .125em .125em .25em rgba( #000, 0.3 )  ); 
         
         /*modernizr*/ .no-touch & {
             min-width: 100%; 
         }
         /*modernizr*/ .touch & {
             top: 120%;
-            //border: 4px solid $white; 
             @include box-shadow( 0 .25em .75em rgba( #000, 0.6 )  ); 
             
             &:before {
                 @include pointer( .75em ); 
-                top: -1.5em; left: 1em; 
+                top: -1.45em; 
+                left: 1em; 
             	display: block; 
-                border-color: transparent transparent $white transparent; 
             }
         }
     }
-    /*modernizr*/ .touch & .tier-1.last .subnav:before {
+    /*modernizr*/ .touch & .tier-1.last .subnav:before,
+    .touch .element-5 &:before, 
+    .touch .element-6 &:before, 
+    .touch .element-7 &:before, 
+    .touch .element-8 &:before {
         left: auto; 
         right: 1em; 
     }

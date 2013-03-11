@@ -16,7 +16,6 @@ urlpatterns = patterns('',
     url(r'^documentation/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
     url(r'^blog/$', TemplateView.as_view(template_name="python/blog.html"), name='blog'),
-    url(r'^events/$', TemplateView.as_view(template_name="python/events.html"), name='events'),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 
     # other section landing pages
@@ -25,22 +24,18 @@ urlpatterns = patterns('',
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
-    # supernav menus
-    url(r'^supernav-python-about/$', TemplateView.as_view(template_name="components/supernav-python-about.html"), name='supernav-python-about'),
-    url(r'^supernav-python-downloads/$', TemplateView.as_view(template_name="components/supernav-python-downloads.html"), name='supernav-python-downloads'),
-    url(r'^supernav-python-documentation/$', TemplateView.as_view(template_name="components/supernav-python-documentation.html"), name='supernav-python-documentation'),
-    url(r'^supernav-python-community/$', TemplateView.as_view(template_name="components/supernav-python-community.html"), name='supernav-python-community'),
-    url(r'^supernav-python-success-stories/$', TemplateView.as_view(template_name="components/supernav-python-success-stories.html"), name='supernav-python-success-stories'),
-    url(r'^supernav-python-blog/$', TemplateView.as_view(template_name="components/supernav-python-blog.html"), name='supernav-python-blog'),
-    url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
-
-    url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^box/', include('boxes.urls')),
+    url(r'^events/', include('events.urls', namespace='events')),
+    url(r'^feedbacks/', include('feedbacks.urls')),
+    url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
+
+    # it's a secret to everyone
+    url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture'),
 
     # Fall back on CMS'd pages as the last resort.
     url(r'', include('pages.urls')),

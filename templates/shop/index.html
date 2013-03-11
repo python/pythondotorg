@@ -1,23 +1,9 @@
 {# ===== SHOP LANDING PAGE ===== #}
 
-{% extends "base.html" %}
+{% extends "waitforit.html" %}
+
 
 {% block body_attributes %}class="shop"{% endblock %}
 
 
 {% block main-nav_attributes %}shop-navigation{% endblock %}
-
-{% comment %}
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "shop-meta" template "sitetree/submenu.html" %}
-{% endblock %}
-{% endcomment %}
-
-
-{% block header_content %}
-{% endblock header_content %}
-
-
-{% block content %}
-{% endblock content %}

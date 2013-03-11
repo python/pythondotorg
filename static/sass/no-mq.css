@@ -86,6 +86,92 @@
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
 /* Mixin for media query parts */
+/* Define constants for the application and to configure the blueprint framework. */
+/* ===== Compass Imports ===== */
+/* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
+/* @import "compass/css3/columns" */
+/* @import "compass/css3/hyphenation"; */
+/* Needed for the link-colors() function */
+/* Needed for the horizontal-list() function */
+/* When remembering whether or not there's a hyphen in white-space is too hard */
+/* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
+/* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
+/* Other interesting functions: 
+	@import "compass/utilities/color/contrast";
+		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
+		Used to pass two colors into a get out the most readable color. 
+		Good for situations where we dont want to create a new color, 
+		but be sure that colors from variables are always going to be readable
+*/
+/* ===== Grid ===== */
+/*
+ * Susy: Un-obtrusive grids for designers
+ * By: Eric A. Meyer and OddBird
+ * Site: susy.oddbird.net
+ */
+/* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ */
+/* ===== Variables ===== */
+/* Confusing, but in some cases, this can be set to a dark color */
+/* Python blue */
+/* Python yellow */
+/* Typography */
+/* True here means that all computed values will be in EMs */
+/* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Calculate the font-size-adjust of Flux:
+ * http://www.cs.tut.fi/~jkorpela/x-height.html
+ * Or, in this case, we did it by hand by comparing Flux to Arial, side by side. 
+ * We then adjusted it further visually, as Flux is more condensed and therefore line-length changes pretty dramatically. 
+ */
+/* 
+	Compass will convert the font sizes from px to em and fit it into the vertical rhythm automatically with the necessary margin 
+	A neat trick, for sure. More on using the vertical rhythm properties and mixins: http://compass-style.org/reference/compass/typography/vertical_rhythm/
+	
+	Note: The line height is relative to the constant $base-line-height. 
+	The number you specify for the leader, trailer and leading will be multiplied by the constant, then converted to its relative value in ems. 
+	Don’t worry about nested elements etc, Compass will do the maths for you :)
+*/
+/* Defaults */
+/* Positive is down */
+/*
+ * Functional mixins – Items we would like to keep consistent from project to project
+ */
+/* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
+/* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
+/* 
+ * Font-size-adjust: the problem and a solution
+ * Not widely supported, can't use this yet */
+/* Since we can't use the above, let's create our own way to do it. */
+/* Quickly apply border styles to elements */
+/* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Vertical gradient mixin to make things easier. */
+/* 
+ * Cross browser @keyframe definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ */
+/* 
+ * Cross browser animation definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ */
+/* 
+ * Cross browser method to apply word-breaking and hyphenation (where supported) 
+ * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
+ */
+/* Keep this in all mix-in files if you can. Useful stuff */
+/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* HTML5 Boilerplate Non-semantic helper classes */
+/* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
+/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
+/* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
+/* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+/* Base styles for a navigation mixin */
+/* Base styles for a navigation with dropdowns mixin */
 /* ********************************
 
     NOTE
@@ -159,9 +245,6 @@ body {
   text-rendering: optimizeLegibility;
   /* @include transition( all .3s ease-in-out ); makes the media query changes animate */ }
 
-p, ul, ol, dl, blockquote, address, table {
-  font-size: 0.9375em; }
-
 .meta-navigation,
 .main-header,
 .main-navigation,
@@ -188,8 +271,8 @@ p, ul, ol, dl, blockquote, address, table {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
 
-p {
-  font-size: 1em; }
+.text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text table {
+  font-size: 0.9375em; }
 
 .meta-navigation {
   text-align: left; }
@@ -239,18 +322,24 @@ p {
   font-size: 1.625em; }
   .fontface .call-to-action {
     font-size: 1.86875em; }
-    .fontface .call-to-action [class^="icon-"]:before, .fontface .call-to-action [class*=" icon-"]:before {
-      font-size: .85em; }
+    .fontface .call-to-action span:before {
+      font-size: .875em; }
 
 /* Header-banners (not home) */
 .header-banner {
   padding: 1em; }
-  .home .header-banner {
+  .home .header-banner, .inner .header-banner {
     padding: 0; }
 
 .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
   padding-left: 8.51064%;
   padding-right: 8.51064%; }
+
+.main-header {
+  /* Shorten the amount of blue space under the nav on inner pages */ }
+  .inner .main-header {
+    position: relative;
+    z-index: 10; }
 
 /*<nav class="main-navigation" role="navigation">*/
 .main-navigation {
@@ -265,7 +354,8 @@ p {
   -ms-border-radius: 8px 8px 0 0;
   -o-border-radius: 8px 8px 0 0;
   border-radius: 8px 8px 0 0;
-  /*ul*/ }
+  /*ul*/
+  /* Shorten the amount of blue space under the nav on inner pages */ }
   .main-navigation .menu {
     margin-bottom: 0; }
   .main-navigation .tier-1, .main-navigation .tier-2 {
@@ -283,6 +373,8 @@ p {
     text-align: left; }
   .main-navigation .tier-2 {
     font-size: 0.875em; }
+  .inner .main-navigation {
+    margin-bottom: -1.75em; }
 
 /* 
  * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
@@ -298,7 +390,8 @@ p {
   background-image: -o-linear-gradient(#3776ab 30%, #2d618c 95%);
   background-image: linear-gradient(#3776ab 30%, #2d618c 95%);
   border-top: 1px solid #629ccd;
-  border-bottom: 1px solid #18334b; }
+  border-bottom: 1px solid #18334b;
+  /*a*/ }
   .python-navigation .tier-1 {
     border-top: 1px solid #4f90c6;
     border-right: 1px solid #2b5b84;
@@ -334,7 +427,10 @@ p {
     background-image: linear-gradient(#bbd4e9 10%, #d6e5f2 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
-    box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15); }
+    box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
+    /*modernizr*/ }
+    .touch .python-navigation .subnav:before {
+      border-color: transparent transparent #bbd4e9 transparent; }
   .python-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(55, 118, 171, 0.25);
@@ -344,7 +440,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .python-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(55, 118, 171, 0.25); }
-  .python-navigation .selected > a {
+  .python-navigation .current_item {
     color: white;
     background-color: #244e71;
     *zoom: 1;
@@ -391,7 +487,8 @@ p {
   background-image: -o-linear-gradient(#78797a 30%, #646565 95%);
   background-image: linear-gradient(#78797a 30%, #646565 95%);
   border-top: 1px solid #9e9fa0;
-  border-bottom: 1px solid #39393a; }
+  border-bottom: 1px solid #39393a;
+  /*a*/ }
   .psf-navigation .tier-1 {
     border-top: 1px solid #929393;
     border-right: 1px solid #5f5f60;
@@ -427,7 +524,10 @@ p {
     background-image: linear-gradient(#dadada 10%, #ececec 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
-    box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15); }
+    box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
+    /*modernizr*/ }
+    .touch .psf-navigation .subnav:before {
+      border-color: transparent transparent #dadada transparent; }
   .psf-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(120, 121, 122, 0.25);
@@ -437,7 +537,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .psf-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(120, 121, 122, 0.25); }
-  .psf-navigation .selected > a {
+  .psf-navigation .current_item {
     color: white;
     background-color: #525353;
     *zoom: 1;
@@ -484,14 +584,15 @@ p {
   background-image: -o-linear-gradient(#ffd343 30%, #ffc91a 95%);
   background-image: linear-gradient(#ffd343 30%, #ffc91a 95%);
   border-top: 1px solid #ffe58f;
-  border-bottom: 1px solid #c39500; }
+  border-bottom: 1px solid #c39500;
+  /*a*/ }
   .docs-navigation .tier-1 {
     border-top: 1px solid #ffdf76;
     border-right: 1px solid #ffc710;
     border-bottom: 1px solid #dca900;
     border-left: 1px solid #ffdf76; }
     .docs-navigation .tier-1 > a {
-      color: #e6e8ea;
+      color: #444444;
       background-color: transparent;
       border-top: 1px solid transparent;
       border-bottom: 1px solid transparent;
@@ -520,7 +621,10 @@ p {
     background-image: linear-gradient(#ffffff 10%, #ffffff 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
-    box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15); }
+    box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
+    /*modernizr*/ }
+    .touch .docs-navigation .subnav:before {
+      border-color: transparent transparent white transparent; }
   .docs-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(255, 211, 67, 0.25);
@@ -530,7 +634,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .docs-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(255, 211, 67, 0.25); }
-  .docs-navigation .selected > a {
+  .docs-navigation .current_item {
     color: white;
     background-color: #f5bc00;
     *zoom: 1;
@@ -577,7 +681,8 @@ p {
   background-image: -o-linear-gradient(#82b043 30%, #6c9238 95%);
   background-image: linear-gradient(#82b043 30%, #6c9238 95%);
   border-top: 1px solid #a6ca75;
-  border-bottom: 1px solid #3e5420; }
+  border-bottom: 1px solid #3e5420;
+  /*a*/ }
   .pypl-navigation .tier-1 {
     border-top: 1px solid #9bc363;
     border-right: 1px solid #678b35;
@@ -613,7 +718,10 @@ p {
     background-image: linear-gradient(#ddebca 10%, #eef5e4 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
-    box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15); }
+    box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
+    /*modernizr*/ }
+    .touch .pypl-navigation .subnav:before {
+      border-color: transparent transparent #ddebca transparent; }
   .pypl-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(130, 176, 67, 0.25);
@@ -623,7 +731,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .pypl-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(130, 176, 67, 0.25); }
-  .pypl-navigation .selected > a {
+  .pypl-navigation .current_item {
     color: white;
     background-color: #59792e;
     *zoom: 1;
@@ -670,7 +778,8 @@ p {
   background-image: -o-linear-gradient(#a06ba7 30%, #8b5792 95%);
   background-image: linear-gradient(#a06ba7 30%, #8b5792 95%);
   border-top: 1px solid #bf9bc4;
-  border-bottom: 1px solid #58375c; }
+  border-bottom: 1px solid #58375c;
+  /*a*/ }
   .jobs-navigation .tier-1 {
     border-top: 1px solid #b58bba;
     border-right: 1px solid #85538c;
@@ -706,7 +815,10 @@ p {
     background-image: linear-gradient(#eee5ef 10%, #fcfbfd 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
-    box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15); }
+    box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
+    /*modernizr*/ }
+    .touch .jobs-navigation .subnav:before {
+      border-color: transparent transparent #eee5ef transparent; }
   .jobs-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(160, 107, 167, 0.25);
@@ -716,7 +828,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .jobs-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(160, 107, 167, 0.25); }
-  .jobs-navigation .selected > a {
+  .jobs-navigation .current_item {
     color: white;
     background-color: #764a7c;
     *zoom: 1;
@@ -763,7 +875,8 @@ p {
   background-image: -o-linear-gradient(#b55863 30%, #9e4650 95%);
   background-image: linear-gradient(#b55863 30%, #9e4650 95%);
   border-top: 1px solid #cc8d95;
-  border-bottom: 1px solid #622b32; }
+  border-bottom: 1px solid #622b32;
+  /*a*/ }
   .shop-navigation .tier-1 {
     border-top: 1px solid #c57b84;
     border-right: 1px solid #97434d;
@@ -799,7 +912,10 @@ p {
     background-image: linear-gradient(#f1dee0 10%, #fbf7f8 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
-    box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15); }
+    box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
+    /*modernizr*/ }
+    .touch .shop-navigation .subnav:before {
+      border-color: transparent transparent #f1dee0 transparent; }
   .shop-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(181, 88, 99, 0.25);
@@ -809,7 +925,7 @@ p {
       color: rgba(34, 34, 34, 0.9); }
   .shop-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(181, 88, 99, 0.25); }
-  .shop-navigation .selected > a {
+  .shop-navigation .current_item {
     color: white;
     background-color: #853b44;
     *zoom: 1;
@@ -847,6 +963,11 @@ p {
       line-height: 1.25em; }
 
 /* end @for */
+.content-wrapper {
+  /* Shorten the amount of blue space under the nav on inner pages */ }
+  .inner .content-wrapper {
+    padding-top: 1.75em; }
+
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
   width: 65.95745%;
@@ -929,6 +1050,13 @@ p {
   clear: both; }
 
 /* Jobs landing page */
+.listing-company {
+  *zoom: 1; }
+  .listing-company:after {
+    content: "";
+    display: table;
+    clear: both; }
+
 .listing-company-category:before {
   content: "Category: ";
   color: #666666; }
@@ -955,6 +1083,24 @@ p {
 .release-enhancements {
   width: 25%; }
 
+/* Previous Next pattern */
+.previous-next {
+  overflow: hidden;
+  *zoom: 1; }
+  .previous-next a {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box; }
+  .previous-next .prev-button {
+    width: 48.93617%;
+    float: left;
+    margin-right: 2.12766%; }
+  .previous-next .next-button {
+    width: 48.93617%;
+    float: right;
+    margin-right: 0;
+    #margin-left: -20px; }
+
 /* Footer */
 .main-footer .jump-link {
   display: none; }
@@ -974,6 +1120,22 @@ p {
   text-align: center; }
   .footer-links li {
     display: inline-block; }
+
+/* Feedback form */
+.feedback {
+  padding-left: 1em;
+  padding-right: 1em; }
+  .feedback .widget-title {
+    position: relative;
+    padding-left: 3em; }
+  .feedback .icon-megaphone {
+    font-size: 3em;
+    position: absolute;
+    top: -.125em;
+    left: -.1875em; }
+  .feedback h3 {
+    margin-top: 0;
+    padding-left: 3em; }
 
 /* TEMPORARY. Move further down later after testing. */
 /* Supernavs in main-navigation */
@@ -1033,13 +1195,12 @@ p {
   left: -28em; }
 
 /* END */
-/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-.lt-ie9 .site-headline a, .site-headline a img {
+.site-headline a img {
   width: 223.52px;
   height: 72.16px; }
 
 .site-headline {
-  margin: 0.30625em 0; }
+  margin: 0.25em 0 0.5em; }
 
 .options-bar {
   margin: 0.875em 0; }
@@ -1073,13 +1234,13 @@ p {
   min-height: 15em; }
 
 .about-banner {
-  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
 .download-for-current-os {
-  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361286604') transparent; }
+  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
 
 .documentation-banner {
-  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361286604') transparent; }
+  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1161,7 +1322,7 @@ p {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1198,6 +1359,20 @@ p {
     content: "";
     display: table;
     clear: both; }
+.list-recent-jobs .listing-company-category a, .list-recent-jobs .listing-job-type a {
+  white-space: nowrap; }
+.list-recent-jobs .listing-posted {
+  width: 48.93617%;
+  float: left;
+  margin-right: 2.12766%;
+  margin-right: 0; }
+.list-recent-jobs .listing-company-category {
+  width: 48.93617%;
+  float: right;
+  margin-right: 0;
+  #margin-left: -20px;
+  text-align: right;
+  clear: none; }
 
 /*h2*/
 .listing-company .listing-company-name {
@@ -1215,21 +1390,17 @@ p {
   #margin-left: -20px;
   text-align: right; }
 
-.listing-company-category a, .listing-job-type a {
-  white-space: nowrap; }
-
-.listing-posted {
+.job-meta {
   width: 48.93617%;
   float: left;
   margin-right: 2.12766%;
-  margin-right: 0; }
+  margin-bottom: 0; }
 
-.listing-company-category {
+.job-tags {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px;
-  text-align: right; }
+  #margin-left: -20px; }
 
 /* Footer */
 .sitemap, .footer-links, .copyright {
@@ -1252,6 +1423,35 @@ p {
 .footer-links .say-no-more {
   display: inline;
   visibility: visible; }
+
+/* Feedback form */
+.feedback {
+  padding-left: 0;
+  padding-right: 0; }
+  .feedback .shrubbery {
+    margin-left: 8.51064%;
+    margin-right: 8.51064%; }
+  .feedback .accordion-wrapper {
+    margin-left: 8.51064%;
+    margin-right: 8.51064%; }
+  .feedback label[for=id_name],
+  .feedback label[for=id_email],
+  .feedback label[for=id_country],
+  .feedback label[for=id_issue_type],
+  .feedback label[for=id_comment] {
+    display: inline-block;
+    text-align: right;
+    width: 14.89362%;
+    margin-right: 2.12766%; }
+  .feedback #id_name,
+  .feedback #id_email,
+  .feedback #id_country,
+  .feedback #id_issue_type,
+  .feedback #id_comment {
+    display: inline-block;
+    width: 65.95745%; }
+  .feedback button {
+    margin-left: 17.02128%; }
 
 a.jump-to-menu {
   display: none; }
@@ -1293,9 +1493,9 @@ a.jump-to-menu {
   .main-navigation .tier-1 {
     position: relative;
     /*modernizr*/ }
-    .no-touch .main-navigation .tier-1:hover .subnav, .no-touch .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
+    .main-navigation .tier-1:hover .subnav, .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
       left: 0; }
-    .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .touch .main-navigation .tier-1.last .subnav.touched {
+    .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
   .main-navigation .subnav {
@@ -1320,12 +1520,10 @@ a.jump-to-menu {
         height: 0;
         border-style: solid;
         border-width: 0.75em;
-        border-color: transparent;
-        top: -1.5em;
+        top: -1.45em;
         left: 1em;
-        display: block;
-        border-color: transparent transparent white transparent; }
-  .touch .main-navigation .tier-1.last .subnav:before {
+        display: block; }
+  .touch .main-navigation .tier-1.last .subnav:before, .touch .element-5 .main-navigation:before, .touch .element-6 .main-navigation:before, .touch .element-7 .main-navigation:before, .touch .element-8 .main-navigation:before {
     left: auto;
     right: 1em; }
   .main-navigation .tier-2 {
@@ -1361,6 +1559,7 @@ a.jump-to-menu {
   .main-navigation .menu {
     text-align: center; }
   .main-navigation .tier-1 {
+    float: none;
     border-top: 0;
     border-bottom: 0;
     display: -moz-inline-stack;
@@ -1368,9 +1567,10 @@ a.jump-to-menu {
     vertical-align: baseline;
     /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
     width: auto;
-    margin: 0 -0.3em 0 0;
+    margin: 0 -5px 0 0;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
-    border-left: 1px solid rgba(255, 255, 255, 0.1); }
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
     .lt-ie8 .main-navigation .tier-1 {
       vertical-align: auto;
       zoom: 1;
@@ -1379,11 +1579,18 @@ a.jump-to-menu {
       border-left: 0; }
     .main-navigation .tier-1.last {
       border-right: 0; }
+    .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
+      width: auto; }
   .main-navigation .tier-1 > a {
     padding: 0.65em 1.25em 0.55em; }
 
 .navigation .close-subnav {
   border-top: 0; }
+  .navigation .close-subnav a {
+    border-right: 1px solid rgba(255, 255, 255, 0.8); }
+  .navigation .close-subnav .close-for-touch {
+    border-right: 1px solid transparent;
+    border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
 /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
 .lt-ie9 .site-headline a, .site-headline a img {
@@ -1409,7 +1616,7 @@ a.jump-to-menu {
   padding-right: 34.04255%; }
 
 .about-banner {
-  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;
@@ -1419,6 +1626,13 @@ a.jump-to-menu {
 .main-content.with-left-sidebar {
   padding-left: 3.19149%;
   padding-right: 3.19149%; }
+
+.single-event-title {
+  font-size: 2em; }
+  .fontface .single-event-title {
+    font-size: 2.3em; }
+    .fontface .single-event-title span:before {
+      font-size: .875em; }
 
 /*aside*/
 /*aside*/
@@ -1519,6 +1733,15 @@ a.jump-to-menu {
 .footer-links a {
   padding: 0.3em 0.75em; }
 
+/* Feedback form */
+.feedback h2, .feedback h3 {
+  display: inline-block; }
+.feedback h3 {
+  padding-left: .125em;
+  margin-bottom: .125em; }
+.feedback .shrubbery p {
+  padding-left: 5em; }
+
 /* Additional media query contents that we want to deliver to non-media query enabled browsers */
 /* ! ===== lt-IE9 rules ===== */
 .container {
@@ -1527,3 +1750,8 @@ a.jump-to-menu {
 .main-navigation li > a {
   padding-left: 1.25em;
   padding-right: 1.25em; }
+
+/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+.site-headline a, .site-headline a img {
+  width: 254px;
+  height: 82px; }

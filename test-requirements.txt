@@ -1,5 +1,0 @@
-# Extra stuff required for running tests.
-
-# My fork of ddt (https://github.com/txels/ddt) with Python 3 support.
-# Can be removed when https://github.com/txels/ddt/pull/5 is merged.
-git+git://github.com/jacobian/ddt.git@23d88adce743ced171644c2b125b05a24b91d02a

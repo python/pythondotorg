@@ -5,7 +5,7 @@
         {% if forloop.first %}
         <li class="tier-2 element-0 close-subnav" role="treeitem">
             <a href="{% sitetree_url for item.parent %}">{{ item.parent }}</a>
-            <a class="close-for-touch" href="#"><span class="close-graphic">&times;</span></a>
+            <a class="close-for-touch close-graphic" href="#">&times;</a>
         </li>
         {% endif %}
         <li class="tier-2 element-{{ forloop.counter }}" role="treeitem"><a href="{% sitetree_url for item %}" title="{{ item.hint|default:"" }}">{{ item.title_resolved }}</a></li>

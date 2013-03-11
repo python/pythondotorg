@@ -57,8 +57,8 @@
     .fontface & {
         font-size: #{$pixel * $adjust-value / $base-size}em;
         
-        [class^="icon-"]:before, [class*=" icon-"]:before {
-            font-size: .85em; 
+        span:before {
+            font-size: .875em; 
         }
     }
 }
@@ -191,7 +191,7 @@
          -o-hyphens: auto;
             hyphens: auto;
     
-    tt &, var &, code &, kbd &, abbr &, acronym & {
+    tt, var, code, kbd, abbr, acronym {
     -webkit-hyphens: none;
        -moz-hyphens: none;
         -ms-hyphens: none;
@@ -265,13 +265,13 @@
     blockquote, q { quotes: none; }
     blockquote:before, blockquote:after,
     q:before, q:after { content: ""; content: none; }
-    ins { background-color: #ddd; text-decoration: none; }
+    ins { background-color: #ddd; color: $grey-darker; text-decoration: none; }
     mark { background-color: #ff8; font-style: italic; }
-    strike, del { text-decoration: line-through; color: #000; }
+    strike, del { text-decoration: line-through; color: $grey-light; }
     abbr[title] { /* border-bottom: 1px dotted; */ cursor: help; }
     dfn[title] { border-bottom: 1px dotted; cursor: help; }
     table { width: 100%; border-collapse: collapse; border-spacing: 0; }
-    hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: rhythm(1) 0; padding: 0; }
+    hr { display: block; height: 1px; border: 0; border-top: 1px solid $grey-lighter; margin: rhythm(1) 0; padding: 0; }
     input, select { display: inline-block; vertical-align: middle; }
     
     html {

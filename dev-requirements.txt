@@ -1,0 +1,7 @@
+# Extra stuff required for local dev
+
+coverage
+ddt
+
+# Invoke from py3 branch, remove once it gets a release.
+https://github.com/pyinvoke/invoke/archive/my-py3.zip

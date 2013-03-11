@@ -11,6 +11,7 @@ SECRET_KEY = 'hu9h&&%j*tcj2o9!k2w%ao=fcw&$0z$)la$&8vl+s$4y%r946h'
 # Until Sentry works on Py3, do errors the old-fashioned way.
 ADMINS = [
     ("JKM", "jacob@jacobian.org"),
+    ('Jeff', 'jeff.triplett+pythondotorg@gmail.com'),
 ]
 
 ### Databases
@@ -89,14 +90,17 @@ INSTALLED_APPS = (
     'pipeline',
     'sitetree',
     'south',
+    'timedelta',
 
     'boxes',
     'cms',
     'companies',
+    'feedbacks',
     'jobs',
     'pages',
     'sponsors',
     'successstories',
+    'events',
 )
 
 ### Testing

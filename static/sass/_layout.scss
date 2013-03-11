@@ -1,3 +1,7 @@
+@import "base";
+@import "functions";
+@import "mixins";
+
 /* ********************************
 
     NOTE
@@ -110,12 +114,13 @@
             text-align: center; 
         }
         .tier-1 {
+            float: none; 
             border-top: 0;
             border-bottom: 0;
             @include pe-inline-block(); 
             /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
             width: auto; 
-            margin: 0 -.3em 0 0; 
+            margin: 0 -5px 0 0; 
             @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
             
             &.element-1 {
@@ -124,11 +129,13 @@
             &.last {
                 border-right: 0; 
             }
+            /* We've set this explicitly before, so we need to "clear" the width value explicitly */
+            &.element-6, &.element-7 {
+                width: auto; 
+            }
         }
         .tier-1 > a {
-            // font-weight: bold;
             padding: .65em 1.25em .55em;
-            // text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         .tier-2 {
             
@@ -137,13 +144,12 @@
     .navigation {
         .close-subnav {
             border-top: 0;
-            // @include pe-border( $color-bottom: rgba( #666, .2 ) );
              
             a {
-                // @include pe-border( $color-right: rgba( #fff, .8 ) );
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
             }
             .close-for-touch {
-                // @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
             }
         }
     }
@@ -213,10 +219,6 @@
         /* @include transition( all .3s ease-in-out ); makes the media query changes animate */
     }
     
-    p, ul, ol, dl, blockquote, address, table {
-        font-size: px2em( 15px );
-    }
-    
     .meta-navigation, 
     .main-header, 
     .main-navigation,
@@ -242,7 +244,15 @@
         font-size: px2em(18px);
         padding: 1em 1.4em 1.3em;
     }
+    
+    .text {
+        
+        p, ul, ol, dl, blockquote, address, table {
+            font-size: px2em( 15px );
+        }
+    }
 }
+
 
 /* ! ===== Larger than 640px ===== */
 @mixin min_width_640() {
@@ -307,12 +317,20 @@
     .header-banner {
         padding: 1em;
         
-        .home & {
+        .home &, .inner & {
             padding: 0;
         }
     }
     .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
         @include pad( 1,1 ); 
+    }
+    
+    .main-header {
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            position: relative; 
+            z-index: 10;  
+        }
     }
     
     /*<nav class="main-navigation" role="navigation">*/
@@ -333,6 +351,10 @@
         .subnav {
             // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
         }
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            margin-bottom: -1.75em; 
+        }
     }
     
     /* 
@@ -341,10 +363,12 @@
      */
     $names: python, psf, docs, pypl, jobs, shop;
     $colors: $blue, $psf, $yellow, $green, $purple, $red;
-    
+    $type-colors: $grey-lightest, $grey-lightest, $grey-dark, $grey-lightest, $grey-lightest, $grey-lightest;
+
     @for $i from 1 through length($names) {
     
         $this-color: nth($colors, $i); 
+        $bordertop: lighten( $this-color, 38% ); 
         
         .#{nth($names, $i)}-navigation {
             @include vertical-gradient( $this-color, adjust-lightness( $this-color, -8 ), 30%, 95% );
@@ -355,7 +379,7 @@
                 @include pe-border( $color-top: lighten($this-color, 10%), $color-left: lighten($this-color, 10%), $color-bottom: darken($this-color, 20%), $color-right: darken($this-color, 10%) );
                 
                 & > a {
-                    color: $grey-lightest;
+                    color: nth($type-colors, $i);;
                     background-color: transparent;
                     @include pe-border( $color-top: transparent, $color-bottom: transparent );
                     letter-spacing: 0.01em;
@@ -372,6 +396,13 @@
                 @include pe-border( $color-top: darken($this-color, 25%) );
                 @include vertical-gradient( lighten( $this-color, 38% ), lighten( $this-color, 45% ) );
                 @include box-shadow( inset 0 0 20px rgba($this-color, 0.15) );
+            
+                /*modernizr*/ .touch & {
+                    
+                    &:before {
+                        border-color: transparent transparent $bordertop transparent; 
+                    }
+                }
             }
             
             .tier-2 {
@@ -392,7 +423,7 @@
                 }
             }
             
-            .selected > a {
+            /*a*/ .current_item {
                 color: $white; 
                 @include vertical-gradient( darken($this-color, 10%), darken($this-color, 15%) );
                 // text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
@@ -425,6 +456,14 @@
             }
         }
     }/* end @for */
+    
+    
+    .content-wrapper {
+        /* Shorten the amount of blue space under the nav on inner pages */
+        .inner & {
+            padding-top: 1.75em; 
+        }
+    }
     
     /* Main content with sidebars */
     .main-content { 
@@ -589,6 +628,27 @@
             display: inline-block; 
         }
     }
+    
+    /* Feedback form */
+    .feedback {
+        padding-left: 1em; 
+        padding-right: 1em; 
+        
+        .widget-title {
+            position: relative; 
+            padding-left: 3em; 
+        }
+        .icon-megaphone {
+            font-size: 3em;
+            position: absolute;
+            top: -.125em;
+            left: -.1875em;
+        }
+        h3 {
+            margin-top: 0; 
+            padding-left: 3em; 
+        }
+    }
 }
 
 /* ! ===== Larger than 800px ===== */
@@ -677,19 +737,19 @@
     /* END */
     
     
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-    .lt-ie9 .site-headline a, .site-headline a img {
+    .site-headline a img {
         width: 254px * .88; 
         height: 82px * .88; 
     }
     
     .site-headline {
-        margin: rhythm( .175 ) 0; 
+        margin: .25em 0 .5em; 
     }
     
     .options-bar {
         margin: rhythm( .5 ) 0; 
     }
+    
     .search-field {
         background: $white;
         padding: .4em .5em .3em;
@@ -944,6 +1004,40 @@
             visibility: visible; 
         }
     }
+    
+    /* Feedback form */
+    .feedback {
+        padding-left: 0; 
+        padding-right: 0; 
+        
+        .shrubbery {
+            @include squish(1,1);  
+        }
+        .accordion-wrapper {
+            @include squish(1,1); 
+        }
+        label[for=id_name], 
+        label[for=id_email], 
+        label[for=id_country], 
+        label[for=id_issue_type], 
+        label[for=id_comment] {
+            display: inline-block; 
+            text-align: right; 
+            width: columns(2); 
+            margin-right: gutter(); 
+        }
+        #id_name, 
+        #id_email, 
+        #id_country, 
+        #id_issue_type, 
+        #id_comment {
+            display: inline-block; 
+            width: columns(8); 
+        }
+        button {
+            margin-left: columns(2) + gutter(); 
+        }
+    }
 }
 
 /* ! ===== Larger than 940px ===== */
@@ -1012,6 +1106,9 @@
              
         }
     }
+        .single-event-title {
+            @include fontface-adjust( 32px );  
+        }
     /*aside*/ .left-sidebar {
         
     }
@@ -1172,6 +1269,21 @@
             padding: 0.3em 0.75em;
         }
     }
+    
+    /* Feedback form */
+    .feedback {
+    
+        h2, h3 {
+            display: inline-block; 
+        }
+        h3 {
+            padding-left: .125em; 
+            margin-bottom: .125em; 
+        }
+        .shrubbery p {
+            padding-left: 5em; 
+        }
+    }
 }
 
 
@@ -1182,10 +1294,11 @@
     .temp-arrow {
         background: url('../img/temp-arrow.png') 0 0 no-repeat;
         position: absolute;
-        top: 150px;
-        right:-50px;
-        height: 100px;
+        top: 50%;
+        right: 0;
         width: 50px;
+        height: 100px;
+        margin: -50px -50px 0 0; 
     }
     
     .latest-blog-post, .featured-event, .jobs-intro {
@@ -1214,13 +1327,16 @@
     /* Main content with sidebars */
     .main-content { 
         
-        &.with-left-sidebar {
+        .inner &.with-left-sidebar {
             @include pad( 1, 1 ); 
         }
         &.with-right-sidebar {
              
         }
     }
+        .event-description, .job-description {
+            @include pad( 1,1 ); 
+        }
     /*aside*/ .left-sidebar {
         
     }

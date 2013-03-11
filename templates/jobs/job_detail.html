@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="jobs"{% endblock %}
+{% block body_attributes %}class="jobs inner single-job"{% endblock %}
 
 
 {% block main-nav_attributes %}jobs-navigation{% endblock %}
@@ -12,27 +12,11 @@
 {% endblock %}
 
 
-{% block header_content %}
-                
-                <!-- "Featured" text. Needs to be editable somewhere. -->
-                <div class="jobs-intro">
-                    <h2 class="welcome-message">Get exploring! </h2>
-                    
-                    <!-- The counts here needs to be DB-driven -->
-                    <h1 class="call-to-action">340 jobs from 122 companies on the Python Job Board</h1>
-                    
-                    <p class="excerpt"><strong>Have a job to post?</strong> Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job postings and create new ones. </p>
-                </div>
-                
-{% endblock header_content %}
-
-
-
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block content %}
 {% load companies %}
-                <div class="text">
+                <article class="text">
             		
             		<h1 class="listing-company">
                         <span class="listing-company-name">
@@ -42,10 +26,13 @@
                     </h1>
                     
                     <!-- User input html/markup/rst/whatever -->
-                    <div class="job-post-content">
+                    <div class="job-description">
                     
                         <h2>Job Description</h2>
+                        
+                        <!-- Shouldn't this allow HTML? If the description contains HTML it does not render, but outputs as a string instead -->
                         <p>{{ object.description }}</p>
+                        
                         
                         <h2>Restrictions</h2>
                         <ul>
@@ -109,23 +96,37 @@
                     </div>
                     
                     
-        		</div>
+        		</article>
         		
         		
         		<!-- Next or Previous Jobs by date posted -->
                 <p class="previous-next">
                     {% with object.get_previous_by_creation as previous %}
-                    {% if previous %}
+                    
+                    {% comment %}
+                    If this is the first job and there is no Previous job, we want to disable this button with the disabled class
                     <a class="prev-button disabled" href="{{ previous.get_absolute_url }}">
+                    
+                    I assume we can do this in an ELSE on the next if statement?
+                    {% endcomment %}
+                    
+                    {% if previous %}
+                    <a class="prev-button" href="{{ previous.get_absolute_url }}">
                         <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
-                        <!--<span class="prevnext-description">
-                            <span class="job-category"></span> with <span class="company-name"></span>
-                        </span>-->
+                        <span class="prevnext-description">
+                            <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
+                        </span>
                     </a>
                     {% endif %}
                     {% endwith %}
 
                     {% with object.get_next_by_creation as next %}
+                    
+                    {% comment %}
+                    If this is the last job and there is no Next job, we want to disable this button with the disabled class
+                    <a class="next-button disabled" href="{{ next.get_absolute_url }}">
+                    {% endcomment %}
+                    
                     {% if next %}
                     <a class="next-button" href="{{ next.get_absolute_url }}">
                         <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
