@@ -19,3 +19,11 @@ class FeedbackForm(ContentManageableModelForm):
         widgets = {
             'feedback_categories': CheckboxSelectMultiple()
         }
+
+
+class FeedbackMiniForm(ContentManageableModelForm):
+    class Meta(object):
+        model = Feedback
+        fields = (
+            'comment',
+        )
