@@ -262,8 +262,8 @@
     font-size: 1.625em; }
     .fontface .call-to-action {
       font-size: 1.86875em; }
-      .fontface .call-to-action [class^="icon-"]:before, .fontface .call-to-action [class*=" icon-"]:before {
-        font-size: .85em; }
+      .fontface .call-to-action span:before {
+        font-size: .875em; }
 
   /* Header-banners (not home) */
   .header-banner {
@@ -523,7 +523,7 @@
       border-bottom: 1px solid #dca900;
       border-left: 1px solid #ffdf76; }
       .docs-navigation .tier-1 > a {
-        color: #e6e8ea;
+        color: #444444;
         background-color: transparent;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
@@ -1270,13 +1270,13 @@
     min-height: 15em; }
 
   .about-banner {
-    background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
 
   .download-for-current-os {
-    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
+    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361286604') transparent; }
 
   .documentation-banner {
-    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
+    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361286604') transparent; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1358,7 +1358,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+      background: top left no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1621,7 +1621,7 @@
     padding-right: 34.04255%; }
 
   .about-banner {
-    background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
 
   .featured-success-story .success-quote {
     margin-left: 8.51064%;
@@ -1636,8 +1636,8 @@
     font-size: 2em; }
     .fontface .single-event-title {
       font-size: 2.3em; }
-      .fontface .single-event-title [class^="icon-"]:before, .fontface .single-event-title [class*=" icon-"]:before {
-        font-size: .85em; }
+      .fontface .single-event-title span:before {
+        font-size: .875em; }
 
   /*aside*/
   /*aside*/
