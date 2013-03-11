@@ -240,15 +240,20 @@ p, ul, ol, dl, blockquote, address, table {
       font-size: .875em; }
 
 /* Header-banners (not home) */
-.header-banner > div {
-  padding-top: 1em;
-  padding-bottom: 1em; }
-.home .header-banner {
-  padding: 0; }
+.header-banner {
+  padding: 1em; }
+  .home .header-banner, .inner .header-banner {
+    padding: 0; }
 
 .about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
   padding-left: 8.51064%;
   padding-right: 8.51064%; }
+
+.main-header {
+  /* Shorten the amount of blue space under the nav on inner pages */ }
+  .inner .main-header {
+    position: relative;
+    z-index: 10; }
 
 /*<nav class="main-navigation" role="navigation">*/
 .main-navigation {
@@ -263,7 +268,8 @@ p, ul, ol, dl, blockquote, address, table {
   -ms-border-radius: 8px 8px 0 0;
   -o-border-radius: 8px 8px 0 0;
   border-radius: 8px 8px 0 0;
-  /*ul*/ }
+  /*ul*/
+  /* Shorten the amount of blue space under the nav on inner pages */ }
   .main-navigation .menu {
     margin-bottom: 0; }
   .main-navigation .tier-1, .main-navigation .tier-2 {
@@ -281,6 +287,8 @@ p, ul, ol, dl, blockquote, address, table {
     text-align: left; }
   .main-navigation .tier-2 {
     font-size: 0.875em; }
+  .inner .main-navigation {
+    margin-bottom: -1.75em; }
 
 /* 
  * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
@@ -869,6 +877,11 @@ p, ul, ol, dl, blockquote, address, table {
       line-height: 1.25em; }
 
 /* end @for */
+.content-wrapper {
+  /* Shorten the amount of blue space under the nav on inner pages */ }
+  .inner .content-wrapper {
+    padding-top: 1.75em; }
+
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
   width: 65.95745%;
@@ -1085,6 +1098,11 @@ p, ul, ol, dl, blockquote, address, table {
   left: -28em; }
 
 /* END */
+/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+.lt-ie9 .site-headline a, .site-headline a img {
+  width: 223.52px;
+  height: 72.16px; }
+
 .site-headline {
   margin: 0.30625em 0; }
 
@@ -1120,20 +1138,13 @@ p, ul, ol, dl, blockquote, address, table {
   min-height: 15em; }
 
 .about-banner {
-  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
 
 .download-for-current-os {
-  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent;
-  min-height: 19.5em; }
-
-.documentation .main-header {
-  /* Increase the space under th ebanner so the image can overlap a little */
-  margin-bottom: 1em; }
+  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361286604') transparent; }
 
 .documentation-banner {
-  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent;
-  min-height: 23em;
-  margin-bottom: -2.5em; }
+  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361286604') transparent; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1215,7 +1226,7 @@ p, ul, ol, dl, blockquote, address, table {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1480,7 +1491,8 @@ a.jump-to-menu {
 .navigation .close-subnav {
   border-top: 0; }
 
-.site-headline a img {
+/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
+.lt-ie9 .site-headline a, .site-headline a img {
   width: 254px;
   height: 82px; }
 
@@ -1503,7 +1515,7 @@ a.jump-to-menu {
   padding-right: 34.04255%; }
 
 .about-banner {
-  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;
@@ -1513,6 +1525,13 @@ a.jump-to-menu {
 .main-content.with-left-sidebar {
   padding-left: 3.19149%;
   padding-right: 3.19149%; }
+
+.single-event-title {
+  font-size: 2em; }
+  .fontface .single-event-title {
+    font-size: 2.3em; }
+    .fontface .single-event-title span:before {
+      font-size: .875em; }
 
 /*aside*/
 /*aside*/
