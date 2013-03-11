@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -499,12 +500,12 @@ form {
 label {
   display: block;
   margin-top: 0.875em;
-  /*modernizr*/
-  /*modernizr*/ }
-  .placeholder label {
-    display: none; }
-  .placeholder label.always-show {
-    display: block; }
+  /*modernizr .placeholder & {
+      display: none; 
+  }*/
+  /*modernizr .placeholder &.always-show {
+      display: block; 
+  }*/ }
 
 input, textarea {
   width: 100%;
@@ -811,7 +812,9 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
       height: 0;
       border-style: solid;
       border-width: 0.5em;
-      border-color: transparent;
+      border-right-color: transparent;
+      border-bottom-color: transparent;
+      border-left-color: transparent;
       top: 0;
       left: -999em;
       margin-left: -.25em; }
@@ -1002,9 +1005,9 @@ a.jump-to-menu {
   .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
     position: relative;
     /*modernizr*/ }
-    .no-touch .adjust-font-size .tier-1:hover .subnav, .no-touch .adjust-font-size .tier-1:focus .subnav, .touch .adjust-font-size .tier-1 .subnav.touched, .no-touch .winkwink-nudgenudge .tier-1:hover .subnav, .no-touch .winkwink-nudgenudge .tier-1:focus .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav.touched {
+    .adjust-font-size .tier-1:hover .subnav, .adjust-font-size .tier-1:focus .subnav, .touch .adjust-font-size .tier-1 .subnav.touched, .winkwink-nudgenudge .tier-1:hover .subnav, .winkwink-nudgenudge .tier-1:focus .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav.touched {
       left: 0; }
-    .adjust-font-size .tier-1.last:hover .subnav, .adjust-font-size .tier-1.last:focus .subnav, .touch .adjust-font-size .tier-1.last .subnav.touched, .winkwink-nudgenudge .tier-1.last:hover .subnav, .winkwink-nudgenudge .tier-1.last:focus .subnav, .touch .winkwink-nudgenudge .tier-1.last .subnav.touched {
+    .adjust-font-size .tier-1.element-5:hover .subnav, .adjust-font-size .tier-1.element-5:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav.touched, .adjust-font-size .tier-1.element-6:hover .subnav, .adjust-font-size .tier-1.element-6:focus .subnav, .adjust-font-size .tier-1.element-6:hover .subnav.touched, .adjust-font-size .tier-1.element-7:hover .subnav, .adjust-font-size .tier-1.element-7:focus .subnav, .adjust-font-size .tier-1.element-7:hover .subnav.touched, .adjust-font-size .tier-1.element-8:hover .subnav, .adjust-font-size .tier-1.element-8:focus .subnav, .adjust-font-size .tier-1.element-8:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-5:hover .subnav, .winkwink-nudgenudge .tier-1.element-5:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-6:hover .subnav, .winkwink-nudgenudge .tier-1.element-6:focus .subnav, .winkwink-nudgenudge .tier-1.element-6:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-7:hover .subnav, .winkwink-nudgenudge .tier-1.element-7:focus .subnav, .winkwink-nudgenudge .tier-1.element-7:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-8:hover .subnav, .winkwink-nudgenudge .tier-1.element-8:focus .subnav, .winkwink-nudgenudge .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
   .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
@@ -1029,11 +1032,9 @@ a.jump-to-menu {
         height: 0;
         border-style: solid;
         border-width: 0.75em;
-        border-color: transparent;
-        top: -1.5em;
+        top: -1.45em;
         left: 1em;
-        display: block;
-        border-color: transparent transparent white transparent; }
+        display: block; }
   .touch .adjust-font-size .tier-1.last .subnav:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before {
     left: auto;
     right: 1em; }
@@ -1455,7 +1456,6 @@ a.jump-to-menu {
     height: 0;
     border-style: solid;
     border-width: 0.6em;
-    border-color: transparent;
     bottom: -1.1em;
     left: 20%;
     border-top-color: #ffdf76; }
@@ -2503,6 +2503,29 @@ you can use the generic selector below, but it's slower:
 
 .icon-search:before {
   content: "\e025"; }
+
+/* For Feedback form */
+@font-face {
+  font-family: 'Temporary';
+  src: url("fonts/Temporary.eot"); }
+
+@font-face {
+  font-family: 'Temporary';
+  src: url(data:application/x-font-woff;charset=utf-8;base64,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) format("woff"), url(data:application/x-font-ttf;charset=utf-8;base64,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) format("truetype");
+  font-weight: normal;
+  font-style: normal; }
+
+/* Use the following CSS code if you want to have a class per icon */
+.icon-megaphone:before {
+  font-family: 'Temporary';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
+  content: "\e003"; }
 
 /* 
  * Hide from anything that does not support FontFace (Opera Mini, Blackberry) 

@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -331,7 +332,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#bbd4e9 10%, #d6e5f2 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
-    box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15); }
+    box-shadow: inset 0 0 20px rgba(55, 118, 171, 0.15);
+    /*modernizr*/ }
+    .touch .python-navigation .subnav:before {
+      border-color: transparent transparent #bbd4e9 transparent; }
   .python-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(55, 118, 171, 0.25);
@@ -424,7 +428,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#dadada 10%, #ececec 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
-    box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15); }
+    box-shadow: inset 0 0 20px rgba(120, 121, 122, 0.15);
+    /*modernizr*/ }
+    .touch .psf-navigation .subnav:before {
+      border-color: transparent transparent #dadada transparent; }
   .psf-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(120, 121, 122, 0.25);
@@ -517,7 +524,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#ffffff 10%, #ffffff 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
-    box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15); }
+    box-shadow: inset 0 0 20px rgba(255, 211, 67, 0.15);
+    /*modernizr*/ }
+    .touch .docs-navigation .subnav:before {
+      border-color: transparent transparent white transparent; }
   .docs-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(255, 211, 67, 0.25);
@@ -610,7 +620,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#ddebca 10%, #eef5e4 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
-    box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15); }
+    box-shadow: inset 0 0 20px rgba(130, 176, 67, 0.15);
+    /*modernizr*/ }
+    .touch .pypl-navigation .subnav:before {
+      border-color: transparent transparent #ddebca transparent; }
   .pypl-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(130, 176, 67, 0.25);
@@ -703,7 +716,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#eee5ef 10%, #fcfbfd 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
-    box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15); }
+    box-shadow: inset 0 0 20px rgba(160, 107, 167, 0.15);
+    /*modernizr*/ }
+    .touch .jobs-navigation .subnav:before {
+      border-color: transparent transparent #eee5ef transparent; }
   .jobs-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(160, 107, 167, 0.25);
@@ -796,7 +812,10 @@ p, ul, ol, dl, blockquote, address, table {
     background-image: linear-gradient(#f1dee0 10%, #fbf7f8 90%);
     -webkit-box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
     -moz-box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
-    box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15); }
+    box-shadow: inset 0 0 20px rgba(181, 88, 99, 0.15);
+    /*modernizr*/ }
+    .touch .shop-navigation .subnav:before {
+      border-color: transparent transparent #f1dee0 transparent; }
   .shop-navigation .tier-2 > a {
     color: rgba(68, 68, 68, 0.9);
     border-top: 1px solid rgba(181, 88, 99, 0.25);
@@ -1327,9 +1346,9 @@ a.jump-to-menu {
   .main-navigation .tier-1 {
     position: relative;
     /*modernizr*/ }
-    .no-touch .main-navigation .tier-1:hover .subnav, .no-touch .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
+    .main-navigation .tier-1:hover .subnav, .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
       left: 0; }
-    .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .touch .main-navigation .tier-1.last .subnav.touched {
+    .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
   .main-navigation .subnav {
@@ -1354,11 +1373,9 @@ a.jump-to-menu {
         height: 0;
         border-style: solid;
         border-width: 0.75em;
-        border-color: transparent;
-        top: -1.5em;
+        top: -1.45em;
         left: 1em;
-        display: block;
-        border-color: transparent transparent white transparent; }
+        display: block; }
   .touch .main-navigation .tier-1.last .subnav:before {
     left: auto;
     right: 1em; }
@@ -1402,7 +1419,7 @@ a.jump-to-menu {
     vertical-align: baseline;
     /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
     width: auto;
-    margin: 0 -0.3em 0 0;
+    margin: 0 -4px 0 0;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     border-left: 1px solid rgba(255, 255, 255, 0.1); }
     .lt-ie8 .main-navigation .tier-1 {
@@ -1418,6 +1435,10 @@ a.jump-to-menu {
 
 .navigation .close-subnav {
   border-top: 0; }
+
+.site-headline a img {
+  width: 254px;
+  height: 82px; }
 
 .search-field {
   width: 14em; }
@@ -1446,8 +1467,8 @@ a.jump-to-menu {
 
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
-  padding-left: 5.31915%;
-  padding-right: 5.31915%; }
+  padding-left: 3.19149%;
+  padding-right: 3.19149%; }
 
 /*aside*/
 /*aside*/

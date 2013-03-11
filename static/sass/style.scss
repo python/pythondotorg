@@ -175,12 +175,12 @@ label {
     display: block; 
     @include leader( .5 ); 
     
-    /*modernizr*/ .placeholder & {
+    /*modernizr .placeholder & {
         display: none; 
-    }
-    /*modernizr*/ .placeholder &.always-show {
+    }*/
+    /*modernizr .placeholder &.always-show {
         display: block; 
-    }
+    }*/
 }
 
 input, textarea {
@@ -429,6 +429,9 @@ abbr, dfn {
         /* no fallback for .no-generatedcontent. This is a progressive enhancement */
         &:before {
             @include pointer( .5em );
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: transparent; 
             top: 0; 
             left: -999em; 
             margin-left: -.25em; 
@@ -2093,6 +2096,10 @@ p.quote-by-organization {
     }
 }
 
+
+.feedback {
+    @extend %yellow-colorspace; 
+}
 
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */

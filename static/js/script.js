@@ -24,8 +24,7 @@ console.log( "is_ltie9=" + is_ltie9 );
 /*
  * WE NEED the Following: 
  
- 1) Make the body text larger, make the body text smaller functions
- 2) Something like FitText.js for numbers in the statistics widget
+ 1) Something like FitText.js for numbers in the statistics widget
  
  */
 
@@ -49,6 +48,7 @@ on_resize(function() {
      */
     mq_tag = window.getComputedStyle(document.body,':after').getPropertyValue('content');
     console.log( "media query tag=" + mq_tag ); 
+    
     
     if ( mq_tag.indexOf("animatebody") !=-1 ) {
         $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
@@ -244,7 +244,7 @@ $().ready(function() {
     
     
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
-    if ( hasplaceholder == false ) {
+    if ( hasplaceholder === false ) {
         
         /* polyfill from hagenburger: https://gist.github.com/379601 */
         $('[placeholder]').focus(function() {
@@ -255,7 +255,7 @@ $().ready(function() {
             }
         }).blur(function() {
             var input = $(this);
-            if (input.val() == '' || input.val() == input.attr('placeholder')) {
+            if (input.val() === '' || input.val() == input.attr('placeholder')) {
                 input.addClass('placeholder');
                 input.val(input.attr('placeholder'));
             }
@@ -312,7 +312,7 @@ function getViewport() {
     // IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
     else if (typeof document.documentElement != 'undefined'
     && typeof document.documentElement.clientWidth !=
-    'undefined' && document.documentElement.clientWidth != 0) {
+    'undefined' && document.documentElement.clientWidth !== 0) {
         viewPortWidth = document.documentElement.clientWidth,
         viewPortHeight = document.documentElement.clientHeight
     }
