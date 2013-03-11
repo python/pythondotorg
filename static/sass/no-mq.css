@@ -296,7 +296,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#3776ab 30%, #2d618c 95%);
   background-image: linear-gradient(#3776ab 30%, #2d618c 95%);
   border-top: 1px solid #629ccd;
-  border-bottom: 1px solid #18334b; }
+  border-bottom: 1px solid #18334b;
+  /*a*/ }
   .python-navigation .tier-1 {
     border-top: 1px solid #4f90c6;
     border-right: 1px solid #2b5b84;
@@ -345,7 +346,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .python-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(55, 118, 171, 0.25); }
-  .python-navigation .selected > a {
+  .python-navigation .current_item {
     color: white;
     background-color: #244e71;
     *zoom: 1;
@@ -392,7 +393,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#78797a 30%, #646565 95%);
   background-image: linear-gradient(#78797a 30%, #646565 95%);
   border-top: 1px solid #9e9fa0;
-  border-bottom: 1px solid #39393a; }
+  border-bottom: 1px solid #39393a;
+  /*a*/ }
   .psf-navigation .tier-1 {
     border-top: 1px solid #929393;
     border-right: 1px solid #5f5f60;
@@ -441,7 +443,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .psf-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(120, 121, 122, 0.25); }
-  .psf-navigation .selected > a {
+  .psf-navigation .current_item {
     color: white;
     background-color: #525353;
     *zoom: 1;
@@ -488,7 +490,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#ffd343 30%, #ffc91a 95%);
   background-image: linear-gradient(#ffd343 30%, #ffc91a 95%);
   border-top: 1px solid #ffe58f;
-  border-bottom: 1px solid #c39500; }
+  border-bottom: 1px solid #c39500;
+  /*a*/ }
   .docs-navigation .tier-1 {
     border-top: 1px solid #ffdf76;
     border-right: 1px solid #ffc710;
@@ -537,7 +540,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .docs-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(255, 211, 67, 0.25); }
-  .docs-navigation .selected > a {
+  .docs-navigation .current_item {
     color: white;
     background-color: #f5bc00;
     *zoom: 1;
@@ -584,7 +587,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#82b043 30%, #6c9238 95%);
   background-image: linear-gradient(#82b043 30%, #6c9238 95%);
   border-top: 1px solid #a6ca75;
-  border-bottom: 1px solid #3e5420; }
+  border-bottom: 1px solid #3e5420;
+  /*a*/ }
   .pypl-navigation .tier-1 {
     border-top: 1px solid #9bc363;
     border-right: 1px solid #678b35;
@@ -633,7 +637,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .pypl-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(130, 176, 67, 0.25); }
-  .pypl-navigation .selected > a {
+  .pypl-navigation .current_item {
     color: white;
     background-color: #59792e;
     *zoom: 1;
@@ -680,7 +684,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#a06ba7 30%, #8b5792 95%);
   background-image: linear-gradient(#a06ba7 30%, #8b5792 95%);
   border-top: 1px solid #bf9bc4;
-  border-bottom: 1px solid #58375c; }
+  border-bottom: 1px solid #58375c;
+  /*a*/ }
   .jobs-navigation .tier-1 {
     border-top: 1px solid #b58bba;
     border-right: 1px solid #85538c;
@@ -729,7 +734,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .jobs-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(160, 107, 167, 0.25); }
-  .jobs-navigation .selected > a {
+  .jobs-navigation .current_item {
     color: white;
     background-color: #764a7c;
     *zoom: 1;
@@ -776,7 +781,8 @@ p, ul, ol, dl, blockquote, address, table {
   background-image: -o-linear-gradient(#b55863 30%, #9e4650 95%);
   background-image: linear-gradient(#b55863 30%, #9e4650 95%);
   border-top: 1px solid #cc8d95;
-  border-bottom: 1px solid #622b32; }
+  border-bottom: 1px solid #622b32;
+  /*a*/ }
   .shop-navigation .tier-1 {
     border-top: 1px solid #c57b84;
     border-right: 1px solid #97434d;
@@ -825,7 +831,7 @@ p, ul, ol, dl, blockquote, address, table {
       color: rgba(34, 34, 34, 0.9); }
   .shop-navigation .tier-2:last-child > a {
     border-bottom: 1px solid rgba(181, 88, 99, 0.25); }
-  .shop-navigation .selected > a {
+  .shop-navigation .current_item {
     color: white;
     background-color: #853b44;
     *zoom: 1;
@@ -1015,6 +1021,11 @@ p, ul, ol, dl, blockquote, address, table {
   text-align: center; }
   .footer-links li {
     display: inline-block; }
+
+/* Feedback form */
+.feedback {
+  padding-left: 1em;
+  padding-right: 1em; }
 
 /* TEMPORARY. Move further down later after testing. */
 /* Supernavs in main-navigation */
@@ -1306,6 +1317,35 @@ p, ul, ol, dl, blockquote, address, table {
   display: inline;
   visibility: visible; }
 
+/* Feedback form */
+.feedback {
+  padding-left: 0;
+  padding-right: 0; }
+  .feedback .shrubbery {
+    margin-left: 8.51064%;
+    margin-right: 8.51064%; }
+  .feedback .accordion-wrapper {
+    margin-left: 8.51064%;
+    margin-right: 8.51064%; }
+  .feedback label[for=id_name],
+  .feedback label[for=id_email],
+  .feedback label[for=id_country],
+  .feedback label[for=id_issue_type],
+  .feedback label[for=id_comment] {
+    display: inline-block;
+    text-align: right;
+    width: 14.89362%;
+    margin-right: 2.12766%; }
+  .feedback #id_name,
+  .feedback #id_email,
+  .feedback #id_country,
+  .feedback #id_issue_type,
+  .feedback #id_comment {
+    display: inline-block;
+    width: 65.95745%; }
+  .feedback button {
+    margin-left: 17.02128%; }
+
 a.jump-to-menu {
   display: none; }
 
@@ -1412,6 +1452,7 @@ a.jump-to-menu {
   .main-navigation .menu {
     text-align: center; }
   .main-navigation .tier-1 {
+    float: none;
     border-top: 0;
     border-bottom: 0;
     display: -moz-inline-stack;
@@ -1419,9 +1460,10 @@ a.jump-to-menu {
     vertical-align: baseline;
     /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
     width: auto;
-    margin: 0 -4px 0 0;
+    margin: 0 -5px 0 0;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
-    border-left: 1px solid rgba(255, 255, 255, 0.1); }
+    border-left: 1px solid rgba(255, 255, 255, 0.1);
+    /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
     .lt-ie8 .main-navigation .tier-1 {
       vertical-align: auto;
       zoom: 1;
@@ -1430,6 +1472,8 @@ a.jump-to-menu {
       border-left: 0; }
     .main-navigation .tier-1.last {
       border-right: 0; }
+    .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
+      width: auto; }
   .main-navigation .tier-1 > a {
     padding: 0.65em 1.25em 0.55em; }
 
@@ -1568,6 +1612,15 @@ a.jump-to-menu {
 
 .footer-links a {
   padding: 0.3em 0.75em; }
+
+/* Feedback form */
+.feedback h2, .feedback h3 {
+  display: inline-block; }
+.feedback h3 {
+  padding-left: .125em;
+  margin-bottom: .125em; }
+.feedback .shrubbery p {
+  padding-left: 5em; }
 
 /* Additional media query contents that we want to deliver to non-media query enabled browsers */
 /* ! ===== lt-IE9 rules ===== */

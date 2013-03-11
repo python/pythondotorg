@@ -338,7 +338,7 @@ abbr.truncation {
 /* 
  * KNOWN Bugs and rendering issues
  *
- * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing. 
+ * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
  */
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 body {
@@ -627,8 +627,21 @@ abbr, dfn {
     display: table;
     clear: both; }
 
+.feedback {
+  background-color: #ffdd6c;
+  *zoom: 1;
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe89f), color-stop(90%, #ffdd6c));
+  background-image: -webkit-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: -moz-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: -o-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05); }
+
 /* Buttons */
-input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button {
+input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button, .feedback button {
   background-color: #cccccc;
   background-color: #cccccc;
   *zoom: 1;
@@ -696,7 +709,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
     background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
 
-.search-button {
+.search-button, .feedback button {
   background-color: #3776ab;
   background-color: #2b5b84;
   *zoom: 1;
@@ -715,7 +728,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   color: #e6e8ea !important;
   text-shadow: none; }
-  .search-button:hover, .search-button:active {
+  .search-button:hover, .feedback button:hover, .search-button:active, .feedback button:active {
     background: inherit;
     background-color: #244e71;
     *zoom: 1;
@@ -2070,6 +2083,36 @@ p.quote-by-organization {
     .copyright a:hover, .copyright a:focus {
       color: white;
       text-decoration: none; }
+
+.feedback {
+  border-top: 1px solid #ffd343;
+  padding-top: 1.75em; }
+  .feedback .widget-title {
+    position: relative;
+    padding-left: 3em; }
+  .feedback .icon-megaphone {
+    font-size: 3em;
+    position: absolute;
+    top: -.125em;
+    left: -.1875em; }
+  .feedback h3 {
+    margin-top: 0;
+    padding-left: 3em; }
+  .feedback .shrubbery {
+    padding-bottom: 0.4375em; }
+    .feedback .shrubbery a {
+      color: #3776ab; }
+  .feedback .accordion-wrapper {
+    padding-top: 1.3125em;
+    border-top: 1px solid #ffd343; }
+  .feedback .helptext {
+    font-style: italic;
+    font-size: 0.875em; }
+
+.accordion-wrapper {
+  display: none; }
+  .no-js .accordion-wrapper {
+    display: block; }
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
 #nojs, #oldie-warning {

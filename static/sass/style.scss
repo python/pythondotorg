@@ -19,7 +19,7 @@
 /* 
  * KNOWN Bugs and rendering issues
  *
- * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing. 
+ * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
  */
  
 
@@ -272,6 +272,20 @@ abbr, dfn {
     padding: 1.25em;
     @include pie-clearfix();
 }
+
+%yellow-colorspace {
+    @include vertical-gradient( lighten( $yellow, 18%), lighten( $yellow, 8%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.05) );
+}
+
+%yellow-colorbox {
+    @extend %yellow-colorspace;
+    border: 1px solid darken( $yellow, 6% );
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
 
 /* Buttons */
 %button-style {
@@ -2099,6 +2113,49 @@ p.quote-by-organization {
 
 .feedback {
     @extend %yellow-colorspace; 
+    border-top: 1px solid $yellow; 
+    padding-top: rhythm(); 
+    
+    .widget-title {
+        position: relative; 
+        padding-left: 3em; 
+    }
+    .icon-megaphone {
+        font-size: 3em;
+        position: absolute;
+        top: -.125em;
+        left: -.1875em;
+    }
+    h3 {
+        margin-top: 0; 
+        padding-left: 3em; 
+    }
+    .shrubbery {
+        padding-bottom: rhythm( .25 ); 
+        
+        a {
+            color: $blue; 
+        }
+    }
+    .accordion-wrapper {
+        padding-top: rhythm( .75 ); 
+        border-top: 1px solid $yellow; 
+    }
+    .helptext {
+        font-style: italic; 
+        font-size: px2em( 14px ); 
+    }
+    button {
+        @extend %button-style-blue; 
+    }
+}
+
+.accordion-wrapper {
+    display: none; 
+    
+    .no-js & {
+        display: block; 
+    }
 }
 
 

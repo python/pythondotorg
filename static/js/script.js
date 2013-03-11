@@ -9,12 +9,14 @@ var hastouch = has_feature( "touch" );
 var hasplaceholder = has_feature( "placeholder" );
 var hasgeneratedcontent = has_feature( "generatedcontent" );
 var is_ltie9 = has_feature( "lt-ie9" );
+var is_retina = Retina.isRetina(); 
 
 /* Run a log for testing */
 console.log( "hastouch=" + hastouch ); 
 console.log( "hasplaceholder=" + hasplaceholder );
 console.log( "hasgeneratedcontent=" + hasgeneratedcontent );
 console.log( "is_ltie9=" + is_ltie9 );
+console.log( "is_retina=" + is_retina );
 
 
 /* For mobile, hide the iOS toolbar on initial page load */
@@ -25,6 +27,7 @@ console.log( "is_ltie9=" + is_ltie9 );
  * WE NEED the Following: 
  
  1) Something like FitText.js for numbers in the statistics widget
+ 2) A down and dirty Retina detection kit to swap out what few images would benefit. 
  
  */
 
@@ -41,6 +44,7 @@ supernavs_loaded = false;
 on_resize(function() {
     
     // Check if a container is empty !$.trim( $('#mainnav').html() ).length
+    var is_retina = Retina.isRetina(); 
     
     /* 
      * "Watch" the body:after { content } to find out how wide the viewport is. 
@@ -270,6 +274,14 @@ $().ready(function() {
     }
     
     
+    /* Trigger accordions where applicable */
+    $("a.accordion-trigger").click(function() {
+		var iden = jQuery(this).attr('href');
+		//$(this).toggleClass("opened");
+		$(iden).slideToggle();
+	});
+    
+    
     /* Non-media query enabled browsers need any critical content on page load. */
     if ( is_ltie9 ) {
         //$( '#mainnav' ). load( 'components/navigation.php' ); 
@@ -332,12 +344,4 @@ function getViewport() {
 $('#test-window-size').html(''+getViewport()+'');
 $(window).resize(function() {
 	$('#test-window-size').html(''+getViewport()+'');
-});
-
-
-/*
- * add class to nav element of current url
- */
-$(function() {
-    $('#mainnav li.tier-1 > a[href^="/' + location.pathname.split("/")[1] + '"]').parent('li').addClass('selected');
 });

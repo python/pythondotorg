@@ -225,8 +225,17 @@
 
         <div class="feedback">
             <div class="container">
-                {% load feedbacks_tags %}
-                {% get_feedback_mini_form %}
+                
+                <div class="shrubbery">
+                    <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2> 
+                    <h3>Python.org Beta only gets better if we hear from you.</h3>
+                    <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</a></p>
+                </div>
+                
+                <div id="feedback_form" class="row accordion-wrapper">
+                    {% load feedbacks_tags %}
+                    {% get_feedback_form %}
+                </div>
             </div>
         </div>
 
@@ -272,9 +281,6 @@
     {% block javascript %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
-
-    <script src="{{ STATIC_URL }}js/plugins.js"></script>
-    <script src="{{ STATIC_URL }}js/script.js"></script>
 
     {% compressed_js 'main.js' %}
     {% comment %}
