@@ -24,15 +24,6 @@ urlpatterns = patterns('',
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
-    # supernav menus
-    url(r'^supernav-python-about/$', TemplateView.as_view(template_name="components/supernav-python-about.html"), name='supernav-python-about'),
-    url(r'^supernav-python-downloads/$', TemplateView.as_view(template_name="components/supernav-python-downloads.html"), name='supernav-python-downloads'),
-    url(r'^supernav-python-documentation/$', TemplateView.as_view(template_name="components/supernav-python-documentation.html"), name='supernav-python-documentation'),
-    url(r'^supernav-python-community/$', TemplateView.as_view(template_name="components/supernav-python-community.html"), name='supernav-python-community'),
-    url(r'^supernav-python-success-stories/$', TemplateView.as_view(template_name="components/supernav-python-success-stories.html"), name='supernav-python-success-stories'),
-    url(r'^supernav-python-blog/$', TemplateView.as_view(template_name="components/supernav-python-blog.html"), name='supernav-python-blog'),
-    url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
-
     url(r'^box/', include('boxes.urls')),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^feedbacks/', include('feedbacks.urls')),
