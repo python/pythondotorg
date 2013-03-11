@@ -19,3 +19,10 @@ def chef():
 @invoke.task
 def django(c):
     run('ssh {host} sudo {python} {deploydir}/manage.py {c} --settings pydotorg.settings.staging', c=c)
+
+@invoke.task
+def copy_data_from_staging(keep=False):
+    run('curl -s -o staging.json https://preview.python.org/__secret/devfixture/')
+    run('python manage.py loaddata staging.json')
+    if not keep:
+        run('rm -f staging.json')
