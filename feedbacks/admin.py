@@ -7,7 +7,7 @@ from cms.admin import NameSlugAdmin
 class FeedbackAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     filter_horizontal = ['feedback_categories']
-    list_display = ['name', 'issue_type', 'created']
+    list_display = ['pk', 'name', 'issue_type', 'created']
     list_filter = ['issue_type', 'feedback_categories']
 
 
