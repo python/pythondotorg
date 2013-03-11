@@ -1,24 +1,9 @@
 {# ===== PyPl LANDING PAGE ===== #}
 
-{% extends "base.html" %}
+{% extends "waitforit.html" %}
+
 
 {% block body_attributes %}class="pypl"{% endblock %}
 
 
 {% block main-nav_attributes %}pypl-navigation{% endblock %}
-
-
-{% comment %}
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "pypi-meta" template "sitetree/submenu.html" %}
-{% endblock %}
-{% endcomment %}
-
-
-{% block header_content %}
-{% endblock header_content %}
-
-
-{% block content %}
-{% endblock content %}
