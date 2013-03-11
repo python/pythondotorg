@@ -35,7 +35,7 @@ urlpatterns = patterns('',
     url(r'^supernav-python-events/$', TemplateView.as_view(template_name="components/supernav-python-events.html"), name='supernav-python-events'),
 
     url(r'^box/', include('boxes.urls')),
-    url(r'^feedback/', include('feedbacks.urls')),
+    url(r'^feedbacks/', include('feedbacks.urls')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
