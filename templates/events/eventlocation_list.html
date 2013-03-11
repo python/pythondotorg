@@ -64,7 +64,7 @@
 
 {% block right_sidebar %}
             <aside class="right-sidebar" role="secondary">
-                
+                {% if event_categories %}
                 <div class="sidebar-widget eventtypes-widget">
                     <h2 class="widget-title">Event Categories</h2>
                     <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
@@ -74,6 +74,7 @@
                         {% endfor %}
                     </ul>
                 </div>
+                {% endif %}
             
                 <div class="sidebar-widget subscribe-widget">
                     <h2 class="widget-title">Python Event Subscriptions</h2>

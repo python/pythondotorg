@@ -78,7 +78,7 @@
 
 {% block right_sidebar %}
             <aside class="right-sidebar" role="secondary">
-                    
+                {% if event_categories %}
                 <div class="sidebar-widget eventtypes-widget">
                     <h2 class="widget-title">Event Categories</h2>
                     <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
@@ -89,7 +89,9 @@
                         <li><a class="readmore" href="{% url 'events:eventcategory_list' %}">More Types</a></li>
                     </ul>
                 </div>
-                
+                {% endif %}
+
+                {% if event_locations %}
                 <div class="sidebar-widget authors-widget">
                     <h2 class="widget-title">Event Locations</h2>
                     <p class="give-me-more"><a href="#" title="More Event Locations">More</a></p>
@@ -100,7 +102,8 @@
                        <li><a class="readmore" href="{% url 'events:eventlocation_list' %}">More Locations</a></li>
                     </ul>
                 </div>
-                
+                {% endif %}
+
                 <div class="sidebar-widget subscribe-widget">
                     <h2 class="widget-title">Python Event Subscriptions</h2>
                     <p>Subscribe to Python Event Calendars:</p>
