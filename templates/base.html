@@ -210,19 +210,34 @@
     <!-- Footer and social media list -->
     <footer id="site-map" class="main-footer" role="navigation">
         <div class="main-footer-links">
-        <div class="container">
+            <div class="container">
 
-            {% block footer_sitemap %}
-            <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+                {% block footer_sitemap %}
+                <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
 
-            {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
+                {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
 
-            <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
-            {% endblock footer_sitemap %}
+                <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+                {% endblock footer_sitemap %}
 
-        </div><!-- end .container -->
+            </div><!-- end .container -->
         </div> <!-- end .main-footer-links -->
 
+        <div class="feedback">
+            <div class="container">
+                
+                <div class="shrubbery">
+                    <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2> 
+                    <h3>Python.org Beta only gets better if we hear from you.</h3>
+                    <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</a></p>
+                </div>
+                
+                <div id="feedback_form" class="row accordion-wrapper">
+                    {% load feedbacks_tags %}
+                    {% get_feedback_form %}
+                </div>
+            </div>
+        </div>
 
         <div class="site-base">
             <div class="container">

@@ -19,7 +19,7 @@
 /* 
  * KNOWN Bugs and rendering issues
  *
- * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing. 
+ * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
  */
  
 
@@ -192,12 +192,12 @@ label {
     display: block; 
     @include leader( .5 ); 
     
-    /*modernizr*/ .placeholder & {
+    /*modernizr .placeholder & {
         display: none; 
-    }
-    /*modernizr*/ .placeholder &.always-show {
+    }*/
+    /*modernizr .placeholder &.always-show {
         display: block; 
-    }
+    }*/
 }
 
 input, textarea {
@@ -459,6 +459,9 @@ abbr, dfn {
         /* no fallback for .no-generatedcontent. This is a progressive enhancement */
         &:before {
             @include pointer( .5em );
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: transparent; 
             top: 0; 
             left: -999em; 
             margin-left: -.25em; 
@@ -2182,6 +2185,53 @@ p.quote-by-organization {
     }
 }
 
+
+.feedback {
+    @extend %yellow-colorspace; 
+    border-top: 1px solid $yellow; 
+    padding-top: rhythm(); 
+    
+    .widget-title {
+        position: relative; 
+        padding-left: 3em; 
+    }
+    .icon-megaphone {
+        font-size: 3em;
+        position: absolute;
+        top: -.125em;
+        left: -.1875em;
+    }
+    h3 {
+        margin-top: 0; 
+        padding-left: 3em; 
+    }
+    .shrubbery {
+        padding-bottom: rhythm( .25 ); 
+        
+        a {
+            color: $blue; 
+        }
+    }
+    .accordion-wrapper {
+        padding-top: rhythm( .75 ); 
+        border-top: 1px solid $yellow; 
+    }
+    .helptext {
+        font-style: italic; 
+        font-size: px2em( 14px ); 
+    }
+    button {
+        @extend %button-style-blue; 
+    }
+}
+
+.accordion-wrapper {
+    display: none; 
+    
+    .no-js & {
+        display: block; 
+    }
+}
 
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */

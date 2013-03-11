@@ -110,12 +110,13 @@
             text-align: center; 
         }
         .tier-1 {
+            float: none; 
             border-top: 0;
             border-bottom: 0;
             @include pe-inline-block(); 
             /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
             width: auto; 
-            margin: 0 -.3em 0 0; 
+            margin: 0 -5px 0 0; 
             @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
             
             &.element-1 {
@@ -123,6 +124,10 @@
             }
             &.last {
                 border-right: 0; 
+            }
+            /* We've set this explicitly before, so we need to "clear" the width value explicitly */
+            &.element-6, &.element-7 {
+                width: auto; 
             }
         }
         .tier-1 > a {
@@ -244,6 +249,7 @@
     }
 }
 
+
 /* ! ===== Larger than 640px ===== */
 @mixin min_width_640() {
     
@@ -358,6 +364,7 @@
     @for $i from 1 through length($names) {
     
         $this-color: nth($colors, $i); 
+        $bordertop: lighten( $this-color, 38% ); 
         
         .#{nth($names, $i)}-navigation {
             @include vertical-gradient( $this-color, adjust-lightness( $this-color, -8 ), 30%, 95% );
@@ -385,6 +392,13 @@
                 @include pe-border( $color-top: darken($this-color, 25%) );
                 @include vertical-gradient( lighten( $this-color, 38% ), lighten( $this-color, 45% ) );
                 @include box-shadow( inset 0 0 20px rgba($this-color, 0.15) );
+            
+                /*modernizr*/ .touch & {
+                    
+                    &:before {
+                        border-color: transparent transparent $bordertop transparent; 
+                    }
+                }
             }
             
             .tier-2 {
@@ -405,7 +419,7 @@
                 }
             }
             
-            .selected > a {
+            /*a*/ .current_item {
                 color: $white; 
                 @include vertical-gradient( darken($this-color, 10%), darken($this-color, 15%) );
                 // text-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
@@ -609,6 +623,12 @@
         li {
             display: inline-block; 
         }
+    }
+    
+    /* Feedback form */
+    .feedback {
+        padding-left: 1em; 
+        padding-right: 1em; 
     }
 }
 
@@ -965,6 +985,40 @@
             visibility: visible; 
         }
     }
+    
+    /* Feedback form */
+    .feedback {
+        padding-left: 0; 
+        padding-right: 0; 
+        
+        .shrubbery {
+            @include squish(1,1);  
+        }
+        .accordion-wrapper {
+            @include squish(1,1); 
+        }
+        label[for=id_name], 
+        label[for=id_email], 
+        label[for=id_country], 
+        label[for=id_issue_type], 
+        label[for=id_comment] {
+            display: inline-block; 
+            text-align: right; 
+            width: columns(2); 
+            margin-right: gutter(); 
+        }
+        #id_name, 
+        #id_email, 
+        #id_country, 
+        #id_issue_type, 
+        #id_comment {
+            display: inline-block; 
+            width: columns(8); 
+        }
+        button {
+            margin-left: columns(2) + gutter(); 
+        }
+    }
 }
 
 /* ! ===== Larger than 940px ===== */
@@ -1194,6 +1248,21 @@
         
         a {
             padding: 0.3em 0.75em;
+        }
+    }
+    
+    /* Feedback form */
+    .feedback {
+    
+        h2, h3 {
+            display: inline-block; 
+        }
+        h3 {
+            padding-left: .125em; 
+            margin-bottom: .125em; 
+        }
+        .shrubbery p {
+            padding-left: 5em; 
         }
     }
 }
