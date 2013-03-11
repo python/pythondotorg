@@ -1,3 +1,7 @@
+@import "base";
+@import "functions";
+@import "mixins";
+
 /* ********************************
 
     NOTE
@@ -131,9 +135,7 @@
             }
         }
         .tier-1 > a {
-            // font-weight: bold;
             padding: .65em 1.25em .55em;
-            // text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
         }
         .tier-2 {
             
@@ -142,13 +144,12 @@
     .navigation {
         .close-subnav {
             border-top: 0;
-            // @include pe-border( $color-bottom: rgba( #666, .2 ) );
              
             a {
-                // @include pe-border( $color-right: rgba( #fff, .8 ) );
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
             }
             .close-for-touch {
-                // @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
             }
         }
     }
@@ -218,10 +219,6 @@
         /* @include transition( all .3s ease-in-out ); makes the media query changes animate */
     }
     
-    p, ul, ol, dl, blockquote, address, table {
-        font-size: px2em( 15px );
-    }
-    
     .meta-navigation, 
     .main-header, 
     .main-navigation,
@@ -246,6 +243,13 @@
     .success-stories-widget blockquote {
         font-size: px2em(18px);
         padding: 1em 1.4em 1.3em;
+    }
+    
+    .text {
+        
+        p, ul, ol, dl, blockquote, address, table {
+            font-size: px2em( 15px );
+        }
     }
 }
 
@@ -629,6 +633,21 @@
     .feedback {
         padding-left: 1em; 
         padding-right: 1em; 
+        
+        .widget-title {
+            position: relative; 
+            padding-left: 3em; 
+        }
+        .icon-megaphone {
+            font-size: 3em;
+            position: absolute;
+            top: -.125em;
+            left: -.1875em;
+        }
+        h3 {
+            margin-top: 0; 
+            padding-left: 3em; 
+        }
     }
 }
 
@@ -718,19 +737,19 @@
     /* END */
     
     
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-    .lt-ie9 .site-headline a, .site-headline a img {
+    .site-headline a img {
         width: 254px * .88; 
         height: 82px * .88; 
     }
     
     .site-headline {
-        margin: rhythm( .175 ) 0; 
+        margin: .25em 0 .5em; 
     }
     
     .options-bar {
         margin: rhythm( .5 ) 0; 
     }
+    
     .search-field {
         background: $white;
         padding: .4em .5em .3em;
@@ -1275,10 +1294,11 @@
     .temp-arrow {
         background: url('../img/temp-arrow.png') 0 0 no-repeat;
         position: absolute;
-        top: 150px;
-        right:-50px;
-        height: 100px;
+        top: 50%;
+        right: 0;
         width: 50px;
+        height: 100px;
+        margin: -50px -50px 0 0; 
     }
     
     .latest-blog-post, .featured-event, .jobs-intro {

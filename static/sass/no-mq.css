@@ -86,6 +86,92 @@
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
 /* Mixin for media query parts */
+/* Define constants for the application and to configure the blueprint framework. */
+/* ===== Compass Imports ===== */
+/* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
+/* @import "compass/css3/columns" */
+/* @import "compass/css3/hyphenation"; */
+/* Needed for the link-colors() function */
+/* Needed for the horizontal-list() function */
+/* When remembering whether or not there's a hyphen in white-space is too hard */
+/* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
+/* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
+/* Other interesting functions: 
+	@import "compass/utilities/color/contrast";
+		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
+		Used to pass two colors into a get out the most readable color. 
+		Good for situations where we dont want to create a new color, 
+		but be sure that colors from variables are always going to be readable
+*/
+/* ===== Grid ===== */
+/*
+ * Susy: Un-obtrusive grids for designers
+ * By: Eric A. Meyer and OddBird
+ * Site: susy.oddbird.net
+ */
+/* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ */
+/* ===== Variables ===== */
+/* Confusing, but in some cases, this can be set to a dark color */
+/* Python blue */
+/* Python yellow */
+/* Typography */
+/* True here means that all computed values will be in EMs */
+/* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Calculate the font-size-adjust of Flux:
+ * http://www.cs.tut.fi/~jkorpela/x-height.html
+ * Or, in this case, we did it by hand by comparing Flux to Arial, side by side. 
+ * We then adjusted it further visually, as Flux is more condensed and therefore line-length changes pretty dramatically. 
+ */
+/* 
+	Compass will convert the font sizes from px to em and fit it into the vertical rhythm automatically with the necessary margin 
+	A neat trick, for sure. More on using the vertical rhythm properties and mixins: http://compass-style.org/reference/compass/typography/vertical_rhythm/
+	
+	Note: The line height is relative to the constant $base-line-height. 
+	The number you specify for the leader, trailer and leading will be multiplied by the constant, then converted to its relative value in ems. 
+	Don’t worry about nested elements etc, Compass will do the maths for you :)
+*/
+/* Defaults */
+/* Positive is down */
+/*
+ * Functional mixins – Items we would like to keep consistent from project to project
+ */
+/* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
+/* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
+/* 
+ * Font-size-adjust: the problem and a solution
+ * Not widely supported, can't use this yet */
+/* Since we can't use the above, let's create our own way to do it. */
+/* Quickly apply border styles to elements */
+/* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Vertical gradient mixin to make things easier. */
+/* 
+ * Cross browser @keyframe definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ */
+/* 
+ * Cross browser animation definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ */
+/* 
+ * Cross browser method to apply word-breaking and hyphenation (where supported) 
+ * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
+ */
+/* Keep this in all mix-in files if you can. Useful stuff */
+/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* HTML5 Boilerplate Non-semantic helper classes */
+/* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
+/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
+/* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
+/* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+/* Base styles for a navigation mixin */
+/* Base styles for a navigation with dropdowns mixin */
 /* ********************************
 
     NOTE
@@ -159,9 +245,6 @@ body {
   text-rendering: optimizeLegibility;
   /* @include transition( all .3s ease-in-out ); makes the media query changes animate */ }
 
-p, ul, ol, dl, blockquote, address, table {
-  font-size: 0.9375em; }
-
 .meta-navigation,
 .main-header,
 .main-navigation,
@@ -187,6 +270,9 @@ p, ul, ol, dl, blockquote, address, table {
 .success-stories-widget blockquote {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
+
+.text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text table {
+  font-size: 0.9375em; }
 
 .meta-navigation {
   text-align: left; }
@@ -1039,6 +1125,17 @@ p, ul, ol, dl, blockquote, address, table {
 .feedback {
   padding-left: 1em;
   padding-right: 1em; }
+  .feedback .widget-title {
+    position: relative;
+    padding-left: 3em; }
+  .feedback .icon-megaphone {
+    font-size: 3em;
+    position: absolute;
+    top: -.125em;
+    left: -.1875em; }
+  .feedback h3 {
+    margin-top: 0;
+    padding-left: 3em; }
 
 /* TEMPORARY. Move further down later after testing. */
 /* Supernavs in main-navigation */
@@ -1098,13 +1195,12 @@ p, ul, ol, dl, blockquote, address, table {
   left: -28em; }
 
 /* END */
-/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-.lt-ie9 .site-headline a, .site-headline a img {
+.site-headline a img {
   width: 223.52px;
   height: 72.16px; }
 
 .site-headline {
-  margin: 0.30625em 0; }
+  margin: 0.25em 0 0.5em; }
 
 .options-bar {
   margin: 0.875em 0; }
@@ -1138,13 +1234,13 @@ p, ul, ol, dl, blockquote, address, table {
   min-height: 15em; }
 
 .about-banner {
-  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
 .download-for-current-os {
-  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361286604') transparent; }
+  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
 
 .documentation-banner {
-  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361286604') transparent; }
+  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1226,7 +1322,7 @@ p, ul, ol, dl, blockquote, address, table {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1399,7 +1495,7 @@ a.jump-to-menu {
     /*modernizr*/ }
     .main-navigation .tier-1:hover .subnav, .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
       left: 0; }
-    .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
+    .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
   .main-navigation .subnav {
@@ -1427,7 +1523,7 @@ a.jump-to-menu {
         top: -1.45em;
         left: 1em;
         display: block; }
-  .touch .main-navigation .tier-1.last .subnav:before {
+  .touch .main-navigation .tier-1.last .subnav:before, .touch .element-5 .main-navigation:before, .touch .element-6 .main-navigation:before, .touch .element-7 .main-navigation:before, .touch .element-8 .main-navigation:before {
     left: auto;
     right: 1em; }
   .main-navigation .tier-2 {
@@ -1490,6 +1586,11 @@ a.jump-to-menu {
 
 .navigation .close-subnav {
   border-top: 0; }
+  .navigation .close-subnav a {
+    border-right: 1px solid rgba(255, 255, 255, 0.8); }
+  .navigation .close-subnav .close-for-touch {
+    border-right: 1px solid transparent;
+    border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
 /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
 .lt-ie9 .site-headline a, .site-headline a img {
@@ -1515,7 +1616,7 @@ a.jump-to-menu {
   padding-right: 34.04255%; }
 
 .about-banner {
-  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361286604') transparent; }
+  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;

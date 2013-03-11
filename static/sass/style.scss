@@ -125,13 +125,13 @@ h6, .gamma {
 }
 
 p, ul, ol, dl, address, table {
-    font-size: px2em( 14px );
-    line-height: 1.625em;
+    //font-size: px2em( 14px );
+    //line-height: 1.625em;
     margin-bottom: rhythm(0.5);
 }
 
 ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
-    font-size: 1em; 
+    //font-size: 1em; 
     margin-bottom: 0; 
 }
 
@@ -261,7 +261,7 @@ abbr, dfn {
 /* Color Areas: use for consistency */
 %blue-colorspace {
     @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
-    background-color: darken($blue, 15%);
+    //background-color: darken($blue, 15%);
     @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03) );
 }
 
@@ -420,7 +420,25 @@ abbr, dfn {
  
  */
 .icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
+	font-family: 'Pythonicon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
 	margin-right: .5em; 
+}
+
+.icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-close {
+	
+	/* Hide a unicode fallback charcter when we supply it by default. 
+	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
+	 */
+	span {
+    	display: none; 
+	}
 }
 
 
@@ -515,11 +533,8 @@ abbr, dfn {
 .main-header {
     @extend %blue-colorspace;
     // background: top left repeat-x image-url("background-gradient.png") #477ca8;
-    // @include vertical-gradient( darken( $blue, 20% ), darken($blue, 10%) );
     border-top: 1px solid #191919;
     border-bottom: 1px solid #444;
-    // @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.05), inset 0 0 20px rgba(0, 0, 0, 0.05) );
-    // padding: rhythm(.5) 0;
     
     .container {
         text-align: center; 
@@ -539,15 +554,8 @@ abbr, dfn {
             width: 254px * .75; 
             height: 82px * .75; 
         }
-        
-        /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-        .lt-ie9 & {
-            width: 254px * .75; 
-            height: 82px * .75;
-        }
     }
 }
-
 
 
 $optionsbar-text: #bbb;
@@ -692,7 +700,7 @@ a.jump-to-menu {
             color: #888; 
         }
         /*modernizr*/ .touch & {
-            top: 125%;
+            top: 127%;
             border: 3px solid $grey; 
             
             &:before {
@@ -2191,19 +2199,8 @@ p.quote-by-organization {
     border-top: 1px solid $yellow; 
     padding-top: rhythm(); 
     
-    .widget-title {
-        position: relative; 
-        padding-left: 3em; 
-    }
-    .icon-megaphone {
-        font-size: 3em;
-        position: absolute;
-        top: -.125em;
-        left: -.1875em;
-    }
     h3 {
         margin-top: 0; 
-        padding-left: 3em; 
     }
     .shrubbery {
         padding-bottom: rhythm( .25 ); 

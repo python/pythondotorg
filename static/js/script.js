@@ -18,6 +18,12 @@ console.log( "hasgeneratedcontent=" + hasgeneratedcontent );
 console.log( "is_ltie9=" + is_ltie9 );
 console.log( "is_retina=" + is_retina );
 
+if ( is_retina ) {
+    $("html").addClass( "retina" ); 
+} else {
+    $("html").addClass( "no-retina" ); 
+}
+
 
 /* For mobile, hide the iOS toolbar on initial page load */
 /* /mobile/i.test(navigator.userAgent) && !window.location.hash && setTimeout(function () { window.scrollTo(0, 0); }, 1000); */

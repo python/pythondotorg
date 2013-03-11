@@ -465,12 +465,9 @@ h6, .gamma {
   margin-top: 1.75em; }
 
 p, ul, ol, dl, address, table {
-  font-size: 0.875em;
-  line-height: 1.625em;
   margin-bottom: 0.875em; }
 
 ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
-  font-size: 1em;
   margin-bottom: 0; }
 
 blockquote {
@@ -612,7 +609,6 @@ abbr, dfn {
   background-image: -moz-linear-gradient(#1e415e 10%, #2b5b84 90%);
   background-image: -o-linear-gradient(#1e415e 10%, #2b5b84 90%);
   background-image: linear-gradient(#1e415e 10%, #2b5b84 90%);
-  background-color: #244e71;
   -webkit-box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03);
   -moz-box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03);
   box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03); }
@@ -649,7 +645,7 @@ abbr, dfn {
     display: table;
     clear: both; }
 
-.single-event-date {
+.single-event-date, .feedback {
   background-color: #ffeba9;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFF7DC', endColorstr='#FFFFEBA9');
@@ -671,19 +667,6 @@ abbr, dfn {
     content: "";
     display: table;
     clear: both; }
-
-.feedback {
-  background-color: #ffdd6c;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe89f), color-stop(90%, #ffdd6c));
-  background-image: -webkit-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
-  background-image: -moz-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
-  background-image: -o-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
-  background-image: linear-gradient(#ffe89f 10%, #ffdd6c 90%);
-  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05); }
 
 /* Buttons */
 input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button, .feedback button {
@@ -832,7 +815,22 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
  
  */
 .icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
+  font-family: 'Pythonicon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  -webkit-font-smoothing: antialiased;
   margin-right: .5em; }
+
+.icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-close {
+  /* Hide a unicode fallback charcter when we supply it by default. 
+   * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
+   */ }
+  .icon-arrow-down span, .icon-arrow-left span, .icon-arrow-right span, .icon-arrow-up span, .icon-close span {
+    display: none; }
 
 /* ===== MAJOR PAGE ELEMENTS ===== */
 /*<div id="top" class="top-bar">*/
@@ -917,12 +915,8 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   margin: 0.15em auto 0.2em; }
   .site-headline a {
     display: block;
-    margin: 0 auto;
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */ }
+    margin: 0 auto; }
     .site-headline a img {
-      width: 190.5px;
-      height: 61.5px; }
-    .lt-ie9 .site-headline a {
       width: 190.5px;
       height: 61.5px; }
 
@@ -1065,7 +1059,7 @@ a.jump-to-menu {
     /*modernizr*/ }
     .adjust-font-size .tier-1:hover .subnav, .adjust-font-size .tier-1:focus .subnav, .touch .adjust-font-size .tier-1 .subnav.touched, .winkwink-nudgenudge .tier-1:hover .subnav, .winkwink-nudgenudge .tier-1:focus .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav.touched {
       left: 0; }
-    .adjust-font-size .tier-1.element-5:hover .subnav, .adjust-font-size .tier-1.element-5:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav.touched, .adjust-font-size .tier-1.element-6:hover .subnav, .adjust-font-size .tier-1.element-6:focus .subnav, .adjust-font-size .tier-1.element-6:hover .subnav.touched, .adjust-font-size .tier-1.element-7:hover .subnav, .adjust-font-size .tier-1.element-7:focus .subnav, .adjust-font-size .tier-1.element-7:hover .subnav.touched, .adjust-font-size .tier-1.element-8:hover .subnav, .adjust-font-size .tier-1.element-8:focus .subnav, .adjust-font-size .tier-1.element-8:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-5:hover .subnav, .winkwink-nudgenudge .tier-1.element-5:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-6:hover .subnav, .winkwink-nudgenudge .tier-1.element-6:focus .subnav, .winkwink-nudgenudge .tier-1.element-6:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-7:hover .subnav, .winkwink-nudgenudge .tier-1.element-7:focus .subnav, .winkwink-nudgenudge .tier-1.element-7:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-8:hover .subnav, .winkwink-nudgenudge .tier-1.element-8:focus .subnav, .winkwink-nudgenudge .tier-1.element-8:hover .subnav.touched {
+    .adjust-font-size .tier-1.last:hover .subnav, .adjust-font-size .tier-1.last:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav, .adjust-font-size .tier-1.element-5:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav.touched, .adjust-font-size .tier-1.element-6:hover .subnav, .adjust-font-size .tier-1.element-6:focus .subnav, .adjust-font-size .tier-1.element-6:hover .subnav.touched, .adjust-font-size .tier-1.element-7:hover .subnav, .adjust-font-size .tier-1.element-7:focus .subnav, .adjust-font-size .tier-1.element-7:hover .subnav.touched, .adjust-font-size .tier-1.element-8:hover .subnav, .adjust-font-size .tier-1.element-8:focus .subnav, .adjust-font-size .tier-1.element-8:hover .subnav.touched, .winkwink-nudgenudge .tier-1.last:hover .subnav, .winkwink-nudgenudge .tier-1.last:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav, .winkwink-nudgenudge .tier-1.element-5:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-6:hover .subnav, .winkwink-nudgenudge .tier-1.element-6:focus .subnav, .winkwink-nudgenudge .tier-1.element-6:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-7:hover .subnav, .winkwink-nudgenudge .tier-1.element-7:focus .subnav, .winkwink-nudgenudge .tier-1.element-7:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-8:hover .subnav, .winkwink-nudgenudge .tier-1.element-8:focus .subnav, .winkwink-nudgenudge .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
   .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
@@ -1093,7 +1087,7 @@ a.jump-to-menu {
         top: -1.45em;
         left: 1em;
         display: block; }
-  .touch .adjust-font-size .tier-1.last .subnav:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before {
+  .touch .adjust-font-size .tier-1.last .subnav:before, .touch .element-5 .adjust-font-size:before, .touch .element-6 .adjust-font-size:before, .touch .element-7 .adjust-font-size:before, .touch .element-8 .adjust-font-size:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before, .touch .element-5 .winkwink-nudgenudge:before, .touch .element-6 .winkwink-nudgenudge:before, .touch .element-7 .winkwink-nudgenudge:before, .touch .element-8 .winkwink-nudgenudge:before {
     left: auto;
     right: 1em; }
   .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-2 {
@@ -1145,7 +1139,7 @@ a.jump-to-menu {
     .adjust-font-size .subnav .text-reset, .winkwink-nudgenudge .subnav .text-reset {
       color: #888; }
     .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
-      top: 125%;
+      top: 127%;
       border: 3px solid #666666; }
       .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
         border-color: transparent transparent #666666 transparent; }
@@ -2159,17 +2153,8 @@ p.quote-by-organization {
 .feedback {
   border-top: 1px solid #ffd343;
   padding-top: 1.75em; }
-  .feedback .widget-title {
-    position: relative;
-    padding-left: 3em; }
-  .feedback .icon-megaphone {
-    font-size: 3em;
-    position: absolute;
-    top: -.125em;
-    left: -.1875em; }
   .feedback h3 {
-    margin-top: 0;
-    padding-left: 3em; }
+    margin-top: 0; }
   .feedback .shrubbery {
     padding-bottom: 0.4375em; }
     .feedback .shrubbery a {
@@ -2371,41 +2356,47 @@ p.quote-by-organization {
 .fontface .fontface-test,
 .generatedcontent .generatedcontent-test,
 .svg .svg-test,
-.inlinesvg .inlinesvg-test {
+.inlinesvg .inlinesvg-test,
+.retina .retina-test {
   display: block;
   color: #ff7;
   background-color: #333; }
   .fontface .fontface-test .yes,
   .generatedcontent .generatedcontent-test .yes,
   .svg .svg-test .yes,
-  .inlinesvg .inlinesvg-test .yes {
+  .inlinesvg .inlinesvg-test .yes,
+  .retina .retina-test .yes {
     font-weight: bold;
     display: inline;
     color: green; }
   .fontface .fontface-test .no,
   .generatedcontent .generatedcontent-test .no,
   .svg .svg-test .no,
-  .inlinesvg .inlinesvg-test .no {
+  .inlinesvg .inlinesvg-test .no,
+  .retina .retina-test .no {
     display: none;
     color: white; }
 
 .no-fontface .fontface-test,
 .no-generatedcontent .generatedcontent-test,
 .no-svg .svg-test,
-.no-inlinesvg .inlinesvg-test {
+.no-inlinesvg .inlinesvg-test,
+.no-retina .retina-test {
   display: block;
   color: #ff7;
   background-color: red; }
   .no-fontface .fontface-test .yes,
   .no-generatedcontent .generatedcontent-test .yes,
   .no-svg .svg-test .yes,
-  .no-inlinesvg .inlinesvg-test .yes {
+  .no-inlinesvg .inlinesvg-test .yes,
+  .no-retina .retina-test .yes {
     display: none;
     color: white; }
   .no-fontface .fontface-test .no,
   .no-generatedcontent .generatedcontent-test .no,
   .no-svg .svg-test .no,
-  .no-inlinesvg .inlinesvg-test .no {
+  .no-inlinesvg .inlinesvg-test .no,
+  .no-retina .retina-test .no {
     font-weight: bold;
     display: inline;
     color: white; }
@@ -2494,17 +2485,17 @@ Since we are importing the data of the entire font, try to make sure only the ne
 Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"]:before {
-*/
-.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
-  font-family: 'Pythonicon';
-  speak: none;
-  font-style: normal;
-  font-weight: normal;
-  font-variant: normal;
-  text-transform: none;
-  line-height: 1;
-  -webkit-font-smoothing: antialiased; }
 
+.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
+	font-family: 'Pythonicon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+	-webkit-font-smoothing: antialiased;
+}*/
 .icon-alert:before {
   content: "\e000"; }
 
@@ -2648,24 +2639,18 @@ you can use the generic selector below, but it's slower:
  * or generated content
  */
 /*modernizr*/
-.no-fontface [class^="icon-"]:before, .no-fontface [class*=" icon-"]:before,
-.no-svg [class^="icon-"]:before, .no-svg [class*=" icon-"]:before,
-.no-generatedcontent [class^="icon-"]:before, .no-generatedcontent [class*=" icon-"]:before {
-  display: none;
-  margin-right: 0; }
-
-/* Show a unicode character back up if it exists */
-/*modernizr*/
-.no-svg [class^="icon-"] span, .no-svg [class*=" icon-"] span,
-.no-fontface [class^="icon-"] span, .no-fontface [class*=" icon-"] span,
-.no-generatedcontent [class^="icon-"], .no-generatedcontent [class*=" icon-"] {
-  display: inline; }
+.no-fontface .icon-arrow-up, .no-fontface .icon-arrow-right, .no-fontface .icon-arrow-down, .no-fontface .icon-arrow-left, .no-fontface .icon-close, .no-svg .icon-arrow-up, .no-svg .icon-arrow-right, .no-svg .icon-arrow-down, .no-svg .icon-arrow-left, .no-svg .icon-close, .no-generatedcontent .icon-arrow-up, .no-generatedcontent .icon-arrow-right, .no-generatedcontent .icon-arrow-down, .no-generatedcontent .icon-arrow-left, .no-generatedcontent .icon-close {
+  /* Show a unicode character back up if it exists */ }
+  .no-fontface .icon-arrow-up:before, .no-fontface .icon-arrow-right:before, .no-fontface .icon-arrow-down:before, .no-fontface .icon-arrow-left:before, .no-fontface .icon-close:before, .no-svg .icon-arrow-up:before, .no-svg .icon-arrow-right:before, .no-svg .icon-arrow-down:before, .no-svg .icon-arrow-left:before, .no-svg .icon-close:before, .no-generatedcontent .icon-arrow-up:before, .no-generatedcontent .icon-arrow-right:before, .no-generatedcontent .icon-arrow-down:before, .no-generatedcontent .icon-arrow-left:before, .no-generatedcontent .icon-close:before {
+    display: none;
+    margin-right: 0; }
+  .no-fontface .icon-arrow-up span, .no-fontface .icon-arrow-right span, .no-fontface .icon-arrow-down span, .no-fontface .icon-arrow-left span, .no-fontface .icon-close span, .no-svg .icon-arrow-up span, .no-svg .icon-arrow-right span, .no-svg .icon-arrow-down span, .no-svg .icon-arrow-left span, .no-svg .icon-close span, .no-generatedcontent .icon-arrow-up span, .no-generatedcontent .icon-arrow-right span, .no-generatedcontent .icon-arrow-down span, .no-generatedcontent .icon-arrow-left span, .no-generatedcontent .icon-close span {
+    display: inline; }
 
 /* Show in IE8: supports FontFace (eot) but not SVG. */
-.ie8 [class^="icon-"]:before, .ie8 [class*=" icon-"]:before {
+.ie8 .icon-arrow-up:before, .ie8 .icon-arrow-right:before, .ie8 .icon-arrow-down:before, .ie8 .icon-arrow-left:before, .ie8 .icon-close:before {
   display: inline; }
-
-.ie8 [class^="icon-"] span, .ie8 [class*=" icon-"] span {
+.ie8 .icon-arrow-up span, .ie8 .icon-arrow-right span, .ie8 .icon-arrow-down span, .ie8 .icon-arrow-left span, .ie8 .icon-close span {
   display: none; }
 
 /* @license

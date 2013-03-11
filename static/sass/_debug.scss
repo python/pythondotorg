@@ -27,7 +27,8 @@
     /*modernizr*/ .fontface .fontface-test, 
     .generatedcontent .generatedcontent-test,
     .svg .svg-test,
-    .inlinesvg .inlinesvg-test {
+    .inlinesvg .inlinesvg-test, 
+    .retina .retina-test {
         display: block; 
         color: #ff7; 
         background-color: #333; 
@@ -38,7 +39,8 @@
     .no-fontface .fontface-test, 
     .no-generatedcontent .generatedcontent-test,
     .no-svg .svg-test,
-    .no-inlinesvg .inlinesvg-test {
+    .no-inlinesvg .inlinesvg-test,
+    .no-retina .retina-test {
         display: block; 
         color: #ff7; 
         background-color: red;
