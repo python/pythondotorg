@@ -38,6 +38,8 @@ class Page(ContentManageable):
     path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=True)
+    template_name = models.CharField(max_length=100, blank=True,
+        help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'.")
 
     objects = PageManager()
 
