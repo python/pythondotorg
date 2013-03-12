@@ -1,9 +1,11 @@
 from django.views.generic import DetailView
+
 from .models import Page
+
 
 class PageView(DetailView):
     # FIXME: probably should allow custom templates via template_name_field.
-    template_name = 'python/inner.html'
+    template_name = 'pages/default.html'
 
     context_object_name = 'page'
 
