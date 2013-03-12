@@ -25,6 +25,7 @@ class Feedback(models.Model):
     feedback_categories = models.ManyToManyField(FeedbackCategory, related_name='feedbacks', null=True, blank=True)
     issue_type = models.ForeignKey(IssueType, related_name='feedbacks', null=True, blank=True)
     referral_url = models.URLField(null=True, blank=True)
+    is_beta_tester = models.BooleanField(default=False, blank=True)
     comment = models.TextField()
     created = models.DateTimeField(default=timezone.now, blank=True)
 

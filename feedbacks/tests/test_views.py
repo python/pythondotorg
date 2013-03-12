@@ -37,7 +37,8 @@ class FeedbackViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
-        self.assertRedirects(response, '/complete/')
+        complete_url = reverse('feedback_complete')
+        self.assertRedirects(response, complete_url)
 
         feedbacks = Feedback.objects.filter(name__exact=self.name)
         self.assertEqual(len(feedbacks), 1)
@@ -58,3 +59,18 @@ class FeedbackViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['form'].errors['comment'], ['This field is required.'])
+
+    def test_feedback_beta_tester_invalid(self):
+        url = reverse('feedback_create')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+
+        post_data = {
+            'is_beta_tester': True,
+            'comment': 'Ihasbeta tester invite!'
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['form'].errors['email'], ['An email address is required for beta testers.'])
