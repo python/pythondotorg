@@ -6,6 +6,10 @@ from cms.forms import ContentManageableModelForm
 
 class FeedbackForm(ContentManageableModelForm):
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['feedback_categories'].help_text = None
+
     class Meta(object):
         model = Feedback
         fields = (
