@@ -290,8 +290,8 @@ abbr, dfn {
 }
 
 %yellow-colorspace {
-    @include vertical-gradient( lighten( $yellow, 30%), lighten( $yellow, 20%) );
-    @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
+    @include vertical-gradient( lighten( $yellow, 18%), lighten( $yellow, 8%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.05) );
 }
 
 %yellow-colorbox {
@@ -522,11 +522,6 @@ abbr, dfn {
 }
 
 
-
-
-
-
-
 /*<header id="top" class="main-header" role="banner">*/
 
 /* Used in both the main-header and the header-banner */
@@ -650,11 +645,6 @@ a.jump-to-menu {
     /* Small screens (phones) have their own form controls */
     display: none; 
     @extend %button-style-blue;
-    // color: $optionsbar-text;
-    // @include reset-gradient( lighten($darkerblue, 8%) ); 
-    // border: 0;
-    // @include pe-border( $color-top: lighten($darkerblue, 8%), $color-bottom: darken($darkerblue, 8%) ); 
-    // @include border-radius(); 
     margin-right: 0.2em;
     margin-bottom: 0;
     text-shadow: none;
@@ -695,21 +685,30 @@ a.jump-to-menu {
                 color: $grey-lightest; 
                 background-color: $grey-light; 
             }
+            .touch & .tier-2 {
+                padding-top: .75em; 
+                padding-bottom: .6em; 
+            }
         }
         .text-reset {
             color: #888; 
         }
         /*modernizr*/ .touch & {
-            top: 127%;
+            top: 135%;
             border: 3px solid $grey; 
             
             &:before {
+                top: -1.6em; 
                 border-color: transparent transparent $grey transparent; 
             }
         }
     }
     .close-subnav {
         @include pe-border( $color-bottom: $grey-light ); 
+        
+        .close-text {
+            padding: .9em 3.25em .8em 1em; 
+        }
     }
 }
     .text-shrink { }
@@ -2132,14 +2131,13 @@ p.quote-by-organization {
     .subnav {
         font-size: px2em(16px);
         margin-bottom: 0; 
-        @include pe-border( $color-bottom: $grey-lighter, $color-top: darken( $grey-lightest, 3% ) );
+        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $grey-lighter, 4% ) );
         
         li {
-            @include pe-border( $color-top: $grey-lighter, $color-bottom: darken( $grey-lightest, 3% ) ); 
+            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $grey-lighter, 4% ) ); 
         }
         a:hover, a:focus {
-            // background-color: lighten( $grey-lightest, 2% ); 
-            background-color: rgba($grey-lightest, 0.5);
+            background-color: lighten( $grey-lightest, 2% ); 
         }
     }
 }
@@ -2216,6 +2214,21 @@ p.quote-by-organization {
     .helptext {
         font-style: italic; 
         font-size: px2em( 14px ); 
+    }
+    /*<ul>
+        <li>
+            <label for="id_feedback_categories_0">
+                <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
+            </label>
+        </li>
+    </ul>*/
+    ul {
+        margin-left: 0; 
+        list-style: none; 
+        
+        label {
+            margin-top: 0.5em;
+        }
     }
     button {
         @extend %button-style-blue; 

@@ -182,23 +182,24 @@ $().ready(function() {
     /* Treat the drop down menus in the main nav like select lists for touch devices */
     if ( hastouch ) {
         $(".main-navigation .tier-1 > a").click(function() {
-            $(".subnav").removeClass( 'touched' );
-            $(this).next( '.subnav' ).addClass( 'touched' );
+            $(".subnav").hide();
+            $(this).next( '.subnav' ).show();
             return false;
         });
+        
         $(".close-for-touch").click(function() {
-            $(this).offsetParent().offsetParent().removeClass( 'touched' );
+            $(".subnav").hide();
             return false;
         });
 
         $(".winkwink-nudgenudge .tier-1 > a").click(function() {
-            $(".subnav").removeClass( 'touched' );
-            $(this).next( '.subnav' ).addClass( 'touched' );
+            $(".subnav").hide();
+            $(this).next( '.subnav' ).show();
             return false;
         });
         $(".adjust-font-size .tier-1 > a").click(function() {
-            $(".subnav").removeClass( 'touched' );
-            $(this).next( '.subnav' ).addClass( 'touched' );
+            $(".subnav").hide(  );
+            $(this).next( '.subnav' ).show();
             return false;
         });
     }

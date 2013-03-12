@@ -2,16 +2,6 @@
 @import "functions";
 @import "mixins";
 
-/* ********************************
-
-    NOTE
-    
-    MQs should be broken up a bit more. 
-    Take advantage of min & max at the same time to avoid having to reset styles from one breakpoint to another 
-
-/* ********************************/
-
-
 /* 
  * ! ===== START Media Queries ===== 
  *
@@ -21,7 +11,7 @@
  *
  * Column structure =  
  * 
- *  Susy mix-ins:
+ *  Susy mix-ins with examples:
  *  @include span-columns(3 omega, 12); 
  *  @include omega; 
  *  @include prefix(3); 3 columns of padding before
@@ -142,6 +132,7 @@
         }
     }
     .navigation {
+        
         .close-subnav {
             border-top: 0;
              
@@ -167,19 +158,6 @@
 
 /* ! ===== Larger than 400px ===== */
 @mixin min_width_400() {
-    
-    .options-bar .breaker {
-        display: none;  
-    }
-    .adjust-font-size {
-        border-left: 1px solid lighten( $darkerblue, 8% );
-    }
-    .search-the-site {
-        border-right: 1px solid darken( $darkerblue, 12% );
-    }
-    /*.subnav li*/ .super-navigation {
-        display: none; 
-    }
     
     .introduction {
         font-size: px2em( 22px );
@@ -207,6 +185,30 @@
     input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
         display: inline-block !important;
         width: auto;
+    }
+}
+
+
+/* ! ===== Smaller than 480px ===== */
+@mixin max_width_480() {
+    
+    .slideshow {
+        display: none; 
+    }
+}
+
+
+/* ! ===== Larger than 480px ===== */
+@mixin min_width_480() {
+    
+    .options-bar .breaker {
+        display: none;  
+    }
+    .adjust-font-size {
+        border-left: 1px solid lighten( $darkerblue, 8% );
+    }
+    .search-the-site {
+        border-right: 1px solid darken( $darkerblue, 12% );
     }
 }
 
@@ -431,27 +433,14 @@
             
             .super-navigation {
                 color: $grey;
-                display: none;
                 @include pe-border( $color-right: rgba($this-color, 0.25), $color-bottom: rgba($this-color, 0.25), $color-left: rgba($this-color, 0.25) );
                 @include vertical-gradient( lighten($this-color, 60%), lighten($this-color, 50%));
                 
                 a:not(.button) {
                     color: $this-color; 
-                    
-                    &, &:hover, &:focus {
-                        background-color: transparent; 
-                    }
-                    &:hover, &:focus {
-                        color: $link-hover; 
-                    }
                 }
-                
                 h4 {
                     color: darken($this-color, 5%);
-                    font-family: $alt-font-bold;
-                    font-weight: normal;
-                    font-size: px2em( 22px );
-                    line-height: 1.25em;
                 }
             }
         }
@@ -612,10 +601,14 @@
             
             &:nth-child(odd) {
                 clear: left; 
-                border-right: 1px solid $grey-lighter; 
+                //border-right: 1px solid lighten( $grey-lighter, 4% ); 
             }
             &:nth-child(even) {
-                border-left: 1px solid $grey-lighter; 
+                border-left: 1px solid lighten( $grey-lightest, 6% ); 
+            }
+            /* Special case, we want the Events subnav to be up under Blog */
+            &.element-7 {
+                clear: none; 
             }
         }
     }
@@ -656,86 +649,7 @@
     
     .main-header {
         
-    }
-    
-    /* TEMPORARY. Move further down later after testing. */
-    /* Supernavs in main-navigation */
-    /*<li id="downloads" class="tier-1 element-2 with-supernav" aria-haspopup="true">
-        <a href="download.php">Downloads</a>
-        <ul class="subnav menu" role="menu" aria-hidden="true">
-            <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
-            <li class="super-navigation">
-                <h2>Download for Mac OSX</h2>
-                <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
-                </p><p>
-                    <a class="button">Python 3.3.0</a> 
-                    <a class="button">Python 2.7.3</a>
-                </p>
-            </li></ul>
-    </li>*/
-    /*li*/ .with-supernav {
-        
-        .subnav {
-            border-right: 1px solid rgba( #666, .3 ); 
-        }
-    }
-    
-    /*.subnav li*/ 
-    .super-navigation {
-        display: block; 
-        position: absolute; /* relative to the containing LI */
-        top: 0;
-        width: 28em; 
-        min-height: 100%; 
-        text-align: left;
-        padding: 1.5em 1.75em; 
-        @include pe-border( $color-top: rgba( #fff, .8 ), $color-left: rgba( #fff, .8 ) ); 
-        // @include box-shadow( .1875em .1875em .375em rgba( #000, 0.3 ) ); 
-        
-        .main-navigation & a:not(.button) {
-            padding: 0; 
-            border: none; 
-            
-            &:hover, &:focus {
-                border: none; 
-                background: transparent; 
-            }
-        } 
-        h2, h3, h4, h5 {
-            margin-top: 0; 
-        }
-        
-        #community & h4, #blog & h4, #events & h4 {
-            margin-bottom: 0;
-        }
-        
-        p.date-posted {
-            color: $grey;
-            font-size: pxtoem( 10px ) !important;
-            font-style: italic;
-        }
-        
-        p.excert {
-            font-size: pxtoem( 10px );
-            line-height: 1.3em;
-        }
-        
-        p.quote-by {
-            color: $blue;
-        }
-    }
-    .tier-1.element-1, .tier-1.element-2, .tier-1.element-3 {
-        .super-navigation {
-            left: 100.25%;
-        }
-    }
-    .tier-1.element-4, .tier-1.element-5, .tier-1.element-6, .tier-1.element-7 {
-        .super-navigation {
-            left: -28em;
-        }
-    }
-    /* END */
-    
+    }    
     
     .site-headline a img {
         width: 254px * .88; 
@@ -761,6 +675,13 @@
         }
     }
     
+    /*li*/ .with-supernav {
+        
+        .super-navigation {
+            display: none; 
+        }
+    }
+    
     .slide-code, .slide-copy {
         float: left;
         min-height: 300px;
@@ -777,9 +698,7 @@
     }
     
     /* Header-banners */
-    .about-banner, .download-for-current-os, .documentation-banner, 
-    //.welcome-to-the-foundation 
-    {
+    .about-banner, .download-for-current-os, .documentation-banner {
         @include pad( 1,4 ); 
         min-height: 15em; 
     }
@@ -982,18 +901,16 @@
             border-left: 0; 
             border-right: 0; 
             
-            &:nth-child(odd) {
+            &:nth-child(odd), &:nth-child(even) {
                 clear: none; 
+                border-left: 0; 
                 border-right: 0; 
             }
-            &.element-1, &.element-4, &.element-7, &.element-10 {
-                border-right: 1px solid darken( $grey-lightest, 3% ); 
+            &.element-1, &.element-2, &.element-4, &.element-5, &.element-8 {
+                border-right: 1px solid lighten( $grey-lighter, 4% ); 
             }
-            &.element-1, &.element-2, &.element-4, &.element-5, &.element-7, &.element-8 {
-                border-right: 1px solid darken( $grey-lightest, 3% ); 
-            }
-            &.element-2, &.element-3, &.element-5, &.element-6, &.element-8, &.element-9 {
-                border-left: 1px solid lighten( $grey-lightest, 4% ); 
+            &.element-2, &.element-3, &.element-5, &.element-6, &.element-7, &.element-8, &.element-9 {
+                border-left: 1px solid lighten( $grey-lightest, 6% ); 
             }
         }
     }
@@ -1034,17 +951,34 @@
             display: inline-block; 
             width: columns(8); 
         }
+        /*<ul>
+            <li>
+                <label for="id_feedback_categories_0">
+                    <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
+                </label>
+            </li>
+        </ul>*/
+        ul {
+            margin-left: columns(2) + gutter(); 
+            @include clearfix(); 
+            
+            li {
+                float: left; 
+                width: 46%; 
+                margin-right: 3%; 
+            }
+        }
         button {
             margin-left: columns(2) + gutter(); 
         }
     }
 }
 
+
 /* ! ===== Larger than 940px ===== */
 @mixin min_width_940() {
     
-    /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-    .lt-ie9 .site-headline a, .site-headline a img {
+    .site-headline a img {
         width: 254px; 
         height: 82px; 
     }
@@ -1057,26 +991,104 @@
             }
         }
     
-    .main-header {
-        // test image
-        // background: top center image-url("underwater-art-80.jpg") $blue;
-    }
-    
     .options-bar {
         margin: rhythm( .75 ) 0; 
     }
     
     
-    /* BRING BACK THE SUPERNAV STUFF HERE */
+    /* Supernavs in main-navigation */
+    /*<li id="downloads" class="tier-1 element-2 with-supernav" aria-haspopup="true">
+        <a href="download.php">Downloads</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
+            <li class="super-navigation">
+                <h2>Download for Mac OSX</h2>
+                <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
+                </p><p>
+                    <a class="button">Python 3.3.0</a> 
+                    <a class="button">Python 2.7.3</a>
+                </p>
+            </li></ul>
+    </li>*/
+    /*li*/ .with-supernav {
+        
+        .subnav {
+            border-right: 1px solid rgba( #666, .3 ); 
+        }
+        .super-navigation {
+            display: block; 
+        }
+    }
     
+    /*.subnav li*/ 
+    .super-navigation {
+        color: $grey;
+        position: absolute; /* relative to the containing LI */
+        top: 0;
+        width: 28em; 
+        min-height: 100%; 
+        text-align: left;
+        padding: 1.5em 1.75em; 
+        @include pe-border( $color-top: rgba( #fff, .8 ), $color-left: rgba( #fff, .8 ) ); 
+        
+        .main-navigation & a:not(.button) {
+            padding: 0; 
+            border: none; 
+            
+            &:hover, &:focus {
+                border: none; 
+                background: transparent; 
+            }
+            &:hover, &:focus {
+                color: $link-hover; 
+            }
+        } 
+
+        h2, h3, h4, h5 {
+            margin-top: 0; 
+        }
+        
+        #community & h4, #blog & h4, #events & h4 {
+            font-family: $alt-font-bold;
+            font-weight: normal;
+            font-size: px2em( 22px );
+            line-height: 1.25em;
+            margin-bottom: 0;
+        }
+        
+        p.date-posted {
+            color: $grey;
+            font-size: pxtoem( 10px ) !important;
+            font-style: italic;
+        }
+        
+        p.excert {
+            font-size: pxtoem( 10px );
+            line-height: 1.3em;
+        }
+        
+        p.quote-by {
+            color: $blue;
+        }
+    }
+    .tier-1.element-1, .tier-1.element-2, .tier-1.element-3 {
+        .super-navigation {
+            left: 100.25%;
+        }
+    }
+    .tier-1.element-4, .tier-1.element-5, .tier-1.element-6, .tier-1.element-7 {
+        .super-navigation {
+            left: -28em;
+        }
+    }
     .super-navigation .menu {
         text-align: left;
     }
+    /* END */
+    
     
     /* Header-banners */
-    .about-banner, .download-for-current-os, .documentation-banner, 
-    //.welcome-to-the-foundation 
-    {
+    .about-banner, .download-for-current-os, .documentation-banner {
         @include pad( 1,4 ); 
     }
         .about-banner {
@@ -1299,6 +1311,13 @@
         width: 50px;
         height: 100px;
         margin: -50px -50px 0 0; 
+        
+        .touch & {
+            background-size: 100%; 
+            width: 25px; 
+             height: 50px;
+            margin: -25px -25px 0 0; 
+        }
     }
     
     .latest-blog-post, .featured-event, .jobs-intro {

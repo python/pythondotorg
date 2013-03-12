@@ -172,14 +172,6 @@
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
-/* ********************************
-
-    NOTE
-    
-    MQs should be broken up a bit more. 
-    Take advantage of min & max at the same time to avoid having to reset styles from one breakpoint to another 
-
-/* ********************************/
 /* 
  * ! ===== START Media Queries ===== 
  *
@@ -189,7 +181,7 @@
  *
  * Column structure =  
  * 
- *  Susy mix-ins:
+ *  Susy mix-ins with examples:
  *  @include span-columns(3 omega, 12); 
  *  @include omega; 
  *  @include prefix(3); 3 columns of padding before
@@ -206,24 +198,13 @@
 /* ! ===== Ruleset for a single row of main navigation ===== */
 /* ! ===== Smaller than 400px ===== */
 /* ! ===== Larger than 400px ===== */
+/* ! ===== Smaller than 480px ===== */
+/* ! ===== Larger than 480px ===== */
 /* ! ===== Larger than 520px ===== */
 /* ! ===== Larger than 640px ===== */
 /* ! ===== Larger than 800px ===== */
 /* ! ===== Larger than 940px ===== */
 /* ! ===== Larger than 1024px ===== */
-.options-bar .breaker {
-  display: none; }
-
-.adjust-font-size {
-  border-left: 1px solid #2d3e4d; }
-
-.search-the-site {
-  border-right: 1px solid #070a0c; }
-
-/*.subnav li*/
-.super-navigation {
-  display: none; }
-
 .introduction {
   font-size: 1.375em; }
 
@@ -452,7 +433,6 @@ body {
     background-image: linear-gradient(#2b5b84 10%, #244e71 90%); }
   .python-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(55, 118, 171, 0.25);
     border-bottom: 1px solid rgba(55, 118, 171, 0.25);
     border-left: 1px solid rgba(55, 118, 171, 0.25);
@@ -466,16 +446,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #e9f1f8 90%); }
     .python-navigation .super-navigation a:not(.button) {
       color: #3776ab; }
-      .python-navigation .super-navigation a:not(.button), .python-navigation .super-navigation a:not(.button):hover, .python-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .python-navigation .super-navigation a:not(.button):hover, .python-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .python-navigation .super-navigation h4 {
-      color: #316998;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #316998; }
 
 .psf-navigation {
   background-color: #646565;
@@ -549,7 +521,6 @@ body {
     background-image: linear-gradient(#5f5f60 10%, #525353 90%); }
   .psf-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(120, 121, 122, 0.25);
     border-bottom: 1px solid rgba(120, 121, 122, 0.25);
     border-left: 1px solid rgba(120, 121, 122, 0.25);
@@ -563,16 +534,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #f8f8f9 90%); }
     .psf-navigation .super-navigation a:not(.button) {
       color: #78797a; }
-      .psf-navigation .super-navigation a:not(.button), .psf-navigation .super-navigation a:not(.button):hover, .psf-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .psf-navigation .super-navigation a:not(.button):hover, .psf-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .psf-navigation .super-navigation h4 {
-      color: #6b6c6d;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #6b6c6d; }
 
 .docs-navigation {
   background-color: #ffc91a;
@@ -646,7 +609,6 @@ body {
     background-image: linear-gradient(#ffc710 10%, #f5bc00 90%); }
   .docs-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(255, 211, 67, 0.25);
     border-bottom: 1px solid rgba(255, 211, 67, 0.25);
     border-left: 1px solid rgba(255, 211, 67, 0.25);
@@ -660,16 +622,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #ffffff 90%); }
     .docs-navigation .super-navigation a:not(.button) {
       color: #ffd343; }
-      .docs-navigation .super-navigation a:not(.button), .docs-navigation .super-navigation a:not(.button):hover, .docs-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .docs-navigation .super-navigation a:not(.button):hover, .docs-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .docs-navigation .super-navigation h4 {
-      color: #ffcd29;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #ffcd29; }
 
 .pypl-navigation {
   background-color: #6c9238;
@@ -743,7 +697,6 @@ body {
     background-image: linear-gradient(#678b35 10%, #59792e 90%); }
   .pypl-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(130, 176, 67, 0.25);
     border-bottom: 1px solid rgba(130, 176, 67, 0.25);
     border-left: 1px solid rgba(130, 176, 67, 0.25);
@@ -757,16 +710,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #f9fcf6 90%); }
     .pypl-navigation .super-navigation a:not(.button) {
       color: #82b043; }
-      .pypl-navigation .super-navigation a:not(.button), .pypl-navigation .super-navigation a:not(.button):hover, .pypl-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .pypl-navigation .super-navigation a:not(.button):hover, .pypl-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .pypl-navigation .super-navigation h4 {
-      color: #749e3c;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #749e3c; }
 
 .jobs-navigation {
   background-color: #8b5792;
@@ -840,7 +785,6 @@ body {
     background-image: linear-gradient(#85538c 10%, #764a7c 90%); }
   .jobs-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(160, 107, 167, 0.25);
     border-bottom: 1px solid rgba(160, 107, 167, 0.25);
     border-left: 1px solid rgba(160, 107, 167, 0.25);
@@ -854,16 +798,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #ffffff 90%); }
     .jobs-navigation .super-navigation a:not(.button) {
       color: #a06ba7; }
-      .jobs-navigation .super-navigation a:not(.button), .jobs-navigation .super-navigation a:not(.button):hover, .jobs-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .jobs-navigation .super-navigation a:not(.button):hover, .jobs-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .jobs-navigation .super-navigation h4 {
-      color: #945d9c;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #945d9c; }
 
 .shop-navigation {
   background-color: #9e4650;
@@ -937,7 +873,6 @@ body {
     background-image: linear-gradient(#97434d 10%, #853b44 90%); }
   .shop-navigation .super-navigation {
     color: #666666;
-    display: none;
     border-right: 1px solid rgba(181, 88, 99, 0.25);
     border-bottom: 1px solid rgba(181, 88, 99, 0.25);
     border-left: 1px solid rgba(181, 88, 99, 0.25);
@@ -951,16 +886,8 @@ body {
     background-image: linear-gradient(#ffffff 10%, #ffffff 90%); }
     .shop-navigation .super-navigation a:not(.button) {
       color: #b55863; }
-      .shop-navigation .super-navigation a:not(.button), .shop-navigation .super-navigation a:not(.button):hover, .shop-navigation .super-navigation a:not(.button):focus {
-        background-color: transparent; }
-      .shop-navigation .super-navigation a:not(.button):hover, .shop-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
     .shop-navigation .super-navigation h4 {
-      color: #a94b56;
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
-      font-weight: normal;
-      font-size: 1.375em;
-      line-height: 1.25em; }
+      color: #a94b56; }
 
 /* end @for */
 .content-wrapper {
@@ -1107,12 +1034,14 @@ body {
 
 .sitemap .tier-1 {
   float: left;
-  width: 50%; }
+  width: 50%;
+  /* Special case, we want the Events subnav to be up under Blog */ }
   .sitemap .tier-1:nth-child(odd) {
-    clear: left;
-    border-right: 1px solid #caccce; }
+    clear: left; }
   .sitemap .tier-1:nth-child(even) {
-    border-left: 1px solid #caccce; }
+    border-left: 1px solid #f7f7f8; }
+  .sitemap .tier-1.element-7 {
+    clear: none; }
 
 .footer-links {
   clear: both;
@@ -1137,64 +1066,6 @@ body {
     margin-top: 0;
     padding-left: 3em; }
 
-/* TEMPORARY. Move further down later after testing. */
-/* Supernavs in main-navigation */
-/*<li id="downloads" class="tier-1 element-2 with-supernav" aria-haspopup="true">
-    <a href="download.php">Downloads</a>
-    <ul class="subnav menu" role="menu" aria-hidden="true">
-        <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
-        <li class="super-navigation">
-            <h2>Download for Mac OSX</h2>
-            <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
-            </p><p>
-                <a class="button">Python 3.3.0</a> 
-                <a class="button">Python 2.7.3</a>
-            </p>
-        </li></ul>
-</li>*/
-/*li*/
-.with-supernav .subnav {
-  border-right: 1px solid rgba(102, 102, 102, 0.3); }
-
-/*.subnav li*/
-.super-navigation {
-  display: block;
-  position: absolute;
-  /* relative to the containing LI */
-  top: 0;
-  width: 28em;
-  min-height: 100%;
-  text-align: left;
-  padding: 1.5em 1.75em;
-  border-top: 1px solid rgba(255, 255, 255, 0.8);
-  border-left: 1px solid rgba(255, 255, 255, 0.8); }
-  .main-navigation .super-navigation a:not(.button) {
-    padding: 0;
-    border: none; }
-    .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
-      border: none;
-      background: transparent; }
-  .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
-    margin-top: 0; }
-  #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
-    margin-bottom: 0; }
-  .super-navigation p.date-posted {
-    color: #666666;
-    font-size: pxtoem(10px) !important;
-    font-style: italic; }
-  .super-navigation p.excert {
-    font-size: pxtoem(10px);
-    line-height: 1.3em; }
-  .super-navigation p.quote-by {
-    color: #3776ab; }
-
-.tier-1.element-1 .super-navigation, .tier-1.element-2 .super-navigation, .tier-1.element-3 .super-navigation {
-  left: 100.25%; }
-
-.tier-1.element-4 .super-navigation, .tier-1.element-5 .super-navigation, .tier-1.element-6 .super-navigation, .tier-1.element-7 .super-navigation {
-  left: -28em; }
-
-/* END */
 .site-headline a img {
   width: 223.52px;
   height: 72.16px; }
@@ -1212,6 +1083,10 @@ body {
   width: 11em; }
   .search-field:focus {
     width: 15em; }
+
+/*li*/
+.with-supernav .super-navigation {
+  display: none; }
 
 .slide-code, .slide-copy {
   float: left;
@@ -1410,15 +1285,14 @@ body {
   width: 32.97872%;
   border-left: 0;
   border-right: 0; }
-  .sitemap .tier-1:nth-child(odd) {
+  .sitemap .tier-1:nth-child(odd), .sitemap .tier-1:nth-child(even) {
     clear: none;
+    border-left: 0;
     border-right: 0; }
-  .sitemap .tier-1.element-1, .sitemap .tier-1.element-4, .sitemap .tier-1.element-7, .sitemap .tier-1.element-10 {
-    border-right: 1px solid #dee0e3; }
-  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8 {
-    border-right: 1px solid #dee0e3; }
-  .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
-    border-left: 1px solid #f1f2f3; }
+  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
+    border-right: 1px solid #d5d6d8; }
+  .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
+    border-left: 1px solid #f7f7f8; }
 
 .footer-links .say-no-more {
   display: inline;
@@ -1427,7 +1301,14 @@ body {
 /* Feedback form */
 .feedback {
   padding-left: 0;
-  padding-right: 0; }
+  padding-right: 0;
+  /*<ul>
+      <li>
+          <label for="id_feedback_categories_0">
+              <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
+          </label>
+      </li>
+  </ul>*/ }
   .feedback .shrubbery {
     margin-left: 8.51064%;
     margin-right: 8.51064%; }
@@ -1450,6 +1331,14 @@ body {
   .feedback #id_comment {
     display: inline-block;
     width: 65.95745%; }
+  .feedback ul {
+    margin-left: 17.02128%;
+    overflow: hidden;
+    *zoom: 1; }
+    .feedback ul li {
+      float: left;
+      width: 46%;
+      margin-right: 3%; }
   .feedback button {
     margin-left: 17.02128%; }
 
@@ -1498,6 +1387,10 @@ a.jump-to-menu {
     .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
+    .touch .main-navigation .tier-1 .subnav {
+      left: auto;
+      right: auto;
+      display: none; }
   .main-navigation .subnav {
     position: absolute;
     top: 100%;
@@ -1521,11 +1414,11 @@ a.jump-to-menu {
         border-style: solid;
         border-width: 0.75em;
         top: -1.45em;
-        left: 1em;
+        left: 1.5em;
         display: block; }
-  .touch .main-navigation .tier-1.last .subnav:before, .touch .element-5 .main-navigation:before, .touch .element-6 .main-navigation:before, .touch .element-7 .main-navigation:before, .touch .element-8 .main-navigation:before {
+  .touch .main-navigation .tier-1.last .subnav:before, .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before {
     left: auto;
-    right: 1em; }
+    right: 1.5em; }
   .main-navigation .tier-2 {
     display: block;
     min-width: 100%; }
@@ -1541,18 +1434,18 @@ a.jump-to-menu {
       display: block; }
     .main-navigation .close-subnav > a {
       display: block;
-      padding-right: 3.25em;
       font-weight: bold; }
     .main-navigation .close-subnav .close-graphic {
       display: block;
       color: #b55863;
-      font-size: 1.875em;
+      font-size: 1.75em;
+      line-height: 1;
       font-weight: bold;
       position: absolute;
       top: 0;
       right: 0;
       text-align: center;
-      width: 1.6em;
+      width: 1.71429em;
       padding: 0.18em 0 0.25em;
       background: rgba(255, 255, 255, 0.2);
       text-shadow: -1px 0 0 white; }
@@ -1592,8 +1485,7 @@ a.jump-to-menu {
     border-right: 1px solid transparent;
     border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
-/* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-.lt-ie9 .site-headline a, .site-headline a img {
+.site-headline a img {
   width: 254px;
   height: 82px; }
 
@@ -1606,10 +1498,74 @@ a.jump-to-menu {
 .options-bar {
   margin: 1.3125em 0; }
 
-/* BRING BACK THE SUPERNAV STUFF HERE */
+/* Supernavs in main-navigation */
+/*<li id="downloads" class="tier-1 element-2 with-supernav" aria-haspopup="true">
+    <a href="download.php">Downloads</a>
+    <ul class="subnav menu" role="menu" aria-hidden="true">
+        <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
+        <li class="super-navigation">
+            <h2>Download for Mac OSX</h2>
+            <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
+            </p><p>
+                <a class="button">Python 3.3.0</a> 
+                <a class="button">Python 2.7.3</a>
+            </p>
+        </li></ul>
+</li>*/
+/*li*/
+.with-supernav .subnav {
+  border-right: 1px solid rgba(102, 102, 102, 0.3); }
+.with-supernav .super-navigation {
+  display: block; }
+
+/*.subnav li*/
+.super-navigation {
+  color: #666666;
+  position: absolute;
+  /* relative to the containing LI */
+  top: 0;
+  width: 28em;
+  min-height: 100%;
+  text-align: left;
+  padding: 1.5em 1.75em;
+  border-top: 1px solid rgba(255, 255, 255, 0.8);
+  border-left: 1px solid rgba(255, 255, 255, 0.8); }
+  .main-navigation .super-navigation a:not(.button) {
+    padding: 0;
+    border: none; }
+    .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
+      border: none;
+      background: transparent; }
+    .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
+      color: #1f3b47; }
+  .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
+    margin-top: 0; }
+  #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
+    font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
+    font-weight: normal;
+    font-size: 1.375em;
+    line-height: 1.25em;
+    margin-bottom: 0; }
+  .super-navigation p.date-posted {
+    color: #666666;
+    font-size: pxtoem(10px) !important;
+    font-style: italic; }
+  .super-navigation p.excert {
+    font-size: pxtoem(10px);
+    line-height: 1.3em; }
+  .super-navigation p.quote-by {
+    color: #3776ab; }
+
+.tier-1.element-1 .super-navigation, .tier-1.element-2 .super-navigation, .tier-1.element-3 .super-navigation {
+  left: 100.25%; }
+
+.tier-1.element-4 .super-navigation, .tier-1.element-5 .super-navigation, .tier-1.element-6 .super-navigation, .tier-1.element-7 .super-navigation {
+  left: -28em; }
+
 .super-navigation .menu {
   text-align: left; }
 
+/* END */
 /* Header-banners */
 .about-banner, .download-for-current-os, .documentation-banner {
   padding-left: 8.51064%;

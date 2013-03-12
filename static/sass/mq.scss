@@ -15,12 +15,27 @@
  */
 
 
+body:after {
+    content: 'animatebody'; 
+    display: none; 
+}
+
+
 /* - - - Smaller than 400px - - - */
 @media (max-width: px2em( 399px )) {
 
     @include max_width_399(); 
 
 }
+
+
+/* - - - Smaller than 480px - - - */
+@media (max-width: px2em( 480px )) {
+
+    @include max_width_480(); 
+
+}
+
 
 /* - - - Larger than 400px - - - */
 @media (min-width: px2em( 400px )) {
@@ -30,6 +45,18 @@
         display: none; 
     }
     @include min_width_400(); 
+
+}
+
+
+/* - - - Larger than 480px - - - */
+@media (min-width: px2em( 480px )) {
+    
+    body:after {
+        content: 'animatebody'; 
+        display: none; 
+    }
+    @include min_width_480(); 
 
 }
 
@@ -74,7 +101,7 @@
 @media (min-width: px2em( 800px )) {
     
     body:after {
-        content: 'local_meetup_map'; 
+        content: ''; 
         display: none; 
     }
     @include min_width_800(); 
@@ -86,7 +113,7 @@
 @media (min-width: px2em( 940px )) {
 
     body:after {
-        content: 'load_supernavs local_meetup_map'; 
+        content: 'load_supernavs'; 
         display: none; 
     }
     
@@ -99,7 +126,7 @@
 @media (min-width: px2em( 1024px )) {
 
     body:after {
-        content: 'load_supernavs local_meetup_map'; 
+        content: 'load_supernavs'; 
         display: none; 
     }
     

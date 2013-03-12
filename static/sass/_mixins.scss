@@ -99,9 +99,14 @@
         &.element-5:hover .subnav, &.element-5:focus .subnav, &.element-5:hover .subnav.touched,  
         &.element-6:hover .subnav, &.element-6:focus .subnav, &.element-6:hover .subnav.touched,
         &.element-7:hover .subnav, &.element-7:focus .subnav, &.element-7:hover .subnav.touched,
-        &.element-8:hover .subnav, &.element-8:focus .subnav, &.element-8:hover .subnav.touched, {
+        &.element-8:hover .subnav, &.element-8:focus .subnav, &.element-8:hover .subnav.touched {
             left: auto; 
             right: 0; 
+        }
+        .touch & .subnav {
+            left: auto; 
+            right: auto; 
+            display: none; 
         }
     }
     .subnav {
@@ -119,18 +124,18 @@
             &:before {
                 @include pointer( .75em ); 
                 top: -1.45em; 
-                left: 1em; 
+                left: 1.5em; 
             	display: block; 
             }
         }
     }
     /*modernizr*/ .touch & .tier-1.last .subnav:before,
-    .touch .element-5 &:before, 
-    .touch .element-6 &:before, 
-    .touch .element-7 &:before, 
-    .touch .element-8 &:before {
+    .touch & .element-5 .subnav:before, 
+    .touch & .element-6 .subnav:before, 
+    .touch & .element-7 .subnav:before, 
+    .touch & .element-8 .subnav:before {
         left: auto; 
-        right: 1em; 
+        right: 1.5em; 
     }
     .tier-2 {
         display: block;
@@ -161,18 +166,18 @@
         }
         & > a {
             display: block; 
-            padding-right: px2em( 52px ); 
             font-weight: bold; 
         }
         .close-graphic {
             display: block; 
             color: $red; 
-            font-size: px2em( 30px ); 
+            font-size: px2em( 28px ); 
+            line-height: 1; 
             font-weight: bold; 
             position: absolute; 
             top: 0; right: 0; 
             text-align: center; 
-            width: px2em( 48px, 30px ); 
+            width: px2em( 48px, 28px ); 
             padding: .18em 0 .25em; 
             background: rgba( $white, .2 ); 
             @include text-shadow( -1px 0 0 $white ); 

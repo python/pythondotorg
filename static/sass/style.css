@@ -646,17 +646,17 @@ abbr, dfn {
     clear: both; }
 
 .single-event-date, .feedback {
-  background-color: #ffeba9;
+  background-color: #ffdd6c;
   *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFF7DC', endColorstr='#FFFFEBA9');
-  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #fff7dc), color-stop(90%, #ffeba9));
-  background-image: -webkit-linear-gradient(#fff7dc 10%, #ffeba9 90%);
-  background-image: -moz-linear-gradient(#fff7dc 10%, #ffeba9 90%);
-  background-image: -o-linear-gradient(#fff7dc 10%, #ffeba9 90%);
-  background-image: linear-gradient(#fff7dc 10%, #ffeba9 90%);
-  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
-  -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
-  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe89f), color-stop(90%, #ffdd6c));
+  background-image: -webkit-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: -moz-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: -o-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  background-image: linear-gradient(#ffe89f 10%, #ffdd6c 90%);
+  -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.05); }
 
 .single-event-date {
   border: 1px solid #ffcc24;
@@ -1062,6 +1062,10 @@ a.jump-to-menu {
     .adjust-font-size .tier-1.last:hover .subnav, .adjust-font-size .tier-1.last:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav, .adjust-font-size .tier-1.element-5:focus .subnav, .adjust-font-size .tier-1.element-5:hover .subnav.touched, .adjust-font-size .tier-1.element-6:hover .subnav, .adjust-font-size .tier-1.element-6:focus .subnav, .adjust-font-size .tier-1.element-6:hover .subnav.touched, .adjust-font-size .tier-1.element-7:hover .subnav, .adjust-font-size .tier-1.element-7:focus .subnav, .adjust-font-size .tier-1.element-7:hover .subnav.touched, .adjust-font-size .tier-1.element-8:hover .subnav, .adjust-font-size .tier-1.element-8:focus .subnav, .adjust-font-size .tier-1.element-8:hover .subnav.touched, .winkwink-nudgenudge .tier-1.last:hover .subnav, .winkwink-nudgenudge .tier-1.last:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav, .winkwink-nudgenudge .tier-1.element-5:focus .subnav, .winkwink-nudgenudge .tier-1.element-5:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-6:hover .subnav, .winkwink-nudgenudge .tier-1.element-6:focus .subnav, .winkwink-nudgenudge .tier-1.element-6:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-7:hover .subnav, .winkwink-nudgenudge .tier-1.element-7:focus .subnav, .winkwink-nudgenudge .tier-1.element-7:hover .subnav.touched, .winkwink-nudgenudge .tier-1.element-8:hover .subnav, .winkwink-nudgenudge .tier-1.element-8:focus .subnav, .winkwink-nudgenudge .tier-1.element-8:hover .subnav.touched {
       left: auto;
       right: 0; }
+    .touch .adjust-font-size .tier-1 .subnav, .touch .winkwink-nudgenudge .tier-1 .subnav {
+      left: auto;
+      right: auto;
+      display: none; }
   .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
     position: absolute;
     top: 100%;
@@ -1085,11 +1089,11 @@ a.jump-to-menu {
         border-style: solid;
         border-width: 0.75em;
         top: -1.45em;
-        left: 1em;
+        left: 1.5em;
         display: block; }
-  .touch .adjust-font-size .tier-1.last .subnav:before, .touch .element-5 .adjust-font-size:before, .touch .element-6 .adjust-font-size:before, .touch .element-7 .adjust-font-size:before, .touch .element-8 .adjust-font-size:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before, .touch .element-5 .winkwink-nudgenudge:before, .touch .element-6 .winkwink-nudgenudge:before, .touch .element-7 .winkwink-nudgenudge:before, .touch .element-8 .winkwink-nudgenudge:before {
+  .touch .adjust-font-size .tier-1.last .subnav:before, .touch .adjust-font-size .element-5 .subnav:before, .touch .adjust-font-size .element-6 .subnav:before, .touch .adjust-font-size .element-7 .subnav:before, .touch .adjust-font-size .element-8 .subnav:before, .touch .winkwink-nudgenudge .tier-1.last .subnav:before, .touch .winkwink-nudgenudge .element-5 .subnav:before, .touch .winkwink-nudgenudge .element-6 .subnav:before, .touch .winkwink-nudgenudge .element-7 .subnav:before, .touch .winkwink-nudgenudge .element-8 .subnav:before {
     left: auto;
-    right: 1em; }
+    right: 1.5em; }
   .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-2 {
     display: block;
     min-width: 100%; }
@@ -1105,18 +1109,18 @@ a.jump-to-menu {
       display: block; }
     .adjust-font-size .close-subnav > a, .winkwink-nudgenudge .close-subnav > a {
       display: block;
-      padding-right: 3.25em;
       font-weight: bold; }
     .adjust-font-size .close-subnav .close-graphic, .winkwink-nudgenudge .close-subnav .close-graphic {
       display: block;
       color: #b55863;
-      font-size: 1.875em;
+      font-size: 1.75em;
+      line-height: 1;
       font-weight: bold;
       position: absolute;
       top: 0;
       right: 0;
       text-align: center;
-      width: 1.6em;
+      width: 1.71429em;
       padding: 0.18em 0 0.25em;
       background: rgba(255, 255, 255, 0.2);
       text-shadow: -1px 0 0 white; }
@@ -1136,15 +1140,21 @@ a.jump-to-menu {
       .adjust-font-size .subnav a:hover, .adjust-font-size .subnav a:focus, .winkwink-nudgenudge .subnav a:hover, .winkwink-nudgenudge .subnav a:focus {
         color: #e6e8ea;
         background-color: #999999; }
+      .touch .adjust-font-size .subnav a .tier-2, .touch .winkwink-nudgenudge .subnav a .tier-2 {
+        padding-top: .75em;
+        padding-bottom: .6em; }
     .adjust-font-size .subnav .text-reset, .winkwink-nudgenudge .subnav .text-reset {
       color: #888; }
     .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
-      top: 127%;
+      top: 135%;
       border: 3px solid #666666; }
       .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
+        top: -1.6em;
         border-color: transparent transparent #666666 transparent; }
   .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
     border-bottom: 1px solid #999999; }
+    .adjust-font-size .close-subnav .close-text, .winkwink-nudgenudge .close-subnav .close-text {
+      padding: 0.9em 3.25em 0.8em 1em; }
 
 /* ! Main navigation – In layout and mixins, as we don't display it here. */
 .main-navigation {
@@ -2109,13 +2119,13 @@ p.quote-by-organization {
   .sitemap .subnav {
     font-size: 1em;
     margin-bottom: 0;
-    border-top: 1px solid #dee0e3;
-    border-bottom: 1px solid #caccce; }
+    border-top: 1px solid #d5d6d8;
+    border-bottom: 1px solid #f7f7f8; }
     .sitemap .subnav li {
-      border-top: 1px solid #caccce;
-      border-bottom: 1px solid #dee0e3; }
+      border-top: 1px solid #f7f7f8;
+      border-bottom: 1px solid #d5d6d8; }
     .sitemap .subnav a:hover, .sitemap .subnav a:focus {
-      background-color: rgba(230, 232, 234, 0.5); }
+      background-color: #ecedef; }
 
 .site-base {
   border-top: 1px solid #111111; }
@@ -2152,7 +2162,14 @@ p.quote-by-organization {
 
 .feedback {
   border-top: 1px solid #ffd343;
-  padding-top: 1.75em; }
+  padding-top: 1.75em;
+  /*<ul>
+      <li>
+          <label for="id_feedback_categories_0">
+              <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
+          </label>
+      </li>
+  </ul>*/ }
   .feedback h3 {
     margin-top: 0; }
   .feedback .shrubbery {
@@ -2165,6 +2182,11 @@ p.quote-by-organization {
   .feedback .helptext {
     font-style: italic;
     font-size: 0.875em; }
+  .feedback ul {
+    margin-left: 0;
+    list-style: none; }
+    .feedback ul label {
+      margin-top: 0.5em; }
 
 .accordion-wrapper {
   display: none; }
