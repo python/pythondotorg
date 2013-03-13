@@ -205,6 +205,7 @@
 /* ! ===== Larger than 800px ===== */
 /* ! ===== Larger than 940px ===== */
 /* ! ===== Larger than 1024px ===== */
+/* ! ===== Larger than 1200px ===== */
 .introduction {
   font-size: 1.375em; }
 
@@ -1103,19 +1104,32 @@ body {
     line-height: 1px; }
 
 /* Header-banners */
-.about-banner, .download-for-current-os, .documentation-banner {
-  padding-left: 8.51064%;
-  padding-right: 34.04255%;
-  min-height: 15em; }
+.main-header .container {
+  padding-bottom: 0; }
+
+.header-banner {
+  padding: 0 0 0 1em;
+  margin: 0 -1em 0 0; }
+
+.about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+  padding-left: 0%;
+  padding-right: 51.06383%;
+  padding-top: 1em; }
 
 .about-banner {
-  background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+  background: 160% 0 no-repeat url('../img/landing-about.png?1363149778') transparent;
+  min-height: 320px; }
 
 .download-for-current-os {
-  background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent; }
 
 .documentation-banner {
-  background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
+  background: 136% 0 no-repeat url('../img/landing-docs.png?1363149778') transparent; }
+
+.community-banner {
+  text-align: left;
+  /* Why is this needed? */
+  background: 150% 0 no-repeat url('../img/landing-community.png?1363149778') transparent; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1567,12 +1581,29 @@ a.jump-to-menu {
 
 /* END */
 /* Header-banners */
-.about-banner, .download-for-current-os, .documentation-banner {
-  padding-left: 8.51064%;
-  padding-right: 34.04255%; }
+.about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+  padding-left: 0%;
+  padding-right: 42.55319%; }
+  .about-banner p:last-child, .download-for-current-os p:last-child, .documentation-banner p:last-child, .community-banner p:last-child {
+    margin-bottom: 0; }
 
 .about-banner {
-  background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+  background-position: 115% -20px;
+  min-height: 320px; }
+
+.download-for-current-os {
+  background-position: 115% 0;
+  padding-bottom: 5.5em;
+  margin-bottom: -3em; }
+
+.documentation-banner {
+  background-position: 105% 0;
+  min-height: 350px;
+  margin-bottom: -20px; }
+
+.community-banner {
+  background-position: 105% 0;
+  min-height: 320px; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;

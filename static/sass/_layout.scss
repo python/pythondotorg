@@ -647,10 +647,6 @@
 /* ! ===== Larger than 800px ===== */
 @mixin min_width_800() {
     
-    .main-header {
-        
-    }    
-    
     .site-headline a img {
         width: 254px * .88; 
         height: 82px * .88; 
@@ -689,7 +685,6 @@
     }
     
     .introduction {
-        // font-size: px2em( 24px );
         text-align: center; 
         
         .breaker {
@@ -698,21 +693,30 @@
     }
     
     /* Header-banners */
-    .about-banner, .download-for-current-os, .documentation-banner {
-        @include pad( 1,4 ); 
-        min-height: 15em; 
+    .main-header .container {
+        padding-bottom: 0; 
+    } 
+    .header-banner {
+        padding: 0 0 0 1em; 
+        margin: 0 -1em 0 0; 
+    }
+    .about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+        @include pad( 0,6 ); 
+        padding-top: 1em; 
     }
     .about-banner {
-        // background: 96% 1em no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
-        background: 96% 0 no-repeat image-url("python-logo-large3.png") transparent;
+        background: 160% 0 no-repeat image-url("landing-about.png") transparent;
+        min-height: 320px; 
     }
     .download-for-current-os {
-        background: 97% -30px no-repeat image-url("download-arrow_trans24.png") transparent;
-        // margin-bottom: - rhythm( 1.25 );
+        background: 130% 0 no-repeat image-url("landing-downloads.png") transparent;
     }
     .documentation-banner {
-        background: 101% -20px no-repeat image-url("docs-filecab_trans24.png") transparent;
-        // margin-bottom: - rhythm( 1.25 ); 
+        background: 136% 0 no-repeat image-url("landing-docs.png") transparent;
+    }
+    .community-banner {
+        text-align: left; /* Why is this needed? */
+        background: 150% 0 no-repeat image-url("landing-community.png") transparent;
     }
     .welcome-to-the-foundation {
         padding-top: 1em;
@@ -1088,18 +1092,30 @@
     
     
     /* Header-banners */
-    .about-banner, .download-for-current-os, .documentation-banner {
-        @include pad( 1,4 ); 
+    .about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+        @include pad( 0,5 ); 
+        
+        & p:last-child {
+            margin-bottom: 0; 
+        }
     }
         .about-banner {
-            // background: 88% 1em no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
-            background: 88% 0 no-repeat image-url("python-logo-large3.png") transparent;
+            background-position: 115% -20px;
+            min-height: 320px; 
         }
         .download-for-current-os {
-            // background: 90% 0 no-repeat image-url("download-arrow_trans24.png") transparent; 
+            background-position: 115% 0; 
+            padding-bottom: 5.5em;
+            margin-bottom: -3em;
         }
         .documentation-banner {
-            // background: 92% 0 no-repeat image-url("docs-filecab_trans24.png") transparent;
+            background-position: 105% 0;
+            min-height: 350px;
+            margin-bottom: -20px;
+        }
+        .community-banner {
+            background-position: 105% 0; 
+            min-height: 320px; 
         }
         .featured-success-story {
             .success-quote {
@@ -1320,6 +1336,20 @@
         }
     }
     
+    .about-banner {
+        background-position: 95% -30px;
+        min-height: 310px;
+    }
+    .download-for-current-os {
+        background-position: 105% 0; 
+    }
+    .documentation-banner {
+        background-position: 110% 0;
+    }
+    .community-banner {
+        background-position: 90% 0; 
+    }
+        
     .latest-blog-post, .featured-event, .jobs-intro {
         
         .call-to-action {
@@ -1369,5 +1399,23 @@
         .container {
             padding: 0 3em 0.75em;
         }
+    }
+}
+
+
+/* ! ===== Larger than 1200px ===== */
+@mixin min_width_1200() {
+    
+    .about-banner {
+        background-position: 85% -30px;
+    }
+    .download-for-current-os {
+        background-position: 95% 0; 
+    }
+    .documentation-banner {
+        background-position: 100% 0;
+    }
+    .community-banner {
+        background-position: 80% 0; 
     }
 }

@@ -122,6 +122,7 @@ body:after {
     @include min_width_940();
 }
 
+
 /* - - - Larger than 1024px - - - */
 @media (min-width: px2em( 1024px )) {
 
@@ -131,4 +132,16 @@ body:after {
     }
     
     @include min_width_1024();
+}
+
+
+/* - - - Larger than 1200px - - - */
+@media (min-width: px2em( 1200px )) {
+
+    body:after {
+        content: 'load_supernavs'; 
+        display: none; 
+    }
+    
+    @include min_width_1200();
 }

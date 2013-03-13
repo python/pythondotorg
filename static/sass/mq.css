@@ -205,6 +205,7 @@
 /* ! ===== Larger than 800px ===== */
 /* ! ===== Larger than 940px ===== */
 /* ! ===== Larger than 1024px ===== */
+/* ! ===== Larger than 1200px ===== */
 /* 
  * We "label" the body with strings that correspond to js functions that we want to fire. 
  * A window.resize() event checks this label and functions fire when conditions are met 
@@ -212,6 +213,10 @@
  * The nice part is, these labels can be strings with more than one item in them. 
  * As many JS functions that we want to fire at different widths can be controlled with tese labels.
  */
+body:after {
+  content: 'animatebody';
+  display: none; }
+
 /* - - - Smaller than 400px - - - */
 @media (max-width: 24.9375em) {
   .search-field:focus {
@@ -1284,19 +1289,32 @@
       line-height: 1px; }
 
   /* Header-banners */
-  .about-banner, .download-for-current-os, .documentation-banner {
-    padding-left: 8.51064%;
-    padding-right: 34.04255%;
-    min-height: 15em; }
+  .main-header .container {
+    padding-bottom: 0; }
+
+  .header-banner {
+    padding: 0 0 0 1em;
+    margin: 0 -1em 0 0; }
+
+  .about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+    padding-left: 0%;
+    padding-right: 51.06383%;
+    padding-top: 1em; }
 
   .about-banner {
-    background: 96% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background: 160% 0 no-repeat url('../img/landing-about.png?1363149778') transparent;
+    min-height: 320px; }
 
   .download-for-current-os {
-    background: 97% -30px no-repeat url('../img/download-arrow_trans24.png?1361222549') transparent; }
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent; }
 
   .documentation-banner {
-    background: 101% -20px no-repeat url('../img/docs-filecab_trans24.png?1361222549') transparent; }
+    background: 136% 0 no-repeat url('../img/landing-docs.png?1363149778') transparent; }
+
+  .community-banner {
+    text-align: left;
+    /* Why is this needed? */
+    background: 150% 0 no-repeat url('../img/landing-community.png?1363149778') transparent; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1753,12 +1771,29 @@
 
   /* END */
   /* Header-banners */
-  .about-banner, .download-for-current-os, .documentation-banner {
-    padding-left: 8.51064%;
-    padding-right: 34.04255%; }
+  .about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+    padding-left: 0%;
+    padding-right: 42.55319%; }
+    .about-banner p:last-child, .download-for-current-os p:last-child, .documentation-banner p:last-child, .community-banner p:last-child {
+      margin-bottom: 0; }
 
   .about-banner {
-    background: 88% 0 no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background-position: 115% -20px;
+    min-height: 320px; }
+
+  .download-for-current-os {
+    background-position: 115% 0;
+    padding-bottom: 5.5em;
+    margin-bottom: -3em; }
+
+  .documentation-banner {
+    background-position: 105% 0;
+    min-height: 350px;
+    margin-bottom: -20px; }
+
+  .community-banner {
+    background-position: 105% 0;
+    min-height: 320px; }
 
   .featured-success-story .success-quote {
     margin-left: 8.51064%;
@@ -1904,6 +1939,19 @@
       height: 50px;
       margin: -25px -25px 0 0; }
 
+  .about-banner {
+    background-position: 95% -30px;
+    min-height: 310px; }
+
+  .download-for-current-os {
+    background-position: 105% 0; }
+
+  .documentation-banner {
+    background-position: 110% 0; }
+
+  .community-banner {
+    background-position: 90% 0; }
+
   .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
     margin-left: 25.53191%;
     margin-right: 8.51064%; }
@@ -1931,3 +1979,21 @@
   /* Footer */
   .main-footer-links .container {
     padding: 0 3em 0.75em; } }
+/* - - - Larger than 1200px - - - */
+@media (min-width: 75em) {
+  body:after {
+    content: 'load_supernavs';
+    display: none; }
+
+  .about-banner {
+    background-position: 85% -40px;
+    min-height: 300px; }
+
+  .download-for-current-os {
+    background-position: 95% 0; }
+
+  .documentation-banner {
+    background-position: 100% 0; }
+
+  .community-banner {
+    background-position: 80% 0; } }
