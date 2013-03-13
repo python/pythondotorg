@@ -7,7 +7,7 @@ from .models import Page
 class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
     fieldsets = [
-        (None, {'fields': ('title', 'path', 'content', 'is_published')}),
+        (None, {'fields': ('title', 'path', 'content', 'content_markup_type', 'is_published')}),
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
     ]
 
