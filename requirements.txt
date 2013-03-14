@@ -5,6 +5,7 @@ Django==1.5
 docutils==0.10
 Markdown==2.2.1
 psycopg2==2.4.5
+requests==1.1.0
 
 pytz
 python-dateutil==2.1
