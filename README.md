@@ -72,12 +72,13 @@ Daily startup for J.
 1. Open Terminal.app
 2. cd ~/github/python
 3. source ENV/bin/activate
-4. ./manage.py runserver
+4. export DATABASE_URL="postgres://localhost/python.org"
+5. ./manage.py runserver
 
 Nuke the DB!
 
-1. Do steps 1-3 above.
-2. PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"
+1. Do steps 1-4 above.
+2. export PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"
 3. dropdb python.org
 4. createdb python.org
 5. ./manage.py syncdb
