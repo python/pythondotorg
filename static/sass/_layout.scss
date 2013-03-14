@@ -95,7 +95,7 @@
         @include border-radius(8px);
         @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         display: block; 
-        margin: 0 -.75em;
+        margin: 0 -.625em;
         text-align: center; 
         @include horizontal_nav_dropdowns();
         font-size: px2em( 18px );
@@ -648,7 +648,7 @@
 @mixin min_width_800() {
     
     .site-headline a img {
-        width: 254px * .88; 
+        width: 290px * .88; 
         height: 82px * .88; 
     }
     
@@ -705,18 +705,23 @@
         padding-top: 1em; 
     }
     .about-banner {
-        background: 160% 0 no-repeat image-url("landing-about.png") transparent;
-        min-height: 320px; 
+        background: 120% 0 no-repeat image-url("landing-about.png") transparent;
+        min-height: 345px; 
+        padding-bottom: 3.5em; 
+        margin-bottom: -2.5em; 
     }
     .download-for-current-os {
         background: 130% 0 no-repeat image-url("landing-downloads.png") transparent;
+        padding-bottom: 4em;
+        margin-bottom: -3em;
     }
     .documentation-banner {
         background: 136% 0 no-repeat image-url("landing-docs.png") transparent;
     }
     .community-banner {
         text-align: left; /* Why is this needed? */
-        background: 150% 0 no-repeat image-url("landing-community.png") transparent;
+        background: 140% 0 no-repeat image-url("landing-community.png") transparent;
+        padding-bottom: .75em; 
     }
     .welcome-to-the-foundation {
         padding-top: 1em;
@@ -983,7 +988,7 @@
 @mixin min_width_940() {
     
     .site-headline a img {
-        width: 254px; 
+        width: 290px; 
         height: 82px; 
     }
         .search-field {
@@ -1100,22 +1105,33 @@
         }
     }
         .about-banner {
-            background-position: 115% -20px;
-            min-height: 320px; 
+            background-position: 110% 0px;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .download-for-current-os {
             background-position: 115% 0; 
-            padding-bottom: 5.5em;
+            padding-bottom: 6em;
             margin-bottom: -3em;
         }
         .documentation-banner {
-            background-position: 105% 0;
+            background-position: 110% 0;
             min-height: 350px;
             margin-bottom: -20px;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .community-banner {
             background-position: 105% 0; 
             min-height: 320px; 
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .featured-success-story {
             .success-quote {
@@ -1337,17 +1353,32 @@
     }
     
     .about-banner {
-        background-position: 95% -30px;
-        min-height: 310px;
+        background-position: 100% 0px;
     }
     .download-for-current-os {
         background-position: 105% 0; 
+        
+        p {
+            @include post( 1,7 ); 
+        }
     }
     .documentation-banner {
-        background-position: 110% 0;
+        background-position: 110% 0; 
+        
+        .call-to-action {
+            @include post( 1 ); 
+        }
+        p {
+            margin-right: 0; 
+        }
     }
     .community-banner {
-        background-position: 90% 0; 
+        @include pad( 0,6 ); 
+        background-position: 95% 0; 
+        
+        p {
+            margin-right: 0; 
+        }
     }
         
     .latest-blog-post, .featured-event, .jobs-intro {
@@ -1406,16 +1437,31 @@
 /* ! ===== Larger than 1200px ===== */
 @mixin min_width_1200() {
     
+    .about-banner, .community-banner {
+        @include pad( 1,6 ); 
+    }
     .about-banner {
-        background-position: 85% -30px;
+        background-position: 85% 0;
     }
     .download-for-current-os {
+        @include pad( 1,5 ); 
         background-position: 95% 0; 
+        padding-bottom: 6em;
+        margin-bottom: -3em;
+        
+        p {
+            @include post( 1,6 ); 
+        }
     }
     .documentation-banner {
+        @include pad( 1,5 ); 
         background-position: 100% 0;
+        
+        .call-to-action {
+            @include post( 1,6 ); 
+        }
     }
     .community-banner {
-        background-position: 80% 0; 
+        background-position: 95% 0; 
     }
 }

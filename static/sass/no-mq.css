@@ -1068,7 +1068,7 @@ body {
     padding-left: 3em; }
 
 .site-headline a img {
-  width: 223.52px;
+  width: 255.2px;
   height: 72.16px; }
 
 .site-headline {
@@ -1117,11 +1117,15 @@ body {
   padding-top: 1em; }
 
 .about-banner {
-  background: 160% 0 no-repeat url('../img/landing-about.png?1363149778') transparent;
-  min-height: 320px; }
+  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+  min-height: 345px;
+  padding-bottom: 3.5em;
+  margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent; }
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+  padding-bottom: 4em;
+  margin-bottom: -3em; }
 
 .documentation-banner {
   background: 136% 0 no-repeat url('../img/landing-docs.png?1363149778') transparent; }
@@ -1129,7 +1133,8 @@ body {
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 150% 0 no-repeat url('../img/landing-community.png?1363149778') transparent; }
+  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+  padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
   padding-top: 1em;
@@ -1372,7 +1377,7 @@ a.jump-to-menu {
   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   display: block;
-  margin: 0 -0.75em;
+  margin: 0 -0.625em;
   text-align: center;
   /*ul*/
   /*modernizr*/
@@ -1500,7 +1505,7 @@ a.jump-to-menu {
     border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
 .site-headline a img {
-  width: 254px;
+  width: 290px;
   height: 82px; }
 
 .search-field {
@@ -1588,22 +1593,27 @@ a.jump-to-menu {
     margin-bottom: 0; }
 
 .about-banner {
-  background-position: 115% -20px;
-  min-height: 320px; }
+  background-position: 110% 0px; }
+  .about-banner p {
+    margin-right: 14.81481%; }
 
 .download-for-current-os {
   background-position: 115% 0;
-  padding-bottom: 5.5em;
+  padding-bottom: 6em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background-position: 105% 0;
+  background-position: 110% 0;
   min-height: 350px;
   margin-bottom: -20px; }
+  .documentation-banner p {
+    margin-right: 14.81481%; }
 
 .community-banner {
   background-position: 105% 0;
   min-height: 320px; }
+  .community-banner p {
+    margin-right: 14.81481%; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;
@@ -1732,7 +1742,7 @@ a.jump-to-menu {
 /* Additional media query contents that we want to deliver to non-media query enabled browsers */
 /* ! ===== lt-IE9 rules ===== */
 .container {
-  width: 60em; }
+  width: 61.25em; }
 
 .main-navigation li > a {
   padding-left: 1.25em;
@@ -1740,5 +1750,5 @@ a.jump-to-menu {
 
 /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
 .site-headline a, .site-headline a img {
-  width: 254px;
+  width: 290px;
   height: 82px; }

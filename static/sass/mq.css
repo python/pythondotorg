@@ -1253,7 +1253,7 @@ body:after {
     display: none; }
 
   .site-headline a img {
-    width: 223.52px;
+    width: 255.2px;
     height: 72.16px; }
 
   .site-headline {
@@ -1302,11 +1302,15 @@ body:after {
     padding-top: 1em; }
 
   .about-banner {
-    background: 160% 0 no-repeat url('../img/landing-about.png?1363149778') transparent;
-    min-height: 320px; }
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+    min-height: 345px;
+    padding-bottom: 3.5em;
+    margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent; }
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+    padding-bottom: 4em;
+    margin-bottom: -3em; }
 
   .documentation-banner {
     background: 136% 0 no-repeat url('../img/landing-docs.png?1363149778') transparent; }
@@ -1314,7 +1318,8 @@ body:after {
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 150% 0 no-repeat url('../img/landing-community.png?1363149778') transparent; }
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+    padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1562,7 +1567,7 @@ body:after {
     -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
-    margin: 0 -0.75em;
+    margin: 0 -0.625em;
     text-align: center;
     /*ul*/
     /*modernizr*/
@@ -1690,7 +1695,7 @@ body:after {
       border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
   .site-headline a img {
-    width: 254px;
+    width: 290px;
     height: 82px; }
 
   .search-field {
@@ -1778,22 +1783,27 @@ body:after {
       margin-bottom: 0; }
 
   .about-banner {
-    background-position: 115% -20px;
-    min-height: 320px; }
+    background-position: 110% 0px; }
+    .about-banner p {
+      margin-right: 14.81481%; }
 
   .download-for-current-os {
     background-position: 115% 0;
-    padding-bottom: 5.5em;
+    padding-bottom: 6em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background-position: 105% 0;
+    background-position: 110% 0;
     min-height: 350px;
     margin-bottom: -20px; }
+    .documentation-banner p {
+      margin-right: 14.81481%; }
 
   .community-banner {
     background-position: 105% 0;
     min-height: 320px; }
+    .community-banner p {
+      margin-right: 14.81481%; }
 
   .featured-success-story .success-quote {
     margin-left: 8.51064%;
@@ -1940,17 +1950,26 @@ body:after {
       margin: -25px -25px 0 0; }
 
   .about-banner {
-    background-position: 95% -30px;
-    min-height: 310px; }
+    background-position: 100% 0px; }
 
   .download-for-current-os {
     background-position: 105% 0; }
+    .download-for-current-os p {
+      margin-right: 14.81481%; }
 
   .documentation-banner {
     background-position: 110% 0; }
+    .documentation-banner .call-to-action {
+      margin-right: 8.51064%; }
+    .documentation-banner p {
+      margin-right: 0; }
 
   .community-banner {
-    background-position: 90% 0; }
+    padding-left: 0%;
+    padding-right: 51.06383%;
+    background-position: 95% 0; }
+    .community-banner p {
+      margin-right: 0; }
 
   .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
     margin-left: 25.53191%;
@@ -1985,15 +2004,28 @@ body:after {
     content: 'load_supernavs';
     display: none; }
 
+  .about-banner, .community-banner {
+    padding-left: 8.51064%;
+    padding-right: 51.06383%; }
+
   .about-banner {
-    background-position: 85% -40px;
-    min-height: 300px; }
+    background-position: 85% 0; }
 
   .download-for-current-os {
-    background-position: 95% 0; }
+    padding-left: 8.51064%;
+    padding-right: 42.55319%;
+    background-position: 95% 0;
+    padding-bottom: 6em;
+    margin-bottom: -3em; }
+    .download-for-current-os p {
+      margin-right: 17.3913%; }
 
   .documentation-banner {
+    padding-left: 8.51064%;
+    padding-right: 42.55319%;
     background-position: 100% 0; }
+    .documentation-banner .call-to-action {
+      margin-right: 17.3913%; }
 
   .community-banner {
-    background-position: 80% 0; } }
+    background-position: 95% 0; } }

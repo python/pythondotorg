@@ -917,7 +917,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     display: block;
     margin: 0 auto; }
     .site-headline a img {
-      width: 190.5px;
+      width: 217.5px;
       height: 61.5px; }
 
 .options-bar {
@@ -1189,8 +1189,7 @@ a.jump-to-menu {
     display: block;
     margin: 0 auto; }
   .header-banner p {
-    color: #e6e8ea;
-    max-width: 450px; }
+    color: #e6e8ea; }
     .header-banner p a:not(.button) {
       color: #ffd343;
       border-bottom: 1px solid #5695c9; }
@@ -1635,7 +1634,7 @@ a.jump-to-menu {
 
 /* Success Stories landing page */
 .featured-success-story {
-  background: url("../img/success-glow3.png") center -230px no-repeat;
+  background: url("../img/success-glow2.png") center -230px no-repeat;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -1742,6 +1741,8 @@ p.quote-by-organization {
   padding: 0;
   color: #666666;
   line-height: 1.5; }
+  .community-success-stories blockquote:before {
+    content: ''; }
 
 .python-weekly {
   background-color: #f2f4f6;
