@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+{% block body_attributes %}class="python signup"{% endblock %}
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <form action="" method="post">{% csrf_token %}
+        {{ form.non_field_errors }}
+        <p>{{ form.username.label_tag }}{{ form.username }}<span class="helptext">{{ form.username.help_text }}</span>{% if form.errors.username %}<span class="error">{{ form.errors.username }}</span>{% endif %}</p>
+        <p>{{ form.password1.label_tag }}{{ form.password1 }}<span class="helptext">{{ form.password1.help_text }}</span>{% if form.errors.password1 %}<span class="error">{{ form.errors.password1 }}</span>{% endif %}</p>
+        <p>{{ form.password2.label_tag }}{{ form.password2 }}<span class="helptext">{{ form.password2.help_text }}</span>{% if form.errors.password2 %}<span class="error">{{ form.errors.password2 }}</span>{% endif %}</p>
+        <p>{{ form.email.label_tag }}{{ form.email }}<span class="helptext">{{ form.email.help_text }}</span>{% if form.errors.email %}<span class="error">{{ form.errors.email }}</span>{% endif %}</p>
+        <p><label for="id_is_beta_tester">{{ form.is_beta_tester }} I would like to be a beta tester</label>{% if form.errors.is_beta_tester %}<span class="error">{{ form.errors.is_beta_tester }}{% endif %}</span></p>
+        <p><button type="submit" name="Submit">Submit Feedback</button></p>
+    </form>
+<div>
+{% endblock content %}

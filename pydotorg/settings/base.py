@@ -73,6 +73,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+AUTH_USER_MODEL = 'users.User'
+SOUTH_TESTS_MIGRATE = False
+
 WSGI_APPLICATION = 'pydotorg.wsgi.application'
 
 ### Apps
@@ -92,6 +95,7 @@ INSTALLED_APPS = (
     'south',
     'timedelta',
 
+    'users',
     'boxes',
     'cms',
     'companies',
