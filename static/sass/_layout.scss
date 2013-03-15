@@ -720,7 +720,8 @@
         margin-bottom: -3em;
     }
     .documentation-banner {
-        background: 136% 0 no-repeat image-url("landing-docs.png") transparent;
+        background: 130% 0 no-repeat image-url("landing-docs.png") transparent;
+        padding-bottom: 1em; 
     }
     .community-banner {
         text-align: left; /* Why is this needed? */
@@ -1122,8 +1123,6 @@
         }
         .documentation-banner {
             background-position: 110% 0;
-            min-height: 350px;
-            margin-bottom: -20px;
             
             p {
                 @include post( 1,7 ); 
@@ -1368,6 +1367,7 @@
     }
     .documentation-banner {
         background-position: 110% 0; 
+        min-height: 345px; 
         
         .call-to-action {
             @include post( 1 ); 
