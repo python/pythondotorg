@@ -43,6 +43,7 @@ function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)}
 
 
 /* Variables to set to true later and check */
+scroll_fired = false;
 supernavs_loaded = false;
 
 
@@ -60,8 +61,9 @@ on_resize(function() {
     console.log( "media query tag=" + mq_tag );
 
 
-    if ( mq_tag.indexOf("animatebody") !=-1 ) {
+    if ( mq_tag.indexOf("animatebody") !=-1 && ! scroll_fired ) {
         $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
+        scroll_fired = true;
         console.log( "! animatebody has fired" );
     }
 

@@ -1113,7 +1113,11 @@ body:after {
       left: -.1875em; }
     .feedback h3 {
       margin-top: 0;
-      padding-left: 3em; } }
+      padding-left: 3em; }
+
+  .feedback-flag {
+    top: 21em;
+    right: -2.4em; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 40em) and (max-width: 58.75em) {
   body:after {

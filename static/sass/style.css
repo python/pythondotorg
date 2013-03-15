@@ -645,7 +645,7 @@ abbr, dfn {
     display: table;
     clear: both; }
 
-.single-event-date, .feedback {
+.single-event-date, .feedback, .feedback-flag {
   background-color: #ffdd6c;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
@@ -2223,6 +2223,27 @@ p.quote-by-organization {
   display: none; }
 
 /* ! Test objects – can be deleted later */
+/* <div class="feedback-flag">
+        <span aria-hidden="true" class="icon-megaphone"></span>
+        <span class="feedback-label">Feedback</span>
+    </div>*/
+.feedback-flag {
+  position: absolute;
+  top: 29.25em;
+  right: -2.4em;
+  -webkit-transform: rotate(90deg);
+  -moz-transform: rotate(90deg);
+  -ms-transform: rotate(90deg);
+  -o-transform: rotate(90deg);
+  transform: rotate(90deg);
+  border: 1px solid #ffcc24;
+  padding: 0.3em 0.6em; }
+  .feedback-flag .icon-megaphone:before {
+    color: #3776ab; }
+  .feedback-flag .feedback-label {
+    color: #3776ab;
+    font-weight: bold; }
+
 #test-window-size {
   background-color: rgba(200, 200, 200, 0.1);
   color: #999;
