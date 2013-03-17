@@ -6,23 +6,18 @@
         <div class="slideshow">
             <div class="slide-code">
                 <code style="display: block;">
-                    <div>&nbsp;1&nbsp;  <strong>>>> l = ['spam', 'ham', 314, 23]</strong></div>
-                    &nbsp;2&nbsp;  <strong>>>> l</strong><br>
-                    &nbsp;3&nbsp;  <span>['spam', 'ham', 314, 23]</span><br>
-                    &nbsp;4&nbsp;  <br>
-                    &nbsp;5&nbsp;  <strong>>>> l[0]</strong><br>
-                    &nbsp;6&nbsp;  <span>spam</span><br>
-                    &nbsp;7&nbsp;  <br>
-                    &nbsp;8&nbsp;  <strong>>>> l[0] = 'monkey'</strong><br>
-                    &nbsp;9&nbsp;  <strong>>>> l</strong><br>
-                         10&nbsp; <span>['monkey', 'ham', 314, 23]</span>
-
+                    <div>&nbsp;1&nbsp;  <strong>>>> def g(x):</strong></div>
+                    &nbsp;2&nbsp;  <strong>... &nbsp;&nbsp;&nbsp;&nbsp;yield from range(x, 0, -1)</strong><br>
+                    &nbsp;3&nbsp;  <strong>... &nbsp;&nbsp;&nbsp;&nbsp;yield from range(x)</strong><br>
+                    &nbsp;4&nbsp;  <strong>...</strong><br>
+                    &nbsp;5&nbsp;  <strong>>>> list(g(5))</strong><br>
+                          6&nbsp;  <span>[5, 4, 3, 2, 1, 0, 1, 2, 3, 4]</span>
                 </code>
             </div>
 
             <div class="slide-copy">
-                <h1>Python&rsquo;s Pragmatism</h1>
-                <p>This example showcases the ease in which arrays can be created and manipulated. Define a list, print an item in that list, or replace an item with simple methods.</p>
+                <h1>Python 3.3</h1>
+                <p><a href="#">PEP 380</a> adds the <code>yield from</code> expression, allowing a generator to delegate part of its operations to another generator. This allows a section of code containing yield to be factored out and placed in another generator. Additionally, the subgenerator is allowed to return with a value, and the value is made available to the delegating generator.</p>
             </div>
         </div>
 
