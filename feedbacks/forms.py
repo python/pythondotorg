@@ -9,13 +9,12 @@ class FeedbackForm(ContentManageableModelForm):
     class Meta(object):
         model = Feedback
         fields = (
-            'name',
+            'comment',
+            'is_beta_tester',
             'email',
+            'name',
             'country',
             'feedback_categories',
-            'issue_type',
-            'is_beta_tester',
-            'comment'
         )
         widgets = {
             'feedback_categories': CheckboxSelectMultiple(),
@@ -24,6 +23,7 @@ class FeedbackForm(ContentManageableModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['feedback_categories'].help_text = None
+        self.fields['feedback_categories'].label = "What features of python.org are you most interested in?"
         self.fields['is_beta_tester'].label = 'Yes, consider me a Beta Tester!'
 
     def clean(self):

@@ -3,6 +3,31 @@
     {# prevents caching. So the feedback view is csrf_excempt. This means #}
     {# that feedback could be spoofed, but there's no real ramifications #}
     {# of that, so it's OK. #}
-    {{ form.as_p }}
+    <p>
+      {{ form.comment.errors }}
+      {{ form.comment.label_tag }}
+      {{ form.comment }}
+    </p>
+    <p><button type="submit" name="Submit">Submit Feedback</button> or tell us more about you:</p>
+    <p>
+      {{ form.name.errors }}
+      {{ form.name.label_tag }}
+      {{ form.name }}
+    </p>
+    <p>
+      {{ form.email.errors }}
+      {{ form.email.label_tag }}
+      {{ form.email }}
+    </p>
+    <p>
+      {{ form.is_beta_tester.errors }}
+      <label for="id_beta_tester">{{ form.is_beta_tester }} {{ form.is_beta_tester.label }}       <small>(This means we'll email you occassionally about new features on the site.)</small>
+</label>
+    </p>
+    <p>
+      {{ form.feedback_categories.errors }}
+      {{ form.feedback_categories.label_tag }}
+      {{ form.feedback_categories }}
+    </p>
     <p><button type="submit" name="Submit">Submit Feedback</button></p>
 </form>

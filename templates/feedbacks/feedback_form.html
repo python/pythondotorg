@@ -15,13 +15,8 @@
 
 {% block content %}
 <div class="row">
-    <form action="" method="post">
-        {# NO CSRF TOKEN: since this is on every page, using a CSRF token #}
-        {# prevents caching. So the feedback view is csrf_excempt. This means #}
-        {# that feedback could be spoofed, but there's no real ramifications #}
-        {# of that, so it's OK. #}
-        {{ form.as_p }}
-        <p><button type="submit" name="Submit">Submit Feedback</button></p>
-    </form>
+  <h3>Python.org Beta only gets better if we hear from you.</h3>
+  <p>Report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</p>
+  {% include "feedbacks/includes/feedback_form.html" %}
 </div>
 {% endblock content %}
