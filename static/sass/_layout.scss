@@ -351,11 +351,18 @@
             font-size: px2em( 14px );
         }
         .subnav {
-            // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
+            @include box-shadow( 0 .5em .5em rgba( 0,0,0,0.3) );
         }
         /* Shorten the amount of blue space under the nav on inner pages */
         .inner & {
             margin-bottom: -1.75em; 
+        }
+    }
+    
+    /*li*/ .with-supernav {
+        
+        .super-navigation {
+            display: none; 
         }
     }
     
@@ -433,8 +440,8 @@
             
             .super-navigation {
                 color: $grey;
-                @include pe-border( $color-right: rgba($this-color, 0.25), $color-bottom: rgba($this-color, 0.25), $color-left: rgba($this-color, 0.25) );
-                @include vertical-gradient( lighten($this-color, 60%), lighten($this-color, 50%));
+                border: 1px solid lighten( $this-color, 25% );
+                @include vertical-gradient( lighten($this-color, 55%), lighten($this-color, 45%));
                 
                 a:not(.button) {
                     color: $this-color; 
@@ -672,13 +679,6 @@
         
         &:focus {
             width: 15em;
-        }
-    }
-    
-    /*li*/ .with-supernav {
-        
-        .super-navigation {
-            display: none; 
         }
     }
     
