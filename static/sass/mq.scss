@@ -15,12 +15,6 @@
  */
 
 
-body:after {
-    content: 'animatebody'; 
-    display: none; 
-}
-
-
 /* - - - Smaller than 400px - - - */
 @media (max-width: px2em( 399px )) {
 
