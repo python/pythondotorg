@@ -1,19 +1,18 @@
+import datetime
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils import timezone
 from django.template.defaultfilters import slugify
-
-import datetime
-
+from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
 
+
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
-# Create your models here.
 class JobType(NameSlugModel):
     pass
 
