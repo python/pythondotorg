@@ -7,6 +7,7 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
+from .managers import JobManager
 from cms.models import ContentManageable, NameSlugModel
 
 
@@ -14,7 +15,10 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 
 class JobType(NameSlugModel):
-    pass
+
+    class Meta(object):
+        verbose_name = 'job type'
+        verbose_name_plural = 'job types'
 
 
 class JobCategory(NameSlugModel):
@@ -36,23 +40,56 @@ class Job(ContentManageable):
     country = models.CharField(max_length=100)
     location_slug = models.SlugField(max_length=350, editable=False)
 
-    description = models.TextField()
+    description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
 
     contact = models.CharField(null=True, blank=True, max_length=100)
     email = models.EmailField()
     url = models.URLField(null=True, blank=True)
 
+    STATUS_DRAFT = 'draft'
+    STATUS_REVIEW = 'review'
+    STATUS_APPROVED = 'approved'
+    STATUS_REJECTED = 'rejected'
+    STATUS_ARCHIVED = 'archived'
+    STATUS_REMOVED = 'removed'
+    STATUS_EXPIRED = 'expired'
+
+    STATUS_CHOICES = (
+        (STATUS_DRAFT, 'draft'),
+        (STATUS_REVIEW, 'review'),
+        (STATUS_APPROVED, 'approved'),
+        (STATUS_REJECTED, 'rejected'),
+        (STATUS_ARCHIVED, 'archived'),
+        (STATUS_REMOVED, 'removed'),
+        (STATUS_EXPIRED, 'expired'),
+    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT)
+    dt_start = models.DateTimeField('Job start date', blank=True, null=True)
+    dt_end = models.DateTimeField(blank=True, null=True)
+
     telecommuting = models.BooleanField(default=True)
     agencies = models.BooleanField(default=True)
+
+    objects = JobManager()
 
     class Meta:
         ordering = ('-created',)
         get_latest_by = 'created'
+        verbose_name = 'job'
+        verbose_name_plural = 'jobs'
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
+
+        if not self.dt_start and self.status == self.STATUS_APPROVED:
+            self.dt_start = timezone.now()
+            self.dt_end = timezone.now() + self.NEW_THRESHOLD
+
         return super().save(**kwargs)
+
+    #def __str__(self):
+    #    return self.pk
 
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
