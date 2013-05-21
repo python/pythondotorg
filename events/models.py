@@ -200,7 +200,7 @@ class RecurringRule(RuleMixin, models.Model):
             interval=self.interval,
             dtstart=self.begin,
             until=self.finish,
-    )
+        )
 
     @property
     def freq_interval_as_timedelta(self):
