@@ -1,7 +1,7 @@
+import datetime
+
 from django.views.generic import ListView, DetailView, CreateView
 from django.utils import timezone
-
-import datetime
 
 from .forms import JobForm
 from .models import Job
@@ -9,6 +9,7 @@ from .models import Job
 
 class JobList(ListView):
     model = Job
+    paginate_by = 5
 
     def get_queryset(self):
         threshold = timezone.now() - datetime.timedelta(days=90)
