@@ -33,6 +33,7 @@ class Calendar(ContentManageable):
 
 class EventCategory(NameSlugModel):
     class Meta:
+        verbose_name_plural = 'event categories'
         ordering = ('name',)
 
     def get_absolute_url(self):
