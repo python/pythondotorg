@@ -12,8 +12,7 @@ class JobList(ListView):
 
     def get_queryset(self):
         threshold = timezone.now() - datetime.timedelta(days=90)
-
-        return Job.objects.select_related().filter(created__gt=threshold)
+        return Job.objects.approved().select_related().filter(created__gt=threshold)
 
 
 class JobListType(JobList):

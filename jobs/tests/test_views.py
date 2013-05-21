@@ -31,7 +31,8 @@ class JobsViewTests(TestCase):
             city='Memphis',
             region='TN',
             country='USA',
-            email='hr@company.com'
+            email='hr@company.com',
+            status=Job.STATUS_APPROVED
         )
         self.job.job_types.add(self.job_type)
 
