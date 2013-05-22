@@ -213,10 +213,6 @@
  * The nice part is, these labels can be strings with more than one item in them. 
  * As many JS functions that we want to fire at different widths can be controlled with tese labels.
  */
-body:after {
-  content: 'animatebody';
-  display: none; }
-
 /* - - - Smaller than 400px - - - */
 @media (max-width: 24.9375em) {
   .search-field:focus {
@@ -403,8 +399,16 @@ body:after {
       text-align: left; }
     .main-navigation .tier-2 {
       font-size: 0.875em; }
+    .main-navigation .subnav {
+      -webkit-box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3);
+      -moz-box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3);
+      box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3); }
     .inner .main-navigation {
       margin-bottom: -1.75em; }
+
+  /*li*/
+  .with-supernav .super-navigation {
+    display: none; }
 
   /* 
    * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
@@ -482,17 +486,15 @@ body:after {
       background-image: linear-gradient(#2b5b84 10%, #244e71 90%); }
     .python-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(55, 118, 171, 0.25);
-      border-bottom: 1px solid rgba(55, 118, 171, 0.25);
-      border-left: 1px solid rgba(55, 118, 171, 0.25);
-      background-color: #e9f1f8;
+      border: 1px solid #89b4d9;
+      background-color: #d6e5f2;
       *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFE9F1F8');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #e9f1f8));
-      background-image: -webkit-linear-gradient(#ffffff 10%, #e9f1f8 90%);
-      background-image: -moz-linear-gradient(#ffffff 10%, #e9f1f8 90%);
-      background-image: -o-linear-gradient(#ffffff 10%, #e9f1f8 90%);
-      background-image: linear-gradient(#ffffff 10%, #e9f1f8 90%); }
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFCFDFE', endColorstr='#FFD6E5F2');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #fcfdfe), color-stop(90%, #d6e5f2));
+      background-image: -webkit-linear-gradient(#fcfdfe 10%, #d6e5f2 90%);
+      background-image: -moz-linear-gradient(#fcfdfe 10%, #d6e5f2 90%);
+      background-image: -o-linear-gradient(#fcfdfe 10%, #d6e5f2 90%);
+      background-image: linear-gradient(#fcfdfe 10%, #d6e5f2 90%); }
       .python-navigation .super-navigation a:not(.button) {
         color: #3776ab; }
       .python-navigation .super-navigation h4 {
@@ -570,17 +572,15 @@ body:after {
       background-image: linear-gradient(#5f5f60 10%, #525353 90%); }
     .psf-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(120, 121, 122, 0.25);
-      border-bottom: 1px solid rgba(120, 121, 122, 0.25);
-      border-left: 1px solid rgba(120, 121, 122, 0.25);
-      background-color: #f8f8f9;
+      border: 1px solid #b8b9b9;
+      background-color: #ececec;
       *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFF8F8F9');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #f8f8f9));
-      background-image: -webkit-linear-gradient(#ffffff 10%, #f8f8f9 90%);
-      background-image: -moz-linear-gradient(#ffffff 10%, #f8f8f9 90%);
-      background-image: -o-linear-gradient(#ffffff 10%, #f8f8f9 90%);
-      background-image: linear-gradient(#ffffff 10%, #f8f8f9 90%); }
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFECECEC');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #ececec));
+      background-image: -webkit-linear-gradient(#ffffff 10%, #ececec 90%);
+      background-image: -moz-linear-gradient(#ffffff 10%, #ececec 90%);
+      background-image: -o-linear-gradient(#ffffff 10%, #ececec 90%);
+      background-image: linear-gradient(#ffffff 10%, #ececec 90%); }
       .psf-navigation .super-navigation a:not(.button) {
         color: #78797a; }
       .psf-navigation .super-navigation h4 {
@@ -658,9 +658,7 @@ body:after {
       background-image: linear-gradient(#ffc710 10%, #f5bc00 90%); }
     .docs-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(255, 211, 67, 0.25);
-      border-bottom: 1px solid rgba(255, 211, 67, 0.25);
-      border-left: 1px solid rgba(255, 211, 67, 0.25);
+      border: 1px solid #fff1c2;
       background-color: white;
       *zoom: 1;
       filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFFFFFFF');
@@ -746,17 +744,15 @@ body:after {
       background-image: linear-gradient(#678b35 10%, #59792e 90%); }
     .pypl-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(130, 176, 67, 0.25);
-      border-bottom: 1px solid rgba(130, 176, 67, 0.25);
-      border-left: 1px solid rgba(130, 176, 67, 0.25);
-      background-color: #f9fcf6;
+      border: 1px solid #bed99a;
+      background-color: #eef5e4;
       *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFF9FCF6');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #f9fcf6));
-      background-image: -webkit-linear-gradient(#ffffff 10%, #f9fcf6 90%);
-      background-image: -moz-linear-gradient(#ffffff 10%, #f9fcf6 90%);
-      background-image: -o-linear-gradient(#ffffff 10%, #f9fcf6 90%);
-      background-image: linear-gradient(#ffffff 10%, #f9fcf6 90%); }
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFEEF5E4');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #eef5e4));
+      background-image: -webkit-linear-gradient(#ffffff 10%, #eef5e4 90%);
+      background-image: -moz-linear-gradient(#ffffff 10%, #eef5e4 90%);
+      background-image: -o-linear-gradient(#ffffff 10%, #eef5e4 90%);
+      background-image: linear-gradient(#ffffff 10%, #eef5e4 90%); }
       .pypl-navigation .super-navigation a:not(.button) {
         color: #82b043; }
       .pypl-navigation .super-navigation h4 {
@@ -834,17 +830,15 @@ body:after {
       background-image: linear-gradient(#85538c 10%, #764a7c 90%); }
     .jobs-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(160, 107, 167, 0.25);
-      border-bottom: 1px solid rgba(160, 107, 167, 0.25);
-      border-left: 1px solid rgba(160, 107, 167, 0.25);
-      background-color: white;
+      border: 1px solid #d3bbd7;
+      background-color: #fcfbfd;
       *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFFFFFFF');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #ffffff));
-      background-image: -webkit-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: -moz-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: -o-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: linear-gradient(#ffffff 10%, #ffffff 90%); }
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFFCFBFD');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #fcfbfd));
+      background-image: -webkit-linear-gradient(#ffffff 10%, #fcfbfd 90%);
+      background-image: -moz-linear-gradient(#ffffff 10%, #fcfbfd 90%);
+      background-image: -o-linear-gradient(#ffffff 10%, #fcfbfd 90%);
+      background-image: linear-gradient(#ffffff 10%, #fcfbfd 90%); }
       .jobs-navigation .super-navigation a:not(.button) {
         color: #a06ba7; }
       .jobs-navigation .super-navigation h4 {
@@ -922,17 +916,15 @@ body:after {
       background-image: linear-gradient(#97434d 10%, #853b44 90%); }
     .shop-navigation .super-navigation {
       color: #666666;
-      border-right: 1px solid rgba(181, 88, 99, 0.25);
-      border-bottom: 1px solid rgba(181, 88, 99, 0.25);
-      border-left: 1px solid rgba(181, 88, 99, 0.25);
-      background-color: white;
+      border: 1px solid #dcb0b6;
+      background-color: #fbf7f8;
       *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFFFFFFF');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #ffffff));
-      background-image: -webkit-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: -moz-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: -o-linear-gradient(#ffffff 10%, #ffffff 90%);
-      background-image: linear-gradient(#ffffff 10%, #ffffff 90%); }
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFFFFF', endColorstr='#FFFBF7F8');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffffff), color-stop(90%, #fbf7f8));
+      background-image: -webkit-linear-gradient(#ffffff 10%, #fbf7f8 90%);
+      background-image: -moz-linear-gradient(#ffffff 10%, #fbf7f8 90%);
+      background-image: -o-linear-gradient(#ffffff 10%, #fbf7f8 90%);
+      background-image: linear-gradient(#ffffff 10%, #fbf7f8 90%); }
       .shop-navigation .super-navigation a:not(.button) {
         color: #b55863; }
       .shop-navigation .super-navigation h4 {
@@ -1113,7 +1105,11 @@ body:after {
       left: -.1875em; }
     .feedback h3 {
       margin-top: 0;
-      padding-left: 3em; } }
+      padding-left: 3em; }
+
+  .feedback-flag {
+    top: 21em;
+    right: -2.4em; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 40em) and (max-width: 58.75em) {
   body:after {
@@ -1133,7 +1129,6 @@ body:after {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
     /*ul*/
-    /*modernizr*/
     /* <li class="tier-2 element-0 close-subnav" role="treeitem">
             <a class="close-for-touch" href="#">Close Menu</a> 
             <a class="close-for-touch close-graphic" href="#">&times;</a>
@@ -1152,21 +1147,10 @@ body:after {
         display: table;
         clear: both; }
     .main-navigation .tier-1 {
-      position: relative;
-      /*modernizr*/ }
-      .main-navigation .tier-1:hover .subnav, .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
-        left: 0; }
-      .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
-        left: auto;
-        right: 0; }
-      .touch .main-navigation .tier-1 .subnav {
-        left: auto;
-        right: auto;
-        display: none; }
+      position: relative; }
     .main-navigation .subnav {
       position: absolute;
       top: 100%;
-      left: -999em;
       z-index: 100;
       text-align: left;
       /*modernizr*/
@@ -1174,6 +1158,7 @@ body:after {
       .no-touch .main-navigation .subnav {
         min-width: 100%; }
       .touch .main-navigation .subnav {
+        display: none;
         top: 120%;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
@@ -1186,11 +1171,46 @@ body:after {
           border-style: solid;
           border-width: 0.75em;
           top: -1.45em;
-          left: 1.5em;
           display: block; }
-    .touch .main-navigation .tier-1.last .subnav:before, .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before {
+    .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
+      left: -999em;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
+      .touch .main-navigation .element-1 .subnav:before, .touch .main-navigation .element-2 .subnav:before, .touch .main-navigation .element-3 .subnav:before, .touch .main-navigation .element-4 .subnav:before {
+        left: 1.5em; }
+    .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-4:hover .subnav,
+    .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:focus .subnav {
+      left: 0;
+      -webkit-transition-delay: 0.25s;
+      -moz-transition-delay: 0.25s;
+      -o-transition-delay: 0.25s;
+      transition-delay: 0.25s; }
+    .touch .main-navigation .element-1:hover .subnav, .touch .main-navigation .element-2:hover .subnav, .touch .main-navigation .element-3:hover .subnav, .touch .main-navigation .element-4:hover .subnav,
+    .touch .main-navigation .element-1 .subnav.touched, .touch .main-navigation .element-2 .subnav.touched, .touch .main-navigation .element-3 .subnav.touched, .touch .main-navigation .element-4 .subnav.touched {
+      left: 0; }
+    .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: 1.5em; }
+      right: -999em;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
+      .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before, .touch .main-navigation .last .subnav:before {
+        right: 1.5em; }
+    .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .last:hover .subnav,
+    .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:focus .subnav {
+      left: auto;
+      right: 0;
+      -webkit-transition-delay: 0.25s;
+      -moz-transition-delay: 0.25s;
+      -o-transition-delay: 0.25s;
+      transition-delay: 0.25s; }
+    .touch .main-navigation .element-5:hover .subnav, .touch .main-navigation .element-6:hover .subnav, .touch .main-navigation .element-7:hover .subnav, .touch .main-navigation .element-8:hover .subnav, .touch .main-navigation .last:hover .subnav,
+    .touch .main-navigation .element-5 .subnav.touched, .touch .main-navigation .element-6 .subnav.touched, .touch .main-navigation .element-7 .subnav.touched, .touch .main-navigation .element-8 .subnav.touched, .touch .main-navigation .last .subnav.touched {
+      left: auto;
+      right: 0; }
     .main-navigation .tier-2 {
       display: block;
       min-width: 100%; }
@@ -1253,7 +1273,7 @@ body:after {
     display: none; }
 
   .site-headline a img {
-    width: 223.52px;
+    width: 255.2px;
     height: 72.16px; }
 
   .site-headline {
@@ -1269,10 +1289,6 @@ body:after {
     width: 11em; }
     .search-field:focus {
       width: 15em; }
-
-  /*li*/
-  .with-supernav .super-navigation {
-    display: none; }
 
   .slide-code, .slide-copy {
     float: left;
@@ -1302,19 +1318,25 @@ body:after {
     padding-top: 1em; }
 
   .about-banner {
-    background: 160% 0 no-repeat url('../img/landing-about.png?1363149778') transparent;
-    min-height: 320px; }
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+    min-height: 345px;
+    padding-bottom: 3.5em;
+    margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent; }
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+    padding-bottom: 4em;
+    margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 136% 0 no-repeat url('../img/landing-docs.png?1363149778') transparent; }
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+    padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 150% 0 no-repeat url('../img/landing-community.png?1363149778') transparent; }
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+    padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
     padding-top: 1em;
@@ -1562,10 +1584,9 @@ body:after {
     -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
-    margin: 0 -0.75em;
+    margin: 0 -0.625em;
     text-align: center;
     /*ul*/
-    /*modernizr*/
     /* <li class="tier-2 element-0 close-subnav" role="treeitem">
             <a class="close-for-touch" href="#">Close Menu</a> 
             <a class="close-for-touch close-graphic" href="#">&times;</a>
@@ -1584,21 +1605,10 @@ body:after {
         display: table;
         clear: both; }
     .main-navigation .tier-1 {
-      position: relative;
-      /*modernizr*/ }
-      .main-navigation .tier-1:hover .subnav, .main-navigation .tier-1:focus .subnav, .touch .main-navigation .tier-1 .subnav.touched {
-        left: 0; }
-      .main-navigation .tier-1.last:hover .subnav, .main-navigation .tier-1.last:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav, .main-navigation .tier-1.element-5:focus .subnav, .main-navigation .tier-1.element-5:hover .subnav.touched, .main-navigation .tier-1.element-6:hover .subnav, .main-navigation .tier-1.element-6:focus .subnav, .main-navigation .tier-1.element-6:hover .subnav.touched, .main-navigation .tier-1.element-7:hover .subnav, .main-navigation .tier-1.element-7:focus .subnav, .main-navigation .tier-1.element-7:hover .subnav.touched, .main-navigation .tier-1.element-8:hover .subnav, .main-navigation .tier-1.element-8:focus .subnav, .main-navigation .tier-1.element-8:hover .subnav.touched {
-        left: auto;
-        right: 0; }
-      .touch .main-navigation .tier-1 .subnav {
-        left: auto;
-        right: auto;
-        display: none; }
+      position: relative; }
     .main-navigation .subnav {
       position: absolute;
       top: 100%;
-      left: -999em;
       z-index: 100;
       text-align: left;
       /*modernizr*/
@@ -1606,6 +1616,7 @@ body:after {
       .no-touch .main-navigation .subnav {
         min-width: 100%; }
       .touch .main-navigation .subnav {
+        display: none;
         top: 120%;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
@@ -1618,11 +1629,46 @@ body:after {
           border-style: solid;
           border-width: 0.75em;
           top: -1.45em;
-          left: 1.5em;
           display: block; }
-    .touch .main-navigation .tier-1.last .subnav:before, .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before {
+    .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
+      left: -999em;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
+      .touch .main-navigation .element-1 .subnav:before, .touch .main-navigation .element-2 .subnav:before, .touch .main-navigation .element-3 .subnav:before, .touch .main-navigation .element-4 .subnav:before {
+        left: 1.5em; }
+    .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-4:hover .subnav,
+    .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:focus .subnav {
+      left: 0;
+      -webkit-transition-delay: 0.25s;
+      -moz-transition-delay: 0.25s;
+      -o-transition-delay: 0.25s;
+      transition-delay: 0.25s; }
+    .touch .main-navigation .element-1:hover .subnav, .touch .main-navigation .element-2:hover .subnav, .touch .main-navigation .element-3:hover .subnav, .touch .main-navigation .element-4:hover .subnav,
+    .touch .main-navigation .element-1 .subnav.touched, .touch .main-navigation .element-2 .subnav.touched, .touch .main-navigation .element-3 .subnav.touched, .touch .main-navigation .element-4 .subnav.touched {
+      left: 0; }
+    .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: 1.5em; }
+      right: -999em;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
+      .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before, .touch .main-navigation .last .subnav:before {
+        right: 1.5em; }
+    .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .last:hover .subnav,
+    .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:focus .subnav {
+      left: auto;
+      right: 0;
+      -webkit-transition-delay: 0.25s;
+      -moz-transition-delay: 0.25s;
+      -o-transition-delay: 0.25s;
+      transition-delay: 0.25s; }
+    .touch .main-navigation .element-5:hover .subnav, .touch .main-navigation .element-6:hover .subnav, .touch .main-navigation .element-7:hover .subnav, .touch .main-navigation .element-8:hover .subnav, .touch .main-navigation .last:hover .subnav,
+    .touch .main-navigation .element-5 .subnav.touched, .touch .main-navigation .element-6 .subnav.touched, .touch .main-navigation .element-7 .subnav.touched, .touch .main-navigation .element-8 .subnav.touched, .touch .main-navigation .last .subnav.touched {
+      left: auto;
+      right: 0; }
     .main-navigation .tier-2 {
       display: block;
       min-width: 100%; }
@@ -1690,7 +1736,7 @@ body:after {
       border-left: 1px solid rgba(102, 102, 102, 0.2); }
 
   .site-headline a img {
-    width: 254px;
+    width: 290px;
     height: 82px; }
 
   .search-field {
@@ -1778,22 +1824,25 @@ body:after {
       margin-bottom: 0; }
 
   .about-banner {
-    background-position: 115% -20px;
-    min-height: 320px; }
+    background-position: 110% 0px; }
+    .about-banner p {
+      margin-right: 14.81481%; }
 
   .download-for-current-os {
     background-position: 115% 0;
-    padding-bottom: 5.5em;
+    padding-bottom: 6em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background-position: 105% 0;
-    min-height: 350px;
-    margin-bottom: -20px; }
+    background-position: 110% 0; }
+    .documentation-banner p {
+      margin-right: 14.81481%; }
 
   .community-banner {
     background-position: 105% 0;
     min-height: 320px; }
+    .community-banner p {
+      margin-right: 14.81481%; }
 
   .featured-success-story .success-quote {
     margin-left: 8.51064%;
@@ -1940,17 +1989,27 @@ body:after {
       margin: -25px -25px 0 0; }
 
   .about-banner {
-    background-position: 95% -30px;
-    min-height: 310px; }
+    background-position: 100% 0px; }
 
   .download-for-current-os {
     background-position: 105% 0; }
+    .download-for-current-os p {
+      margin-right: 14.81481%; }
 
   .documentation-banner {
-    background-position: 110% 0; }
+    background-position: 110% 0;
+    min-height: 345px; }
+    .documentation-banner .call-to-action {
+      margin-right: 8.51064%; }
+    .documentation-banner p {
+      margin-right: 0; }
 
   .community-banner {
-    background-position: 90% 0; }
+    padding-left: 0%;
+    padding-right: 51.06383%;
+    background-position: 95% 0; }
+    .community-banner p {
+      margin-right: 0; }
 
   .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
     margin-left: 25.53191%;
@@ -1985,15 +2044,28 @@ body:after {
     content: 'load_supernavs';
     display: none; }
 
+  .about-banner, .community-banner {
+    padding-left: 8.51064%;
+    padding-right: 51.06383%; }
+
   .about-banner {
-    background-position: 85% -40px;
-    min-height: 300px; }
+    background-position: 85% 0; }
 
   .download-for-current-os {
-    background-position: 95% 0; }
+    padding-left: 8.51064%;
+    padding-right: 42.55319%;
+    background-position: 95% 0;
+    padding-bottom: 6em;
+    margin-bottom: -3em; }
+    .download-for-current-os p {
+      margin-right: 17.3913%; }
 
   .documentation-banner {
+    padding-left: 8.51064%;
+    padding-right: 42.55319%;
     background-position: 100% 0; }
+    .documentation-banner .call-to-action {
+      margin-right: 17.3913%; }
 
   .community-banner {
-    background-position: 80% 0; } }
+    background-position: 95% 0; } }

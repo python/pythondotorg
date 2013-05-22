@@ -63,3 +63,25 @@ Install `coverage` (`pip install coverage`), then::
     $ coverage report
 
 Generate an HTML report with `coverage html` if you like.
+
+
+------------
+
+Daily startup for J.
+
+1. Open Terminal.app
+2. cd ~/github/python
+3. source ENV/bin/activate
+4. export DATABASE_URL="postgres://localhost/python.org"
+5. ./manage.py runserver
+
+Nuke the DB!
+
+1. Do steps 1-4 above.
+2. export PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"
+3. dropdb python.org
+4. createdb python.org
+5. ./manage.py syncdb
+6. ./manage.py migrate
+7. Install at least the menus: ./manage.py loaddata fixtures/sitetree_menus.json
+8. Install data from staging: invoke copy_data_from_staging

@@ -546,7 +546,7 @@ abbr, dfn {
         margin: 0 auto;
         
         img {
-            width: 254px * .75; 
+            width: 290px * .75; 
             height: 82px * .75; 
         }
     }
@@ -755,7 +755,7 @@ a.jump-to-menu {
     
     p {
         color: $grey-lightest;
-        max-width: 450px;
+        //max-width: 450px;
     
         & a:not(.button) {
             color: $yellow;
@@ -1551,6 +1551,10 @@ p.quote-by-organization {
         padding: 0;
         color: $grey;
         line-height: 1.5; 
+        
+        &:before {
+            content: ''; 
+        }
     }
 }
 
@@ -2249,6 +2253,28 @@ p.quote-by-organization {
 
 
 /* ! Test objects – can be deleted later */
+
+/* <div class="feedback-flag">
+        <span aria-hidden="true" class="icon-megaphone"></span>
+        <span class="feedback-label">Feedback</span>
+    </div>*/
+.feedback-flag {
+    @extend %yellow-colorspace; 
+    position: absolute; 
+    top: 29.25em; right: -2.4em; 
+    @include transform( rotate(90deg) ); 
+    
+    border: 1px solid darken( $yellow, 6% );
+    padding: .3em .6em;
+    
+    .icon-megaphone:before {
+        color: $blue; 
+    }
+    .feedback-label {
+        color: $blue; 
+        font-weight: bold; 
+    }
+}
 
 .container {
     //@include susy-grid-background(); 

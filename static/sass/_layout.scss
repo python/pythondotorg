@@ -95,7 +95,7 @@
         @include border-radius(8px);
         @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         display: block; 
-        margin: 0 -.75em;
+        margin: 0 -.625em;
         text-align: center; 
         @include horizontal_nav_dropdowns();
         font-size: px2em( 18px );
@@ -351,11 +351,18 @@
             font-size: px2em( 14px );
         }
         .subnav {
-            // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
+            @include box-shadow( 0 .5em .5em rgba( 0,0,0,0.3) );
         }
         /* Shorten the amount of blue space under the nav on inner pages */
         .inner & {
             margin-bottom: -1.75em; 
+        }
+    }
+    
+    /*li*/ .with-supernav {
+        
+        .super-navigation {
+            display: none; 
         }
     }
     
@@ -433,8 +440,8 @@
             
             .super-navigation {
                 color: $grey;
-                @include pe-border( $color-right: rgba($this-color, 0.25), $color-bottom: rgba($this-color, 0.25), $color-left: rgba($this-color, 0.25) );
-                @include vertical-gradient( lighten($this-color, 60%), lighten($this-color, 50%));
+                border: 1px solid lighten( $this-color, 25% );
+                @include vertical-gradient( lighten($this-color, 55%), lighten($this-color, 45%));
                 
                 a:not(.button) {
                     color: $this-color; 
@@ -642,13 +649,17 @@
             padding-left: 3em; 
         }
     }
+    
+    .feedback-flag {
+        top: 21em; right: -2.4em; 
+    }
 }
 
 /* ! ===== Larger than 800px ===== */
 @mixin min_width_800() {
     
     .site-headline a img {
-        width: 254px * .88; 
+        width: 290px * .88; 
         height: 82px * .88; 
     }
     
@@ -668,13 +679,6 @@
         
         &:focus {
             width: 15em;
-        }
-    }
-    
-    /*li*/ .with-supernav {
-        
-        .super-navigation {
-            display: none; 
         }
     }
     
@@ -705,18 +709,24 @@
         padding-top: 1em; 
     }
     .about-banner {
-        background: 160% 0 no-repeat image-url("landing-about.png") transparent;
-        min-height: 320px; 
+        background: 120% 0 no-repeat image-url("landing-about.png") transparent;
+        min-height: 345px; 
+        padding-bottom: 3.5em; 
+        margin-bottom: -2.5em; 
     }
     .download-for-current-os {
         background: 130% 0 no-repeat image-url("landing-downloads.png") transparent;
+        padding-bottom: 4em;
+        margin-bottom: -3em;
     }
     .documentation-banner {
-        background: 136% 0 no-repeat image-url("landing-docs.png") transparent;
+        background: 130% 0 no-repeat image-url("landing-docs.png") transparent;
+        padding-bottom: 1em; 
     }
     .community-banner {
         text-align: left; /* Why is this needed? */
-        background: 150% 0 no-repeat image-url("landing-community.png") transparent;
+        background: 140% 0 no-repeat image-url("landing-community.png") transparent;
+        padding-bottom: .75em; 
     }
     .welcome-to-the-foundation {
         padding-top: 1em;
@@ -983,7 +993,7 @@
 @mixin min_width_940() {
     
     .site-headline a img {
-        width: 254px; 
+        width: 290px; 
         height: 82px; 
     }
         .search-field {
@@ -1100,22 +1110,31 @@
         }
     }
         .about-banner {
-            background-position: 115% -20px;
-            min-height: 320px; 
+            background-position: 110% 0px;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .download-for-current-os {
             background-position: 115% 0; 
-            padding-bottom: 5.5em;
+            padding-bottom: 6em;
             margin-bottom: -3em;
         }
         .documentation-banner {
-            background-position: 105% 0;
-            min-height: 350px;
-            margin-bottom: -20px;
+            background-position: 110% 0;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .community-banner {
             background-position: 105% 0; 
             min-height: 320px; 
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .featured-success-story {
             .success-quote {
@@ -1337,17 +1356,33 @@
     }
     
     .about-banner {
-        background-position: 95% -30px;
-        min-height: 310px;
+        background-position: 100% 0px;
     }
     .download-for-current-os {
         background-position: 105% 0; 
+        
+        p {
+            @include post( 1,7 ); 
+        }
     }
     .documentation-banner {
-        background-position: 110% 0;
+        background-position: 110% 0; 
+        min-height: 345px; 
+        
+        .call-to-action {
+            @include post( 1 ); 
+        }
+        p {
+            margin-right: 0; 
+        }
     }
     .community-banner {
-        background-position: 90% 0; 
+        @include pad( 0,6 ); 
+        background-position: 95% 0; 
+        
+        p {
+            margin-right: 0; 
+        }
     }
         
     .latest-blog-post, .featured-event, .jobs-intro {
@@ -1406,16 +1441,31 @@
 /* ! ===== Larger than 1200px ===== */
 @mixin min_width_1200() {
     
+    .about-banner, .community-banner {
+        @include pad( 1,6 ); 
+    }
     .about-banner {
-        background-position: 85% -30px;
+        background-position: 85% 0;
     }
     .download-for-current-os {
+        @include pad( 1,5 ); 
         background-position: 95% 0; 
+        padding-bottom: 6em;
+        margin-bottom: -3em;
+        
+        p {
+            @include post( 1,6 ); 
+        }
     }
     .documentation-banner {
+        @include pad( 1,5 ); 
         background-position: 100% 0;
+        
+        .call-to-action {
+            @include post( 1,6 ); 
+        }
     }
     .community-banner {
-        background-position: 80% 0; 
+        background-position: 95% 0; 
     }
 }
