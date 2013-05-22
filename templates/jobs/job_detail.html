@@ -101,7 +101,7 @@
 
 <!-- Next or Previous Jobs by date posted -->
 <p class="previous-next">
-    {% with object.get_previous_by_creation as previous %}
+    {% with object.get_previous_by_created as previous %}
 
     {% comment %}
     If this is the first job and there is no Previous job, we want to disable this button with the disabled class
@@ -120,7 +120,7 @@
     {% endif %}
     {% endwith %}
 
-    {% with object.get_next_by_creation as next %}
+    {% with object.get_next_by_created as next %}
 
     {% comment %}
     If this is the last job and there is no Next job, we want to disable this button with the disabled class
