@@ -17,7 +17,6 @@
         <p>{{ form.password1.label_tag }}{{ form.password1 }}<span class="helptext">{{ form.password1.help_text }}</span>{% if form.errors.password1 %}<span class="error">{{ form.errors.password1 }}</span>{% endif %}</p>
         <p>{{ form.password2.label_tag }}{{ form.password2 }}<span class="helptext">{{ form.password2.help_text }}</span>{% if form.errors.password2 %}<span class="error">{{ form.errors.password2 }}</span>{% endif %}</p>
         <p>{{ form.email.label_tag }}{{ form.email }}<span class="helptext">{{ form.email.help_text }}</span>{% if form.errors.email %}<span class="error">{{ form.errors.email }}</span>{% endif %}</p>
-        <p><label for="id_is_beta_tester">{{ form.is_beta_tester }} I would like to be a beta tester</label>{% if form.errors.is_beta_tester %}<span class="error">{{ form.errors.is_beta_tester }}{% endif %}</span></p>
         <p><button type="submit" name="Submit">Submit Feedback</button></p>
     </form>
 <div>

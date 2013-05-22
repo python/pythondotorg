@@ -10,7 +10,7 @@ class UsersModelsTestCase(TestCase):
         user = User.objects.create_superuser(
             username='username',
             password='password',
-            is_beta_tester=True
+            email='user@domain.com'
         )
         self.assertNotEqual(user, None)
         self.assertTrue(user.is_active)

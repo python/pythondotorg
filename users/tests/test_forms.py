@@ -8,7 +8,7 @@ from django.test import TestCase
 User = get_user_model()
 
 
-class UsersModelsTestCase(TestCase):
+class UsersFormsTestCase(TestCase):
     def test_user_creation_form(self):
         form = UserCreationForm({
             'username': 'username',
@@ -43,8 +43,7 @@ class UsersModelsTestCase(TestCase):
     def test_user_change_form(self):
         user = User.objects.create_user(
             username='username',
-            password='password',
-            is_beta_tester=True
+            password='password'
         )
         form = UserChangeForm({
             'username': 'username2',
