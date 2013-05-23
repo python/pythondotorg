@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^feedbacks/', include('feedbacks.urls')),

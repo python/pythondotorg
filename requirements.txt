@@ -1,10 +1,12 @@
 dj-database-url==0.2.1
+django-allauth==0.10.1
 django-discover-runner==0.3
 django-pipeline==1.3.6
 Django==1.5
 docutils==0.10
 Markdown==2.2.1
 psycopg2==2.4.5
+python3-openid==3.0.1
 
 pytz
 python-dateutil==2.1

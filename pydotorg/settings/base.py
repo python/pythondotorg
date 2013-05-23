@@ -43,6 +43,17 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE, 'static'),)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
+
+### Auth
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
 ### Templates
 
 TEMPLATE_DIRS = [
@@ -57,6 +68,8 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.core.context_processors.request",
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
     "django.contrib.messages.context_processors.messages",
 ]
 
@@ -86,6 +99,10 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
 
     'pipeline',
     'sitetree',
