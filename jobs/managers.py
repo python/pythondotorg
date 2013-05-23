@@ -39,6 +39,9 @@ class JobManager(Manager):
     def draft(self):
         return self.get_query_set().draft()
 
+    def expired(self):
+        return self.get_query_set().expired()
+
     def rejected(self):
         return self.get_query_set().rejected()
 
