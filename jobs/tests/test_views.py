@@ -4,27 +4,29 @@ from django.test import TestCase
 from companies.models import Company
 
 from .. import admin     # coverage FTW
-from ..models import Job, JobCategory, JobType
+from ..models import Job
+from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory
+from companies.factories import CompanyFactory
 
 
 class JobsViewTests(TestCase):
     def setUp(self):
-        self.company = Company.objects.create(
+        self.company = CompanyFactory(
             name='Kulfun Games',
             slug='kulfun-games',
         )
 
-        self.job_category = JobCategory.objects.create(
+        self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
         )
 
-        self.job_type = JobType.objects.create(
+        self.job_type = JobTypeFactory(
             name='FrontEnd Developer',
             slug='frontend-developer'
         )
 
-        self.job = Job.objects.create(
+        self.job = ApprovedJobFactory(
             company=self.company,
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
@@ -32,7 +34,6 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            status=Job.STATUS_APPROVED
         )
         self.job.job_types.add(self.job_type)
 
@@ -101,3 +102,5 @@ class JobsViewTests(TestCase):
         self.assertNotEqual(job.created, None)
         self.assertNotEqual(job.updated, None)
         self.assertEqual(job.creator, None)
+
+        self.assertEqual(job.status, 'draft')

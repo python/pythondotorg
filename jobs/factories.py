@@ -4,13 +4,6 @@ from .models import JobType, JobCategory, Job
 from companies.factories import CompanyFactory
 
 
-__all__ = (
-    'JobFactory',
-    'JobCategoryFactory',
-    'JobTypeFactory'
-)
-
-
 class JobCategoryFactory(factory.DjangoModelFactory):
     FACTORY_FOR = JobCategory
     FACTORY_DJANGO_GET_OR_CREATE = ('name',)
@@ -44,3 +37,31 @@ class JobFactory(factory.DjangoModelFactory):
             # A list of job_types were passed in, use them
             for job_type in extracted:
                 self.job_types.add(job_type)
+
+
+class ApprovedJobFactory(JobFactory):
+    status = Job.STATUS_APPROVED
+
+
+class ArchivedJobFactory(JobFactory):
+    status = Job.STATUS_ARCHIVED
+
+
+class DraftJobFactory(JobFactory):
+    status = Job.STATUS_DRAFT
+
+
+class ExpiredJobFactory(JobFactory):
+    status = Job.STATUS_EXPIRED
+
+
+class RejectedJobFactory(JobFactory):
+    status = Job.STATUS_REJECTED
+
+
+class RemovedJobFactory(JobFactory):
+    status = Job.STATUS_REMOVED
+
+
+class ReviewJobFactory(JobFactory):
+    status = Job.STATUS_REVIEW
