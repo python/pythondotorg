@@ -139,10 +139,11 @@
 
     <div class="sidebar-widget">
         {% if category_jobs %}
-        <h3 class="widget-title">More jobs in <a href="#todo">{{ object.category.name }}</a></h3>
+        <h3 class="widget-title">More jobs in <a href="{% url 'jobs:job_list_category' slug=object.category.slug %}">{{ object.category.name }}</a></h3>
+
         <ul class="menu">
             {% for job in category_jobs %}
-            <li><a href="#">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
