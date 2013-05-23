@@ -102,39 +102,33 @@
 <!-- Next or Previous Jobs by date posted -->
 <p class="previous-next">
     {% with object.get_previous_by_created as previous %}
-
-    {% comment %}
-    If this is the first job and there is no Previous job, we want to disable this button with the disabled class
-    <a class="prev-button disabled" href="{{ previous.get_absolute_url }}">
-
-    I assume we can do this in an ELSE on the next if statement?
-    {% endcomment %}
-
-    {% if previous %}
-    <a class="prev-button" href="{{ previous.get_absolute_url }}">
-        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
-        <span class="prevnext-description">
-            <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
-        </span>
-    </a>
-    {% endif %}
+        {% if previous %}
+        <a class="prev-button" href="{{ previous.get_absolute_url }}">
+            <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+            <span class="prevnext-description">
+                <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
+            </span>
+        </a>
+        {% else %}
+        <a class="prev-button disabled">
+            <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+        </a>
+        {% endif %}
     {% endwith %}
 
     {% with object.get_next_by_created as next %}
-
-    {% comment %}
-    If this is the last job and there is no Next job, we want to disable this button with the disabled class
-    <a class="next-button disabled" href="{{ next.get_absolute_url }}">
-    {% endcomment %}
-
-    {% if next %}
-    <a class="next-button" href="{{ next.get_absolute_url }}">
-        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
-        <span class="prevnext-description">
-            <span class="company-name">{{ next.company.name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
-        </span>
-    </a>
-    {% endif %}
+        {% if next %}
+        <a class="next-button" href="{{ next.get_absolute_url }}">
+            <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+            <span class="prevnext-description">
+                <span class="company-name">{{ next.company.name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
+            </span>
+        </a>
+        {% else %}
+        <a class="next-button disabled">
+            <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+        </a>
+        {% endif %}
     {% endwith %}
 </p>
 {% endblock content %}
