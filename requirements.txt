@@ -1,5 +1,4 @@
 dj-database-url==0.2.1
-django-allauth==0.10.1
 django-discover-runner==0.3
 django-pipeline==1.3.6
 Django==1.5
@@ -21,3 +20,6 @@ git+git://github.com/jefftriplett/django-sitetree.git
 
 # South from trunk which has py3 support:
 https://bitbucket.org/andrewgodwin/south/get/8ecfffbaf5eb.zip
+
+# django-allauth
+git+git://github.com/jefftriplett/django-allauth.git@3b10d6
