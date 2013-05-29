@@ -6,8 +6,9 @@ docutils==0.10
 Markdown==2.2.1
 psycopg2==2.4.5
 python3-openid==3.0.1
+South>=0.8.1,<0.9
 
-pytz
+pytz==2013b
 python-dateutil==2.1
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
@@ -17,9 +18,6 @@ git+git://github.com/jamesturk/django-markupfield.git@70dc74
 # My fork of django-sitetree, adding Py3 support. Can be removed when
 # https://github.com/idlesign/django-sitetree/pull/93
 git+git://github.com/jefftriplett/django-sitetree.git
-
-# South from trunk which has py3 support:
-https://bitbucket.org/andrewgodwin/south/get/8ecfffbaf5eb.zip
 
 # django-allauth
 git+git://github.com/jefftriplett/django-allauth.git@3b10d6
