@@ -1,9 +1,11 @@
 from django import template
 from django.core.urlresolvers import reverse
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from ..models import Story, StoryCategory
+
+User = get_user_model()
 
 
 class StoryTestCase(TestCase):
