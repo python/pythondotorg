@@ -5,6 +5,7 @@ Django==1.5
 docutils==0.10
 Markdown==2.2.1
 psycopg2==2.4.5
+python3-openid==3.0.1
 
 pytz
 python-dateutil==2.1
@@ -19,3 +20,6 @@ git+git://github.com/jefftriplett/django-sitetree.git
 
 # South from trunk which has py3 support:
 https://bitbucket.org/andrewgodwin/south/get/8ecfffbaf5eb.zip
+
+# django-allauth
+git+git://github.com/jefftriplett/django-allauth.git@3b10d6
