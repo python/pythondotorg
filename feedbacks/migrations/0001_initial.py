@@ -27,23 +27,25 @@ class Migration(SchemaMigration):
         # Adding model 'Feedback'
         db.create_table('feedbacks_feedback', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(null=True, blank=True, max_length=200)),
-            ('email', self.gf('django.db.models.fields.EmailField')(null=True, blank=True, max_length=75)),
-            ('country', self.gf('django.db.models.fields.CharField')(null=True, blank=True, max_length=100)),
-            ('issue_type', self.gf('django.db.models.fields.related.ForeignKey')(related_name='feedbacks', blank=True, null=True, to=orm['feedbacks.IssueType'])),
-            ('referral_url', self.gf('django.db.models.fields.URLField')(null=True, blank=True, max_length=200)),
+            ('name', self.gf('django.db.models.fields.CharField')(blank=True, max_length=200, null=True)),
+            ('email', self.gf('django.db.models.fields.EmailField')(blank=True, max_length=75, null=True)),
+            ('country', self.gf('django.db.models.fields.CharField')(blank=True, max_length=100, null=True)),
+            ('issue_type', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, null=True, to=orm['feedbacks.IssueType'], related_name='feedbacks')),
+            ('referral_url', self.gf('django.db.models.fields.URLField')(blank=True, max_length=200, null=True)),
+            ('is_beta_tester', self.gf('django.db.models.fields.BooleanField')(default=False)),
             ('comment', self.gf('django.db.models.fields.TextField')()),
             ('created', self.gf('django.db.models.fields.DateTimeField')(blank=True, default=datetime.datetime.now)),
         ))
         db.send_create_signal('feedbacks', ['Feedback'])
 
         # Adding M2M table for field feedback_categories on 'Feedback'
-        db.create_table('feedbacks_feedback_feedback_categories', (
+        m2m_table_name = db.shorten_name('feedbacks_feedback_feedback_categories')
+        db.create_table(m2m_table_name, (
             ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
             ('feedback', models.ForeignKey(orm['feedbacks.feedback'], null=False)),
             ('feedbackcategory', models.ForeignKey(orm['feedbacks.feedbackcategory'], null=False))
         ))
-        db.create_unique('feedbacks_feedback_feedback_categories', ['feedback_id', 'feedbackcategory_id'])
+        db.create_unique(m2m_table_name, ['feedback_id', 'feedbackcategory_id'])
 
 
     def backwards(self, orm):
@@ -57,21 +59,22 @@ class Migration(SchemaMigration):
         db.delete_table('feedbacks_feedback')
 
         # Removing M2M table for field feedback_categories on 'Feedback'
-        db.delete_table('feedbacks_feedback_feedback_categories')
+        db.delete_table(db.shorten_name('feedbacks_feedback_feedback_categories'))
 
 
     models = {
         'feedbacks.feedback': {
-            'Meta': {'ordering': "['created']", 'object_name': 'Feedback'},
+            'Meta': {'object_name': 'Feedback', 'ordering': "['created']"},
             'comment': ('django.db.models.fields.TextField', [], {}),
-            'country': ('django.db.models.fields.CharField', [], {'null': 'True', 'blank': 'True', 'max_length': '100'}),
+            'country': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '100', 'null': 'True'}),
             'created': ('django.db.models.fields.DateTimeField', [], {'blank': 'True', 'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'null': 'True', 'blank': 'True', 'max_length': '75'}),
-            'feedback_categories': ('django.db.models.fields.related.ManyToManyField', [], {'related_name': "'feedbacks'", 'blank': 'True', 'null': 'True', 'to': "orm['feedbacks.FeedbackCategory']", 'symmetrical': 'False'}),
+            'email': ('django.db.models.fields.EmailField', [], {'blank': 'True', 'max_length': '75', 'null': 'True'}),
+            'feedback_categories': ('django.db.models.fields.related.ManyToManyField', [], {'blank': 'True', 'null': 'True', 'to': "orm['feedbacks.FeedbackCategory']", 'symmetrical': 'False', 'related_name': "'feedbacks'"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'issue_type': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'feedbacks'", 'blank': 'True', 'null': 'True', 'to': "orm['feedbacks.IssueType']"}),
-            'name': ('django.db.models.fields.CharField', [], {'null': 'True', 'blank': 'True', 'max_length': '200'}),
-            'referral_url': ('django.db.models.fields.URLField', [], {'null': 'True', 'blank': 'True', 'max_length': '200'})
+            'is_beta_tester': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
+            'issue_type': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'null': 'True', 'to': "orm['feedbacks.IssueType']", 'related_name': "'feedbacks'"}),
+            'name': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '200', 'null': 'True'}),
+            'referral_url': ('django.db.models.fields.URLField', [], {'blank': 'True', 'max_length': '200', 'null': 'True'})
         },
         'feedbacks.feedbackcategory': {
             'Meta': {'object_name': 'FeedbackCategory'},
