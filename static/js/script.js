@@ -182,30 +182,43 @@ $().ready(function() {
 
 
     /* Treat the drop down menus in the main nav like select lists for touch devices */
+    closeNav = function(object) {
+        $('.main-navigation ').find( '.subnav.touched' ).hide();
+        $(".subnav").removeClass( 'touched' );
+        $('#trigger-pane').hide();
+    };
+
+    openNav = function(object) {
+        $(".subnav").removeClass( 'touched' );
+        object.next( '.subnav' ).addClass( 'touched' ).show();
+        $('#trigger-pane').css('height', $('body').css('height')).show();
+    };
+
     if ( hastouch ) {
-        $(".main-navigation .tier-1 > a").click(function() {
-            $(".subnav").hide();
-            $(this).next( '.subnav' ).show();
+
+        $(".main-navigation  .tier-1 > a").click(function() {
+            if ($(this).next( '.subnav' ).hasClass('touched')) {
+                closeNav($(this));
+            } else {
+                openNav($(this));
+            }
             return false;
         });
-        
-        $(".close-for-touch").click(function() {
-            $(".subnav").hide();
-            return false;
-        });
+
+        $(".close-for-touch").click(function() { closeNav(); return false; });
 
         $(".winkwink-nudgenudge .tier-1 > a").click(function() {
             $(".subnav").hide();
             $(this).next( '.subnav' ).show();
             return false;
         });
+
         $(".adjust-font-size .tier-1 > a").click(function() {
             $(".subnav").hide(  );
             $(this).next( '.subnav' ).show();
             return false;
         });
     }
-
 
     /*
      * Change or store the body font-size and save it into a cookie

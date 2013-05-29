@@ -1,4 +1,3 @@
-@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -1318,24 +1317,24 @@
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363787174') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363787174') transparent;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1363787174') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363787174') transparent;
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
@@ -1418,7 +1417,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+      background: top left no-repeat url('../img/python-logo-large3.png?1362499728') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1850,8 +1849,8 @@
 
   /* Main content with sidebars */
   .main-content.with-left-sidebar {
-    padding-left: 3.19149%;
-    padding-right: 3.19149%; }
+    padding-left: 5.31915%;
+    padding-right: 5.31915%; }
 
   .single-event-title {
     font-size: 2em; }
