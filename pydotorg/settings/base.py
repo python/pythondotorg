@@ -43,6 +43,25 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE, 'static'),)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
+
+### Auth
+
+AUTHENTICATION_BACKENDS = (
+    # Needed to login by username in Django admin, regardless of `allauth`
+    "django.contrib.auth.backends.ModelBackend",
+
+    # `allauth` specific authentication methods, such as login by e-mail
+    "allauth.account.auth_backends.AuthenticationBackend",
+)
+
+LOGIN_REDIRECT_URL = 'home'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_UNIQUE_EMAIL = True
+SOCIALACCOUNT_EMAIL_REQUIRED = True
+SOCIALACCOUNT_EMAIL_VERIFICATION = True
+SOCIALACCOUNT_QUERY_EMAIL = True
+
 ### Templates
 
 TEMPLATE_DIRS = [
@@ -57,6 +76,8 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.core.context_processors.request",
+    "allauth.account.context_processors.account",
+    "allauth.socialaccount.context_processors.socialaccount",
     "django.contrib.messages.context_processors.messages",
 ]
 
@@ -73,6 +94,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+AUTH_USER_MODEL = 'users.User'
+SOUTH_TESTS_MIGRATE = False
+
 WSGI_APPLICATION = 'pydotorg.wsgi.application'
 
 ### Apps
@@ -87,11 +111,20 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    #'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.openid',
+    'allauth.socialaccount.providers.twitter',
+
     'pipeline',
     'sitetree',
     'south',
     'timedelta',
 
+    'users',
     'boxes',
     'cms',
     'companies',
@@ -105,6 +138,7 @@ INSTALLED_APPS = (
 
 ### Testing
 
+SOUTH_TESTS_MIGRATE = False
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
 TEST_DISCOVER_TOP_LEVEL = BASE
 ### Logging

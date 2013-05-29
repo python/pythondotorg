@@ -24,13 +24,14 @@ urlpatterns = patterns('',
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
-    url(r'^events/$', TemplateView.as_view(template_name="python/events.html"), name='events'),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^feedbacks/', include('feedbacks.urls')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
+    url(r'^users/', include('users.urls')),
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
