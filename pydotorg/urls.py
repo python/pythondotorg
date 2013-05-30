@@ -37,7 +37,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # it's a secret to everyone
-    url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture'),
+    url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
 
     # Fall back on CMS'd pages as the last resort.
     url(r'', include('pages.urls')),
