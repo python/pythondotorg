@@ -32,7 +32,7 @@ class Job(ContentManageable):
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
-    job_types = models.ManyToManyField(JobType, related_name='jobs')
+    job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True)
     company = models.ForeignKey('companies.Company', related_name='jobs')
 
     city = models.CharField(max_length=100)
@@ -66,7 +66,7 @@ class Job(ContentManageable):
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT)
     dt_start = models.DateTimeField('Job start date', blank=True, null=True)
-    dt_end = models.DateTimeField(blank=True, null=True)
+    dt_end = models.DateTimeField('Job end date', blank=True, null=True)
 
     telecommuting = models.BooleanField(default=True)
     agencies = models.BooleanField(default=True)
@@ -78,6 +78,10 @@ class Job(ContentManageable):
         get_latest_by = 'created'
         verbose_name = 'job'
         verbose_name_plural = 'jobs'
+        permissions = [('can_moderate_jobs', 'Can moderate Job listings')]
+
+    def __str__(self):
+        return 'Job Listing #{0}'.format(self.pk)
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
@@ -88,12 +92,14 @@ class Job(ContentManageable):
 
         return super().save(**kwargs)
 
-    #def __str__(self):
-    #    return self.pk
-
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
 
     @property
     def is_new(self):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
+
+    @property
+    def editable(self):
+        return self.status in (self.STATUS_DRAFT, self.STATUS_REVIEW,
+            self.STATUS_REJECTED)

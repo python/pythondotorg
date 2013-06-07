@@ -23,7 +23,9 @@ class JobQuerySet(QuerySet):
         return self.filter(status__exact=self.model.STATUS_REMOVED)
 
     def review(self):
-        return self.filter(status__exact=self.model.STATUS_REVIEW)
+        return self.filter(status__in=[
+            self.model.STATUS_REVIEW,
+        ])
 
 
 class JobManager(Manager):

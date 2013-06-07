@@ -1,12 +1,12 @@
+from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from companies.models import Company
-
-from .. import admin     # coverage FTW
+from .. import admin  # coverage FTW
 from ..models import Job
-from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory
+from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory, ReviewJobFactory
 from companies.factories import CompanyFactory
+from companies.models import Company
 
 
 class JobsViewTests(TestCase):
@@ -51,7 +51,6 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
-        self.assertEqual(response.status_code, 200)
 
         url = reverse('jobs:job_list_location', kwargs={'slug': self.job.location_slug})
         response = self.client.get(url)
@@ -61,8 +60,37 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_list_company', kwargs={'slug': self.company.slug})
         response = self.client.get(url)
         self.assertEqual(len(response.context['object_list']), 1)
-
         self.assertEqual(response.status_code, 200)
+
+    def test_job_list_mine(self):
+        url = reverse('jobs:job_list_mine')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+        username = 'kevinarnold'
+        email = 'kevinarnold@example.com'
+        password = 'secret'
+
+        User = get_user_model()
+        creator = User.objects.create_user(username, email, password)
+
+        self.job = ApprovedJobFactory(
+            company=self.company,
+            description='My job listing',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email='hr@company.com',
+            creator=creator
+        )
+
+        self.client.login(username=username, password=password)
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
 
     def test_job_detail(self):
         url = self.job.get_absolute_url()
@@ -104,3 +132,57 @@ class JobsViewTests(TestCase):
         self.assertEqual(job.creator, None)
 
         self.assertEqual(job.status, 'draft')
+
+
+class JobsReviewTests(TestCase):
+    def setUp(self):
+
+        self.super_username = 'kevinarnold'
+        self.super_email = 'kevinarnold@example.com'
+        self.password = 'secret'
+
+        User = get_user_model()
+        creator = User.objects.create_superuser(self.super_username,
+            self.super_email, self.password)
+
+        self.company = CompanyFactory(
+            name='Kulfun Games',
+            slug='kulfun-games'
+        )
+
+        self.job_category = JobCategoryFactory(
+            name='Game Production',
+            slug='game-production'
+        )
+
+        self.job_type = JobTypeFactory(
+            name='FrontEnd Developer',
+            slug='frontend-developer'
+        )
+
+        self.job = ApprovedJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email=creator.email,
+            creator=creator
+        )
+        self.job.job_types.add(self.job_type)
+
+    def test_job_review(self):
+        url = reverse('jobs:job_review')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+
+        ReviewJobFactory()
+
+        self.client.login(username=self.super_username, password=self.password)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
