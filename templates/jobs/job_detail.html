@@ -22,7 +22,9 @@
 
 	<h1 class="listing-company">
         <span class="listing-company-name">
-            {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<span class="company-name">{{ object.comapny.name }}</span>
+            {% if object.is_new %}<span class="listing-new">New</span>
+            {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
+            {% endif %}<span class="company-name">{{ object.comapny.name }}</span>
         </span>
         <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
     </h1>
@@ -30,7 +32,7 @@
     <!-- User input html/markup/rst/whatever -->
     <div class="job-description">
 
-        <h2>Job Description</h2>
+        <h2>Job Description {% if under_review %}<small>({{ object.status }})</small>{% endif %}</h2>
 
         {{ object.description }}
 
@@ -57,6 +59,17 @@
         {% if object.company.about %}
         <h2>About the Company</h2>
         {{ object.company.about }}
+        {% endif %}
+
+        {% if under_review %}
+        <hr>
+        <p>Comments are only viewable between the submitter and job reviewers.</p>
+        {% load comments %}
+        {% get_comment_count for object as comment_count %}
+        <h2>Review Company <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+        {% render_comment_list for object %}
+        <hr>
+        {% render_comment_form for object %}
         {% endif %}
 
         <h2>Contact Info</h2>
