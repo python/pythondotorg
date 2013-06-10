@@ -26,6 +26,7 @@ urlpatterns = patterns('',
 
     url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
+    url(r'^comments/', include('django_comments_xtd.urls')),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^feedbacks/', include('feedbacks.urls')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),

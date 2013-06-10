@@ -108,6 +108,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.comments',
     'django.contrib.admin',
     'django.contrib.admindocs',
 
@@ -119,6 +120,7 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.openid',
     'allauth.socialaccount.providers.twitter',
 
+    'django_comments_xtd',
     'pipeline',
     'sitetree',
     'south',
@@ -141,6 +143,7 @@ INSTALLED_APPS = (
 SOUTH_TESTS_MIGRATE = False
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
 TEST_DISCOVER_TOP_LEVEL = BASE
+
 ### Logging
 
 LOGGING = {
@@ -166,6 +169,13 @@ LOGGING = {
         },
     }
 }
+
+### Comments
+
+COMMENTS_APP = 'django_comments_xtd'
+COMMENTS_XTD_MAX_THREAD_LEVEL = 0
+
+### Pipeline
 
 from .pipeline import (
     PIPELINE_CSS, PIPELINE_JS,
