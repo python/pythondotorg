@@ -1,31 +1,16 @@
 from django.test import TestCase
 from django.utils import timezone
 
-from companies.models import Company
-
-from ..models import Job, JobCategory
+from .. import factories
+from ..models import Job
 
 
 class JobsModelsTests(TestCase):
     def setUp(self):
-        company = Company.objects.create(
-            name='Kulfun Games',
-            slug='kulfun-games',
-        )
-
-        job_category = JobCategory.objects.create(
-            name='Game Production',
-            slug='game-production'
-        )
-
-        self.job = Job.objects.create(
-            company=company,
-            description='Lorem ipsum dolor sit amet',
-            category=job_category,
+        self.job = factories.JobFactory(
             city='Memphis',
             region='TN',
             country='USA',
-            email='hr@company.com'
         )
 
     def test_is_new(self):
@@ -38,3 +23,38 @@ class JobsModelsTests(TestCase):
 
     def test_location_slug(self):
         self.assertEqual(self.job.location_slug, 'memphis-tn-usa')
+
+    def test_approved_manager(self):
+        self.assertEqual(Job.objects.approved().count(), 0)
+        factories.ApprovedJobFactory()
+        self.assertEqual(Job.objects.approved().count(), 1)
+
+    def test_archived_manager(self):
+        self.assertEqual(Job.objects.archived().count(), 0)
+        factories.ArchivedJobFactory()
+        self.assertEqual(Job.objects.archived().count(), 1)
+
+    def test_draft_manager(self):
+        self.assertEqual(Job.objects.draft().count(), 1)
+        factories.DraftJobFactory()
+        self.assertEqual(Job.objects.draft().count(), 2)
+
+    def test_expired_manager(self):
+        self.assertEqual(Job.objects.expired().count(), 0)
+        factories.ExpiredJobFactory()
+        self.assertEqual(Job.objects.expired().count(), 1)
+
+    def test_rejected_manager(self):
+        self.assertEqual(Job.objects.rejected().count(), 0)
+        factories.RejectedJobFactory()
+        self.assertEqual(Job.objects.rejected().count(), 1)
+
+    def test_removed_manager(self):
+        self.assertEqual(Job.objects.removed().count(), 0)
+        factories.RemovedJobFactory()
+        self.assertEqual(Job.objects.removed().count(), 1)
+
+    def test_review_manager(self):
+        self.assertEqual(Job.objects.review().count(), 0)
+        factories.ReviewJobFactory()
+        self.assertEqual(Job.objects.review().count(), 1)
