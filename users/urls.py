@@ -1,11 +1,10 @@
 from django.conf.urls import patterns, url
-from django.contrib.auth.views import login, logout
 
 from . import views
 
 
 urlpatterns = patterns('',
-    url(r'^signup/$', views.SignupView.as_view(), name='signup'),
-    url(r'^login/$', login, name='login'),
-    url(r'^logout/$', logout, name='logout'),
+    url(r'^$', views.UserList.as_view(), name='user_list'),
+    url(r'^(?P<slug>[-_\w]+)/$', views.UserDetail.as_view(), name='user_detail'),
+    url(r'^(?P<slug>[-_\w]+)/edit/$', views.UserUpdate.as_view(), name='user_profile_edit'),
 )

@@ -1,9 +1,9 @@
 # Create your views here.
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
-from django.views.generic import CreateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from .forms import UserCreationForm
+from .forms import UserCreationForm, UserProfileForm
 from .models import User
 
 
@@ -27,3 +27,25 @@ class SignupView(CreateView):
         user = authenticate(username=username, password=password)
         login(self.request, user)
         return super().form_valid(form)
+
+
+class UserList(ListView):
+    model = User
+    paginate_by = 25
+
+    def get_queryset(self):
+        return super().get_queryset().searchable()
+
+
+class UserDetail(DetailView):
+    model = User
+    slug_field = 'username'
+
+    def get_queryset(self):
+        return super().get_queryset().searchable()
+
+
+class UserUpdate(UpdateView):
+    model = User
+    slug_field = 'username'
+    form_class = UserProfileForm

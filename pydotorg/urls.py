@@ -32,7 +32,7 @@ urlpatterns = patterns('',
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
-    url(r'^users/', include('users.urls')),
+    url(r'^users/', include('users.urls', namespace='users')),
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
