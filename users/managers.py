@@ -1,4 +1,4 @@
-from django.db.models import Manager
+from django.contrib.auth.models import UserManager as BaseUserManager
 from django.db.models.query import QuerySet
 
 
@@ -14,7 +14,7 @@ class UserQuerySet(QuerySet):
         return self.filter(search_visibility__exact=self.model.SEARCH_PUBLIC)
 
 
-class UserManager(Manager):
+class UserManager(BaseUserManager):
 
     def get_query_set(self):
         return UserQuerySet(self.model, using=self._db)

@@ -40,7 +40,40 @@ class UserProfileForm(ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # probably should not be editable?
+    class Meta(object):
+        model = User
+        fields = [
+            'bio',
+            'search_visibility',
+            'email_privacy',
+        ]
+        widgets = {
+            'search_visibility': forms.RadioSelect,
+            'email_privacy': forms.RadioSelect,
+        }
+
+
+class MembershipForm(ModelForm):
+
+    COC_CHOICES = (
+        (True, 'Yes'),
+        (False, 'No')
+    )
+    ACCOUNCEMENT_CHOICES = (
+        (True, 'Yes'),
+        (False, 'No')
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields['legal_name'].required = True
+        self.fields['preferred_name'].required = True
+        self.fields['city'].required = True
+        self.fields['region'].required = True
+        self.fields['country'].required = True
+        self.fields['postal_code'].required = True
+
         code_of_conduct = self.fields['psf_code_of_conduct']
         code_of_conduct.widget = forms.RadioSelect(choices=self.COC_CHOICES)
         code_of_conduct.initial = True
@@ -52,17 +85,19 @@ class UserProfileForm(ModelForm):
     class Meta(object):
         model = User
         fields = [
-            'bio',
+            'legal_name',
+            'preferred_name',
             'city',
             'region',
             'country',
             'postal_code',
             'psf_code_of_conduct',
             'psf_announcements',
-            'search_visibility',
-            'email_privacy',
         ]
-        widgets = {
-            'search_visibility': forms.RadioSelect,
-            'email_privacy': forms.RadioSelect,
-        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        code_of_conduct = cleaned_data.get('psf_code_of_conduct')
+        if code_of_conduct is not True:
+            raise forms.ValidationError('Agreeing to the code of conduct is required.')
+        return cleaned_data

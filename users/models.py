@@ -11,25 +11,9 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
 
 class User(AbstractUser):
-    """
-    - Username
-    - Email
-    - Password
-
-    - Legal name
-    - Preferred name
-    +- City
-    +- Region
-    +- Country
-    +- Post Code
-    - Opt-in to CoC (required)
-    - Opt-in to announcements from the PSF
-    """
     bio = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
-
-    #legal_name = models.CharField(max_length=100, blank=True)
-    #preferred_name = models.CharField(max_length=100, blank=True)
-
+    legal_name = models.CharField(max_length=100, blank=True)
+    preferred_name = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
     region = models.CharField(max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)

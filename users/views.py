@@ -1,9 +1,9 @@
-# Create your views here.
+from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.shortcuts import render
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from .forms import UserCreationForm, UserProfileForm
+from .forms import UserCreationForm, UserProfileForm, MembershipForm
 from .models import User
 
 
@@ -29,12 +29,18 @@ class SignupView(CreateView):
         return super().form_valid(form)
 
 
-class UserList(ListView):
+class MembershipUpdate(LoginRequiredMixin, UpdateView):
+    form_class = MembershipForm
     model = User
-    paginate_by = 25
+    slug_field = 'username'
+    template_name = 'users/user_form.html'
 
     def get_queryset(self):
-        return super().get_queryset().searchable()
+        return User.objects.filter(username=self.request.user)
+
+
+class UserUpdate(MembershipUpdate):
+    form_class = UserProfileForm
 
 
 class UserDetail(DetailView):
@@ -45,7 +51,9 @@ class UserDetail(DetailView):
         return super().get_queryset().searchable()
 
 
-class UserUpdate(UpdateView):
+class UserList(ListView):
     model = User
-    slug_field = 'username'
-    form_class = UserProfileForm
+    paginate_by = 25
+
+    def get_queryset(self):
+        return super().get_queryset().searchable()
