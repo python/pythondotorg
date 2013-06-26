@@ -41,6 +41,7 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
 
 class UserUpdate(MembershipUpdate):
     form_class = UserProfileForm
+    template_name = 'users/user_form.html'
 
 
 class UserDetail(DetailView):
