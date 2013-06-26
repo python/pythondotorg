@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-class ContentManageableModelAdmin(admin.ModelAdmin):
+class ContentManageableAdmin(object):
     """
     Base ModelAdmin class for any model that uses ContentManageable.
     """
@@ -52,6 +52,18 @@ class ContentManageableModelAdmin(admin.ModelAdmin):
             'fields': ['creator', 'created', 'updated'],
             'classes': ('collapse',),
         })]
+
+
+class ContentManageableModelAdmin(ContentManageableAdmin, admin.ModelAdmin):
+    pass
+
+
+class ContentManageableStackedInline(ContentManageableAdmin, admin.StackedInline):
+    pass
+
+
+class ContentManageableTabularInline(ContentManageableAdmin, admin.TabularInline):
+    pass
 
 
 class NameSlugAdmin(admin.ModelAdmin):
