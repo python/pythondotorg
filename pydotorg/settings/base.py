@@ -112,14 +112,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    #'allauth.socialaccount.providers.facebook',
-    'allauth.socialaccount.providers.github',
-    'allauth.socialaccount.providers.openid',
-    'allauth.socialaccount.providers.twitter',
-
     'django_comments_xtd',
     'pipeline',
     'sitetree',
@@ -136,6 +128,14 @@ INSTALLED_APPS = (
     'sponsors',
     'successstories',
     'events',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    #'allauth.socialaccount.providers.facebook',
+    #'allauth.socialaccount.providers.github',
+    #'allauth.socialaccount.providers.openid',
+    #'allauth.socialaccount.providers.twitter',
 )
 
 ### Testing
