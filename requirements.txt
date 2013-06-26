@@ -8,6 +8,7 @@ Django>=1.5,<1.6
 docutils==0.10
 factory-boy==2.0.2
 Markdown==2.2.1
+Pillow==2.0.0
 psycopg2==2.4.5
 python3-openid==3.0.1
 
@@ -16,6 +17,9 @@ python-dateutil==2.1
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
 https://bitbucket.org/andrewgodwin/south/get/59f6bae8b1a501ca14a5f23f8b11c44c42f33147.zip
+
+git+https://github.com/bradjasper/django-jsonfield.git@c21b18
+
 git+https://github.com/danirus/django-comments-xtd.git@cc096c
 
 # django-markupfield with Py3 support. Can be removed when 1.1 is released.

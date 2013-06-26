@@ -113,6 +113,7 @@ INSTALLED_APPS = (
     'django.contrib.admindocs',
 
     'django_comments_xtd',
+    'jsonfield',
     'pipeline',
     'sitetree',
     'south',
@@ -123,6 +124,7 @@ INSTALLED_APPS = (
     'cms',
     'companies',
     'feedbacks',
+    'community',
     'jobs',
     'pages',
     'sponsors',
