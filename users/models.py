@@ -15,7 +15,7 @@ class User(AbstractUser):
     legal_name = models.CharField(max_length=100, blank=True)
     preferred_name = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100, blank=True)
-    region = models.CharField(max_length=100, blank=True)
+    region = models.CharField('State, Province or Region', max_length=100, blank=True)
     country = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
 
