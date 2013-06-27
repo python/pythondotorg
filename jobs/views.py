@@ -33,6 +33,7 @@ class JobListMine(ListView):
             raise Http404
         return queryset.filter(q)
 
+
 class JobListType(JobList):
     def get_queryset(self):
         return super().get_queryset().filter(job_types__slug=self.kwargs['slug'])

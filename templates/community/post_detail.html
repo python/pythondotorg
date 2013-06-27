@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+
+{% block body_attributes %}class="python community"{% endblock %}
+
+
+{% block main-nav_attributes %}community-navigation{% endblock main-nav_attributes %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock content_attributes %}
+
+
+{% block content %}
+{% if object.title %}
+<h2>{{ object.title }}</h2>
+{% endif %}
+
+{{ object.content }}
+{% endblock content %}
