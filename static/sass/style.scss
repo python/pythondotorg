@@ -21,9 +21,6 @@
  *
  * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
  */
- 
-
-
 
 
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
@@ -481,7 +478,7 @@ abbr, dfn {
             border-bottom-color: transparent;
             border-left-color: transparent; 
             top: 0; 
-            left: -999em; 
+            left: -9999px; 
             margin-left: -.25em; 
         }
         

@@ -1,0 +1,15 @@
+
+TO DO: 
+***
+
+Blockquotes should not have a FOOTER element inside of them. Change markup and associated CSS
+
+-999em or -9999em is too large. Use pixels in this case or the browser could use too much memory rendering the absurdly large distance. 
+
+Drop down menus with right: -999em styles produce a horiz scroll bar in Chrome. 
+
+Make the breakpoints in layout.scss work on variables. Easier to change in one place than in both the layout and mq files. 
+
+
+DONE: 
+***

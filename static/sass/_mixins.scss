@@ -115,7 +115,7 @@
         }
     }
     .element-1 .subnav, .element-2 .subnav, .element-3 .subnav, .element-4 .subnav {
-        left: -999em; 
+        left: -9999px; 
         @include transition( all 0s ease ); 
         
         .touch &:before {
@@ -139,7 +139,7 @@
     }
     .element-5 .subnav, .element-6 .subnav, .element-7 .subnav, .element-8 .subnav, .last .subnav {
         left: auto; 
-        right: -999em; 
+        right: -9999px; 
         @include transition( all 0s ease ); 
         
         .touch &:before {

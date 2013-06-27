@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -871,7 +872,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
       border-bottom-color: transparent;
       border-left-color: transparent;
       top: 0;
-      left: -999em;
+      left: -9999px;
       margin-left: -.25em; }
   .top-bar li {
     border-top: 3px solid #3776ab; }
@@ -1079,7 +1080,7 @@ a.jump-to-menu {
         top: -1.45em;
         display: block; }
   .adjust-font-size .element-1 .subnav, .adjust-font-size .element-2 .subnav, .adjust-font-size .element-3 .subnav, .adjust-font-size .element-4 .subnav, .winkwink-nudgenudge .element-1 .subnav, .winkwink-nudgenudge .element-2 .subnav, .winkwink-nudgenudge .element-3 .subnav, .winkwink-nudgenudge .element-4 .subnav {
-    left: -999em;
+    left: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
@@ -1100,7 +1101,7 @@ a.jump-to-menu {
     left: 0; }
   .adjust-font-size .element-5 .subnav, .adjust-font-size .element-6 .subnav, .adjust-font-size .element-7 .subnav, .adjust-font-size .element-8 .subnav, .adjust-font-size .last .subnav, .winkwink-nudgenudge .element-5 .subnav, .winkwink-nudgenudge .element-6 .subnav, .winkwink-nudgenudge .element-7 .subnav, .winkwink-nudgenudge .element-8 .subnav, .winkwink-nudgenudge .last .subnav {
     left: auto;
-    right: -999em;
+    right: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
@@ -2301,7 +2302,7 @@ p.quote-by-organization {
 /* For image replacement */
 .ir {
   display: block;
-  text-indent: -999em;
+  text-indent: -9999px;
   overflow: hidden;
   background-repeat: no-repeat;
   text-align: left;

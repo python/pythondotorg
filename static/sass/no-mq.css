@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -1112,24 +1113,24 @@ body {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1363787174') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363787174') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1363787174') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1363787174') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1212,7 +1213,7 @@ body {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1362499728') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1420,7 +1421,7 @@ a.jump-to-menu {
         top: -1.45em;
         display: block; }
   .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
-    left: -999em;
+    left: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
@@ -1439,7 +1440,7 @@ a.jump-to-menu {
     left: 0; }
   .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
     left: auto;
-    right: -999em;
+    right: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
@@ -1639,8 +1640,8 @@ a.jump-to-menu {
 
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
-  padding-left: 5.31915%;
-  padding-right: 5.31915%; }
+  padding-left: 3.19149%;
+  padding-right: 3.19149%; }
 
 .single-event-title {
   font-size: 2em; }
