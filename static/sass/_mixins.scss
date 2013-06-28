@@ -58,7 +58,7 @@
     /*ul*/ .menu {
         margin-bottom: 0; 
     }
-    .tier-1 , .tier-2 {
+    .tier-1, .tier-2 {
         
         /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */
         & > a {
