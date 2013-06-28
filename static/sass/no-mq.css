@@ -30,6 +30,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -64,6 +66,12 @@
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
 /* Vertical gradient mixin to make things easier. */
+/* Horizontal gradient mixin to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -117,6 +125,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -151,6 +161,12 @@
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
 /* Vertical gradient mixin to make things easier. */
+/* Horizontal gradient mixin to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -1293,6 +1309,18 @@ body {
   margin-right: 0;
   #margin-left: -20px; }
 
+/* Forms that are wide enough to have labels and input fields side by side */
+.wide-form p {
+  overflow: hidden;
+  *zoom: 1; }
+  .wide-form p label {
+    width: 25%;
+    float: left;
+    margin-top: .5em; }
+  .wide-form p input[type=text], .wide-form p input[type=password], .wide-form p input[type=search], .wide-form p input[type=email], .wide-form p input[type=url], .wide-form p input[type=tel] {
+    width: 75%;
+    float: left; }
+
 /* Footer */
 .sitemap, .footer-links, .copyright {
   font-size: 0.875em; }
@@ -1577,7 +1605,7 @@ a.jump-to-menu {
       border: none;
       background: transparent; }
     .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
-      color: #1f3b47; }
+      color: #1e2933; }
   .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
     margin-top: 0; }
   #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {

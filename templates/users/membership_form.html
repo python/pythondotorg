@@ -10,9 +10,24 @@
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block content %}
-<div class="row">
 
-<form action="" method="post">
+{% comment %}
+    I'd like some feedback to appear at the top of the page if the form reloads and there is info missing. 
+    If the error is at the bottom of the page, no one will see it and realize there is something wrong. 
+    
+    If the form is submitted successfully, we should let the user know as well. 
+    
+    Samples below: 
+{% endcomment %}
+
+<div class="user-feedback level-error">
+    <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888; </span></span>Please correct the errors <b>noted in red</b> below:</p>
+</div>
+<div class="user-feedback level-success">
+    <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
+</div>
+
+<form action="" method="post" class="wide-form">
     {% csrf_token %}
 
     <p>
@@ -50,41 +65,59 @@
       {{ form.postal_code.label_tag }}
       {{ form.postal_code }}
     </p>
-
-    <h3>The Python Software Foundation has adopted the following Code of Conduct for all of its members:</h3>
-
-    <p>The Python community is made up of members from around the globe with a diverse set of skills, personalities, and experiences. It is through these differences that our community experiences great successes and continued growth. When you’re working with members of the community, we encourage you to follow these guidelines which help steer our interactions and strive to keep Python a positive, successful, and growing community.</p>
-
-    <p>A member of the Python community is:</p>
-
-    <h3>Open</h3>
-
-    <p>Members of the community are open to collaboration, whether it’s on PEPs, patches, problems, or otherwise. We’re receptive to constructive comment and criticism, as the experiences and skill sets of other members contribute to the whole of our efforts. We’re accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference.</p>
-
-    <h3>Considerate</h3>
-
-    <p>Members of the community are considerate of their peers -- other Python users. We’re thoughtful when addressing the efforts of others, keeping in mind that often times the labor was completed simply for the good of the community. We’re attentive in our communications, whether in person or online, and we’re tactful when approaching differing views.</p>
-
-    <h3>Respectful</h3>
-
-    <p>Members of the community are respectful. We’re respectful of others, their positions, their skills, their commitments, and their efforts. We’re respectful of the volunteer efforts that permeate the Python community. We’re respectful of the processes set forth in the community, and we work within them. When we disagree, we are courteous in raising our issues.</p>
-
-    <p>Overall, we’re good to each other. We contribute to this community not because we have to, but because we want to. If we remember that, these guidelines will come naturally.</p>
-
-    <p>
-      {{ form.psf_code_of_conduct.errors }}
-      {{ form.psf_code_of_conduct.label_tag }}
-      {{ form.psf_code_of_conduct }}
-    </p>
-
-    <p>
-      {{ form.psf_announcements.errors }}
-      {{ form.psf_announcements.label_tag }}
-      {{ form.psf_announcements }}
-    </p>
-
+    
+    <div class="psf-codeofconduct">
+        <h3>The Python Software Foundation has adopted the following Code of Conduct for all of its members:</h3>
+    
+        <p>The Python community is made up of members from around the globe with a diverse set of skills, personalities, and experiences. It is through these differences that our community experiences great successes and continued growth. When you’re working with members of the community, we encourage you to follow these guidelines which help steer our interactions and strive to keep Python a positive, successful, and growing community.</p>
+    
+        <p>A member of the Python community is:</p>
+        
+        <div class="indent">
+            <h3>Open</h3>
+            <p>Members of the community are open to collaboration, whether it’s on PEPs, patches, problems, or otherwise. We’re receptive to constructive comment and criticism, as the experiences and skill sets of other members contribute to the whole of our efforts. We’re accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference.</p>
+        
+            <h3>Considerate</h3>
+            <p>Members of the community are considerate of their peers &mdash; other Python users. We’re thoughtful when addressing the efforts of others, keeping in mind that often times the labor was completed simply for the good of the community. We’re attentive in our communications, whether in person or online, and we’re tactful when approaching differing views.</p>
+        
+            <h3>Respectful</h3>
+            <p>Members of the community are respectful. We’re respectful of others, their positions, their skills, their commitments, and their efforts. We’re respectful of the volunteer efforts that permeate the Python community. We’re respectful of the processes set forth in the community, and we work within them. When we disagree, we are courteous in raising our issues.</p>
+        </div>
+        
+        <p>Overall, we’re good to each other. We contribute to this community not because we have to, but because we want to. If we remember that, these guidelines will come naturally.</p>
+    </div>
+    
+    {% comment %}
+        I also noticed that when an error is throw on these radios, that the error message is not being wrapped in anything that I can style. See the markup below: 
+        
+        <p>
+            Agreeing to the code of conduct is required.
+            <label for="id_psf_code_of_conduct_0">PSF Code of Conduct</label>
+        </p>
+        
+        The message itself should be wrapped in a <span class="error-message">
+        
+        ---
+        I would also prefer if these two radio choices were labeled: 
+        "I agree to the PSF Code of Conduct"
+        and
+        "I would like to receive occasional PSF email announcements"
+        
+        Should strings like this be put into some sort of l18n string for future translation?
+    {% endcomment %}
+    
+    <div class="horizontal-menu">
+        {{ form.psf_code_of_conduct.errors }}
+        {{ form.psf_code_of_conduct.label_tag }}
+        {{ form.psf_code_of_conduct }}
+    </div>
+    <div class="horizontal-menu">
+        {{ form.psf_announcements.errors }}
+        {{ form.psf_announcements.label_tag }}
+        {{ form.psf_announcements }}
+    </div>
+    
     <p><button type="submit" name="Submit">Save Profile</button></p>
 </form>
 
-<div>
 {% endblock content %}
