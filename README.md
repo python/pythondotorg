@@ -83,5 +83,7 @@ Nuke the DB!
 4. createdb python.org
 5. ./manage.py syncdb
 6. ./manage.py migrate
-7. Install at least the menus: ./manage.py loaddata fixtures/sitetree_menus.json
+7. Install at least the menus: ./manage.py migrate sitetree  OLD('./manage.py loaddata fixtures/sitetree_menus.json')
 8. Install data from staging: invoke copy_data_from_staging
+
+If you need to, ./manage.py createsuperuser

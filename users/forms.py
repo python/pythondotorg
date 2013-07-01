@@ -95,11 +95,8 @@ class MembershipForm(ModelForm):
             'psf_announcements',
         ]
 
-    def clean(self):
-        cleaned_data = super().clean()
-        code_of_conduct = cleaned_data.get('psf_code_of_conduct')
-        if code_of_conduct is not True:
-            msg = 'Agreeing to the code of conduct is required.'
-            self._errors['psf_code_of_conduct'] = msg
-            del cleaned_data['psf_code_of_conduct']
-        return cleaned_data
+    def clean_psf_code_of_conduct(self):
+        data = self.cleaned_data['psf_code_of_conduct']
+        if not data:
+            raise forms.ValidationError('Agreeing to the code of conduct is required.')
+        return data

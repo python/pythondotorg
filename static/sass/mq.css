@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -29,6 +30,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -63,6 +66,12 @@
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
 /* Vertical gradient mixin to make things easier. */
+/* Horizontal gradient mixin to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -116,6 +125,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -150,6 +161,12 @@
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
 /* Vertical gradient mixin to make things easier. */
+/* Horizontal gradient mixin to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -1172,7 +1189,7 @@
           top: -1.45em;
           display: block; }
     .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
-      left: -999em;
+      left: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1191,7 +1208,7 @@
       left: 0; }
     .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: -999em;
+      right: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1317,24 +1334,24 @@
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1363787174') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363787174') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1363787174') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 140% 0 no-repeat url('../img/landing-community.png?1363787174') transparent;
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
@@ -1417,7 +1434,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large3.png?1362499728') transparent; }
+      background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1496,6 +1513,18 @@
     float: right;
     margin-right: 0;
     #margin-left: -20px; }
+
+  /* Forms that are wide enough to have labels and input fields side by side */
+  .wide-form p {
+    overflow: hidden;
+    *zoom: 1; }
+    .wide-form p label {
+      width: 25%;
+      float: left;
+      margin-top: .5em; }
+    .wide-form p input[type=text], .wide-form p input[type=password], .wide-form p input[type=search], .wide-form p input[type=email], .wide-form p input[type=url], .wide-form p input[type=tel] {
+      width: 75%;
+      float: left; }
 
   /* Footer */
   .sitemap, .footer-links, .copyright {
@@ -1630,7 +1659,7 @@
           top: -1.45em;
           display: block; }
     .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
-      left: -999em;
+      left: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1649,7 +1678,7 @@
       left: 0; }
     .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: -999em;
+      right: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1786,7 +1815,7 @@
         border: none;
         background: transparent; }
       .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
+        color: #1e2933; }
     .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
       margin-top: 0; }
     #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
@@ -1849,8 +1878,8 @@
 
   /* Main content with sidebars */
   .main-content.with-left-sidebar {
-    padding-left: 5.31915%;
-    padding-right: 5.31915%; }
+    padding-left: 3.19149%;
+    padding-right: 3.19149%; }
 
   .single-event-title {
     font-size: 2em; }
