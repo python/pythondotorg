@@ -35,8 +35,8 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
     slug_field = 'username'
     template_name = 'users/membership_form.html'
 
-    def get_queryset(self):
-        return User.objects.filter(username=self.request.user)
+    def get_object(self, queryset=None):
+        return User.objects.get(username=self.request.user)
 
 
 class UserUpdate(MembershipUpdate):

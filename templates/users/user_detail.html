@@ -19,8 +19,8 @@
 <div class="user-profile-controls">
     <ul class="menu">
         <li>Manage your Information: </li>
-        <li><a href="{% url 'users:user_profile_edit' slug=request.user.username %}">Edit your profile</a></li>
-        <li><a href="{% url 'users:user_membership_edit' slug=request.user.username %}">Edit your PSF membership</a></li>
+        <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
+        <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
     </ul>
 </div>
 {% endif %}
@@ -30,7 +30,7 @@
 </div>
 
 <div class="user-profile-display">
-    
+
     <div class="user-profile-name">
         <p><span class="profile-label">Name:</span> {{ object.get_full_name|ifempty:object }}</p>
     </div>
@@ -40,10 +40,10 @@
     <div class="user-profile-bio">
         {{ object.bio }}
     </div>
-    
-    {% comment %} 
-        All possible supported networks with icons. 
-        We don't need to support all of these through the profile if you do not want to 
+
+    {% comment %}
+        All possible supported networks with icons.
+        We don't need to support all of these through the profile if you do not want to
     {% endcomment %}
     <div class="user-social-profiles">
         <ul class="menu">
@@ -55,7 +55,7 @@
             <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }}'s personal blog</a></li>
         </ul>
     </div>
-    
+
 </div>
 
 {% endblock content %}

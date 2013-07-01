@@ -19,8 +19,8 @@
 <div class="user-profile-controls">
     <ul class="menu">
         <li>Manage your Information: </li>
-        <li><a href="{% url 'users:user_profile_edit' slug=request.user.username %}">Edit your profile</a></li>
-        <li><a href="{% url 'users:user_membership_edit' slug=request.user.username %}">Edit your PSF membership</a></li>
+        <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
+        <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
     </ul>
 </div>
 {% endif %}
@@ -35,7 +35,7 @@
     <ul class="list-row-container menu">
     {% for user in user_list %}
         <li>
-            <span class="user-name"><a href="{{ user.get_absolute_url }}">{{ user.get_full_name|ifempty:user.username }}</a></span> 
+            <span class="user-name"><a href="{{ user.get_absolute_url }}">{{ user.get_full_name|ifempty:user.username }}</a></span>
             <span class="user-location">{% location user %}</span>
             <span class="user-psfmember-status"><span class="icon-python" aria-hidden="true"></span>Yes</span>
             {% comment %}If not a member, simply output <span class="user-psfmember-status"></span> {% endcomment %}
