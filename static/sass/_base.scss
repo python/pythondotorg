@@ -74,15 +74,16 @@ $psf: #78797a;
 $yellow: #ffd343; /* Python yellow */
 $green: #82b043;
 $purple: #a06ba7; 
-$red: #b55863;  
+$red: #b55863;  /* Also used for error messages */
 $orange: #cc9547; 
 
 $darkblue: #1f3b47; 
 $darkerblue: #1e2933; 
 
 $link-color: $blue;
-$link-hover: $darkblue;
+$link-hover: $darkerblue;
 
+$border-color: $grey-lighter; /* Set a generic border color here to keep them consistent */
 
 
 /* Typography */

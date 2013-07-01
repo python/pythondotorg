@@ -20,8 +20,8 @@ class User(AbstractUser):
     postal_code = models.CharField(max_length=20, blank=True)
 
     # PSF fields
-    psf_code_of_conduct = models.NullBooleanField('PSF Code of Conduct', blank=True)
-    psf_announcements = models.NullBooleanField('Receive PSF Announcements', blank=True)
+    psf_code_of_conduct = models.NullBooleanField('I agree to the PSF Code of Conduct', blank=True)
+    psf_announcements = models.NullBooleanField('I would like to receive occasional PSF email announcements', blank=True)
 
     SEARCH_PRIVATE = 0
     SEARCH_PUBLIC = 1

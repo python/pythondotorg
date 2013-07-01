@@ -2,7 +2,7 @@
 
 
 {% block main_navigation %}
-{% load sitetree %}
+{% load sitetree users_tags %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
@@ -14,8 +14,48 @@
 
 
 {% block content %}
-details for {{ object }}?
 
-{{ object.bio }}
+{% if request.user %}
+<div class="user-profile-controls">
+    <ul class="menu">
+        <li>Manage your Information: </li>
+        <li><a href="{% url 'users:user_profile_edit' slug=request.user.username %}">Edit your profile</a></li>
+        <li><a href="{% url 'users:user_membership_edit' slug=request.user.username %}">Edit your PSF membership</a></li>
+    </ul>
+</div>
+{% endif %}
+
+<div class="return-link">
+    <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
+</div>
+
+<div class="user-profile-display">
+    
+    <div class="user-profile-name">
+        <p><span class="profile-label">Name:</span> {{ object.get_full_name|ifempty:object }}</p>
+    </div>
+    <div class="user-profile-location">
+        <p><span class="profile-label">Location:</span> {% location object %}</p>
+    </div>
+    <div class="user-profile-bio">
+        {{ object.bio }}
+    </div>
+    
+    {% comment %} 
+        All possible supported networks with icons. 
+        We don't need to support all of these through the profile if you do not want to 
+    {% endcomment %}
+    <div class="user-social-profiles">
+        <ul class="menu">
+            <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{{ object.get_full_name|ifempty:object }} on Twitter</a></li>
+            <li><a href="#" title="To this user's Freenode profile"><span class="icon-freenode" aria-hidden="true"></span>{{ object.get_full_name|ifempty:object }} on Freenode</a></li>
+            <li><a href="#" title="To this user's GitHub profile"><span class="icon-github" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on Github</a></li>
+            <li><a href="#" title="To this user's StackOverflow profile"><span class="icon-stack-overflow" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on StackOverflow</a></li>
+            <li><a href="#" title="To this user's Google+ profile"><span class="icon-google-plus" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on Google+</a></li>
+            <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }}'s personal blog</a></li>
+        </ul>
+    </div>
+    
+</div>
 
 {% endblock content %}
