@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.contrib.auth.forms import UserChangeForm as BaseUserChangeForm
 from django.forms import ModelForm
 
-from .models import User
+from .models import User, Membership
 
 
 class UserCreationForm(BaseUserCreationForm):
@@ -27,15 +27,6 @@ class UserChangeForm(BaseUserChangeForm):
 
 
 class UserProfileForm(ModelForm):
-
-    COC_CHOICES = (
-        (True, 'Yes'),
-        (False, 'No')
-    )
-    ACCOUNCEMENT_CHOICES = (
-        (True, 'Yes'),
-        (False, 'No')
-    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,10 +74,11 @@ class MembershipForm(ModelForm):
         announcements.initial = True
 
     class Meta(object):
-        model = User
+        model = Membership
         fields = [
             'legal_name',
             'preferred_name',
+            'email_address',
             'city',
             'region',
             'country',

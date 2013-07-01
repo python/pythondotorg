@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+{% block body_attributes %}class="python signup"{% endblock %}
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+
+{% comment %}
+<div class="user-feedback level-success">
+    <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
+</div>
+{% endcomment %}
+
+<p>Your membership information has been saved successfully.</p>
+
+{% endblock content %}

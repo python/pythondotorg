@@ -34,9 +34,11 @@
     <div class="user-profile-name">
         <p><span class="profile-label">Name:</span> {{ object.get_full_name|ifempty:object }}</p>
     </div>
+    {% comment %}
     <div class="user-profile-location">
         <p><span class="profile-label">Location:</span> {% location object %}</p>
     </div>
+    {% endcomment %}
     <div class="user-profile-bio">
         {{ object.bio }}
     </div>
@@ -45,6 +47,7 @@
         All possible supported networks with icons.
         We don't need to support all of these through the profile if you do not want to
     {% endcomment %}
+    {% comment %}
     <div class="user-social-profiles">
         <ul class="menu">
             <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{{ object.get_full_name|ifempty:object }} on Twitter</a></li>
@@ -55,6 +58,7 @@
             <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }}'s personal blog</a></li>
         </ul>
     </div>
+    {% endcomment %}
 
 </div>
 
