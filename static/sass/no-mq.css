@@ -1,3 +1,4 @@
+@charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -15,7 +16,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -23,9 +24,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -62,7 +64,13 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -70,13 +78,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -102,7 +122,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -110,9 +130,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -149,7 +170,13 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
+ */
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -157,13 +184,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -252,7 +291,7 @@ body {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
 
-.text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text table {
+.text {
   font-size: 0.9375em; }
 
 .meta-navigation {
@@ -1112,24 +1151,24 @@ body {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1363787174') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363787174') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1363787174') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1363787174') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1212,7 +1251,7 @@ body {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1362499728') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1580,7 +1619,7 @@ a.jump-to-menu {
   .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
     margin-top: 0; }
   #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
-    font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
+    font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
     font-weight: normal;
     font-size: 1.375em;
     line-height: 1.25em;
@@ -1639,8 +1678,8 @@ a.jump-to-menu {
 
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
-  padding-left: 5.31915%;
-  padding-right: 5.31915%; }
+  padding-left: 3.19149%;
+  padding-right: 3.19149%; }
 
 .single-event-title {
   font-size: 2em; }

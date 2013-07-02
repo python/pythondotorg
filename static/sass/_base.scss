@@ -34,18 +34,17 @@
 
 
 
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
  * Site: susy.oddbird.net
  */
-
 @import "susy";
 
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
  
 $total-columns: 12; 
@@ -55,14 +54,15 @@ $grid-padding: $gutter-width;
 $container-style: fluid; 
 
 
+/* ! ===== Variables ===== */
 
-/* ===== Variables ===== */
-
+/* Colors */
 $default-color: #444;
 
 $white: #fff; /* Confusing, but in some cases, this can be set to a dark color */
 $grey-lighterest: #f2f4f6; 
 $grey-lightest: #e6e8ea;
+$grey-lighterer: #ddd;
 $grey-lighter: #caccce;
 $grey-light: #999;
 $grey: #666;
@@ -83,6 +83,7 @@ $darkerblue: #1e2933;
 $link-color: $blue;
 $link-hover: $darkblue;
 
+$code-green: #0c0; 
 
 
 /* Typography */
@@ -92,11 +93,11 @@ $round-to-nearest-half-line : true; /* Allows the adjust-font-size-to and lines-
 $base-font-size             : 16px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
 $base-line-height           : 28px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
 
-//$default-font: "Lucida Grande", "Lucida Sans Unicode", "Lucida Sans", Verdana, Tahoma, sans-serif;
-$default-font: HelveticaNeue, 'Helvetica Neue', Arial, sans-serif;
-$alt-font: 'Flux-Regular', $default-font;
-$alt-font-bold: 'Flux-Bold', $default-font;
-$alt-font-italic: 'Flux-Italic', $default-font;
+$default-font: SourceSansProRegular, Arial, sans-serif;
+$default-font-italic: SourceSansProItalic, Arial, sans-serif;
+$default-font-bold: SourceSansProBold, Arial, sans-serif;
+$alt-font: Flux-Regular, $default-font;
+$alt-font-bold: Flux-Bold, $default-font-bold;
 
 /* Calculate the font-size-adjust of Flux:
  * http://www.cs.tut.fi/~jkorpela/x-height.html

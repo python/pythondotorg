@@ -25,12 +25,9 @@
 
 
 
-
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 
 body {
-   color: $default-color;
-   font: normal 100%/1.625 $default-font;
    
     /* Label the body with our media query parameters. Then check with JS to coordinate @media changes */
     &:after {
@@ -39,7 +36,12 @@ body {
     }
 }
 
-header, nav, section, article, aside, footer, div, li {
+body, input, textarea, select, button {
+    color: $default-color;
+    font: normal 100%/1.625 $default-font;
+}
+
+header, nav, section, article, aside, figure, footer, div, li, input, textarea {
     @include pe-box-sizing( border-box ); 
 }
 
@@ -56,7 +58,10 @@ a:hover, a:focus {
     border-bottom: 1px dotted $default-color; 
 }
 
-a img { display: block; }
+a img { 
+    display: block; 
+    margin: 0 auto; 
+}
 
 /* Set the highlight colors. These selection declarations have to be separate */
 ::-moz-selection { background: $link-color; color: #fff; text-shadow: none; }
@@ -65,10 +70,6 @@ a:link { -webkit-tap-highlight-color: $link-hover; }
 
 img, embed, object, video {
 	max-width: 100%
-}
-
-img {
-    margin: 0 auto; 
 }
 
 .giga { @include fontface-adjust( 48px ); }
@@ -124,16 +125,12 @@ h6, .gamma {
     @include leader(1); 
 }
 
-p, ul, ol, dl, address, table {
-    //font-size: px2em( 14px );
-    //line-height: 1.625em;
+p, ul, ol, dl, address, form, table, figure {
     margin-bottom: rhythm(0.5);
 }
 
-ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
-    //font-size: 1em; 
-    margin-bottom: 0; 
-}
+/* remove margin bottom for nested lists */
+li > ul, li > ol { margin-bottom: 0; }
 
 blockquote {
     font: italic px2em( 18px ) Georgia, serif;
@@ -183,7 +180,6 @@ blockquote {
     }
 }
 
-
 form {
     @include pie-clearfix(); 
 }
@@ -191,13 +187,6 @@ form {
 label {
     display: block; 
     @include leader( .5 ); 
-    
-    /*modernizr .placeholder & {
-        display: none; 
-    }*/
-    /*modernizr .placeholder &.always-show {
-        display: block; 
-    }*/
 }
 
 input, textarea {
@@ -206,7 +195,6 @@ input, textarea {
     margin-bottom: rhythm( .5 ); 
     border: 1px solid $grey-lighter; 
     @include border-radius(); 
-    @include pe-box-sizing( border-box ); 
 }
 
 input[type=checkbox], input[type=radio] {
@@ -241,12 +229,21 @@ input[type=reset] {
     }
 }
 
+b, strong {
+    font-weight: normal; 
+    font-style: normal; 
+    font-family: $default-font-bold; 
+}
+
+i, em {
+    font-weight: normal; 
+    font-style: normal; 
+    font-family: $default-font-italic; 
+}
+
 abbr, dfn {
     border-bottom: 1px dotted $blue;
 }
-
-
-
 
 
 /* ===== LOCAL EXTENDABLE STYLES ===== 
@@ -261,7 +258,6 @@ abbr, dfn {
 /* Color Areas: use for consistency */
 %blue-colorspace {
     @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
-    //background-color: darken($blue, 15%);
     @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03) );
 }
 
@@ -305,12 +301,8 @@ abbr, dfn {
 
 /* Buttons */
 %button-style {
-    background-color: lighten($grey-light, 20%);
-    @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
-    @include pe-border( $color-top: $grey-lighter, $color-right: $grey-lighter, $color-bottom: $grey-light, $color-left: $grey-lighter );
-    @include border-radius();
-    @include box-shadow( 1px 1px 1px rgba(0, 0, 0, 0.05) , inset 0 0 5px rgba(255, 255, 255, 0.5) );
     color: darken($grey, 10%) !important;
+    background-color: lighten($grey-light, 20%);
     cursor: pointer;
     display: block;
     font-weight: normal;
@@ -320,6 +312,10 @@ abbr, dfn {
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
     white-space: nowrap;
     // width: auto;
+    @include border-radius();
+    @include box-shadow( 1px 1px 1px rgba(0, 0, 0, 0.05) , inset 0 0 5px rgba(255, 255, 255, 0.5) );
+    @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
+    @include pe-border( $color-top: $grey-lighter, $color-right: $grey-lighter, $color-bottom: $grey-light, $color-left: $grey-lighter );
     
     &:hover, &:focus, &:active {
         background-color: inherit;
@@ -342,27 +338,26 @@ abbr, dfn {
 
 %button-style-blue {
     @extend %button-style;
+    color: $grey-lightest !important;
     background-color: $blue;
-    @include vertical-gradient($blue, darken($blue, 10%) );
+    text-shadow: none;
+    @include vertical-gradient( $blue, darken($blue, 10%) );
     @include pe-border( $color-top: lighten($blue, 5%), $color-right: $blue, $color-bottom: $blue, $color-left: lighten($blue, 5%) );
     @include box-shadow( inset 0 0 5px rgba($blue, 0.2) );
-    color: $grey-lightest !important;
-    text-shadow: none;
     
     &:hover, &:active {
-        background: inherit;
-        @include vertical-gradient(darken($blue, 5%), darken($blue, 15%) );
         color: $grey-lighterest !important;
+        background: inherit;
+        @include vertical-gradient( darken($blue, 5%), darken($blue, 15%) );
     }
 }
 
 %link-style {
-    // border-bottom: 1px dotted lighten($blue, 30%);
-    border-bottom: 1px solid lighten($yellow, 10%);
+    border-bottom: 1px solid lighten($yellow, 15%);
     text-decoration: none;
     
     &:hover, &:focus {
-        border-bottom: 1px solid $yellow;
+        border-bottom-color: $yellow;
     }
 }
 
@@ -391,7 +386,7 @@ abbr, dfn {
 /* Our own little class for progressive text. Yes, it is a Monty Python reference */
 .say-no-more {
     display: none; 
-    visibility: hidden;  
+    visibility: hidden; 
 }
 
 /* Styling for a series of angle brackets... >>> */
@@ -417,7 +412,6 @@ abbr, dfn {
 /* ! ===== ICONS =====
     
     Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. 
- 
  */
 .icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
 	font-family: 'Pythonicon';
@@ -433,7 +427,7 @@ abbr, dfn {
 
 .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-close {
 	
-	/* Hide a unicode fallback charcter when we supply it by default. 
+	/* Hide a unicode fallback character when we supply it by default. 
 	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
 	 */
 	span {
@@ -442,11 +436,9 @@ abbr, dfn {
 }
 
 
-
 /* ===== MAJOR PAGE ELEMENTS ===== */
 
-/*<div id="top" class="top-bar">*/
-
+/* ! ===== Header ===== */
 %hovered-state {
     @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
     color: $white;
@@ -471,8 +463,8 @@ abbr, dfn {
         color: $grey-light; 
         background: transparent; 
         text-align: center;
-        @include adjust-font-size( 16px ); 
         padding: .5em .75em .4em; 
+        @include adjust-font-size( 16px ); 
         
         /* no fallback for .no-generatedcontent. This is a progressive enhancement */
         &:before {
@@ -521,9 +513,6 @@ abbr, dfn {
     }
 }
 
-
-/*<header id="top" class="main-header" role="banner">*/
-
 /* Used in both the main-header and the header-banner */
 .main-header {
     @extend %blue-colorspace;
@@ -552,18 +541,17 @@ abbr, dfn {
     }
 }
 
-
 $optionsbar-text: #bbb;
 
 .options-bar {
     width: 100%; 
     color: $optionsbar-text; 
     margin-bottom: rhythm( .75 ); 
-    @include border-radius(); 
     border-top: 1px solid lighten( $darkerblue, 8% );
     border-bottom: 1px solid darken( $darkerblue, 12% );
     background-color: $darkerblue; 
     line-height: 1em;
+    @include border-radius(); 
     
     form, div {
         padding: 0.35em 0.2em 0.3em;
@@ -620,9 +608,9 @@ a.jump-to-menu {
     color: $optionsbar-text;
     background-color: transparent; 
     border: none; 
-    @include border-radius( 0px ); 
     margin: .125em 0; 
     padding: .4em 0 .3em; 
+    @include border-radius( 0px ); 
     
     &::-webkit-input-placeholder { color: $optionsbar-text; font-style: normal; }
     &:-moz-placeholder { color: $optionsbar-text; font-style: normal; }
@@ -632,8 +620,8 @@ a.jump-to-menu {
         color: $default-color; 
         padding: .4em .5em .3em; 
         
-        // removed this line because it was making the height fluctuate on focus:
-        // @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); 
+        /* removed this line because it was making the height fluctuate on focus:
+        @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */
     }
     
     &:blur {
@@ -648,18 +636,16 @@ a.jump-to-menu {
     margin-right: 0.2em;
     margin-bottom: 0;
     text-shadow: none;
-    // @include box-shadow( none );
     
     &:hover, &:focus, &:active {
-        // color: $white; 
-        // @include reset-gradient( lighten($darkerblue, 15%) ); 
+        
     }
 }
 
 .adjust-font-size, .winkwink-nudgenudge {
+    border-left: 1px solid lighten( $darkerblue, 8% );
     @include horizontal_nav_base();
     @include horizontal_nav_dropdowns(); 
-    border-left: 1px solid lighten( $darkerblue, 8% );
     
     a {
         color: $optionsbar-text; 
@@ -716,32 +702,32 @@ a.jump-to-menu {
     .text-reset { }
 
 
+/* ! ===== Main Navigation ===== */
 
-/* ! Main navigation – In layout and mixins, as we don't display it here. */
+/* Rules are mostly in layout and mixins, as we don't display it for mobile */
 .main-navigation {
     display: none;
     margin-bottom: 1px;
-}
-
-.main-navigation .close-pane {
-    display: none;
-    background-color: rgba(255,255,255,.25);
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 1200px;
-    .close-graphic { 
+    
+    /* For touch devices we create an overlay that is tappable */
+    .close-pane {
+        display: none;
+        background-color: rgba(255,255,255,.25);
         position: absolute;
-        top: 0px;
-        right: 0px;
-        padding: 0px 10px;
-        background-color: white;
+        top: 0; left: 0; bottom: 0; 
+        width: 100%;
+        
+        .close-graphic { 
+            position: absolute;
+            top: 0px;
+            right: 0px;
+            padding: 0px 1.25em;
+            background-color: $white;
+        }
     }
 }
 
-
-/* ! Header banner, present on most landing pages */
+/* ! ===== Header banner, present on most landing pages ===== */
 /*<div class="header-banner">
     <div class="featured-success-story">
         <h1 class="call-to-action"><a href="#">Python is powerful... and fast</a>. <a href="#">Python plays well with others</a>. <a href="#">Python runs everywhere</a>. <a href="#">Python is friendly... and easy to learn</a>. <a href="#">Python is Open</a>.</h1>
@@ -751,17 +737,16 @@ a.jump-to-menu {
 
 .header-banner {
     clear: both;
-    @include pie-clearfix;
     margin: 0 1em;
     position: relative;
-    // text-align: left;
+    @include pie-clearfix;
     
     /* temporary slideshow placeholder */
     .home & {
         background: #222;
-        @include box-shadow( inset 0 0 30px rgba(0, 0, 0, 1) ); 
         margin: 0 auto; 
         max-width: 960px;
+        @include box-shadow( inset 0 0 30px rgba(0, 0, 0, 1) );  
     }
     
     img {
@@ -771,7 +756,6 @@ a.jump-to-menu {
     
     p {
         color: $grey-lightest;
-        //max-width: 450px;
     
         & a:not(.button) {
             color: $yellow;
@@ -780,7 +764,6 @@ a.jump-to-menu {
             &:hover, &:focus {
                 color: #fff;
                 @include pe-border( $color-bottom: lighten($blue, 18%) );
-                // text-shadow: 0 0 3px rgba( darken($yellow, 10%), 0.5);
             }
         }
     }
@@ -816,7 +799,7 @@ a.jump-to-menu {
         }
         
         strong {
-            color: #00cc00;
+            color: $code-green;
             font-weight: normal;
         }
     }
@@ -828,18 +811,18 @@ a.jump-to-menu {
     
     h1 {
         color: $yellow;
-        margin-bottom: .25em;
+        font-size: px2em(22px); 
+        font-family: $default-font-bold; 
     }
 }
 
 .introduction {
-    font-family: $alt-font-bold;
+    color: $grey-lighter;
     font-size: px2em( 20px );
+    text-align: left; 
+    padding: 0.25em 0.5em; 
     @include leader(.5); 
     @include trailer(.5);
-    text-align: left; 
-    color: $grey-lighter;
-    padding: 0.25em 0.5em;
     
     p {
         line-height: 1.4em;
@@ -851,7 +834,7 @@ a.jump-to-menu {
         text-decoration: underline;
         
         &:hover, &:focus {
-            color: #fff;
+            color: $white;
         }
     }
     
@@ -862,11 +845,6 @@ a.jump-to-menu {
 
 .about-banner, .download-for-current-os, .documentation-banner, .latest-blog-post, .featured-event, .jobs-intro {
     text-align: left; 
-    // padding: rhythm( .75 ) 0 rhythm( 1.25 );
-    
-    p:last-child {
-        // margin-bottom: 0; 
-    }
 }
 
 .featured-success-story {
@@ -883,30 +861,22 @@ a.jump-to-menu {
     a {
         color: $yellow; 
         border-bottom: 2px dotted $blue; 
-        // border-bottom-color: rgba( $yellow, .4 );
         line-height: 1.35em;
         
         &:hover, &:focus {
             color: $grey-lightest; 
-            text-decoration: none; 
         }
     } 
 }
 
 .content-wrapper {
-    background-color: #fcfcfc;
-    // border-top: 1px solid #333;
-    @include vertical-gradient( #fcfcfc, #f9f9f9 );
-    // @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.1) );
-    // padding: 0 0 .5em 0;
     padding: 0; 
+    @include vertical-gradient( #fcfcfc, #f9f9f9 );
     
     .container {
         padding: 0.25em;
     }
 }
-
-
 
 .main-content {
     
@@ -919,8 +889,8 @@ a.jump-to-menu {
 }
 
 .text {
+    font-size: 1em; 
     margin-top: rhythm( .75 ); 
-    //color: $grey; 
     
     .giga, .mega, .kilo {
         color: $blue; 
@@ -935,6 +905,15 @@ a.jump-to-menu {
 .text, 
 .sidebar-widget {
     
+    /* Before adding this in, remove line 128 and see how it effects the layouts
+    p, ul, ol, dl, dd, blockquote, address, form, table, figure {
+        margin-bottom: rhythm(0.75);
+    }
+    
+    li ul, li ol {
+        margin-bottom: 0; 
+    }*/
+    
     li {
         line-height: 1.625em;
         margin: rhythm(0.15) 0;
@@ -944,7 +923,6 @@ a.jump-to-menu {
         line-height: 1.625em;
         margin-bottom: rhythm(0.5);
     }
-
     
     a:not(.button) {
         @extend %link-style;
@@ -956,27 +934,20 @@ a.jump-to-menu {
         }
     }
     
-    a, a:active, a:visited { 
-    	// color: $link-color;
-    	//text-decoration: underline;
-    }
-    
-    a:hover, a:visited:hover { 
-    	//color: $link-hover; 
-    	// text-decoration: none;
-    }
-    
+    /* This is a mess and dumb. Figure out a better way */
     nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, .prompt,
     nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .prompt:hover, 
     nav a:focus, .menu a:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .prompt:focus {
         border-bottom: 0; 
     }
     
+    /* If generated content is supported, provide our own decoratations */
     ul:not(.menu) {
         
         /*modernizr*/ .generatedcontent & li {
             list-style: none; 
         }
+        
         /*modernizr*/ .generatedcontent & li:before {
             content:'\25A0'; /* square */
             display: block;
@@ -985,20 +956,113 @@ a.jump-to-menu {
             max-height: 0px;
             left: -1em;
             top: -.125em;
-            color: #bbb;
+            color: $grey-light;
             font-size: 1em;
         }
+        
         /*modernizr*/ .generatedcontent & li ul li:before {
             content:'\2022'; /* solid round */
-            top: 0;
-            font-size: 1.125em;
+            color: $blue;
+            top: -.125em; 
+            left: -.75em;
+            font-size: 1.625em;
+        }
+        
+        /*modernizr*/ .generatedcontent & li ul li ul li:before {
+            content:'\25cb'; /* open round */
+            color: $blue;
+            top: -.125em;
+            left: -.75em;
+            font-size: 1.25em;
+        }
+    }
+    
+    figcaption {
+        font-size: px2em( 14px ); 
+    }
+    
+    cite, abbr[title], dfn[title] {
+        border-bottom: 1px dotted $blue;
+    }
+    cite a { border-bottom: 0; }
+    
+    abbr[title] {
+        font-size: .875em;
+        text-transform: uppercase;
+        letter-spacing: 0.125em;
+    }
+    
+    var { color: $grey-dark; }
+    
+    code, kbd {
+        display: inline-block; 
+    }
+    code, samp { border: 0; }
+    code, kbd {
+        padding: .125em .25em .0625em; 
+        margin: 0 -.0625em; 
+        background: $grey-lightest; 
+        background: rgba( $grey-lightest, .5 ); 
+        @include box-shadow( 0 0 .5em rgba( #000, .1 ) inset ); 
+        @include border-radius(); 
+    }
+    
+    s, strike, del { color: $grey-light; }
+    
+    dl {
+        border-top: 1px solid $grey-lightest; 
+        
+        dt {
+            font-family: $default-font-bold; 
+            border-bottom: 1px solid $grey-lightest;
+        }
+        
+        dd {
+            padding-left: 1.5em; 
+            border-bottom: 1px solid $grey-lighter;
+        }
+    }
+    
+    /* Prettier tables if authors use the correct elements */
+    table {
+            
+        caption {
+            caption-side: top;
+            color: $default-color;
+            font-size: px2em( 18px ); 
+            text-align: left;
+            @include trailer(1); 
+        }
+        thead, tfoot {
+            border-bottom: 1px solid $grey-lighter; 
+        }
+        tr {
+            background-color: #f6f6f6; 
+            
+            & th {
+                background-color: #f0f0f0; 
+            }
+        }
+        tr:nth-of-type(even) {
+            background-color: #f0f0f0; 
+        }
+        th, td {
+            padding: .25em .5em .2em; 
+            border-left: 2px solid $white; 
+            
+            &:first-child {
+                border-left: none; 
+            }
+        }
+        tfoot {
+            border-top: 1px solid $grey-lighterer; 
         }
     }
 }
 
-.documentation-help {}
+.documentation-help { }
 
-.row {}
+.row { }
 
 .row-title {
     border-top: 5px solid darken($grey-lighterest, 10%);
@@ -1006,11 +1070,7 @@ a.jump-to-menu {
 }
 
 
-
-
-
-/* ===== WIDGET STYLES ===== */
-
+/* ! ===== WIDGET STYLES ===== */
 %widget {
     border-top: 5px solid $grey-lightest; // default fallback
     margin-bottom: 0.25em;
@@ -1043,6 +1103,7 @@ a.jump-to-menu {
     margin: 0 0 0.1em; 
     @include fontface-adjust( 22px ); /* like an h3, even though we mark it up as an h2 */
     
+    /* Again, this is dumb. Can we apply the underline more succently, instead of resetting it everywhere we don't ant it? */
     .main-content &, .main-content .give-me-more {
         
         a {
@@ -1055,7 +1116,7 @@ a.jump-to-menu {
     }
     
     .prompt {
-        display: none; // show this at first breakpoint
+        display: none; /* show this at first breakpoint */
     }
     
     & > span:before {
@@ -1065,36 +1126,17 @@ a.jump-to-menu {
 }
 
 /* Section Specific Widget Colorways */
-
 .small-widget, .medium-widget, .sidebar-widget {
     
-    .python & {
-        border-top: 4px solid lighten($blue, 20%);
-    }
-    
-    .psf-home & {
-        border-top: 5px solid $grey-lighter;
-    }
-    
-    .docs & {
-        border-top: 5px solid $yellow;
-    }
-    
-    .pypl & {
-        border-top: 5px solid $green;
-    }
-    
-    .jobs & {
-        border-top: 5px solid lighten($purple, 20%);
-    }
-    
-    .shop & {
-        border-top: 5px solid $red;
-    }
+    .python & { border-top: 4px solid lighten($blue, 20%); }
+    .psf-home & { border-top: 5px solid $grey-lighter; }
+    .docs & { border-top: 5px solid $yellow; }
+    .pypl & { border-top: 5px solid $green; }
+    .jobs & { border-top: 5px solid lighten($purple, 20%); }
+    .shop & { border-top: 5px solid $red; }
 }
 
 /* Section Specific Widget Icon Colorways */
-
 $names: python, psf, docs, pypl, jobs, shop;
 $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
@@ -1106,43 +1148,9 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
 }
 
-    /*
-    & > span {
-        
-        .python & {
-            color: $blue;
-        }
-        
-        .psf-home & {
-            color: $grey-light;
-        }
-        
-        .jobs & {
-            color: $purple;
-        }
-    }
-    
-    .home & > span {
-        color: $blue;
-    }
-    
-    .psf-home & > span {
-        color: $grey-light;
-    }
-    
-    .docs & > span {}
-    */
-
 
 /* Specific Widget Styles */
-
-.psf-widget, .python-needs-you-widget, .download-list-widget, .mapped-events {
-    .widget-title {
-        // margin-bottom: 0;
-    }
-}
-
-.get-started-widget {}
+.get-started-widget { }
 
 .download-widget {
     
@@ -1154,10 +1162,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .documentation-widget {}
 
 .jobs-widget {}
-
-
-
-
 
 %indent-time-elements {
     
@@ -1208,17 +1212,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .success-stories-widget {
-    // border-top: 0; 
     
     blockquote {
-        background-color: lighten($yellow, 15%);
-        @include vertical-gradient( lighten($yellow, 15%), lighten($yellow, 10%) );
-        @include border-radius;
+        position: relative;
         color: $grey;
-        @include adjust-font-size( 16px );
+        background-color: lighten($yellow, 15%);
         line-height: 1.4em;
         padding: rhythm(.4) 1em rhythm(.5);
-        position: relative;
+        @include vertical-gradient( lighten($yellow, 15%), lighten($yellow, 10%) );
+        @include border-radius;
+        @include adjust-font-size( 16px );
         
         &:after {
             @include pointer( .6em ); 
@@ -1237,7 +1240,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         }
         
         img {
-            // padding-right: 1em;
             max-height: 50px;
         }
         
@@ -1253,10 +1255,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     
     .stat {
         background: lighten($blue, 50%);
-        @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
+        padding: 0.7em 1em 0.875em;
         border: 1px solid lighten($blue, 40%);
         @include border-radius;
-        padding: 0.7em 1em 0.875em;
+        @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
     }
     
     .number {
@@ -1268,7 +1270,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         text-align: center;
     }
     .explanation {
-        font-family: $alt-font-italic;
+        font-family: $default-font-italic;
         font-size: px2em( 18px );
         line-height: 1.2em;
         margin-bottom: 0;
@@ -1300,15 +1302,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
     
     
-    
 /* PEP Widget */
 .pep-widget {
     @extend %grey-colorbox;
     
     .widget-title {
-        @include fontface-adjust( 18px );
         color: lighten($grey, 5%);
         margin-bottom: 0.35em;
+        @include fontface-adjust( 18px );
         
         a {
             color: $blue;
@@ -1355,7 +1356,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .rss-link {
     @extend .pre;
-    // margin-left: 0.5em;
     line-height: 1em;
     
     .main-content & {
@@ -1372,9 +1372,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background: url('../img/success-glow2.png') center -230px no-repeat;
     
     img {
-        // background: $white;
-        // @include border-radius(50px);
-        // @include box-shadow( 0 0 10px rgba($white, 1.0), 0 0 20px rgba($white, 0.5) );
         padding: 10px 30px;
     }
     
@@ -1382,12 +1379,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         color: $yellow; 
         font-size: px2em( 26px ); 
         line-height: 1.5; 
-        //padding: rhythm(.25) 1.25em 0;
         position: static;
         text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
         
         &:before, &:after {
-            // color: darken($yellow, 20%);
             color: lighten($blue, 10%);
             font-style: normal; 
             font-size: px2em( 32px );
@@ -1395,11 +1390,13 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
             vertical-align: text-bottom;
             position: static;
         }
+        
         &:before {
             content: "“";
             top: auto; left: auto;
             margin-left: -.2em;
         }
+        
         &:after {
             content: "”";
             bottom: auto; right: auto;
@@ -1422,6 +1419,7 @@ p.quote-by {
     color: $grey-lightest;
     margin-bottom: 0;
 }
+
 p.quote-by-organization {
     color: $grey-lightest;
 }
@@ -1434,12 +1432,11 @@ p.quote-by-organization {
     }
 }
 
-/* Blog landing page */
+/* ! ===== Blog landing page ===== */
 
 /*h2*/ .welcome-message {
     font-family: $default-font; /* style like an h4 */
     font-size: px2em( 18px );
-    // font-weight: bold;
     color: darken($yellow, 10%); 
     @include leader( 0 ); 
     @include trailer( .5 ); 
@@ -1490,8 +1487,7 @@ p.quote-by-organization {
     
 }
     
-/* ! Events landing page */
-
+/* ! ===== Events landing page ===== */
 .most-recent-events {
     
     .menu {
@@ -1500,24 +1496,23 @@ p.quote-by-organization {
 }
 
 /*h3*/ .just-missed {
-    @include leader( .75 ); 
     color: $blue; 
+    @include leader( .75 ); 
 }
 
 .list-recent-events, .list-recent-posts {
-    border-top: 1px solid #ddd; 
+    border-top: 1px solid $grey-lighterer; 
     
     li {
-        border-bottom: 1px solid #ddd;
-        padding: 0 0 0.75em;
         position: relative;
+        border-bottom: 1px solid $grey-lighterer;
+        padding: 0 0 0.75em;
     }
     
     .event-title {
         font-size: px2em(20px);
         line-height: 1.3em;
         @include leader(.25);
-        // margin-bottom: 0;
     }
 }
 
@@ -1555,6 +1550,7 @@ p.quote-by-organization {
         .more-by-category {
             
         }
+        
         .more-by-venue {
             
         }
@@ -1580,9 +1576,7 @@ p.quote-by-organization {
     padding: .75em 1em;
     
     form {
-        // background-color: $grey-lighterest; 
-        // padding: .5em; 
-        // margin-bottom: .25em;
+        
     }
 }
 
@@ -1655,7 +1649,7 @@ p.quote-by-organization {
     padding-bottom: .25em; 
 }
     
-/* Stylized lists of items, used on Downloads and others */
+/* ! ===== Stylized lists of items, used on Downloads and others ===== */
 /* <ol class="list-row-container menu">
         <li>
             <span class="release-number"><a href="#?to-download">Python 3.3.0</a></span> 
@@ -1664,7 +1658,6 @@ p.quote-by-organization {
             <span class="release-enhancements"><a href="#?to-features">Features and Improvements</a></span>
         </li>
     </ol>*/
-
 .list-row-headings {
     font-weight: bold;
     padding: .5em .5em .4em .75em;;
@@ -1693,7 +1686,7 @@ p.quote-by-organization {
     }
 }
 
-/* ! Pagination */
+/* ! ===== Pagination ===== */
 /* <ul class="pagination menu">
     <li class="previous"><a class="disabled" href="#">Prev</a></li>
     <li><a class="active" href="#">01</a></li>
@@ -1707,12 +1700,14 @@ p.quote-by-organization {
     text-align: center; 
     padding-top: rhythm( .75 ); 
 }
+
 .pagination {
     
     li {
-        @include pe-inline-block; 
         line-height: 2; 
+        @include pe-inline-block; 
     }
+    
     a {
         @extend %square-block-buttons; 
             
@@ -1720,10 +1715,12 @@ p.quote-by-organization {
             color: $grey-dark; 
             background-color: $yellow; 
         }
+        
         &.active {
             color: $grey-lightest; 
             background-color: $blue; 
         }
+        
         &.disabled, &.disabled:hover, &.disabled:focus {
             color: $grey-lighter;
             background-color: transparent; 
@@ -1735,7 +1732,7 @@ p.quote-by-organization {
 }
 
 
-/* ! Previous - Next display pattern */
+/* ! ===== Previous - Next display pattern ===== */
 /* <p class="previous-next">
     <a class="prev-button disabled" href="#">
         <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
@@ -1762,15 +1759,18 @@ p.quote-by-organization {
             background-color: $yellow; 
         }
     }
+    
     .prev-button-text, .next-button-text {
         display: block; 
         border-bottom: 1px solid $grey-lighter; 
         padding-bottom: .5em; 
     }
+    
     .prevnext-description {
         display: block; 
         padding-top: .5em; 
     }
+    
     .disabled {
         
         .prev-button-text, .next-button-text {
@@ -1778,6 +1778,7 @@ p.quote-by-organization {
             border-bottom: 0; 
         }
     }
+    
     .icon-arrow-right, .icon-arrow-left {
         vertical-align: bottom; 
     }
@@ -1790,11 +1791,9 @@ p.quote-by-organization {
 }
 
 
-/* ! Downloads templates */
+/* ! ===== Downloads templates ===== */
 .release-number, .release-date, .release-download, .release-enhancements {
     display: block;
-    // @include inline-block();
-    // margin-right: -4px;
 }
 
 .release-number {
@@ -1814,19 +1813,9 @@ p.quote-by-organization {
 }
 
 
-
 /* Blue Widgets */
-
 .psf-widget, .python-needs-you-widget {
     @extend %blue-colorbox;
-    // padding: 1em; 
-    // margin-bottom: 1.5em; 
-    
-    /*
-    .button {
-        @extend %button-style-yellow;
-    }
-    */
     
     .main-content & a:not(.button) {
         border-bottom: none;
@@ -1849,6 +1838,7 @@ p.quote-by-organization {
     }
     
     .widget-title {
+        
         a, a:link, a:hover, a:visited, a:active {
             border-bottom: none;
         }
@@ -1866,13 +1856,12 @@ p.quote-by-organization {
 .pep-widget, .psf-widget {
     
     .widget-title .prompt {
-        // display: none;
+        
     }
 }
-        
 
 
-/* ! Feedback messages and alert levels */
+/* ! ===== Feedback messages and alert levels ===== */
 /* <div class="alert level-low">
         <p>Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
@@ -1926,6 +1915,7 @@ p.quote-by-organization {
 .main-sidebar {
      
 }
+
 .left-sidebar {
     
     .sidebar-widget {
@@ -1945,6 +1935,7 @@ p.quote-by-organization {
 .right-sidebar {
     
 }
+
 .sidebar-widget {
      
 }
@@ -2006,6 +1997,7 @@ p.quote-by-organization {
     .job-description {
         
     }
+    
     .job-post-meta {
         clear: both; 
         border: 1px solid #caccce;
@@ -2027,11 +2019,7 @@ p.quote-by-organization {
     border-bottom: 1px solid $grey-lighter; 
     
     li {
-        display: inline-block; 
-        
-        .ie7 & {
-            display: inline; 
-        }
+        @include pe-inline-block();  
     }
     
     .prompt {
@@ -2086,11 +2074,10 @@ p.quote-by-organization {
 }
 
 .main-footer {
+    clear: both; 
+    color: $grey;
     background-color: $grey-lightest;
     border-top: 1px solid darken($grey-lightest, 5%);
-    // @include box-shadow( inset 0 0 20px rgba(0, 0, 0, 0.025) );
-    clear: both;
-    color: $grey;
     
     .container {
         padding: 0 .75em .75em;
@@ -2140,7 +2127,6 @@ p.quote-by-organization {
             font-size: px2em(20px);
             @include leader(.5); 
             @include trailer(0);
-            // @include fontface-adjust( 20px );
             
             &:hover, &:focus {
                 color: $grey-darker; 
@@ -2175,16 +2161,12 @@ p.quote-by-organization {
     margin-bottom: 0.5em;
     
     a {
-        // color: $yellow;
-        // color: $grey-lighter;
         color: lighten($blue, 25%);
         font-family: $alt-font-bold;
         @include fontface-adjust( 18px );
         
         &:hover, &:focus {
-            // color: $grey-lighterest;
             color: lighten($yellow, 30%);
-            // text-decoration: underline;
             text-shadow: 0 0 5px rgba( $yellow, 0.2);
         }
     }
@@ -2195,14 +2177,11 @@ p.quote-by-organization {
     color: lighten($blue, 20%);
     font-size: px2em( 12px );
     text-align: center; 
-    /* padding-top: 1.5em; */
     margin-bottom: 0;
-    // text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
     
     a {
         border-bottom: 1px dotted lighten($blue, 10%);
         color: lighten($blue, 20%);
-        // text-decoration: underline;
         
         &:hover, &:focus {
             color: $white;
@@ -2220,6 +2199,7 @@ p.quote-by-organization {
     h3 {
         margin-top: 0; 
     }
+    
     .shrubbery {
         padding-bottom: rhythm( .25 ); 
         
@@ -2227,14 +2207,17 @@ p.quote-by-organization {
             color: $blue; 
         }
     }
+    
     .accordion-wrapper {
         padding-top: rhythm( .75 ); 
         border-top: 1px solid $yellow; 
     }
+    
     .helptext {
         font-style: italic; 
         font-size: px2em( 14px ); 
     }
+    
     /*<ul>
         <li>
             <label for="id_feedback_categories_0">
@@ -2250,6 +2233,7 @@ p.quote-by-organization {
             margin-top: 0.5em;
         }
     }
+    
     button {
         @extend %button-style-blue; 
     }
@@ -2299,8 +2283,7 @@ p.quote-by-organization {
 #test-window-size {
     background-color: rgba(200, 200, 200, 0.1);
     color: #999;
-    // @include text-shadow( 1px 1px 2px rgba( #000, .8 ) ); 
-	font-family: Verdana, sans-serif;
+    font-family: Verdana, sans-serif;
 	font-size: px2em(12px);
 	line-height: 1em;
 	padding: 3px;
@@ -2319,7 +2302,7 @@ p.quote-by-organization {
  * Uses :not selectors a bunch, so only modern browsers will support them
  */
 @import "debug";
-@include modernizr_links;
+//@include modernizr_links;
 //@include debug_links;
 //@include debug_images;
 //@include debug_misc;
