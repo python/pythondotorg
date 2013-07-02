@@ -92,13 +92,13 @@
         border-left: 0; 
     }
     .main-navigation {
-        @include border-radius(8px);
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         display: block; 
         margin: 0 -.625em;
         text-align: center; 
         @include horizontal_nav_dropdowns();
         font-size: px2em( 18px );
+        @include border-radius(8px);
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         
         .menu {
             text-align: center; 
@@ -160,7 +160,7 @@
 @mixin min_width_400() {
     
     .introduction {
-        font-size: px2em( 22px );
+        font-size: px2em( $headerthree );
     }
     
     .content-wrapper {
@@ -239,11 +239,11 @@
     }
     
     .introduction {
-        font-size: px2em( 24px );
+        font-size: px2em( $headertwo );
     }
     
     .success-stories-widget blockquote {
-        font-size: px2em(18px);
+        font-size: px2em( $headerfour );
         padding: 1em 1.4em 1.3em;
     }
     
@@ -299,17 +299,16 @@
         padding: 30px 40px;
         
         p {
-            font-size: px2em(16px);
+            font-size: px2em( 16px );
         }
     }
     
     .introduction {
-        // font-size: px2em( 22px ); 
         padding: 0 1em;
     }
     
     .call-to-action {
-        @include fontface-adjust( 26px );
+        font-size: px2em( $headertwo ); 
     }
     
     /* Header-banners (not home) */
@@ -735,8 +734,8 @@
         text-align: left; 
         position: absolute; 
         left: 0; 
-        @include leader( .325 ); 
         width: columns( 3 );
+        @include leader( .325 ); 
     }
     .latest-blog-post, .featured-event, .jobs-intro {
         position: relative; 
@@ -844,7 +843,7 @@
             }
         }
     
-    /* <li>
+        /*<li>
             <h2 class="listing-company">
                 <span class="listing-company-name">
                     <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
@@ -1062,7 +1061,7 @@
         #community & h4, #blog & h4, #events & h4 {
             font-family: $alt-font-bold;
             font-weight: normal;
-            font-size: px2em( 22px );
+            font-size: px2em( $headerthree );
             line-height: 1.25em;
             margin-bottom: 0;
         }
@@ -1325,7 +1324,7 @@
             margin-bottom: .125em; 
         }
         .shrubbery p {
-            padding-left: 5em; 
+            padding-left: 4.5em; 
         }
     }
 }

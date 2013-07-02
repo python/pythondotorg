@@ -66,7 +66,7 @@ $grey-lighterer: #ddd;
 $grey-lighter: #caccce;
 $grey-light: #999;
 $grey: #666;
-$grey-dark: $default-color;
+$grey-dark: #333;
 $grey-darker: #222;
 
 $blue: #3776ab; /* Python blue */
@@ -92,6 +92,14 @@ $relative-font-sizing       : true; /* True here means that all computed values 
 $round-to-nearest-half-line : true; /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
 $base-font-size             : 16px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
 $base-line-height           : 28px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
+
+$giga: 48px;
+$mega: 40px;
+$kilo: 36px;
+$headerone: 28px;
+$headertwo: 24px;
+$headerthree: 21px;
+$headerfour: 18px;
 
 $default-font: SourceSansProRegular, Arial, sans-serif;
 $default-font-italic: SourceSansProItalic, Arial, sans-serif;

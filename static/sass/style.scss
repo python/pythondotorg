@@ -72,65 +72,102 @@ img, embed, object, video {
 	max-width: 100%
 }
 
-.giga { @include fontface-adjust( 48px ); }
-.mega { @include fontface-adjust( 40px ); }
-.kilo { @include fontface-adjust( 36px ); }
+.giga { @include fontface-adjust( $giga ); }
+.mega { @include fontface-adjust( $mega ); }
+.kilo { @include fontface-adjust( $kilo ); }
 
 h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
-    line-height: 1.5; 
+    line-height: 1.5em; 
 }
 
 h1, .alpha {
-    color: $grey;
-    font-family: $alt-font-bold;
+    color: $blue;
+    //font-family: $default-font;
     line-height: 1.2em;
+    font-size: px2em( $headerone ); 
     @include trailer(.25);
-    @include fontface-adjust( 28px ); 
+    //@include fontface-adjust( 28px ); 
 }
 
 h2, .beta {
-    color: $grey-dark;
-    font-family: $alt-font-bold;
-    @include leader(.75); 
-    @include trailer(.25);
-    @include fontface-adjust( 24px );
+    color: $grey-light;
+    font-family: $default-font-bold;
+    font-size: $headertwo; 
+    @include leader(1); 
+    @include trailer(.1875);
+    //@include fontface-adjust( 24px );
 }
 
 h3, .chi {
     color: $grey-darker;
-    font-family: $alt-font;
+    //font-family: $default-font-bold;
+    font-size: px2em( $headerthree ); 
     @include leader(1); 
     @include trailer(.25);
-    @include fontface-adjust( 21px ); 
+    //@include fontface-adjust( 21px ); 
 }
 
 h4, .delta {
-    color: $grey;
-    font-size: px2em( 15px );
-    font-weight: bold; 
+    color: $grey-darker;
+    font-family: $default-font-bold;
+    font-size: px2em( $headerfour ); 
     @include leader(.75); 
     @include trailer(.25);
 }
 
 h5, .epsilon {
-    color: $grey;
-    font-weight: bold; 
+    color: $grey-darker;
+    font-family: $default-font-bold;
     text-transform: uppercase; 
+    letter-spacing: 0.0625em; 
     @include leader(1); 
 }
 
 h6, .gamma {
-    color: $grey;
-    font-weight: bold; 
+    color: $grey-darker;
+    font-family: $default-font-bold; 
     @include leader(1); 
 }
 
-p, ul, ol, dl, address, form, table, figure {
+p, ul, ol, dl {
     margin-bottom: rhythm(0.5);
 }
 
-/* remove margin bottom for nested lists */
-li > ul, li > ol { margin-bottom: 0; }
+/* If generated content is supported, provide our own decoratations */
+ul:not(.menu) {
+    
+    /*modernizr*/ .generatedcontent & li {
+        list-style: none; 
+    }
+    
+    /*modernizr*/ .generatedcontent & li:before {
+        content:'\25A0'; /* square */
+        display: block;
+        position: relative;
+        max-width: 0px;
+        max-height: 0px;
+        left: -1em;
+        top: -.125em;
+        color: $grey-light;
+        font-size: 1em;
+    }
+    
+    /*modernizr*/ .generatedcontent & li > ul li:before {
+        content:'\2022'; /* solid round */
+        color: $blue;
+        top: -.375em; 
+        left: -.75em;
+        font-size: 1.625em;
+    }
+    
+    /*modernizr*/ .generatedcontent & li > ul li > ul li:before {
+        content:'\25cb'; /* open round */
+        color: $blue;
+        top: -.125em;
+        left: -.75em;
+        font-size: 1.25em;
+    }
+}
 
 blockquote {
     font: italic px2em( 18px ) Georgia, serif;
@@ -184,9 +221,20 @@ form {
     @include pie-clearfix(); 
 }
 
+legend {
+    display: block; 
+    width: 100%; 
+    font-size: px2em( $headerfour ); 
+    color: $blue; 
+    border-bottom: 1px solid $blue;  
+    @include padding-leader( .5 ); 
+    @include trailer( .5 ); 
+}
+
 label {
     display: block; 
-    @include leader( .5 ); 
+    font-family: $default-font-bold; 
+    @include padding-leader( .5 ); 
 }
 
 input, textarea {
@@ -399,7 +447,6 @@ abbr, dfn {
 /* Used on "Read More" or "More" links (duh)  */
 .readmore, .give-me-more a {
     white-space: nowrap; 
-    text-decoration: none !important; 
     
     &:before {
         @extend .prompt; 
@@ -756,24 +803,19 @@ a.jump-to-menu {
     
     p {
         color: $grey-lightest;
+    }
     
-        & a:not(.button) {
-            color: $yellow;
-            @include pe-border( $color-bottom: lighten($blue, 12%) );
-            
-            &:hover, &:focus {
-                color: #fff;
-                @include pe-border( $color-bottom: lighten($blue, 18%) );
-            }
+    a:not(.button), a:not(.readmore) {
+        @extend %link-style; 
+        color: $yellow;
+        
+        &:hover, &:focus {
+            color: #fff;
         }
     }
     
     .button, a.button {
         @extend %button-style-yellow;
-    }
-    
-    a.readmore {
-        color: $yellow;
     }
 }
 
@@ -811,7 +853,7 @@ a.jump-to-menu {
     
     h1 {
         color: $yellow;
-        font-size: px2em(22px); 
+        font-size: px2em( $headerthree ); 
         font-family: $default-font-bold; 
     }
 }
@@ -853,7 +895,7 @@ a.jump-to-menu {
 
 /*h1*/ .call-to-action {
     color: $yellow;
-    @include fontface-adjust( 20px );
+    font-size: px2em( $headerfour );
     line-height: 1.25em;
     @include leader( .25 );
     @include trailer( .25 );
@@ -905,14 +947,17 @@ a.jump-to-menu {
 .text, 
 .sidebar-widget {
     
-    /* Before adding this in, remove line 128 and see how it effects the layouts
+    & > h1, & > .alpha {
+        @include leader(1); 
+    }
+    
     p, ul, ol, dl, dd, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
     }
     
     li ul, li ol {
         margin-bottom: 0; 
-    }*/
+    }
     
     li {
         line-height: 1.625em;
@@ -941,50 +986,13 @@ a.jump-to-menu {
         border-bottom: 0; 
     }
     
-    /* If generated content is supported, provide our own decoratations */
-    ul:not(.menu) {
-        
-        /*modernizr*/ .generatedcontent & li {
-            list-style: none; 
-        }
-        
-        /*modernizr*/ .generatedcontent & li:before {
-            content:'\25A0'; /* square */
-            display: block;
-            position: relative;
-            max-width: 0px;
-            max-height: 0px;
-            left: -1em;
-            top: -.125em;
-            color: $grey-light;
-            font-size: 1em;
-        }
-        
-        /*modernizr*/ .generatedcontent & li ul li:before {
-            content:'\2022'; /* solid round */
-            color: $blue;
-            top: -.125em; 
-            left: -.75em;
-            font-size: 1.625em;
-        }
-        
-        /*modernizr*/ .generatedcontent & li ul li ul li:before {
-            content:'\25cb'; /* open round */
-            color: $blue;
-            top: -.125em;
-            left: -.75em;
-            font-size: 1.25em;
-        }
-    }
-    
     figcaption {
         font-size: px2em( 14px ); 
     }
     
-    cite, abbr[title], dfn[title] {
+    abbr[title], dfn[title] {
         border-bottom: 1px dotted $blue;
     }
-    cite a { border-bottom: 0; }
     
     abbr[title] {
         font-size: .875em;
@@ -1033,9 +1041,11 @@ a.jump-to-menu {
             text-align: left;
             @include trailer(1); 
         }
+        
         thead, tfoot {
-            border-bottom: 1px solid $grey-lighter; 
+            border-bottom: 1px solid $grey-lighterer; 
         }
+        
         tr {
             background-color: #f6f6f6; 
             
@@ -1043,9 +1053,11 @@ a.jump-to-menu {
                 background-color: #f0f0f0; 
             }
         }
+        
         tr:nth-of-type(even) {
             background-color: #f0f0f0; 
         }
+        
         th, td {
             padding: .25em .5em .2em; 
             border-left: 2px solid $white; 
@@ -1054,6 +1066,7 @@ a.jump-to-menu {
                 border-left: none; 
             }
         }
+        
         tfoot {
             border-top: 1px solid $grey-lighterer; 
         }
@@ -1099,21 +1112,11 @@ a.jump-to-menu {
 }
 
 .widget-title, .listing-company {
+    color: $default-color; 
     line-height: 1.25em;
     margin: 0 0 0.1em; 
-    @include fontface-adjust( 22px ); /* like an h3, even though we mark it up as an h2 */
-    
-    /* Again, this is dumb. Can we apply the underline more succently, instead of resetting it everywhere we don't ant it? */
-    .main-content &, .main-content .give-me-more {
-        
-        a {
-            border-bottom: none;
-            
-            &:hover {
-                border-bottom: none;
-            }
-        }
-    }
+    font-family: $alt-font; 
+    @include fontface-adjust( $headerthree ); 
     
     .prompt {
         display: none; /* show this at first breakpoint */
@@ -1198,8 +1201,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .blog-name {
     display: block;
-    font-style: italic;
-    font-weight: bold;
+    font-family: $default-font-bold; 
     letter-spacing: 0.01em;
 }
 
@@ -1313,7 +1315,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         
         a {
             color: $blue;
-            text-decoration: none;
             
             &:hover, &:active {
                 color: $darkblue;
@@ -1346,11 +1347,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     
     .pep-number {
         color: $grey; 
-        font-weight: bold; 
-    }
-    
-    a {
-        text-decoration: none;
+        font-family: $default-font-bold;  
     }
 }
 
@@ -1358,9 +1355,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     @extend .pre;
     line-height: 1em;
     
-    .main-content & {
-        text-decoration: none; 
-    }
     span:before {
         color: $orange; 
     }
@@ -1408,7 +1402,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 a.activity-feed {
     border-bottom: none;
     font-size: px2em( 12px ); 
-    text-decoration: none;
     
     span {
         margin-right: .25em;
@@ -1436,7 +1429,7 @@ p.quote-by-organization {
 
 /*h2*/ .welcome-message {
     font-family: $default-font; /* style like an h4 */
-    font-size: px2em( 18px );
+    font-size: px2em( $headerfour );
     color: darken($yellow, 10%); 
     @include leader( 0 ); 
     @include trailer( .5 ); 
@@ -1462,7 +1455,6 @@ p.quote-by-organization {
     
     .readmore {
         color: $yellow; 
-        text-decoration: none; 
         
         &:hover, &:focus {
             color: $white; 
@@ -1589,14 +1581,14 @@ p.quote-by-organization {
         margin-bottom: .25em; 
         
         .view-on-twitter {
-            font-weight: bold;
+            font-family: $default-font-bold; 
             font-size: px2em( 12px, 14px );
         }
     }
 }
 
 .twitteruser {
-    font-weight: bold; 
+    font-family: $default-font-bold;  
 }
 
 .twittermention {
@@ -1659,7 +1651,7 @@ p.quote-by-organization {
         </li>
     </ol>*/
 .list-row-headings {
-    font-weight: bold;
+    font-family: $default-font-bold;
     padding: .5em .5em .4em .75em;;
     margin-right: 1.25em;
     
@@ -1797,7 +1789,7 @@ p.quote-by-organization {
 }
 
 .release-number {
-    font-weight: bold;
+    font-family: $default-font-bold; 
 }
 
 .download-list-widget {
@@ -1818,29 +1810,18 @@ p.quote-by-organization {
     @extend %blue-colorbox;
     
     .main-content & a:not(.button) {
-        border-bottom: none;
         color: $yellow;
-        text-decoration: none; 
         
         &:hover, &:focus {
-            color: lighten($yellow, 20%); 
+            color: lighten($yellow, 25%); 
         }
     }
     
     .widget-title, .readmore, .readmore:before {
-        border-bottom: none;
         color: $yellow;
-        text-decoration: none;
         
         &:hover, &:focus {
             color: #fff; 
-        }
-    }
-    
-    .widget-title {
-        
-        a, a:link, a:hover, a:visited, a:active {
-            border-bottom: none;
         }
     }
     
@@ -2196,6 +2177,10 @@ p.quote-by-organization {
     border-top: 1px solid $yellow; 
     padding-top: rhythm(); 
     
+    .widget-title {
+        font-family: $default-font-bold; 
+    }
+    
     h3 {
         margin-top: 0; 
     }
@@ -2272,7 +2257,7 @@ p.quote-by-organization {
     }
     .feedback-label {
         color: $blue; 
-        font-weight: bold; 
+        font-family: $default-font-bold;  
     }
 }
 

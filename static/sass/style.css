@@ -435,65 +435,82 @@ img, embed, object, video {
       font-size: .875em; }
 
 h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
-  line-height: 1.5; }
+  line-height: 1.5em; }
 
 h1, .alpha {
-  color: #666666;
-  font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
+  color: #3776ab;
   line-height: 1.2em;
-  margin-bottom: 0.4375em;
-  font-size: 1.75em; }
-  .fontface h1, .fontface .alpha {
-    font-size: 2.0125em; }
-    .fontface h1 span:before, .fontface .alpha span:before {
-      font-size: .875em; }
+  font-size: 1.75em;
+  margin-bottom: 0.4375em; }
 
 h2, .beta {
-  color: #444444;
-  font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
-  margin-top: 1.3125em;
-  margin-bottom: 0.4375em;
-  font-size: 1.5em; }
-  .fontface h2, .fontface .beta {
-    font-size: 1.725em; }
-    .fontface h2 span:before, .fontface .beta span:before {
-      font-size: .875em; }
+  color: #999999;
+  font-family: SourceSansProBold, Arial, sans-serif;
+  font-size: 24px;
+  margin-top: 1.75em;
+  margin-bottom: 0.32813em; }
 
 h3, .chi {
   color: #222222;
-  font-family: Flux-Regular, SourceSansProRegular, Arial, sans-serif;
+  font-size: 1.3125em;
   margin-top: 1.75em;
-  margin-bottom: 0.4375em;
-  font-size: 1.3125em; }
-  .fontface h3, .fontface .chi {
-    font-size: 1.50938em; }
-    .fontface h3 span:before, .fontface .chi span:before {
-      font-size: .875em; }
+  margin-bottom: 0.4375em; }
 
 h4, .delta {
-  color: #666666;
-  font-size: 0.9375em;
-  font-weight: bold;
+  color: #222222;
+  font-family: SourceSansProBold, Arial, sans-serif;
+  font-size: 1.125em;
   margin-top: 1.3125em;
   margin-bottom: 0.4375em; }
 
 h5, .epsilon {
-  color: #666666;
-  font-weight: bold;
+  color: #222222;
+  font-family: SourceSansProBold, Arial, sans-serif;
   text-transform: uppercase;
+  letter-spacing: 0.0625em;
   margin-top: 1.75em; }
 
 h6, .gamma {
-  color: #666666;
-  font-weight: bold;
+  color: #222222;
+  font-family: SourceSansProBold, Arial, sans-serif;
   margin-top: 1.75em; }
 
-p, ul, ol, dl, address, form, table, figure {
+p, ul, ol, dl {
   margin-bottom: 0.875em; }
 
-/* remove margin bottom for nested lists */
-li > ul, li > ol {
-  margin-bottom: 0; }
+/* If generated content is supported, provide our own decoratations */
+ul:not(.menu) {
+  /*modernizr*/
+  /*modernizr*/
+  /*modernizr*/
+  /*modernizr*/ }
+  .generatedcontent ul:not(.menu) li {
+    list-style: none; }
+  .generatedcontent ul:not(.menu) li:before {
+    content: '\25A0';
+    /* square */
+    display: block;
+    position: relative;
+    max-width: 0px;
+    max-height: 0px;
+    left: -1em;
+    top: -.125em;
+    color: #999999;
+    font-size: 1em; }
+  .generatedcontent ul:not(.menu) li > ul li:before {
+    content: '\2022';
+    /* solid round */
+    color: #3776ab;
+    top: -.375em;
+    left: -.75em;
+    font-size: 1.625em; }
+  .generatedcontent ul:not(.menu) li > ul li > ul li:before {
+    content: '\25cb';
+    /* open round */
+    color: #3776ab;
+    top: -.125em;
+    left: -.75em;
+    font-size: 1.25em; }
 
 blockquote {
   font: italic 1.125em Georgia, serif;
@@ -542,9 +559,19 @@ form {
     display: table;
     clear: both; }
 
+legend {
+  display: block;
+  width: 100%;
+  font-size: 1.125em;
+  color: #3776ab;
+  border-bottom: 1px solid #3776ab;
+  padding-top: 0.875em;
+  margin-bottom: 0.875em; }
+
 label {
   display: block;
-  margin-top: 0.875em; }
+  font-family: SourceSansProBold, Arial, sans-serif;
+  padding-top: 0.875em; }
 
 input, textarea {
   width: 100%;
@@ -794,12 +821,12 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     background-image: -o-linear-gradient(#316998 10%, #244e71 90%);
     background-image: linear-gradient(#316998 10%, #244e71 90%); }
 
-.text a:not(.button),
+.header-banner a:not(.button), .header-banner a:not(.readmore), .text a:not(.button),
 .sidebar-widget a:not(.button) {
   border-bottom: 1px solid #ffe58f;
   text-decoration: none; }
-  .text a:hover:not(.button),
-  .sidebar-widget a:hover:not(.button), .text a:focus:not(.button),
+  .header-banner a:hover:not(.button), .header-banner a:hover:not(.readmore), .text a:hover:not(.button),
+  .sidebar-widget a:hover:not(.button), .header-banner a:focus:not(.button), .header-banner a:focus:not(.readmore), .text a:focus:not(.button),
   .sidebar-widget a:focus:not(.button) {
     border-bottom-color: #ffd343; }
 
@@ -829,8 +856,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 
 /* Used on "Read More" or "More" links (duh)  */
 .readmore, .give-me-more a {
-  white-space: nowrap;
-  text-decoration: none !important; }
+  white-space: nowrap; }
   .readmore:before, .give-me-more a:before {
     content: ">>>";
     margin-right: .25em; }
@@ -1260,14 +1286,10 @@ a.jump-to-menu {
     margin: 0 auto; }
   .header-banner p {
     color: #e6e8ea; }
-    .header-banner p a:not(.button) {
-      color: #ffd343;
-      border-bottom: 1px solid #5695c9; }
-      .header-banner p a:not(.button):hover, .header-banner p a:not(.button):focus {
-        color: #fff;
-        border-bottom: 1px solid #6ea3d0; }
-  .header-banner a.readmore {
+  .header-banner a:not(.button), .header-banner a:not(.readmore) {
     color: #ffd343; }
+    .header-banner a:not(.button):hover, .header-banner a:not(.button):focus, .header-banner a:not(.readmore):hover, .header-banner a:not(.readmore):focus {
+      color: #fff; }
 
 .slide-code, .slide-copy {
   text-align: left; }
@@ -1292,7 +1314,7 @@ a.jump-to-menu {
   padding: 20px; }
   .slide-copy h1 {
     color: #ffd343;
-    font-size: 1.375em;
+    font-size: 1.3125em;
     font-family: SourceSansProBold, Arial, sans-serif; }
 
 .introduction {
@@ -1322,14 +1344,10 @@ a.jump-to-menu {
 /*h1*/
 .call-to-action {
   color: #ffd343;
-  font-size: 1.25em;
+  font-size: 1.125em;
   line-height: 1.25em;
   margin-top: 0.4375em;
   margin-bottom: 0.4375em; }
-  .fontface .call-to-action {
-    font-size: 1.4375em; }
-    .fontface .call-to-action span:before {
-      font-size: .875em; }
   .call-to-action a {
     color: #ffd343;
     border-bottom: 2px dotted #3776ab;
@@ -1362,17 +1380,28 @@ a.jump-to-menu {
 /* ! Default body text styles for more comfortable reading */
 .text,
 .sidebar-widget {
-  /* Before adding this in, remove line 128 and see how it effects the layouts
-  p, ul, ol, dl, dd, blockquote, address, form, table, figure {
-      margin-bottom: rhythm(0.75);
-  }
-  
-  li ul, li ol {
-      margin-bottom: 0; 
-  }*/
   /* This is a mess and dumb. Figure out a better way */
-  /* If generated content is supported, provide our own decoratations */
   /* Prettier tables if authors use the correct elements */ }
+  .text > h1, .text > .alpha,
+  .sidebar-widget > h1,
+  .sidebar-widget > .alpha {
+    margin-top: 1.75em; }
+  .text p, .text ul, .text ol, .text dl, .text dd, .text blockquote, .text address, .text form, .text table, .text figure,
+  .sidebar-widget p,
+  .sidebar-widget ul,
+  .sidebar-widget ol,
+  .sidebar-widget dl,
+  .sidebar-widget dd,
+  .sidebar-widget blockquote,
+  .sidebar-widget address,
+  .sidebar-widget form,
+  .sidebar-widget table,
+  .sidebar-widget figure {
+    margin-bottom: 1.3125em; }
+  .text li ul, .text li ol,
+  .sidebar-widget li ul,
+  .sidebar-widget li ol {
+    margin-bottom: 0; }
   .text li,
   .sidebar-widget li {
     line-height: 1.625em;
@@ -1423,54 +1452,13 @@ a.jump-to-menu {
   .sidebar-widget .give-me-more a:focus:before,
   .give-me-more .sidebar-widget a:focus:before {
     border-bottom: 0; }
-  .text ul:not(.menu),
-  .sidebar-widget ul:not(.menu) {
-    /*modernizr*/
-    /*modernizr*/
-    /*modernizr*/
-    /*modernizr*/ }
-    .generatedcontent .text ul:not(.menu) li, .generatedcontent
-    .sidebar-widget ul:not(.menu) li {
-      list-style: none; }
-    .generatedcontent .text ul:not(.menu) li:before, .generatedcontent
-    .sidebar-widget ul:not(.menu) li:before {
-      content: '\25A0';
-      /* square */
-      display: block;
-      position: relative;
-      max-width: 0px;
-      max-height: 0px;
-      left: -1em;
-      top: -.125em;
-      color: #999999;
-      font-size: 1em; }
-    .generatedcontent .text ul:not(.menu) li ul li:before, .generatedcontent
-    .sidebar-widget ul:not(.menu) li ul li:before {
-      content: '\2022';
-      /* solid round */
-      color: #3776ab;
-      top: -.125em;
-      left: -.75em;
-      font-size: 1.625em; }
-    .generatedcontent .text ul:not(.menu) li ul li ul li:before, .generatedcontent
-    .sidebar-widget ul:not(.menu) li ul li ul li:before {
-      content: '\25cb';
-      /* open round */
-      color: #3776ab;
-      top: -.125em;
-      left: -.75em;
-      font-size: 1.25em; }
   .text figcaption,
   .sidebar-widget figcaption {
     font-size: 0.875em; }
-  .text cite, .text abbr[title], .text dfn[title],
-  .sidebar-widget cite,
+  .text abbr[title], .text dfn[title],
   .sidebar-widget abbr[title],
   .sidebar-widget dfn[title] {
     border-bottom: 1px dotted #3776ab; }
-  .text cite a,
-  .sidebar-widget cite a {
-    border-bottom: 0; }
   .text abbr[title],
   .sidebar-widget abbr[title] {
     font-size: .875em;
@@ -1478,7 +1466,7 @@ a.jump-to-menu {
     letter-spacing: 0.125em; }
   .text var,
   .sidebar-widget var {
-    color: #444444; }
+    color: #333333; }
   .text code, .text kbd,
   .sidebar-widget code,
   .sidebar-widget kbd {
@@ -1528,7 +1516,7 @@ a.jump-to-menu {
   .text table thead, .text table tfoot,
   .sidebar-widget table thead,
   .sidebar-widget table tfoot {
-    border-bottom: 1px solid #caccce; }
+    border-bottom: 1px solid #dddddd; }
   .text table tr,
   .sidebar-widget table tr {
     background-color: #f6f6f6; }
@@ -1570,19 +1558,15 @@ a.jump-to-menu {
     display: inline-block; }
 
 .widget-title, .listing-company {
+  color: #444444;
   line-height: 1.25em;
   margin: 0 0 0.1em;
-  font-size: 1.375em;
-  /* like an h3, even though we mark it up as an h2 */
-  /* Again, this is dumb. Can we apply the underline more succently, instead of resetting it everywhere we don't ant it? */ }
+  font-family: Flux-Regular, SourceSansProRegular, Arial, sans-serif;
+  font-size: 1.3125em; }
   .fontface .widget-title, .fontface .listing-company {
-    font-size: 1.58125em; }
+    font-size: 1.50938em; }
     .fontface .widget-title span:before, .fontface .listing-company span:before {
       font-size: .875em; }
-  .main-content .widget-title a, .widget-title .main-content .give-me-more a, .main-content .listing-company a, .listing-company .main-content .give-me-more a {
-    border-bottom: none; }
-    .main-content .widget-title a:hover, .widget-title .main-content .give-me-more a:hover, .main-content .listing-company a:hover, .listing-company .main-content .give-me-more a:hover {
-      border-bottom: none; }
   .widget-title .prompt, .widget-title .readmore:before, .widget-title .give-me-more a:before, .give-me-more .widget-title a:before, .listing-company .prompt, .listing-company .readmore:before, .listing-company .give-me-more a:before, .give-me-more .listing-company a:before {
     display: none;
     /* show this at first breakpoint */ }
@@ -1653,8 +1637,7 @@ a.jump-to-menu {
 
 .blog-name {
   display: block;
-  font-style: italic;
-  font-weight: bold;
+  font-family: SourceSansProBold, Arial, sans-serif;
   letter-spacing: 0.01em; }
 
 .success-stories-widget blockquote {
@@ -1759,8 +1742,7 @@ a.jump-to-menu {
     .fontface .pep-widget .widget-title span:before {
       font-size: .875em; }
   .pep-widget .widget-title a {
-    color: #3776ab;
-    text-decoration: none; }
+    color: #3776ab; }
     .pep-widget .widget-title a:hover, .pep-widget .widget-title a:active {
       color: #1f3b47; }
 .pep-widget tr {
@@ -1780,14 +1762,10 @@ a.jump-to-menu {
     width: 40px; }
 .pep-widget .pep-number {
   color: #666666;
-  font-weight: bold; }
-.pep-widget a {
-  text-decoration: none; }
+  font-family: SourceSansProBold, Arial, sans-serif; }
 
 .rss-link {
   line-height: 1em; }
-  .main-content .rss-link {
-    text-decoration: none; }
   .rss-link span:before {
     color: #cc9547; }
 
@@ -1823,8 +1801,7 @@ a.jump-to-menu {
 
 a.activity-feed {
   border-bottom: none;
-  font-size: 0.75em;
-  text-decoration: none; }
+  font-size: 0.75em; }
   a.activity-feed span {
     margin-right: .25em; }
 
@@ -1857,8 +1834,7 @@ p.quote-by-organization {
 .latest-blog-post p.excerpt, .featured-event p.excerpt {
   max-width: none; }
 .latest-blog-post .readmore, .featured-event .readmore {
-  color: #ffd343;
-  text-decoration: none; }
+  color: #ffd343; }
   .latest-blog-post .readmore:hover, .latest-blog-post .readmore:focus, .featured-event .readmore:hover, .featured-event .readmore:focus {
     color: white; }
 
@@ -1919,11 +1895,11 @@ p.quote-by-organization {
   padding: .5em;
   margin-bottom: .25em; }
   .twitter-stream li .view-on-twitter {
-    font-weight: bold;
+    font-family: SourceSansProBold, Arial, sans-serif;
     font-size: 0.85714em; }
 
 .twitteruser {
-  font-weight: bold; }
+  font-family: SourceSansProBold, Arial, sans-serif; }
 
 .twittermention {
   color: #3776ab; }
@@ -1972,7 +1948,7 @@ p.quote-by-organization {
         </li>
     </ol>*/
 .list-row-headings {
-  font-weight: bold;
+  font-family: SourceSansProBold, Arial, sans-serif;
   padding: 0.5em 0.5em 0.4em 0.75em;
   margin-right: 1.25em; }
 
@@ -2008,7 +1984,7 @@ p.quote-by-organization {
     zoom: 1;
     display: inline; }
 .pagination a:hover, .pagination a:focus {
-  color: #444444;
+  color: #333333;
   background-color: #ffd343; }
 .pagination a.active {
   color: #e6e8ea;
@@ -2041,7 +2017,7 @@ p.quote-by-organization {
     padding: 0.5em 0.75em 0.4em;
     margin-bottom: 0.875em; }
     .previous-next .prev-button:not(.disabled):hover, .previous-next .prev-button:not(.disabled):focus, .previous-next .next-button:not(.disabled):hover, .previous-next .next-button:not(.disabled):focus {
-      color: #444444;
+      color: #333333;
       background-color: #ffd343; }
   .previous-next .prev-button-text, .previous-next .next-button-text {
     display: block;
@@ -2064,7 +2040,7 @@ p.quote-by-organization {
   display: block; }
 
 .release-number {
-  font-weight: bold; }
+  font-family: SourceSansProBold, Arial, sans-serif; }
 
 .download-list-widget {
   /*modernizr*/ }
@@ -2078,19 +2054,13 @@ p.quote-by-organization {
 .psf-widget, .python-needs-you-widget {
   /*p*/ }
   .main-content .psf-widget a:not(.button), .main-content .python-needs-you-widget a:not(.button) {
-    border-bottom: none;
-    color: #ffd343;
-    text-decoration: none; }
+    color: #ffd343; }
     .main-content .psf-widget a:not(.button):hover, .main-content .psf-widget a:not(.button):focus, .main-content .python-needs-you-widget a:not(.button):hover, .main-content .python-needs-you-widget a:not(.button):focus {
-      color: #ffeba9; }
+      color: #fff1c2; }
   .psf-widget .widget-title, .psf-widget .readmore, .psf-widget .readmore:before, .python-needs-you-widget .widget-title, .python-needs-you-widget .readmore, .python-needs-you-widget .readmore:before {
-    border-bottom: none;
-    color: #ffd343;
-    text-decoration: none; }
+    color: #ffd343; }
     .psf-widget .widget-title:hover, .psf-widget .widget-title:focus, .psf-widget .readmore:hover, .psf-widget .readmore:focus, .psf-widget .readmore:before:hover, .psf-widget .readmore:before:focus, .python-needs-you-widget .widget-title:hover, .python-needs-you-widget .widget-title:focus, .python-needs-you-widget .readmore:hover, .python-needs-you-widget .readmore:focus, .python-needs-you-widget .readmore:before:hover, .python-needs-you-widget .readmore:before:focus {
       color: #fff; }
-  .psf-widget .widget-title a, .psf-widget .widget-title a:link, .psf-widget .widget-title a:hover, .psf-widget .widget-title a:visited, .psf-widget .widget-title a:active, .python-needs-you-widget .widget-title a, .python-needs-you-widget .widget-title a:link, .python-needs-you-widget .widget-title a:hover, .python-needs-you-widget .widget-title a:visited, .python-needs-you-widget .widget-title a:active {
-    border-bottom: none; }
   .psf-widget p, .python-needs-you-widget p {
     color: #caccce; }
   .psf-widget .click-these, .python-needs-you-widget .click-these {
@@ -2328,6 +2298,8 @@ p.quote-by-organization {
           </label>
       </li>
   </ul>*/ }
+  .feedback .widget-title {
+    font-family: SourceSansProBold, Arial, sans-serif; }
   .feedback h3 {
     margin-top: 0; }
   .feedback .shrubbery {
@@ -2399,7 +2371,7 @@ p.quote-by-organization {
     color: #3776ab; }
   .feedback-flag .feedback-label {
     color: #3776ab;
-    font-weight: bold; }
+    font-family: SourceSansProBold, Arial, sans-serif; }
 
 #test-window-size {
   background-color: rgba(200, 200, 200, 0.1);

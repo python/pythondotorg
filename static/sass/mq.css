@@ -266,7 +266,7 @@
     display: none; }
 
   .introduction {
-    font-size: 1.375em; }
+    font-size: 1.3125em; }
 
   .content-wrapper .container {
     padding: 1em 1.5em; }
@@ -383,11 +383,7 @@
     padding: 0 1em; }
 
   .call-to-action {
-    font-size: 1.625em; }
-    .fontface .call-to-action {
-      font-size: 1.86875em; }
-      .fontface .call-to-action span:before {
-        font-size: .875em; }
+    font-size: 1.5em; }
 
   /* Header-banners (not home) */
   .header-banner {
@@ -504,7 +500,7 @@
       .touch .python-navigation .subnav:before {
         border-color: transparent transparent #bbd4e9 transparent; }
     .python-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(55, 118, 171, 0.25);
       border-bottom: 1px solid transparent; }
       .python-navigation .tier-2 > a:hover, .python-navigation .tier-2 > a:focus {
@@ -590,7 +586,7 @@
       .touch .psf-navigation .subnav:before {
         border-color: transparent transparent #dadada transparent; }
     .psf-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(120, 121, 122, 0.25);
       border-bottom: 1px solid transparent; }
       .psf-navigation .tier-2 > a:hover, .psf-navigation .tier-2 > a:focus {
@@ -642,7 +638,7 @@
       border-bottom: 1px solid #dca900;
       border-left: 1px solid #ffdf76; }
       .docs-navigation .tier-1 > a {
-        color: #444444;
+        color: #333333;
         background-color: transparent;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
@@ -676,7 +672,7 @@
       .touch .docs-navigation .subnav:before {
         border-color: transparent transparent white transparent; }
     .docs-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(255, 211, 67, 0.25);
       border-bottom: 1px solid transparent; }
       .docs-navigation .tier-2 > a:hover, .docs-navigation .tier-2 > a:focus {
@@ -762,7 +758,7 @@
       .touch .pypl-navigation .subnav:before {
         border-color: transparent transparent #ddebca transparent; }
     .pypl-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(130, 176, 67, 0.25);
       border-bottom: 1px solid transparent; }
       .pypl-navigation .tier-2 > a:hover, .pypl-navigation .tier-2 > a:focus {
@@ -848,7 +844,7 @@
       .touch .jobs-navigation .subnav:before {
         border-color: transparent transparent #eee5ef transparent; }
     .jobs-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(160, 107, 167, 0.25);
       border-bottom: 1px solid transparent; }
       .jobs-navigation .tier-2 > a:hover, .jobs-navigation .tier-2 > a:focus {
@@ -934,7 +930,7 @@
       .touch .shop-navigation .subnav:before {
         border-color: transparent transparent #f1dee0 transparent; }
     .shop-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(181, 88, 99, 0.25);
       border-bottom: 1px solid transparent; }
       .shop-navigation .tier-2 > a:hover, .shop-navigation .tier-2 > a:focus {
@@ -1386,8 +1382,8 @@
     text-align: left;
     position: absolute;
     left: 0;
-    margin-top: 0.56875em;
-    width: 23.40426%; }
+    width: 23.40426%;
+    margin-top: 0.56875em; }
 
   .latest-blog-post, .featured-event, .jobs-intro {
     position: relative;
@@ -1476,17 +1472,17 @@
     left: 0;
     width: 23.40426%; }
 
-  /* <li>
-          <h2 class="listing-company">
-              <span class="listing-company-name">
-                  <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
-              </span>
-              <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
-          </h2>
-          <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
-          <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
-          <span class="listing-posted">10 December 2012</span>
-      </li>*/
+  /*<li>
+      <h2 class="listing-company">
+          <span class="listing-company-name">
+              <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
+          </span>
+          <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
+      </h2>
+      <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
+      <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
+      <span class="listing-posted">10 December 2012</span>
+  </li>*/
   .list-recent-jobs li {
     *zoom: 1; }
     .list-recent-jobs li:after {
@@ -1613,14 +1609,6 @@
     border-left: 0; }
 
   .main-navigation {
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -o-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
     margin: 0 -0.625em;
     text-align: center;
@@ -1635,7 +1623,15 @@
             <a class="close-for-touch close-graphic" href="#">&times;</a>
         </li>
     /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
-    font-size: 1.125em; }
+    font-size: 1.125em;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
     .main-navigation .menu {
       *zoom: 1; }
       .main-navigation .menu:after {
@@ -1831,7 +1827,7 @@
     #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
       font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
       font-weight: normal;
-      font-size: 1.375em;
+      font-size: 1.3125em;
       line-height: 1.25em;
       margin-bottom: 0; }
     .super-navigation p.date-posted {
@@ -2004,7 +2000,7 @@
     padding-left: .125em;
     margin-bottom: .125em; }
   .feedback .shrubbery p {
-    padding-left: 5em; } }
+    padding-left: 4.5em; } }
 /* - - - Larger than 1024px - - - */
 @media (min-width: 64em) {
   body:after {
