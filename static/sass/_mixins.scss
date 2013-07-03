@@ -89,80 +89,101 @@
     /*ul*/ .menu {
         @include pie-clearfix(); 
     }
+    
     .tier-1 {
         position: relative; 
     }
+    
     .subnav {
         position: absolute; 
-        top: 100%;  
         z-index: 100; 
         text-align: left; 
         
         /*modernizr*/ .no-touch & {
             min-width: 100%; 
         }
+        
         /*modernizr*/ .touch & {
-            display: none; 
             top: 120%;
             @include box-shadow( 0 .25em .75em rgba( #000, 0.6 )  ); 
             
             &:before {
                 @include pointer( .75em ); 
                 top: -1.45em; 
-                //left: 1.5em; 
-            	display: block; 
+                display: block; 
             }
         }
     }
-    .element-1 .subnav, .element-2 .subnav, .element-3 .subnav, .element-4 .subnav {
-        left: -9999px; 
-        @include transition( all 0s ease ); 
-        
-        .touch &:before {
-            left: 1.5em; 
-        }
-    }
+    
     .no-touch & {
         
-        .element-1:hover .subnav, .element-2:hover .subnav, .element-3:hover .subnav, .element-4:hover .subnav, 
-        .element-1:focus .subnav, .element-2:focus .subnav, .element-3:focus .subnav, .element-4:focus .subnav {
-            left: 0; 
-            @include transition-delay( .25s ); 
+        .element-1, .element-2, .element-3, .element-4 {
+            
+            .subnav {
+                top: -9999px; 
+                @include transition( all 0s ease ); 
+            }
+            &:hover .subnav, &:focus .subnav {
+                left: 0; 
+                top: 100%; 
+                @include transition-delay( .25s ); 
+            }
+        }
+        
+        .element-5, .element-6, .element-7, .element-8, .last { 
+            
+            .subnav {
+                top: -9999px; 
+                @include transition( all 0s ease ); 
+            }
+            &:hover .subnav, &:focus .subnav {
+                right: 0; 
+                top: 100%; 
+                @include transition-delay( .25s ); 
+            }
         }
     }
+    
     .touch & {
         
-        .element-1:hover .subnav, .element-2:hover .subnav, .element-3:hover .subnav, .element-4:hover .subnav, 
-        .element-1 .subnav.touched, .element-2 .subnav.touched, .element-3 .subnav.touched, .element-4 .subnav.touched {
-            left: 0; 
+        .element-1, .element-2, .element-3, .element-4 {
+            
+            .subnav {
+                display: none; 
+                opacity: 0; 
+                @include transition( opacity .25s ease-in-out );
+            }
+            &:hover .subnav, & .subnav.touched {
+                display: block; 
+                opacity: 1; 
+                left: 0; 
+            }
+            /* Position the pointer element */
+            & .subnav:before {
+                left: 1.5em; 
+            }
         }
-    }
-    .element-5 .subnav, .element-6 .subnav, .element-7 .subnav, .element-8 .subnav, .last .subnav {
-        left: auto; 
-        right: -9999px; 
-        @include transition( all 0s ease ); 
         
-        .touch &:before {
-            right: 1.5em; 
+        .element-5, .element-6, .element-7, .element-8, .last {
+            
+            .subnav {
+                display: none; 
+                opacity: 0; 
+                @include transition( opacity .25s ease-in-out );
+            }
+            &:hover .subnav, & .subnav.touched {
+                display: block; 
+                opacity: 1; 
+                right: 0; 
+            }
+            /* Position the pointer element */
+            & .subnav:before {
+                left: auto; 
+                right: 1.5em; 
+            }
         }
     }
-    .no-touch & {
-        
-        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
-        .element-5:focus .subnav, .element-6:focus .subnav, .element-7:focus .subnav, .element-8:focus .subnav, .last:focus .subnav {
-            left: auto; 
-            right: 0; 
-            @include transition-delay( .25s ); 
-        }
-    }
-    .touch & {
-        
-        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
-        .element-5 .subnav.touched, .element-6 .subnav.touched, .element-7 .subnav.touched, .element-8 .subnav.touched, .last .subnav.touched {
-            left: auto; 
-            right: 0; 
-        }
-    }
+    
     .tier-2 {
         display: block;
         min-width: 100%; 
@@ -171,43 +192,5 @@
             white-space: nowrap; 
         }
     }
-    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a class="close-for-touch" href="#">Close Menu</a> 
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-        or
-        <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a href="/about">About</a>
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
-    .close-subnav {
-        display: none; 
-        text-align: left; 
-        white-space: nowrap; 
-        position: relative; 
-        
-        /*modernizr*/ .js.touch & {
-            display: block; 
-        }
-        & > a {
-            display: block; 
-            font-weight: bold; 
-        }
-        .close-graphic {
-            display: block; 
-            color: $red; 
-            font-size: px2em( 28px ); 
-            line-height: 1; 
-            font-weight: bold; 
-            position: absolute; 
-            top: 0; right: 0; 
-            text-align: center; 
-            width: px2em( 48px, 28px ); 
-            padding: .18em 0 .25em; 
-            background: rgba( $white, .2 ); 
-            @include text-shadow( -1px 0 0 $white ); 
-        }
-        
-    }
 }
+

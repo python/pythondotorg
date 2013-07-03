@@ -67,15 +67,21 @@ Generate an HTML report with `coverage html` if you like.
 
 ------------
 
-Daily startup for J.
+
+Cheasheet for Front End devs that know enough to be dangerous
+-------------------------------------------------------------
+
+But not really enough to remember all these CLI commands by heart. 
+
+### Spinning up a VM
 
 1. Open Terminal.app
 2. cd ~/github/python
 3. source ENV/bin/activate
 4. export DATABASE_URL="postgres://localhost/python.org"
-5. ./manage.py runserver
+5. ./manage.py runserver 0.0.0.0:8000 (or whatever port you run at)
 
-Nuke the DB!
+### Nuke the DB!
 
 1. Do steps 1-4 above.
 2. export PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"
@@ -86,4 +92,11 @@ Nuke the DB!
 7. Install at least the menus: ./manage.py migrate sitetree  OLD('./manage.py loaddata fixtures/sitetree_menus.json')
 8. Install data from staging: invoke copy_data_from_staging
 
-If you need to, ./manage.py createsuperuser
+### Other Useful Commands
+
+Create a super user (for a new DB)
+./manage.py createsuperuser
+
+Want to save some data from your DB before nuking it, and then load it back in? 
+./manage.py dumpdata app-name-here > app-name-here.json
+./manage.py loaddata app-name_here.json

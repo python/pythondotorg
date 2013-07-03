@@ -196,7 +196,7 @@ $().ready(function() {
 
     if ( hastouch ) {
 
-        $(".main-navigation  .tier-1 > a").click(function() {
+        $(".main-navigation .tier-1 > a").click(function() {
             if ($(this).next( '.subnav' ).hasClass('touched')) {
                 closeNav($(this));
             } else {

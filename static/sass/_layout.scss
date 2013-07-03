@@ -131,19 +131,6 @@
             
         }
     }
-    .navigation {
-        
-        .close-subnav {
-            border-top: 0;
-             
-            a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
-            }
-            .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
-            }
-        }
-    }
 }
 
 
