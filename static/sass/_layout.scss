@@ -29,54 +29,57 @@
 /* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
 @mixin stacked_nav() {
     
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        border-top: 0;
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        @include horizontal_nav_dropdowns(); 
-        text-align: center; 
-        
-        .tier-1 {
-            float: left; 
-            width: 33.333333%;
-            // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+    .no-touch {
+     
+        a.jump-to-menu {
+            display: none; 
+        }
+        .search-the-site {
+            border-left: 0; 
+        }
+        .main-navigation {
+            border-top: 0;
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            display: block; 
+            @include horizontal_nav_dropdowns(); 
+            text-align: center; 
             
-            &.element-6, &.element-7 {
-                width: 16.6666665%;
-            }
-            &.element-1 {
-                @include border-top-left-radius( 8px );
+            .tier-1 {
+                float: left; 
+                width: 33.333333%;
+                // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
                 
-                & > a { @include border-top-left-radius( 7px ); }
-            }
-            &.element-3 {
-                @include border-top-right-radius( 8px ); border-right: 0;
+                &.element-6, &.element-7 {
+                    width: 16.6666665%;
+                }
+                &.element-1 {
+                    @include border-top-left-radius( 8px );
+                    
+                    & > a { @include border-top-left-radius( 7px ); }
+                }
+                &.element-3 {
+                    @include border-top-right-radius( 8px ); border-right: 0;
+                    
+                    & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                }
                 
-                & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                // &.element-4 { @include border-bottom-left-radius( 8px ); }
+                // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
             }
-            
-            // &.element-4 { @include border-bottom-left-radius( 8px ); }
-            // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
-        }
-        .tier-2 {
-            
-            & > a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            .tier-2 {
+                
+                & > a {
+                    @include pe-border( $color-right: rgba( #fff, .8 ) );
+                }
             }
         }
-    }
-    .navigation {
-        .close-subnav {
-             // @include pe-border( $color-bottom: rgba( #666, .2 ) );
-        }
-        .close-for-touch {
-            // @include pe-border( $color-left: rgba( #666, .2 ) );
+        .navigation {
+            .close-subnav {
+                 // @include pe-border( $color-bottom: rgba( #666, .2 ) );
+            }
+            .close-for-touch {
+                // @include pe-border( $color-left: rgba( #666, .2 ) );
+            }
         }
     }
 }
@@ -85,64 +88,117 @@
 /* ! ===== Ruleset for a single row of main navigation ===== */
 @mixin horizontal_nav() {
     
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        @include border-radius(8px);
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        margin: 0 -.625em;
-        text-align: center; 
-        @include horizontal_nav_dropdowns();
-        font-size: px2em( 18px );
-        
-        .menu {
+    .no-touch {
+    
+        a.jump-to-menu {
+            display: none; 
+        }
+        .search-the-site {
+            border-left: 0; 
+        }
+        .main-navigation {
+            @include border-radius(8px);
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            display: block; 
+            margin: 0 -.625em;
             text-align: center; 
-        }
-        .tier-1 {
-            float: none; 
-            border-top: 0;
-            border-bottom: 0;
-            @include pe-inline-block(); 
-            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
-            width: auto; 
-            margin: 0 -5px 0 0; 
-            @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+            @include horizontal_nav_dropdowns();
+            font-size: px2em( 18px );
             
-            &.element-1 {
-                border-left: 0; 
+            .menu {
+                text-align: center; 
             }
-            &.last {
-                border-right: 0; 
-            }
-            /* We've set this explicitly before, so we need to "clear" the width value explicitly */
-            &.element-6, &.element-7 {
+            .tier-1 {
+                float: none; 
+                border-top: 0;
+                border-bottom: 0;
+                @include pe-inline-block(); 
+                /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
                 width: auto; 
+                margin: 0 -5px 0 0; 
+                @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+                
+                &.element-1 {
+                    border-left: 0; 
+                }
+                &.last {
+                    border-right: 0; 
+                }
+                /* We've set this explicitly before, so we need to "clear" the width value explicitly */
+                &.element-6, &.element-7 {
+                    width: auto; 
+                }
             }
-        }
-        .tier-1 > a {
-            padding: .65em 1.25em .55em;
-        }
-        .tier-2 {
-            
+            .tier-1 > a {
+                padding: .65em 1.25em .55em;
+            }
+            .tier-2 {
+                
+            }
         }
     }
-    .navigation {
+}
+
+@mixin drawer_nav_fortouch() {
+    /*
+<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
+            <a href="/about/" title="" class="">About</a>
+            <ul class="subnav menu" role="menu" aria-hidden="true">
+                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
+                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
+! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
+
+*/
+    $menuwidth: 260px; 
+    
+    .touch {
         
-        .close-subnav {
-            border-top: 0;
-             
-            a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
-            }
-            .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+        body, #touchnav-wrapper {
+            position: relative; 
+            width: 100%; 
+        }
+        
+        .main-navigation {
+            display: block; 
+            position: absolute; 
+            top: 0; left: - $menuwidth; 
+            width: $menuwidth; 
+            height: 100%; 
+            overflow: scroll; 
+            
+            /* Reset some styles */
+            border: 0; 
+            @include border-radius( 0 ); 
+            
+            .tier-1 > a {
+                text-align: left; 
             }
         }
+    }
+    
+    /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+    #touchnav-wrapper {
+        
+        .touch & {
+            @include transition( transform 300ms ease ); 
+            @include transform( translate3d( 0, 0, 0 ) ); 
+            -webkit-backface-visibility: hidden; 
+        }
+        .touch .show-sidemenu & {
+            @include transform( translate3d( $menuwidth, 0, 0 ) ); 
+        }
+    }
+    
+    .inner .main-header {
+        position: static; 
     }
 }
 
@@ -183,7 +239,7 @@
     }
     
     input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-        display: inline-block !important;
+        display: inline-block;
         width: auto;
     }
 }
@@ -295,7 +351,7 @@
         margin-right: .5em;
     }
     /*modernizr*/ .no-touch .search-button {
-        display: inline-block; 
+        display: inline; 
     }
     
     .slide-copy {
@@ -812,7 +868,7 @@
                 width: 210px; 
                 height: 210px; 
                 // background: top left no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
-                background: top left no-repeat image-url("python-logo-large3.png") transparent;
+                background: top left no-repeat image-url("python-logo-large.png") transparent;
             }
             .widget-title, p {
                 @include post( 4 ); 
@@ -1092,7 +1148,7 @@
         
         p.date-posted {
             color: $grey;
-            font-size: pxtoem( 10px ) !important;
+            font-size: px2em( 10px ) !important;
             font-style: italic;
         }
         
