@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python minutes"{% endblock %}
+
+{% block content %}
+{% if not minutes.is_published %}<h1>DRAFT PREVIEW</h1>{% endif %}
+<h1>PSF Meeting Minutes for {{ minutes.date|date }}</h1>
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python minutes"{% endblock %}
+
+{% block content %}
+    <div class="row">
+        {% for m in minutes_list %}
+            {% ifchanged m.date|date:"Y" %}
+            {% if not forloop.first %}</ul>{% endif %}
+            <h1>{{ m.date|date:"Y" }}</h1>
+                <ul>
+            {% endifchanged %}
+            <li><a href="{{ m.get_absolute_url }}">{{ m.date|date:"F j, Y"}}</a>{% if not m.is_published %}(draft){% endif %}</li>
+        {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
