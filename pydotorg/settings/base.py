@@ -86,6 +86,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ROOT_URLCONF = 'pydotorg.urls'
 
 MIDDLEWARE_CLASSES = (
+    'djangosecure.middleware.SecurityMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -118,6 +119,7 @@ INSTALLED_APPS = (
     'sitetree',
     'south',
     'timedelta',
+    'djangosecure',
 
     'users',
     'boxes',
