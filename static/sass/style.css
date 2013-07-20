@@ -246,7 +246,7 @@ pre {
   padding: 1em;
   margin-bottom: 1em;
   background-color: rgba(230, 230, 230, 0.6);
-  border-left: 5px solid #6ce26c; }
+  border-left: 5px solid #6CE26C; }
 
 code {
   color: #82b043;
@@ -645,7 +645,7 @@ abbr, dfn {
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .more-by-location {
+.pep-widget, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -704,13 +704,13 @@ abbr, dfn {
     margin-top: -.75em; }
 
 /* Buttons */
-input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button, .feedback button {
+input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .search-button {
   color: #4d4d4d !important;
   cursor: pointer;
   display: block;
   font-weight: normal;
   margin-bottom: 0.4375em;
-  padding: 0.4em 0.75em 0.35em;
+  padding: .4em .75em .35em;
   text-align: left;
   white-space: nowrap;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
@@ -734,7 +734,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .button:hover, .header-banner .button:hover, .header-banner a.button:hover, .search-button:hover, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .button:focus, .header-banner .button:focus, .header-banner a.button:focus, .search-button:focus, input[type=submit]:active, input[type=reset]:active, input[type=button]:active, button:active, .button:active, .header-banner .button:active, .header-banner a.button:active, .search-button:active {
+  input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .button:hover, .search-button:hover, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .button:focus, .search-button:focus, input[type=submit]:active, input[type=reset]:active, input[type=button]:active, button:active, .button:active, .search-button:active {
     background-color: inherit;
     color: #1a1a1a !important;
     background-color: #d9d9d9;
@@ -760,7 +760,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   border-right: 1px solid #dca900;
   border-bottom: 1px solid #dca900;
   border-left: 1px solid #dca900; }
-  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .header-banner .button:hover, .header-banner a.button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .header-banner .button:active, .header-banner a.button:active {
+  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .header-banner .button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .header-banner .button:active {
     background-color: inherit;
     background-color: #ffd343;
     *zoom: 1;
@@ -814,7 +814,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   /* Used in the pagination UL anchors, and in the Previous Next pattern */
   display: block;
   color: #999999;
-  padding: 0.5em 0.75em 0.4em;
+  padding: .5em .75em .4em;
   border: 1px solid #caccce;
   background-color: transparent; }
 
@@ -892,7 +892,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     color: #999999;
     background: transparent;
     text-align: center;
-    padding: 0.5em 0.75em 0.4em;
+    padding: .5em .75em .4em;
     font-size: 1em;
     line-height: 1.75em;
     /* no fallback for .no-generatedcontent. This is a progressive enhancement */ }
@@ -938,10 +938,10 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 /* Used in both the main-header and the header-banner */
 .main-header {
   border-top: 1px solid #191919;
-  border-bottom: 1px solid #444444; }
+  border-bottom: 1px solid #444; }
   .main-header .container {
     text-align: center;
-    padding: 0.75em 1em; }
+    padding: .75em 1em; }
 
 /*h1*/
 .site-headline {
@@ -993,7 +993,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 
 a.jump-to-menu {
   color: #bbbbbb;
-  padding: 0.45em 0.75em 0.35em;
+  padding: .45em .75em .35em;
   border-right: 1px solid #070a0c;
   vertical-align: middle; }
   a.jump-to-menu:hover, a.jump-to-menu:focus {
@@ -1002,17 +1002,17 @@ a.jump-to-menu {
 .menu-icon {
   display: inline-block;
   font-size: 1.25em;
-  margin: -0.125em -0.125em 0 0; }
+  margin: -.125em -.125em 0 0; }
 
 /*form*/
 .search-the-site {
   text-align: left;
-  padding: 0.35em 0.2em 0.3em;
+  padding: .35em .2em .3em;
   border-left: 1px solid #2d3e4d; }
   .search-the-site .icon-search:before {
     font-size: 1.5em;
     vertical-align: text-bottom;
-    margin: 0 0.25em; }
+    margin: 0 .25em; }
 
 /*input*/
 .search-field {
@@ -1026,8 +1026,8 @@ a.jump-to-menu {
   -ms-border-radius: 0px;
   -o-border-radius: 0px;
   border-radius: 0px;
-  margin: 0.125em 0;
-  padding: 0.4em 0 0.3em; }
+  margin: .125em 0;
+  padding: .4em 0 .3em; }
   .search-field::-webkit-input-placeholder {
     color: #bbbbbb;
     font-style: normal; }
@@ -1037,7 +1037,7 @@ a.jump-to-menu {
   .search-field:focus {
     background-color: white;
     color: #444444;
-    padding: 0.4em 0.5em 0.3em; }
+    padding: .4em .5em .3em; }
   .search-field:blur {
     color: #bbbbbb; }
 
@@ -1072,7 +1072,7 @@ a.jump-to-menu {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .adjust-font-size .tier-1 > a, .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-1 > a, .winkwink-nudgenudge .tier-2 > a {
       display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
+      padding: .5em 1.5em .4em 1em;
       position: relative; }
   .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
     display: block;
@@ -1183,7 +1183,7 @@ a.jump-to-menu {
       right: 0;
       text-align: center;
       width: 1.71429em;
-      padding: 0.18em 0 0.25em;
+      padding: .18em 0 .25em;
       background: rgba(255, 255, 255, 0.2);
       text-shadow: -1px 0 0 white; }
   .adjust-font-size a, .winkwink-nudgenudge a {
@@ -1216,7 +1216,7 @@ a.jump-to-menu {
   .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
     border-bottom: 1px solid #999999; }
     .adjust-font-size .close-subnav .close-text, .winkwink-nudgenudge .close-subnav .close-text {
-      padding: 0.9em 3.25em 0.8em 1em; }
+      padding: .9em 3.25em .8em 1em; }
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
@@ -1744,9 +1744,9 @@ p.quote-by-organization {
   color: #3776ab; }
 
 .list-recent-events, .list-recent-posts {
-  border-top: 1px solid #dddddd; }
+  border-top: 1px solid #ddd; }
   .list-recent-events li, .list-recent-posts li {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid #ddd;
     padding: 0 0 0.75em;
     position: relative; }
   .list-recent-events .event-title, .list-recent-posts .event-title {
@@ -1759,7 +1759,7 @@ p.quote-by-organization {
   /* resets as this is an H3 element and it behaves differently */
   margin-top: .75em;
   margin-bottom: 1.25em;
-  padding: 0.5em 0.75em; }
+  padding: .5em .75em; }
 
 .event-description {
   padding: 1.3125em 0; }
@@ -1782,7 +1782,7 @@ p.quote-by-organization {
   -ms-border-radius: 0 0 8px 8px;
   -o-border-radius: 0 0 8px 8px;
   border-radius: 0 0 8px 8px;
-  padding: 0.75em 1em; }
+  padding: .75em 1em; }
 
 /*ul*/
 .twitter-stream li {
@@ -1814,7 +1814,7 @@ p.quote-by-organization {
     color: #666666;
     font-size: 0.8125em;
     vertical-align: baseline;
-    padding: 0.2em 0.4em 0.1em;
+    padding: .2em .4em .1em;
     background-color: #e6e8ea;
     border-top: 1px solid #f2f4f6;
     border-bottom: 1px solid #caccce; }
@@ -1837,13 +1837,13 @@ p.quote-by-organization {
 /* ! ===== Stylized lists of items, used on Downloads and others ===== */
 .list-row-headings {
   font-weight: bold;
-  padding: 0.5em 0.5em 0.4em 0.75em;
+  padding: .5em .5em .4em .75em;
   margin-right: 1.25em; }
 
 .list-row-container {
   border: 1px solid #caccce; }
   .list-row-container li {
-    padding: 0.5em 0.5em 0.4em 0.75em;
+    padding: .5em .5em .4em .75em;
     margin-right: 0; }
     .list-row-container li:nth-child(odd) {
       background-color: #f2f4f6; }
@@ -1902,7 +1902,7 @@ p.quote-by-organization {
   /* Special rules for specific templates */ }
   .previous-next .prev-button, .previous-next .next-button {
     display: block;
-    padding: 0.5em 0.75em 0.4em;
+    padding: .5em .75em .4em;
     margin-bottom: 0.875em; }
     .previous-next .prev-button:not(.disabled):hover, .previous-next .prev-button:not(.disabled):focus, .previous-next .next-button:not(.disabled):hover, .previous-next .next-button:not(.disabled):focus {
       color: #444444;
@@ -1965,7 +1965,7 @@ p.quote-by-organization {
         <p role="alert">Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
 .user-feedback {
-  padding: 0.75em 1em 0.65em;
+  padding: .75em 1em .65em;
   margin-bottom: 1.3125em;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -2019,7 +2019,7 @@ p.quote-by-organization {
   font-size: 0.58333em;
   text-transform: uppercase;
   letter-spacing: .0625em;
-  padding: 0.45em 0.5em 0;
+  padding: .45em .5em 0;
   margin-right: .25em; }
 .listing-company .listing-location a {
   color: #999999; }
@@ -2070,7 +2070,7 @@ p.quote-by-organization {
   margin-bottom: 0; }
   .section-nav a {
     display: block;
-    padding: 0.3em 0 0.2em; }
+    padding: .3em 0 .2em; }
 
 .psf-sidebar-widget {
   color: #f2f4f6;
@@ -2126,7 +2126,7 @@ p.quote-by-organization {
 
 .psf-codeofconduct {
   font-size: 0.875em;
-  padding: 0.5em 1em;
+  padding: .5em 1em;
   margin-bottom: 1em;
   background-color: white;
   -webkit-box-shadow: 0.25em 0.25em 0.75em rgba(0, 0, 0, 0.15);
@@ -2153,7 +2153,7 @@ p.quote-by-organization {
 .main-footer .jump-link, .sitemap a, .footer-links a {
   display: block;
   text-align: center;
-  padding: 0.5em 0.75em 0.4em; }
+  padding: .5em .75em .4em; }
 
 .main-footer {
   clear: both;
@@ -2161,7 +2161,7 @@ p.quote-by-organization {
   background-color: #e6e8ea;
   border-top: 1px solid #d8dbde; }
   .main-footer .container {
-    padding: 0 0.75em 0.75em; }
+    padding: 0 .75em .75em; }
   .main-footer a {
     color: #666666; }
     .main-footer a:hover, .main-footer a:focus {
@@ -2169,7 +2169,7 @@ p.quote-by-organization {
   .main-footer .jump-link {
     background-color: #e0e3e5; }
   .main-footer a.jump-link {
-    margin: 0.75em 0;
+    margin: .75em 0;
     border-top: 1px solid #e6e8ea;
     border-bottom: 1px solid #dbdee1; }
     .main-footer a.jump-link:hover, .main-footer a.jump-link:focus {
@@ -2183,7 +2183,7 @@ p.quote-by-organization {
     margin-bottom: 1.3125em; }
     .sitemap .tier-1 > a {
       color: #3776ab;
-      padding: 0.4em 0.5em 0.3em;
+      padding: .4em .5em .3em;
       font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
       font-size: 1.25em;
       margin-top: 0.875em;
@@ -2202,7 +2202,7 @@ p.quote-by-organization {
       background-color: #ecedef; }
 
 .site-base {
-  border-top: 1px solid #111111; }
+  border-top: 1px solid #111; }
   .site-base .container {
     padding: 1em; }
 
@@ -2266,7 +2266,7 @@ p.quote-by-organization {
   -o-transform: rotate(90deg);
   transform: rotate(90deg);
   border: 1px solid #ffcc24;
-  padding: 0.3em 0.6em; }
+  padding: .3em .6em; }
   .feedback-flag .icon-megaphone:before {
     color: #3776ab; }
   .feedback-flag .feedback-label {
@@ -2280,7 +2280,7 @@ p.quote-by-organization {
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
 #nojs, #oldie-warning {
-  padding: 0.75em 0.75em 0.65em;
+  padding: .75em .75em .65em;
   text-align: center;
   background-color: #c33; }
   #nojs p, #oldie-warning p {
@@ -2361,7 +2361,7 @@ p.quote-by-organization {
 @media print {
   * {
     background: transparent !important;
-    color: black !important;
+    color: #000 !important;
     /* Black prints faster: h5bp.com/s */
     box-shadow: none !important;
     text-shadow: none !important; }
@@ -2385,7 +2385,7 @@ p.quote-by-organization {
     content: ""; }
 
   pre, blockquote {
-    border: 1px solid #999999;
+    border: 1px solid #999;
     page-break-inside: avoid; }
 
   thead {
