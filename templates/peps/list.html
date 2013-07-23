@@ -18,7 +18,7 @@
             {% for pep in cat.peps.all %}
                 <tr>
                     <td>{{ pep.type.abbreviation }}{{ pep.status.abbreviation }}</td>
-                    <td>{{ pep.number }}</td>
+                    <td><a href="{{ pep.url }}">{{ pep.number }}</a></td>
                     <td>{{ pep.title }}</td>
                     <td>{{ pep.get_owner_names }}</td>
                 </tr>
@@ -41,7 +41,7 @@
         {% for pep in peps %}
         <tr>
             <td>{{ pep.type.abbreviation }}{{ pep.status.abbreviation }}</td>
-            <td>{{ pep.number }}</td>
+            <td><a href="{{ pep.url }}">{{ pep.number }}</a></td>
             <td>{{ pep.title }}</td>
             <td>{{ pep.get_owner_names }}</td>
         </tr>
