@@ -36,6 +36,7 @@ urlpatterns = patterns('',
     url(r'^users/', include('users.urls', namespace='users')),
 
     url(r'^psf/board/records/minutes/', include('minutes.urls')),
+    url(r'^peps/', include('peps.urls')),
 
     # admin
     url(r'^admin/', include(admin.site.urls)),
