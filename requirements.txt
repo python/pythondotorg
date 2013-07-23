@@ -13,7 +13,7 @@ Pillow==2.0.0
 psycopg2==2.4.5
 python3-openid==3.0.1
 lxml==3.2.1
-csselect==0.8
+cssselect==0.8
 
 pytz==2013b
 python-dateutil==2.1
