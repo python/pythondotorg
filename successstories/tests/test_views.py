@@ -45,6 +45,23 @@ class StoryViewTests(StoryTestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context['stories']), 1)
 
+    def test_story_category_list(self):
+        self.category2 = StoryCategory.objects.create(name='Entertainment')
+        self.story3 = Story.objects.create(
+            name='Three',
+            company_name='Company Three',
+            company_url='http://www.python.org/psf/',
+            category=self.category2,
+            content='Whatever',
+            is_published=True
+        )
+
+        url = reverse('success_story_list_category', kwargs={'slug': self.category.slug})
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(len(r.context['stories']), 1)
+        self.assertEqual(r.context['stories'][0].pk, self.story1.pk)
+
     def test_story_create(self):
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
