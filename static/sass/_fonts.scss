@@ -213,7 +213,7 @@ you can use the generic selector below, but it's slower:
  */
 /*modernizr*/ .no-fontface, .no-svg, .no-generatedcontent { 
     
-    .icon-arrow-up, .icon-arrow-right, .icon-arrow-down, .icon-arrow-left, .icon-close {
+    .icon-alert, .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
         
         &:before {
             display: none; 
@@ -229,7 +229,7 @@ you can use the generic selector below, but it's slower:
 /* Show in IE8: supports FontFace (eot) but not SVG. */
 .ie8 {
     
-    .icon-arrow-up, .icon-arrow-right, .icon-arrow-down, .icon-arrow-left, .icon-close {
+    .icon-alert, .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
         
         &:before {
             display: inline; 

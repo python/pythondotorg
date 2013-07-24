@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm as BaseUserCreationForm
 from django.contrib.auth.forms import UserChangeForm as BaseUserChangeForm
 from django.forms import ModelForm
 
-from .models import User
+from .models import User, Membership
 
 
 class UserCreationForm(BaseUserCreationForm):
@@ -27,15 +27,6 @@ class UserChangeForm(BaseUserChangeForm):
 
 
 class UserProfileForm(ModelForm):
-
-    COC_CHOICES = (
-        (True, 'Yes'),
-        (False, 'No')
-    )
-    ACCOUNCEMENT_CHOICES = (
-        (True, 'Yes'),
-        (False, 'No')
-    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -83,10 +74,11 @@ class MembershipForm(ModelForm):
         announcements.initial = True
 
     class Meta(object):
-        model = User
+        model = Membership
         fields = [
             'legal_name',
             'preferred_name',
+            'email_address',
             'city',
             'region',
             'country',
@@ -95,11 +87,8 @@ class MembershipForm(ModelForm):
             'psf_announcements',
         ]
 
-    def clean(self):
-        cleaned_data = super().clean()
-        code_of_conduct = cleaned_data.get('psf_code_of_conduct')
-        if code_of_conduct is not True:
-            msg = 'Agreeing to the code of conduct is required.'
-            self._errors['psf_code_of_conduct'] = msg
-            del cleaned_data['psf_code_of_conduct']
-        return cleaned_data
+    def clean_psf_code_of_conduct(self):
+        data = self.cleaned_data['psf_code_of_conduct']
+        if not data:
+            raise forms.ValidationError('Agreeing to the code of conduct is required.')
+        return data

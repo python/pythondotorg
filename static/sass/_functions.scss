@@ -390,7 +390,7 @@
 @mixin html5boilerplate_helpers {
     
     /* For image replacement */
-    .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
+    .ir { display: block; text-indent: -9999px; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
     
     /* Hide for both screenreaders and browsers. */
     .hidden { display: none; visibility: hidden; }

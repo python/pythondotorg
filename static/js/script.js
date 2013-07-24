@@ -303,7 +303,30 @@ $().ready(function() {
 		$(iden).slideToggle();
 	});
 
-
+    
+    /* 
+     * Add a class to the selected radio/checkbox parent label 
+     * Requires inputs to be nested in labels: 
+     * <label for="checkbox2"><input id="checkbox2" name="checkbox" type="checkbox">Choice B</label>
+     * <label for="radio1"><input id="radio1" name="radio" type="radio" checked="checked">Option 1</label>
+     */
+    $('input:radio').click(function() {
+        $('label:has(input:radio:checked)').addClass('active');
+        $('label:has(input:radio:not(:checked))').removeClass('active');
+    });
+    $('input:checkbox').click(function() {
+        $('label:has(input:checkbox:checked)').addClass('active');
+        $('label:has(input:checkbox:not(:checked))').removeClass('active');
+    });
+    /* Loop through them on initial page load as well */
+    $('input:radio').each(function() {
+        $('label:has(input:radio:checked)').addClass('active');
+    });
+    $('input:checkbox').each(function() {
+        $('label:has(input:checkbox:checked)').addClass('active');
+    });
+    
+    
     /* Non-media query enabled browsers need any critical content on page load. */
     if ( is_ltie9 ) {
         //$( '#mainnav' ). load( 'components/navigation.php' );

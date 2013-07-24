@@ -31,6 +31,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -137,6 +139,8 @@
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
 /* Typography */
 /* True here means that all computed values will be in EMs */
 /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
@@ -1207,7 +1211,7 @@
           top: -1.45em;
           display: block; }
     .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
-      left: -999em;
+      left: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1226,7 +1230,7 @@
       left: 0; }
     .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: -999em;
+      right: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1532,6 +1536,18 @@
     margin-right: 0;
     #margin-left: -20px; }
 
+  /* Forms that are wide enough to have labels and input fields side by side */
+  .wide-form p {
+    overflow: hidden;
+    *zoom: 1; }
+    .wide-form p label {
+      width: 25%;
+      float: left;
+      margin-top: .5em; }
+    .wide-form p input[type=text], .wide-form p input[type=password], .wide-form p input[type=search], .wide-form p input[type=email], .wide-form p input[type=url], .wide-form p input[type=tel] {
+      width: 75%;
+      float: left; }
+
   /* Footer */
   .sitemap, .footer-links, .copyright {
     font-size: 0.875em; }
@@ -1665,7 +1681,7 @@
           top: -1.45em;
           display: block; }
     .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
-      left: -999em;
+      left: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1684,7 +1700,7 @@
       left: 0; }
     .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
       left: auto;
-      right: -999em;
+      right: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1821,7 +1837,7 @@
         border: none;
         background: transparent; }
       .main-navigation .super-navigation a:not(.button):hover, .main-navigation .super-navigation a:not(.button):focus {
-        color: #1f3b47; }
+        color: #1e2933; }
     .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
       margin-top: 0; }
     #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {

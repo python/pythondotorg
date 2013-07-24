@@ -21,13 +21,19 @@
  *
  * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
  */
- 
+
 
 
 
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
+html {
+    background-color: darken($blue, 10%); 
+}
 
 body {
+   color: $default-color;
+   background-color: $white; 
+   font: normal 100%/1.625 $default-font;
    
     /* Label the body with our media query parameters. Then check with JS to coordinate @media changes */
     &:after {
@@ -129,44 +135,12 @@ h6, .gamma {
     @include leader(1); 
 }
 
-p, ul, ol, dl {
+p, ul, ol, dl, address, table {
     margin-bottom: rhythm(0.5);
 }
 
-/* If generated content is supported, provide our own decoratations */
-ul:not(.menu) {
-    
-    /*modernizr*/ .generatedcontent & li {
-        list-style: none; 
-    }
-    
-    /*modernizr*/ .generatedcontent & li:before {
-        content:'\25A0'; /* square */
-        display: block;
-        position: relative;
-        max-width: 0px;
-        max-height: 0px;
-        left: -1em;
-        top: -.125em;
-        color: $grey-light;
-        font-size: 1em;
-    }
-    
-    /*modernizr*/ .generatedcontent & li > ul li:before {
-        content:'\2022'; /* solid round */
-        color: $blue;
-        top: -.375em; 
-        left: -.75em;
-        font-size: 1.625em;
-    }
-    
-    /*modernizr*/ .generatedcontent & li > ul li > ul li:before {
-        content:'\25cb'; /* open round */
-        color: $blue;
-        top: -.125em;
-        left: -.75em;
-        font-size: 1.25em;
-    }
+ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
+    margin-bottom: 0; 
 }
 
 blockquote {
@@ -217,38 +191,54 @@ blockquote {
     }
 }
 
+
+/* ! ===== Form elements ===== */
 form {
     @include pie-clearfix(); 
 }
 
-legend {
-    display: block; 
-    width: 100%; 
-    font-size: px2em( $headerfour ); 
-    color: $blue; 
-    border-bottom: 1px solid $blue;  
-    @include padding-leader( .5 ); 
-    @include trailer( .5 ); 
+.errorlist {
+    @extend .menu; 
+    color: $red; 
+    margin-bottom: 0; 
+    
+    &:before {
+        @extend .icon-arrow-down; 
+    }
+    & + label {
+        margin-top: 0; 
+    }
+}
+
+.error-message {
+    color: $red; 
 }
 
 label {
     display: block; 
-    font-family: $default-font-bold; 
-    @include padding-leader( .5 ); 
+    @include leader( .5 );
+    @include leader( .125 );
+    
+    &.active {
+        font-weight: bold; 
+    }
 }
 
 input, textarea {
     width: 100%;
     padding: .65em;
     margin-bottom: rhythm( .5 ); 
-    border: 1px solid $grey-lighter; 
+    border: 1px solid $border-color; 
     @include border-radius(); 
 }
 
 input[type=checkbox], input[type=radio] {
     width: auto; 
     border: none; 
+    margin-right: .25em; 
 }
+
+input[type=radio] { margin-bottom: .25em;  }
 
 input {
     /*modernizr*/ .no-touch &:focus {
@@ -269,7 +259,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 
 input[type=reset] {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
-    @include pe-border( $color-top: $grey-lighter, $color-bottom: darken( $grey-light, 10% ) ); 
+    @include pe-border( $color-top: $border-color, $color-bottom: darken( $grey-light, 10% ) ); 
     
     &:hover, &:focus, &:active {
         color: $white; 
@@ -306,7 +296,7 @@ abbr, dfn {
 /* Color Areas: use for consistency */
 %blue-colorspace {
     @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
-    @include box-shadow( inset 0 0 50px rgba(0, 0, 0, 0.03), inset 0 0 20px rgba(0, 0, 0, 0.03) );
+    @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) );
 }
 
 %blue-colorbox {
@@ -327,7 +317,7 @@ abbr, dfn {
 
 %grey-colorbox {
     @extend %grey-colorspace;
-    border: 1px solid $grey-lighter;
+    border: 1px solid $border-color;
     margin-bottom: 0.5em;
     padding: 1.25em;
     @include pie-clearfix();
@@ -346,6 +336,23 @@ abbr, dfn {
     @include pie-clearfix();
 }
 
+%indent-time-elements {
+    
+    li {
+        border-top: 1px solid $border-color;
+        padding-left: 4em;
+        padding-top: rhythm(0.25);
+        padding-bottom: rhythm(0.25);
+        position: relative;
+        
+        time {
+            position: absolute; 
+            top: 50%;
+            left: 0;
+            margin-top: -.75em;
+        }
+    }
+}
 
 /* Buttons */
 %button-style {
@@ -357,13 +364,12 @@ abbr, dfn {
     margin-bottom: rhythm(.25);
     padding: .4em .75em .35em;
     text-align: left;
-    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
     white-space: nowrap;
-    // width: auto;
-    @include border-radius();
-    @include box-shadow( 1px 1px 1px rgba(0, 0, 0, 0.05) , inset 0 0 5px rgba(255, 255, 255, 0.5) );
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
     @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
-    @include pe-border( $color-top: $grey-lighter, $color-right: $grey-lighter, $color-bottom: $grey-light, $color-left: $grey-lighter );
+    @include pe-border( $color-top: $border-color, $color-right: $border-color, $color-bottom: $grey-light, $color-left: $border-color );
+    @include border-radius();
+    @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
     
     &:hover, &:focus, &:active {
         background-color: inherit;
@@ -394,14 +400,14 @@ abbr, dfn {
     @include box-shadow( inset 0 0 5px rgba($blue, 0.2) );
     
     &:hover, &:active {
+        background: inherit; 
         color: $grey-lighterest !important;
-        background: inherit;
-        @include vertical-gradient( darken($blue, 5%), darken($blue, 15%) );
+        @include vertical-gradient(darken($blue, 5%), darken($blue, 15%) );
     }
 }
 
 %link-style {
-    border-bottom: 1px solid lighten($yellow, 15%);
+    border-bottom: 1px solid lighten($yellow, 10%);
     text-decoration: none;
     
     &:hover, &:focus {
@@ -418,18 +424,16 @@ abbr, dfn {
     display: block; 
     color: $grey-light; 
     padding: .5em .75em .4em; 
-    border: 1px solid $grey-lighter; 
+    border: 1px solid $border-color; 
     background-color: transparent; 
 }
 
 
 
-/* ===== HELPFUL CLASSES ===== */
+/* ! ===== HELPFUL CLASSES ===== */
 
 /* A useful class that helps control how lines might break. Use carefully and always test. */
-.pre {
-    white-space: nowrap; 
-}
+.pre { white-space: nowrap; }
 
 /* Our own little class for progressive text. Yes, it is a Monty Python reference */
 .say-no-more {
@@ -455,11 +459,14 @@ abbr, dfn {
     }
 }
 
+.larger { font-size: 120%; }
 
-/* ! ===== ICONS =====
+.indent { padding-left: 2em; }
+
+
+/* ! ===== ICONS ===== */
     
-    Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. 
- */
+/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
 .icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
 	font-family: 'Pythonicon';
 	speak: none;
@@ -472,7 +479,7 @@ abbr, dfn {
 	margin-right: .5em; 
 }
 
-.icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-close {
+.icon-alert, .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
 	
 	/* Hide a unicode fallback character when we supply it by default. 
 	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
@@ -483,12 +490,12 @@ abbr, dfn {
 }
 
 
-/* ===== MAJOR PAGE ELEMENTS ===== */
 
-/* ! ===== Header ===== */
+/* ! ===== MAJOR PAGE ELEMENTS ===== */
+
 %hovered-state {
-    @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
     color: $white;
+    @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
     
     &:before {
         left: 50%;
@@ -500,10 +507,6 @@ abbr, dfn {
     background-color: $darkerblue;
     border-bottom: 1px solid $darkblue;
    
-    .container {
-       
-    }
-    
     a {
         position: relative; 
         display: block; 
@@ -520,7 +523,7 @@ abbr, dfn {
             border-bottom-color: transparent;
             border-left-color: transparent; 
             top: 0; 
-            left: -999em; 
+            left: -9999px; 
             margin-left: -.25em; 
         }
         
@@ -560,10 +563,10 @@ abbr, dfn {
     }
 }
 
+
 /* Used in both the main-header and the header-banner */
 .main-header {
     @extend %blue-colorspace;
-    // background: top left repeat-x image-url("background-gradient.png") #477ca8;
     border-top: 1px solid #191919;
     border-bottom: 1px solid #444;
     
@@ -749,38 +752,32 @@ a.jump-to-menu {
     .text-reset { }
 
 
-/* ! ===== Main Navigation ===== */
-
-/* Rules are mostly in layout and mixins, as we don't display it for mobile */
+/* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
     display: none;
     margin-bottom: 1px;
+}
+
+.main-navigation .close-pane {
+    display: none;
+    background-color: rgba(255,255,255,.25);
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 1200px;
     
-    /* For touch devices we create an overlay that is tappable */
-    .close-pane {
-        display: none;
-        background-color: rgba(255,255,255,.25);
+    .close-graphic { 
         position: absolute;
-        top: 0; left: 0; bottom: 0; 
-        width: 100%;
-        
-        .close-graphic { 
-            position: absolute;
-            top: 0px;
-            right: 0px;
-            padding: 0px 1.25em;
-            background-color: $white;
-        }
+        top: 0px;
+        right: 0px;
+        padding: 0px 10px;
+        background-color: white;
     }
 }
 
+
 /* ! ===== Header banner, present on most landing pages ===== */
-/*<div class="header-banner">
-    <div class="featured-success-story">
-        <h1 class="call-to-action"><a href="#">Python is powerful... and fast</a>. <a href="#">Python plays well with others</a>. <a href="#">Python runs everywhere</a>. <a href="#">Python is friendly... and easy to learn</a>. <a href="#">Python is Open</a>.</h1>
-        <p>These are some of the reasons people who use Python would rather not use anything else.</p>
-    </div>
-</div>*/
 
 .header-banner {
     clear: both;
@@ -791,6 +788,7 @@ a.jump-to-menu {
     /* temporary slideshow placeholder */
     .home & {
         background: #222;
+        @include box-shadow( inset 0 0 30px rgba(#000, 1) ); 
         margin: 0 auto; 
         max-width: 960px;
         @include box-shadow( inset 0 0 30px rgba(0, 0, 0, 1) );  
@@ -920,6 +918,9 @@ a.jump-to-menu {
     }
 }
 
+
+/* ! ===== Main Content ===== */
+
 .main-content {
     
     &.with-left-sidebar {
@@ -942,6 +943,7 @@ a.jump-to-menu {
 .sidebar-widget {
     padding-bottom: rhythm( .75 );
 }
+
 
 /* ! Default body text styles for more comfortable reading */
 .text, 
@@ -971,11 +973,11 @@ a.jump-to-menu {
     
     a:not(.button) {
         @extend %link-style;
-        color: $link-color; 
+        //color: $link-color; 
         display: inline;
         
         &:hover, &:focus {
-            color: $link-hover; 
+            //color: $link-hover; 
         }
     }
     
@@ -1083,7 +1085,8 @@ a.jump-to-menu {
 }
 
 
-/* ! ===== WIDGET STYLES ===== */
+/* ! ===== Widget Styles ===== */
+
 %widget {
     border-top: 5px solid $grey-lightest; // default fallback
     margin-bottom: 0.25em;
@@ -1128,18 +1131,20 @@ a.jump-to-menu {
     }
 }
 
-/* Section Specific Widget Colorways */
+/* ! ===== Section Specific Widget Colorways ===== */
+
 .small-widget, .medium-widget, .sidebar-widget {
     
     .python & { border-top: 4px solid lighten($blue, 20%); }
-    .psf-home & { border-top: 5px solid $grey-lighter; }
+    .psf-home & { border-top: 5px solid $border-color; }
     .docs & { border-top: 5px solid $yellow; }
     .pypl & { border-top: 5px solid $green; }
     .jobs & { border-top: 5px solid lighten($purple, 20%); }
     .shop & { border-top: 5px solid $red; }
 }
 
-/* Section Specific Widget Icon Colorways */
+/* ! ===== Section Specific Widget Icon Colorways ===== */
+
 $names: python, psf, docs, pypl, jobs, shop;
 $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
@@ -1152,7 +1157,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 
-/* Specific Widget Styles */
+/* ! ===== Specific Widget Styles ===== */
+
+.psf-widget, .python-needs-you-widget, .download-list-widget, .mapped-events {
+    .widget-title {
+        // margin-bottom: 0;
+    }
+}
+
 .get-started-widget { }
 
 .download-widget {
@@ -1162,9 +1174,9 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
 }
 
-.documentation-widget {}
+.documentation-widget { }
 
-.jobs-widget {}
+.jobs-widget { }
 
 %indent-time-elements {
     
@@ -1304,7 +1316,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
     
     
-/* PEP Widget */
+/* ! ===== PEP Widget ===== */
 .pep-widget {
     @extend %grey-colorbox;
     
@@ -1324,7 +1336,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     
     tr {
         background-color: $grey-lighterest;
-        border-top: 1px solid $grey-lighter;
+        border-top: 1px solid $border-color;
         line-height: 1.2em;
         margin: 0;
         
@@ -1360,10 +1372,11 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
 }
 
-/* Success Stories landing page */
+
+/* ! ===== Success Stories landing page ===== */
 .featured-success-story {
-    // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
     background: url('../img/success-glow2.png') center -230px no-repeat;
+    // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
     
     img {
         padding: 10px 30px;
@@ -1425,6 +1438,7 @@ p.quote-by-organization {
     }
 }
 
+
 /* ! ===== Blog landing page ===== */
 
 /*h2*/ .welcome-message {
@@ -1478,8 +1492,10 @@ p.quote-by-organization {
 .subscription-channels {
     
 }
-    
+
+
 /* ! ===== Events landing page ===== */
+
 .most-recent-events {
     
     .menu {
@@ -1548,7 +1564,7 @@ p.quote-by-organization {
         }
 
 
-/* Community landing page */
+/* ! ===== Community landing page ===== */
 .community-success-stories {
     
     blockquote {
@@ -1614,12 +1630,12 @@ p.quote-by-organization {
         vertical-align: baseline; 
         padding: .2em .4em .1em; 
         background-color: $grey-lightest; 
-        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $grey-lighter ); 
+        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $border-color ); 
         
         &:hover, &:focus {
             color: $default-color; 
             background-color: darken( $grey-lightest, 8% ); 
-            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $grey-lighter, 8% ) ); 
+            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $border-color, 8% ) ); 
         }
     }
 }
@@ -1640,16 +1656,9 @@ p.quote-by-organization {
 .git-repo {
     padding-bottom: .25em; 
 }
-    
+
+
 /* ! ===== Stylized lists of items, used on Downloads and others ===== */
-/* <ol class="list-row-container menu">
-        <li>
-            <span class="release-number"><a href="#?to-download">Python 3.3.0</a></span> 
-            <span class="release-date">September 29, 2012</span> 
-            <span class="release-download"><a href="#?to-download" class="icon-download">Download</a></span> 
-            <span class="release-enhancements"><a href="#?to-features">Features and Improvements</a></span>
-        </li>
-    </ol>*/
 .list-row-headings {
     font-family: $default-font-bold;
     padding: .5em .5em .4em .75em;;
@@ -1661,7 +1670,7 @@ p.quote-by-organization {
 }
 
 .list-row-container {
-    border: 1px solid $grey-lighter;
+    border: 1px solid $border-color;
     
     li {
         padding: .5em .5em .4em .75em;
@@ -1670,11 +1679,6 @@ p.quote-by-organization {
         &:nth-child(odd) {
             background-color: $grey-lighterest; 
         }
-    }
-    
-    a {
-        // padding: .25em .5em; 
-        // margin: -.25em; 
     }
 }
 
@@ -1686,6 +1690,7 @@ p.quote-by-organization {
     <li><a href="#">…</a></li>
     <li class="next"><a href="#">Next</a></li>
 </ul> */
+
 .pagination, .previous-next {
     display: block; 
     width: 100%; 
@@ -1724,7 +1729,7 @@ p.quote-by-organization {
 }
 
 
-/* ! ===== Previous - Next display pattern ===== */
+/* ! ===== Previous / Next display pattern ===== */
 /* <p class="previous-next">
     <a class="prev-button disabled" href="#">
         <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
@@ -1739,6 +1744,7 @@ p.quote-by-organization {
         </span>
     </a>
 </p>*/
+
 .previous-next {
     
     .prev-button, .next-button {
@@ -1754,7 +1760,7 @@ p.quote-by-organization {
     
     .prev-button-text, .next-button-text {
         display: block; 
-        border-bottom: 1px solid $grey-lighter; 
+        border-bottom: 1px solid $border-color; 
         padding-bottom: .5em; 
     }
     
@@ -1778,7 +1784,7 @@ p.quote-by-organization {
     /* Special rules for specific templates */
     .single-event & {
         margin-top: rhythm( .75 ); 
-        border-top: 1px solid $grey-lighter; 
+        border-top: 1px solid $border-color; 
     }
 }
 
@@ -1805,7 +1811,8 @@ p.quote-by-organization {
 }
 
 
-/* Blue Widgets */
+
+/* ! ===== Blue Widgets ===== */
 .psf-widget, .python-needs-you-widget {
     @extend %blue-colorbox;
     
@@ -1842,12 +1849,13 @@ p.quote-by-organization {
 }
 
 
-/* ! ===== Feedback messages and alert levels ===== */
-/* <div class="alert level-low">
-        <p>Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
+
+/* ! ===== Feedback messages and Alert levels ===== */
+/* <div class="user-feedback level-low">
+        <p role="alert">Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
 
-.alert {
+.user-feedback {
     padding: .75em 1em .65em; 
     margin-bottom: rhythm( .75 ); 
     @include border-radius(); 
@@ -1857,13 +1865,10 @@ p.quote-by-organization {
     }
     
     a {
-        // color: $default-color; 
-        // margin-left: .25em;
         text-decoration: underline; 
         
         &:hover, &:focus {
             color: $grey-darker; 
-            // text-decoration: none; 
         }
     }
 }
@@ -1883,14 +1888,17 @@ p.quote-by-organization {
 }
 
 .level-error {
-    /* red? */
+    background-color: lighten( $red, 35% ); 
+    border: 2px solid $red;
 }
 
 .level-success {
-    /* green? */
+    background-color: lighten( $green, 35% ); 
+    border: 2px solid $green;
 }
 
 
+/* ! ===== SIDEBAR syles ===== */
 
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/ 
 .main-sidebar {
@@ -1920,16 +1928,6 @@ p.quote-by-organization {
 .sidebar-widget {
      
 }
-
-/* <li>
-    <h2 class="listing-company">
-        <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
-        <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
-    </h2>
-    <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
-    <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
-    <span class="listing-posted">10 December 2012</span>
-</li>*/
 
 .list-recent-jobs {
     
@@ -1968,7 +1966,8 @@ p.quote-by-organization {
     display: block; 
 }
 
-/* ! Jobs single page template */
+
+/* ! ===== Jobs single page template ===== */
 .listing-company {
     
     .company-name {
@@ -1994,10 +1993,10 @@ p.quote-by-organization {
         }
 
 
-/* Inner pages */
+/* ! ===== Inner pages ===== */
 .breadcrumbs {
     padding: .5em;
-    border-bottom: 1px solid $grey-lighter; 
+    border-bottom: 1px solid $border-color; 
     
     li {
         @include pe-inline-block();  
@@ -2046,7 +2045,71 @@ p.quote-by-organization {
 }
 
 
-/* <footer id="site-map" class="main-footer" role="navigation"> */
+/* ! ===== User profile pages and sign up forms ===== */
+.user-profile-controls {
+    border-bottom: 1px solid $border-color; 
+    margin-bottom: 2em; 
+    
+    li {
+        @include pe-inline-block(); 
+        margin-right: .75em; 
+    }
+    & + .return-link {
+        margin-top: - rhythm(.75); 
+    }
+}
+
+.return-link {
+    padding-bottom: rhythm(1.25); 
+}
+
+.active-user-list {
+    
+    a {
+        @extend %link-style; 
+    }
+    .user-name, .user-location, .user-psfmember-status {
+        display: inline-block; 
+        vertical-align: top; 
+    }
+    .user-name {
+        width: 25%; 
+    }
+    .user-location {
+        width: 40%; 
+    }
+    .user-psfmember-status {
+        width: 25%; 
+    }
+}
+
+.profile-label {
+    color: $grey-light; 
+}
+
+.psf-codeofconduct {
+    font-size: px2em( 14px ); 
+    padding: .5em 1em; 
+    margin-bottom: 1em; 
+    background-color: $white; 
+    @include box-shadow( .25em .25em .75em rgba(#000, .15) ); 
+}
+
+/*p*/ .horizontal-menu {
+    padding-bottom: rhythm( .75 ); 
+    
+    ul, ol {
+        list-style: none; 
+        margin-left: 0; 
+    }
+    li {
+        margin-right: 1em; 
+        @include pe-inline-block(); 
+    }
+}
+
+
+/* ! ===== FOOTER elements ===== */
 
 %footer-anchor-style {
     display: block; 
@@ -2055,7 +2118,7 @@ p.quote-by-organization {
 }
 
 .main-footer {
-    clear: both; 
+    clear: both;
     color: $grey;
     background-color: $grey-lightest;
     border-top: 1px solid darken($grey-lightest, 5%);
@@ -2118,10 +2181,10 @@ p.quote-by-organization {
     .subnav {
         font-size: px2em(16px);
         margin-bottom: 0; 
-        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $grey-lighter, 4% ) );
+        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $border-color, 4% ) );
         
         li {
-            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $grey-lighter, 4% ) ); 
+            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $border-color, 4% ) ); 
         }
         a:hover, a:focus {
             background-color: lighten( $grey-lightest, 2% ); 
@@ -2172,6 +2235,7 @@ p.quote-by-organization {
 }
 
 
+/* ! ===== Temporary Feedback Form for the Beta site ===== */
 .feedback {
     @extend %yellow-colorspace; 
     border-top: 1px solid $yellow; 
@@ -2202,14 +2266,7 @@ p.quote-by-organization {
         font-style: italic; 
         font-size: px2em( 14px ); 
     }
-    
-    /*<ul>
-        <li>
-            <label for="id_feedback_categories_0">
-                <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
-            </label>
-        </li>
-    </ul>*/
+
     ul {
         margin-left: 0; 
         list-style: none; 
@@ -2224,25 +2281,6 @@ p.quote-by-organization {
     }
 }
 
-.accordion-wrapper {
-    display: none; 
-    
-    .no-js & {
-        display: block; 
-    }
-}
-
-
-/* ! ==== No JS warning message... more of a suggestion, really ==== */
-@include no_js_warning;
-
-
-/* ! Test objects – can be deleted later */
-
-/* <div class="feedback-flag">
-        <span aria-hidden="true" class="icon-megaphone"></span>
-        <span class="feedback-label">Feedback</span>
-    </div>*/
 .feedback-flag {
     @extend %yellow-colorspace; 
     position: absolute; 
@@ -2261,10 +2299,20 @@ p.quote-by-organization {
     }
 }
 
-.container {
-    //@include susy-grid-background(); 
+.accordion-wrapper {
+    display: none; 
+    
+    .no-js & {
+        display: block; 
+    }
 }
 
+
+/* ! ==== No JS warning message... more of a suggestion, really ==== */
+@include no_js_warning;
+
+
+/* ! Test objects – can be deleted later */
 #test-window-size {
     background-color: rgba(200, 200, 200, 0.1);
     color: #999;

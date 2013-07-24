@@ -1,10 +1,11 @@
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
+from django.core.urlresolvers import reverse
 from django.shortcuts import render
-from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from .forms import UserCreationForm, UserProfileForm, MembershipForm
-from .models import User
+from .models import User, Membership
 
 
 #TODO: dont show the form if the user is already auth'd.
@@ -29,19 +30,34 @@ class SignupView(CreateView):
         return super().form_valid(form)
 
 
-class MembershipUpdate(LoginRequiredMixin, UpdateView):
+class MembershipUpdate(CreateView):
     form_class = MembershipForm
-    model = User
-    slug_field = 'username'
+    model = Membership
     template_name = 'users/membership_form.html'
 
-    def get_queryset(self):
-        return User.objects.filter(username=self.request.user)
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        if self.request.user.is_authenticated():
+            self.object.creator = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('users:user_membership_thanks')
 
 
-class UserUpdate(MembershipUpdate):
+class MembershipThanks(TemplateView):
+    template_name = 'users/membership_thanks.html'
+
+
+class UserUpdate(LoginRequiredMixin, UpdateView):
     form_class = UserProfileForm
+    model = User
+    slug_field = 'username'
     template_name = 'users/user_form.html'
+
+    def get_object(self, queryset=None):
+        return User.objects.get(username=self.request.user)
 
 
 class UserDetail(DetailView):

@@ -651,6 +651,7 @@
     }
 }
 
+
 /* ! ===== Larger than 800px ===== */
 @mixin min_width_800() {
     
@@ -899,6 +900,25 @@
         .job-tags {
             @include span-columns( 6 omega ); 
         }
+    
+    /* Forms that are wide enough to have labels and input fields side by side */
+    .wide-form {
+        
+        p {
+            @include clearfix(); 
+            
+            label {
+                width: 25%; 
+                float: left; 
+                margin-top: .5em; 
+            }
+            @include input_text_types() {
+                width: 75%; 
+                float: left; 
+            }
+        }
+    }
+    
     
     /* Footer */
     .sitemap, .footer-links, .copyright {
