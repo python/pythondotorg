@@ -521,6 +521,8 @@ blockquote {
     left: 0; }
   blockquote footer {
     font: normal 0.77778em HelveticaNeue, "Helvetica Neue", Arial, sans-serif; }
+  blockquote em {
+    font-style: normal; }
 
 /* ! ===== Form elements ===== */
 form {
@@ -979,11 +981,11 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     border-top: 1px solid #070a0c;
     border-bottom: 1px solid #2d3e4d; }
 
-.jump-to-menu, .search-the-site, .icon-search-alt, input#s, .search-button, .adjust-font-size, .winkwink-nudgenudge {
+.jump-to-menu, .search-the-site, .icon-search-alt, input#s, .adjust-font-size, .winkwink-nudgenudge {
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: baseline; }
-  .lt-ie8 .jump-to-menu, .lt-ie8 .search-the-site, .lt-ie8 .icon-search-alt, .lt-ie8 input#s, .lt-ie8 .search-button, .lt-ie8 .adjust-font-size, .lt-ie8 .winkwink-nudgenudge {
+  .lt-ie8 .jump-to-menu, .lt-ie8 .search-the-site, .lt-ie8 .icon-search-alt, .lt-ie8 input#s, .lt-ie8 .adjust-font-size, .lt-ie8 .winkwink-nudgenudge {
     vertical-align: auto;
     zoom: 1;
     display: inline; }
@@ -1241,21 +1243,21 @@ a.jump-to-menu {
 /* ! ===== Header banner, present on most landing pages ===== */
 .header-banner {
   clear: both;
-  *zoom: 1;
   margin: 0 1em;
   position: relative;
+  *zoom: 1;
   /* temporary slideshow placeholder */ }
   .header-banner:after {
     content: "";
     display: table;
     clear: both; }
   .home .header-banner {
-    background: #222;
-    -webkit-box-shadow: inset 0 0 30px black;
-    -moz-box-shadow: inset 0 0 30px black;
-    box-shadow: inset 0 0 30px black;
     margin: 0 auto;
-    max-width: 960px; }
+    max-width: 960px;
+    background: #1e2933;
+    -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.8); }
   .header-banner img {
     display: block;
     margin: 0 auto; }
@@ -1274,7 +1276,6 @@ a.jump-to-menu {
   text-align: left; }
 
 .slide-code {
-  background: #1e2933;
   overflow: auto; }
   .slide-code code {
     color: #666666;

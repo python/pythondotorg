@@ -7,7 +7,7 @@
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en">              <!--<![endif]-->
 
 <head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website# article: http://ogp.me/ns/article#">
-
+    
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
@@ -71,217 +71,213 @@
 
 <body {% block body_attributes %}{% endblock %}>
 
-    <!-- Sister Site Links -->
-    <div id="top" class="top-bar do-not-print">
-
-        <nav class="meta-navigation container" role="navigation">
-
-            <!-- Allow Screen readers (hidden for all others) to skip the navigation and get to the main content -->
-            <div class="skip-link screen-reader-text">
-                <a href="#content" title="Skip to content">Skip to content</a>
-            </div>
-
-            <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
-            <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close</a>
-
-            {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
-
-            <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network</a>
-
-        </nav>
-
-    </div>
-
-    <!-- Header elements -->
-    <header class="main-header" role="banner">
-        <div class="container">
-
-            <h1 class="site-headline">
-                <a href="/">
-                    <img src="{{ STATIC_URL }}img/python-top-logo.png" alt="python&trade;">
-                </a>
-            </h1>
-
-            <div class="options-bar do-not-print">
-
-                <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a>
-
-                <form class="search-the-site" action="#" method="get">
-                    <fieldset title="Search Python.org">
-
-                        <span aria-hidden="true" class="icon-search"></span>
-
-                        <label class="screen-reader-text" for="search-field">Search This Site</label>
-                        <input id="s" name="s" type="search" role="textbox" class="search-field" placeholder="Search" tabindex="1">
-
-                        <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
-                            GO
-                        </button>
-
-                        <!-- I heard IE needs this in order to have the form submit by pressing the enter key. True? -->
-                        <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
-
-                    </fieldset>
-                </form>
-
-                <span class="breaker"></span>
-
-                <div class="adjust-font-size">
-                    <ul class="navigation menu" aria-label="Adjust Text Size on Page">
-                        <li class="tier-1 last" aria-haspopup="true">
-                            <a href="#"><strong><small>A</small> A</strong></a>
-                            <ul class="subnav menu">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a class="close-for-touch close-text" href="#">Close Menu</a>
-                                    <a class="close-for-touch close-graphic" href="#">&times;</a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</li>
-                                <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
-                            </ul>
-                        </li>
-                    </ul>
+    <div id="touchnav-wrapper">
+    
+        <!-- Sister Site Links -->
+        <div id="top" class="top-bar do-not-print">
+    
+            <nav class="meta-navigation container" role="navigation">
+    
+                <!-- Allow Screen readers (hidden for all others) to skip the navigation and get to the main content -->
+                <div class="skip-link screen-reader-text">
+                    <a href="#content" title="Skip to content">Skip to content</a>
                 </div>
-
-                <div class="winkwink-nudgenudge">
-                    <ul class="navigation menu" aria-label="Social Media Navigation">
-                        <li class="tier-1 last" aria-haspopup="true">
-                            <a href="#">Socialize</a>
-                            <ul class="subnav menu">
-                                <li class="tier-2 element-0 close-subnav" role="treeitem">
-                                    <a class="close-for-touch close-text" href="#">Close Menu</a>
-                                    <a class="close-for-touch close-graphic" href="#">&times;</a>
-                                </li>
-                                <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
-                                <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
-                                <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>@ThePSF</a></li>
-                                <li class="tier-2 element-4" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span>GitHub</a></li>
-                                <li class="tier-2 element-5" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-freenode"></span>IRC on Freenode</a></li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-
-            </div><!-- end options-bar -->
-
-            <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
-                {% block main_navigation %}
-                    {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
-                {% endblock main_navigation %}
+    
+                <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
+                <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close</a>
+    
+                {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
+    
+                <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network</a>
+    
             </nav>
-
-            <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
-                {% block header_content %}
-                {% endblock %}
-            </div>
-
-            {% block intro_copy %}
-            {% endblock %}
-
-         </div><!-- end .container -->
-    </header>
-
-    <div id="content" class="content-wrapper">
-        <!-- Main Content Column -->
-        <div class="container">
-
-            <section class="main-content {% block content_attributes %}{% endblock %}" role="main">
-
-                {% block breadcrumbs %}
-                {% endblock breadcrumbs %}
-
-                {% block content %}
-                {% endblock content %}
-
-            </section>
-
-            {% block left_sidebar %}
-            {% endblock left_sidebar %}
-
-            {% block right_sidebar %}
-            {% endblock right_sidebar %}
-
-
-        </div><!-- end .container -->
-    </div><!-- end #content .content-wrapper -->
-
-    <!-- Footer and social media list -->
-    <footer id="site-map" class="main-footer" role="navigation">
-        <div class="main-footer-links">
-            <div class="container">
-
-                {% block footer_sitemap %}
-                <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
-
-                {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
-
-                <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
-                {% endblock footer_sitemap %}
-
-            </div><!-- end .container -->
-        </div> <!-- end .main-footer-links -->
-
-        <div id="leave_feedback" class="feedback">
-            <div class="container">
-                
-                <div class="shrubbery">
-                    <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2> 
-                    <h3>Python.org Beta only gets better if we hear from you.</h3>
-                    <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</a></p>
-                </div>
-                
-                <div id="feedback_form" class="row accordion-wrapper">
-                    {% load feedbacks_tags %}
-                    {% get_feedback_form %}
-                </div>
-            </div>
+    
         </div>
-
-        <div class="site-base">
+    
+        <!-- Header elements -->
+        <header class="main-header" role="banner">
             <div class="container">
-                <ul class="footer-links navigation menu do-not-print" role="tree">
-                    <li class="tier-1 element-1"><a href="#">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
-                    <li class="tier-1 element-2"><a href="#">Diversity <span class="say-no-more">Initiatives</span></a></li>
-                    <li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>
-                </ul>
-
-                <div class="copyright">
-                    <p><small>
-                        <span class="pre">Copyright &copy;1990-2013<!-- Insert Django date tag to keep year current? -->.</span>
-                        <span class="pre">Python Software Foundation.</span>
-                        <a class="pre" href="#">Legal Statements.</a>
-                    </small></p>
+    
+                <h1 class="site-headline">
+                    <a href="/">
+                        <img src="{{ STATIC_URL }}img/python-top-logo.png" alt="python&trade;">
+                    </a>
+                </h1>
+    
+                <div class="options-bar do-not-print">
+    
+                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a>
+    
+                    <form class="search-the-site" action="#" method="get">
+                        <fieldset title="Search Python.org">
+    
+                            <span aria-hidden="true" class="icon-search"></span>
+    
+                            <label class="screen-reader-text" for="search-field">Search This Site</label>
+                            <input id="s" name="s" type="search" role="textbox" class="search-field" placeholder="Search" tabindex="1">
+    
+                            <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
+                                GO
+                            </button>
+    
+                            <!-- I heard IE needs this in order to have the form submit by pressing the enter key. True? -->
+                            <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
+    
+                        </fieldset>
+                    </form>
+    
+                    <span class="breaker"></span>
+    
+                    <div class="adjust-font-size">
+                        <ul class="navigation menu" aria-label="Adjust Text Size on Page">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#"><strong><small>A</small> A</strong></a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</li>
+                                    <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+    
+                    <div class="winkwink-nudgenudge">
+                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#">Socialize</a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
+                                    <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>@ThePSF</a></li>
+                                    <li class="tier-2 element-4" role="treeitem"><a href="http://github.com/python-git/python"><span aria-hidden="true" class="icon-github"></span>GitHub</a></li>
+                                    <li class="tier-2 element-5" role="treeitem"><a href="http://irc.freenode.net"><span aria-hidden="true" class="icon-freenode"></span>IRC on Freenode</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+    
+                </div><!-- end options-bar -->
+    
+                <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
+                    {% block main_navigation %}
+                        {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
+                    {% endblock main_navigation %}
+                </nav>
+    
+                <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
+                    {% block header_content %}
+                    {% endblock %}
                 </div>
-
-
-                <!-- Testing only for small screens - Delete later
-                <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
-                <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
-                <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
-                <div class="jump-link test-suite retina-test">Retina Display @1.5 <span class="yes">Yes</span><span class="no">No</span></div> -->
+    
+                {% block intro_copy %}
+                {% endblock %}
+    
+             </div><!-- end .container -->
+        </header>
+    
+        <div id="content" class="content-wrapper">
+            <!-- Main Content Column -->
+            <div class="container">
+    
+                <section class="main-content {% block content_attributes %}{% endblock %}" role="main">
+    
+                    {% block breadcrumbs %}
+                    {% endblock breadcrumbs %}
+    
+                    {% block content %}
+                    {% endblock content %}
+    
+                </section>
+    
+                {% block left_sidebar %}
+                {% endblock left_sidebar %}
+    
+                {% block right_sidebar %}
+                {% endblock right_sidebar %}
+    
+    
             </div><!-- end .container -->
-
-        </div><!-- end .site-base -->
-
-    </footer>
+        </div><!-- end #content .content-wrapper -->
+    
+        <!-- Footer and social media list -->
+        <footer id="site-map" class="main-footer" role="contentinfo">
+            <div class="main-footer-links">
+                <div class="container">
+    
+                    {% block footer_sitemap %}
+                    <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+    
+                    {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
+    
+                    <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+                    {% endblock footer_sitemap %}
+    
+                </div><!-- end .container -->
+            </div> <!-- end .main-footer-links -->
+    
+            <div id="leave_feedback" class="feedback">
+                <div class="container">
+                    
+                    <div class="shrubbery">
+                        <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2> 
+                        <h3>Python.org Beta only gets better if we hear from you.</h3>
+                        <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</a></p>
+                    </div>
+                    
+                    <div id="feedback_form" class="row accordion-wrapper">
+                        {% load feedbacks_tags %}
+                        {% get_feedback_form %}
+                    </div>
+                </div>
+            </div>
+    
+            <div class="site-base">
+                <div class="container">
+                    <ul class="footer-links navigation menu do-not-print" role="tree">
+                        <li class="tier-1 element-1"><a href="#">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
+                        <li class="tier-1 element-2"><a href="#">Diversity <span class="say-no-more">Initiatives</span></a></li>
+                        <li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>
+                    </ul>
+    
+                    <div class="copyright">
+                        <p><small>
+                            <span class="pre">Copyright &copy;1990-2013<!-- Insert Django date tag to keep year current? -->.</span>
+                            <span class="pre"><a href="#">Python Software Foundation</a>.</span>
+                            <a class="pre" href="#">Legal Statements.</a>
+                        </small></p>
+                    </div>
     
     
-    <!-- Feedback Flag -->
-    <div class="feedback-flag">
-        <a class="feedback-label" href="#leave_feedback"><span aria-hidden="true" class="icon-megaphone"></span> Feedback</a>
-    </div>
+                    <!-- Testing only for small screens - Delete later
+                    <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
+                    <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
+                    <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
+                    <div class="jump-link test-suite retina-test">Retina Display @1.5 <span class="yes">Yes</span><span class="no">No</span></div> -->
+                </div><!-- end .container -->
     
-
-    <div id="nojs" class="do-not-print">
-        <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
-    </div>
-
-    <!--[if lt IE 8]>
-    <div id="oldie-warning" class="do-not-print">
-        <p><strong>Notice:</strong> Your browser is <em>ancient</em> and <a href="http://www.ie6countdown.com/">Microsoft agrees</a>. <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience a better web.</p>
-    </div>
-    <![endif]-->
-
+            </div><!-- end .site-base -->
+    
+        </footer>
+        
+        
+        <!-- Feedback Flag -->
+        <div class="feedback-flag">
+            <a class="feedback-label" href="#leave_feedback"><span aria-hidden="true" class="icon-megaphone"></span> Feedback</a>
+        </div>
+        
+    
+        <div id="nojs" class="do-not-print">
+            <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
+        </div>
+    
+        <!--[if lt IE 8]>
+        <div id="oldie-warning" class="do-not-print">
+            <p><strong>Notice:</strong> Your browser is <em>ancient</em> and <a href="http://www.ie6countdown.com/">Microsoft agrees</a>. <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience a better web.</p>
+        </div>
+        <![endif]-->
+    
+    </div><!-- end #touchnav-wrapper -->
+    
     {% block javascript %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
