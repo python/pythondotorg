@@ -42,6 +42,7 @@ class FeedbackViewTests(TestCase):
 
         feedbacks = Feedback.objects.filter(name__exact=self.name)
         self.assertEqual(len(feedbacks), 1)
+        self.assertEqual(str(feedbacks[0]), 'Kevin Arnold')
 
     def test_feedback_create_invalid(self):
         url = reverse('feedback_create')

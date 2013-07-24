@@ -360,7 +360,7 @@ body {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
       display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
+      padding: .5em 1.5em .4em 1em;
       position: relative; }
   .main-navigation .tier-1 {
     display: block;
@@ -1088,14 +1088,14 @@ body {
   height: 72.16px; }
 
 .site-headline {
-  margin: 0.25em 0 0.5em; }
+  margin: .25em 0 .5em; }
 
 .options-bar {
   margin: 0.875em 0; }
 
 .search-field {
   background: white;
-  padding: 0.4em 0.5em 0.3em;
+  padding: .4em .5em .3em;
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
@@ -1129,24 +1129,24 @@ body {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1400,7 +1400,7 @@ body {
   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   display: block;
-  margin: 0 -0.625em;
+  margin: 0 -.625em;
   text-align: center;
   /*ul*/
   /* <li class="tier-2 element-0 close-subnav" role="treeitem">
@@ -1512,7 +1512,7 @@ body {
       right: 0;
       text-align: center;
       width: 1.71429em;
-      padding: 0.18em 0 0.25em;
+      padding: .18em 0 .25em;
       background: rgba(255, 255, 255, 0.2);
       text-shadow: -1px 0 0 white; }
   .no-touch .main-navigation .menu {

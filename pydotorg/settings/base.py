@@ -130,6 +130,8 @@ INSTALLED_APPS = (
     'sponsors',
     'successstories',
     'events',
+    'minutes',
+    'peps',
 
     'allauth',
     'allauth.account',
@@ -185,3 +187,7 @@ from .pipeline import (
     PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
+
+# PEP Repo - Location on disk of where a hg.python.org/peps checkout can be
+# found
+PEP_REPO_PATH = os.path.join(BASE, 'hg-peps')
