@@ -373,7 +373,8 @@ html {
 
 body {
   color: #444444;
-  font: normal 100%/1.625 HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
+  background-color: white;
+  font: normal 100%/1.625 SourceSansProRegular, Arial, sans-serif;
   /* Label the body with our media query parameters. Then check with JS to coordinate @media changes */ }
   body:after {
     content: 'small';
@@ -482,42 +483,11 @@ h6, .gamma {
   font-family: SourceSansProBold, Arial, sans-serif;
   margin-top: 1.75em; }
 
-p, ul, ol, dl {
+p, ul, ol, dl, address, table {
   margin-bottom: 0.875em; }
 
-/* If generated content is supported, provide our own decoratations */
-ul:not(.menu) {
-  /*modernizr*/
-  /*modernizr*/
-  /*modernizr*/
-  /*modernizr*/ }
-  .generatedcontent ul:not(.menu) li {
-    list-style: none; }
-  .generatedcontent ul:not(.menu) li:before {
-    content: '\25A0';
-    /* square */
-    display: block;
-    position: relative;
-    max-width: 0px;
-    max-height: 0px;
-    left: -1em;
-    top: -.125em;
-    color: #999999;
-    font-size: 1em; }
-  .generatedcontent ul:not(.menu) li > ul li:before {
-    content: '\2022';
-    /* solid round */
-    color: #3776ab;
-    top: -.375em;
-    left: -.75em;
-    font-size: 1.625em; }
-  .generatedcontent ul:not(.menu) li > ul li > ul li:before {
-    content: '\25cb';
-    /* open round */
-    color: #3776ab;
-    top: -.125em;
-    left: -.75em;
-    font-size: 1.25em; }
+ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
+  margin-bottom: 0; }
 
 blockquote {
   font: italic 1.125em Georgia, serif;
@@ -567,19 +537,21 @@ form {
     display: table;
     clear: both; }
 
-legend {
-  display: block;
-  width: 100%;
-  font-size: 1.125em;
-  color: #3776ab;
-  border-bottom: 1px solid #3776ab;
-  padding-top: 0.875em;
-  margin-bottom: 0.875em; }
+.errorlist {
+  color: #b55863;
+  margin-bottom: 0; }
+  .errorlist + label {
+    margin-top: 0; }
+
+.error-message {
+  color: #b55863; }
 
 label {
   display: block;
-  font-family: SourceSansProBold, Arial, sans-serif;
-  padding-top: 0.875em; }
+  margin-top: 0.875em;
+  margin-top: 0.21875em; }
+  label.active {
+    font-weight: bold; }
 
 input, textarea {
   width: 100%;
@@ -755,16 +727,8 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   margin-bottom: 0.4375em;
   padding: 0.4em 0.75em 0.35em;
   text-align: left;
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
   white-space: nowrap;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  -ms-border-radius: 6px;
-  -o-border-radius: 6px;
-  border-radius: 6px;
-  -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
-  -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
   background-color: #cccccc;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFD9D9D9', endColorstr='#FFCCCCCC');
@@ -784,16 +748,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   border-radius: 6px;
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
-  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
-  color: #4d4d4d !important;
-  cursor: pointer;
-  display: block;
-  font-weight: normal;
-  margin-bottom: 0.4375em;
-  padding: 0.4em 0.75em 0.35em;
-  text-align: left;
-  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
-  white-space: nowrap; }
+  box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
   input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .button:hover, .header-banner .button:hover, .header-banner a.button:hover, .search-button:hover, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .button:focus, .header-banner .button:focus, .header-banner a.button:focus, .search-button:focus, input[type=submit]:active, input[type=reset]:active, input[type=button]:active, button:active, .button:active, .header-banner .button:active, .header-banner a.button:active, .search-button:active {
     background-color: inherit;
     color: #1a1a1a !important;
@@ -851,7 +806,6 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   -moz-box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2); }
   .search-button:hover, .feedback button:hover, .search-button:active, .feedback button:active {
-    color: #f2f4f6 !important;
     background: inherit;
     color: #f2f4f6 !important;
     background-color: #244e71;
@@ -864,12 +818,12 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     background-image: linear-gradient(#316998 10%, #244e71 90%); }
 
 .header-banner a:not(.button), .header-banner a:not(.readmore), .text a:not(.button),
-.sidebar-widget a:not(.button) {
-  border-bottom: 1px solid #ffe58f;
+.sidebar-widget a:not(.button), .active-user-list a {
+  border-bottom: 1px solid #ffdf76;
   text-decoration: none; }
   .header-banner a:hover:not(.button), .header-banner a:hover:not(.readmore), .text a:hover:not(.button),
-  .sidebar-widget a:hover:not(.button), .header-banner a:focus:not(.button), .header-banner a:focus:not(.readmore), .text a:focus:not(.button),
-  .sidebar-widget a:focus:not(.button) {
+  .sidebar-widget a:hover:not(.button), .active-user-list a:hover, .header-banner a:focus:not(.button), .header-banner a:focus:not(.readmore), .text a:focus:not(.button),
+  .sidebar-widget a:focus:not(.button), .active-user-list a:focus {
     border-bottom-color: #ffd343; }
 
 .pagination a {
@@ -903,11 +857,15 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     content: ">>>";
     margin-right: .25em; }
 
-/* ! ===== ICONS =====
-    
-    Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. 
- */
-.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
+.larger {
+  font-size: 120%; }
+
+.indent {
+  padding-left: 2em; }
+
+/* ! ===== ICONS ===== */
+/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
+.icon-alert:before, .icon-arrow-down:before, .errorlist:before:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
   font-family: 'Pythonicon';
   speak: none;
   font-style: normal;
@@ -918,15 +876,14 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   -webkit-font-smoothing: antialiased;
   margin-right: .5em; }
 
-.icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-close {
+.icon-alert, .icon-arrow-down, .errorlist:before, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
   /* Hide a unicode fallback character when we supply it by default. 
    * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
    */ }
   .icon-alert span, .icon-arrow-down span, .errorlist:before span, .icon-arrow-left span, .icon-arrow-right span, .icon-arrow-up span, .icon-calendar span, .icon-close span, .icon-code span, .icon-documentation span, .icon-email span, .icon-facebook span, .icon-feed span, .icon-freenode span, .icon-get-started span, .icon-github span, .icon-google-plus span, .icon-help span, .icon-pypi span, .icon-python span, .icon-python-alt span, .icon-search span, .icon-sitemap span, .icon-stack-overflow span, .icon-statistics span, .icon-success-stories span, .icon-text-resize span, .icon-thumbs-down span, .icon-thumbs-up span, .icon-twitter span, .icon-versions span, .icon-community span, .icon-download span, .icon-news span, .icon-jobs span, .icon-beginner span, .icon-moderate span, .icon-advanced span, .icon-search-alt span, .icon-megaphone span {
     display: none; }
 
-/* ===== MAJOR PAGE ELEMENTS ===== */
-/* ! ===== Header ===== */
+/* ! ===== MAJOR PAGE ELEMENTS ===== */
 .top-bar a:hover, .top-bar a:focus, .top-bar .selected a {
   color: white;
   background-color: #1f2a32;
@@ -1126,7 +1083,7 @@ a.jump-to-menu {
           <a class="close-for-touch close-graphic" href="#">&times;</a>
       </li>
   /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */ }
-  .adjust-font-size .menu, .winkwink-nudgenudge .menu {
+  .adjust-font-size .menu, .adjust-font-size .errorlist, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist {
     margin-bottom: 0; }
   .adjust-font-size .tier-1, .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-1, .winkwink-nudgenudge .tier-2 {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
@@ -1278,34 +1235,27 @@ a.jump-to-menu {
     .adjust-font-size .close-subnav .close-text, .winkwink-nudgenudge .close-subnav .close-text {
       padding: 0.9em 3.25em 0.8em 1em; }
 
-/* ! ===== Main Navigation ===== */
-/* Rules are mostly in layout and mixins, as we don't display it for mobile */
+/* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
   display: none;
-  margin-bottom: 1px;
-  /* For touch devices we create an overlay that is tappable */ }
-  .main-navigation .close-pane {
-    display: none;
-    background-color: rgba(255, 255, 255, 0.25);
+  margin-bottom: 1px; }
+
+.main-navigation .close-pane {
+  display: none;
+  background-color: rgba(255, 255, 255, 0.25);
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 1200px; }
+  .main-navigation .close-pane .close-graphic {
     position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    width: 100%; }
-    .main-navigation .close-pane .close-graphic {
-      position: absolute;
-      top: 0px;
-      right: 0px;
-      padding: 0px 1.25em;
-      background-color: white; }
+    top: 0px;
+    right: 0px;
+    padding: 0px 10px;
+    background-color: white; }
 
 /* ! ===== Header banner, present on most landing pages ===== */
-/*<div class="header-banner">
-    <div class="featured-success-story">
-        <h1 class="call-to-action"><a href="#">Python is powerful... and fast</a>. <a href="#">Python plays well with others</a>. <a href="#">Python runs everywhere</a>. <a href="#">Python is friendly... and easy to learn</a>. <a href="#">Python is Open</a>.</h1>
-        <p>These are some of the reasons people who use Python would rather not use anything else.</p>
-    </div>
-</div>*/
 .header-banner {
   clear: both;
   margin: 0 1em;
@@ -1318,6 +1268,9 @@ a.jump-to-menu {
     clear: both; }
   .home .header-banner {
     background: #222;
+    -webkit-box-shadow: inset 0 0 30px black;
+    -moz-box-shadow: inset 0 0 30px black;
+    box-shadow: inset 0 0 30px black;
     margin: 0 auto;
     max-width: 960px;
     -webkit-box-shadow: inset 0 0 30px black;
@@ -1455,17 +1408,13 @@ a.jump-to-menu {
     margin-bottom: 0.875em; }
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
-    color: #3776ab;
     display: inline; }
-    .text a:not(.button):hover, .text a:not(.button):focus,
-    .sidebar-widget a:not(.button):hover,
-    .sidebar-widget a:not(.button):focus {
-      color: #1f3b47; }
-  .text nav a, .text .menu a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
-  .text nav a:hover, .text .menu a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text button:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
-  .text nav a:focus, .text .menu a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text button:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
+  .text nav a, .text .menu a, .text .errorlist a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
+  .text nav a:hover, .text .menu a:hover, .text .errorlist a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text button:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
+  .text nav a:focus, .text .menu a:focus, .text .errorlist a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text button:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
   .sidebar-widget nav a,
   .sidebar-widget .menu a,
+  .sidebar-widget .errorlist a,
   .sidebar-widget input[type=submit],
   .sidebar-widget input[type=reset],
   .sidebar-widget input[type=button],
@@ -1476,6 +1425,7 @@ a.jump-to-menu {
   .give-me-more .sidebar-widget a:before,
   .sidebar-widget nav a:hover,
   .sidebar-widget .menu a:hover,
+  .sidebar-widget .errorlist a:hover,
   .sidebar-widget input[type=submit]:hover,
   .sidebar-widget input[type=reset]:hover,
   .sidebar-widget input[type=button]:hover,
@@ -1486,6 +1436,7 @@ a.jump-to-menu {
   .give-me-more .sidebar-widget a:hover:before,
   .sidebar-widget nav a:focus,
   .sidebar-widget .menu a:focus,
+  .sidebar-widget .errorlist a:focus,
   .sidebar-widget input[type=submit]:focus,
   .sidebar-widget input[type=reset]:focus,
   .sidebar-widget input[type=button]:focus,
@@ -1586,7 +1537,7 @@ a.jump-to-menu {
   border-top: 5px solid #d4dbe1;
   padding: 0.75em 1em 0.5em; }
 
-/* ===== WIDGET STYLES ===== */
+/* ! ===== Widget Styles ===== */
 .small-widget, .download-list-widget, .most-recent-events, .triple-widget, .most-recent-posts, .medium-widget, .sidebar-widget {
   border-top: 5px solid #e6e8ea;
   margin-bottom: 0.25em;
@@ -1656,9 +1607,21 @@ a.jump-to-menu {
 .shop .listing-company > span:before {
   color: #b55863; }
 
-/* Specific Widget Styles */
+/* ! ===== Specific Widget Styles ===== */
 .download-widget p:last-child a {
   white-space: nowrap; }
+
+.blog-widget li, .event-widget li, .most-recent-posts li {
+  border-top: 1px solid #caccce;
+  padding-left: 4em;
+  padding-top: 0.4375em;
+  padding-bottom: 0.4375em;
+  position: relative; }
+  .blog-widget li time, .event-widget li time, .most-recent-posts li time {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    margin-top: -.75em; }
 
 .time-posted {
   display: block;
@@ -1735,14 +1698,7 @@ a.jump-to-menu {
     background-image: -webkit-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
     background-image: -moz-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
     background-image: -o-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
-    background-image: linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
-    border: 1px solid #c2d9ec;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -ms-border-radius: 6px;
-    -o-border-radius: 6px;
-    border-radius: 6px;
-    padding: 0.7em 1em 0.875em; }
+    background-image: linear-gradient(#e9f1f8 10%, #d6e5f2 90%); }
   .statistics-widget .number {
     color: #666666;
     font-size: 2.625em;
@@ -1977,14 +1933,6 @@ p.quote-by-organization {
   padding-bottom: .25em; }
 
 /* ! ===== Stylized lists of items, used on Downloads and others ===== */
-/* <ol class="list-row-container menu">
-        <li>
-            <span class="release-number"><a href="#?to-download">Python 3.3.0</a></span> 
-            <span class="release-date">September 29, 2012</span> 
-            <span class="release-download"><a href="#?to-download" class="icon-download">Download</a></span> 
-            <span class="release-enhancements"><a href="#?to-features">Features and Improvements</a></span>
-        </li>
-    </ol>*/
 .list-row-headings {
   font-family: SourceSansProBold, Arial, sans-serif;
   padding: 0.5em 0.5em 0.4em 0.75em;
@@ -2033,7 +1981,7 @@ p.quote-by-organization {
 .pagination .previous a, .pagination .next a, .pagination .previous a:hover, .pagination .next a:hover, .pagination .previous a:focus, .pagination .next a:focus {
   border: 0; }
 
-/* ! ===== Previous - Next display pattern ===== */
+/* ! ===== Previous / Next display pattern ===== */
 /* <p class="previous-next">
     <a class="prev-button disabled" href="#">
         <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
@@ -2104,9 +2052,9 @@ p.quote-by-organization {
   .psf-widget .click-these, .python-needs-you-widget .click-these {
     margin-bottom: 0; }
 
-/* ! ===== Feedback messages and alert levels ===== */
-/* <div class="alert level-low">
-        <p>Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
+/* ! ===== Feedback messages and Alert levels ===== */
+/* <div class="user-feedback level-low">
+        <p role="alert">Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
 .user-feedback {
   padding: 0.75em 1em 0.65em;
@@ -2380,14 +2328,7 @@ p.quote-by-organization {
 /* ! ===== Temporary Feedback Form for the Beta site ===== */
 .feedback {
   border-top: 1px solid #ffd343;
-  padding-top: 1.75em;
-  /*<ul>
-      <li>
-          <label for="id_feedback_categories_0">
-              <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
-          </label>
-      </li>
-  </ul>*/ }
+  padding-top: 1.75em; }
   .feedback .widget-title {
     font-family: SourceSansProBold, Arial, sans-serif; }
   .feedback h3 {
@@ -2423,7 +2364,7 @@ p.quote-by-organization {
     color: #3776ab; }
   .feedback-flag .feedback-label {
     color: #3776ab;
-    font-weight: bold; }
+    font-family: SourceSansProBold, Arial, sans-serif; }
 
 .accordion-wrapper {
   display: none; }
@@ -2459,27 +2400,6 @@ p.quote-by-organization {
   display: none; }
 
 /* ! Test objects – can be deleted later */
-/* <div class="feedback-flag">
-        <span aria-hidden="true" class="icon-megaphone"></span>
-        <span class="feedback-label">Feedback</span>
-    </div>*/
-.feedback-flag {
-  position: absolute;
-  top: 29.25em;
-  right: -2.4em;
-  -webkit-transform: rotate(90deg);
-  -moz-transform: rotate(90deg);
-  -ms-transform: rotate(90deg);
-  -o-transform: rotate(90deg);
-  transform: rotate(90deg);
-  border: 1px solid #ffcc24;
-  padding: 0.3em 0.6em; }
-  .feedback-flag .icon-megaphone:before {
-    color: #3776ab; }
-  .feedback-flag .feedback-label {
-    color: #3776ab;
-    font-family: SourceSansProBold, Arial, sans-serif; }
-
 #test-window-size {
   background-color: rgba(200, 200, 200, 0.1);
   color: #999;
