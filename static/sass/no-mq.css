@@ -235,7 +235,7 @@
   display: inline; }
 
 input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-  display: inline-block !important;
+  display: inline-block;
   width: auto; }
 
 /* - - - Larger than 520px - - - many basic styles for larger screens are here */
@@ -306,7 +306,7 @@ body {
 
 /*modernizr*/
 .no-touch .search-button {
-  display: inline-block; }
+  display: inline; }
 
 .slide-copy {
   padding: 30px 40px; }
@@ -1229,7 +1229,7 @@ body {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1370977946') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1361222549') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1386,13 +1386,11 @@ body {
   .feedback button {
     margin-left: 17.02128%; }
 
-a.jump-to-menu {
+.no-touch a.jump-to-menu {
   display: none; }
-
-.search-the-site {
+.no-touch .search-the-site {
   border-left: 0; }
-
-.main-navigation {
+.no-touch .main-navigation {
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
@@ -1416,30 +1414,30 @@ a.jump-to-menu {
       </li>
   /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
   font-size: 1.125em; }
-  .main-navigation .menu {
+  .no-touch .main-navigation .menu {
     *zoom: 1; }
-    .main-navigation .menu:after {
+    .no-touch .main-navigation .menu:after {
       content: "";
       display: table;
       clear: both; }
-  .main-navigation .tier-1 {
+  .no-touch .main-navigation .tier-1 {
     position: relative; }
-  .main-navigation .subnav {
+  .no-touch .main-navigation .subnav {
     position: absolute;
     top: 100%;
     z-index: 100;
     text-align: left;
     /*modernizr*/
     /*modernizr*/ }
-    .no-touch .main-navigation .subnav {
+    .no-touch .no-touch .main-navigation .subnav {
       min-width: 100%; }
-    .touch .main-navigation .subnav {
+    .touch .no-touch .main-navigation .subnav {
       display: none;
       top: 120%;
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
-      .touch .main-navigation .subnav:before {
+      .touch .no-touch .main-navigation .subnav:before {
         position: absolute;
         content: "";
         width: 0;
@@ -1448,62 +1446,62 @@ a.jump-to-menu {
         border-width: 0.75em;
         top: -1.45em;
         display: block; }
-  .main-navigation .element-1 .subnav, .main-navigation .element-2 .subnav, .main-navigation .element-3 .subnav, .main-navigation .element-4 .subnav {
+  .no-touch .main-navigation .element-1 .subnav, .no-touch .main-navigation .element-2 .subnav, .no-touch .main-navigation .element-3 .subnav, .no-touch .main-navigation .element-4 .subnav {
     left: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
     transition: all 0s ease; }
-    .touch .main-navigation .element-1 .subnav:before, .touch .main-navigation .element-2 .subnav:before, .touch .main-navigation .element-3 .subnav:before, .touch .main-navigation .element-4 .subnav:before {
+    .touch .no-touch .main-navigation .element-1 .subnav:before, .touch .no-touch .main-navigation .element-2 .subnav:before, .touch .no-touch .main-navigation .element-3 .subnav:before, .touch .no-touch .main-navigation .element-4 .subnav:before {
       left: 1.5em; }
-  .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-4:hover .subnav,
-  .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:focus .subnav {
+  .no-touch .no-touch .main-navigation .element-1:hover .subnav, .no-touch .no-touch .main-navigation .element-2:hover .subnav, .no-touch .no-touch .main-navigation .element-3:hover .subnav, .no-touch .no-touch .main-navigation .element-4:hover .subnav,
+  .no-touch .no-touch .main-navigation .element-1:focus .subnav, .no-touch .no-touch .main-navigation .element-2:focus .subnav, .no-touch .no-touch .main-navigation .element-3:focus .subnav, .no-touch .no-touch .main-navigation .element-4:focus .subnav {
     left: 0;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .touch .main-navigation .element-1:hover .subnav, .touch .main-navigation .element-2:hover .subnav, .touch .main-navigation .element-3:hover .subnav, .touch .main-navigation .element-4:hover .subnav,
-  .touch .main-navigation .element-1 .subnav.touched, .touch .main-navigation .element-2 .subnav.touched, .touch .main-navigation .element-3 .subnav.touched, .touch .main-navigation .element-4 .subnav.touched {
+  .touch .no-touch .main-navigation .element-1:hover .subnav, .touch .no-touch .main-navigation .element-2:hover .subnav, .touch .no-touch .main-navigation .element-3:hover .subnav, .touch .no-touch .main-navigation .element-4:hover .subnav,
+  .touch .no-touch .main-navigation .element-1 .subnav.touched, .touch .no-touch .main-navigation .element-2 .subnav.touched, .touch .no-touch .main-navigation .element-3 .subnav.touched, .touch .no-touch .main-navigation .element-4 .subnav.touched {
     left: 0; }
-  .main-navigation .element-5 .subnav, .main-navigation .element-6 .subnav, .main-navigation .element-7 .subnav, .main-navigation .element-8 .subnav, .main-navigation .last .subnav {
+  .no-touch .main-navigation .element-5 .subnav, .no-touch .main-navigation .element-6 .subnav, .no-touch .main-navigation .element-7 .subnav, .no-touch .main-navigation .element-8 .subnav, .no-touch .main-navigation .last .subnav {
     left: auto;
     right: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
     transition: all 0s ease; }
-    .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before, .touch .main-navigation .last .subnav:before {
+    .touch .no-touch .main-navigation .element-5 .subnav:before, .touch .no-touch .main-navigation .element-6 .subnav:before, .touch .no-touch .main-navigation .element-7 .subnav:before, .touch .no-touch .main-navigation .element-8 .subnav:before, .touch .no-touch .main-navigation .last .subnav:before {
       right: 1.5em; }
-  .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .last:hover .subnav,
-  .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:focus .subnav {
+  .no-touch .no-touch .main-navigation .element-5:hover .subnav, .no-touch .no-touch .main-navigation .element-6:hover .subnav, .no-touch .no-touch .main-navigation .element-7:hover .subnav, .no-touch .no-touch .main-navigation .element-8:hover .subnav, .no-touch .no-touch .main-navigation .last:hover .subnav,
+  .no-touch .no-touch .main-navigation .element-5:focus .subnav, .no-touch .no-touch .main-navigation .element-6:focus .subnav, .no-touch .no-touch .main-navigation .element-7:focus .subnav, .no-touch .no-touch .main-navigation .element-8:focus .subnav, .no-touch .no-touch .main-navigation .last:focus .subnav {
     left: auto;
     right: 0;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .touch .main-navigation .element-5:hover .subnav, .touch .main-navigation .element-6:hover .subnav, .touch .main-navigation .element-7:hover .subnav, .touch .main-navigation .element-8:hover .subnav, .touch .main-navigation .last:hover .subnav,
-  .touch .main-navigation .element-5 .subnav.touched, .touch .main-navigation .element-6 .subnav.touched, .touch .main-navigation .element-7 .subnav.touched, .touch .main-navigation .element-8 .subnav.touched, .touch .main-navigation .last .subnav.touched {
+  .touch .no-touch .main-navigation .element-5:hover .subnav, .touch .no-touch .main-navigation .element-6:hover .subnav, .touch .no-touch .main-navigation .element-7:hover .subnav, .touch .no-touch .main-navigation .element-8:hover .subnav, .touch .no-touch .main-navigation .last:hover .subnav,
+  .touch .no-touch .main-navigation .element-5 .subnav.touched, .touch .no-touch .main-navigation .element-6 .subnav.touched, .touch .no-touch .main-navigation .element-7 .subnav.touched, .touch .no-touch .main-navigation .element-8 .subnav.touched, .touch .no-touch .main-navigation .last .subnav.touched {
     left: auto;
     right: 0; }
-  .main-navigation .tier-2 {
+  .no-touch .main-navigation .tier-2 {
     display: block;
     min-width: 100%; }
-    .main-navigation .tier-2 a {
+    .no-touch .main-navigation .tier-2 a {
       white-space: nowrap; }
-  .main-navigation .close-subnav {
+  .no-touch .main-navigation .close-subnav {
     display: none;
     text-align: left;
     white-space: nowrap;
     position: relative;
     /*modernizr*/ }
-    .js.touch .main-navigation .close-subnav {
+    .js.touch .no-touch .main-navigation .close-subnav {
       display: block; }
-    .main-navigation .close-subnav > a {
+    .no-touch .main-navigation .close-subnav > a {
       display: block;
       font-weight: bold; }
-    .main-navigation .close-subnav .close-graphic {
+    .no-touch .main-navigation .close-subnav .close-graphic {
       display: block;
       color: #b55863;
       font-size: 1.75em;
@@ -1517,9 +1515,9 @@ a.jump-to-menu {
       padding: .18em 0 .25em;
       background: rgba(255, 255, 255, 0.2);
       text-shadow: -1px 0 0 white; }
-  .main-navigation .menu {
+  .no-touch .main-navigation .menu {
     text-align: center; }
-  .main-navigation .tier-1 {
+  .no-touch .main-navigation .tier-1 {
     float: none;
     border-top: 0;
     border-bottom: 0;
@@ -1532,26 +1530,18 @@ a.jump-to-menu {
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
-    .lt-ie8 .main-navigation .tier-1 {
+    .lt-ie8 .no-touch .main-navigation .tier-1 {
       vertical-align: auto;
       zoom: 1;
       display: inline; }
-    .main-navigation .tier-1.element-1 {
+    .no-touch .main-navigation .tier-1.element-1 {
       border-left: 0; }
-    .main-navigation .tier-1.last {
+    .no-touch .main-navigation .tier-1.last {
       border-right: 0; }
-    .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
+    .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
       width: auto; }
-  .main-navigation .tier-1 > a {
-    padding: .65em 1.25em .55em; }
-
-.navigation .close-subnav {
-  border-top: 0; }
-  .navigation .close-subnav a {
-    border-right: 1px solid rgba(255, 255, 255, 0.8); }
-  .navigation .close-subnav .close-for-touch {
-    border-right: 1px solid transparent;
-    border-left: 1px solid rgba(102, 102, 102, 0.2); }
+  .no-touch .main-navigation .tier-1 > a {
+    padding: 0.65em 1.25em 0.55em; }
 
 .site-headline a img {
   width: 290px;
@@ -1616,7 +1606,7 @@ a.jump-to-menu {
     margin-bottom: 0; }
   .super-navigation p.date-posted {
     color: #666666;
-    font-size: pxtoem(10px) !important;
+    font-size: 0.625em !important;
     font-style: italic; }
   .super-navigation p.excert {
     font-size: pxtoem(10px);
