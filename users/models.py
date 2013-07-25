@@ -55,6 +55,9 @@ class Membership(models.Model):
     updated = models.DateTimeField(blank=True)
     creator = models.ForeignKey(User, null=True, blank=True)
 
+    def __str__(self):
+        return "Membership object for user: %s" % self.creator.username
+
     def save(self, **kwargs):
         self.updated = timezone.now()
         return super().save(**kwargs)
