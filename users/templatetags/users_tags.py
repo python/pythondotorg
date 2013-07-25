@@ -2,20 +2,6 @@ from django import template
 
 register = template.Library()
 
-@register.filter(name='ifempty')
-def if_empty_replace(value, str_replace):
-    """
-    if the value is an empty string replace with 'str_replace'
-
-    For example::
-        {{ user.get_full_name|ifempty:user.username }}
-    """
-
-    if value == '':
-        return str_replace
-    else:
-        return value
-
 
 @register.simple_tag(name='location')
 def parse_location(user):

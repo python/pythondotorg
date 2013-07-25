@@ -35,14 +35,17 @@ This expects a local database named "python.org". If you need to change it:
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
 To compile and compress static media, you will need compass and yui-compressor:
-    
+
+    $ gem install bundler
     $ bundle install
     $ brew install yuicompressor
 
+NOTE: On OSX you may need to adjust your PATH to be able to find the sass binary, etc.
+
 ### Python 3.3 and OSX 10.8.2
 
-Homebrew's recipe for python3.3 has some difficulty installing distribute 
-and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/) 
+Homebrew's recipe for python3.3 has some difficulty installing distribute
+and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/)
 may work better, if you're having trouble.
 
 ### Using Vagrant

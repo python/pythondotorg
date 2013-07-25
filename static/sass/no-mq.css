@@ -16,7 +16,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -24,9 +24,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -65,12 +66,12 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
-/* Horizontal gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
  * Does not include types that are not meant to be displayed full width, such as: 
         type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
  */
 /* 
  * Cross browser @keyframe definition set 
@@ -79,13 +80,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -111,7 +124,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -119,9 +132,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -160,12 +174,12 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
-/* Horizontal gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
  * Does not include types that are not meant to be displayed full width, such as: 
         type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
  */
 /* 
  * Cross browser @keyframe definition set 
@@ -174,13 +188,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -223,7 +249,7 @@
 /* ! ===== Larger than 1024px ===== */
 /* ! ===== Larger than 1200px ===== */
 .introduction {
-  font-size: 1.375em; }
+  font-size: 1.3125em; }
 
 .content-wrapper .container {
   padding: 1em 1.5em; }
@@ -235,7 +261,7 @@
   display: inline; }
 
 input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-  display: inline-block !important;
+  display: inline-block;
   width: auto; }
 
 /* - - - Larger than 520px - - - many basic styles for larger screens are here */
@@ -269,7 +295,7 @@ body {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
 
-.text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text table {
+.text {
   font-size: 0.9375em; }
 
 .meta-navigation {
@@ -306,7 +332,7 @@ body {
 
 /*modernizr*/
 .no-touch .search-button {
-  display: inline-block; }
+  display: inline; }
 
 .slide-copy {
   padding: 30px 40px; }
@@ -317,11 +343,7 @@ body {
   padding: 0 1em; }
 
 .call-to-action {
-  font-size: 1.625em; }
-  .fontface .call-to-action {
-    font-size: 1.86875em; }
-    .fontface .call-to-action span:before {
-      font-size: .875em; }
+  font-size: 1.5em; }
 
 /* Header-banners (not home) */
 .header-banner {
@@ -360,7 +382,7 @@ body {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
       display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
+      padding: .5em 1.5em .4em 1em;
       position: relative; }
   .main-navigation .tier-1 {
     display: block;
@@ -438,7 +460,7 @@ body {
     .touch .python-navigation .subnav:before {
       border-color: transparent transparent #bbd4e9 transparent; }
   .python-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(55, 118, 171, 0.25);
     border-bottom: 1px solid transparent; }
     .python-navigation .tier-2 > a:hover, .python-navigation .tier-2 > a:focus {
@@ -524,7 +546,7 @@ body {
     .touch .psf-navigation .subnav:before {
       border-color: transparent transparent #dadada transparent; }
   .psf-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(120, 121, 122, 0.25);
     border-bottom: 1px solid transparent; }
     .psf-navigation .tier-2 > a:hover, .psf-navigation .tier-2 > a:focus {
@@ -576,7 +598,7 @@ body {
     border-bottom: 1px solid #dca900;
     border-left: 1px solid #ffdf76; }
     .docs-navigation .tier-1 > a {
-      color: #444444;
+      color: #333333;
       background-color: transparent;
       border-top: 1px solid transparent;
       border-bottom: 1px solid transparent;
@@ -610,7 +632,7 @@ body {
     .touch .docs-navigation .subnav:before {
       border-color: transparent transparent white transparent; }
   .docs-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(255, 211, 67, 0.25);
     border-bottom: 1px solid transparent; }
     .docs-navigation .tier-2 > a:hover, .docs-navigation .tier-2 > a:focus {
@@ -696,7 +718,7 @@ body {
     .touch .pypl-navigation .subnav:before {
       border-color: transparent transparent #ddebca transparent; }
   .pypl-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(130, 176, 67, 0.25);
     border-bottom: 1px solid transparent; }
     .pypl-navigation .tier-2 > a:hover, .pypl-navigation .tier-2 > a:focus {
@@ -782,7 +804,7 @@ body {
     .touch .jobs-navigation .subnav:before {
       border-color: transparent transparent #eee5ef transparent; }
   .jobs-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(160, 107, 167, 0.25);
     border-bottom: 1px solid transparent; }
     .jobs-navigation .tier-2 > a:hover, .jobs-navigation .tier-2 > a:focus {
@@ -868,7 +890,7 @@ body {
     .touch .shop-navigation .subnav:before {
       border-color: transparent transparent #f1dee0 transparent; }
   .shop-navigation .tier-2 > a {
-    color: rgba(68, 68, 68, 0.9);
+    color: rgba(51, 51, 51, 0.9);
     border-top: 1px solid rgba(181, 88, 99, 0.25);
     border-bottom: 1px solid transparent; }
     .shop-navigation .tier-2 > a:hover, .shop-navigation .tier-2 > a:focus {
@@ -1088,14 +1110,14 @@ body {
   height: 72.16px; }
 
 .site-headline {
-  margin: 0.25em 0 0.5em; }
+  margin: .25em 0 .5em; }
 
 .options-bar {
   margin: 0.875em 0; }
 
 .search-field {
   background: white;
-  padding: 0.4em 0.5em 0.3em;
+  padding: .4em .5em .3em;
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
@@ -1129,24 +1151,24 @@ body {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1159,8 +1181,8 @@ body {
   text-align: left;
   position: absolute;
   left: 0;
-  margin-top: 0.56875em;
-  width: 23.40426%; }
+  width: 23.40426%;
+  margin-top: 0.56875em; }
 
 .latest-blog-post, .featured-event, .jobs-intro {
   position: relative;
@@ -1229,7 +1251,7 @@ body {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large3.png?1361222549') transparent; }
+    background: top left no-repeat url('../img/python-logo-large3.png?1373641784') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1249,17 +1271,17 @@ body {
   left: 0;
   width: 23.40426%; }
 
-/* <li>
-        <h2 class="listing-company">
-            <span class="listing-company-name">
-                <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
-            </span>
-            <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
-        </h2>
-        <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
-        <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
-        <span class="listing-posted">10 December 2012</span>
-    </li>*/
+/*<li>
+    <h2 class="listing-company">
+        <span class="listing-company-name">
+            <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
+        </span>
+        <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
+    </h2>
+    <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
+    <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
+    <span class="listing-posted">10 December 2012</span>
+</li>*/
 .list-recent-jobs li {
   *zoom: 1; }
   .list-recent-jobs li:after {
@@ -1386,13 +1408,27 @@ body {
   .feedback button {
     margin-left: 17.02128%; }
 
-a.jump-to-menu {
+.no-touch a.jump-to-menu {
   display: none; }
-
-.search-the-site {
+.no-touch .search-the-site {
   border-left: 0; }
 
 .main-navigation {
+  display: block;
+  margin: 0 -.625em;
+  text-align: center;
+  /*ul*/
+  /* <li class="tier-2 element-0 close-subnav" role="treeitem">
+          <a class="close-for-touch" href="#">Close Menu</a> 
+          <a class="close-for-touch close-graphic" href="#">&times;</a>
+      </li>
+      or
+      <li class="tier-2 element-0 close-subnav" role="treeitem">
+          <a href="/about">About</a>
+          <a class="close-for-touch close-graphic" href="#">&times;</a>
+      </li>
+  /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
+  font-size: 1.125em;
   -webkit-border-radius: 8px;
   -moz-border-radius: 8px;
   -ms-border-radius: 8px;
@@ -1400,34 +1436,30 @@ a.jump-to-menu {
   border-radius: 8px;
   -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
   -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  display: block;
-  margin: 0 -0.625em;
-  text-align: center;
-  /*ul*/
-  font-size: 1.125em; }
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
   .main-navigation .menu {
     *zoom: 1; }
-    .main-navigation .menu:after {
+    .no-touch .main-navigation .menu:after {
       content: "";
       display: table;
       clear: both; }
-  .main-navigation .tier-1 {
+  .no-touch .main-navigation .tier-1 {
     position: relative; }
-  .main-navigation .subnav {
+  .no-touch .main-navigation .subnav {
     position: absolute;
     z-index: 100;
     text-align: left;
     /*modernizr*/
     /*modernizr*/ }
-    .no-touch .main-navigation .subnav {
+    .no-touch .no-touch .main-navigation .subnav {
       min-width: 100%; }
-    .touch .main-navigation .subnav {
+    .touch .no-touch .main-navigation .subnav {
+      display: none;
       top: 120%;
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
-      .touch .main-navigation .subnav:before {
+      .touch .no-touch .main-navigation .subnav:before {
         position: absolute;
         content: "";
         width: 0;
@@ -1437,27 +1469,36 @@ a.jump-to-menu {
         top: -1.45em;
         display: block; }
   .no-touch .main-navigation .element-1 .subnav, .no-touch .main-navigation .element-2 .subnav, .no-touch .main-navigation .element-3 .subnav, .no-touch .main-navigation .element-4 .subnav {
-    top: -9999px;
+    left: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
     transition: all 0s ease; }
-  .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:hover .subnav, .no-touch .main-navigation .element-4:focus .subnav {
+    .touch .no-touch .main-navigation .element-1 .subnav:before, .touch .no-touch .main-navigation .element-2 .subnav:before, .touch .no-touch .main-navigation .element-3 .subnav:before, .touch .no-touch .main-navigation .element-4 .subnav:before {
+      left: 1.5em; }
+  .no-touch .no-touch .main-navigation .element-1:hover .subnav, .no-touch .no-touch .main-navigation .element-2:hover .subnav, .no-touch .no-touch .main-navigation .element-3:hover .subnav, .no-touch .no-touch .main-navigation .element-4:hover .subnav,
+  .no-touch .no-touch .main-navigation .element-1:focus .subnav, .no-touch .no-touch .main-navigation .element-2:focus .subnav, .no-touch .no-touch .main-navigation .element-3:focus .subnav, .no-touch .no-touch .main-navigation .element-4:focus .subnav {
     left: 0;
-    top: 100%;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
+  .touch .no-touch .main-navigation .element-1:hover .subnav, .touch .no-touch .main-navigation .element-2:hover .subnav, .touch .no-touch .main-navigation .element-3:hover .subnav, .touch .no-touch .main-navigation .element-4:hover .subnav,
+  .touch .no-touch .main-navigation .element-1 .subnav.touched, .touch .no-touch .main-navigation .element-2 .subnav.touched, .touch .no-touch .main-navigation .element-3 .subnav.touched, .touch .no-touch .main-navigation .element-4 .subnav.touched {
+    left: 0; }
   .no-touch .main-navigation .element-5 .subnav, .no-touch .main-navigation .element-6 .subnav, .no-touch .main-navigation .element-7 .subnav, .no-touch .main-navigation .element-8 .subnav, .no-touch .main-navigation .last .subnav {
-    top: -9999px;
+    left: auto;
+    right: -9999px;
     -webkit-transition: all 0s ease;
     -moz-transition: all 0s ease;
     -o-transition: all 0s ease;
     transition: all 0s ease; }
-  .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:hover .subnav, .no-touch .main-navigation .last:focus .subnav {
+    .touch .no-touch .main-navigation .element-5 .subnav:before, .touch .no-touch .main-navigation .element-6 .subnav:before, .touch .no-touch .main-navigation .element-7 .subnav:before, .touch .no-touch .main-navigation .element-8 .subnav:before, .touch .no-touch .main-navigation .last .subnav:before {
+      right: 1.5em; }
+  .no-touch .no-touch .main-navigation .element-5:hover .subnav, .no-touch .no-touch .main-navigation .element-6:hover .subnav, .no-touch .no-touch .main-navigation .element-7:hover .subnav, .no-touch .no-touch .main-navigation .element-8:hover .subnav, .no-touch .no-touch .main-navigation .last:hover .subnav,
+  .no-touch .no-touch .main-navigation .element-5:focus .subnav, .no-touch .no-touch .main-navigation .element-6:focus .subnav, .no-touch .no-touch .main-navigation .element-7:focus .subnav, .no-touch .no-touch .main-navigation .element-8:focus .subnav, .no-touch .no-touch .main-navigation .last:focus .subnav {
+    left: auto;
     right: 0;
-    top: 100%;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
@@ -1496,11 +1537,36 @@ a.jump-to-menu {
   .main-navigation .tier-2 {
     display: block;
     min-width: 100%; }
-    .main-navigation .tier-2 a {
+    .no-touch .main-navigation .tier-2 a {
       white-space: nowrap; }
-  .main-navigation .menu {
+  .no-touch .main-navigation .close-subnav {
+    display: none;
+    text-align: left;
+    white-space: nowrap;
+    position: relative;
+    /*modernizr*/ }
+    .js.touch .no-touch .main-navigation .close-subnav {
+      display: block; }
+    .no-touch .main-navigation .close-subnav > a {
+      display: block;
+      font-weight: bold; }
+    .no-touch .main-navigation .close-subnav .close-graphic {
+      display: block;
+      color: #b55863;
+      font-size: 1.75em;
+      line-height: 1;
+      font-weight: bold;
+      position: absolute;
+      top: 0;
+      right: 0;
+      text-align: center;
+      width: 1.71429em;
+      padding: .18em 0 .25em;
+      background: rgba(255, 255, 255, 0.2);
+      text-shadow: -1px 0 0 white; }
+  .no-touch .main-navigation .menu {
     text-align: center; }
-  .main-navigation .tier-1 {
+  .no-touch .main-navigation .tier-1 {
     float: none;
     border-top: 0;
     border-bottom: 0;
@@ -1513,17 +1579,17 @@ a.jump-to-menu {
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
     /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
-    .lt-ie8 .main-navigation .tier-1 {
+    .lt-ie8 .no-touch .main-navigation .tier-1 {
       vertical-align: auto;
       zoom: 1;
       display: inline; }
-    .main-navigation .tier-1.element-1 {
+    .no-touch .main-navigation .tier-1.element-1 {
       border-left: 0; }
-    .main-navigation .tier-1.last {
+    .no-touch .main-navigation .tier-1.last {
       border-right: 0; }
-    .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
+    .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
       width: auto; }
-  .main-navigation .tier-1 > a {
+  .no-touch .main-navigation .tier-1 > a {
     padding: 0.65em 1.25em 0.55em; }
 
 .site-headline a img {
@@ -1582,14 +1648,14 @@ a.jump-to-menu {
   .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
     margin-top: 0; }
   #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
-    font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
+    font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
     font-weight: normal;
-    font-size: 1.375em;
+    font-size: 1.3125em;
     line-height: 1.25em;
     margin-bottom: 0; }
   .super-navigation p.date-posted {
     color: #666666;
-    font-size: pxtoem(10px) !important;
+    font-size: 0.625em !important;
     font-style: italic; }
   .super-navigation p.excert {
     font-size: pxtoem(10px);
@@ -1757,7 +1823,7 @@ a.jump-to-menu {
   padding-left: .125em;
   margin-bottom: .125em; }
 .feedback .shrubbery p {
-  padding-left: 5em; }
+  padding-left: 4.5em; }
 
 /* Additional media query contents that we want to deliver to non-media query enabled browsers */
 /* ! ===== lt-IE9 rules ===== */

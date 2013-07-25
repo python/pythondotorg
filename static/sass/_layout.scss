@@ -29,54 +29,57 @@
 /* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
 @mixin stacked_nav() {
     
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        border-top: 0;
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        @include horizontal_nav_dropdowns(); 
-        text-align: center; 
-        
-        .tier-1 {
-            float: left; 
-            width: 33.333333%;
-            // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+    .no-touch {
+     
+        a.jump-to-menu {
+            display: none; 
+        }
+        .search-the-site {
+            border-left: 0; 
+        }
+        .main-navigation {
+            border-top: 0;
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            display: block; 
+            @include horizontal_nav_dropdowns(); 
+            text-align: center; 
             
-            &.element-6, &.element-7 {
-                width: 16.6666665%;
-            }
-            &.element-1 {
-                @include border-top-left-radius( 8px );
+            .tier-1 {
+                float: left; 
+                width: 33.333333%;
+                // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
                 
-                & > a { @include border-top-left-radius( 7px ); }
-            }
-            &.element-3 {
-                @include border-top-right-radius( 8px ); border-right: 0;
+                &.element-6, &.element-7 {
+                    width: 16.6666665%;
+                }
+                &.element-1 {
+                    @include border-top-left-radius( 8px );
+                    
+                    & > a { @include border-top-left-radius( 7px ); }
+                }
+                &.element-3 {
+                    @include border-top-right-radius( 8px ); border-right: 0;
+                    
+                    & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                }
                 
-                & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                // &.element-4 { @include border-bottom-left-radius( 8px ); }
+                // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
             }
-            
-            // &.element-4 { @include border-bottom-left-radius( 8px ); }
-            // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
-        }
-        .tier-2 {
-            
-            & > a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            .tier-2 {
+                
+                & > a {
+                    @include pe-border( $color-right: rgba( #fff, .8 ) );
+                }
             }
         }
-    }
-    .navigation {
-        .close-subnav {
-             // @include pe-border( $color-bottom: rgba( #666, .2 ) );
-        }
-        .close-for-touch {
-            // @include pe-border( $color-left: rgba( #666, .2 ) );
+        .navigation {
+            .close-subnav {
+                 // @include pe-border( $color-bottom: rgba( #666, .2 ) );
+            }
+            .close-for-touch {
+                // @include pe-border( $color-left: rgba( #666, .2 ) );
+            }
         }
     }
 }
@@ -92,13 +95,13 @@
         border-left: 0; 
     }
     .main-navigation {
-        @include border-radius(8px);
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         display: block; 
         margin: 0 -.625em;
         text-align: center; 
         @include horizontal_nav_dropdowns();
         font-size: px2em( 18px );
+        @include border-radius(8px);
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         
         .menu {
             text-align: center; 
@@ -131,6 +134,36 @@
             
         }
     }
+    .navigation {
+        
+        .close-subnav {
+            border-top: 0;
+             
+            a {
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            }
+            .close-for-touch {
+                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+            }
+        }
+    }
+    
+    /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+    #touchnav-wrapper {
+        
+        .touch & {
+            @include transition( transform 300ms ease ); 
+            @include transform( translate3d( 0, 0, 0 ) ); 
+            -webkit-backface-visibility: hidden; 
+        }
+        .touch .show-sidemenu & {
+            @include transform( translate3d( 280px, 0, 0 ) ); 
+        }
+    }
+    
+    .inner .main-header {
+        position: static; 
+    }
 }
 
 
@@ -147,7 +180,7 @@
 @mixin min_width_400() {
     
     .introduction {
-        font-size: px2em( 22px );
+        font-size: px2em( $headerthree );
     }
     
     .content-wrapper {
@@ -170,7 +203,7 @@
     }
     
     input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-        display: inline-block !important;
+        display: inline-block;
         width: auto;
     }
 }
@@ -226,19 +259,16 @@
     }
     
     .introduction {
-        font-size: px2em( 24px );
+        font-size: px2em( $headertwo );
     }
     
     .success-stories-widget blockquote {
-        font-size: px2em(18px);
+        font-size: px2em( $headerfour );
         padding: 1em 1.4em 1.3em;
     }
     
     .text {
-        
-        p, ul, ol, dl, blockquote, address, table {
-            font-size: px2em( 15px );
-        }
+        font-size: px2em( 15px );
     }
 }
 
@@ -282,24 +312,23 @@
         margin-right: .5em;
     }
     /*modernizr*/ .no-touch .search-button {
-        display: inline-block; 
+        display: inline; 
     }
     
     .slide-copy {
         padding: 30px 40px;
         
         p {
-            font-size: px2em(16px);
+            font-size: px2em( 16px );
         }
     }
     
     .introduction {
-        // font-size: px2em( 22px ); 
         padding: 0 1em;
     }
     
     .call-to-action {
-        @include fontface-adjust( 26px );
+        font-size: px2em( $headertwo ); 
     }
     
     /* Header-banners (not home) */
@@ -726,8 +755,8 @@
         text-align: left; 
         position: absolute; 
         left: 0; 
-        @include leader( .325 ); 
         width: columns( 3 );
+        @include leader( .325 ); 
     }
     .latest-blog-post, .featured-event, .jobs-intro {
         position: relative; 
@@ -799,7 +828,7 @@
                 width: 210px; 
                 height: 210px; 
                 // background: top left no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
-                background: top left no-repeat image-url("python-logo-large3.png") transparent;
+                background: top left no-repeat image-url("python-logo-large.png") transparent;
             }
             .widget-title, p {
                 @include post( 4 ); 
@@ -835,7 +864,7 @@
             }
         }
     
-    /* <li>
+        /*<li>
             <h2 class="listing-company">
                 <span class="listing-company-name">
                     <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
@@ -1072,14 +1101,14 @@
         #community & h4, #blog & h4, #events & h4 {
             font-family: $alt-font-bold;
             font-weight: normal;
-            font-size: px2em( 22px );
+            font-size: px2em( $headerthree );
             line-height: 1.25em;
             margin-bottom: 0;
         }
         
         p.date-posted {
             color: $grey;
-            font-size: pxtoem( 10px ) !important;
+            font-size: px2em( 10px ) !important;
             font-style: italic;
         }
         
@@ -1335,7 +1364,7 @@
             margin-bottom: .125em; 
         }
         .shrubbery p {
-            padding-left: 5em; 
+            padding-left: 4.5em; 
         }
     }
 }
