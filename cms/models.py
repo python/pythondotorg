@@ -27,7 +27,7 @@ class ContentManageable(models.Model):
     # object we'll get an error. This is a reasonable compromise that lets us
     # track creators fairly well without neccisarily over-enforcing it in places
     # where it'd be invasive.
-    creator = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='+', null=True, blank=True)
+    creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True)
 
     def save(self, **kwargs):
         self.updated = timezone.now()

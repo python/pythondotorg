@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+{% block body_attributes %}class="python users"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+<p>You already are a user!</p>
+{% endblock content %}

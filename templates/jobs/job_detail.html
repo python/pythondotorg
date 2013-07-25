@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 
+
 {% block body_attributes %}class="jobs inner single-job"{% endblock %}
 
 
@@ -14,158 +15,163 @@
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
+
 {% block content %}
 {% load companies %}
-                <article class="text">
-            		
-            		<h1 class="listing-company">
-                        <span class="listing-company-name">
-                            {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<span class="company-name">{{ object.comapny.name }}</span>
-                        </span>
-                        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
-                    </h1>
-                    
-                    <!-- User input html/markup/rst/whatever -->
-                    <div class="job-description">
-                    
-                        <h2>Job Description</h2>
-                        
-                        <!-- Shouldn't this allow HTML? If the description contains HTML it does not render, but outputs as a string instead -->
-                        <p>{{ object.description }}</p>
-                        
-                        
-                        <h2>Restrictions</h2>
-                        <ul>
-                            {% if object.telecommuting %}
-                            <li><strong>Telecommuting is OK</strong></li>
-                            {% else %}
-                            <li><strong>No telecommuting</strong></li>
-                            {% endif %}
+<article class="text">
 
-                            {% if object.agencies %}
-                            <li><strong>Agencies are OK</strong></li>
-                            {% else %}
-                            <li><strong>No Agencies Please</strong></li>
-                            {% endif %}
-                        </ul>
+	<h1 class="listing-company">
+        <span class="listing-company-name">
+            {% if object.is_new %}<span class="listing-new">New</span>
+            {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
+            {% endif %}<span class="company-name">{{ object.comapny.name }}</span>
+        </span>
+        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
+    </h1>
 
-                        {% if object.requirements %}
-                        <h2>Requirements</h2>
-                        {{ object.requirements.rendered }}
-                        {% endif %}
+    <!-- User input html/markup/rst/whatever -->
+    <div class="job-description">
 
-                        {% if object.commpany.about %}
-                        <h2>About the Company</h2>
-                        <p>{{ object.commpany.about }}</p>
-                        {% endif %}
-                        
-                        <h2>Contact Info</h2>
-                        <ul>
-                            {% if object.contact %}
-                            <li><strong>Contact</strong>: {{ object.contact }}</li>
-                            {% endif %}
+        <h2>Job Description {% if under_review %}<small>({{ object.status }})</small>{% endif %}</h2>
 
-                            <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></li>
+        {{ object.description }}
 
-                            {% if object.url %}
-                            <li><strong>Web</strong>: <a class="reference external" href="{{ object.company.url }}">{{ object.url }}</a></li>
-                            {% endif %}
-                        </ul>
-                        
-                    </div><!-- end .job-post-content -->
-                    
-                    
-                    <div class="job-post-meta">
-                        <p class="job-meta">
-                            <!-- Company URL -->
-                            {% if object.company.url %}
-                            <span class="company-link"><a href="{{ object.company.url }}">{{ object.company.url }}</a></span>
-                            {% endif %}
-                            
-                            <!-- Date posted -->
-                            <span class="listing-posted">Posted <time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></span>
-                        </p>
-                        
-                        <p class="job-tags">
-                            <!-- Job Types -->
-                            <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More {{ type.name }} jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
-                            
-                            <!-- Company Category (Job Category) -->
-                            <span class="listing-company-category"><a href="{% url 'jobs:job_list_category' slug=object.category.slug %}" title="More jobs in {{ object.category.name }}">{{ object.category.name }}</a></span>
-                        </p>
-                    </div>
-                    
-                    
-        		</article>
-        		
-        		
-        		<!-- Next or Previous Jobs by date posted -->
-                <p class="previous-next">
-                    {% with object.get_previous_by_creation as previous %}
-                    
-                    {% comment %}
-                    If this is the first job and there is no Previous job, we want to disable this button with the disabled class
-                    <a class="prev-button disabled" href="{{ previous.get_absolute_url }}">
-                    
-                    I assume we can do this in an ELSE on the next if statement?
-                    {% endcomment %}
-                    
-                    {% if previous %}
-                    <a class="prev-button" href="{{ previous.get_absolute_url }}">
-                        <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
-                        <span class="prevnext-description">
-                            <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
-                        </span>
-                    </a>
-                    {% endif %}
-                    {% endwith %}
+        <h2>Restrictions</h2>
+        <ul>
+            {% if object.telecommuting %}
+            <li><strong>Telecommuting is OK</strong></li>
+            {% else %}
+            <li><strong>No telecommuting</strong></li>
+            {% endif %}
 
-                    {% with object.get_next_by_creation as next %}
-                    
-                    {% comment %}
-                    If this is the last job and there is no Next job, we want to disable this button with the disabled class
-                    <a class="next-button disabled" href="{{ next.get_absolute_url }}">
-                    {% endcomment %}
-                    
-                    {% if next %}
-                    <a class="next-button" href="{{ next.get_absolute_url }}">
-                        <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
-                        <span class="prevnext-description">
-                            <span class="company-name">{{ next.company.name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
-                        </span>
-                    </a>
-                    {% endif %}
-                    {% endwith %}
-                </p>
+            {% if object.agencies %}
+            <li><strong>Agencies are OK</strong></li>
+            {% else %}
+            <li><strong>No Agencies Please</strong></li>
+            {% endif %}
+        </ul>
 
+        {% if object.requirements %}
+        <h2>Requirements</h2>
+        {{ object.requirements }}
+        {% endif %}
+
+        {% if object.company.about %}
+        <h2>About the Company</h2>
+        {{ object.company.about }}
+        {% endif %}
+
+        {% if under_review %}
+        <hr>
+        <p>Comments are only viewable between the submitter and job reviewers.</p>
+        {% load comments %}
+        {% get_comment_count for object as comment_count %}
+        <h2>Review Company <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+        {% render_comment_list for object %}
+        <hr>
+        {% render_comment_form for object %}
+        {% endif %}
+
+        <h2>Contact Info</h2>
+        <ul>
+            {% if object.contact %}
+            <li><strong>Contact</strong>: {{ object.contact }}</li>
+            {% endif %}
+
+            <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></li>
+
+            {% if object.url %}
+            <li><strong>Web</strong>: <a class="reference external" href="{{ object.company.url }}">{{ object.url }}</a></li>
+            {% endif %}
+        </ul>
+
+    </div><!-- end .job-post-content -->
+
+
+    <div class="job-post-meta">
+        <p class="job-meta">
+            <!-- Company URL -->
+            {% if object.company.url %}
+            <span class="company-link"><a href="{{ object.company.url }}">{{ object.company.url }}</a></span>
+            {% endif %}
+
+            <!-- Date posted -->
+            <span class="listing-posted">Posted <time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></span>
+        </p>
+
+        <p class="job-tags">
+            <!-- Job Types -->
+            <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More {{ type.name }} jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+
+            <!-- Company Category (Job Category) -->
+            <span class="listing-company-category"><a href="{% url 'jobs:job_list_category' slug=object.category.slug %}" title="More jobs in {{ object.category.name }}">{{ object.category.name }}</a></span>
+        </p>
+    </div>
+
+
+</article>
+
+
+<!-- Next or Previous Jobs by date posted -->
+<p class="previous-next">
+    {% with object.get_previous_by_created as previous %}
+        {% if previous %}
+        <a class="prev-button" href="{{ previous.get_absolute_url }}">
+            <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+            <span class="prevnext-description">
+                <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
+            </span>
+        </a>
+        {% else %}
+        <a class="prev-button disabled">
+            <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
+        </a>
+        {% endif %}
+    {% endwith %}
+
+    {% with object.get_next_by_created as next %}
+        {% if next %}
+        <a class="next-button" href="{{ next.get_absolute_url }}">
+            <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+            <span class="prevnext-description">
+                <span class="company-name">{{ next.company.name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
+            </span>
+        </a>
+        {% else %}
+        <a class="next-button disabled">
+            <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
+        </a>
+        {% endif %}
+    {% endwith %}
+</p>
 {% endblock content %}
 
 
-
 {% block right_sidebar %}
-            <aside class="right-sidebar">
+<aside class="right-sidebar">
 
-                <div class="sidebar-widget">
-                    {% if category_jobs %}
-                    <h3 class="widget-title">More jobs in <!-- The current category-->{{ object.category.name }}</h3>
-                    <ul class="menu">
-                        {% for job in category_jobs %}
-                        <li><a href="#">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
-                
-                <div class="sidebar-widget">
-                    <h3 class="widget-title">Submit a Job</h3>
-                    <p>Have a job that our community would be interested in? Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job existing postings or to add new ones to their profile.</p>
-                </div>
+    <div class="sidebar-widget">
+        {% if category_jobs %}
+        <h3 class="widget-title">More jobs in <a href="{% url 'jobs:job_list_category' slug=object.category.slug %}">{{ object.category.name }}</a></h3>
 
-                <div class="sidebar-widget">
-                    <h3 class="widget-title">Stay up-to-date</h3>
-                    <p><a href="#"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
-                    <p><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Follow via Twitter</a></p>
-                </div>
+        <ul class="menu">
+            {% for job in category_jobs %}
+            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
 
-            </aside>
+    <div class="sidebar-widget">
+        <h3 class="widget-title">Submit a Job</h3>
+        <p>Have a job that our community would be interested in? Please <a href="{% url 'jobs:job_create' %}">fill out this form</a>, or returning Job Board users may <a href="#">log in here</a> to update job existing postings or to add new ones to their profile.</p>
+    </div>
+
+    <div class="sidebar-widget">
+        <h3 class="widget-title">Stay up-to-date</h3>
+        <p><a href="#"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
+        <p><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Follow via Twitter</a></p>
+    </div>
+
+</aside>
 {% endblock right_sidebar %}

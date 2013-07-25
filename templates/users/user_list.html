@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+
+{% block main_navigation %}
+{% load sitetree users_tags %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+{% block body_attributes %}class="python users"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+
+{% if request.user %}
+<div class="user-profile-controls">
+    <ul class="menu">
+        <li>Manage your Information: </li>
+        <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
+        <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
+    </ul>
+</div>
+{% endif %}
+
+<div class="active-user-list">
+    <h2 class="widget-title">Current Python.org Users and PSF Members</h2>
+    <div class="list-row-headings">
+        <span class="user-name">User Name</span>
+        <span class="user-location">Location</span>
+        <span class="user-psfmember-status">PSF Member?</span>
+    </div>
+    <ul class="list-row-container menu">
+    {% for user in user_list %}
+        <li>
+            <span class="user-name"><a href="{{ user.get_absolute_url }}">{{ user.get_full_name|ifempty:user.username }}</a></span>
+            <span class="user-location">{# location user #}</span>
+            <span class="user-psfmember-status"><span class="icon-python" aria-hidden="true"></span>Yes</span>
+            {% comment %}If not a member, simply output <span class="user-psfmember-status"></span> {% endcomment %}
+        </li>
+    {% endfor %}
+    </ul>
+</div>
+
+<!-- Pagination -->
+<ul class="pagination menu">
+    {% if page_obj.has_previous %}
+        <li class="previous"><a href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+    {% else %}
+        <li class="previous"><a class="disabled" href="">Prev</a></li>
+    {% endif %}
+
+    {% for page in paginator.page_range %}
+    <li><a {% if page_obj.number == page %}class="active" {% endif %}href="?page={{ page }}">{{ page }}</a></li>
+    {% endfor %}
+
+    {% if page_obj.has_next %}
+        <li class="next"><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+    {% else %}
+        <li class="next"><a class="disabled" href="">Next</a></li>
+    {% endif %}
+</ul>
+{% endblock content %}

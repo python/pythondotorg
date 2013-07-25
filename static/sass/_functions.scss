@@ -116,6 +116,32 @@
     background-image: none; 
 }
 
+/* Horizontal gradient mixin to make things easier. */
+@mixin horizontal-gradient( $left-color, $right-color, $left-percent:5%, $right-percent:95% ) {
+    background-color: $left-color; // Old browsers
+    @include filter-gradient( $left-color, $right-color, horizontal); // IE6-9
+    @include background-image( linear-gradient(left,  $left-color $left-percent, $right-color $right-percent) );
+}
+
+
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ */
+@mixin input_text_types( $focus:false ) {
+    @if $focus {
+        input[type=text]:focus, input[type=password]:focus, input[type=search]:focus, input[type=email]:focus, input[type=url]:focus, input[type=tel]:focus {
+            @content;
+        }
+    } @else {
+        input[type=text], input[type=password], input[type=search], input[type=email], input[type=url], input[type=tel] {
+            @content;
+        }
+    }
+}
+
+
 /* 
  * Cross browser @keyframe definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
@@ -358,7 +384,7 @@
 @mixin html5boilerplate_helpers {
     
     /* For image replacement */
-    .ir { display: block; text-indent: -999em; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
+    .ir { display: block; text-indent: -9999px; overflow: hidden; background-repeat: no-repeat; text-align: left; direction: ltr; }
     
     /* Hide for both screenreaders and browsers. */
     .hidden { display: none; visibility: hidden; }

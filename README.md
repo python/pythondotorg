@@ -35,14 +35,17 @@ This expects a local database named "python.org". If you need to change it:
     $ export DATABASE_URL=postgres://user:pass@host:port/dbname
 
 To compile and compress static media, you will need compass and yui-compressor:
-    
+
+    $ gem install bundler
     $ bundle install
     $ brew install yuicompressor
 
+NOTE: On OSX you may need to adjust your PATH to be able to find the sass binary, etc.
+
 ### Python 3.3 and OSX 10.8.2
 
-Homebrew's recipe for python3.3 has some difficulty installing distribute 
-and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/) 
+Homebrew's recipe for python3.3 has some difficulty installing distribute
+and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/)
 may work better, if you're having trouble.
 
 ### Using Vagrant
@@ -63,3 +66,27 @@ Install `coverage` (`pip install coverage`), then::
     $ coverage report
 
 Generate an HTML report with `coverage html` if you like.
+
+
+------------
+
+Daily startup for J.
+
+1. Open Terminal.app
+2. cd ~/github/python
+3. source ENV/bin/activate
+4. export DATABASE_URL="postgres://localhost/python.org"
+5. ./manage.py runserver
+
+Nuke the DB!
+
+1. Do steps 1-4 above.
+2. export PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"
+3. dropdb python.org
+4. createdb python.org
+5. ./manage.py syncdb
+6. ./manage.py migrate
+7. Install at least the menus: ./manage.py migrate sitetree  OLD('./manage.py loaddata fixtures/sitetree_menus.json')
+8. Install data from staging: invoke copy_data_from_staging
+
+If you need to, ./manage.py createsuperuser

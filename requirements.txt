@@ -6,8 +6,11 @@ docutils==0.10
 Markdown==2.2.1
 psycopg2==2.4.5
 requests==1.1.0
+python3-openid==3.0.1
+lxml==3.2.1
+cssselect==0.8
 
-pytz
+pytz==2013b
 python-dateutil==2.1
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
@@ -19,4 +22,13 @@ git+git://github.com/jamesturk/django-markupfield.git@70dc74
 git+git://github.com/jefftriplett/django-sitetree.git
 
 # South from trunk which has py3 support:
-https://bitbucket.org/andrewgodwin/south/get/8ecfffbaf5eb.zip
+https://bitbucket.org/andrewgodwin/south/get/59f6bae8b1a501ca14a5f23f8b11c44c42f33147.zip
+git+https://github.com/bradjasper/django-jsonfield.git@c21b18
+
+git+https://github.com/danirus/django-comments-xtd.git@cc096c
+
+# django-markupfield with Py3 support. Can be removed when 1.1 is released.
+git+git://github.com/jamesturk/django-markupfield.git@70dc74
+
+# django-allauth
+git+git://github.com/jefftriplett/django-allauth.git@3b10d6

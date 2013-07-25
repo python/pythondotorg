@@ -29,54 +29,57 @@
 /* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
 @mixin stacked_nav() {
     
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        border-top: 0;
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        @include horizontal_nav_dropdowns(); 
-        text-align: center; 
-        
-        .tier-1 {
-            float: left; 
-            width: 33.333333%;
-            // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+    .no-touch {
+     
+        a.jump-to-menu {
+            display: none; 
+        }
+        .search-the-site {
+            border-left: 0; 
+        }
+        .main-navigation {
+            border-top: 0;
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            display: block; 
+            @include horizontal_nav_dropdowns(); 
+            text-align: center; 
             
-            &.element-6, &.element-7 {
-                width: 16.6666665%;
-            }
-            &.element-1 {
-                @include border-top-left-radius( 8px );
+            .tier-1 {
+                float: left; 
+                width: 33.333333%;
+                // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
                 
-                & > a { @include border-top-left-radius( 7px ); }
-            }
-            &.element-3 {
-                @include border-top-right-radius( 8px ); border-right: 0;
+                &.element-6, &.element-7 {
+                    width: 16.6666665%;
+                }
+                &.element-1 {
+                    @include border-top-left-radius( 8px );
+                    
+                    & > a { @include border-top-left-radius( 7px ); }
+                }
+                &.element-3 {
+                    @include border-top-right-radius( 8px ); border-right: 0;
+                    
+                    & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                }
                 
-                & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                // &.element-4 { @include border-bottom-left-radius( 8px ); }
+                // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
             }
-            
-            // &.element-4 { @include border-bottom-left-radius( 8px ); }
-            // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
-        }
-        .tier-2 {
-            
-            & > a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            .tier-2 {
+                
+                & > a {
+                    @include pe-border( $color-right: rgba( #fff, .8 ) );
+                }
             }
         }
-    }
-    .navigation {
-        .close-subnav {
-             // @include pe-border( $color-bottom: rgba( #666, .2 ) );
-        }
-        .close-for-touch {
-            // @include pe-border( $color-left: rgba( #666, .2 ) );
+        .navigation {
+            .close-subnav {
+                 // @include pe-border( $color-bottom: rgba( #666, .2 ) );
+            }
+            .close-for-touch {
+                // @include pe-border( $color-left: rgba( #666, .2 ) );
+            }
         }
     }
 }
@@ -85,64 +88,117 @@
 /* ! ===== Ruleset for a single row of main navigation ===== */
 @mixin horizontal_nav() {
     
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        @include border-radius(8px);
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        margin: 0 -.75em;
-        text-align: center; 
-        @include horizontal_nav_dropdowns();
-        font-size: px2em( 18px );
-        
-        .menu {
+    .no-touch {
+    
+        a.jump-to-menu {
+            display: none; 
+        }
+        .search-the-site {
+            border-left: 0; 
+        }
+        .main-navigation {
+            @include border-radius(8px);
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            display: block; 
+            margin: 0 -.625em;
             text-align: center; 
-        }
-        .tier-1 {
-            float: none; 
-            border-top: 0;
-            border-bottom: 0;
-            @include pe-inline-block(); 
-            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
-            width: auto; 
-            margin: 0 -5px 0 0; 
-            @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+            @include horizontal_nav_dropdowns();
+            font-size: px2em( 18px );
             
-            &.element-1 {
-                border-left: 0; 
+            .menu {
+                text-align: center; 
             }
-            &.last {
-                border-right: 0; 
-            }
-            /* We've set this explicitly before, so we need to "clear" the width value explicitly */
-            &.element-6, &.element-7 {
+            .tier-1 {
+                float: none; 
+                border-top: 0;
+                border-bottom: 0;
+                @include pe-inline-block(); 
+                /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
                 width: auto; 
+                margin: 0 -5px 0 0; 
+                @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+                
+                &.element-1 {
+                    border-left: 0; 
+                }
+                &.last {
+                    border-right: 0; 
+                }
+                /* We've set this explicitly before, so we need to "clear" the width value explicitly */
+                &.element-6, &.element-7 {
+                    width: auto; 
+                }
             }
-        }
-        .tier-1 > a {
-            padding: .65em 1.25em .55em;
-        }
-        .tier-2 {
-            
+            .tier-1 > a {
+                padding: .65em 1.25em .55em;
+            }
+            .tier-2 {
+                
+            }
         }
     }
-    .navigation {
+}
+
+@mixin drawer_nav_fortouch() {
+    /*
+<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
+            <a href="/about/" title="" class="">About</a>
+            <ul class="subnav menu" role="menu" aria-hidden="true">
+                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
+                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
+! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
+
+*/
+    $menuwidth: 260px; 
+    
+    .touch {
         
-        .close-subnav {
-            border-top: 0;
-             
-            a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
-            }
-            .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+        body, #touchnav-wrapper {
+            position: relative; 
+            width: 100%; 
+        }
+        
+        .main-navigation {
+            display: block; 
+            position: absolute; 
+            top: 0; left: - $menuwidth; 
+            width: $menuwidth; 
+            height: 100%; 
+            overflow: scroll; 
+            
+            /* Reset some styles */
+            border: 0; 
+            @include border-radius( 0 ); 
+            
+            .tier-1 > a {
+                text-align: left; 
             }
         }
+    }
+    
+    /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+    #touchnav-wrapper {
+        
+        .touch & {
+            @include transition( transform 300ms ease ); 
+            @include transform( translate3d( 0, 0, 0 ) ); 
+            -webkit-backface-visibility: hidden; 
+        }
+        .touch .show-sidemenu & {
+            @include transform( translate3d( $menuwidth, 0, 0 ) ); 
+        }
+    }
+    
+    .inner .main-header {
+        position: static; 
     }
 }
 
@@ -183,7 +239,7 @@
     }
     
     input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-        display: inline-block !important;
+        display: inline-block;
         width: auto;
     }
 }
@@ -295,7 +351,7 @@
         margin-right: .5em;
     }
     /*modernizr*/ .no-touch .search-button {
-        display: inline-block; 
+        display: inline; 
     }
     
     .slide-copy {
@@ -351,11 +407,18 @@
             font-size: px2em( 14px );
         }
         .subnav {
-            // @include box-shadow( 0 10px 10px rgba(0, 0, 0, 0.3));
+            @include box-shadow( 0 .5em .5em rgba( 0,0,0,0.3) );
         }
         /* Shorten the amount of blue space under the nav on inner pages */
         .inner & {
             margin-bottom: -1.75em; 
+        }
+    }
+    
+    /*li*/ .with-supernav {
+        
+        .super-navigation {
+            display: none; 
         }
     }
     
@@ -433,8 +496,8 @@
             
             .super-navigation {
                 color: $grey;
-                @include pe-border( $color-right: rgba($this-color, 0.25), $color-bottom: rgba($this-color, 0.25), $color-left: rgba($this-color, 0.25) );
-                @include vertical-gradient( lighten($this-color, 60%), lighten($this-color, 50%));
+                border: 1px solid lighten( $this-color, 25% );
+                @include vertical-gradient( lighten($this-color, 55%), lighten($this-color, 45%));
                 
                 a:not(.button) {
                     color: $this-color; 
@@ -642,13 +705,18 @@
             padding-left: 3em; 
         }
     }
+    
+    .feedback-flag {
+        top: 21em; right: -2.4em; 
+    }
 }
+
 
 /* ! ===== Larger than 800px ===== */
 @mixin min_width_800() {
     
     .site-headline a img {
-        width: 254px * .88; 
+        width: 290px * .88; 
         height: 82px * .88; 
     }
     
@@ -668,13 +736,6 @@
         
         &:focus {
             width: 15em;
-        }
-    }
-    
-    /*li*/ .with-supernav {
-        
-        .super-navigation {
-            display: none; 
         }
     }
     
@@ -705,18 +766,24 @@
         padding-top: 1em; 
     }
     .about-banner {
-        background: 160% 0 no-repeat image-url("landing-about.png") transparent;
-        min-height: 320px; 
+        background: 120% 0 no-repeat image-url("landing-about.png") transparent;
+        min-height: 345px; 
+        padding-bottom: 3.5em; 
+        margin-bottom: -2.5em; 
     }
     .download-for-current-os {
         background: 130% 0 no-repeat image-url("landing-downloads.png") transparent;
+        padding-bottom: 4em;
+        margin-bottom: -3em;
     }
     .documentation-banner {
-        background: 136% 0 no-repeat image-url("landing-docs.png") transparent;
+        background: 130% 0 no-repeat image-url("landing-docs.png") transparent;
+        padding-bottom: 1em; 
     }
     .community-banner {
         text-align: left; /* Why is this needed? */
-        background: 150% 0 no-repeat image-url("landing-community.png") transparent;
+        background: 140% 0 no-repeat image-url("landing-community.png") transparent;
+        padding-bottom: .75em; 
     }
     .welcome-to-the-foundation {
         padding-top: 1em;
@@ -801,7 +868,7 @@
                 width: 210px; 
                 height: 210px; 
                 // background: top left no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
-                background: top left no-repeat image-url("python-logo-large3.png") transparent;
+                background: top left no-repeat image-url("python-logo-large.png") transparent;
             }
             .widget-title, p {
                 @include post( 4 ); 
@@ -894,6 +961,25 @@
             @include span-columns( 6 omega ); 
         }
     
+    /* Forms that are wide enough to have labels and input fields side by side */
+    .wide-form {
+        
+        p {
+            @include clearfix(); 
+            
+            label {
+                width: 25%; 
+                float: left; 
+                margin-top: .5em; 
+            }
+            @include input_text_types() {
+                width: 75%; 
+                float: left; 
+            }
+        }
+    }
+    
+    
     /* Footer */
     .sitemap, .footer-links, .copyright {
         font-size: px2em( 14px ); 
@@ -983,7 +1069,7 @@
 @mixin min_width_940() {
     
     .site-headline a img {
-        width: 254px; 
+        width: 290px; 
         height: 82px; 
     }
         .search-field {
@@ -1062,7 +1148,7 @@
         
         p.date-posted {
             color: $grey;
-            font-size: pxtoem( 10px ) !important;
+            font-size: px2em( 10px ) !important;
             font-style: italic;
         }
         
@@ -1100,22 +1186,31 @@
         }
     }
         .about-banner {
-            background-position: 115% -20px;
-            min-height: 320px; 
+            background-position: 110% 0px;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .download-for-current-os {
             background-position: 115% 0; 
-            padding-bottom: 5.5em;
+            padding-bottom: 6em;
             margin-bottom: -3em;
         }
         .documentation-banner {
-            background-position: 105% 0;
-            min-height: 350px;
-            margin-bottom: -20px;
+            background-position: 110% 0;
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .community-banner {
             background-position: 105% 0; 
             min-height: 320px; 
+            
+            p {
+                @include post( 1,7 ); 
+            }
         }
         .featured-success-story {
             .success-quote {
@@ -1337,17 +1432,33 @@
     }
     
     .about-banner {
-        background-position: 95% -30px;
-        min-height: 310px;
+        background-position: 100% 0px;
     }
     .download-for-current-os {
         background-position: 105% 0; 
+        
+        p {
+            @include post( 1,7 ); 
+        }
     }
     .documentation-banner {
-        background-position: 110% 0;
+        background-position: 110% 0; 
+        min-height: 345px; 
+        
+        .call-to-action {
+            @include post( 1 ); 
+        }
+        p {
+            margin-right: 0; 
+        }
     }
     .community-banner {
-        background-position: 90% 0; 
+        @include pad( 0,6 ); 
+        background-position: 95% 0; 
+        
+        p {
+            margin-right: 0; 
+        }
     }
         
     .latest-blog-post, .featured-event, .jobs-intro {
@@ -1406,16 +1517,31 @@
 /* ! ===== Larger than 1200px ===== */
 @mixin min_width_1200() {
     
+    .about-banner, .community-banner {
+        @include pad( 1,6 ); 
+    }
     .about-banner {
-        background-position: 85% -30px;
+        background-position: 85% 0;
     }
     .download-for-current-os {
+        @include pad( 1,5 ); 
         background-position: 95% 0; 
+        padding-bottom: 6em;
+        margin-bottom: -3em;
+        
+        p {
+            @include post( 1,6 ); 
+        }
     }
     .documentation-banner {
+        @include pad( 1,5 ); 
         background-position: 100% 0;
+        
+        .call-to-action {
+            @include post( 1,6 ); 
+        }
     }
     .community-banner {
-        background-position: 80% 0; 
+        background-position: 95% 0; 
     }
 }

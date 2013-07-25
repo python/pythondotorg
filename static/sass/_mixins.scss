@@ -58,7 +58,7 @@
     /*ul*/ .menu {
         margin-bottom: 0; 
     }
-    .tier-1 , .tier-2 {
+    .tier-1, .tier-2 {
         
         /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */
         & > a {
@@ -91,26 +91,10 @@
     }
     .tier-1 {
         position: relative; 
-        
-        /*modernizr*/ &:hover .subnav, &:focus .subnav, .touch & .subnav.touched {
-            left: 0; 
-        }
-        &.last:hover .subnav, &.last:focus .subnav, 
-        &.element-5:hover .subnav, &.element-5:focus .subnav, &.element-5:hover .subnav.touched,  
-        &.element-6:hover .subnav, &.element-6:focus .subnav, &.element-6:hover .subnav.touched,
-        &.element-7:hover .subnav, &.element-7:focus .subnav, &.element-7:hover .subnav.touched,
-        &.element-8:hover .subnav, &.element-8:focus .subnav, &.element-8:hover .subnav.touched {
-            left: auto; 
-            right: 0; 
-        }
-        .touch & .subnav {
-            left: auto; 
-            right: auto; 
-            display: none; 
-        }
     }
     .subnav {
-        position: absolute; top: 100%; left: -999em;  
+        position: absolute; 
+        top: 100%;  
         z-index: 100; 
         text-align: left; 
         
@@ -118,24 +102,66 @@
             min-width: 100%; 
         }
         /*modernizr*/ .touch & {
+            display: none; 
             top: 120%;
             @include box-shadow( 0 .25em .75em rgba( #000, 0.6 )  ); 
             
             &:before {
                 @include pointer( .75em ); 
                 top: -1.45em; 
-                left: 1.5em; 
+                //left: 1.5em; 
             	display: block; 
             }
         }
     }
-    /*modernizr*/ .touch & .tier-1.last .subnav:before,
-    .touch & .element-5 .subnav:before, 
-    .touch & .element-6 .subnav:before, 
-    .touch & .element-7 .subnav:before, 
-    .touch & .element-8 .subnav:before {
+    .element-1 .subnav, .element-2 .subnav, .element-3 .subnav, .element-4 .subnav {
+        left: -9999px; 
+        @include transition( all 0s ease ); 
+        
+        .touch &:before {
+            left: 1.5em; 
+        }
+    }
+    .no-touch & {
+        
+        .element-1:hover .subnav, .element-2:hover .subnav, .element-3:hover .subnav, .element-4:hover .subnav, 
+        .element-1:focus .subnav, .element-2:focus .subnav, .element-3:focus .subnav, .element-4:focus .subnav {
+            left: 0; 
+            @include transition-delay( .25s ); 
+        }
+    }
+    .touch & {
+        
+        .element-1:hover .subnav, .element-2:hover .subnav, .element-3:hover .subnav, .element-4:hover .subnav, 
+        .element-1 .subnav.touched, .element-2 .subnav.touched, .element-3 .subnav.touched, .element-4 .subnav.touched {
+            left: 0; 
+        }
+    }
+    .element-5 .subnav, .element-6 .subnav, .element-7 .subnav, .element-8 .subnav, .last .subnav {
         left: auto; 
-        right: 1.5em; 
+        right: -9999px; 
+        @include transition( all 0s ease ); 
+        
+        .touch &:before {
+            right: 1.5em; 
+        }
+    }
+    .no-touch & {
+        
+        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
+        .element-5:focus .subnav, .element-6:focus .subnav, .element-7:focus .subnav, .element-8:focus .subnav, .last:focus .subnav {
+            left: auto; 
+            right: 0; 
+            @include transition-delay( .25s ); 
+        }
+    }
+    .touch & {
+        
+        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
+        .element-5 .subnav.touched, .element-6 .subnav.touched, .element-7 .subnav.touched, .element-8 .subnav.touched, .last .subnav.touched {
+            left: auto; 
+            right: 0; 
+        }
     }
     .tier-2 {
         display: block;

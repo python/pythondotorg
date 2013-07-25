@@ -30,7 +30,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        #self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 1)
 
     def test_event_list_category(self):
         category = EventCategory.objects.create(

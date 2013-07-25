@@ -13,10 +13,8 @@ var is_retina = Retina.isRetina();
 
 /* Run a log for testing */
 console.log( "hastouch=" + hastouch );
-console.log( "hasplaceholder=" + hasplaceholder );
-console.log( "hasgeneratedcontent=" + hasgeneratedcontent );
-console.log( "is_ltie9=" + is_ltie9 );
-console.log( "is_retina=" + is_retina );
+//console.log( "is_ltie9=" + is_ltie9 );
+//console.log( "is_retina=" + is_retina );
 
 if ( is_retina ) {
     $("html").addClass( "retina" ); 
@@ -38,82 +36,118 @@ if ( is_retina ) {
  */
 
 
-/* Debulked onresize handler from @louis_remi. https://github.com/louisremi/jquery-smartresize */
-function on_resize(c,t){onresize=function(){clearTimeout(t);t=setTimeout(c,100)};return c};
+/* Load, Resize and Orientation change methods 
+ * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 */
+
+    //initial load
+    $(window).load( function() { on_resize_orientationchange(); });
+    
+    //bind to resize
+    $(window).resize( function() { on_resize_orientationchange(); });
+    
+    //check for the orientation event and bind accordingly
+    if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', on_resize_orientationchange, false); } 
 
 
 /* Variables to set to true later and check */
+scroll_fired = false;
 supernavs_loaded = false;
 
 
 /* Load progressive content. Must remember to also load them for IE 7 and 8 if needed */
-on_resize(function() {
+function on_resize_orientationchange() {
 
     // Check if a container is empty !$.trim( $('#mainnav').html() ).length
-    var is_retina = Retina.isRetina();
+
 
     /*
      * "Watch" the body:after { content } to find out how wide the viewport is.
      * Thanks to http://adactio.com/journal/5429/ for details about this method
      */
     mq_tag = window.getComputedStyle(document.body,':after').getPropertyValue('content');
-    console.log( "media query tag=" + mq_tag );
+    //console.log( "media query tag=" + mq_tag );
 
 
-    if ( mq_tag.indexOf("animatebody") !=-1 ) {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
-        console.log( "! animatebody has fired" );
+    /* Move the top nav (sister sites) out of the way for small screens */
+    if ( mq_tag.indexOf("animatebody") !=-1 && ! scroll_fired ) {
+        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
+        scroll_fired = true;
     }
-
+    
+    
+    /* Click the menu button and add a class to the body for a "drawer" */
+    if ( mq_tag.indexOf("drawer_navigation") !=-1 ) {
+        
+        /* TO DO: Look for a left-right swipe action (on the #touchnav-wrapper?) and also trigger the menu to open/close */
+        $( "#site-map-link" ).click( function() {
+            $("body").toggleClass("show-sidemenu"); 
+            //console.log( "! #site-map-link has been tapped" );
+            return false; 
+        }); 
+        
+    } else {
+        
+        /* If "drawer_navigation" is not present, treat the Menu button as a scroller down to the footer */
+        $("#site-map-link").click(function() {
+            $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 500);
+            return false;
+        });
+    }
+    
+    
     /* Load a supernav into the About dropdown */
-    if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
-
-        $.get("/box/supernav-python-about/",
-            function(data){
-             $('li#about .subnav').append( data );
-            }, "html");
-        $('li#about').addClass("with-supernav");
-
-        $.get("/box/supernav-python-downloads/",
-            function(data){
-             $('li#downloads .subnav').append( data );
-            }, "html");
-        $('li#downloads').addClass("with-supernav");
-
-        $.get("/box/supernav-python-documentation/",
-            function(data){
-             $('li#documentation .subnav').append( data );
-            }, "html");
-        $('li#documentation').addClass("with-supernav");
-
-        $.get("/box/supernav-python-community/",
-            function(data){
-             $('li#community .subnav').append( data );
-            }, "html");
-        $('li#community').addClass("with-supernav");
-
-        $.get("/box/supernav-python-success-stories/",
-            function(data){
-             $('li#success-stories .subnav').append( data );
-            }, "html");
-        $('li#success-stories').addClass("with-supernav");
-
-        $.get("/box/supernav-python-blog/",
-            function(data){
-             $('li#blog .subnav').append( data );
-            }, "html");
-        $('li#blog').addClass("with-supernav");
-
-        $.get("/box/supernav-python-events/",
-            function(data){
-             $('li#events .subnav').append( data );
-            }, "html");
-        $('li#events').addClass("with-supernav");
-
-        supernavs_loaded = true;
-        console.log( "! supernavs_loaded has fired" );
+    if ( ! hastouch ) {
+    
+        if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
+    
+            $.get("/box/supernav-python-about/",
+                function(data){
+                 $('li#about .subnav').append( data );
+                }, "html");
+            $('li#about').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-downloads/",
+                function(data){
+                 $('li#downloads .subnav').append( data );
+                }, "html");
+            $('li#downloads').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-documentation/",
+                function(data){
+                 $('li#documentation .subnav').append( data );
+                }, "html");
+            $('li#documentation').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-community/",
+                function(data){
+                 $('li#community .subnav').append( data );
+                }, "html");
+            $('li#community').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-success-stories/",
+                function(data){
+                 $('li#success-stories .subnav').append( data );
+                }, "html");
+            $('li#success-stories').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-blog/",
+                function(data){
+                 $('li#blog .subnav').append( data );
+                }, "html");
+            $('li#blog').addClass("with-supernav");
+    
+            $.get("/box/supernav-python-events/",
+                function(data){
+                 $('li#events .subnav').append( data );
+                }, "html");
+            $('li#events').addClass("with-supernav");
+    
+            supernavs_loaded = true;
+            //console.log( "! supernavs_loaded has fired" );
+        }
     }
-
+    
+    
     /* Load a Google Map into the Community landing page
     if ( mq_tag.indexOf("local_meetup_map") !=-1 && ! local_meetups_loaded ) {
 
@@ -152,7 +186,7 @@ on_resize(function() {
         console.log( "! local_meetups_map has fired" );
     } */
 
-})(); // the magic extra () makes this function fire on page load
+};
 
 
 /* Initiate some other functions as well. Fires on first page load or when called. */
@@ -162,47 +196,19 @@ $().ready(function() {
 
     /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 400);
+        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         return false;
     });
+    
     $("#python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#top').offset().top }, 400);
+        $('body, html').animate({ scrollTop: $('#top').offset().top }, 300);
         return false;
     });
-    $("#site-map-link").click(function() {
-        $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 600);
-        return false;
-    });
+
     $("#back-to-top-1, #back-to-top-2").click(function() {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 600);
+        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
         return false;
     });
-
-
-    /* Treat the drop down menus in the main nav like select lists for touch devices */
-    if ( hastouch ) {
-        $(".main-navigation .tier-1 > a").click(function() {
-            $(".subnav").hide();
-            $(this).next( '.subnav' ).show();
-            return false;
-        });
-        
-        $(".close-for-touch").click(function() {
-            $(".subnav").hide();
-            return false;
-        });
-
-        $(".winkwink-nudgenudge .tier-1 > a").click(function() {
-            $(".subnav").hide();
-            $(this).next( '.subnav' ).show();
-            return false;
-        });
-        $(".adjust-font-size .tier-1 > a").click(function() {
-            $(".subnav").hide(  );
-            $(this).next( '.subnav' ).show();
-            return false;
-        });
-    }
 
 
     /*
@@ -288,12 +294,33 @@ $().ready(function() {
 		$(iden).slideToggle();
 	});
 
-
+    
+    /* 
+     * Add a class to the selected radio/checkbox parent label 
+     * Requires inputs to be nested in labels: 
+     * <label for="checkbox2"><input id="checkbox2" name="checkbox" type="checkbox">Choice B</label>
+     * <label for="radio1"><input id="radio1" name="radio" type="radio" checked="checked">Option 1</label>
+     */
+    $('input:radio').click(function() {
+        $('label:has(input:radio:checked)').addClass('active');
+        $('label:has(input:radio:not(:checked))').removeClass('active');
+    });
+    $('input:checkbox').click(function() {
+        $('label:has(input:checkbox:checked)').addClass('active');
+        $('label:has(input:checkbox:not(:checked))').removeClass('active');
+    });
+    /* Loop through them on initial page load as well */
+    $('input:radio').each(function() {
+        $('label:has(input:radio:checked)').addClass('active');
+    });
+    $('input:checkbox').each(function() {
+        $('label:has(input:checkbox:checked)').addClass('active');
+    });
+    
+    
     /* Non-media query enabled browsers need any critical content on page load. */
     if ( is_ltie9 ) {
-        //$( '#mainnav' ). load( 'components/navigation.php' );
-
-        //console.log( "! loadmainnav has fired because this is a non-media-query browser" );
+        //console.log( "! something has fired because this is a non-media-query browser" );
     }
 
 });

@@ -28,7 +28,7 @@
 
 /* ! ===== lt-IE9 rules ===== */
 .container {
-    width: px2em( 960px ); 
+    width: px2em( 980px ); 
 }
 
 .main-navigation li > a {
@@ -38,6 +38,6 @@
 
 /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
 .site-headline a, .site-headline a img {
-    width: 254px; 
+    width: 290px; 
     height: 82px; 
 }

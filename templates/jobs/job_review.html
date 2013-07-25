@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+
+{% block body_attributes %}class="jobs"{% endblock %}
+
+
+{% block main-nav_attributes %}jobs-navigation{% endblock %}
+
+
+{% block content %}
+<div class="row">
+    <h1>Job Listing Reviews</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>id</th>
+                <th>description</th>
+                <th>status</th>
+                <th>action</th>
+            </tr>
+        </thead>
+        <tbody>
+    {% for object in object_list %}
+    <tr>
+        <td><a href="{% url 'jobs:job_detail_review' pk=object.pk %}">{{ object.pk }}</a></td>
+        <td>
+            <p><strong>Company:</strong> {{ object.company.name }}</p>
+            {{ object.description|truncatewords:"50" }}
+        </td>
+        <td>{{ object.status }}</td>
+        <td>
+          <form action="." method="post">
+            {% csrf_token %}
+            <input type="hidden" name="job_id" value="{{ object.id }}">
+            <div>
+              <button name="action" value="approve">Approve</button>
+              <button name="action" value="reject">Reject</button>
+              <button name="action" value="remove">Remove</button>
+            </div>
+          </form>
+        </td>
+    </tr>
+    {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    <ul class="pagination menu">
+        {% if page_obj.has_previous %}
+            <li class="previous"><a href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+        {% else %}
+            <li class="previous"><a class="disabled" href="">Prev</a></li>
+        {% endif %}
+
+        {% for page in paginator.page_range %}
+        <li><a {% if page_obj.number == page %}class="active" {% endif %}href="?page={{ page }}">{{ page }}</a></li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+            <li class="next"><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+        {% else %}
+            <li class="next"><a class="disabled" href="">Next</a></li>
+        {% endif %}
+    </ul>
+
+</div>
+{% endblock content %}
