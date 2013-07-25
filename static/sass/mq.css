@@ -16,7 +16,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -24,9 +24,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -65,12 +66,12 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
-/* Horizontal gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
  * Does not include types that are not meant to be displayed full width, such as: 
         type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
  */
 /* 
  * Cross browser @keyframe definition set 
@@ -79,13 +80,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -111,7 +124,7 @@
 		Good for situations where we dont want to create a new color, 
 		but be sure that colors from variables are always going to be readable
 */
-/* ===== Grid ===== */
+/* ! ===== Grid ===== */
 /*
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
@@ -119,9 +132,10 @@
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
- * We are using Susy 1.0. Update your GEM file by deleting the old an downloading the new. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
  */
-/* ===== Variables ===== */
+/* ! ===== Variables ===== */
+/* Colors */
 /* Confusing, but in some cases, this can be set to a dark color */
 /* Python blue */
 /* Python yellow */
@@ -160,12 +174,12 @@
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
 /* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
-/* Vertical gradient mixin to make things easier. */
-/* Horizontal gradient mixin to make things easier. */
+/* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
  * Does not include types that are not meant to be displayed full width, such as: 
         type=number, type=range, type=date, type=color
+ * Usage: @include input-text-types() { @content }
  */
 /* 
  * Cross browser @keyframe definition set 
@@ -174,13 +188,25 @@
 /* 
  * Cross browser animation definition set 
  * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
  */
 /* 
  * Cross browser method to apply word-breaking and hyphenation (where supported) 
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 /* Keep this in all mix-in files if you can. Useful stuff */
-/* Manage our preferred reset as a Mix-in instead of replying on Compass or Blueprint */
+/* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
@@ -250,7 +276,7 @@
     speak: none; }
 
   .introduction {
-    font-size: 1.375em; }
+    font-size: 1.3125em; }
 
   .content-wrapper .container {
     padding: 1em 1.5em; }
@@ -316,7 +342,7 @@
     font-size: 1.125em;
     padding: 1em 1.4em 1.3em; }
 
-  .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text table {
+  .text {
     font-size: 0.9375em; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 39.9375em) and (max-width: 58.75em) {
@@ -525,11 +551,7 @@
     padding: 0 1em; }
 
   .call-to-action {
-    font-size: 1.625em; }
-    .fontface .call-to-action {
-      font-size: 1.86875em; }
-      .fontface .call-to-action span:before {
-        font-size: .875em; }
+    font-size: 1.5em; }
 
   /* Header-banners (not home) */
   .header-banner {
@@ -646,7 +668,7 @@
       .touch .python-navigation .subnav:before {
         border-color: transparent transparent #bbd4e9 transparent; }
     .python-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(55, 118, 171, 0.25);
       border-bottom: 1px solid transparent; }
       .python-navigation .tier-2 > a:hover, .python-navigation .tier-2 > a:focus {
@@ -732,7 +754,7 @@
       .touch .psf-navigation .subnav:before {
         border-color: transparent transparent #dadada transparent; }
     .psf-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(120, 121, 122, 0.25);
       border-bottom: 1px solid transparent; }
       .psf-navigation .tier-2 > a:hover, .psf-navigation .tier-2 > a:focus {
@@ -784,7 +806,7 @@
       border-bottom: 1px solid #dca900;
       border-left: 1px solid #ffdf76; }
       .docs-navigation .tier-1 > a {
-        color: #444444;
+        color: #333333;
         background-color: transparent;
         border-top: 1px solid transparent;
         border-bottom: 1px solid transparent;
@@ -818,7 +840,7 @@
       .touch .docs-navigation .subnav:before {
         border-color: transparent transparent white transparent; }
     .docs-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(255, 211, 67, 0.25);
       border-bottom: 1px solid transparent; }
       .docs-navigation .tier-2 > a:hover, .docs-navigation .tier-2 > a:focus {
@@ -904,7 +926,7 @@
       .touch .pypl-navigation .subnav:before {
         border-color: transparent transparent #ddebca transparent; }
     .pypl-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(130, 176, 67, 0.25);
       border-bottom: 1px solid transparent; }
       .pypl-navigation .tier-2 > a:hover, .pypl-navigation .tier-2 > a:focus {
@@ -990,7 +1012,7 @@
       .touch .jobs-navigation .subnav:before {
         border-color: transparent transparent #eee5ef transparent; }
     .jobs-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(160, 107, 167, 0.25);
       border-bottom: 1px solid transparent; }
       .jobs-navigation .tier-2 > a:hover, .jobs-navigation .tier-2 > a:focus {
@@ -1076,7 +1098,7 @@
       .touch .shop-navigation .subnav:before {
         border-color: transparent transparent #f1dee0 transparent; }
     .shop-navigation .tier-2 > a {
-      color: rgba(68, 68, 68, 0.9);
+      color: rgba(51, 51, 51, 0.9);
       border-top: 1px solid rgba(181, 88, 99, 0.25);
       border-bottom: 1px solid transparent; }
       .shop-navigation .tier-2 > a:hover, .shop-navigation .tier-2 > a:focus {
@@ -1433,8 +1455,8 @@
     text-align: left;
     position: absolute;
     left: 0;
-    margin-top: 0.56875em;
-    width: 23.40426%; }
+    width: 23.40426%;
+    margin-top: 0.56875em; }
 
   .latest-blog-post, .featured-event, .jobs-intro {
     position: relative;
@@ -1503,7 +1525,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large.png?1361222549') transparent; }
+      background: top left no-repeat url('../img/python-logo-large3.png?1373641784') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1523,17 +1545,17 @@
     left: 0;
     width: 23.40426%; }
 
-  /* <li>
-          <h2 class="listing-company">
-              <span class="listing-company-name">
-                  <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
-              </span>
-              <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
-          </h2>
-          <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
-          <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
-          <span class="listing-posted">10 December 2012</span>
-      </li>*/
+  /*<li>
+      <h2 class="listing-company">
+          <span class="listing-company-name">
+              <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
+          </span>
+          <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
+      </h2>
+      <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
+      <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
+      <span class="listing-posted">10 December 2012</span>
+  </li>*/
   .list-recent-jobs li {
     *zoom: 1; }
     .list-recent-jobs li:after {
@@ -1670,15 +1692,8 @@
     display: none; }
   .no-touch .search-the-site {
     border-left: 0; }
-  .no-touch .main-navigation {
-    -webkit-border-radius: 8px;
-    -moz-border-radius: 8px;
-    -ms-border-radius: 8px;
-    -o-border-radius: 8px;
-    border-radius: 8px;
-    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+
+  .main-navigation {
     display: block;
     margin: 0 -.625em;
     text-align: center;
@@ -1693,8 +1708,16 @@
             <a class="close-for-touch close-graphic" href="#">&times;</a>
         </li>
     /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
-    font-size: 1.125em; }
-    .no-touch .main-navigation .menu {
+    font-size: 1.125em;
+    -webkit-border-radius: 8px;
+    -moz-border-radius: 8px;
+    -ms-border-radius: 8px;
+    -o-border-radius: 8px;
+    border-radius: 8px;
+    -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
+    .main-navigation .menu {
       *zoom: 1; }
       .no-touch .main-navigation .menu:after {
         content: "";
@@ -1879,9 +1902,9 @@
     .super-navigation h2, .super-navigation h3, .super-navigation h4, .super-navigation h5 {
       margin-top: 0; }
     #community .super-navigation h4, #blog .super-navigation h4, #events .super-navigation h4 {
-      font-family: "Flux-Bold", HelveticaNeue, "Helvetica Neue", Arial, sans-serif;
+      font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
       font-weight: normal;
-      font-size: 1.375em;
+      font-size: 1.3125em;
       line-height: 1.25em;
       margin-bottom: 0; }
     .super-navigation p.date-posted {
@@ -2054,7 +2077,7 @@
     padding-left: .125em;
     margin-bottom: .125em; }
   .feedback .shrubbery p {
-    padding-left: 5em; } }
+    padding-left: 4.5em; } }
 /* - - - Larger than 1024px - - - */
 @media (min-width: 64em) {
   body:after {
