@@ -157,7 +157,7 @@
             -webkit-backface-visibility: hidden; 
         }
         .touch .show-sidemenu & {
-            @include transform( translate3d( $menuwidth, 0, 0 ) ); 
+            @include transform( translate3d( 280px, 0, 0 ) ); 
         }
     }
     
