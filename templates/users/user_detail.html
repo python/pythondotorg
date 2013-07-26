@@ -52,10 +52,10 @@
         <ul class="menu">
             <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{% firstof object.get_full_name object %} on Twitter</a></li>
             <li><a href="#" title="To this user's Freenode profile"><span class="icon-freenode" aria-hidden="true"></span>{% firstof object.get_full_name object %} on Freenode</a></li>
-            <li><a href="#" title="To this user's GitHub profile"><span class="icon-github" aria-hidden="true"></span>{% firstof object.preferred_name object.legal_name object %} on Github</a></li>
-            <li><a href="#" title="To this user's StackOverflow profile"><span class="icon-stack-overflow" aria-hidden="true"></span>{% firstof object.preferred_name object.legal_name object %} on StackOverflow</a></li>
-            <li><a href="#" title="To this user's Google+ profile"><span class="icon-google-plus" aria-hidden="true"></span>{% firstof object.preferred_name object.legal_name object %} on Google+</a></li>
-            <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{% firstof object.preferred_name object.legal_name object %}'s personal blog</a></li>
+            <li><a href="#" title="To this user's GitHub profile"><span class="icon-github" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on Github</a></li>
+            <li><a href="#" title="To this user's StackOverflow profile"><span class="icon-stack-overflow" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on StackOverflow</a></li>
+            <li><a href="#" title="To this user's Google+ profile"><span class="icon-google-plus" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on Google+</a></li>
+            <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %}'s personal blog</a></li>
         </ul>
     </div>
     {% endcomment %}

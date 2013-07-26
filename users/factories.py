@@ -1,6 +1,6 @@
 import factory
 
-from .models import User
+from .models import User, Membership
 
 
 class UserFactory(factory.DjangoModelFactory):
@@ -10,7 +10,15 @@ class UserFactory(factory.DjangoModelFactory):
     username = factory.Sequence(lambda n: 'zombie{0}'.format(n))
     email = factory.Sequence(lambda n: "zombie%s@example.com" % n)
     #password = ?
-    psf_code_of_conduct = True
-    psf_announcements = True
     search_visibility = User.SEARCH_PUBLIC
     email_privacy = User.EMAIL_PUBLIC
+
+
+class MembershipFactory(factory.DjangoModelFactory):
+    FACTORY_FOR = Membership
+    FACTORY_DJANGO_GET_OR_CREATE = ('creator',)
+
+    psf_code_of_conduct = True
+    psf_announcements = True
+
+    creator = factory.SubFactory(UserFactory)
