@@ -5,11 +5,11 @@ from django.db.models.query import QuerySet
 class PostQuerySet(QuerySet):
 
     def public(self):
-        return self.filter(status__exact=self.model.STATUS_APPROVED)
+        return self.filter(status__exact=self.model.STATUS_PUBLIC)
 
-    def review(self):
+    def private(self):
         return self.filter(status__in=[
-            self.model.STATUS_REVIEW,
+            self.model.STATUS_PRIVATE,
         ])
 
 
@@ -21,5 +21,5 @@ class PostManager(Manager):
     def public(self):
         return self.get_query_set().public()
 
-    def review(self):
-        return self.get_query_set().review()
+    def private(self):
+        return self.get_query_set().private()
