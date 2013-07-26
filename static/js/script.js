@@ -9,10 +9,15 @@ var hastouch = has_feature( "touch" );
 var hasplaceholder = has_feature( "placeholder" );
 var hasgeneratedcontent = has_feature( "generatedcontent" );
 var is_ltie9 = has_feature( "lt-ie9" );
-var is_retina = Retina.isRetina();
+
+if(!window.Retina) {
+    console.log( "Retina.js has not loaded" );
+} else {
+    var is_retina = Retina.isRetina();
+}
 
 /* Run a log for testing */
-console.log( "hastouch=" + hastouch );
+//console.log( "hastouch=" + hastouch );
 //console.log( "is_ltie9=" + is_ltie9 );
 //console.log( "is_retina=" + is_retina );
 
@@ -27,26 +32,17 @@ if ( is_retina ) {
 /* /mobile/i.test(navigator.userAgent) && !window.location.hash && setTimeout(function () { window.scrollTo(0, 0); }, 1000); */
 
 
-/*
- * WE NEED the Following:
-
- 1) Something like FitText.js for numbers in the statistics widget
- 2) A down and dirty Retina detection kit to swap out what few images would benefit.
-
- */
-
-
 /* Load, Resize and Orientation change methods 
  * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 */
 
-    //initial load
-    $(window).load( function() { on_resize_orientationchange(); });
-    
-    //bind to resize
-    $(window).resize( function() { on_resize_orientationchange(); });
-    
-    //check for the orientation event and bind accordingly
-    if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', on_resize_orientationchange, false); } 
+//initial load
+$(window).load( function() { on_resize_orientationchange(); });
+
+//bind to resize
+$(window).resize( function() { on_resize_orientationchange(); });
+
+//check for the orientation event and bind accordingly
+if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', on_resize_orientationchange, false); } 
 
 
 /* Variables to set to true later and check */
@@ -216,49 +212,53 @@ $().ready(function() {
      * Scales the font-size up or down by about 2 pixels.
      * Requires jQuery.cookie.js
      */
-    var $cookie_name = "Python-FontSize";
-    var elem = "body";
-    var originalFontSize = $(elem).css("font-size");
-
-    // if exists load saved value, otherwise store it
-    if($.cookie($cookie_name)) {
-        var $getSize = $.cookie($cookie_name);
-        $(elem).css({fontSize : $getSize + ($getSize.indexOf("px")!=-1 ? "" : "px")}); // IE fix for double "pxpx" error
+    if(!window.cookie) {
+        console.log( "cookie.js has not loaded" );
     } else {
-        $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
+
+        var $cookie_name = "Python-FontSize";
+        var elem = "body";
+        var originalFontSize = $(elem).css("font-size");
+    
+        // if exists load saved value, otherwise store it
+        if($.cookie($cookie_name)) {
+            var $getSize = $.cookie($cookie_name);
+            $(elem).css({fontSize : $getSize + ($getSize.indexOf("px")!=-1 ? "" : "px")}); // IE fix for double "pxpx" error
+        } else {
+            $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
+        }
+    
+        // reset link
+        $(".text-reset").bind("click", function() {
+            $(elem).css("font-size", originalFontSize);
+            $.cookie($cookie_name, originalFontSize);
+            return false;
+        });
+    
+        // text "A+" link
+        $(".text-grow").bind("click", function() {
+            var currentFontSize = $(elem).css("font-size");
+            var currentFontSizeNum = parseFloat(currentFontSize, 10);
+            var newFontSize = Math.round( currentFontSizeNum*1.125 );
+            if (newFontSize) {
+                $(elem).css("font-size", newFontSize);
+                $.cookie($cookie_name, newFontSize);
+            }
+            return false;
+        });
+    
+        // text "A-" link
+        $(".text-shrink").bind("click", function() {
+            var currentFontSize = $(elem).css("font-size");
+            var currentFontSizeNum = parseFloat(currentFontSize, 10);
+            var newFontSize = Math.round( currentFontSizeNum*0.89 );
+            if (newFontSize) {
+                $(elem).css("font-size", newFontSize);
+                $.cookie($cookie_name, newFontSize);
+            }
+            return false;
+        });
     }
-
-    // reset link
-    $(".text-reset").bind("click", function() {
-        $(elem).css("font-size", originalFontSize);
-        $.cookie($cookie_name, originalFontSize);
-        return false;
-    });
-
-    // text "A+" link
-    $(".text-grow").bind("click", function() {
-        var currentFontSize = $(elem).css("font-size");
-        var currentFontSizeNum = parseFloat(currentFontSize, 10);
-        var newFontSize = Math.round( currentFontSizeNum*1.125 );
-        if (newFontSize) {
-            $(elem).css("font-size", newFontSize);
-            $.cookie($cookie_name, newFontSize);
-        }
-        return false;
-    });
-
-    // text "A-" link
-    $(".text-shrink").bind("click", function() {
-        var currentFontSize = $(elem).css("font-size");
-        var currentFontSizeNum = parseFloat(currentFontSize, 10);
-        var newFontSize = Math.round( currentFontSizeNum*0.89 );
-        if (newFontSize) {
-            $(elem).css("font-size", newFontSize);
-            $.cookie($cookie_name, newFontSize);
-        }
-        return false;
-    });
-
 
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
     if ( hasplaceholder === false ) {
