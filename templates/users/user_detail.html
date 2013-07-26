@@ -2,7 +2,7 @@
 
 
 {% block main_navigation %}
-{% load sitetree users_tags %}
+{% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
@@ -32,11 +32,11 @@
 <div class="user-profile-display">
 
     <div class="user-profile-name">
-        <p><span class="profile-label">Name:</span> {{ object.get_full_name|ifempty:object }}</p>
+        <p><span class="profile-label">Name:</span> {% firstof object.get_full_name object %}</p>
     </div>
     {% comment %}
     <div class="user-profile-location">
-        <p><span class="profile-label">Location:</span> {% location object %}</p>
+        <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
     </div>
     {% endcomment %}
     <div class="user-profile-bio">
@@ -50,12 +50,12 @@
     {% comment %}
     <div class="user-social-profiles">
         <ul class="menu">
-            <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{{ object.get_full_name|ifempty:object }} on Twitter</a></li>
-            <li><a href="#" title="To this user's Freenode profile"><span class="icon-freenode" aria-hidden="true"></span>{{ object.get_full_name|ifempty:object }} on Freenode</a></li>
-            <li><a href="#" title="To this user's GitHub profile"><span class="icon-github" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on Github</a></li>
-            <li><a href="#" title="To this user's StackOverflow profile"><span class="icon-stack-overflow" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on StackOverflow</a></li>
-            <li><a href="#" title="To this user's Google+ profile"><span class="icon-google-plus" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }} on Google+</a></li>
-            <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{{ object.preferred_name|ifempty:object.legal_name|ifempty:object }}'s personal blog</a></li>
+            <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{% firstof object.get_full_name object %} on Twitter</a></li>
+            <li><a href="#" title="To this user's Freenode profile"><span class="icon-freenode" aria-hidden="true"></span>{% firstof object.get_full_name object %} on Freenode</a></li>
+            <li><a href="#" title="To this user's GitHub profile"><span class="icon-github" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on Github</a></li>
+            <li><a href="#" title="To this user's StackOverflow profile"><span class="icon-stack-overflow" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on StackOverflow</a></li>
+            <li><a href="#" title="To this user's Google+ profile"><span class="icon-google-plus" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %} on Google+</a></li>
+            <li><a href="#" title="To this user's personal blog"><span class="icon-feed" aria-hidden="true"></span>{% firstof object.membership.preferred_name object.membership.legal_name object %}'s personal blog</a></li>
         </ul>
     </div>
     {% endcomment %}

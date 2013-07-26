@@ -2,7 +2,7 @@
 
 
 {% block main_navigation %}
-{% load sitetree users_tags %}
+{% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
@@ -35,8 +35,8 @@
     <ul class="list-row-container menu">
     {% for user in user_list %}
         <li>
-            <span class="user-name"><a href="{{ user.get_absolute_url }}">{{ user.get_full_name|ifempty:user.username }}</a></span>
-            <span class="user-location">{# location user #}</span>
+            <span class="user-name"><a href="{{ user.get_absolute_url }}">{% firstof user.get_full_name user.username %}</a></span>
+            <span class="user-location">{# {{ user|user_location|default:"Not Specified" }} #}</span>
             <span class="user-psfmember-status"><span class="icon-python" aria-hidden="true"></span>Yes</span>
             {% comment %}If not a member, simply output <span class="user-psfmember-status"></span> {% endcomment %}
         </li>

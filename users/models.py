@@ -53,7 +53,12 @@ class Membership(models.Model):
 
     created = models.DateTimeField(default=timezone.now, blank=True)
     updated = models.DateTimeField(blank=True)
+    # FIXME: This should be a OneToOneField
     creator = models.ForeignKey(User, null=True, blank=True)
+#    creator = models.OneToOneField(User, null=True, blank=True)
+
+    def __str__(self):
+        return "Membership object for user: %s" % self.creator.username
 
     def save(self, **kwargs):
         self.updated = timezone.now()

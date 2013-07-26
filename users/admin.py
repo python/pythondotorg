@@ -12,5 +12,14 @@ class UserAdmin(BaseUserAdmin):
     change_password_form = AdminPasswordChangeForm
 
 
+class MembershipAdmin(admin.ModelAdmin):
+    list_display = (
+        '__str__',
+        'created',
+        'updated'
+    )
+    date_hierarchy = 'created'
+
+
 admin.site.register(User, UserAdmin)
-admin.site.register(Membership)
+admin.site.register(Membership, MembershipAdmin)

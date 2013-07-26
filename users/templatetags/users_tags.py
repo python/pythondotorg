@@ -1,23 +1,11 @@
 from django import template
 
+from ..models import Membership
+
 register = template.Library()
 
-@register.filter(name='ifempty')
-def if_empty_replace(value, str_replace):
-    """
-    if the value is an empty string replace with 'str_replace'
 
-    For example::
-        {{ user.get_full_name|ifempty:user.username }}
-    """
-
-    if value == '':
-        return str_replace
-    else:
-        return value
-
-
-@register.simple_tag(name='location')
+@register.filter(name='user_location')
 def parse_location(user):
     """
     Returns a formatted string of user location data.
@@ -25,14 +13,32 @@ def parse_location(user):
 
     Returns empty if no location data is present
     """
+
     path = ''
-    if user.city:
-        path += "%s, " % (user.city)
-    if user.region:
-        path += "%s " % (user.region)
-    if user.country:
-        path += "%s" % (user.country)
-    if len(path) == 0:
-        path = "Not Specified"
+
+    # FIXME: Change this when Membership.creator becomes a OneToOneField
+    try:
+        membership = user.membership_set.all()[0]
+    except IndexError:
+        return ''
+
+    #try:
+    #    membership = user.membership
+    #except Membership.DoesNotExist:
+    #    return ''
+
+    if membership.city:
+        path += "%s" % (membership.city)
+    if membership.region:
+        if membership.city:
+            path += ", "
+        path += "%s" % (membership.region)
+    if membership.country:
+        if membership.region:
+            path += " "
+        else:
+            if membership.city:
+                path += ", "
+        path += "%s" % (membership.country)
 
     return path
