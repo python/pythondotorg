@@ -398,6 +398,7 @@ body {
     -moz-box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3);
     box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3); }
   .inner .main-navigation {
+    position: relative;
     margin-bottom: -1.75em; }
 
 /*li*/
@@ -1245,13 +1246,13 @@ body {
 .psf-widget {
   min-height: 14em;
   position: relative; }
-  .psf-widget .shiny-python-logo {
+  .psf-widget .python-logo {
     position: absolute;
     top: 0.5em;
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1374783936') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1375124397') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1483,15 +1484,41 @@ a.jump-to-menu {
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .touch .main-navigation .tier-1 {
-    position: static;
-    display: block;
-    opacity: 1;
-    left: 0; }
-  .touch .main-navigation .tier-2 {
+  .touch .main-navigation .element-1, .touch .main-navigation .element-2, .touch .main-navigation .element-3, .touch .main-navigation .element-4 {
+    /* Position the pointer element */ }
+    .touch .main-navigation .element-1 .subnav, .touch .main-navigation .element-2 .subnav, .touch .main-navigation .element-3 .subnav, .touch .main-navigation .element-4 .subnav {
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out; }
+    .touch .main-navigation .element-1:hover .subnav, .touch .main-navigation .element-1 .subnav.touched, .touch .main-navigation .element-2:hover .subnav, .touch .main-navigation .element-2 .subnav.touched, .touch .main-navigation .element-3:hover .subnav, .touch .main-navigation .element-3 .subnav.touched, .touch .main-navigation .element-4:hover .subnav, .touch .main-navigation .element-4 .subnav.touched {
+      display: block;
+      opacity: 1;
+      left: 0; }
+    .touch .main-navigation .element-1 .subnav:before, .touch .main-navigation .element-2 .subnav:before, .touch .main-navigation .element-3 .subnav:before, .touch .main-navigation .element-4 .subnav:before {
+      left: 1.5em; }
+  .touch .main-navigation .element-5, .touch .main-navigation .element-6, .touch .main-navigation .element-7, .touch .main-navigation .element-8, .touch .main-navigation .last {
+    /* Position the pointer element */ }
+    .touch .main-navigation .element-5 .subnav, .touch .main-navigation .element-6 .subnav, .touch .main-navigation .element-7 .subnav, .touch .main-navigation .element-8 .subnav, .touch .main-navigation .last .subnav {
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out; }
+    .touch .main-navigation .element-5:hover .subnav, .touch .main-navigation .element-5 .subnav.touched, .touch .main-navigation .element-6:hover .subnav, .touch .main-navigation .element-6 .subnav.touched, .touch .main-navigation .element-7:hover .subnav, .touch .main-navigation .element-7 .subnav.touched, .touch .main-navigation .element-8:hover .subnav, .touch .main-navigation .element-8 .subnav.touched, .touch .main-navigation .last:hover .subnav, .touch .main-navigation .last .subnav.touched {
+      display: block;
+      opacity: 1;
+      right: 0; }
+    .touch .main-navigation .element-5 .subnav:before, .touch .main-navigation .element-6 .subnav:before, .touch .main-navigation .element-7 .subnav:before, .touch .main-navigation .element-8 .subnav:before, .touch .main-navigation .last .subnav:before {
+      left: auto;
+      right: 1.5em; }
+  .main-navigation .tier-2 {
     display: block;
     min-width: 100%; }
-    .touch .main-navigation .tier-2 a {
+    .main-navigation .tier-2 a {
       white-space: nowrap; }
   .main-navigation .menu {
     text-align: center; }
@@ -1520,19 +1547,14 @@ a.jump-to-menu {
   .main-navigation .tier-1 > a {
     padding: 0.65em 1.25em 0.55em; }
 
-/*.navigation {
-    
-    .close-subnav {
-        border-top: 0;
-         
-        a {
-            @include pe-border( $color-right: rgba( #fff, .8 ) );
-        }
-        .close-for-touch {
-            @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
-        }
-    }
-}*/
+.navigation .close-subnav {
+  border-top: 0; }
+  .navigation .close-subnav a {
+    border-right: 1px solid rgba(255, 255, 255, 0.8); }
+  .navigation .close-subnav .close-for-touch {
+    border-right: 1px solid transparent;
+    border-left: 1px solid rgba(102, 102, 102, 0.2); }
+
 /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
 .touch #touchnav-wrapper {
   -webkit-transition: -webkit-transform 300ms ease;
