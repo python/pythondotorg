@@ -343,21 +343,16 @@
     sup { top: -0.5em; }
     sub { bottom: -0.25em; }
     
-    pre, code, kbd, samp, var { font-family: Courier, monospace, sans-serif; }
-    pre {  /* PE's codey-looking pre style, just for kicks */
+    pre, code, kbd, samp, var { font-family: Consolas, 'Lucida Console','Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, sans-serif; }
+    pre {  /* Get spaces to display for PRE tags but dont let long lines break out of containers */
     	white-space: pre-wrap; 
     	white-space: -moz-pre-wrap !important;	/* 1999+ Mozilla */
     	white-space: -pre-wrap;					/* Opera 4 thru 6 */
     	white-space: -o-pre-wrap;				/* Opera 7 and up */
     	word-wrap: break-word;					/* IE 5.5+ and up */
-    	padding: 1em; 
-    	margin-bottom: 1em; 
-    	background: #f2f2f2; 
-    	background: rgba(#e6e6e6, 0.5); 
-    	border-left: 5px solid #6CE26C; 
     }
-    code { color: $code-green; font-size: 108%; }
-    var { font-size: 112%; font-style: italic; }
+    code { color: $code-green; }
+    var { font-style: italic; }
     
     textarea { overflow: auto; vertical-align: top; resize: vertical; }
     .ie7 legend { border: 0; padding: 0; white-space: normal;*margin-left: -7px; } 

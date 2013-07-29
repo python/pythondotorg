@@ -371,6 +371,7 @@
         }
         /* Shorten the amount of blue space under the nav on inner pages */
         .inner & {
+            position: relative; 
             margin-bottom: -1.75em; 
         }
     }
@@ -820,14 +821,13 @@
             min-height: 14em; 
             position: relative; 
             
-            .shiny-python-logo {
+            .python-logo {
                 position: absolute; 
                 top: 0.5em; 
                 // left: columns( 8.25 ); 
                 right: 1em;
                 width: 210px; 
                 height: 210px; 
-                // background: top left no-repeat image-url("python-logo-large-shiny_trans24.png") transparent;
                 background: top left no-repeat image-url("python-logo-large.png") transparent;
             }
             .widget-title, p {
