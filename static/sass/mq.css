@@ -287,7 +287,7 @@
   .widget-title .prompt, .listing-company .prompt {
     display: inline; }
 
-  input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
+  input[type="submit"], input[type="reset"], button, a.button, .button {
     display: inline-block;
     width: auto; } }
 /* - - - Larger than 480px - - - */
@@ -362,16 +362,6 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: block;
     /*ul*/
-    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a class="close-for-touch" href="#">Close Menu</a> 
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-        or
-        <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a href="/about">About</a>
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
     text-align: center; }
     .no-touch .main-navigation .menu {
       *zoom: 1; }
@@ -383,7 +373,6 @@
       position: relative; }
     .no-touch .main-navigation .subnav {
       position: absolute;
-      top: 100%;
       z-index: 100;
       text-align: left;
       /*modernizr*/
@@ -391,7 +380,6 @@
       .no-touch .no-touch .main-navigation .subnav {
         min-width: 100%; }
       .touch .no-touch .main-navigation .subnav {
-        display: none;
         top: 120%;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
@@ -405,75 +393,42 @@
           border-width: 0.75em;
           top: -1.45em;
           display: block; }
-    .no-touch .main-navigation .element-1 .subnav, .no-touch .main-navigation .element-2 .subnav, .no-touch .main-navigation .element-3 .subnav, .no-touch .main-navigation .element-4 .subnav {
-      left: -9999px;
+    .no-touch .no-touch .main-navigation .element-1 .subnav, .no-touch .no-touch .main-navigation .element-2 .subnav, .no-touch .no-touch .main-navigation .element-3 .subnav, .no-touch .no-touch .main-navigation .element-4 .subnav {
+      top: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
       transition: all 0s ease; }
-      .touch .no-touch .main-navigation .element-1 .subnav:before, .touch .no-touch .main-navigation .element-2 .subnav:before, .touch .no-touch .main-navigation .element-3 .subnav:before, .touch .no-touch .main-navigation .element-4 .subnav:before {
-        left: 1.5em; }
-    .no-touch .no-touch .main-navigation .element-1:hover .subnav, .no-touch .no-touch .main-navigation .element-2:hover .subnav, .no-touch .no-touch .main-navigation .element-3:hover .subnav, .no-touch .no-touch .main-navigation .element-4:hover .subnav,
-    .no-touch .no-touch .main-navigation .element-1:focus .subnav, .no-touch .no-touch .main-navigation .element-2:focus .subnav, .no-touch .no-touch .main-navigation .element-3:focus .subnav, .no-touch .no-touch .main-navigation .element-4:focus .subnav {
+    .no-touch .no-touch .main-navigation .element-1:hover .subnav, .no-touch .no-touch .main-navigation .element-1:focus .subnav, .no-touch .no-touch .main-navigation .element-2:hover .subnav, .no-touch .no-touch .main-navigation .element-2:focus .subnav, .no-touch .no-touch .main-navigation .element-3:hover .subnav, .no-touch .no-touch .main-navigation .element-3:focus .subnav, .no-touch .no-touch .main-navigation .element-4:hover .subnav, .no-touch .no-touch .main-navigation .element-4:focus .subnav {
       left: 0;
+      top: 100%;
       -webkit-transition-delay: 0.25s;
       -moz-transition-delay: 0.25s;
       -o-transition-delay: 0.25s;
       transition-delay: 0.25s; }
-    .touch .no-touch .main-navigation .element-1:hover .subnav, .touch .no-touch .main-navigation .element-2:hover .subnav, .touch .no-touch .main-navigation .element-3:hover .subnav, .touch .no-touch .main-navigation .element-4:hover .subnav,
-    .touch .no-touch .main-navigation .element-1 .subnav.touched, .touch .no-touch .main-navigation .element-2 .subnav.touched, .touch .no-touch .main-navigation .element-3 .subnav.touched, .touch .no-touch .main-navigation .element-4 .subnav.touched {
-      left: 0; }
-    .no-touch .main-navigation .element-5 .subnav, .no-touch .main-navigation .element-6 .subnav, .no-touch .main-navigation .element-7 .subnav, .no-touch .main-navigation .element-8 .subnav, .no-touch .main-navigation .last .subnav {
-      left: auto;
-      right: -9999px;
+    .no-touch .no-touch .main-navigation .element-5 .subnav, .no-touch .no-touch .main-navigation .element-6 .subnav, .no-touch .no-touch .main-navigation .element-7 .subnav, .no-touch .no-touch .main-navigation .element-8 .subnav, .no-touch .no-touch .main-navigation .last .subnav {
+      top: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
       transition: all 0s ease; }
-      .touch .no-touch .main-navigation .element-5 .subnav:before, .touch .no-touch .main-navigation .element-6 .subnav:before, .touch .no-touch .main-navigation .element-7 .subnav:before, .touch .no-touch .main-navigation .element-8 .subnav:before, .touch .no-touch .main-navigation .last .subnav:before {
-        right: 1.5em; }
-    .no-touch .no-touch .main-navigation .element-5:hover .subnav, .no-touch .no-touch .main-navigation .element-6:hover .subnav, .no-touch .no-touch .main-navigation .element-7:hover .subnav, .no-touch .no-touch .main-navigation .element-8:hover .subnav, .no-touch .no-touch .main-navigation .last:hover .subnav,
-    .no-touch .no-touch .main-navigation .element-5:focus .subnav, .no-touch .no-touch .main-navigation .element-6:focus .subnav, .no-touch .no-touch .main-navigation .element-7:focus .subnav, .no-touch .no-touch .main-navigation .element-8:focus .subnav, .no-touch .no-touch .main-navigation .last:focus .subnav {
-      left: auto;
+    .no-touch .no-touch .main-navigation .element-5:hover .subnav, .no-touch .no-touch .main-navigation .element-5:focus .subnav, .no-touch .no-touch .main-navigation .element-6:hover .subnav, .no-touch .no-touch .main-navigation .element-6:focus .subnav, .no-touch .no-touch .main-navigation .element-7:hover .subnav, .no-touch .no-touch .main-navigation .element-7:focus .subnav, .no-touch .no-touch .main-navigation .element-8:hover .subnav, .no-touch .no-touch .main-navigation .element-8:focus .subnav, .no-touch .no-touch .main-navigation .last:hover .subnav, .no-touch .no-touch .main-navigation .last:focus .subnav {
       right: 0;
+      top: 100%;
       -webkit-transition-delay: 0.25s;
       -moz-transition-delay: 0.25s;
       -o-transition-delay: 0.25s;
       transition-delay: 0.25s; }
-    .touch .no-touch .main-navigation .element-5:hover .subnav, .touch .no-touch .main-navigation .element-6:hover .subnav, .touch .no-touch .main-navigation .element-7:hover .subnav, .touch .no-touch .main-navigation .element-8:hover .subnav, .touch .no-touch .main-navigation .last:hover .subnav,
-    .touch .no-touch .main-navigation .element-5 .subnav.touched, .touch .no-touch .main-navigation .element-6 .subnav.touched, .touch .no-touch .main-navigation .element-7 .subnav.touched, .touch .no-touch .main-navigation .element-8 .subnav.touched, .touch .no-touch .main-navigation .last .subnav.touched {
-      left: auto;
-      right: 0; }
-    .no-touch .main-navigation .tier-2 {
+    .touch .no-touch .main-navigation .tier-1 {
+      position: static;
+      display: block;
+      opacity: 1;
+      left: 0; }
+    .touch .no-touch .main-navigation .tier-2 {
       display: block;
       min-width: 100%; }
-      .no-touch .main-navigation .tier-2 a {
+      .touch .no-touch .main-navigation .tier-2 a {
         white-space: nowrap; }
-    .no-touch .main-navigation .close-subnav {
-      display: none;
-      text-align: left;
-      white-space: nowrap;
-      position: relative;
-      /*modernizr*/ }
-      .js.touch .no-touch .main-navigation .close-subnav {
-        display: block; }
-      .no-touch .main-navigation .close-subnav > a {
-        display: block;
-        font-weight: bold; }
-      .no-touch .main-navigation .close-subnav .close-graphic {
-        display: block;
-        color: #b55863;
-        font-size: 1.75em;
-        line-height: 1;
-        font-weight: bold;
-        position: absolute;
-        top: 0;
-        right: 0;
-        text-align: center;
-        width: 1.71429em;
-        padding: 0.18em 0 0.25em;
-        background: rgba(255, 255, 255, 0.2);
-        text-shadow: -1px 0 0 white; }
     .no-touch .main-navigation .tier-1 {
       float: left;
       width: 33.333333%; }
@@ -590,7 +545,7 @@
       /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
       .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
         display: block;
-        padding: .5em 1.5em .4em 1em;
+        padding: 0.5em 1.5em 0.4em 1em;
         position: relative; }
     .main-navigation .tier-1 {
       display: block;
@@ -1311,67 +1266,7 @@
 
   .feedback-flag {
     top: 21em;
-    right: -2.4em; }
-
-    /*
-<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
-    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
-            <a href="/about/" title="" class="">About</a>
-            <ul class="subnav menu" role="menu" aria-hidden="true">
-                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
-                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-
-! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
-! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
-
-*/
-  .touch body, .touch #touchnav-wrapper {
-    position: relative;
-    width: 100%; }
-  .touch .main-navigation {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: -260px;
-    width: 260px;
-    height: 100%;
-    overflow: scroll;
-    /* Reset some styles */
-    border: 0;
-    -webkit-border-radius: 0;
-    -moz-border-radius: 0;
-    -ms-border-radius: 0;
-    -o-border-radius: 0;
-    border-radius: 0; }
-    .touch .main-navigation .tier-1 > a {
-      text-align: left; }
-
-  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
-  .touch #touchnav-wrapper {
-    -webkit-transition: -webkit-transform 300ms ease;
-    -moz-transition: -moz-transform 300ms ease;
-    -o-transition: -o-transform 300ms ease;
-    transition: transform 300ms ease;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden; }
-  .touch .show-sidemenu #touchnav-wrapper {
-    -webkit-transform: translate3d(260px, 0, 0);
-    -moz-transform: translate3d(260px, 0, 0);
-    -ms-transform: translate3d(260px, 0, 0);
-    -o-transform: translate3d(260px, 0, 0);
-    transform: translate3d(260px, 0, 0); }
-
-  .inner .main-header {
-    position: static; } }
+    right: -2.4em; } }
 /* - - - Larger than 800px - - - */
 @media (min-width: 50em) {
   body:after {
@@ -1384,14 +1279,14 @@
     height: 72.16px; }
 
   .site-headline {
-    margin: .25em 0 .5em; }
+    margin: 0.25em 0 0.5em; }
 
   .options-bar {
     margin: 0.875em 0; }
 
   .search-field {
     background: white;
-    padding: .4em .5em .3em;
+    padding: 0.4em 0.5em 0.3em;
     margin-right: .5em;
     width: 11em; }
     .search-field:focus {
@@ -1425,24 +1320,24 @@
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
@@ -1525,7 +1420,7 @@
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large3.png?1373641784') transparent; }
+      background: top left no-repeat url('../img/python-logo-large.png?1374783936') transparent; }
     .psf-widget .widget-title, .psf-widget p {
       margin-right: 34.04255%; }
 
@@ -1688,26 +1583,15 @@
     display: none;
     speak: none; }
 
-  .no-touch a.jump-to-menu {
+  a.jump-to-menu {
     display: none; }
-  .no-touch .search-the-site {
+
+  .search-the-site {
     border-left: 0; }
 
   .main-navigation {
     display: block;
-    margin: 0 -.625em;
     text-align: center;
-    /*ul*/
-    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a class="close-for-touch" href="#">Close Menu</a> 
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-        or
-        <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a href="/about">About</a>
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
     font-size: 1.125em;
     -webkit-border-radius: 8px;
     -moz-border-radius: 8px;
@@ -1716,31 +1600,30 @@
     border-radius: 8px;
     -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    /*ul*/ }
     .main-navigation .menu {
       *zoom: 1; }
-      .no-touch .main-navigation .menu:after {
+      .main-navigation .menu:after {
         content: "";
         display: table;
         clear: both; }
-    .no-touch .main-navigation .tier-1 {
+    .main-navigation .tier-1 {
       position: relative; }
-    .no-touch .main-navigation .subnav {
+    .main-navigation .subnav {
       position: absolute;
-      top: 100%;
       z-index: 100;
       text-align: left;
       /*modernizr*/
       /*modernizr*/ }
-      .no-touch .no-touch .main-navigation .subnav {
+      .no-touch .main-navigation .subnav {
         min-width: 100%; }
-      .touch .no-touch .main-navigation .subnav {
-        display: none;
+      .touch .main-navigation .subnav {
         top: 120%;
         -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
         box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
-        .touch .no-touch .main-navigation .subnav:before {
+        .touch .main-navigation .subnav:before {
           position: absolute;
           content: "";
           width: 0;
@@ -1750,101 +1633,102 @@
           top: -1.45em;
           display: block; }
     .no-touch .main-navigation .element-1 .subnav, .no-touch .main-navigation .element-2 .subnav, .no-touch .main-navigation .element-3 .subnav, .no-touch .main-navigation .element-4 .subnav {
-      left: -9999px;
+      top: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
       transition: all 0s ease; }
-      .touch .no-touch .main-navigation .element-1 .subnav:before, .touch .no-touch .main-navigation .element-2 .subnav:before, .touch .no-touch .main-navigation .element-3 .subnav:before, .touch .no-touch .main-navigation .element-4 .subnav:before {
-        left: 1.5em; }
-    .no-touch .no-touch .main-navigation .element-1:hover .subnav, .no-touch .no-touch .main-navigation .element-2:hover .subnav, .no-touch .no-touch .main-navigation .element-3:hover .subnav, .no-touch .no-touch .main-navigation .element-4:hover .subnav,
-    .no-touch .no-touch .main-navigation .element-1:focus .subnav, .no-touch .no-touch .main-navigation .element-2:focus .subnav, .no-touch .no-touch .main-navigation .element-3:focus .subnav, .no-touch .no-touch .main-navigation .element-4:focus .subnav {
+    .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:hover .subnav, .no-touch .main-navigation .element-4:focus .subnav {
       left: 0;
+      top: 100%;
       -webkit-transition-delay: 0.25s;
       -moz-transition-delay: 0.25s;
       -o-transition-delay: 0.25s;
       transition-delay: 0.25s; }
-    .touch .no-touch .main-navigation .element-1:hover .subnav, .touch .no-touch .main-navigation .element-2:hover .subnav, .touch .no-touch .main-navigation .element-3:hover .subnav, .touch .no-touch .main-navigation .element-4:hover .subnav,
-    .touch .no-touch .main-navigation .element-1 .subnav.touched, .touch .no-touch .main-navigation .element-2 .subnav.touched, .touch .no-touch .main-navigation .element-3 .subnav.touched, .touch .no-touch .main-navigation .element-4 .subnav.touched {
-      left: 0; }
     .no-touch .main-navigation .element-5 .subnav, .no-touch .main-navigation .element-6 .subnav, .no-touch .main-navigation .element-7 .subnav, .no-touch .main-navigation .element-8 .subnav, .no-touch .main-navigation .last .subnav {
-      left: auto;
-      right: -9999px;
+      top: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
       transition: all 0s ease; }
-      .touch .no-touch .main-navigation .element-5 .subnav:before, .touch .no-touch .main-navigation .element-6 .subnav:before, .touch .no-touch .main-navigation .element-7 .subnav:before, .touch .no-touch .main-navigation .element-8 .subnav:before, .touch .no-touch .main-navigation .last .subnav:before {
-        right: 1.5em; }
-    .no-touch .no-touch .main-navigation .element-5:hover .subnav, .no-touch .no-touch .main-navigation .element-6:hover .subnav, .no-touch .no-touch .main-navigation .element-7:hover .subnav, .no-touch .no-touch .main-navigation .element-8:hover .subnav, .no-touch .no-touch .main-navigation .last:hover .subnav,
-    .no-touch .no-touch .main-navigation .element-5:focus .subnav, .no-touch .no-touch .main-navigation .element-6:focus .subnav, .no-touch .no-touch .main-navigation .element-7:focus .subnav, .no-touch .no-touch .main-navigation .element-8:focus .subnav, .no-touch .no-touch .main-navigation .last:focus .subnav {
-      left: auto;
+    .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:hover .subnav, .no-touch .main-navigation .last:focus .subnav {
       right: 0;
+      top: 100%;
       -webkit-transition-delay: 0.25s;
       -moz-transition-delay: 0.25s;
       -o-transition-delay: 0.25s;
       transition-delay: 0.25s; }
-    .touch .no-touch .main-navigation .element-5:hover .subnav, .touch .no-touch .main-navigation .element-6:hover .subnav, .touch .no-touch .main-navigation .element-7:hover .subnav, .touch .no-touch .main-navigation .element-8:hover .subnav, .touch .no-touch .main-navigation .last:hover .subnav,
-    .touch .no-touch .main-navigation .element-5 .subnav.touched, .touch .no-touch .main-navigation .element-6 .subnav.touched, .touch .no-touch .main-navigation .element-7 .subnav.touched, .touch .no-touch .main-navigation .element-8 .subnav.touched, .touch .no-touch .main-navigation .last .subnav.touched {
-      left: auto;
-      right: 0; }
-    .no-touch .main-navigation .tier-2 {
+    .touch .main-navigation .tier-1 {
+      position: static;
+      display: block;
+      opacity: 1;
+      left: 0; }
+    .touch .main-navigation .tier-2 {
       display: block;
       min-width: 100%; }
-      .no-touch .main-navigation .tier-2 a {
+      .touch .main-navigation .tier-2 a {
         white-space: nowrap; }
-    .no-touch .main-navigation .close-subnav {
-      display: none;
-      text-align: left;
-      white-space: nowrap;
-      position: relative;
-      /*modernizr*/ }
-      .js.touch .no-touch .main-navigation .close-subnav {
-        display: block; }
-      .no-touch .main-navigation .close-subnav > a {
-        display: block;
-        font-weight: bold; }
-      .no-touch .main-navigation .close-subnav .close-graphic {
-        display: block;
-        color: #b55863;
-        font-size: 1.75em;
-        line-height: 1;
-        font-weight: bold;
-        position: absolute;
-        top: 0;
-        right: 0;
-        text-align: center;
-        width: 1.71429em;
-        padding: .18em 0 .25em;
-        background: rgba(255, 255, 255, 0.2);
-        text-shadow: -1px 0 0 white; }
-    .no-touch .main-navigation .menu {
+    .main-navigation .menu {
       text-align: center; }
-    .no-touch .main-navigation .tier-1 {
+    .main-navigation .tier-1 {
       float: none;
       border-top: 0;
       border-bottom: 0;
+      width: auto;
+      margin: 0 -5px 0 0;
       display: -moz-inline-stack;
       display: inline-block;
       vertical-align: baseline;
-      /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
-      width: auto;
-      margin: 0 -5px 0 0;
       border-right: 1px solid rgba(0, 0, 0, 0.2);
       border-left: 1px solid rgba(255, 255, 255, 0.1);
       /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
-      .lt-ie8 .no-touch .main-navigation .tier-1 {
+      .lt-ie8 .main-navigation .tier-1 {
         vertical-align: auto;
         zoom: 1;
         display: inline; }
-      .no-touch .main-navigation .tier-1.element-1 {
+      .main-navigation .tier-1.element-1 {
         border-left: 0; }
-      .no-touch .main-navigation .tier-1.last {
+      .main-navigation .tier-1.last {
         border-right: 0; }
-      .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
+      .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
         width: auto; }
-    .no-touch .main-navigation .tier-1 > a {
+    .main-navigation .tier-1 > a {
       padding: 0.65em 1.25em 0.55em; }
+
+  /*.navigation {
+      
+      .close-subnav {
+          border-top: 0;
+           
+          a {
+              @include pe-border( $color-right: rgba( #fff, .8 ) );
+          }
+          .close-for-touch {
+              @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+          }
+      }
+  }*/
+  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+  .touch #touchnav-wrapper {
+    -webkit-transition: -webkit-transform 300ms ease;
+    -moz-transition: -moz-transform 300ms ease;
+    -o-transition: -o-transform 300ms ease;
+    transition: transform 300ms ease;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden; }
+  .touch .show-sidemenu #touchnav-wrapper {
+    -webkit-transform: translate3d(280px, 0, 0);
+    -moz-transform: translate3d(280px, 0, 0);
+    -ms-transform: translate3d(280px, 0, 0);
+    -o-transform: translate3d(280px, 0, 0);
+    transform: translate3d(280px, 0, 0); }
+
+  .inner .main-header {
+    position: static; }
 
   .site-headline a img {
     width: 290px;

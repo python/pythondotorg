@@ -96,12 +96,13 @@
     }
     .main-navigation {
         display: block; 
-        margin: 0 -.625em;
+        //margin: 0 -.625em;
         text-align: center; 
-        @include horizontal_nav_dropdowns();
         font-size: px2em( 18px );
         @include border-radius(8px);
         @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+        
+        @include horizontal_nav_dropdowns();
         
         .menu {
             text-align: center; 
@@ -110,10 +111,9 @@
             float: none; 
             border-top: 0;
             border-bottom: 0;
-            @include pe-inline-block(); 
-            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
             width: auto; 
             margin: 0 -5px 0 0; 
+            @include pe-inline-block(); 
             @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
             
             &.element-1 {
@@ -202,7 +202,7 @@
         }
     }
     
-    input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
+    input[type="submit"], input[type="reset"], button, a.button, .button {
         display: inline-block;
         width: auto;
     }
