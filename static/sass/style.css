@@ -256,10 +256,10 @@ sub {
   bottom: -0.25em; }
 
 pre, code, kbd, samp, var {
-  font-family: Courier, monospace, sans-serif; }
+  font-family: Consolas, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, sans-serif; }
 
 pre {
-  /* PE's codey-looking pre style, just for kicks */
+  /* Get spaces to display for PRE tags but dont let long lines break out of containers */
   white-space: pre-wrap;
   white-space: -moz-pre-wrap !important;
   /* 1999+ Mozilla */
@@ -268,19 +268,12 @@ pre {
   white-space: -o-pre-wrap;
   /* Opera 7 and up */
   word-wrap: break-word;
-  /* IE 5.5+ and up */
-  padding: 1em;
-  margin-bottom: 1em;
-  background: #f2f2f2;
-  background: rgba(230, 230, 230, 0.5);
-  border-left: 5px solid #6ce26c; }
+  /* IE 5.5+ and up */ }
 
 code {
-  color: #00cc00;
-  font-size: 108%; }
+  color: #11a611; }
 
 var {
-  font-size: 112%;
   font-style: italic; }
 
 textarea {
@@ -1146,15 +1139,41 @@ a.jump-to-menu {
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .touch .adjust-font-size .tier-1, .touch .winkwink-nudgenudge .tier-1 {
-    position: static;
-    display: block;
-    opacity: 1;
-    left: 0; }
-  .touch .adjust-font-size .tier-2, .touch .winkwink-nudgenudge .tier-2 {
+  .touch .adjust-font-size .element-1, .touch .adjust-font-size .element-2, .touch .adjust-font-size .element-3, .touch .adjust-font-size .element-4, .touch .winkwink-nudgenudge .element-1, .touch .winkwink-nudgenudge .element-2, .touch .winkwink-nudgenudge .element-3, .touch .winkwink-nudgenudge .element-4 {
+    /* Position the pointer element */ }
+    .touch .adjust-font-size .element-1 .subnav, .touch .adjust-font-size .element-2 .subnav, .touch .adjust-font-size .element-3 .subnav, .touch .adjust-font-size .element-4 .subnav, .touch .winkwink-nudgenudge .element-1 .subnav, .touch .winkwink-nudgenudge .element-2 .subnav, .touch .winkwink-nudgenudge .element-3 .subnav, .touch .winkwink-nudgenudge .element-4 .subnav {
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out; }
+    .touch .adjust-font-size .element-1:hover .subnav, .touch .adjust-font-size .element-1 .subnav.touched, .touch .adjust-font-size .element-2:hover .subnav, .touch .adjust-font-size .element-2 .subnav.touched, .touch .adjust-font-size .element-3:hover .subnav, .touch .adjust-font-size .element-3 .subnav.touched, .touch .adjust-font-size .element-4:hover .subnav, .touch .adjust-font-size .element-4 .subnav.touched, .touch .winkwink-nudgenudge .element-1:hover .subnav, .touch .winkwink-nudgenudge .element-1 .subnav.touched, .touch .winkwink-nudgenudge .element-2:hover .subnav, .touch .winkwink-nudgenudge .element-2 .subnav.touched, .touch .winkwink-nudgenudge .element-3:hover .subnav, .touch .winkwink-nudgenudge .element-3 .subnav.touched, .touch .winkwink-nudgenudge .element-4:hover .subnav, .touch .winkwink-nudgenudge .element-4 .subnav.touched {
+      display: block;
+      opacity: 1;
+      left: 0; }
+    .touch .adjust-font-size .element-1 .subnav:before, .touch .adjust-font-size .element-2 .subnav:before, .touch .adjust-font-size .element-3 .subnav:before, .touch .adjust-font-size .element-4 .subnav:before, .touch .winkwink-nudgenudge .element-1 .subnav:before, .touch .winkwink-nudgenudge .element-2 .subnav:before, .touch .winkwink-nudgenudge .element-3 .subnav:before, .touch .winkwink-nudgenudge .element-4 .subnav:before {
+      left: 1.5em; }
+  .touch .adjust-font-size .element-5, .touch .adjust-font-size .element-6, .touch .adjust-font-size .element-7, .touch .adjust-font-size .element-8, .touch .adjust-font-size .last, .touch .winkwink-nudgenudge .element-5, .touch .winkwink-nudgenudge .element-6, .touch .winkwink-nudgenudge .element-7, .touch .winkwink-nudgenudge .element-8, .touch .winkwink-nudgenudge .last {
+    /* Position the pointer element */ }
+    .touch .adjust-font-size .element-5 .subnav, .touch .adjust-font-size .element-6 .subnav, .touch .adjust-font-size .element-7 .subnav, .touch .adjust-font-size .element-8 .subnav, .touch .adjust-font-size .last .subnav, .touch .winkwink-nudgenudge .element-5 .subnav, .touch .winkwink-nudgenudge .element-6 .subnav, .touch .winkwink-nudgenudge .element-7 .subnav, .touch .winkwink-nudgenudge .element-8 .subnav, .touch .winkwink-nudgenudge .last .subnav {
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out; }
+    .touch .adjust-font-size .element-5:hover .subnav, .touch .adjust-font-size .element-5 .subnav.touched, .touch .adjust-font-size .element-6:hover .subnav, .touch .adjust-font-size .element-6 .subnav.touched, .touch .adjust-font-size .element-7:hover .subnav, .touch .adjust-font-size .element-7 .subnav.touched, .touch .adjust-font-size .element-8:hover .subnav, .touch .adjust-font-size .element-8 .subnav.touched, .touch .adjust-font-size .last:hover .subnav, .touch .adjust-font-size .last .subnav.touched, .touch .winkwink-nudgenudge .element-5:hover .subnav, .touch .winkwink-nudgenudge .element-5 .subnav.touched, .touch .winkwink-nudgenudge .element-6:hover .subnav, .touch .winkwink-nudgenudge .element-6 .subnav.touched, .touch .winkwink-nudgenudge .element-7:hover .subnav, .touch .winkwink-nudgenudge .element-7 .subnav.touched, .touch .winkwink-nudgenudge .element-8:hover .subnav, .touch .winkwink-nudgenudge .element-8 .subnav.touched, .touch .winkwink-nudgenudge .last:hover .subnav, .touch .winkwink-nudgenudge .last .subnav.touched {
+      display: block;
+      opacity: 1;
+      right: 0; }
+    .touch .adjust-font-size .element-5 .subnav:before, .touch .adjust-font-size .element-6 .subnav:before, .touch .adjust-font-size .element-7 .subnav:before, .touch .adjust-font-size .element-8 .subnav:before, .touch .adjust-font-size .last .subnav:before, .touch .winkwink-nudgenudge .element-5 .subnav:before, .touch .winkwink-nudgenudge .element-6 .subnav:before, .touch .winkwink-nudgenudge .element-7 .subnav:before, .touch .winkwink-nudgenudge .element-8 .subnav:before, .touch .winkwink-nudgenudge .last .subnav:before {
+      left: auto;
+      right: 1.5em; }
+  .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-2 {
     display: block;
     min-width: 100%; }
-    .touch .adjust-font-size .tier-2 a, .touch .winkwink-nudgenudge .tier-2 a {
+    .adjust-font-size .tier-2 a, .winkwink-nudgenudge .tier-2 a {
       white-space: nowrap; }
   .adjust-font-size a, .winkwink-nudgenudge a {
     color: #bbbbbb;
@@ -1193,21 +1212,23 @@ a.jump-to-menu {
   display: none;
   margin-bottom: 1px; }
 
-.main-navigation .close-pane {
-  display: none;
-  background-color: rgba(255, 255, 255, 0.25);
-  position: absolute;
-  top: 0px;
-  left: 0px;
-  width: 100%;
-  height: 1200px; }
-  .main-navigation .close-pane .close-graphic {
+/*.main-navigation .close-pane {
+    display: none;
+    background-color: rgba(255,255,255,.25);
     position: absolute;
     top: 0px;
-    right: 0px;
-    padding: 0px 10px;
-    background-color: white; }
-
+    left: 0px;
+    width: 100%;
+    height: 1200px;
+    
+    .close-graphic { 
+        position: absolute;
+        top: 0px;
+        right: 0px;
+        padding: 0px 10px;
+        background-color: white;
+    }
+}*/
 /* ! ===== Header banner, present on most landing pages ===== */
 .header-banner {
   clear: both;
@@ -1250,7 +1271,7 @@ a.jump-to-menu {
     .slide-code code span {
       color: #caccce; }
     .slide-code code strong {
-      color: #00cc00;
+      color: #11a611;
       font-weight: normal; }
 
 .slide-copy {
@@ -1409,19 +1430,28 @@ a.jump-to-menu {
     letter-spacing: 0.125em; }
   .text var,
   .sidebar-widget var {
-    color: #333333; }
-  .text code, .text kbd,
+    color: #222222;
+    font-size: 104%;
+    font-weight: 700; }
+  .text code, .text kbd, .text samp,
   .sidebar-widget code,
-  .sidebar-widget kbd {
+  .sidebar-widget kbd,
+  .sidebar-widget samp {
     display: inline-block; }
   .text code, .text samp,
   .sidebar-widget code,
   .sidebar-widget samp {
     border: 0; }
+  .text samp,
+  .sidebar-widget samp {
+    border-bottom: 1px solid #caccce;
+    background-color: #e6e8ea;
+    padding: 0.125em 0.375em 0;
+    margin: 0 0.25em; }
   .text code, .text kbd,
   .sidebar-widget code,
   .sidebar-widget kbd {
-    padding: 0.125em 0.25em 0.0625em;
+    padding: 0.125em 0.375em 0;
     margin: 0 -0.0625em;
     background: #e6e8ea;
     background: rgba(230, 232, 234, 0.5);
@@ -1433,6 +1463,23 @@ a.jump-to-menu {
     -ms-border-radius: 6px;
     -o-border-radius: 6px;
     border-radius: 6px; }
+  .text pre,
+  .sidebar-widget pre {
+    margin-bottom: 1em;
+    border-left: 5px solid #11a611; }
+  .text pre code,
+  .sidebar-widget pre code {
+    display: block;
+    padding: 1em;
+    margin: 0;
+    -webkit-box-shadow: 0;
+    -moz-box-shadow: 0;
+    box-shadow: 0;
+    -webkit-border-radius: 0;
+    -moz-border-radius: 0;
+    -ms-border-radius: 0;
+    -o-border-radius: 0;
+    border-radius: 0; }
   .text s, .text strike, .text del,
   .sidebar-widget s,
   .sidebar-widget strike,

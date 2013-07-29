@@ -762,7 +762,7 @@ a.jump-to-menu {
     margin-bottom: 1px;
 }
 
-.main-navigation .close-pane {
+/*.main-navigation .close-pane {
     display: none;
     background-color: rgba(255,255,255,.25);
     position: absolute;
@@ -778,7 +778,7 @@ a.jump-to-menu {
         padding: 0px 10px;
         background-color: white;
     }
-}
+}*/
 
 
 /* ! ===== Header banner, present on most landing pages ===== */
@@ -1005,19 +1005,41 @@ a.jump-to-menu {
         letter-spacing: 0.125em;
     }
     
-    var { color: $grey-dark; }
+    var { 
+        color: $grey-darker; 
+        font-size: 104%; 
+        font-weight: 700; 
+    }
     
-    code, kbd {
+    code, kbd, samp {
         display: inline-block; 
     }
     code, samp { border: 0; }
+    samp { 
+        border-bottom: 1px solid $grey-lighter; 
+        background-color: $grey-lightest; 
+        padding: .125em .375em 0; 
+        margin: 0 .25em; 
+    }
     code, kbd {
-        padding: .125em .25em .0625em; 
+        padding: .125em .375em 0; 
         margin: 0 -.0625em; 
         background: $grey-lightest; 
         background: rgba( $grey-lightest, .5 ); 
         @include box-shadow( 0 0 .5em rgba( #000, .1 ) inset ); 
         @include border-radius(); 
+    }
+    
+    pre {
+        margin-bottom: 1em; 
+    	border-left: 5px solid $code-green; 
+    }
+    pre code {
+        display: block; 
+        padding: 1em; 
+        margin: 0; 
+        @include box-shadow( 0 );
+        @include border-radius( 0 );  
     }
     
     s, strike, del { color: $grey-light; }
