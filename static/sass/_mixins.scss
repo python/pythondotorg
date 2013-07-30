@@ -83,6 +83,7 @@
     }
 }
 
+
 /* Base styles for a navigation with dropdowns mixin */
 @mixin horizontal_nav_dropdowns() {
     
@@ -132,37 +133,44 @@
     }
     .touch & {
         
-        .element-1:hover .subnav, .element-2:hover .subnav, .element-3:hover .subnav, .element-4:hover .subnav, 
-        .element-1 .subnav.touched, .element-2 .subnav.touched, .element-3 .subnav.touched, .element-4 .subnav.touched {
-            left: 0; 
+        .element-1, .element-2, .element-3, .element-4 {
+            
+            .subnav {
+                display: none; 
+                opacity: 0; 
+                @include transition( opacity .25s ease-in-out );
+            }
+            &:hover .subnav, & .subnav.touched {
+                display: block; 
+                opacity: 1; 
+                left: 0; 
+            }
+            /* Position the pointer element */
+            & .subnav:before {
+                left: 1.5em; 
+            }
         }
-    }
-    .element-5 .subnav, .element-6 .subnav, .element-7 .subnav, .element-8 .subnav, .last .subnav {
-        left: auto; 
-        right: -9999px; 
-        @include transition( all 0s ease ); 
         
-        .touch &:before {
-            right: 1.5em; 
+        .element-5, .element-6, .element-7, .element-8, .last {
+            
+            .subnav {
+                display: none; 
+                opacity: 0; 
+                @include transition( opacity .25s ease-in-out );
+            }
+            &:hover .subnav, & .subnav.touched {
+                display: block; 
+                opacity: 1; 
+                right: 0; 
+            }
+            /* Position the pointer element */
+            & .subnav:before {
+                left: auto; 
+                right: 1.5em; 
+            }
         }
     }
-    .no-touch & {
-        
-        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
-        .element-5:focus .subnav, .element-6:focus .subnav, .element-7:focus .subnav, .element-8:focus .subnav, .last:focus .subnav {
-            left: auto; 
-            right: 0; 
-            @include transition-delay( .25s ); 
-        }
-    }
-    .touch & {
-        
-        .element-5:hover .subnav, .element-6:hover .subnav, .element-7:hover .subnav, .element-8:hover .subnav, .last:hover .subnav, 
-        .element-5 .subnav.touched, .element-6 .subnav.touched, .element-7 .subnav.touched, .element-8 .subnav.touched, .last .subnav.touched {
-            left: auto; 
-            right: 0; 
-        }
-    }
+    
     .tier-2 {
         display: block;
         min-width: 100%; 
@@ -171,43 +179,139 @@
             white-space: nowrap; 
         }
     }
-    /* <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a class="close-for-touch" href="#">Close Menu</a> 
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-        or
-        <li class="tier-2 element-0 close-subnav" role="treeitem">
-            <a href="/about">About</a>
-            <a class="close-for-touch close-graphic" href="#">&times;</a>
-        </li>
-    /* If JS doesn't load, make the default appearance hidden, since the trigger to reset focus needs JS */
-    .close-subnav {
-        display: none; 
-        text-align: left; 
-        white-space: nowrap; 
-        position: relative; 
-        
-        /*modernizr*/ .js.touch & {
+}
+
+
+/* Ruleset for a two-tier, stacked version of the main navigation -- DESKTOP ONLY -- */
+@mixin stacked_nav() {
+    
+    .no-touch {
+     
+        .main-navigation {
             display: block; 
-        }
-        & > a {
-            display: block; 
-            font-weight: bold; 
-        }
-        .close-graphic {
-            display: block; 
-            color: $red; 
-            font-size: px2em( 28px ); 
-            line-height: 1; 
-            font-weight: bold; 
-            position: absolute; 
-            top: 0; right: 0; 
+            border-top: 0;
             text-align: center; 
-            width: px2em( 48px, 28px ); 
-            padding: .18em 0 .25em; 
-            background: rgba( $white, .2 ); 
-            @include text-shadow( -1px 0 0 $white ); 
+            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+            //@include horizontal_nav_dropdowns(); 
+            @include pie-clearfix(); 
+            
+            .tier-1 {
+                position: relative; 
+                float: left; 
+                width: 33.333333%;
+                // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+                
+                .subnav {
+                    position: absolute; 
+                    z-index: 100; 
+                    text-align: left; 
+                    top: -9999px; 
+                    min-width: 100%; 
+                    @include transition( all 0s ease ); 
+                }
+                &:hover .subnav, &:focus .subnav {
+                    left: 0; 
+                    top: 100%; 
+                    @include transition-delay( .25s ); 
+                }
+                
+                &.element-1 {
+                    @include border-top-left-radius( 8px );
+                    
+                    & > a { @include border-top-left-radius( 7px ); }
+                }
+                &.element-3 {
+                    @include border-top-right-radius( 8px ); border-right: 0;
+                    
+                    & > a { @include border-top-right-radius( 7px ); border-right: 0; }
+                }
+                &.element-6, &.element-7 {
+                    width: 16.6666665%;
+                }
+            }
+            .tier-2 {
+                
+                & > a {
+                    @include pe-border( $color-right: rgba( #fff, .8 ) );
+                }
+            }
         }
+    }
+}
+
+
+/* Ruleset for a single row of main navigation -- DESKTOP ONLY -- */
+@mixin horizontal_nav() {
+    
+    .main-navigation {
+        display: block; 
+        //margin: 0 -.625em;
+        text-align: center; 
+        font-size: px2em( 18px );
+        @include border-radius(8px);
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         
+        @include horizontal_nav_dropdowns();
+        
+        .menu {
+            text-align: center; 
+        }
+        .tier-1 {
+            float: none; 
+            border-top: 0;
+            border-bottom: 0;
+            width: auto; 
+            margin: 0 -5px 0 0; 
+            @include pe-inline-block(); 
+            @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
+            
+            &.element-1 {
+                border-left: 0; 
+            }
+            &.last {
+                border-right: 0; 
+            }
+            /* We've set this explicitly before, so we need to reset the width value explicitly */
+            &.element-6, &.element-7 {
+                width: auto; 
+            }
+        }
+        .tier-1 > a {
+            padding: .65em 1.25em .55em;
+        }
+        .tier-2 {
+            
+        }
+    }
+    
+    .navigation {
+        
+        .close-subnav {
+            border-top: 0;
+             
+            a {
+                @include pe-border( $color-right: rgba( #fff, .8 ) );
+            }
+            .close-for-touch {
+                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+            }
+        }
+    }
+    
+    /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+    #touchnav-wrapper {
+        
+        .touch & {
+            @include transition( transform 300ms ease ); 
+            @include transform( translate3d( 0, 0, 0 ) ); 
+            -webkit-backface-visibility: hidden; 
+        }
+        .touch .show-sidemenu & {
+            @include transform( translate3d( 280px, 0, 0 ) ); 
+        }
+    }
+    
+    .inner .main-header {
+        position: static; 
     }
 }

@@ -26,127 +26,6 @@
  */
 
 
-/* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
-@mixin stacked_nav() {
-    
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        border-top: 0;
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        @include horizontal_nav_dropdowns(); 
-        text-align: center; 
-        
-        .tier-1 {
-            float: left; 
-            width: 33.333333%;
-            // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
-            
-            &.element-6, &.element-7 {
-                width: 16.6666665%;
-            }
-            &.element-1 {
-                @include border-top-left-radius( 8px );
-                
-                & > a { @include border-top-left-radius( 7px ); }
-            }
-            &.element-3 {
-                @include border-top-right-radius( 8px ); border-right: 0;
-                
-                & > a { @include border-top-right-radius( 7px ); border-right: 0; }
-            }
-            
-            // &.element-4 { @include border-bottom-left-radius( 8px ); }
-            // &.element-7 { @include border-bottom-right-radius( 8px ); border-right: 0; }
-        }
-        .tier-2 {
-            
-            & > a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
-            }
-        }
-    }
-    .navigation {
-        .close-subnav {
-             // @include pe-border( $color-bottom: rgba( #666, .2 ) );
-        }
-        .close-for-touch {
-            // @include pe-border( $color-left: rgba( #666, .2 ) );
-        }
-    }
-}
-
-
-/* ! ===== Ruleset for a single row of main navigation ===== */
-@mixin horizontal_nav() {
-    
-    a.jump-to-menu {
-        display: none; 
-    }
-    .search-the-site {
-        border-left: 0; 
-    }
-    .main-navigation {
-        @include border-radius(8px);
-        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-        display: block; 
-        margin: 0 -.625em;
-        text-align: center; 
-        @include horizontal_nav_dropdowns();
-        font-size: px2em( 18px );
-        
-        .menu {
-            text-align: center; 
-        }
-        .tier-1 {
-            float: none; 
-            border-top: 0;
-            border-bottom: 0;
-            @include pe-inline-block(); 
-            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
-            width: auto; 
-            margin: 0 -5px 0 0; 
-            @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
-            
-            &.element-1 {
-                border-left: 0; 
-            }
-            &.last {
-                border-right: 0; 
-            }
-            /* We've set this explicitly before, so we need to "clear" the width value explicitly */
-            &.element-6, &.element-7 {
-                width: auto; 
-            }
-        }
-        .tier-1 > a {
-            padding: .65em 1.25em .55em;
-        }
-        .tier-2 {
-            
-        }
-    }
-    .navigation {
-        
-        .close-subnav {
-            border-top: 0;
-             
-            a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
-            }
-            .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
-            }
-        }
-    }
-}
-
-
 /* ! ===== Smaller than 400px ===== */
 @mixin max_width_399() {
     
@@ -164,6 +43,7 @@
     }
     
     .content-wrapper {
+        
         .container {
             padding: 1em 1.5em;
         }
@@ -182,8 +62,9 @@
         }
     }
     
-    input[type="submit"], input[type="reset"], input[type="button"], button, a.button, .button {
-        display: inline-block !important;
+    input[type="submit"], input[type="reset"], button, a.button, .button,
+    .psf-widget .button, .psf-widget a.button, .python-needs-you-widget .button, .python-needs-you-widget a.button {
+        display: inline-block;
         width: auto;
     }
 }
@@ -221,6 +102,16 @@
         /* @include transition( all .3s ease-in-out ); makes the media query changes animate */
     }
     
+    /* Simple Column Structure */
+    .col-row {
+        .column { float: left; }
+    }
+    .two-col, .four-col {
+        & > .column { width: 50%; }
+        & > .double-col { width: 100%; }
+        & > .column:nth-of-type(2n+3) { clear: left; }
+    }
+    
     .meta-navigation, 
     .main-header, 
     .main-navigation,
@@ -238,21 +129,14 @@
         @include pie-clearfix(); 
     }
     
-    .introduction {
-        font-size: px2em( 24px );
-    }
+    .introduction { font-size: px2em( $headertwo ); }
     
     .success-stories-widget blockquote {
         font-size: px2em(18px);
         padding: 1em 1.4em 1.3em;
     }
     
-    .text {
-        
-        p, ul, ol, dl, blockquote, address, table {
-            font-size: px2em( 15px );
-        }
-    }
+    .text { font-size: px2em( 15px ); }
 }
 
 
@@ -455,9 +339,9 @@
     
     
     .content-wrapper {
-        /* Shorten the amount of blue space under the nav on inner pages */
+        
         .inner & {
-            padding-top: 1.75em; 
+            padding-top: 3.5em; 
         }
     }
     
@@ -484,11 +368,6 @@
         .small-widget, .medium-widget, .triple-widget {
              @include reset-columns(); 
          }
-    }
-    
-    .documentation-help {
-        // @include squish( 0,4 );
-        // text-align: center; 
     }
     
     /* Widgets in main content */
@@ -518,7 +397,7 @@
         @include span-columns( 9 ); 
     }
     
-    .pep-widget, .psf-widget {
+    .pep-widget, .psf-widget, .python-needs-you-widget {
         padding: 1.5em 1.75em;
     }
     
@@ -543,10 +422,29 @@
         clear: both;
     }
     
-    /* Jobs landing page */
-    .listing-company {
-        @include pie-clearfix(); 
+    /* PEP landing page */
+    .pep-list-header, .pep-index-list li {
+        margin: 0 -.5em; 
+        @include pie-clearfix; 
     }
+    .pep-list-header { display: block; }
+    .pep-index-list {
+        
+        .label { display: none; }
+        a { display: block; }
+        li { border-bottom: 1px solid darken($grey-lighterest, 5%); margin-bottom: 0;  }
+    }
+    .pep-type, .pep-num, .pep-title, .pep-owner {
+        float: left; 
+        border-bottom: 0; 
+    }
+    .pep-type { width: 15%;  }
+    .pep-num { width: 10%; }
+    .pep-title { width: 50%; }
+    .pep-owner { width: 25%; }
+    
+    /* Jobs landing page */
+    .listing-company { @include pie-clearfix(); }
     .listing-company-category:before {
         content: "Category: "; 
         color: $grey; 
@@ -555,51 +453,31 @@
         content: "Looking for: "; 
         color: $grey; 
     }
-    
     .release-number, .release-date, .release-download, .release-enhancements {
         -moz-box-orient: vertical;
         display: inline-block;
         margin-right: -4px;
         vertical-align: middle;
     }
-    
-    .release-number {
-        width: 20%;
-    }
-    
-    .release-date {
-        width: 30%;
-    }
-    
-    .release-download {
-        width: 25%;
-    }
-    
-    .release-enhancements {
-        width: 25%;
-    }
+    .release-number { width: 20%; }
+    .release-date { width: 30%; }
+    .release-download { width: 25%; }
+    .release-enhancements { width: 25%; }
     
     
     /* Previous Next pattern */
     .previous-next {
         @include clearfix(); 
         
-        a {
-            @include pe-box-sizing(); 
-        }
-        .prev-button {
-            @include span-columns( 6 ); 
-        }
-        .next-button {
-            @include span-columns( 6 omega ); 
-        }
+        a { @include pe-box-sizing(); }
+        .prev-button { @include span-columns( 6 ); }
+        .next-button { @include span-columns( 6 omega ); }
     }
     
     
     /* Footer */
-    .main-footer .jump-link {
-        display: none; 
-    }
+    .main-footer .jump-link { display: none; }
+    
     .sitemap {
         
         .tier-1 {
@@ -818,6 +696,7 @@
                 @include post( 4 ); 
             }
         }
+        
     .triple-widget {
         @include span-columns( 4 ); 
         
@@ -825,7 +704,7 @@
             margin-right: 0; 
         }
     }
-        
+     
     /* ! Events landing page */
     .most-recent-events {
         
@@ -847,8 +726,9 @@
                 width: columns( 3 ); 
             }
         }
-    
-    /* <li>
+        
+        /* Jobs Section */
+        /*<li>
             <h2 class="listing-company">
                 <span class="listing-company-name">
                     <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
@@ -922,7 +802,6 @@
             }
         }
     }
-    
     
     /* Footer */
     .sitemap, .footer-links, .copyright {
@@ -1011,6 +890,14 @@
 
 /* ! ===== Larger than 940px ===== */
 @mixin min_width_940() {
+    
+    /* Simple Column Structure */
+    .four-col {
+        & > .column { width: 25%; }
+        & > .double-col { width: 50%; }
+        & > .column:nth-of-type(2n+3) { clear: none; }
+        & > .column:nth-of-type(4n+5) { clear: left; }
+    }
     
     .site-headline a img {
         width: 290px; 
