@@ -5,6 +5,7 @@ from markupfield.fields import MarkupField
 
 from .managers import StoryManager
 from cms.models import ContentManageable, NameSlugModel
+from companies.models import Company
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -27,11 +28,13 @@ class StoryCategory(NameSlugModel):
 class Story(NameSlugModel, ContentManageable):
     company_name = models.CharField(max_length=500)
     company_url = models.URLField()
+    company = models.ForeignKey(Company, blank=True, null=True, related_name='success_stories')
     category = models.ForeignKey(StoryCategory)
     author = models.CharField(max_length=500)
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False)
+    image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
     objects = StoryManager()
 
@@ -44,3 +47,16 @@ class Story(NameSlugModel, ContentManageable):
 
     def get_absolute_url(self):
         return reverse('success_story_detail', kwargs={'slug': self.slug})
+
+    def get_company_name(self):
+        """ Return company name depending on ForeignKey """
+        if self.company:
+            return self.company.name
+        else:
+            return self.company_name
+
+    def get_company_url(self):
+        if self.company:
+            return self.company.url
+        else:
+            return self.company_url

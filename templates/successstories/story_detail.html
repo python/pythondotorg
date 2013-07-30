@@ -7,6 +7,10 @@ todo: detail.html
 
 <h1>{{ story.name }}</h1>
 
+{% if story.image %}<img src="{{ story.image.url }}" />{% endif %}
+
 {{ story.content.rendered|safe }}
+
+<p><a href="{{ story.get_company_url }}">{{ story.get_company_name }}</a></p>
 
 {% endblock content %}
