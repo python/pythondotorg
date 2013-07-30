@@ -12,6 +12,9 @@ class ContentManageableAdmin(object):
         """
         if not change:
             obj.creator = request.user
+        else:
+            obj.last_modified_by = request.user
+
         return super().save_model(request, obj, form, change)
 
     #
