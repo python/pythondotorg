@@ -47,7 +47,7 @@ body, input, textarea, select, button {
     font: normal 100%/1.625 $default-font;
 }
 
-header, nav, section, article, aside, figure, footer, div, li, input, textarea {
+header, nav, section, article, aside, figure, footer, div, ul, li, dl, dt, dd, input, textarea {
     @include pe-box-sizing( border-box ); 
 }
 
@@ -98,7 +98,7 @@ h1, .alpha {
 h2, .beta {
     color: $grey-light;
     font-family: $default-font-bold;
-    font-size: $headertwo; 
+    font-size: px2em( $headertwo ); 
     @include leader(1); 
     @include trailer(.1875);
     //@include fontface-adjust( 24px );
@@ -139,7 +139,7 @@ p, ul, ol, dl, address, table {
     margin-bottom: rhythm(0.5);
 }
 
-ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
+li > ul, li > ol {
     margin-bottom: 0; 
 }
 
@@ -195,6 +195,19 @@ blockquote {
     }
 }
 
+dl {
+    border-top: 1px solid $grey-lightest; 
+    
+    dt {
+        font-family: $default-font-bold; 
+        border-bottom: 1px solid $grey-lightest;
+    }
+    dd {
+        padding-left: 1.5em; 
+        border-bottom: 1px solid $grey-lighter;
+    }
+}
+
 
 /* ! ===== Form elements ===== */
 form {
@@ -234,6 +247,7 @@ input, textarea {
     margin-bottom: rhythm( .5 ); 
     border: 1px solid $border-color; 
     @include border-radius(); 
+    @include pe-box-sizing( border-box ); 
 }
 
 input[type=checkbox], input[type=radio] {
@@ -257,7 +271,7 @@ input {
 input:-moz-placeholder { color: $grey-light; font-style: italic; }
 
 /* Not a mistake... I repeat a.button and .button so I do not need to add !important to the color declaration */
-input[type=submit], input[type=reset], input[type=button], button, a.button, .button {
+input[type=submit], input[type=reset], button, a.button, .button {
     @extend %button-style;
 }
 
@@ -288,13 +302,11 @@ abbr, dfn {
 }
 
 
-/* ===== LOCAL EXTENDABLE STYLES ===== 
+/* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative 
  * if the rule name has a % in front of it, it will not be output as part of the file, only if called with @extend
  * Unfortunately, the @extend operative does not work inside a media query or mix-in
- *
- * Example: %horizontal-nav-with-drop-downs { }
  */
 
 /* Color Areas: use for consistency */
@@ -432,6 +444,26 @@ abbr, dfn {
     background-color: transparent; 
 }
 
+
+/* ! ===== Simple Column Structure ===== */
+$colpadpx:  16px; 
+$colpad:    1em; 
+.col-row {
+    margin: 0 - $colpad; 
+    @include clearfix(); 
+}
+.column, .not-column {
+    padding-left: $colpad; 
+    padding-right: $colpad; 
+}
+.column {
+    padding-bottom: rhythm( 1 ); 
+}
+/* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
+h2.not-column {
+    padding-left: px2em( $colpadpx, $headertwo ); 
+    padding-right: px2em( $colpadpx, $headertwo );
+}
 
 
 /* ! ===== HELPFUL CLASSES ===== */
@@ -595,6 +627,7 @@ abbr, dfn {
     }
 }
 
+
 $optionsbar-text: #bbb;
 
 .options-bar {
@@ -636,6 +669,9 @@ a.jump-to-menu {
     &:hover, &:focus {
         color: $white;
     }
+    .no-touch {
+        display: none; 
+    }
 }
 
 .menu-icon {
@@ -653,6 +689,9 @@ a.jump-to-menu {
         font-size: 1.5em;
         vertical-align: text-bottom;
         margin: 0 .25em;
+    }
+    .no-touch {
+        border-left: 0; 
     }
 }
 
@@ -956,11 +995,11 @@ a.jump-to-menu {
         @include leader(1); 
     }
     
-    p, ul, ol, dl, dd, blockquote, address, form, table, figure {
+    p, ul, ol, dl, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
     }
     
-    li ul, li ol {
+    li > ul, li > ol {
         margin-bottom: 0; 
     }
     
@@ -1043,20 +1082,6 @@ a.jump-to-menu {
     }
     
     s, strike, del { color: $grey-light; }
-    
-    dl {
-        border-top: 1px solid $grey-lightest; 
-        
-        dt {
-            font-family: $default-font-bold; 
-            border-bottom: 1px solid $grey-lightest;
-        }
-        
-        dd {
-            padding-left: 1.5em; 
-            border-bottom: 1px solid $grey-lighter;
-        }
-    }
     
     /* Prettier tables if authors use the correct elements */
     table {
@@ -1185,6 +1210,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== Specific Widget Styles ===== */
 
 .psf-widget, .python-needs-you-widget, .download-list-widget, .mapped-events {
+    
     .widget-title {
         // margin-bottom: 0;
     }
@@ -1359,39 +1385,101 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         }
     }
     
-    tr {
-        background-color: $grey-lighterest;
+    .pep-number {
+        color: $grey; 
+        font-family: $default-font-bold;  
+        display: inline-block; 
+        width: 3em; 
+    }
+}
+
+    .pep-list {
         border-top: 1px solid $border-color;
         line-height: 1.2em;
         margin: 0;
         
-        &:hover, &:active {
-            background-color: lighten($grey-lighterest, 5%);
-            color: $grey-darker;
+        li {
+            display: block; 
+            line-height: 1.35em;
+            
+            a {
+                display: block; 
+                color: $blue;
+                background-color: $grey-lighterest; 
+                border-bottom: 1px solid darken($grey-lighterest, 4%); 
+                padding: .6em .75em .5em;
+                
+                &:hover, &:focus, &:active {
+                    color: $grey-darker;
+                    background-color: lighten($grey-lighterest, 4%);
+                }
+            }
         }
     }
-    
-    td {
-        line-height: 1.35em;
-        padding: 8px;
-        vertical-align: middle;
-        
-        &:first-child {
-            text-align: right;
-            width: 40px;
-        }
-    }
-    
-    .pep-number {
-        color: $grey; 
-        font-family: $default-font-bold;  
-    }
-}
 
 .rss-link {
     @extend .pre;
     line-height: 1em;
     
+    span:before {
+        color: $orange; 
+    }
+}
+
+/* ! ===== PEP landing page ===== */
+    /*<div class="pep-list-header list-row-headings">
+        <span class="pep-type">Type</span>
+        <span class="pep-num">Number</span>
+        <span class="pep-title">Title <span class="say-no-more">(click for more)</span></span>
+        <span class="pep-owner">Owner</span>
+    </div>
+    <ul class="pep-index-list menu">
+        <li>
+            <div class="pep-type"><span class="label">Type</span>info-act</div>
+            <div class="pep-num"><span class="label">Number</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">20</a></div>
+            <div class="pep-title"><span class="label">Title</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">The Zen of Python</a></div>
+            <div class="pep-owner"><span class="label">Owner</span>Tim Peters</div>
+        </li>
+    </ul>*/
+.pep-list-header, .pep-index-list li {
+     
+}
+.pep-list-header {
+    font-family: $default-font-bold; 
+    display: none; 
+}
+.pep-index-list {
+    
+    .label {
+        font-family: $default-font-bold;
+        display: inline-block;
+        width: 20%;  
+    }
+    li {
+        background-color: $grey-lighterest; 
+        border-bottom: 1px solid $grey-lighter;  
+    }
+    a {
+        display: inline-block; 
+        color: $blue;
+        
+        &:hover, &:focus, &:active {
+            color: $grey-darker;
+        }
+    }
+}
+.pep-type, .pep-num, .pep-title, .pep-owner {
+    padding: .5em .5em .4em; 
+    border-bottom: 1px solid darken($grey-lighterest, 5%); 
+}
+
+/*dl*/ .info-key {
+    margin: 0 -.5em; 
+    @include clearfix(); 
+    
+    .main-content & {
+        text-decoration: none; 
+    }
     span:before {
         color: $orange; 
     }
@@ -1836,7 +1924,6 @@ p.quote-by-organization {
 }
 
 
-
 /* ! ===== Blue Widgets ===== */
 .psf-widget, .python-needs-you-widget {
     @extend %blue-colorbox;
@@ -1865,14 +1952,6 @@ p.quote-by-organization {
         margin-bottom: 0; 
     }
 }
-
-.pep-widget, .psf-widget {
-    
-    .widget-title .prompt {
-        
-    }
-}
-
 
 
 /* ! ===== Feedback messages and Alert levels ===== */

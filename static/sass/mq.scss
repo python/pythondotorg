@@ -82,15 +82,14 @@
 }
 
 
-/* - - - Larger than 640px - - - */
-@media (min-width: px2em( 639px )) {
+/* - - - Larger than 640px, less that 940px - - - */
+@media (min-width: px2em( 640px )) and (max-width: px2em( 940px )) {
     
     body:after {
         @include javascript_tag( 'drawer_navigation' ); 
     }
-    @include min_width_640(); 
-    
-    //@include drawer_nav_fortouch(); 
+    @include stacked_nav(); 
+
 }
 
 

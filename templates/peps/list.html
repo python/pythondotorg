@@ -1,80 +1,98 @@
 {% extends "base.html" %}
 
+{% block body_attributes %}class="python pep-index inner"{% endblock %}
+
 {% block content %}
-<h1>Index of Python Enhancement Proposals</h1>
-
-{% for cat in categories %}
-    <h2>{{ cat.name }}</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>Type</th>
-                <th>Num</th>
-                <th>Title</th>
-                <th>Owner</th>
-            </tr>
-        </thead>
-        <tbody>
+        <h1>Index of Python Enhancement Proposals</h1>
+    
+    {% for cat in categories %}
+        <h2>{{ cat.name }}</h2>
+        
+        <div class="pep-list-header">
+            <div class="pep-type">Type/Status</div>
+            <div class="pep-num">Number</div>
+            <div class="pep-title">Title <span class="say-no-more">(click for more)</span></div>
+            <div class="pep-owner">Owner</div>
+        </div>
+        <ul class="pep-index-list menu">
             {% for pep in cat.peps.all %}
-                <tr>
-                    <td>{{ pep.type.abbreviation }}{{ pep.status.abbreviation }}</td>
-                    <td><a href="{{ pep.url }}">{{ pep.number }}</a></td>
-                    <td>{{ pep.title }}</td>
-                    <td>{{ pep.get_owner_names }}</td>
-                </tr>
+                <li>
+                    <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}/{{ pep.status.abbreviation }}</div>
+                    <div class="pep-num"><span class="label">Number</span><a href="{{ pep.url }}">{{ pep.number }}</a></div>
+                    <div class="pep-title"><span class="label">Title</span><a href="{{ pep.url }}">{{ pep.title }}</a></div>
+                    <div class="pep-owner"><span class="label">Owner</span>{{ pep.get_owner_names }}</div>
+                </li>
             {% endfor %}
-        </tbody>
-    </table>
-{% endfor %}
+        </ul>
 
-<h2>Numerical List</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Type</th>
-            <th>Num</th>
-            <th>Title></th>
-            <th>Owner</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for pep in peps %}
-        <tr>
-            <td>{{ pep.type.abbreviation }}{{ pep.status.abbreviation }}</td>
-            <td><a href="{{ pep.url }}">{{ pep.number }}</a></td>
-            <td>{{ pep.title }}</td>
-            <td>{{ pep.get_owner_names }}</td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-
-<h2>Key</h2>
-<ul>
-    {% for t in types %}
-    <li>{{ t.abbreviation }} - {{ t.name }}</li>
     {% endfor %}
-</ul>
-<ul>
-    {% for s in statuses %}
-    <li>{{ s.abbreviation }} - {{ s.name }}</li>
-    {% endfor %}
-</ul>
+    
+        <h2>Numerical List</h2>
+        
+        <div class="pep-list-header">
+            <div class="pep-type">Type/Status</div>
+            <div class="pep-num">Number</div>
+            <div class="pep-title">Title <span class="say-no-more">(click for more)</span></div>
+            <div class="pep-owner">Owner</div>
+        </div>
+        <ul class="pep-index-list menu">
+            {% for pep in peps %}
+            <li>
+                <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}/{{ pep.status.abbreviation }}</div>
+                <div class="pep-num"><span class="label">Number</span><a href="{{ pep.url }}">{{ pep.number }}</a></div>
+                <div class="pep-title"><span class="label">Title</span><a href="{{ pep.url }}">{{ pep.title }}</a></div>
+                <div class="pep-owner"><span class="label">Owner</span>{{ pep.get_owner_names }}</div>
+            </li>
+            {% endfor %}
+        </ul>
 
-<h2>Owners</h2>
-<table>
-    <thead>
-        <tr>
-            <th>Name</th>
-            <th>Email Address</th>
-        </tr>
-    </thead>
-    <tbody>
-        {% for o in owners %}
-            <tr>
-                <td>{{ o.name }}</td>
-                <td>{{ o.email_display }}</td>
-        {% endfor %}
-    </tbody>
-</table>
+        
+        <div class="col-row four-col">
+            
+            <div class="column double-col">
+                
+                <h2>Key</h2>
+                
+                <div class="col-row two-col">
+                    <div class="column">
+                        <h5>Types</h5>
+                        <dl class="info-key">
+                            {% for t in types %}
+                            <dt>{{ t.abbreviation }}</dt>
+                            <dd>{{ t.name }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                    
+                    <div class="column">
+                        <h5>Statuses</h5>
+                        <dl class="info-key">
+                            {% for s in statuses %}
+                            <dt>{{ s.abbreviation }}</dt>
+                            <dd>{{ s.name }}</dd>
+                            {% endfor %}
+                        </dl>
+                    </div>
+                </div>
+                
+            </div>
+            <div class="column double-col">
+                
+                <h2>Owners</h2>
+                <div class="pep-owner-header">
+                    <div class="label">Name</div>
+                    <div class="label">Email Address</div>
+                </div>
+                <ul class="pep-owner-list menu">
+                    {% for o in owners %}
+                    <li>
+                        <div class="owner-name">{{ o.name }}</div>
+                        <div class="owner-email">{{ o.email_display }}</div>
+                    </li>
+                    {% endfor %}
+                </ul>
+                
+            </div>
+        </div><!-- end .four-col -->
+    
 {% endblock %}
