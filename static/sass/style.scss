@@ -427,18 +427,27 @@ abbr, dfn {
 /* ! ===== Simple Column Structure ===== */
 $colpadpx:  16px; 
 $colpad:    1em; 
+
 .col-row {
     margin: 0 - $colpad; 
     @include clearfix(); 
 }
+
 .column, .not-column {
     padding-left: $colpad; 
     padding-right: $colpad; 
 }
+
 .column {
     padding-bottom: rhythm( 1 ); 
 }
+
 /* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
+h1.not-column {
+    padding-left: px2em( $colpadpx, $headerone ); 
+    padding-right: px2em( $colpadpx, $headerone );
+}
+
 h2.not-column {
     padding-left: px2em( $colpadpx, $headertwo ); 
     padding-right: px2em( $colpadpx, $headertwo );
@@ -933,14 +942,19 @@ a.jump-to-menu {
     &.with-left-sidebar {
         
     }
+    
     &.with-right-sidebar {
         
+    }
+    
+    & > article {
+        margin-top: rhythm( .75 ); 
+        padding-bottom: rhythm( 1 );
     }
 }
 
 .text {
     font-size: 1em; 
-    margin-top: rhythm( .75 ); 
     
     .giga, 
     .mega, 
@@ -1330,8 +1344,11 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         }
     }
 }
-    
-    
+
+/* ! ===== PSF Board Meeting Minutes ===== */
+.draft-preview { color: $red; font-family: $default-font-bold; }
+
+
 /* ! ===== PEP Widget ===== */
 .pep-widget {
     @extend %grey-colorbox;
@@ -2007,17 +2024,13 @@ p.quote-by-organization {
 .left-sidebar {
     
     .sidebar-widget {
-        padding-top: 0; 
+        //padding-top: 0; 
         margin-bottom: rhythm( .5 ); 
     }
     
-    .twitter-widget {
-        padding: 0;
-    }
+    .twitter-widget { padding: 0; }
     
-    .twtr-doc {
-        padding: .75em;
-    }
+    .twtr-doc { padding: .75em; }
 }
 
 .right-sidebar {
@@ -2030,9 +2043,7 @@ p.quote-by-organization {
 
 .list-recent-jobs {
     
-    li {
-        padding: rhythm( .5 ) .5em; 
-    }
+    li { padding: rhythm( .5 ) .5em; }
 }
 
 /*h2*/ .listing-company {
@@ -2094,26 +2105,25 @@ p.quote-by-organization {
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
-    padding: .5em;
+    padding: .5em 0;
     border-bottom: 1px solid $border-color; 
     
-    li {
-        @include pe-inline-block();  
-    }
+    li { @include pe-inline-block(); }
     
-    .prompt {
-        margin-left: .5em; 
-    }
+    .prompt { margin-left: .5em; }
 }
 
 .section-navigation {
     border-top: 3px solid lighten($blue, 20%); 
     background-color: lighten( $blue, 48% ); 
-    padding: rhythm( .75 ) .75em rhythm( .5 ); 
+    padding: rhythm( .5 ) .75em rhythm( .5 ); 
+    
+    h2:first-child { @include leader( .375 ); }
+    
+    h3:first-child { @include leader( .375 ); }
 }
 
 .section-nav {
-    margin-bottom: 0; 
     
     a {
         display: block; 
@@ -2132,9 +2142,7 @@ p.quote-by-organization {
         a {
             color: $yellow; 
             
-            &:hover, &:focus {
-                color: $white; 
-            }
+            &:hover, &:focus { color: $white; }
         }
     }
 }

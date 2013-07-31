@@ -104,8 +104,9 @@
     .two-col, .four-col {
         
         & > .column { width: 50%; }
-        & > .double-col { width: 100%; }
-        & > .column:nth-of-type(2n+3) { clear: left; }
+        & > .double-col { width: 100%; } 
+        /* Only works if we are using all single .column, not .double-col as well */
+        & > div:nth-of-type(2n+3) { clear: left; }
     }
     
     .meta-navigation, 
@@ -138,6 +139,15 @@
 
 /* ! ===== Larger than 640px - Small ===== */
 @mixin min_width_640() {
+    
+    /* Simple Column Structure */
+    .three-col {
+        
+        & > .column { width: 33.3333%; }
+        & > .double-col { width: 66.6666%; }
+        /* Only works if we are using all single .column, not .double-col as well */
+        & > div:nth-of-type(3n+4) { clear: left; }
+    }
     
     .meta-navigation {
         text-align: left;
@@ -301,8 +311,8 @@
     
     .content-wrapper {
         
-        /* Shorten the amount of blue space under the nav on inner pages */
-        .inner & { padding-top: 3.5em; }
+        /* Increase the amount of white space under the nav on inner pages */
+        .inner & { padding-top: 2em; }
     }
     
     /* Main content with sidebars */
@@ -429,7 +439,8 @@
         
         .tier-1 {
             float: left; 
-            width: columns( 6 ) + gutter()/2; 
+            width: 50%; 
+            //width: columns( 6 ) + gutter()/2; 
             
             &:nth-child(odd) { clear: left; }
             &:nth-child(even) { border-left: 1px solid lighten( $grey-lightest, 6% ); }
@@ -621,6 +632,7 @@
             
             .widget-title, p { @include post( 4 ); }
         }
+        
     .triple-widget {
         @include span-columns( 4 ); 
         
@@ -709,7 +721,8 @@
     .sitemap {
         
         .tier-1 {
-            width: columns( 4 ) + gutter()/2; 
+            width: 32.97872%;
+            //width: columns( 4 ) + gutter()/2; 
             border-left: 0; 
             border-right: 0; 
             
@@ -803,8 +816,8 @@
     .four-col {
         & > .column { width: 25%; }
         & > .double-col { width: 50%; }
-        & > .column:nth-of-type(2n+3) { clear: none; }
-        & > .column:nth-of-type(4n+5) { clear: left; }
+        & > div:nth-of-type(2n+3) { clear: none; }
+        & > div:nth-of-type(4n+5) { clear: left; }
     }
     
     .site-headline a img {
@@ -1021,6 +1034,7 @@
                 width: 30%; 
             }
         }
+        
     .pep-widget {
         
         .widget-title {
@@ -1045,7 +1059,7 @@
         a { text-align: left; }
         
         .tier-1 {
-            width: 16.666%; 
+            width: 16.6667%; 
             border: 0; 
             
             &.element-1, 
