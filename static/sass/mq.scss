@@ -34,8 +34,8 @@
     body:after {
         @include javascript_tag( 'animatebody' ); 
     }
+    
     @include max_width_480(); 
-
 }
 
 
@@ -45,8 +45,8 @@
     body:after {
         @include javascript_tag( 'animatebody' ); 
     }
+    
     @include min_width_400(); 
-
 }
 
 
@@ -56,8 +56,8 @@
     body:after {
         @include javascript_tag( 'animatebody' ); 
     }
+    
     @include min_width_480(); 
-
 }
 
 
@@ -67,8 +67,8 @@
     body:after {
         @include javascript_tag( 'animatebody' ); 
     }
+    
     @include min_width_520(); 
-
 }
 
 
@@ -78,18 +78,21 @@
     body:after {
         @include javascript_tag( 'drawer_navigation' ); 
     }
+    
     @include stacked_nav(); 
 }
 
 
-/* - - - Larger than 640px, less that 940px - - - */
-@media (min-width: px2em( 640px )) and (max-width: px2em( 940px )) {
+/* - - - Larger than 640px - - - */
+@media (min-width: px2em( 640px )) {
     
     body:after {
         @include javascript_tag( 'drawer_navigation' ); 
     }
-    @include stacked_nav(); 
-
+    
+    @include min_width_640(); 
+    
+    @include drawer_nav_fortouch(); 
 }
 
 
@@ -99,6 +102,7 @@
     body:after {
         @include javascript_tag( 'drawer_navigation' ); 
     }
+    
     @include min_width_800(); 
 }
 
@@ -112,7 +116,12 @@
     
     @include horizontal_nav(); 
     
-    @include min_width_940();
+    @include min_width_940(); 
+    
+    /* I don't like including this again.
+     * The problem is, touch device styles are being clobbered by contents in the horizontal_nav_dropdowns mixin 
+     * We need the contents of that mixin to function in the Social Share and Font Adjust drop downs */
+    @include drawer_nav_fortouch(); 
 }
 
 

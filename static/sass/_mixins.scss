@@ -46,18 +46,19 @@
     content: ""; 
     width: 0; 
     height: 0; 
+    border-color: transparent; 
     border-style: solid; 
     border-width: $size; 
 }
+
 
 /* Base styles for a navigation mixin */
 @mixin horizontal_nav_base() {
     text-align: center; 
     overflow: visible; 
     
-    /*ul*/ .menu {
-        margin-bottom: 0; 
-    }
+    /*ul*/ .menu { margin-bottom: 0; }
+    
     .tier-1, .tier-2 {
         
         /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */
@@ -71,15 +72,11 @@
         display: block; 
         width: 100%; 
         
-        & > a {
-            text-align: center;
-        }
+        & > a { text-align: center; }
     }
     /*li*/ .tier-2 {
         
-        & > a {
-            text-align: left;
-        }
+        & > a { text-align: left; }
     }
 }
 
@@ -87,26 +84,26 @@
 /* Base styles for a navigation with dropdowns mixin */
 @mixin horizontal_nav_dropdowns() {
     
-    /*ul*/ .menu {
-        @include pie-clearfix(); 
-    }
+    /*ul*/ .menu { @include pie-clearfix(); }
     
-    .tier-1 {
-        position: relative; 
-    }
+    .tier-1 { position: relative; }
     
     .subnav {
         position: absolute; 
-        top: 100%;  
         z-index: 100; 
         text-align: left; 
         
         /*modernizr*/ .no-touch & {
             min-width: 100%; 
+            top: -9999px; 
+            @include transition( all 0s ease ); 
         }
         
         /*modernizr*/ .touch & {
             top: 120%;
+            display: none; 
+            opacity: 0; 
+            @include transition( opacity .25s ease-in-out );
             @include box-shadow( 0 .25em .75em rgba( #000, 0.6 )  ); 
             
             &:before {
@@ -121,10 +118,6 @@
         
         .element-1, .element-2, .element-3, .element-4 {
             
-            .subnav {
-                top: -9999px; 
-                @include transition( all 0s ease ); 
-            }
             &:hover .subnav, &:focus .subnav {
                 left: 0; 
                 top: 100%; 
@@ -132,13 +125,31 @@
             }
         }
         
+        .element-5, .element-6, .element-7, .element-8, .last { 
+            
+            &:hover .subnav, &:focus .subnav {
+                right: 0; 
+                top: 100%; 
+                @include transition-delay( .25s ); 
+            }
+        }
+    }
+    
+    .touch & {
+        
+        .element-1, .element-2, .element-3, .element-4 {
+            
+            &:hover .subnav, & .subnav.touched {
+                display: block; 
+                opacity: 1; 
+                left: 0; 
+            }
+            /* Position the pointer element */
+            & .subnav:before { left: 1.5em; }
+        }
+        
         .element-5, .element-6, .element-7, .element-8, .last {
             
-            .subnav {
-                display: none; 
-                opacity: 0; 
-                @include transition( opacity .25s ease-in-out );
-            }
             &:hover .subnav, & .subnav.touched {
                 display: block; 
                 opacity: 1; 
@@ -156,125 +167,177 @@
         display: block;
         min-width: 100%; 
         
-        a {
-            white-space: nowrap; 
-        }
+        a { white-space: nowrap; }
     }
 }
 
 
-/* Ruleset for a two-tier, stacked version of the main navigation -- DESKTOP ONLY -- */
+/* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
 @mixin stacked_nav() {
     
-    .no-touch {
-     
-        .main-navigation {
-            display: block; 
-            border-top: 0;
-            text-align: center; 
-            @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
-            //@include horizontal_nav_dropdowns(); 
-            @include pie-clearfix(); 
+    .main-navigation {
+        
+        /* Include the mixins to start our horizontal nav 
+         * Don't wrap this in a .touch or .no-touch, as it has those selectors already inside
+        */
+        @include horizontal_nav_base(); 
+        @include horizontal_nav_dropdowns(); 
+    }
+    
+    .no-touch .main-navigation {
+        display: block;
+        clear: both; 
+        text-align: center; 
+        @include border-radius( 8px 8px 0 0 ); 
+        @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
+        
+        .tier-1 {
+            float: left; 
+            width: 33.333333%;
             
-            .tier-1 {
-                position: relative; 
-                float: left; 
-                width: 33.333333%;
-                // @include pe-border( $color-top: rgba( #fff, .2 ), $color-left: rgba( #fff, .1 ), $color-bottom: rgba( #000, .3 ), $color-right: rgba( #000, .2 ) ); 
+            &.element-6, &.element-7 { width: 16.6666665%; }
+            
+            &.element-1 {
+                @include border-top-left-radius( 8px );
                 
-                .subnav {
-                    position: absolute; 
-                    z-index: 100; 
-                    text-align: left; 
-                    top: -9999px; 
-                    min-width: 100%; 
-                    @include transition( all 0s ease ); 
-                }
-                &:hover .subnav, &:focus .subnav {
-                    left: 0; 
-                    top: 100%; 
-                    @include transition-delay( .25s ); 
-                }
+                & > a { @include border-top-left-radius( 7px ); }
+            }
+            &.element-3 {
+                @include border-top-right-radius( 8px ); 
+                border-right: 0;
                 
-                &.element-1 {
-                    @include border-top-left-radius( 8px );
-                    
-                    & > a { @include border-top-left-radius( 7px ); }
-                }
-                &.element-3 {
-                    @include border-top-right-radius( 8px ); border-right: 0;
-                    
-                    & > a { @include border-top-right-radius( 7px ); border-right: 0; }
-                }
-                &.element-6, &.element-7 {
-                    width: 16.6666665%;
+                & > a { 
+                    @include border-top-right-radius( 7px ); 
+                    border-right: 0; 
                 }
             }
-            .tier-2 {
-                
-                & > a {
-                    @include pe-border( $color-right: rgba( #fff, .8 ) );
-                }
-            }
+            // &.element-4 { @include border-bottom-left-radius( 8px ); }
+            &.element-7 { /* @include border-bottom-right-radius( 8px ); */ border-right: 0; }
         }
+        
+        .tier-2 { 
+            font-size: px2em( 14px ); 
+            & > a { @include pe-border( $color-right: rgba( #fff, .8 ) ); }
+        }
+        
+        .subnav { @include box-shadow( 0 .5em .5em rgba( 0,0,0,0.3) ); }
+    }
+    
+    /* Shorten the amount of blue space under the nav on inner pages */
+    .no-touch  .inner .main-navigation {
+        position: relative; 
+        margin-bottom: -.0625em; 
     }
 }
 
 
-/* Ruleset for a single row of main navigation -- DESKTOP ONLY -- */
+/* A single row of main navigation -- DESKTOP ONLY */
 @mixin horizontal_nav() {
     
     .main-navigation {
+        
+        /* Include the mixins to start our horizontal nav 
+         * Don't wrap this in a .touch or .no-touch, as it has those selectors already inside
+        */
+        @include horizontal_nav_base(); 
+        @include horizontal_nav_dropdowns(); 
+    }
+    
+    .no-touch .main-navigation {
         display: block; 
-        //margin: 0 -.625em;
         text-align: center; 
-        font-size: px2em( 18px );
+        font-size: px2em( 18px ); 
         @include border-radius(8px);
         @include box-shadow(0 0 10px rgba(0, 0, 0, 0.2) );
         
-        @include horizontal_nav_dropdowns();
+        .menu { text-align: center; }
         
-        .menu {
-            text-align: center; 
-        }
         .tier-1 {
             float: none; 
             border-top: 0;
             border-bottom: 0;
+            /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
             width: auto; 
             margin: 0 -5px 0 0; 
             @include pe-inline-block(); 
             @include pe-border( $color-left: rgba( #fff, .1 ), $color-right: rgba( #000, .2 ) ); 
             
-            &.element-1 {
-                border-left: 0; 
-            }
-            &.last {
-                border-right: 0; 
-            }
-            /* We've set this explicitly before, so we need to reset the width value explicitly */
-            &.element-6, &.element-7 {
-                width: auto; 
-            }
-        }
-        .tier-1 > a {
-            padding: .65em 1.25em .55em;
-        }
-        .tier-2 {
+            &.element-1 { border-left: 0; }
             
+            &.last { border-right: 0; }
+            
+            /* We've set this explicitly before, so we need to unset it here */
+            &.element-6, &.element-7 { width: auto; }
+            
+            & > a { padding: .65em 1.25em .55em; }
         }
+        
+        .tier-2 { font-size: px2em( 14px ); }
     }
     
-    .navigation {
+    /* Shorten the amount of blue space under the nav on inner pages */
+    .no-touch .inner .main-navigation {
+        position: relative; 
+        margin-bottom: -1.375em; 
+    }
+}
+
+
+@mixin drawer_nav_fortouch() {
+    /*
+<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
+            <a href="/about/" title="" class="">About</a>
+            <ul class="subnav menu" role="menu" aria-hidden="true">
+                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
+                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
+! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
+
+*/
+    $menuwidth: 260px; 
+    
+    .touch {
         
-        .close-subnav {
-            border-top: 0;
-             
-            a {
-                @include pe-border( $color-right: rgba( #fff, .8 ) );
+        body, #touchnav-wrapper {
+            position: relative; 
+            width: 100%; 
+        }
+        
+        .inner .main-header { position: static; }
+        
+        .main-navigation {
+            display: block; 
+            position: absolute; 
+                top: 0; left: - $menuwidth; 
+            width: $menuwidth; 
+            height: 100%; 
+            overflow: scroll; 
+            
+            /* styles that are not being applied because they are inside .no-touch in other nav patterns */
+            text-align: center; 
+            font-size: px2em( 18px ); 
+            
+            a { 
+                text-align: center; 
+                padding: .65em 1.25em .55em; 
             }
-            .close-for-touch {
-                @include pe-border( $color-left: rgba( #666, .2 ), $color-right: transparent );
+            
+            .tier-2 { font-size: px2em( 14px ); }
+            
+            /* Reset some styles from the drop down menus */
+            .subnav {
+                position: static; 
+                display: block; 
+                opacity: 1; 
+                border-top: 0; 
+                @include box-shadow( none ); 
             }
         }
     }
@@ -288,11 +351,7 @@
             -webkit-backface-visibility: hidden; 
         }
         .touch .show-sidemenu & {
-            @include transform( translate3d( 280px, 0, 0 ) ); 
+            @include transform( translate3d( $menuwidth, 0, 0 ) ); 
         }
-    }
-    
-    .inner .main-header {
-        position: static; 
     }
 }

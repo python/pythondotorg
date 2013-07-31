@@ -135,24 +135,24 @@ h6, .gamma {
     @include leader(1); 
 }
 
-p, ul, ol, dl, address, table {
+/*p, ul, ol, dl, address, table {
     margin-bottom: rhythm(0.5);
 }
 
 li > ul, li > ol {
     margin-bottom: 0; 
-}
+}*/
 
 blockquote {
+    position: relative;
     font: italic px2em( 18px ) Georgia, serif;
     line-height: 2; 
     padding: rhythm(.75) 1em rhythm(.75) 3em;
     border-top: 3px solid lighten( $yellow, 20% ); 
     border-bottom: 3px solid lighten( $yellow, 20% ); 
     margin-bottom: rhythm(0.75);
-    position: relative;
     
-    &:before, &:after {
+    /*&:before, &:after {
         color: $grey-lighter; 
         font-style: normal; 
         font-size: 4em;
@@ -163,27 +163,6 @@ blockquote {
         content: "“";
         top: -.25em; 
         left: 0;
-    }
-    
-    /*&:before, &:after {
-        color: $grey-light; 
-        font-style: normal; 
-        font-size: px2em( 36px );
-        position: absolute;
-    }
-    
-    &:before {
-        content: "“";
-        top: .375em; 
-        left: 0;
-    }
-    
-    &:after {
-        content: "”";
-        line-height: 0;
-        vertical-align: bottom;
-        bottom: 0; 
-        right: 0;
     }*/
     
     footer {
@@ -652,11 +631,18 @@ $optionsbar-text: #bbb;
     }
 }
 
-.jump-to-menu, .search-the-site, .icon-search-alt, input#s, .adjust-font-size, .winkwink-nudgenudge {
+.jump-to-menu, 
+.search-the-site, 
+.icon-search-alt, 
+input#s, 
+.adjust-font-size, 
+.winkwink-nudgenudge {
     @include pe-inline-block(); 
 }
 
-.jump-to-menu, .search-the-site, .adjust-font-size {
+.jump-to-menu, 
+.search-the-site, 
+.adjust-font-size {
     margin-right: -.35em; 
 }
 
@@ -666,12 +652,9 @@ a.jump-to-menu {
     border-right: 1px solid darken( $darkerblue, 12% );
     vertical-align: middle;
     
-    &:hover, &:focus {
-        color: $white;
-    }
-    .no-touch {
-        display: none; 
-    }
+    &:hover, &:focus { color: $white; }
+    
+    .no-touch & { display: none; }
 }
 
 .menu-icon {
@@ -800,24 +783,6 @@ a.jump-to-menu {
     display: none;
     margin-bottom: 1px;
 }
-
-/*.main-navigation .close-pane {
-    display: none;
-    background-color: rgba(255,255,255,.25);
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 1200px;
-    
-    .close-graphic { 
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        padding: 0px 10px;
-        background-color: white;
-    }
-}*/
 
 
 /* ! ===== Header banner, present on most landing pages ===== */
@@ -977,24 +942,26 @@ a.jump-to-menu {
     font-size: 1em; 
     margin-top: rhythm( .75 ); 
     
-    .giga, .mega, .kilo {
+    .giga, 
+    .mega, 
+    .kilo {
         color: $blue; 
     }
 }
 
-.sidebar-widget {
-    padding-bottom: rhythm( .75 );
-}
+.sidebar-widget { padding-bottom: rhythm( .75 ); }
 
 
 /* ! Default body text styles for more comfortable reading */
 .text, 
 .sidebar-widget {
     
-    & > h1, & > .alpha {
+    & > h1, 
+    & > .alpha {
         @include leader(1); 
     }
     
+    /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
     p, ul, ol, dl, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
     }
@@ -1139,7 +1106,6 @@ a.jump-to-menu {
 
 %widget {
     border-top: 5px solid $grey-lightest; // default fallback
-    margin-bottom: 0.25em;
     padding: 1.25em;
     
     h4 {
@@ -1149,6 +1115,7 @@ a.jump-to-menu {
     }
     
     p, ul {
+        margin-bottom: rhythm( .5 ); 
         
         &:last-child {
             margin-bottom: 0;
@@ -1279,19 +1246,18 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .success-stories-widget {
     
     blockquote {
-        position: relative;
+        //position: relative;
         color: $grey;
         background-color: lighten($yellow, 15%);
-        line-height: 1.4em;
         padding: rhythm(.4) 1em rhythm(.5);
+        margin-bottom: rhythm( .25 ); 
+        @include adjust-font-size( 16px );
         @include vertical-gradient( lighten($yellow, 15%), lighten($yellow, 10%) );
         @include border-radius;
-        @include adjust-font-size( 16px );
         
         &:after {
-            @include pointer( .6em ); 
-            bottom: -1.1em; 
-            left: 20%; 
+            @include pointer( 1.5em ); 
+                left: 20%; bottom: -2.875em; 
             border-top-color: lighten($yellow, 10%); 
         }
     }
@@ -1300,17 +1266,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         @include pie-clearfix;
         
         td {
-            padding: 8px;
+            padding: .5em;
             vertical-align: middle;
         }
         
         img {
-            max-height: 50px;
+            max-height: 5em;
         }
         
         p {
             font-size: px2em( 14px );
-            margin-bottom: 0;
         }
     }
 }
@@ -1370,6 +1335,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== PEP Widget ===== */
 .pep-widget {
     @extend %grey-colorbox;
+    margin-bottom: rhythm( .75 ); 
     
     .widget-title {
         color: lighten($grey, 5%);
@@ -1379,9 +1345,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         a {
             color: $blue;
             
-            &:hover, &:active {
-                color: $darkblue;
-            }
+            &:hover, &:active { color: $darkblue; }
         }
     }
     
@@ -1421,9 +1385,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     @extend .pre;
     line-height: 1em;
     
-    span:before {
-        color: $orange; 
-    }
+    span:before { color: $orange; }
 }
 
 /* ! ===== PEP landing page ===== */
@@ -1463,9 +1425,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         display: inline-block; 
         color: $blue;
         
-        &:hover, &:focus, &:active {
-            color: $grey-darker;
-        }
+        &:hover, &:focus, &:active { color: $grey-darker; }
     }
 }
 .pep-type, .pep-num, .pep-title, .pep-owner {
@@ -1473,15 +1433,53 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     border-bottom: 1px solid darken($grey-lighterest, 5%); 
 }
 
-/*dl*/ .info-key {
+/*dl*/ .info-key { 
+    
+    dt, dd {
+        display: block; 
+        float: left; 
+        padding: .5em .5em .4em; 
+    }
+    dt { width: 25%; }
+    dd { width: 75%; border-bottom: 1px solid $grey-lightest; }
+}
+
+/* <div class="pep-owner-header">
+        <div class="label">Name</div>
+        <div class="label">Email Address</div>
+    </div>
+    <ul class="pep-owner-list menu">
+        <li>
+            <div class="owner-name">Tim Peters</div>
+            <div class="owner-email">tim at zope.com</div>
+        </li>
+    </ul> */
+.pep-owner-header {
     margin: 0 -.5em; 
     @include clearfix(); 
     
-    .main-content & {
-        text-decoration: none; 
+    .label {
+        font-family: $default-font-bold;
+        float: left; 
+        width: 50%; 
+        padding: .25em .5em .2em; 
     }
-    span:before {
-        color: $orange; 
+}
+.pep-owner-list {
+    
+    li {
+        background-color: $grey-lighterest; 
+        border-bottom: 1px solid $grey-lighter;  
+        @include clearfix();
+        
+        &:hover {
+            background-color: lighten($grey-lighterest, 4%);
+        }
+    }
+    .owner-name, .owner-email {
+        float: left; 
+        width: 50%; 
+        padding: .5em .5em .4em; 
     }
 }
 
@@ -1491,9 +1489,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background: url('../img/success-glow2.png') center -230px no-repeat;
     // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
     
-    img {
-        padding: 10px 30px;
-    }
+    img { padding: 10px 30px; }
     
     /*blockquote*/ .success-quote {
         color: $yellow; 
@@ -1729,7 +1725,6 @@ p.quote-by-organization {
     
     .medium-widget {
         border-top: 0;
-        margin-bottom: 0;
     }
 }
 
@@ -2141,10 +2136,6 @@ p.quote-by-organization {
                 color: $white; 
             }
         }
-    }
-    
-    p {
-        margin-bottom: 0;
     }
 }
 
