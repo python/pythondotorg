@@ -53,19 +53,6 @@
         
         .prompt { display: inline; }
     }
-    
-    input[type="submit"], 
-    input[type="reset"], 
-    .button, 
-    a.button, 
-    .button,
-    .psf-widget .button, 
-    .psf-widget a.button, 
-    .python-needs-you-widget .button, 
-    .python-needs-you-widget a.button {
-        display: inline-block;
-        width: auto;
-    }
 }
 
 
@@ -133,7 +120,14 @@
         padding: 1em 1.4em 1.3em;
     }
     
-    .text { font-size: px2em( 15px ); }
+    input[type="submit"], 
+    input[type="reset"], 
+    .button, 
+    a.button, 
+    .button {
+        display: inline-block;
+        width: auto;
+    }
 }
 
 
@@ -321,6 +315,8 @@
         &.with-left-sidebar { @include span-columns( 8 omega ); }
         &.with-right-sidebar { @include span-columns( 8 ); }
     }
+    
+    .text { font-size: px2em( 15px ); }
     
     /*aside*/ .left-sidebar {
         @include span-columns( 4 );
@@ -540,6 +536,7 @@
     
     .download-for-current-os {
         background: 130% 0 no-repeat image-url("landing-downloads.png") transparent;
+        min-height: 345px;
         padding-bottom: 4em;
         margin-bottom: -3em;
     }
@@ -587,6 +584,11 @@
     }
     
     /* Main content with sidebars */
+    .home .content-wrapper {
+        
+        .container { padding-top: 2.5em; }
+    }
+    
     .main-content { 
         
         &.with-left-sidebar { @include span-columns( 9 omega ); }

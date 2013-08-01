@@ -8,16 +8,16 @@
                         <div class="shrubbery">
 
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-success-stories"></span>Success Stories</h2>
-                            <p class="give-me-more"><a href="{{ story.get_absolute_url }}" title="More Success Stories">More</a></p>
+                            <p class="give-me-more"><a href="{% url 'success_story_list' %}" title="More Success Stories">More</a></p>
 
                             <blockquote>
-                                {{ story.pull_quote }}
+                                <a href="{{ story.get_absolute_url }}">{{ story.pull_quote }}</a>
                             </blockquote>
 
                             <table cellpadding="0" cellspacing="0" border="0" width="100%" class="quote-from">
                                 <tbody>
                                     <tr>
-                                        <td><img src="{{ STATIC_URL }}img/ILM_logo.png"></td>
+                                        <td><a href="{{ story.get_absolute_url }}"><img src="{{ STATIC_URL }}img/ILM_logo.png"></a></td>
                                         <td><p><a href="{{ story.get_absolute_url }}">{{ story.name }}</a> <em>by {{ story.author }}</em></em></p></td>
                                     </tr>
                                 </tbody>

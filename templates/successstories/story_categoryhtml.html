@@ -17,19 +17,18 @@
 
 {% block content %}
     
-    <article class="text">
+    <article>
         
-        {% if story.image %}
-        <figure class="story-header" role="banner">
-            <!--The URL isn't returning properly -->
-            <img src="{{ story.image.url }}" alt="{{ story.name }}" />
-        </figure>
-        {% endif %}
+        <!-- Need to hook this in -->
+        <h1>Category Name</h1>
         
-        <h1>{{ story.name }}</h1>
-        <p class="company-byline"><a rel="external" href="{{ story.get_company_url }}">{{ story.get_company_name }}</a></p>
-        
-        {{ story.content.rendered|safe }}
+        <ul class="menu success-story-category">
+            <li><a href="#fixme">A Success Story Title</a></li>
+            <li><a href="#fixme">Another Success Story Title</a></li>
+            <li><a href="#fixme">Another Another Success Story Title</a></li>
+            <li><a href="#fixme">A Success Story Title Again</a></li>
+            <li><a href="#fixme">Another Success Story Title Again</a></li>
+        </ul>
         
         
     </article>
