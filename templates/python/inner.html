@@ -54,12 +54,53 @@
 
 <!-- Menu -->
 <ol>
+<li><a href="#user-feedback">User Feedback Modules</a></li>
 <li><a href="#headings">Headings</a></li>
 <li><a href="#grouping">Grouping</a></li>
 <li><a href="#text">Text Semantic Elements</a></li>
 <li><a href="#tables">Table Example</a></li>
 <li><a href="#form">Form Example</a></li>
 </ol>
+
+<!-- User Feedback Modules -->
+<h1 id="user-feedback">User Feedback Modules</h1>
+<p>A few feedback styles have been created and should be used as "announcements" and as system-generated feedback styles. Here are some examples:</p>
+<div class="example">
+    <div class="user-feedback level-general">
+        <p role="alert">Can&rsquo;t find what you&rsquo;re looking for? <a href="#">Try our comprehensive Help section</a></p>
+    </div>
+</div>
+<pre class="examplecode"><code>&lt;div class="user-feedback level-general"&gt;
+    &lt;p role="alert"&gt;Content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<div class="example">
+    <div class="user-feedback level-notice">
+        <p role="alert">Please fill out all fields before submitting.</p>
+    </div>
+</div>
+<pre class="examplecode"><code>&lt;div class="user-feedback level-notice"&gt;
+    &lt;p role="alert"&gt;Content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<div class="example">
+    <div class="user-feedback level-error">
+        <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888;</span></span> Please correct the errors <b>noted in red</b> below:</p>
+    </div>
+</div>
+<pre class="examplecode"><code>&lt;div class="user-feedback level-error"&gt;
+    &lt;p role="alert"&gt;&lt;span class="icon-alert" aria-hidden="true">&lt;span class="larger">&amp;#9888;&lt;/span>&lt;/span> Content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
+<div class="example">
+    <div class="user-feedback level-success">
+        <p role="alert"><span aria-hidden="true">&#10004;</span> Your information has been saved successfully.</p>
+    </div>
+</div>
+<pre class="examplecode"><code>&lt;div class="user-feedback level-success"&gt;
+    &lt;p role="alert"&gt;&lt;span aria-hidden="true">&amp;#10004;&lt;/span> Content&lt;/p&gt;
+&lt;/div&gt;</code></pre>
+
 
 <!-- Headings -->
 <h1 id="headings">Heading 1 <a href="#">with a Link</a></h1>

@@ -1989,28 +1989,35 @@ p.quote-by-organization {
     }
 }
 
+/* A helpful tip */
 .level-general {
     background-color: lighten($blue, 50%);
     border: 1px solid lighten($blue, 40%); 
 }
 
+/* A slight warning before completing a task */
 .level-notice {
-    background-color: lighten( $yellow, 50% ); 
+    background-color: lighten( $yellow, 30% ); 
     border: 2px solid $yellow; 
 }
 
-.level-warning {
-    /* orange? */
-}
-
+/* Something went wrong */
 .level-error {
     background-color: lighten( $red, 35% ); 
-    border: 2px solid $red;
+    border: 2px solid $red; 
+    
+    span { color: $red; }
 }
 
+/* Yeah! It worked correctly */
 .level-success {
     background-color: lighten( $green, 35% ); 
     border: 2px solid $green;
+    
+    span { 
+        color: $green; 
+        margin-right: .5em; 
+    }
 }
 
 
