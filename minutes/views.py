@@ -41,3 +41,14 @@ class MinutesDetail(DetailView):
             raise Http404("Minutes does not exist")
 
         return obj
+
+    def get_context_data(self, *args, **kwargs):
+        context = super(MinutesDetail, self).get_context_data(*args, **kwargs)
+
+        same_year = Minutes.objects.filter(
+            date__year=self.object.date.year,
+        ).order_by('date')
+
+        context['same_year_minutes'] = same_year
+
+        return context
