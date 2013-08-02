@@ -3,13 +3,13 @@
 {% block body_attributes %}class="python pep-index inner"{% endblock %}
 
 {% block content %}
-        
+
     <article>
         <h1>Index of Python Enhancement Proposals</h1>
-    
+
     {% for cat in categories %}
         <h2>{{ cat.name }}</h2>
-        
+
         <div class="pep-list-header">
             <div class="pep-type">Type/Status</div>
             <div class="pep-num">Number</div>
@@ -19,7 +19,7 @@
         <ul class="pep-index-list menu">
             {% for pep in cat.peps.all %}
                 <li>
-                    <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}/{{ pep.status.abbreviation }}</div>
+                    <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}{% if pep.status.abbreviation %}/{{ pep.status.abbreviation }}{% endif %}</div>
                     <div class="pep-num"><span class="label">Number</span><a href="{{ pep.url }}">{{ pep.number }}</a></div>
                     <div class="pep-title"><span class="label">Title</span><a href="{{ pep.url }}">{{ pep.title }}</a></div>
                     <div class="pep-owner"><span class="label">Owner</span>{{ pep.get_owner_names }}</div>
@@ -28,9 +28,9 @@
         </ul>
 
     {% endfor %}
-    
+
         <h2>Numerical List</h2>
-        
+
         <div class="pep-list-header">
             <div class="pep-type">Type/Status</div>
             <div class="pep-num">Number</div>
@@ -40,7 +40,7 @@
         <ul class="pep-index-list menu">
             {% for pep in peps %}
             <li>
-                <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}/{{ pep.status.abbreviation }}</div>
+                <div class="pep-type"><span class="label">Type/Status</span>{{ pep.type.abbreviation }}{% if pep.status.abbreviation %}/{{ pep.status.abbreviation }}{% endif %}</div>
                 <div class="pep-num"><span class="label">Number</span><a href="{{ pep.url }}">{{ pep.number }}</a></div>
                 <div class="pep-title"><span class="label">Title</span><a href="{{ pep.url }}">{{ pep.title }}</a></div>
                 <div class="pep-owner"><span class="label">Owner</span>{{ pep.get_owner_names }}</div>
@@ -48,13 +48,13 @@
             {% endfor %}
         </ul>
 
-        
+
         <div class="col-row four-col">
-            
+
             <div class="column double-col">
-                
+
                 <h2>Key</h2>
-                
+
                 <div class="col-row two-col">
                     <div class="column">
                         <h5>Types</h5>
@@ -65,7 +65,7 @@
                             {% endfor %}
                         </dl>
                     </div>
-                    
+
                     <div class="column">
                         <h5>Statuses</h5>
                         <dl class="info-key">
@@ -76,10 +76,10 @@
                         </dl>
                     </div>
                 </div>
-                
+
             </div>
             <div class="column double-col">
-                
+
                 <h2>Owners</h2>
                 <div class="pep-owner-header">
                     <div class="label">Name</div>
@@ -93,9 +93,9 @@
                     </li>
                     {% endfor %}
                 </ul>
-                
+
             </div>
         </div><!-- end .four-col -->
-    
+
     </article>
 {% endblock %}
