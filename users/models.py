@@ -58,7 +58,10 @@ class Membership(models.Model):
 #    creator = models.OneToOneField(User, null=True, blank=True)
 
     def __str__(self):
-        return "Membership object for user: %s" % self.creator.username
+        if self.creator:
+            return "Membership object for user: %s" % self.creator.username
+        else:
+            return "Membership '%s'" % self.legal_name
 
     def save(self, **kwargs):
         self.updated = timezone.now()
