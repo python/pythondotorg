@@ -1,10 +1,11 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="pages"{% endblock %}
+{% block body_attributes %}class="python pages inner"{% endblock %}
 
 
 {% block breadcrumbs %}
 {% load sitetree %}
+
 {% comment %}
 TODO: format breadcrumbs
 
@@ -23,7 +24,9 @@ TODO: format breadcrumbs
 
 {% block content %}
 <div class="text">
+    
     {{ page.content }}
+    
 </div>
 {% endblock content %}
 
@@ -47,6 +50,9 @@ TODO: should this partially come from sitetree?
     </div>
 
     <div class="twitter-widget sidebar-widget">
+        
+        <!-- No good! Using the old Twitter API. Should content become part of the DB anyway? -->
+        
         <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
         <script type="text/javascript">// <![CDATA[
         new TWTR.Widget({

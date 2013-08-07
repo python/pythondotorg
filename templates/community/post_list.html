@@ -7,10 +7,26 @@
 {% block body_attributes %}class="python community"{% endblock %}
 
 
-{% block main-nav_attributes %}community-navigation{% endblock main-nav_attributes %}
+{% block main-nav_attributes %}python-navigation{% endblock main-nav_attributes %}
+
+
+{% block header_content %}
+                <div class="community-banner">
+                    <h1 class="call-to-action">
+                        <a href="#">Python&rsquo;s community is vast</a>; <br>
+                        <a href="#">diverse &amp; aims to grow</a>; <br>
+                        <a href="#">Python is Open</a>.
+                    </h1>
+                    
+                    <p>Great software is supported by great people, and Python is no exception. Our user base is fanatical and dedicated to spreading use of the language far and wide. Our community can help support the beginner, the expert, and adds to the ever-increasing open-source knowledge base. </p>
+                </div>
+{% endblock header_content %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock content_attributes %}
+
+
+{# Based on the template python/community.html #}
 
 
 {% block content %}

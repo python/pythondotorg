@@ -81,8 +81,9 @@ But not really enough to remember all these CLI commands by heart.
 1. Open Terminal.app
 2. `cd ~/github/python`
 3. `source ENV/bin/activate`
-4. `export DATABASE_URL="postgres://localhost/python.org"`
-5. `./manage.py runserver 0.0.0.0:8000` (or whatever port you run at)
+4. Maybe you need to install requirements? `pip install -r requirements.txt`
+5. `export DATABASE_URL="postgres://localhost/python.org"`
+6. `./manage.py runserver 0.0.0.0:8000` (or whatever port you run at)
 
 ### Nuke the DB!
 

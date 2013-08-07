@@ -567,7 +567,12 @@ h2.not-column {
     .jobs-meta, .jobs-meta a:before { border-top-color: $purple; }
     .shop-meta, .shop-meta a:before { border-top-color: $red; }
     
-    .selected a {
+    .python & .python-meta a, 
+    .psf & .psf-meta a,
+    .docs & .docs-meta a, 
+    .pypi & .pypi-meta a,
+    .jobs & .jobs-meta a, 
+    .shop & .shop-meta a {
         @extend %hovered-state;
     }
 }
@@ -971,7 +976,12 @@ a.jump-to-menu {
         margin-bottom: rhythm(0.75);
     }
     
-    li > ul, li > ol { margin-bottom: 0; }
+    p, dd, blockquote, address {
+        @include pe-hyphenate(); 
+    }
+    
+    li > ul, 
+    li > ol { margin-bottom: 0; }
     
     li {
         line-height: 1.625em;
@@ -980,15 +990,28 @@ a.jump-to-menu {
     
     form {
         line-height: 1.625em;
-        margin-bottom: rhythm(0.5);
+        margin-bottom: rhythm(0.5); 
+        
+        button {
+            @extend %button-style-blue; 
+        }
+        
+        /* Tricky, but trying to remove bullets from ULs in forms when containing radios or checkboxes */
+        label + ul {
+            @extend .menu; 
+        }
     }
     
     a:not(.button) {
         @extend %link-style;
         display: inline;
         
+        //&.external, &[rel='external'] {
+            /* Try to break long URLs instead of a very messy right rag */
+            //@include break-long-urls(); 
+        //}
         &.external:before, &[rel='external']:before {
-            content: '\21f1'; 
+            content: '\21f1'; /* An external link unicode icon */
             display: inline-block; 
             font-weight: bold; 
             color: $grey-light; 
@@ -1008,7 +1031,8 @@ a.jump-to-menu {
         font-size: px2em( 14px ); 
     }
     
-    abbr[title], dfn[title] { border-bottom: 1px dotted $blue; }
+    abbr[title], 
+    dfn[title] { border-bottom: 1px dotted $blue; }
     
     abbr[title] {
         font-size: .875em;
@@ -1076,7 +1100,7 @@ a.jump-to-menu {
             & th { background-color: #f0f0f0; }
         }
         
-        tr:nth-of-type(even) { background-color: #f0f0f0; }
+        tr:nth-of-type(even), tr.even { background-color: #f0f0f0; }
         
         th, td {
             padding: .25em .5em .2em; 

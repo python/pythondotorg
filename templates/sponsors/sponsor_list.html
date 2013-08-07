@@ -1,10 +1,61 @@
 {% extends "base.html" %}
 
+{% block body_attributes %}class="psf users inner"{% endblock %}
+
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
 {% block content %}
-<div class="row">
-    <h2>PSF Sponsor Members</h2>
-    {% for sponsor in sponsors %}
-        <p><a href="{{ sponsor.company.url }}">{{ sponsor.company.name }}</a></p>
-    {% endfor %}
-</div>
+
+    <article class="text">
+    
+        <h1>PSF Sponsor Members</h1>
+        <ul class="list-row-container menu">
+        {% for sponsor in sponsors %}
+            <li><a href="{{ sponsor.company.url }}">{{ sponsor.company.name }}</a></li>
+        {% endfor %}
+        </ul>
+   
+    </article>
+
 {% endblock content %}
+
+
+{% block right_sidebar %}
+    <aside class="right-sidebar" role="secondary">
+        
+        <div class="sidebar-widget membership-widget">
+            <h3 class="widget-title">Become a Member</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+            <p><a href="#">Membership FAQ</a><br/><a href="#">Membership Forms</a></p>
+        </div>
+
+        <div class="sidebar-widget donate-widget">
+            <h3 class="widget-title">Donate</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+            <p><a href="#">How to Contribute</a></p>
+        </div>
+
+        <div class="sidebar-widget volunteer-widget">
+            <h3 class="widget-title">Volunteer</h3>
+            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
+            <p><a href="#">How to Volunteer</a></p>
+        </div>
+
+        <div class="sidebar-widget loa-widget last">
+            <h3 class="widget-title">League of Awesome</h3>
+            <p>Thanks to these companies for their volunteer services. </p>
+            <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
+            <p><a href="#">More Awesomeness</a></p>
+        </div>
+        
+    </aside>
+{% endblock right_sidebar %}

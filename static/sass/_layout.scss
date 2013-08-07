@@ -1051,11 +1051,6 @@
     }
     
     /* Footer */
-    .main-footer-links {
-        
-        .container { padding: 0 2em 0.75em; }
-    }
-    
     .sitemap {
         
         a { text-align: left; }
@@ -1151,11 +1146,6 @@
     .event-description, 
     .job-description { 
         @include pad( 1,1 ); 
-    }
-    
-    .main-footer-links {
-        
-        .container { padding: 0 3em 0.75em; }
     }
 }
 

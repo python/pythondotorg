@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="python events"{% endblock %}
+{% block body_attributes %}class="python events{% if not featured %} inner{% endif %}"{% endblock %}
 
 
 
@@ -23,6 +23,8 @@
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
+
+{# Based on python/events.html #}
 
 {% block content %}
                 <div class="most-recent-events">

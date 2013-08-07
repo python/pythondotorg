@@ -1,20 +1,23 @@
 {% extends "base.html" %}
 
+{% block body_attributes %}class="psf users inner"{% endblock %}
+
 
 {% block main_navigation %}
 {% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
-
-{% block body_attributes %}class="python users"{% endblock %}
+{% block main-nav_attributes %}psf-navigation{% endblock %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 
 {% block content %}
+
 <div class="user-feedback level-notice">
     <p role="alert">You are already a user!</p>
 </div>
+
 {% endblock content %}

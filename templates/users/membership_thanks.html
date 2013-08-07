@@ -1,22 +1,36 @@
 {% extends "base.html" %}
 
+{% block body_attributes %}class="psf signup inner"{% endblock %}
+
+
 {% block main_navigation %}
 {% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
-{% block body_attributes %}class="python signup"{% endblock %}
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block content %}
 
-{% comment %}
+{% if request.user %}
+<div class="user-profile-controls">
+    <ul class="menu">
+        <li>Manage your Information: </li>
+        <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
+        <li>Edit your PSF membership</li>
+    </ul>
+</div>
+{% endif %}
+
+<div class="return-link">
+    <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
+</div>
+
 <div class="user-feedback level-success">
     <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
 </div>
-{% endcomment %}
-
-<p>Your membership information has been saved successfully.</p>
 
 {% endblock content %}

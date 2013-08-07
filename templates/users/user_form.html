@@ -1,54 +1,76 @@
 {% extends "base.html" %}
 
+{% block body_attributes %}class="psf users inner"{% endblock %}
+
+
 {% block main_navigation %}
 {% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
 
-{% block body_attributes %}class="python signup"{% endblock %}
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block content %}
-
-{% comment %}
-    I'd like some feedback to appear at the top of the page if the form reloads and there is info missing.
-    If the error is at the bottom of the page, no one will see it and realize there is something wrong.
-
-    If the form is submitted successfully, we should let the user know as well.
-
-    Samples below:
-{% endcomment %}
-
-{% if form.errors %}
-<div class="user-feedback level-error">
-    <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888; </span></span>Please correct the errors <b>noted in red</b> below:</p>
-</div>
-{% endif %}
-
-{% comment %}
-<div class="user-feedback level-success">
-    <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
-</div>
-{% endcomment %}
-
-<form action="" method="post" class="wide-form">{% csrf_token %}
-    {{ form }}
-
-    {% comment %}
-        Would like the ULs that contain the input/radio elements to have the class "menu".
-        Is this possible/easy?
-        I ask because otherwise I have to target ALL ULs inside of this form to have the bullets removed,
-        and that may not be future friendly
-
-        Markup should be:
+    
+    {% if request.user %}
+    <div class="user-profile-controls">
         <ul class="menu">
-            <li><label for="id_psf_code_of_conduct_0"><input checked="checked" id="id_psf_code_of_conduct_0" name="psf_code_of_conduct" type="radio" value="True"> Yes</label></li>
-            <li><label for="id_psf_code_of_conduct_1"><input id="id_psf_code_of_conduct_1" name="psf_code_of_conduct" type="radio" value="False"> No</label></li>
+            <li>Manage your Information: </li>
+            <li>Edit your profile</li>
+            <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
         </ul>
+    </div>
+    {% endif %}
+    
+    <div class="return-link">
+        <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
+    </div>
+    
+    
+    {% comment %}
+        I'd like some feedback to appear at the top of the page if the form reloads and there is info missing.
+        If the error is at the bottom of the page, no one will see it and realize there is something wrong.
+    
+        If the form is submitted successfully, we should let the user know as well.
+    
+        Samples below:
     {% endcomment %}
-
-    <p><button type="submit" name="Submit">Save Profile</button></p>
-</form>
-
+    
+    {% if form.errors %}
+    <div class="user-feedback level-error">
+        <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888; </span></span>Please correct the errors <b>noted in red</b> below:</p>
+    </div>
+    {% endif %}
+    
+    {% comment %}
+    <div class="user-feedback level-success">
+        <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
+    </div>
+    {% endcomment %}
+    
+    <article class="text">
+        <h1>Edit information for: <strong>{% firstof user.get_full_name user.username %}</strong></h1>
+        <form action="" method="post" class="wide-form">{% csrf_token %}
+            {{ form }}
+        
+            {% comment %}
+                Would like the ULs that contain the input/radio elements to have the class "menu".
+                Is this possible/easy?
+                I ask because otherwise I have to target ALL ULs inside of this form to have the bullets removed,
+                and that may not be future friendly
+        
+                Markup should be:
+                <ul class="menu">
+                    <li><label for="id_psf_code_of_conduct_0"><input checked="checked" id="id_psf_code_of_conduct_0" name="psf_code_of_conduct" type="radio" value="True"> Yes</label></li>
+                    <li><label for="id_psf_code_of_conduct_1"><input id="id_psf_code_of_conduct_1" name="psf_code_of_conduct" type="radio" value="False"> No</label></li>
+                </ul>
+            {% endcomment %}
+        
+            <p><button type="submit" name="Submit">Save Profile</button></p>
+        </form>
+    </article>
+    
 {% endblock content %}
