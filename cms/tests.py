@@ -15,7 +15,7 @@ class ContentManagableAdminTests(unittest.TestCase):
         admin = self.make_admin(readonly_fields=['f1'])
         self.assertEqual(
             admin.get_readonly_fields(request=mock.Mock()),
-            ['f1', 'created', 'updated', 'creator']
+            ['f1', 'created', 'updated', 'creator', 'last_modified_by']
         )
 
     def test_list_filter(self):
@@ -41,7 +41,7 @@ class ContentManagableAdminTests(unittest.TestCase):
         self.assertEqual(
             fieldsets,
             [(None, {'fields': ['foo']}),
-             ('CMS metadata', {'fields': ['creator', 'created', 'updated'], 'classes': ('collapse',)})]
+             ('CMS metadata', {'fields': [('creator', 'created'), ('last_modified_by', 'updated')], 'classes': ('collapse',)})]
         )
 
     def test_save_model(self):
