@@ -48,7 +48,7 @@ class Post(ContentManageable):
         (STATUS_PRIVATE, 'private'),
         (STATUS_PUBLIC, 'public'),
     )
-    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PRIVATE)
+    status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PRIVATE, db_index=True)
 
     objects = PostManager()
 
