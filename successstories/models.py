@@ -33,7 +33,7 @@ class Story(NameSlugModel, ContentManageable):
     author = models.CharField(max_length=500)
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=False, db_index=True)
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
     objects = StoryManager()

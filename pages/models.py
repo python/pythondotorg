@@ -35,9 +35,9 @@ is_valid_page_path = validators.RegexValidator(
 
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
-    path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True)
+    path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
-    is_published = models.BooleanField(default=True)
+    is_published = models.BooleanField(default=True, db_index=True)
     template_name = models.CharField(max_length=100, blank=True,
         help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'.")
 

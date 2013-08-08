@@ -13,9 +13,9 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 
 class Minutes(ContentManageable):
-    date = models.DateField(verbose_name='Meeting Date')
+    date = models.DateField(verbose_name='Meeting Date', db_index=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
-    is_published = models.BooleanField(default=False)
+    is_published = models.BooleanField(default=False, db_index=True)
 
     objects = MinutesManager()
 

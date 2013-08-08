@@ -17,7 +17,7 @@ from django.utils import timezone
 
 
 class ContentManageable(models.Model):
-    created = models.DateTimeField(default=timezone.now, blank=True)
+    created = models.DateTimeField(default=timezone.now, blank=True, db_index=True)
     updated = models.DateTimeField(blank=True)
 
     # We allow creator to be null=True so that we can, if we must, create a
