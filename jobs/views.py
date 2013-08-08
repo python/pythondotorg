@@ -9,7 +9,9 @@ from django.utils import timezone
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
 from .forms import JobForm
-from .models import Job
+from .models import Job, JobType, JobCategory
+
+THRESHOLD_DAYS = 30
 
 
 class JobList(ListView):
@@ -17,7 +19,7 @@ class JobList(ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        threshold = timezone.now() - datetime.timedelta(days=30)
+        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
         return super().get_queryset().approved().select_related().filter(created__gt=threshold)
 
 
@@ -52,6 +54,48 @@ class JobListCategory(JobList):
 class JobListLocation(JobList):
     def get_queryset(self):
         return super().get_queryset().filter(location_slug=self.kwargs['slug'])
+
+
+class JobTypes(TemplateView):
+    """ View to simply list JobType instances that have current jobs """
+    template_name = "jobs/job_types.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
+        context['types'] = JobType.objects.filter(
+            jobs__status=Job.STATUS_APPROVED,
+            jobs__created__gt=threshold,
+        ).distinct().order_by('name')
+
+        return context
+
+
+class JobCategories(TemplateView):
+    """ View to simply list JobCategory instances that have current jobs """
+    template_name = "jobs/job_categories.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
+        context['categories'] = JobCategory.objects.filter(
+            jobs__status=Job.STATUS_APPROVED,
+            jobs__created__gt=threshold,
+        ).distinct().order_by('name')
+
+        return context
+
+
+class JobLocations(TemplateView):
+    """ View to simply list distinct Countries that have current jobs """
+    template_name = "jobs/job_locations.html"
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context['jobs'] = Job.objects.approved().order_by('country', 'region')
+        return context
 
 
 class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, ListView):

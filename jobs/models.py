@@ -37,7 +37,7 @@ class Job(ContentManageable):
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
-    country = models.CharField(max_length=100)
+    country = models.CharField(max_length=100, db_index=True)
     location_slug = models.SlugField(max_length=350, editable=False)
 
     description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
@@ -64,7 +64,7 @@ class Job(ContentManageable):
         (STATUS_REMOVED, 'removed'),
         (STATUS_EXPIRED, 'expired'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT, db_index=True)
     dt_start = models.DateTimeField('Job start date', blank=True, null=True)
     dt_end = models.DateTimeField('Job end date', blank=True, null=True)
 
