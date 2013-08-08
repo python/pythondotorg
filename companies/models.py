@@ -13,7 +13,7 @@ class Company(NameSlugModel):
     about = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     contact = models.CharField(null=True, blank=True, max_length=100)
     email = models.EmailField(null=True, blank=True)
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField('URL', null=True, blank=True)
     logo = models.ImageField(upload_to='companies/logos/', blank=True, null=True)
 
     class Meta:

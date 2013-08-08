@@ -43,7 +43,7 @@ class EventCategory(NameSlugModel):
 class EventLocation(models.Model):
     name = models.CharField(max_length=255)
     address = models.CharField(blank=True, null=True, max_length=255)
-    url = models.URLField(blank=True, null=True)
+    url = models.URLField('URL', blank=True, null=True)
 
     class Meta:
         ordering = ('name',)

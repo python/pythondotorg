@@ -45,7 +45,7 @@ class Job(ContentManageable):
 
     contact = models.CharField(null=True, blank=True, max_length=100)
     email = models.EmailField()
-    url = models.URLField(null=True, blank=True)
+    url = models.URLField('URL', null=True, blank=True)
 
     STATUS_DRAFT = 'draft'
     STATUS_REVIEW = 'review'

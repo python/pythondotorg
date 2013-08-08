@@ -21,6 +21,7 @@ Quote
 Chat
 '''
 
+
 class Post(ContentManageable):
     title = models.CharField(max_length=200, blank=True, null=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
@@ -66,7 +67,7 @@ class Post(ContentManageable):
 
 class Link(ContentManageable):
     post = models.ForeignKey(Post, related_name='related_%(class)s', editable=False, null=True)
-    url = models.URLField(max_length=1000, blank=True)
+    url = models.URLField('URL', max_length=1000, blank=True)
 
     class Meta:
         verbose_name = _('Link')
@@ -81,7 +82,7 @@ class Link(ContentManageable):
 class Photo(ContentManageable):
     post = models.ForeignKey(Post, related_name='related_%(class)s', editable=False, null=True)
     image = models.ImageField(upload_to='community/photos/', blank=True)
-    image_url = models.URLField(max_length=1000, blank=True)
+    image_url = models.URLField('Image URL', max_length=1000, blank=True)
     caption = models.TextField(blank=True)
     click_through_url = models.URLField(blank=True)
 
@@ -100,7 +101,7 @@ class Video(ContentManageable):
     video_embed = models.TextField(blank=True)
     video_data = models.FileField(upload_to='community/videos/', blank=True, )
     caption = models.TextField(blank=True)
-    click_through_url = models.URLField(blank=True)
+    click_through_url = models.URLField('Click Through URL', blank=True)
 
     class Meta:
         verbose_name = _('video')
