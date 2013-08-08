@@ -133,6 +133,52 @@ class JobsViewTests(TestCase):
 
         self.assertEqual(job.status, 'draft')
 
+    def test_job_types(self):
+        job_type2 = JobTypeFactory(
+            name='Senior Developer',
+            slug='senior-developer'
+        )
+
+        url = reverse('jobs:job_types')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.job_type in response.context['types'])
+        self.assertFalse(job_type2 in response.context['types'])
+
+    def test_job_categories(self):
+        job_category2 = JobCategoryFactory(
+            name='Web Development',
+            slug='web-development'
+        )
+
+        url = reverse('jobs:job_categories')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.job_category in response.context['categories'])
+        self.assertFalse(job_category2 in response.context['categories'])
+
+    def test_job_locations(self):
+        job2 = ReviewJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Lawrence',
+            region='KS',
+            country='USA',
+            email='hr@company.com',
+        )
+        job2.job_types.add(self.job_type)
+
+        url = reverse('jobs:job_locations')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.job in response.context['jobs'])
+        self.assertFalse(job2 in response.context['jobs'])
+
+        content = str(response.content)
+        self.assertTrue('Memphis' in content)
+        self.assertFalse('Lawrence' in content)
+
 
 class JobsReviewTests(TestCase):
     def setUp(self):
@@ -160,7 +206,7 @@ class JobsReviewTests(TestCase):
             slug='frontend-developer'
         )
 
-        self.job = ApprovedJobFactory(
+        self.job1 = ReviewJobFactory(
             company=self.company,
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
@@ -170,7 +216,31 @@ class JobsReviewTests(TestCase):
             email=creator.email,
             creator=creator
         )
-        self.job.job_types.add(self.job_type)
+        self.job1.job_types.add(self.job_type)
+
+        self.job2 = ReviewJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email=creator.email,
+            creator=creator
+        )
+        self.job2.job_types.add(self.job_type)
+
+        self.job3 = ReviewJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email=creator.email,
+            creator=creator
+        )
+        self.job3.job_types.add(self.job_type)
 
     def test_job_review(self):
         url = reverse('jobs:job_review')
@@ -178,11 +248,27 @@ class JobsReviewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
-        ReviewJobFactory()
-
         self.client.login(username=self.super_username, password=self.password)
 
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 3)
+        self.assertTrue(self.job1 in response.context['object_list'])
+        self.assertTrue(self.job2 in response.context['object_list'])
+        self.assertTrue(self.job3 in response.context['object_list'])
+
+        self.client.post(url, data={'job_id': self.job1.pk, 'action': 'approve'})
+        j1 = Job.objects.get(pk=self.job1.pk)
+        self.assertEqual(j1.status, Job.STATUS_APPROVED)
+
+        self.client.post(url, data={'job_id': self.job2.pk, 'action': 'reject'})
+        j2 = Job.objects.get(pk=self.job2.pk)
+        self.assertEqual(j2.status, Job.STATUS_REJECTED)
+
+        self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
+        j3 = Job.objects.get(pk=self.job3.pk)
+        self.assertEqual(j3.status, Job.STATUS_REMOVED)
+
+        response = self.client.post(url, data={'job_id': 999999, 'action': 'approve'})
+        self.assertEqual(response.status_code, 302)

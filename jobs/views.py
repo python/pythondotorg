@@ -94,7 +94,12 @@ class JobLocations(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context['jobs'] = Job.objects.approved().order_by('country', 'region')
+
+        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
+        context['jobs'] = Job.objects.approved().filter(
+            created__gt=threshold
+        ).order_by('country', 'region')
+
         return context
 
 
