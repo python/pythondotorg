@@ -12,6 +12,7 @@ SECRET_KEY = 'hu9h&&%j*tcj2o9!k2w%ao=fcw&$0z$)la$&8vl+s$4y%r946h'
 ADMINS = [
     ("JKM", "jacob@jacobian.org"),
     ('Jeff', 'jeff.triplett+pythondotorg@gmail.com'),
+    ('Frank', 'frank.wiles@gmail.com'),
 ]
 
 ### Databases

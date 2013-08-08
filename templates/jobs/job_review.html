@@ -46,6 +46,7 @@
     </table>
 
     <!-- Pagination -->
+    {% if page_obj.has_previous or page_obj.has_next %}
     <ul class="pagination menu">
         {% if page_obj.has_previous %}
             <li class="previous"><a href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
@@ -63,6 +64,7 @@
             <li class="next"><a class="disabled" href="">Next</a></li>
         {% endif %}
     </ul>
+    {% endif %}
 
 </div>
 {% endblock content %}

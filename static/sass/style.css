@@ -104,8 +104,11 @@
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+/* Apply to individual elements when we want to force line breaks. */
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
+/* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
+/* A single row of main navigation -- DESKTOP ONLY */
 html, body, div, span, object, iframe,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
@@ -154,8 +157,8 @@ ins {
 
 mark {
   display: inline-block;
-  padding: 0 0.25em;
-  margin: 0 -0.125em;
+  padding: 0 .25em;
+  margin: 0 -.125em;
   background-color: #ffb;
   /* light yellow */ }
 
@@ -230,7 +233,8 @@ ol ol ol {
 ol ol ol ol {
   list-style: lower-alpha; }
 
-nav ul, menu ul, .menu, .errorlist, .tabs {
+nav ul, menu ul, .menu, .errorlist, .text form label + ul,
+.sidebar-widget form label + ul, .tabs {
   margin-left: 0;
   list-style: none;
   list-style-image: none; }
@@ -256,7 +260,7 @@ sub {
   bottom: -0.25em; }
 
 pre, code, kbd, samp, var {
-  font-family: Consolas, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, sans-serif; }
+  font-family: Consolas, 'Lucida Console','Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, sans-serif; }
 
 pre {
   /* Get spaces to display for PRE tags but dont let long lines break out of containers */
@@ -377,7 +381,7 @@ body, input, textarea, select, button {
   color: #444444;
   font: normal 100%/1.625 SourceSansProRegular, Arial, sans-serif; }
 
-header, nav, section, article, aside, figure, footer, div, li, input, textarea {
+header, nav, section, article, aside, figure, footer, div, ul, li, dl, dt, dd, input, textarea {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
@@ -447,7 +451,7 @@ h1, .alpha {
 h2, .beta {
   color: #999999;
   font-family: SourceSansProBold, Arial, sans-serif;
-  font-size: 24px;
+  font-size: 1.5em;
   margin-top: 1.75em;
   margin-bottom: 0.32813em; }
 
@@ -476,53 +480,46 @@ h6, .gamma {
   font-family: SourceSansProBold, Arial, sans-serif;
   margin-top: 1.75em; }
 
-p, ul, ol, dl, address, table {
-  margin-bottom: 0.875em; }
+/*p, ul, ol, dl, address, table {
+    margin-bottom: rhythm(0.5);
+}
 
-ul ul, ul ul ul, ol ol, ol ol ol, ul ol, ul ol ul, ol ul, ol ul ol {
-  margin-bottom: 0; }
-
+li > ul, li > ol {
+    margin-bottom: 0; 
+}*/
 blockquote {
+  position: relative;
   font: italic 1.125em Georgia, serif;
   line-height: 2;
   padding: 1.3125em 1em 1.3125em 3em;
   border-top: 3px solid #ffeba9;
   border-bottom: 3px solid #ffeba9;
   margin-bottom: 1.3125em;
-  position: relative;
   /*&:before, &:after {
-      color: $grey-light; 
+      color: $grey-lighter; 
       font-style: normal; 
-      font-size: px2em( 36px );
+      font-size: 4em;
       position: absolute;
   }
   
   &:before {
       content: "“";
-      top: .375em; 
+      top: -.25em; 
       left: 0;
-  }
-  
-  &:after {
-      content: "”";
-      line-height: 0;
-      vertical-align: bottom;
-      bottom: 0; 
-      right: 0;
   }*/ }
-  blockquote:before, blockquote:after {
-    color: #caccce;
-    font-style: normal;
-    font-size: 4em;
-    position: absolute; }
-  blockquote:before {
-    content: "“";
-    top: -.25em;
-    left: 0; }
   blockquote footer {
     font: normal 0.77778em SourceSansProRegular, Arial, sans-serif; }
   blockquote em {
     font-style: normal; }
+
+dl {
+  border-top: 1px solid #e6e8ea; }
+  dl dt {
+    font-family: SourceSansProBold, Arial, sans-serif;
+    border-bottom: 1px solid #e6e8ea; }
+  dl dd {
+    padding-left: 1.5em;
+    border-bottom: 1px solid #caccce; }
 
 /* ! ===== Form elements ===== */
 form {
@@ -557,7 +554,10 @@ input, textarea {
   -moz-border-radius: 6px;
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
-  border-radius: 6px; }
+  border-radius: 6px;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box; }
 
 input[type=checkbox], input[type=radio] {
   width: auto;
@@ -588,6 +588,9 @@ input:-moz-placeholder {
   font-style: italic; }
 
 /* Not a mistake... I repeat a.button and .button so I do not need to add !important to the color declaration */
+input[type=submit], input[type=reset], button, a.button, .button {
+  display: block; }
+
 input[type=reset] {
   background-color: #999999;
   *zoom: 1;
@@ -623,13 +626,11 @@ i, em {
 abbr, dfn {
   border-bottom: 1px dotted #3776ab; }
 
-/* ===== LOCAL EXTENDABLE STYLES ===== 
+/* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative 
  * if the rule name has a % in front of it, it will not be output as part of the file, only if called with @extend
  * Unfortunately, the @extend operative does not work inside a media query or mix-in
- *
- * Example: %horizontal-nav-with-drop-downs { }
  */
 /* Color Areas: use for consistency */
 .psf-widget, .python-needs-you-widget, .main-header, .site-base {
@@ -654,7 +655,7 @@ abbr, dfn {
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .more-by-location {
+.pep-widget, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -713,14 +714,13 @@ abbr, dfn {
     margin-top: -.75em; }
 
 /* Buttons */
-input[type=submit], input[type=reset], input[type=button], button, a.button, .button, .psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button, .feedback button {
+input[type=submit], input[type=reset], button, a.button, .button, .search-button {
   color: #4d4d4d !important;
   background-color: #cccccc;
   cursor: pointer;
-  display: block;
   font-weight: normal;
   margin-bottom: 0.4375em;
-  padding: 0.4em 0.75em 0.35em;
+  padding: .4em .75em .35em;
   text-align: left;
   white-space: nowrap;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
@@ -744,7 +744,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .button:hover, .header-banner .button:hover, .header-banner a.button:hover, .search-button:hover, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .button:focus, .header-banner .button:focus, .header-banner a.button:focus, .search-button:focus, input[type=submit]:active, input[type=reset]:active, input[type=button]:active, button:active, .button:active, .header-banner .button:active, .header-banner a.button:active, .search-button:active {
+  input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .search-button:hover, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .search-button:focus, input[type=submit]:active, input[type=reset]:active, button:active, .button:active, .search-button:active {
     background-color: inherit;
     color: #1a1a1a !important;
     background-color: #d9d9d9;
@@ -770,7 +770,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   border-right: 1px solid #dca900;
   border-bottom: 1px solid #dca900;
   border-left: 1px solid #dca900; }
-  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .header-banner .button:hover, .header-banner a.button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .header-banner .button:active, .header-banner a.button:active {
+  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .header-banner .button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .header-banner .button:active {
     background-color: inherit;
     background-color: #ffd343;
     *zoom: 1;
@@ -781,7 +781,8 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
     background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
 
-.search-button, .feedback button {
+.search-button, .text form button,
+.sidebar-widget form button, .feedback button {
   color: #e6e8ea !important;
   background-color: #3776ab;
   text-shadow: none;
@@ -800,7 +801,9 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   -webkit-box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   -moz-box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2); }
-  .search-button:hover, .feedback button:hover, .search-button:active, .feedback button:active {
+  .search-button:hover, .text form button:hover,
+  .sidebar-widget form button:hover, .feedback button:hover, .search-button:active, .text form button:active,
+  .sidebar-widget form button:active, .feedback button:active {
     background: inherit;
     color: #f2f4f6 !important;
     background-color: #244e71;
@@ -825,9 +828,31 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   /* Used in the pagination UL anchors, and in the Previous Next pattern */
   display: block;
   color: #999999;
-  padding: 0.5em 0.75em 0.4em;
+  padding: .5em .75em .4em;
   border: 1px solid #caccce;
   background-color: transparent; }
+
+/* ! ===== Simple Column Structure ===== */
+.col-row {
+  margin: -1em;
+  overflow: hidden;
+  *zoom: 1; }
+
+.column, .not-column {
+  padding-left: 1em;
+  padding-right: 1em; }
+
+.column {
+  padding-bottom: 1.75em; }
+
+/* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
+h1.not-column {
+  padding-left: 0.57143em;
+  padding-right: 0.57143em; }
+
+h2.not-column {
+  padding-left: 0.66667em;
+  padding-right: 0.66667em; }
 
 /* ! ===== HELPFUL CLASSES ===== */
 /* A useful class that helps control how lines might break. Use carefully and always test. */
@@ -879,7 +904,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     display: none; }
 
 /* ! ===== MAJOR PAGE ELEMENTS ===== */
-.top-bar a:hover, .top-bar a:focus, .top-bar .selected a {
+.top-bar a:hover, .top-bar a:focus, .python .top-bar .python-meta a, .psf .top-bar .psf-meta a, .docs .top-bar .docs-meta a, .pypi .top-bar .pypi-meta a, .jobs .top-bar .jobs-meta a, .shop .top-bar .shop-meta a {
   color: white;
   background-color: #1f2a32;
   *zoom: 1;
@@ -889,7 +914,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
   background-image: -moz-linear-gradient(#13191e 10%, #1f2a32 90%);
   background-image: -o-linear-gradient(#13191e 10%, #1f2a32 90%);
   background-image: linear-gradient(#13191e 10%, #1f2a32 90%); }
-  .top-bar a:hover:before, .top-bar a:focus:before, .top-bar .selected a:before {
+  .top-bar a:hover:before, .top-bar a:focus:before, .python .top-bar .python-meta a:before, .psf .top-bar .psf-meta a:before, .docs .top-bar .docs-meta a:before, .pypi .top-bar .pypi-meta a:before, .jobs .top-bar .jobs-meta a:before, .shop .top-bar .shop-meta a:before {
     left: 50%; }
 
 .top-bar {
@@ -902,7 +927,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     color: #999999;
     background: transparent;
     text-align: center;
-    padding: 0.5em 0.75em 0.4em;
+    padding: .5em .75em .4em;
     font-size: 1em;
     line-height: 1.75em;
     /* no fallback for .no-generatedcontent. This is a progressive enhancement */ }
@@ -911,6 +936,7 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
       content: "";
       width: 0;
       height: 0;
+      border-color: transparent;
       border-style: solid;
       border-width: 0.5em;
       border-right-color: transparent;
@@ -937,7 +963,9 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 .meta-navigation {
   text-align: center;
   /*ul*/ }
-  .meta-navigation .menu, .meta-navigation .errorlist {
+  .meta-navigation .menu, .meta-navigation .errorlist, .meta-navigation .text form label + ul, .text form .meta-navigation label + ul,
+  .meta-navigation .sidebar-widget form label + ul,
+  .sidebar-widget form .meta-navigation label + ul {
     margin-bottom: 0; }
   .meta-navigation .say-no-more {
     display: inline;
@@ -948,10 +976,10 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
 /* Used in both the main-header and the header-banner */
 .main-header {
   border-top: 1px solid #191919;
-  border-bottom: 1px solid #444444; }
+  border-bottom: 1px solid #444; }
   .main-header .container {
     text-align: center;
-    padding: 0.75em 1em; }
+    padding: .75em 1em; }
 
 /*h1*/
 .site-headline {
@@ -989,40 +1017,56 @@ input[type=submit], input[type=reset], input[type=button], button, a.button, .bu
     border-top: 1px solid #070a0c;
     border-bottom: 1px solid #2d3e4d; }
 
-.jump-to-menu, .search-the-site, .icon-search-alt, input#s, .adjust-font-size, .winkwink-nudgenudge {
+.jump-to-menu,
+.search-the-site,
+.icon-search-alt,
+input#s,
+.adjust-font-size,
+.winkwink-nudgenudge {
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: baseline; }
-  .lt-ie8 .jump-to-menu, .lt-ie8 .search-the-site, .lt-ie8 .icon-search-alt, .lt-ie8 input#s, .lt-ie8 .adjust-font-size, .lt-ie8 .winkwink-nudgenudge {
+  .lt-ie8 .jump-to-menu, .lt-ie8
+  .search-the-site, .lt-ie8
+  .icon-search-alt, .lt-ie8
+  input#s, .lt-ie8
+  .adjust-font-size, .lt-ie8
+  .winkwink-nudgenudge {
     vertical-align: auto;
     zoom: 1;
     display: inline; }
 
-.jump-to-menu, .search-the-site, .adjust-font-size {
+.jump-to-menu,
+.search-the-site,
+.adjust-font-size {
   margin-right: -.35em; }
 
 a.jump-to-menu {
   color: #bbbbbb;
-  padding: 0.45em 0.75em 0.35em;
+  padding: .45em .75em .35em;
   border-right: 1px solid #070a0c;
   vertical-align: middle; }
   a.jump-to-menu:hover, a.jump-to-menu:focus {
     color: white; }
+  .no-touch a.jump-to-menu {
+    display: none; }
 
 .menu-icon {
   display: inline-block;
   font-size: 1.25em;
-  margin: -0.125em -0.125em 0 0; }
+  margin: -.125em -.125em 0 0; }
 
 /*form*/
 .search-the-site {
   text-align: left;
-  padding: 0.35em 0.2em 0.3em;
+  padding: .35em .2em .3em;
   border-left: 1px solid #2d3e4d; }
   .search-the-site .icon-search:before {
     font-size: 1.5em;
     vertical-align: text-bottom;
-    margin: 0 0.25em; }
+    margin: 0 .25em; }
+  .search-the-site .no-touch {
+    border-left: 0; }
 
 /*input*/
 .search-field {
@@ -1031,8 +1075,8 @@ a.jump-to-menu {
   color: #bbbbbb;
   background-color: transparent;
   border: none;
-  margin: 0.125em 0;
-  padding: 0.4em 0 0.3em;
+  margin: .125em 0;
+  padding: .4em 0 .3em;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   -ms-border-radius: 0px;
@@ -1047,7 +1091,7 @@ a.jump-to-menu {
   .search-field:focus {
     background-color: white;
     color: #444444;
-    padding: 0.4em 0.5em 0.3em;
+    padding: .4em .5em .3em;
     /* removed this line because it was making the height fluctuate on focus:
     @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */ }
   .search-field:blur {
@@ -1068,13 +1112,17 @@ a.jump-to-menu {
   /*li*/
   /*li*/
   /*ul*/ }
-  .adjust-font-size .menu, .adjust-font-size .errorlist, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist {
+  .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
+  .adjust-font-size .sidebar-widget form label + ul,
+  .sidebar-widget form .adjust-font-size label + ul, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist, .winkwink-nudgenudge .text form label + ul, .text form .winkwink-nudgenudge label + ul,
+  .winkwink-nudgenudge .sidebar-widget form label + ul,
+  .sidebar-widget form .winkwink-nudgenudge label + ul {
     margin-bottom: 0; }
   .adjust-font-size .tier-1, .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-1, .winkwink-nudgenudge .tier-2 {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .adjust-font-size .tier-1 > a, .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-1 > a, .winkwink-nudgenudge .tier-2 > a {
       display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
+      padding: .5em 1.5em .4em 1em;
       position: relative; }
   .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
     display: block;
@@ -1083,9 +1131,17 @@ a.jump-to-menu {
       text-align: center; }
   .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-2 > a {
     text-align: left; }
-  .adjust-font-size .menu, .adjust-font-size .errorlist, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist {
+  .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
+  .adjust-font-size .sidebar-widget form label + ul,
+  .sidebar-widget form .adjust-font-size label + ul, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist, .winkwink-nudgenudge .text form label + ul, .text form .winkwink-nudgenudge label + ul,
+  .winkwink-nudgenudge .sidebar-widget form label + ul,
+  .sidebar-widget form .winkwink-nudgenudge label + ul {
     *zoom: 1; }
-    .adjust-font-size .menu:after, .adjust-font-size .errorlist:after, .winkwink-nudgenudge .menu:after, .winkwink-nudgenudge .errorlist:after {
+    .adjust-font-size .menu:after, .adjust-font-size .errorlist:after, .adjust-font-size .text form label + ul:after, .text form .adjust-font-size label + ul:after,
+    .adjust-font-size .sidebar-widget form label + ul:after,
+    .sidebar-widget form .adjust-font-size label + ul:after, .winkwink-nudgenudge .menu:after, .winkwink-nudgenudge .errorlist:after, .winkwink-nudgenudge .text form label + ul:after, .text form .winkwink-nudgenudge label + ul:after,
+    .winkwink-nudgenudge .sidebar-widget form label + ul:after,
+    .sidebar-widget form .winkwink-nudgenudge label + ul:after {
       content: "";
       display: table;
       clear: both; }
@@ -1098,9 +1154,20 @@ a.jump-to-menu {
     /*modernizr*/
     /*modernizr*/ }
     .no-touch .adjust-font-size .subnav, .no-touch .winkwink-nudgenudge .subnav {
-      min-width: 100%; }
+      min-width: 100%;
+      top: -9999px;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
     .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
       top: 120%;
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out;
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
@@ -1109,16 +1176,11 @@ a.jump-to-menu {
         content: "";
         width: 0;
         height: 0;
+        border-color: transparent;
         border-style: solid;
         border-width: 0.75em;
         top: -1.45em;
         display: block; }
-  .no-touch .adjust-font-size .element-1 .subnav, .no-touch .adjust-font-size .element-2 .subnav, .no-touch .adjust-font-size .element-3 .subnav, .no-touch .adjust-font-size .element-4 .subnav, .no-touch .winkwink-nudgenudge .element-1 .subnav, .no-touch .winkwink-nudgenudge .element-2 .subnav, .no-touch .winkwink-nudgenudge .element-3 .subnav, .no-touch .winkwink-nudgenudge .element-4 .subnav {
-    top: -9999px;
-    -webkit-transition: all 0s ease;
-    -moz-transition: all 0s ease;
-    -o-transition: all 0s ease;
-    transition: all 0s ease; }
   .no-touch .adjust-font-size .element-1:hover .subnav, .no-touch .adjust-font-size .element-1:focus .subnav, .no-touch .adjust-font-size .element-2:hover .subnav, .no-touch .adjust-font-size .element-2:focus .subnav, .no-touch .adjust-font-size .element-3:hover .subnav, .no-touch .adjust-font-size .element-3:focus .subnav, .no-touch .adjust-font-size .element-4:hover .subnav, .no-touch .adjust-font-size .element-4:focus .subnav, .no-touch .winkwink-nudgenudge .element-1:hover .subnav, .no-touch .winkwink-nudgenudge .element-1:focus .subnav, .no-touch .winkwink-nudgenudge .element-2:hover .subnav, .no-touch .winkwink-nudgenudge .element-2:focus .subnav, .no-touch .winkwink-nudgenudge .element-3:hover .subnav, .no-touch .winkwink-nudgenudge .element-3:focus .subnav, .no-touch .winkwink-nudgenudge .element-4:hover .subnav, .no-touch .winkwink-nudgenudge .element-4:focus .subnav {
     left: 0;
     top: 100%;
@@ -1126,12 +1188,6 @@ a.jump-to-menu {
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .no-touch .adjust-font-size .element-5 .subnav, .no-touch .adjust-font-size .element-6 .subnav, .no-touch .adjust-font-size .element-7 .subnav, .no-touch .adjust-font-size .element-8 .subnav, .no-touch .adjust-font-size .last .subnav, .no-touch .winkwink-nudgenudge .element-5 .subnav, .no-touch .winkwink-nudgenudge .element-6 .subnav, .no-touch .winkwink-nudgenudge .element-7 .subnav, .no-touch .winkwink-nudgenudge .element-8 .subnav, .no-touch .winkwink-nudgenudge .last .subnav {
-    top: -9999px;
-    -webkit-transition: all 0s ease;
-    -moz-transition: all 0s ease;
-    -o-transition: all 0s ease;
-    transition: all 0s ease; }
   .no-touch .adjust-font-size .element-5:hover .subnav, .no-touch .adjust-font-size .element-5:focus .subnav, .no-touch .adjust-font-size .element-6:hover .subnav, .no-touch .adjust-font-size .element-6:focus .subnav, .no-touch .adjust-font-size .element-7:hover .subnav, .no-touch .adjust-font-size .element-7:focus .subnav, .no-touch .adjust-font-size .element-8:hover .subnav, .no-touch .adjust-font-size .element-8:focus .subnav, .no-touch .adjust-font-size .last:hover .subnav, .no-touch .adjust-font-size .last:focus .subnav, .no-touch .winkwink-nudgenudge .element-5:hover .subnav, .no-touch .winkwink-nudgenudge .element-5:focus .subnav, .no-touch .winkwink-nudgenudge .element-6:hover .subnav, .no-touch .winkwink-nudgenudge .element-6:focus .subnav, .no-touch .winkwink-nudgenudge .element-7:hover .subnav, .no-touch .winkwink-nudgenudge .element-7:focus .subnav, .no-touch .winkwink-nudgenudge .element-8:hover .subnav, .no-touch .winkwink-nudgenudge .element-8:focus .subnav, .no-touch .winkwink-nudgenudge .last:hover .subnav, .no-touch .winkwink-nudgenudge .last:focus .subnav {
     right: 0;
     top: 100%;
@@ -1141,13 +1197,6 @@ a.jump-to-menu {
     transition-delay: 0.25s; }
   .touch .adjust-font-size .element-1, .touch .adjust-font-size .element-2, .touch .adjust-font-size .element-3, .touch .adjust-font-size .element-4, .touch .winkwink-nudgenudge .element-1, .touch .winkwink-nudgenudge .element-2, .touch .winkwink-nudgenudge .element-3, .touch .winkwink-nudgenudge .element-4 {
     /* Position the pointer element */ }
-    .touch .adjust-font-size .element-1 .subnav, .touch .adjust-font-size .element-2 .subnav, .touch .adjust-font-size .element-3 .subnav, .touch .adjust-font-size .element-4 .subnav, .touch .winkwink-nudgenudge .element-1 .subnav, .touch .winkwink-nudgenudge .element-2 .subnav, .touch .winkwink-nudgenudge .element-3 .subnav, .touch .winkwink-nudgenudge .element-4 .subnav {
-      display: none;
-      opacity: 0;
-      -webkit-transition: opacity 0.25s ease-in-out;
-      -moz-transition: opacity 0.25s ease-in-out;
-      -o-transition: opacity 0.25s ease-in-out;
-      transition: opacity 0.25s ease-in-out; }
     .touch .adjust-font-size .element-1:hover .subnav, .touch .adjust-font-size .element-1 .subnav.touched, .touch .adjust-font-size .element-2:hover .subnav, .touch .adjust-font-size .element-2 .subnav.touched, .touch .adjust-font-size .element-3:hover .subnav, .touch .adjust-font-size .element-3 .subnav.touched, .touch .adjust-font-size .element-4:hover .subnav, .touch .adjust-font-size .element-4 .subnav.touched, .touch .winkwink-nudgenudge .element-1:hover .subnav, .touch .winkwink-nudgenudge .element-1 .subnav.touched, .touch .winkwink-nudgenudge .element-2:hover .subnav, .touch .winkwink-nudgenudge .element-2 .subnav.touched, .touch .winkwink-nudgenudge .element-3:hover .subnav, .touch .winkwink-nudgenudge .element-3 .subnav.touched, .touch .winkwink-nudgenudge .element-4:hover .subnav, .touch .winkwink-nudgenudge .element-4 .subnav.touched {
       display: block;
       opacity: 1;
@@ -1156,13 +1205,6 @@ a.jump-to-menu {
       left: 1.5em; }
   .touch .adjust-font-size .element-5, .touch .adjust-font-size .element-6, .touch .adjust-font-size .element-7, .touch .adjust-font-size .element-8, .touch .adjust-font-size .last, .touch .winkwink-nudgenudge .element-5, .touch .winkwink-nudgenudge .element-6, .touch .winkwink-nudgenudge .element-7, .touch .winkwink-nudgenudge .element-8, .touch .winkwink-nudgenudge .last {
     /* Position the pointer element */ }
-    .touch .adjust-font-size .element-5 .subnav, .touch .adjust-font-size .element-6 .subnav, .touch .adjust-font-size .element-7 .subnav, .touch .adjust-font-size .element-8 .subnav, .touch .adjust-font-size .last .subnav, .touch .winkwink-nudgenudge .element-5 .subnav, .touch .winkwink-nudgenudge .element-6 .subnav, .touch .winkwink-nudgenudge .element-7 .subnav, .touch .winkwink-nudgenudge .element-8 .subnav, .touch .winkwink-nudgenudge .last .subnav {
-      display: none;
-      opacity: 0;
-      -webkit-transition: opacity 0.25s ease-in-out;
-      -moz-transition: opacity 0.25s ease-in-out;
-      -o-transition: opacity 0.25s ease-in-out;
-      transition: opacity 0.25s ease-in-out; }
     .touch .adjust-font-size .element-5:hover .subnav, .touch .adjust-font-size .element-5 .subnav.touched, .touch .adjust-font-size .element-6:hover .subnav, .touch .adjust-font-size .element-6 .subnav.touched, .touch .adjust-font-size .element-7:hover .subnav, .touch .adjust-font-size .element-7 .subnav.touched, .touch .adjust-font-size .element-8:hover .subnav, .touch .adjust-font-size .element-8 .subnav.touched, .touch .adjust-font-size .last:hover .subnav, .touch .adjust-font-size .last .subnav.touched, .touch .winkwink-nudgenudge .element-5:hover .subnav, .touch .winkwink-nudgenudge .element-5 .subnav.touched, .touch .winkwink-nudgenudge .element-6:hover .subnav, .touch .winkwink-nudgenudge .element-6 .subnav.touched, .touch .winkwink-nudgenudge .element-7:hover .subnav, .touch .winkwink-nudgenudge .element-7 .subnav.touched, .touch .winkwink-nudgenudge .element-8:hover .subnav, .touch .winkwink-nudgenudge .element-8 .subnav.touched, .touch .winkwink-nudgenudge .last:hover .subnav, .touch .winkwink-nudgenudge .last .subnav.touched {
       display: block;
       opacity: 1;
@@ -1205,30 +1247,13 @@ a.jump-to-menu {
   .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
     border-bottom: 1px solid #999999; }
     .adjust-font-size .close-subnav .close-text, .winkwink-nudgenudge .close-subnav .close-text {
-      padding: 0.9em 3.25em 0.8em 1em; }
+      padding: .9em 3.25em .8em 1em; }
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
   display: none;
   margin-bottom: 1px; }
 
-/*.main-navigation .close-pane {
-    display: none;
-    background-color: rgba(255,255,255,.25);
-    position: absolute;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    height: 1200px;
-    
-    .close-graphic { 
-        position: absolute;
-        top: 0px;
-        right: 0px;
-        padding: 0px 10px;
-        background-color: white;
-    }
-}*/
 /* ! ===== Header banner, present on most landing pages ===== */
 .header-banner {
   clear: both;
@@ -1300,11 +1325,13 @@ a.jump-to-menu {
   .introduction .breaker {
     display: none; }
 
-.about-banner, .download-for-current-os, .documentation-banner, .latest-blog-post, .featured-event, .jobs-intro {
+.about-banner,
+.download-for-current-os,
+.documentation-banner,
+.latest-blog-post,
+.featured-event,
+.jobs-intro {
   text-align: left; }
-
-.featured-success-story {
-  padding: 1.3125em 0 0; }
 
 /*h1*/
 .call-to-action {
@@ -1334,10 +1361,15 @@ a.jump-to-menu {
     padding: 0.25em; }
 
 /* ! ===== Main Content ===== */
+.main-content > article {
+  margin-top: 1.3125em;
+  padding-bottom: 1.75em; }
+
 .text {
-  font-size: 1em;
-  margin-top: 1.3125em; }
-  .text .giga, .text .mega, .text .kilo {
+  font-size: 1em; }
+  .text .giga,
+  .text .mega,
+  .text .kilo {
     color: #3776ab; }
 
 .sidebar-widget {
@@ -1346,27 +1378,72 @@ a.jump-to-menu {
 /* ! Default body text styles for more comfortable reading */
 .text,
 .sidebar-widget {
+  /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
   /* This is a mess and dumb. Figure out a better way */
   /* Prettier tables if authors use the correct elements */ }
   .text > h1, .text > .alpha,
   .sidebar-widget > h1,
   .sidebar-widget > .alpha {
     margin-top: 1.75em; }
-  .text p, .text ul, .text ol, .text dl, .text dd, .text blockquote, .text address, .text form, .text table, .text figure,
+  .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
   .sidebar-widget p,
   .sidebar-widget ul,
   .sidebar-widget ol,
   .sidebar-widget dl,
-  .sidebar-widget dd,
   .sidebar-widget blockquote,
   .sidebar-widget address,
   .sidebar-widget form,
   .sidebar-widget table,
   .sidebar-widget figure {
     margin-bottom: 1.3125em; }
-  .text li ul, .text li ol,
-  .sidebar-widget li ul,
-  .sidebar-widget li ol {
+  .text p, .text dd, .text blockquote, .text address,
+  .sidebar-widget p,
+  .sidebar-widget dd,
+  .sidebar-widget blockquote,
+  .sidebar-widget address {
+    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE6-8 */
+    /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
+    /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
+    -webkit-hyphens: auto;
+    -moz-hyphens: auto;
+    -ms-hyphens: auto;
+    -o-hyphens: auto;
+    hyphens: auto;
+    /* Don't hypenate certain elements... its bad form */ }
+    .text p tt, .text p var, .text p code, .text p kbd, .text p abbr, .text p acronym, .text dd tt, .text dd var, .text dd code, .text dd kbd, .text dd abbr, .text dd acronym, .text blockquote tt, .text blockquote var, .text blockquote code, .text blockquote kbd, .text blockquote abbr, .text blockquote acronym, .text address tt, .text address var, .text address code, .text address kbd, .text address abbr, .text address acronym,
+    .sidebar-widget p tt,
+    .sidebar-widget p var,
+    .sidebar-widget p code,
+    .sidebar-widget p kbd,
+    .sidebar-widget p abbr,
+    .sidebar-widget p acronym,
+    .sidebar-widget dd tt,
+    .sidebar-widget dd var,
+    .sidebar-widget dd code,
+    .sidebar-widget dd kbd,
+    .sidebar-widget dd abbr,
+    .sidebar-widget dd acronym,
+    .sidebar-widget blockquote tt,
+    .sidebar-widget blockquote var,
+    .sidebar-widget blockquote code,
+    .sidebar-widget blockquote kbd,
+    .sidebar-widget blockquote abbr,
+    .sidebar-widget blockquote acronym,
+    .sidebar-widget address tt,
+    .sidebar-widget address var,
+    .sidebar-widget address code,
+    .sidebar-widget address kbd,
+    .sidebar-widget address abbr,
+    .sidebar-widget address acronym {
+      -webkit-hyphens: none;
+      -moz-hyphens: none;
+      -ms-hyphens: none;
+      -o-hyphens: none;
+      hyphens: none; }
+  .text li > ul,
+  .text li > ol,
+  .sidebar-widget li > ul,
+  .sidebar-widget li > ol {
     margin-bottom: 0; }
   .text li,
   .sidebar-widget li {
@@ -1375,16 +1452,32 @@ a.jump-to-menu {
   .text form,
   .sidebar-widget form {
     line-height: 1.625em;
-    margin-bottom: 0.875em; }
+    margin-bottom: 0.875em;
+    /* Tricky, but trying to remove bullets from ULs in forms when containing radios or checkboxes */ }
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
-    display: inline; }
-  .text nav a, .text .menu a, .text .errorlist a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
-  .text nav a:hover, .text .menu a:hover, .text .errorlist a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text button:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
-  .text nav a:focus, .text .menu a:focus, .text .errorlist a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text button:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
+    display: inline;
+    /* Try to break long URLs instead of a very messy right rag */ }
+    .text a:not(.button).external:before, .text a:not(.button)[rel='external']:before,
+    .sidebar-widget a:not(.button).external:before,
+    .sidebar-widget a:not(.button)[rel='external']:before {
+      content: '\21f1';
+      /* An external link unicode icon */
+      display: inline-block;
+      font-weight: bold;
+      color: #999999;
+      margin-right: .5em; }
+  .text nav a, .text .menu a, .text .errorlist a, .text form label + ul a,
+  .sidebar-widget form .text label + ul a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
+  .text nav a:hover, .text .menu a:hover, .text .errorlist a:hover, .text form label + ul a:hover,
+  .sidebar-widget form .text label + ul a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text button:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
+  .text nav a:focus, .text .menu a:focus, .text .errorlist a:focus, .text form label + ul a:focus,
+  .sidebar-widget form .text label + ul a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text button:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
   .sidebar-widget nav a,
   .sidebar-widget .menu a,
   .sidebar-widget .errorlist a,
+  .text form .sidebar-widget label + ul a,
+  .sidebar-widget form label + ul a,
   .sidebar-widget input[type=submit],
   .sidebar-widget input[type=reset],
   .sidebar-widget input[type=button],
@@ -1396,6 +1489,8 @@ a.jump-to-menu {
   .sidebar-widget nav a:hover,
   .sidebar-widget .menu a:hover,
   .sidebar-widget .errorlist a:hover,
+  .text form .sidebar-widget label + ul a:hover,
+  .sidebar-widget form label + ul a:hover,
   .sidebar-widget input[type=submit]:hover,
   .sidebar-widget input[type=reset]:hover,
   .sidebar-widget input[type=button]:hover,
@@ -1407,6 +1502,8 @@ a.jump-to-menu {
   .sidebar-widget nav a:focus,
   .sidebar-widget .menu a:focus,
   .sidebar-widget .errorlist a:focus,
+  .text form .sidebar-widget label + ul a:focus,
+  .sidebar-widget form label + ul a:focus,
   .sidebar-widget input[type=submit]:focus,
   .sidebar-widget input[type=reset]:focus,
   .sidebar-widget input[type=button]:focus,
@@ -1418,8 +1515,10 @@ a.jump-to-menu {
     border-bottom: 0; }
   .text figcaption,
   .sidebar-widget figcaption {
+    font-style: italic;
     font-size: 0.875em; }
-  .text abbr[title], .text dfn[title],
+  .text abbr[title],
+  .text dfn[title],
   .sidebar-widget abbr[title],
   .sidebar-widget dfn[title] {
     border-bottom: 1px dotted #3776ab; }
@@ -1446,13 +1545,13 @@ a.jump-to-menu {
   .sidebar-widget samp {
     border-bottom: 1px solid #caccce;
     background-color: #e6e8ea;
-    padding: 0.125em 0.375em 0;
-    margin: 0 0.25em; }
+    padding: .125em .375em 0;
+    margin: 0 .25em; }
   .text code, .text kbd,
   .sidebar-widget code,
   .sidebar-widget kbd {
-    padding: 0.125em 0.375em 0;
-    margin: 0 -0.0625em;
+    padding: .125em .375em 0;
+    margin: 0 -.0625em;
     background: #e6e8ea;
     background: rgba(230, 232, 234, 0.5);
     -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
@@ -1485,17 +1584,6 @@ a.jump-to-menu {
   .sidebar-widget strike,
   .sidebar-widget del {
     color: #999999; }
-  .text dl,
-  .sidebar-widget dl {
-    border-top: 1px solid #e6e8ea; }
-    .text dl dt,
-    .sidebar-widget dl dt {
-      font-family: SourceSansProBold, Arial, sans-serif;
-      border-bottom: 1px solid #e6e8ea; }
-    .text dl dd,
-    .sidebar-widget dl dd {
-      padding-left: 1.5em;
-      border-bottom: 1px solid #caccce; }
   .text table caption,
   .sidebar-widget table caption {
     caption-side: top;
@@ -1513,13 +1601,14 @@ a.jump-to-menu {
     .text table tr th,
     .sidebar-widget table tr th {
       background-color: #f0f0f0; }
-  .text table tr:nth-of-type(even),
-  .sidebar-widget table tr:nth-of-type(even) {
+  .text table tr:nth-of-type(even), .text table tr.even,
+  .sidebar-widget table tr:nth-of-type(even),
+  .sidebar-widget table tr.even {
     background-color: #f0f0f0; }
   .text table th, .text table td,
   .sidebar-widget table th,
   .sidebar-widget table td {
-    padding: 0.25em 0.5em 0.2em;
+    padding: .25em .5em .2em;
     border-left: 2px solid white; }
     .text table th:first-child, .text table td:first-child,
     .sidebar-widget table th:first-child,
@@ -1534,48 +1623,83 @@ a.jump-to-menu {
   padding: 0.75em 1em 0.5em; }
 
 /* ! ===== Widget Styles ===== */
-.small-widget, .download-list-widget, .most-recent-events, .triple-widget, .most-recent-posts, .medium-widget, .sidebar-widget {
+.small-widget, .download-list-widget, .most-recent-events, .triple-widget, .most-recent-posts,
+.medium-widget,
+.sidebar-widget {
   border-top: 5px solid #e6e8ea;
-  margin-bottom: 0.25em;
   padding: 1.25em; }
-  .small-widget h4, .download-list-widget h4, .most-recent-events h4, .triple-widget h4, .most-recent-posts h4, .medium-widget h4, .sidebar-widget h4 {
+  .small-widget h4, .download-list-widget h4, .most-recent-events h4, .triple-widget h4, .most-recent-posts h4,
+  .medium-widget h4,
+  .sidebar-widget h4 {
     border-top: 1px solid #e6e8ea;
     margin-top: 1.75em;
     padding-top: 0.5em; }
-  .small-widget p:last-child, .download-list-widget p:last-child, .most-recent-events p:last-child, .triple-widget p:last-child, .most-recent-posts p:last-child, .medium-widget p:last-child, .sidebar-widget p:last-child, .small-widget ul:last-child, .download-list-widget ul:last-child, .most-recent-events ul:last-child, .triple-widget ul:last-child, .most-recent-posts ul:last-child, .medium-widget ul:last-child, .sidebar-widget ul:last-child {
-    margin-bottom: 0; }
-  .small-widget li > a, .download-list-widget li > a, .most-recent-events li > a, .triple-widget li > a, .most-recent-posts li > a, .medium-widget li > a, .sidebar-widget li > a {
+  .small-widget p, .download-list-widget p, .most-recent-events p, .triple-widget p, .most-recent-posts p,
+  .medium-widget p,
+  .sidebar-widget p, .small-widget ul, .download-list-widget ul, .most-recent-events ul, .triple-widget ul, .most-recent-posts ul,
+  .medium-widget ul,
+  .sidebar-widget ul {
+    margin-bottom: 0.875em; }
+    .small-widget p:last-child, .download-list-widget p:last-child, .most-recent-events p:last-child, .triple-widget p:last-child, .most-recent-posts p:last-child,
+    .medium-widget p:last-child,
+    .sidebar-widget p:last-child, .small-widget ul:last-child, .download-list-widget ul:last-child, .most-recent-events ul:last-child, .triple-widget ul:last-child, .most-recent-posts ul:last-child,
+    .medium-widget ul:last-child,
+    .sidebar-widget ul:last-child {
+      margin-bottom: 0; }
+  .small-widget li > a, .download-list-widget li > a, .most-recent-events li > a, .triple-widget li > a, .most-recent-posts li > a,
+  .medium-widget li > a,
+  .sidebar-widget li > a {
     display: inline-block; }
 
-.widget-title, .listing-company {
+.widget-title,
+.listing-company {
   color: #444444;
   line-height: 1.25em;
   margin: 0 0 0.1em;
   font-family: Flux-Regular, SourceSansProRegular, Arial, sans-serif;
   font-size: 1.3125em; }
-  .fontface .widget-title, .fontface .listing-company {
+  .fontface .widget-title, .fontface
+  .listing-company {
     font-size: 1.50938em; }
-    .fontface .widget-title span:before, .fontface .listing-company span:before {
+    .fontface .widget-title span:before, .fontface
+    .listing-company span:before {
       font-size: .875em; }
-  .widget-title .prompt, .widget-title .readmore:before, .widget-title .give-me-more a:before, .give-me-more .widget-title a:before, .listing-company .prompt, .listing-company .readmore:before, .listing-company .give-me-more a:before, .give-me-more .listing-company a:before {
+  .widget-title .prompt, .widget-title .readmore:before, .widget-title .give-me-more a:before, .give-me-more .widget-title a:before,
+  .listing-company .prompt,
+  .listing-company .readmore:before,
+  .listing-company .give-me-more a:before,
+  .give-me-more .listing-company a:before {
     display: none;
     /* show this at first breakpoint */ }
-  .widget-title > span:before, .listing-company > span:before {
+  .widget-title > span:before,
+  .listing-company > span:before {
     color: #999999;
     margin-right: .25em; }
 
 /* ! ===== Section Specific Widget Colorways ===== */
-.python .small-widget, .python .download-list-widget, .python .most-recent-events, .python .triple-widget, .python .most-recent-posts, .python .medium-widget, .python .sidebar-widget {
+.python .small-widget, .python .download-list-widget, .python .most-recent-events, .python .triple-widget, .python .most-recent-posts, .python
+.medium-widget, .python
+.sidebar-widget {
   border-top: 4px solid #75a8d3; }
-.psf-home .small-widget, .psf-home .download-list-widget, .psf-home .most-recent-events, .psf-home .triple-widget, .psf-home .most-recent-posts, .psf-home .medium-widget, .psf-home .sidebar-widget {
+.psf-home .small-widget, .psf-home .download-list-widget, .psf-home .most-recent-events, .psf-home .triple-widget, .psf-home .most-recent-posts, .psf-home
+.medium-widget, .psf-home
+.sidebar-widget {
   border-top: 5px solid #caccce; }
-.docs .small-widget, .docs .download-list-widget, .docs .most-recent-events, .docs .triple-widget, .docs .most-recent-posts, .docs .medium-widget, .docs .sidebar-widget {
+.docs .small-widget, .docs .download-list-widget, .docs .most-recent-events, .docs .triple-widget, .docs .most-recent-posts, .docs
+.medium-widget, .docs
+.sidebar-widget {
   border-top: 5px solid #ffd343; }
-.pypl .small-widget, .pypl .download-list-widget, .pypl .most-recent-events, .pypl .triple-widget, .pypl .most-recent-posts, .pypl .medium-widget, .pypl .sidebar-widget {
+.pypl .small-widget, .pypl .download-list-widget, .pypl .most-recent-events, .pypl .triple-widget, .pypl .most-recent-posts, .pypl
+.medium-widget, .pypl
+.sidebar-widget {
   border-top: 5px solid #82b043; }
-.jobs .small-widget, .jobs .download-list-widget, .jobs .most-recent-events, .jobs .triple-widget, .jobs .most-recent-posts, .jobs .medium-widget, .jobs .sidebar-widget {
+.jobs .small-widget, .jobs .download-list-widget, .jobs .most-recent-events, .jobs .triple-widget, .jobs .most-recent-posts, .jobs
+.medium-widget, .jobs
+.sidebar-widget {
   border-top: 5px solid #c9abcd; }
-.shop .small-widget, .shop .download-list-widget, .shop .most-recent-events, .shop .triple-widget, .shop .most-recent-posts, .shop .medium-widget, .shop .sidebar-widget {
+.shop .small-widget, .shop .download-list-widget, .shop .most-recent-events, .shop .triple-widget, .shop .most-recent-posts, .shop
+.medium-widget, .shop
+.sidebar-widget {
   border-top: 5px solid #b55863; }
 
 /* ! ===== Section Specific Widget Icon Colorways ===== */
@@ -1607,18 +1731,6 @@ a.jump-to-menu {
 .download-widget p:last-child a {
   white-space: nowrap; }
 
-.blog-widget li, .event-widget li, .most-recent-posts li {
-  border-top: 1px solid #caccce;
-  padding-left: 4em;
-  padding-top: 0.4375em;
-  padding-bottom: 0.4375em;
-  position: relative; }
-  .blog-widget li time, .event-widget li time, .most-recent-posts li time {
-    position: absolute;
-    top: 50%;
-    left: 0;
-    margin-top: -.75em; }
-
 .time-posted {
   display: block;
   font-size: 0.875em;
@@ -1631,11 +1743,12 @@ a.jump-to-menu {
   letter-spacing: 0.01em; }
 
 .success-stories-widget blockquote {
-  position: relative;
   color: #666666;
   background-color: #ffe58f;
-  line-height: 1.4em;
   padding: 0.7em 1em 0.875em;
+  margin-bottom: 0.4375em;
+  font-size: 1em;
+  line-height: 1.75em;
   background-color: #ffdf76;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE58F', endColorstr='#FFFFDF76');
@@ -1648,19 +1761,22 @@ a.jump-to-menu {
   -moz-border-radius: 6px;
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
-  border-radius: 6px;
-  font-size: 1em;
-  line-height: 1.75em; }
+  border-radius: 6px; }
   .success-stories-widget blockquote:after {
     position: absolute;
     content: "";
     width: 0;
     height: 0;
+    border-color: transparent;
     border-style: solid;
-    border-width: 0.6em;
-    bottom: -1.1em;
+    border-width: 1.5em;
     left: 20%;
+    bottom: -2.875em;
     border-top-color: #ffdf76; }
+  .success-stories-widget blockquote a {
+    color: #666666; }
+    .success-stories-widget blockquote a:hover, .success-stories-widget blockquote a:focus, .success-stories-widget blockquote a:active {
+      color: #3776ab; }
 .success-stories-widget .quote-from {
   *zoom: 1; }
   .success-stories-widget .quote-from:after {
@@ -1668,13 +1784,12 @@ a.jump-to-menu {
     display: table;
     clear: both; }
   .success-stories-widget .quote-from td {
-    padding: 8px;
+    padding: .5em;
     vertical-align: middle; }
   .success-stories-widget .quote-from img {
-    max-height: 50px; }
+    max-height: 5em; }
   .success-stories-widget .quote-from p {
-    font-size: 0.875em;
-    margin-bottom: 0; }
+    font-size: 0.875em; }
 
 .statistics-widget {
   padding-left: .75em; }
@@ -1722,45 +1837,136 @@ a.jump-to-menu {
       .shrubbery .give-me-more a:hover, .shrubbery .give-me-more a:active {
         color: #666666; }
 
+/* ! ===== PSF Board Meeting Minutes ===== */
+.draft-preview {
+  color: #b55863;
+  font-family: SourceSansProBold, Arial, sans-serif; }
+
 /* ! ===== PEP Widget ===== */
-.pep-widget .widget-title {
-  color: #737373;
-  margin-bottom: 0.35em;
-  font-size: 1.125em; }
-  .fontface .pep-widget .widget-title {
-    font-size: 1.29375em; }
-    .fontface .pep-widget .widget-title span:before {
-      font-size: .875em; }
-  .pep-widget .widget-title a {
-    color: #3776ab; }
-    .pep-widget .widget-title a:hover, .pep-widget .widget-title a:active {
-      color: #1f3b47; }
-.pep-widget tr {
-  background-color: #f2f4f6;
+.pep-widget {
+  margin-bottom: 1.3125em; }
+  .pep-widget .widget-title {
+    color: #737373;
+    margin-bottom: 0.35em;
+    font-size: 1.125em; }
+    .fontface .pep-widget .widget-title {
+      font-size: 1.29375em; }
+      .fontface .pep-widget .widget-title span:before {
+        font-size: .875em; }
+    .pep-widget .widget-title a {
+      color: #3776ab; }
+      .pep-widget .widget-title a:hover, .pep-widget .widget-title a:active {
+        color: #1f3b47; }
+  .pep-widget .pep-number {
+    color: #666666;
+    font-family: SourceSansProBold, Arial, sans-serif;
+    display: inline-block;
+    width: 3em; }
+
+.pep-list {
   border-top: 1px solid #caccce;
   line-height: 1.2em;
   margin: 0; }
-  .pep-widget tr:hover, .pep-widget tr:active {
-    background-color: white;
-    color: #222222; }
-.pep-widget td {
-  line-height: 1.35em;
-  padding: 8px;
-  vertical-align: middle; }
-  .pep-widget td:first-child {
-    text-align: right;
-    width: 40px; }
-.pep-widget .pep-number {
-  color: #666666;
-  font-family: SourceSansProBold, Arial, sans-serif; }
+  .pep-list li {
+    display: block;
+    line-height: 1.35em; }
+    .pep-list li a {
+      display: block;
+      color: #3776ab;
+      background-color: #f2f4f6;
+      border-bottom: 1px solid #e6eaee;
+      padding: .6em .75em .5em; }
+      .pep-list li a:hover, .pep-list li a:focus, .pep-list li a:active {
+        color: #222222;
+        background-color: #fefefe; }
 
 .rss-link {
   line-height: 1em; }
   .rss-link span:before {
     color: #cc9547; }
 
+/* ! ===== PEP landing page ===== */
+/*<div class="pep-list-header list-row-headings">
+    <span class="pep-type">Type</span>
+    <span class="pep-num">Number</span>
+    <span class="pep-title">Title <span class="say-no-more">(click for more)</span></span>
+    <span class="pep-owner">Owner</span>
+</div>
+<ul class="pep-index-list menu">
+    <li>
+        <div class="pep-type"><span class="label">Type</span>info-act</div>
+        <div class="pep-num"><span class="label">Number</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">20</a></div>
+        <div class="pep-title"><span class="label">Title</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">The Zen of Python</a></div>
+        <div class="pep-owner"><span class="label">Owner</span>Tim Peters</div>
+    </li>
+</ul>*/
+.pep-list-header {
+  font-family: SourceSansProBold, Arial, sans-serif;
+  display: none; }
+
+.pep-index-list .label {
+  font-family: SourceSansProBold, Arial, sans-serif;
+  display: inline-block;
+  width: 20%; }
+.pep-index-list li {
+  background-color: #f2f4f6;
+  border-bottom: 1px solid #caccce; }
+.pep-index-list a {
+  display: inline-block;
+  color: #3776ab; }
+  .pep-index-list a:hover, .pep-index-list a:focus, .pep-index-list a:active {
+    color: #222222; }
+
+.pep-type, .pep-num, .pep-title, .pep-owner {
+  padding: .5em .5em .4em;
+  border-bottom: 1px solid #e3e7ec; }
+
+/*dl*/
+.info-key dt, .info-key dd {
+  display: block;
+  float: left;
+  padding: .5em .5em .4em; }
+.info-key dt {
+  width: 25%; }
+.info-key dd {
+  width: 75%;
+  border-bottom: 1px solid #e6e8ea; }
+
+/* <div class="pep-owner-header">
+        <div class="label">Name</div>
+        <div class="label">Email Address</div>
+    </div>
+    <ul class="pep-owner-list menu">
+        <li>
+            <div class="owner-name">Tim Peters</div>
+            <div class="owner-email">tim at zope.com</div>
+        </li>
+    </ul> */
+.pep-owner-header {
+  margin: 0 -.5em;
+  overflow: hidden;
+  *zoom: 1; }
+  .pep-owner-header .label {
+    font-family: SourceSansProBold, Arial, sans-serif;
+    float: left;
+    width: 50%;
+    padding: .25em .5em .2em; }
+
+.pep-owner-list li {
+  background-color: #f2f4f6;
+  border-bottom: 1px solid #caccce;
+  overflow: hidden;
+  *zoom: 1; }
+  .pep-owner-list li:hover {
+    background-color: #fefefe; }
+.pep-owner-list .owner-name, .pep-owner-list .owner-email {
+  float: left;
+  width: 50%;
+  padding: .5em .5em .4em; }
+
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
+  padding: 1.3125em 0;
   background: url("../img/success-glow2.png") center -230px no-repeat;
   /*blockquote*/ }
   .featured-success-story img {
@@ -1806,6 +2012,23 @@ p.quote-by-organization {
   padding-top: 1.3125em; }
   .newest-success-stories .widget-title {
     position: relative; }
+
+/* Success Stories inner pages */
+/*<figure class="story-header" role="banner">
+    <img src="http://www.python.org/files/success/rackspace/datacenter-web.jpg" alt="Python is Rackspace's CORE Technology">
+</figure>
+<h1>{{ story.name }}</h1>
+<p class="company-byline"><a href="{{ story.get_company_url }}">{{ story.get_company_name }}</a></p>*/
+.story-header {
+  background-color: #f2f4f6;
+  margin: -1.3em 0 0;
+  overflow: hidden;
+  max-height: 24em;
+  border-bottom: 3px solid #ffd343; }
+  .story-header img {
+    display: block;
+    margin: 0 auto;
+    min-width: 100%; }
 
 /* ! ===== Blog landing page ===== */
 /*h2*/
@@ -1853,7 +2076,7 @@ p.quote-by-organization {
   /* resets as this is an H3 element and it behaves differently */
   margin-top: .75em;
   margin-bottom: 1.25em;
-  padding: 0.5em 0.75em; }
+  padding: .5em .75em; }
 
 .event-description {
   padding: 1.3125em 0; }
@@ -1876,7 +2099,7 @@ p.quote-by-organization {
   -ms-border-radius: 0 0 8px 8px;
   -o-border-radius: 0 0 8px 8px;
   border-radius: 0 0 8px 8px;
-  padding: 0.75em 1em; }
+  padding: .75em 1em; }
 
 /*ul*/
 .twitter-stream li {
@@ -1897,8 +2120,7 @@ p.quote-by-organization {
 .mapped-events {
   border-top: 3px solid #e6e8ea; }
   .mapped-events .medium-widget {
-    border-top: 0;
-    margin-bottom: 0; }
+    border-top: 0; }
 
 .tag-wrapper {
   display: block;
@@ -1908,7 +2130,7 @@ p.quote-by-organization {
     color: #666666;
     font-size: 0.8125em;
     vertical-align: baseline;
-    padding: 0.2em 0.4em 0.1em;
+    padding: .2em .4em .1em;
     background-color: #e6e8ea;
     border-top: 1px solid #f2f4f6;
     border-bottom: 1px solid #caccce; }
@@ -1931,13 +2153,13 @@ p.quote-by-organization {
 /* ! ===== Stylized lists of items, used on Downloads and others ===== */
 .list-row-headings {
   font-family: SourceSansProBold, Arial, sans-serif;
-  padding: 0.5em 0.5em 0.4em 0.75em;
+  padding: .5em .5em .4em .75em;
   margin-right: 1.25em; }
 
 .list-row-container {
   border: 1px solid #caccce; }
   .list-row-container li {
-    padding: 0.5em 0.5em 0.4em 0.75em;
+    padding: .5em .5em .4em .75em;
     margin-right: 0; }
     .list-row-container li:nth-child(odd) {
       background-color: #f2f4f6; }
@@ -1950,7 +2172,8 @@ p.quote-by-organization {
     <li><a href="#">…</a></li>
     <li class="next"><a href="#">Next</a></li>
 </ul> */
-.pagination, .previous-next {
+.pagination,
+.previous-next {
   display: block;
   width: 100%;
   text-align: center;
@@ -1974,7 +2197,11 @@ p.quote-by-organization {
 .pagination a.disabled, .pagination a.disabled:hover, .pagination a.disabled:focus {
   color: #caccce;
   background-color: transparent; }
-.pagination .previous a, .pagination .next a, .pagination .previous a:hover, .pagination .next a:hover, .pagination .previous a:focus, .pagination .next a:focus {
+.pagination .previous a, .pagination .next a,
+.pagination .previous a:hover,
+.pagination .next a:hover,
+.pagination .previous a:focus,
+.pagination .next a:focus {
   border: 0; }
 
 /* ! ===== Previous / Next display pattern ===== */
@@ -1994,31 +2221,40 @@ p.quote-by-organization {
 </p>*/
 .previous-next {
   /* Special rules for specific templates */ }
-  .previous-next .prev-button, .previous-next .next-button {
+  .previous-next .prev-button,
+  .previous-next .next-button {
     display: block;
-    padding: 0.5em 0.75em 0.4em;
+    padding: .5em .75em .4em;
     margin-bottom: 0.875em; }
-    .previous-next .prev-button:not(.disabled):hover, .previous-next .prev-button:not(.disabled):focus, .previous-next .next-button:not(.disabled):hover, .previous-next .next-button:not(.disabled):focus {
+    .previous-next .prev-button:not(.disabled):hover, .previous-next .prev-button:not(.disabled):focus,
+    .previous-next .next-button:not(.disabled):hover,
+    .previous-next .next-button:not(.disabled):focus {
       color: #333333;
       background-color: #ffd343; }
-  .previous-next .prev-button-text, .previous-next .next-button-text {
+  .previous-next .prev-button-text,
+  .previous-next .next-button-text {
     display: block;
     border-bottom: 1px solid #caccce;
     padding-bottom: .5em; }
   .previous-next .prevnext-description {
     display: block;
     padding-top: .5em; }
-  .previous-next .disabled .prev-button-text, .previous-next .disabled .next-button-text {
+  .previous-next .disabled .prev-button-text,
+  .previous-next .disabled .next-button-text {
     color: #caccce;
     border-bottom: 0; }
-  .previous-next .icon-arrow-right, .previous-next .icon-arrow-left {
+  .previous-next .icon-arrow-right,
+  .previous-next .icon-arrow-left {
     vertical-align: bottom; }
   .single-event .previous-next {
     margin-top: 1.3125em;
     border-top: 1px solid #caccce; }
 
 /* ! ===== Downloads templates ===== */
-.release-number, .release-date, .release-download, .release-enhancements {
+.release-number,
+.release-date,
+.release-download,
+.release-enhancements {
   display: block; }
 
 .release-number {
@@ -2053,7 +2289,7 @@ p.quote-by-organization {
         <p role="alert">Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
 .user-feedback {
-  padding: 0.75em 1em 0.65em;
+  padding: .75em 1em .65em;
   margin-bottom: 1.3125em;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -2067,29 +2303,34 @@ p.quote-by-organization {
     .user-feedback a:hover, .user-feedback a:focus {
       color: #222222; }
 
+/* A helpful tip */
 .level-general {
   background-color: #e9f1f8;
   border: 1px solid #c2d9ec; }
 
+/* A slight warning before completing a task */
 .level-notice {
-  background-color: white;
+  background-color: #fff7dc;
   border: 2px solid #ffd343; }
 
-.level-warning {
-  /* orange? */ }
-
+/* Something went wrong */
 .level-error {
   background-color: #ecd4d7;
   border: 2px solid #b55863; }
+  .level-error span {
+    color: #b55863; }
 
+/* Yeah! It worked correctly */
 .level-success {
   background-color: #d6e7bf;
   border: 2px solid #82b043; }
+  .level-success span {
+    color: #82b043;
+    margin-right: .5em; }
 
 /* ! ===== SIDEBAR syles ===== */
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/
 .left-sidebar .sidebar-widget {
-  padding-top: 0;
   margin-bottom: 0.875em; }
 .left-sidebar .twitter-widget {
   padding: 0; }
@@ -2107,7 +2348,7 @@ p.quote-by-organization {
   font-size: 0.58333em;
   text-transform: uppercase;
   letter-spacing: .0625em;
-  padding: 0.45em 0.5em 0;
+  padding: .45em .5em 0;
   margin-right: .25em; }
 .listing-company .listing-location a {
   color: #999999; }
@@ -2136,7 +2377,7 @@ p.quote-by-organization {
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
-  padding: .5em;
+  padding: .5em 0;
   border-bottom: 1px solid #caccce; }
   .breadcrumbs li {
     display: -moz-inline-stack;
@@ -2152,13 +2393,15 @@ p.quote-by-organization {
 .section-navigation {
   border-top: 3px solid #75a8d3;
   background-color: #e1ecf5;
-  padding: 1.3125em 0.75em 0.875em; }
+  padding: 0.875em 0.75em 0.875em; }
+  .section-navigation h2:first-child {
+    margin-top: 0.65625em; }
+  .section-navigation h3:first-child {
+    margin-top: 0.65625em; }
 
-.section-nav {
-  margin-bottom: 0; }
-  .section-nav a {
-    display: block;
-    padding: 0.3em 0 0.2em; }
+.section-nav a {
+  display: block;
+  padding: .3em 0 .2em; }
 
 .psf-sidebar-widget {
   color: #f2f4f6;
@@ -2177,8 +2420,6 @@ p.quote-by-organization {
       color: #ffd343; }
       .psf-sidebar-widget .widget-title a:hover, .psf-sidebar-widget .widget-title a:focus {
         color: white; }
-  .psf-sidebar-widget p {
-    margin-bottom: 0; }
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
@@ -2214,7 +2455,7 @@ p.quote-by-organization {
 
 .psf-codeofconduct {
   font-size: 0.875em;
-  padding: 0.5em 1em;
+  padding: .5em 1em;
   margin-bottom: 1em;
   background-color: white;
   -webkit-box-shadow: 0.25em 0.25em 0.75em rgba(0, 0, 0, 0.15);
@@ -2241,7 +2482,7 @@ p.quote-by-organization {
 .main-footer .jump-link, .sitemap a, .footer-links a {
   display: block;
   text-align: center;
-  padding: 0.5em 0.75em 0.4em; }
+  padding: .5em .75em .4em; }
 
 .main-footer {
   clear: both;
@@ -2249,7 +2490,7 @@ p.quote-by-organization {
   background-color: #e6e8ea;
   border-top: 1px solid #d8dbde; }
   .main-footer .container {
-    padding: 0 0.75em 0.75em; }
+    padding: 0 .75em .75em; }
   .main-footer a {
     color: #666666; }
     .main-footer a:hover, .main-footer a:focus {
@@ -2257,7 +2498,7 @@ p.quote-by-organization {
   .main-footer .jump-link {
     background-color: #e0e3e5; }
   .main-footer a.jump-link {
-    margin: 0.75em 0;
+    margin: .75em 0;
     border-top: 1px solid #e6e8ea;
     border-bottom: 1px solid #dbdee1; }
     .main-footer a.jump-link:hover, .main-footer a.jump-link:focus {
@@ -2271,7 +2512,7 @@ p.quote-by-organization {
     margin-bottom: 1.3125em; }
     .sitemap .tier-1 > a {
       color: #3776ab;
-      padding: 0.4em 0.5em 0.3em;
+      padding: .4em .5em .3em;
       font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
       font-size: 1.25em;
       margin-top: 0.875em;
@@ -2290,7 +2531,7 @@ p.quote-by-organization {
       background-color: #ecedef; }
 
 .site-base {
-  border-top: 1px solid #111111; }
+  border-top: 1px solid #111; }
   .site-base .container {
     padding: 1em; }
 
@@ -2355,13 +2596,14 @@ p.quote-by-organization {
   -o-transform: rotate(90deg);
   transform: rotate(90deg);
   border: 1px solid #ffcc24;
-  padding: 0.3em 0.6em; }
+  padding: .3em .6em; }
   .feedback-flag .icon-megaphone:before {
     color: #3776ab; }
   .feedback-flag .feedback-label {
     color: #3776ab;
     font-family: SourceSansProBold, Arial, sans-serif; }
 
+/* end Feedback */
 .accordion-wrapper {
   display: none; }
   .no-js .accordion-wrapper {
@@ -2369,7 +2611,7 @@ p.quote-by-organization {
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
 #nojs, #oldie-warning {
-  padding: 0.75em 0.75em 0.65em;
+  padding: .75em .75em .65em;
   text-align: center;
   background-color: #c33; }
   #nojs p, #oldie-warning p {
@@ -2394,19 +2636,6 @@ p.quote-by-organization {
 
 .js #nojs {
   display: none; }
-
-/* ! Test objects – can be deleted later */
-#test-window-size {
-  background-color: rgba(200, 200, 200, 0.1);
-  color: #999;
-  font-family: Verdana, sans-serif;
-  font-size: 0.75em;
-  line-height: 1em;
-  padding: 3px;
-  position: fixed;
-  top: 2px;
-  right: 2px;
-  z-index: 10000; }
 
 /* For image replacement */
 .ir {
@@ -2450,7 +2679,7 @@ p.quote-by-organization {
 @media print {
   * {
     background: transparent !important;
-    color: black !important;
+    color: #000 !important;
     /* Black prints faster: h5bp.com/s */
     box-shadow: none !important;
     text-shadow: none !important; }
@@ -2474,7 +2703,7 @@ p.quote-by-organization {
     content: ""; }
 
   pre, blockquote {
-    border: 1px solid #999999;
+    border: 1px solid #999;
     page-break-inside: avoid; }
 
   thead {

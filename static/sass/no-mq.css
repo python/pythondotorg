@@ -104,8 +104,11 @@
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+/* Apply to individual elements when we want to force line breaks. */
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
+/* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
+/* A single row of main navigation -- DESKTOP ONLY */
 /* Mixin for media query parts */
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
@@ -212,8 +215,11 @@
 /* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
+/* Apply to individual elements when we want to force line breaks. */
 /* Base styles for a navigation mixin */
 /* Base styles for a navigation with dropdowns mixin */
+/* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
+/* A single row of main navigation -- DESKTOP ONLY */
 /* 
  * ! ===== START Media Queries ===== 
  *
@@ -236,18 +242,16 @@
  *  columns(2); raw math for 2 cols of width and any gutters contained within
  *  gutter(6); raw math for gutter width
  */
-/* ! ===== Ruleset for a two-tier, stacked version of the main navigation ===== */
-/* ! ===== Ruleset for a single row of main navigation ===== */
 /* ! ===== Smaller than 400px ===== */
 /* ! ===== Larger than 400px ===== */
-/* ! ===== Smaller than 480px ===== */
-/* ! ===== Larger than 480px ===== */
-/* ! ===== Larger than 520px ===== */
-/* ! ===== Larger than 640px ===== */
-/* ! ===== Larger than 800px ===== */
-/* ! ===== Larger than 940px ===== */
-/* ! ===== Larger than 1024px ===== */
-/* ! ===== Larger than 1200px ===== */
+/* ! ===== Smaller than 480px - Baby ===== */
+/* ! ===== Larger than 480px - Tiny ===== */
+/* ! ===== Larger than 520px - Smaller ===== */
+/* ! ===== Larger than 640px - Small ===== */
+/* ! ===== Larger than 800px - Medium ===== */
+/* ! ===== Larger than 940px - Large ===== */
+/* ! ===== Larger than 1024px - ExtraLarge ===== */
+/* ! ===== Larger than 1200px - Supersize ===== */
 .introduction {
   font-size: 1.3125em; }
 
@@ -257,17 +261,27 @@
 .shrubbery .give-me-more {
   display: block; }
 
-.widget-title .prompt, .listing-company .prompt {
+.widget-title .prompt,
+.listing-company .prompt {
   display: inline; }
-
-input[type="submit"], input[type="reset"], button, a.button, .button {
-  display: inline-block;
-  width: auto; }
 
 /* - - - Larger than 520px - - - many basic styles for larger screens are here */
 body {
   text-rendering: optimizeLegibility;
   /* @include transition( all .3s ease-in-out ); makes the media query changes animate */ }
+
+/* Simple Column Structure */
+.col-row .column {
+  float: left; }
+
+.two-col, .four-col {
+  /* Only works if we are using all single .column, not .double-col as well */ }
+  .two-col > .column, .four-col > .column {
+    width: 50%; }
+  .two-col > .double-col, .four-col > .double-col {
+    width: 100%; }
+  .two-col > div:nth-of-type(2n+3), .four-col > div:nth-of-type(2n+3) {
+    clear: left; }
 
 .meta-navigation,
 .main-header,
@@ -295,8 +309,23 @@ body {
   font-size: 1.125em;
   padding: 1em 1.4em 1.3em; }
 
-.text {
-  font-size: 0.9375em; }
+input[type="submit"],
+input[type="reset"],
+.button,
+a.button,
+.button {
+  display: inline-block;
+  width: auto; }
+
+/* Simple Column Structure */
+.three-col {
+  /* Only works if we are using all single .column, not .double-col as well */ }
+  .three-col > .column {
+    width: 33.3333%; }
+  .three-col > .double-col {
+    width: 66.6666%; }
+  .three-col > div:nth-of-type(3n+4) {
+    clear: left; }
 
 .meta-navigation {
   text-align: left; }
@@ -309,7 +338,6 @@ body {
     float: left;
     width: 16.6666667%;
     /* 6 columns */
-    /* width: 14.2857142857%; 7 columns */
     border-left: 1px solid #273643;
     border-right: 1px solid #11171d; }
 
@@ -344,6 +372,10 @@ body {
 
 .call-to-action {
   font-size: 1.5em; }
+  .fontface .call-to-action {
+    font-size: 1.725em; }
+    .fontface .call-to-action span:before {
+      font-size: .875em; }
 
 /* Header-banners (not home) */
 .header-banner {
@@ -351,7 +383,10 @@ body {
   .home .header-banner, .inner .header-banner {
     padding: 0; }
 
-.about-banner, .download-for-current-os, .documentation-banner, .welcome-to-the-foundation {
+.about-banner,
+.download-for-current-os,
+.documentation-banner,
+.welcome-to-the-foundation {
   padding-left: 8.51064%;
   padding-right: 8.51064%; }
 
@@ -360,46 +395,6 @@ body {
   .inner .main-header {
     position: relative;
     z-index: 10; }
-
-/*<nav class="main-navigation" role="navigation">*/
-.main-navigation {
-  clear: both;
-  text-align: center;
-  overflow: visible;
-  /*ul*/
-  /*li*/
-  /*li*/
-  -webkit-border-radius: 8px 8px 0 0;
-  -moz-border-radius: 8px 8px 0 0;
-  -ms-border-radius: 8px 8px 0 0;
-  -o-border-radius: 8px 8px 0 0;
-  border-radius: 8px 8px 0 0;
-  /*ul*/
-  /* Shorten the amount of blue space under the nav on inner pages */ }
-  .main-navigation .menu {
-    margin-bottom: 0; }
-  .main-navigation .tier-1, .main-navigation .tier-2 {
-    /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
-    .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
-      display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
-      position: relative; }
-  .main-navigation .tier-1 {
-    display: block;
-    width: 100%; }
-    .main-navigation .tier-1 > a {
-      text-align: center; }
-  .main-navigation .tier-2 > a {
-    text-align: left; }
-  .main-navigation .tier-2 {
-    font-size: 0.875em; }
-  .main-navigation .subnav {
-    -webkit-box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3);
-    -moz-box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3);
-    box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3); }
-  .inner .main-navigation {
-    position: relative;
-    margin-bottom: -1.75em; }
 
 /*li*/
 .with-supernav .super-navigation {
@@ -927,9 +922,9 @@ body {
 
 /* end @for */
 .content-wrapper {
-  /* Shorten the amount of blue space under the nav on inner pages */ }
+  /* Increase the amount of white space under the nav on inner pages */ }
   .inner .content-wrapper {
-    padding-top: 1.75em; }
+    padding-top: 2em; }
 
 /* Main content with sidebars */
 .main-content.with-left-sidebar {
@@ -941,6 +936,9 @@ body {
   width: 65.95745%;
   float: left;
   margin-right: 2.12766%; }
+
+.text {
+  font-size: 0.9375em; }
 
 /*aside*/
 .left-sidebar {
@@ -990,27 +988,54 @@ body {
   float: left;
   margin-right: 2.12766%; }
 
-.pep-widget, .psf-widget {
-  padding: 1.5em 1.75em; }
-
-.pep-widget {
-  clear: both;
-  /* === 4 columns
-  li {
-      @include span-columns( 6 ); 
-      
-      &:nth-child(2), &.last {
-          margin-right: 0; 
-      }
-      .lt-ie9 &.last {
-          float: right; 
-          margin-right: 0; 
-      }
-  }
-  === end */ }
-
-.psf-widget {
+.pep-widget,
+.psf-widget,
+.python-needs-you-widget {
+  padding: 1.5em 1.75em;
   clear: both; }
+
+/* PEP landing page */
+.pep-list-header,
+.pep-index-list li,
+.info-key {
+  margin: 0 -.5em;
+  *zoom: 1; }
+  .pep-list-header:after,
+  .pep-index-list li:after,
+  .info-key:after {
+    content: "";
+    display: table;
+    clear: both; }
+
+.pep-list-header {
+  display: block; }
+
+.pep-index-list .label {
+  display: none; }
+.pep-index-list a {
+  display: block; }
+.pep-index-list li {
+  border-bottom: 1px solid #e3e7ec;
+  margin-bottom: 0; }
+
+.pep-type,
+.pep-num,
+.pep-title,
+.pep-owner {
+  float: left;
+  border-bottom: 0; }
+
+.pep-type {
+  width: 15%; }
+
+.pep-num {
+  width: 10%; }
+
+.pep-title {
+  width: 50%; }
+
+.pep-owner {
+  width: 25%; }
 
 /* Jobs landing page */
 .listing-company {
@@ -1028,7 +1053,10 @@ body {
   content: "Looking for: ";
   color: #666666; }
 
-.release-number, .release-date, .release-download, .release-enhancements {
+.release-number,
+.release-date,
+.release-download,
+.release-enhancements {
   -moz-box-orient: vertical;
   display: inline-block;
   margin-right: -4px;
@@ -1081,12 +1109,11 @@ body {
 
 .footer-links {
   clear: both;
-  /* background: top center no-repeat image-url("footer-radial-shadow.jpg") transparent; */
   text-align: center; }
   .footer-links li {
     display: inline-block; }
 
-/* Feedback form */
+/* Feedback form -- DELETE LATER */
 .feedback {
   padding-left: 1em;
   padding-right: 1em; }
@@ -1111,14 +1138,14 @@ body {
   height: 72.16px; }
 
 .site-headline {
-  margin: 0.25em 0 0.5em; }
+  margin: .25em 0 .5em; }
 
 .options-bar {
   margin: 0.875em 0; }
 
 .search-field {
   background: white;
-  padding: 0.4em 0.5em 0.3em;
+  padding: .4em .5em .3em;
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
@@ -1146,30 +1173,34 @@ body {
   padding: 0 0 0 1em;
   margin: 0 -1em 0 0; }
 
-.about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+.about-banner,
+.download-for-current-os,
+.documentation-banner,
+.community-banner {
   padding-left: 0%;
   padding-right: 51.06383%;
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
+  min-height: 345px;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1185,19 +1216,32 @@ body {
   width: 23.40426%;
   margin-top: 0.56875em; }
 
-.latest-blog-post, .featured-event, .jobs-intro {
+.latest-blog-post,
+.featured-event,
+.jobs-intro {
   position: relative;
   text-align: left; }
-  .latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
+  .latest-blog-post .call-to-action,
+  .featured-event .call-to-action,
+  .jobs-intro .call-to-action {
     margin-left: 34.04255%; }
-  .latest-blog-post .date-posted, .latest-blog-post .event-date, .featured-event .date-posted, .featured-event .event-date, .jobs-intro .date-posted, .jobs-intro .event-date {
+  .latest-blog-post .date-posted, .latest-blog-post .event-date,
+  .featured-event .date-posted,
+  .featured-event .event-date,
+  .jobs-intro .date-posted,
+  .jobs-intro .event-date {
     position: absolute;
     left: 0;
     width: 31.91489%; }
-  .latest-blog-post .excerpt, .featured-event .excerpt, .jobs-intro .excerpt {
+  .latest-blog-post .excerpt,
+  .featured-event .excerpt,
+  .jobs-intro .excerpt {
     margin-left: 34.04255%; }
 
 /* Main content with sidebars */
+.home .content-wrapper .container {
+  padding-top: 2.5em; }
+
 .main-content.with-left-sidebar {
   width: 74.46809%;
   float: right;
@@ -1252,7 +1296,7 @@ body {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1375124397') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1375216152') transparent; }
   .psf-widget .widget-title, .psf-widget p {
     margin-right: 34.04255%; }
 
@@ -1272,17 +1316,7 @@ body {
   left: 0;
   width: 23.40426%; }
 
-/*<li>
-    <h2 class="listing-company">
-        <span class="listing-company-name">
-            <span class="listing-new">New</span> <a href="#to-description">StudioNow</a>
-        </span>
-        <span class="listing-location"><a href="#to-jobs-by-location">Nashville, TN, USA</a></span>
-    </h2>
-    <span class="listing-company-category"><a href="#to-jobs-by-category">Video production</a></span>
-    <span class="listing-job-type"><a href="#to-jobs-by-type">Front-end Developer</a>, <a href="#to-jobs-by-type">Software Engineers</a></span>
-    <span class="listing-posted">10 December 2012</span>
-</li>*/
+/* Jobs Section */
 .list-recent-jobs li {
   *zoom: 1; }
   .list-recent-jobs li:after {
@@ -1356,7 +1390,8 @@ body {
     clear: none;
     border-left: 0;
     border-right: 0; }
-  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
+  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1
+  .element-8 {
     border-right: 1px solid #d5d6d8; }
   .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
     border-left: 1px solid #f7f7f8; }
@@ -1365,7 +1400,7 @@ body {
   display: inline;
   visibility: visible; }
 
-/* Feedback form */
+/* Feedback form -- DELETE LATER */
 .feedback {
   padding-left: 0;
   padding-right: 0;
@@ -1409,25 +1444,32 @@ body {
   .feedback button {
     margin-left: 17.02128%; }
 
-a.jump-to-menu {
-  display: none; }
-
-.search-the-site {
-  border-left: 0; }
-
+/* end Feedback form */
 .main-navigation {
-  display: block;
+  /* Include the mixins to start our horizontal nav 
+   * Don't wrap this in a .touch or .no-touch, as it has those selectors already inside
+  */
   text-align: center;
-  font-size: 1.125em;
-  -webkit-border-radius: 8px;
-  -moz-border-radius: 8px;
-  -ms-border-radius: 8px;
-  -o-border-radius: 8px;
-  border-radius: 8px;
-  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  overflow: visible;
+  /*ul*/
+  /*li*/
+  /*li*/
   /*ul*/ }
+  .main-navigation .menu {
+    margin-bottom: 0; }
+  .main-navigation .tier-1, .main-navigation .tier-2 {
+    /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
+    .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
+      display: block;
+      padding: .5em 1.5em .4em 1em;
+      position: relative; }
+  .main-navigation .tier-1 {
+    display: block;
+    width: 100%; }
+    .main-navigation .tier-1 > a {
+      text-align: center; }
+  .main-navigation .tier-2 > a {
+    text-align: left; }
   .main-navigation .menu {
     *zoom: 1; }
     .main-navigation .menu:after {
@@ -1443,9 +1485,20 @@ a.jump-to-menu {
     /*modernizr*/
     /*modernizr*/ }
     .no-touch .main-navigation .subnav {
-      min-width: 100%; }
+      min-width: 100%;
+      top: -9999px;
+      -webkit-transition: all 0s ease;
+      -moz-transition: all 0s ease;
+      -o-transition: all 0s ease;
+      transition: all 0s ease; }
     .touch .main-navigation .subnav {
       top: 120%;
+      display: none;
+      opacity: 0;
+      -webkit-transition: opacity 0.25s ease-in-out;
+      -moz-transition: opacity 0.25s ease-in-out;
+      -o-transition: opacity 0.25s ease-in-out;
+      transition: opacity 0.25s ease-in-out;
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
@@ -1454,16 +1507,11 @@ a.jump-to-menu {
         content: "";
         width: 0;
         height: 0;
+        border-color: transparent;
         border-style: solid;
         border-width: 0.75em;
         top: -1.45em;
         display: block; }
-  .no-touch .main-navigation .element-1 .subnav, .no-touch .main-navigation .element-2 .subnav, .no-touch .main-navigation .element-3 .subnav, .no-touch .main-navigation .element-4 .subnav {
-    top: -9999px;
-    -webkit-transition: all 0s ease;
-    -moz-transition: all 0s ease;
-    -o-transition: all 0s ease;
-    transition: all 0s ease; }
   .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:hover .subnav, .no-touch .main-navigation .element-4:focus .subnav {
     left: 0;
     top: 100%;
@@ -1471,12 +1519,6 @@ a.jump-to-menu {
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .no-touch .main-navigation .element-5 .subnav, .no-touch .main-navigation .element-6 .subnav, .no-touch .main-navigation .element-7 .subnav, .no-touch .main-navigation .element-8 .subnav, .no-touch .main-navigation .last .subnav {
-    top: -9999px;
-    -webkit-transition: all 0s ease;
-    -moz-transition: all 0s ease;
-    -o-transition: all 0s ease;
-    transition: all 0s ease; }
   .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:hover .subnav, .no-touch .main-navigation .last:focus .subnav {
     right: 0;
     top: 100%;
@@ -1486,13 +1528,6 @@ a.jump-to-menu {
     transition-delay: 0.25s; }
   .touch .main-navigation .element-1, .touch .main-navigation .element-2, .touch .main-navigation .element-3, .touch .main-navigation .element-4 {
     /* Position the pointer element */ }
-    .touch .main-navigation .element-1 .subnav, .touch .main-navigation .element-2 .subnav, .touch .main-navigation .element-3 .subnav, .touch .main-navigation .element-4 .subnav {
-      display: none;
-      opacity: 0;
-      -webkit-transition: opacity 0.25s ease-in-out;
-      -moz-transition: opacity 0.25s ease-in-out;
-      -o-transition: opacity 0.25s ease-in-out;
-      transition: opacity 0.25s ease-in-out; }
     .touch .main-navigation .element-1:hover .subnav, .touch .main-navigation .element-1 .subnav.touched, .touch .main-navigation .element-2:hover .subnav, .touch .main-navigation .element-2 .subnav.touched, .touch .main-navigation .element-3:hover .subnav, .touch .main-navigation .element-3 .subnav.touched, .touch .main-navigation .element-4:hover .subnav, .touch .main-navigation .element-4 .subnav.touched {
       display: block;
       opacity: 1;
@@ -1501,13 +1536,6 @@ a.jump-to-menu {
       left: 1.5em; }
   .touch .main-navigation .element-5, .touch .main-navigation .element-6, .touch .main-navigation .element-7, .touch .main-navigation .element-8, .touch .main-navigation .last {
     /* Position the pointer element */ }
-    .touch .main-navigation .element-5 .subnav, .touch .main-navigation .element-6 .subnav, .touch .main-navigation .element-7 .subnav, .touch .main-navigation .element-8 .subnav, .touch .main-navigation .last .subnav {
-      display: none;
-      opacity: 0;
-      -webkit-transition: opacity 0.25s ease-in-out;
-      -moz-transition: opacity 0.25s ease-in-out;
-      -o-transition: opacity 0.25s ease-in-out;
-      transition: opacity 0.25s ease-in-out; }
     .touch .main-navigation .element-5:hover .subnav, .touch .main-navigation .element-5 .subnav.touched, .touch .main-navigation .element-6:hover .subnav, .touch .main-navigation .element-6 .subnav.touched, .touch .main-navigation .element-7:hover .subnav, .touch .main-navigation .element-7 .subnav.touched, .touch .main-navigation .element-8:hover .subnav, .touch .main-navigation .element-8 .subnav.touched, .touch .main-navigation .last:hover .subnav, .touch .main-navigation .last .subnav.touched {
       display: block;
       opacity: 1;
@@ -1520,12 +1548,26 @@ a.jump-to-menu {
     min-width: 100%; }
     .main-navigation .tier-2 a {
       white-space: nowrap; }
-  .main-navigation .menu {
+
+.no-touch .main-navigation {
+  display: block;
+  text-align: center;
+  font-size: 1.125em;
+  -webkit-border-radius: 8px;
+  -moz-border-radius: 8px;
+  -ms-border-radius: 8px;
+  -o-border-radius: 8px;
+  border-radius: 8px;
+  -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  -moz-box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2); }
+  .no-touch .main-navigation .menu {
     text-align: center; }
-  .main-navigation .tier-1 {
+  .no-touch .main-navigation .tier-1 {
     float: none;
     border-top: 0;
     border-bottom: 0;
+    /* Conside display: table; on the wrapper (ul.main-navigation) to get the centering to work, and to allow floats here */
     width: auto;
     margin: 0 -5px 0 0;
     display: -moz-inline-stack;
@@ -1533,49 +1575,36 @@ a.jump-to-menu {
     vertical-align: baseline;
     border-right: 1px solid rgba(0, 0, 0, 0.2);
     border-left: 1px solid rgba(255, 255, 255, 0.1);
-    /* We've set this explicitly before, so we need to "clear" the width value explicitly */ }
-    .lt-ie8 .main-navigation .tier-1 {
+    /* We've set this explicitly before, so we need to unset it here */ }
+    .lt-ie8 .no-touch .main-navigation .tier-1 {
       vertical-align: auto;
       zoom: 1;
       display: inline; }
-    .main-navigation .tier-1.element-1 {
+    .no-touch .main-navigation .tier-1.element-1 {
       border-left: 0; }
-    .main-navigation .tier-1.last {
+    .no-touch .main-navigation .tier-1.last {
       border-right: 0; }
-    .main-navigation .tier-1.element-6, .main-navigation .tier-1.element-7 {
+    .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
       width: auto; }
-  .main-navigation .tier-1 > a {
-    padding: 0.65em 1.25em 0.55em; }
+    .no-touch .main-navigation .tier-1 > a {
+      padding: .65em 1.25em .55em; }
+  .no-touch .main-navigation .tier-2 {
+    font-size: 0.875em; }
 
-.navigation .close-subnav {
-  border-top: 0; }
-  .navigation .close-subnav a {
-    border-right: 1px solid rgba(255, 255, 255, 0.8); }
-  .navigation .close-subnav .close-for-touch {
-    border-right: 1px solid transparent;
-    border-left: 1px solid rgba(102, 102, 102, 0.2); }
+/* Shorten the amount of blue space under the nav on inner pages */
+.no-touch .inner .main-navigation {
+  position: relative;
+  margin-bottom: -1.375em; }
 
-/* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
-.touch #touchnav-wrapper {
-  -webkit-transition: -webkit-transform 300ms ease;
-  -moz-transition: -moz-transform 300ms ease;
-  -o-transition: -o-transform 300ms ease;
-  transition: transform 300ms ease;
-  -webkit-transform: translate3d(0, 0, 0);
-  -moz-transform: translate3d(0, 0, 0);
-  -ms-transform: translate3d(0, 0, 0);
-  -o-transform: translate3d(0, 0, 0);
-  transform: translate3d(0, 0, 0);
-  -webkit-backface-visibility: hidden; }
-.touch .show-sidemenu #touchnav-wrapper {
-  -webkit-transform: translate3d(280px, 0, 0);
-  -moz-transform: translate3d(280px, 0, 0);
-  -ms-transform: translate3d(280px, 0, 0);
-  -o-transform: translate3d(280px, 0, 0);
-  transform: translate3d(280px, 0, 0); }
-
-.inner .main-header {
-  position: static; }
+/* Simple Column Structure */
+.four-col > .column {
+  width: 25%; }
+.four-col > .double-col {
+  width: 50%; }
+.four-col > div:nth-of-type(2n+3) {
+  clear: none; }
+.four-col > div:nth-of-type(4n+5) {
+  clear: left; }
 
 .site-headline a img {
   width: 290px;
@@ -1604,7 +1633,6 @@ a.jump-to-menu {
             </p>
         </li></ul>
 </li>*/
-/*li*/
 .with-supernav .subnav {
   border-right: 1px solid rgba(102, 102, 102, 0.3); }
 .with-supernav .super-navigation {
@@ -1643,32 +1671,46 @@ a.jump-to-menu {
     font-size: 0.625em !important;
     font-style: italic; }
   .super-navigation p.excert {
-    font-size: pxtoem(10px);
+    font-size: 0.625em;
     line-height: 1.3em; }
   .super-navigation p.quote-by {
     color: #3776ab; }
 
-.tier-1.element-1 .super-navigation, .tier-1.element-2 .super-navigation, .tier-1.element-3 .super-navigation {
+.tier-1.element-1 .super-navigation,
+.tier-1.element-2 .super-navigation,
+.tier-1.element-3 .super-navigation {
   left: 100.25%; }
 
-.tier-1.element-4 .super-navigation, .tier-1.element-5 .super-navigation, .tier-1.element-6 .super-navigation, .tier-1.element-7 .super-navigation {
+.tier-1.element-4 .super-navigation,
+.tier-1.element-5 .super-navigation,
+.tier-1.element-6 .super-navigation,
+.tier-1.element-7 .super-navigation {
   left: -28em; }
 
 .super-navigation .menu {
   text-align: left; }
 
-/* END */
+/* END Supernavs */
 /* Header-banners */
-.about-banner, .download-for-current-os, .documentation-banner, .community-banner {
+.about-banner,
+.download-for-current-os,
+.documentation-banner,
+.community-banner {
   padding-left: 0%;
   padding-right: 42.55319%; }
-  .about-banner p:last-child, .download-for-current-os p:last-child, .documentation-banner p:last-child, .community-banner p:last-child {
+  .about-banner p:last-child,
+  .download-for-current-os p:last-child,
+  .documentation-banner p:last-child,
+  .community-banner p:last-child {
     margin-bottom: 0; }
+
+.about-banner p,
+.documentation-banner p,
+.community-banner p {
+  margin-right: 14.81481%; }
 
 .about-banner {
   background-position: 110% 0px; }
-  .about-banner p {
-    margin-right: 14.81481%; }
 
 .download-for-current-os {
   background-position: 115% 0;
@@ -1677,14 +1719,10 @@ a.jump-to-menu {
 
 .documentation-banner {
   background-position: 110% 0; }
-  .documentation-banner p {
-    margin-right: 14.81481%; }
 
 .community-banner {
   background-position: 105% 0;
   min-height: 320px; }
-  .community-banner p {
-    margin-right: 14.81481%; }
 
 .featured-success-story .success-quote {
   margin-left: 8.51064%;
@@ -1730,10 +1768,14 @@ a.jump-to-menu {
   display: inline;
   visibility: visible; }
 
-.pep-widget, .psf-widget, .python-needs-you-widget {
+.pep-widget,
+.psf-widget,
+.python-needs-you-widget {
   padding: 1.5em 1.75em; }
 
-.psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
+.psf-widget .widget-title, .psf-widget p,
+.python-needs-you-widget .widget-title,
+.python-needs-you-widget p {
   margin-right: 25.53191%; }
 
 .mapped-events h2 {
@@ -1748,11 +1790,19 @@ a.jump-to-menu {
 .welcome-message {
   width: 23.40426%; }
 
-.latest-blog-post .call-to-action, .featured-event .call-to-action, .jobs-intro .call-to-action {
+.latest-blog-post .call-to-action,
+.featured-event .call-to-action,
+.jobs-intro .call-to-action {
   margin-left: 25.53191%; }
-.latest-blog-post .date-posted, .latest-blog-post .event-date, .featured-event .date-posted, .featured-event .event-date, .jobs-intro .date-posted, .jobs-intro .event-date {
+.latest-blog-post .date-posted, .latest-blog-post .event-date,
+.featured-event .date-posted,
+.featured-event .event-date,
+.jobs-intro .date-posted,
+.jobs-intro .event-date {
   width: 23.40426%; }
-.latest-blog-post .excerpt, .featured-event .excerpt, .jobs-intro .excerpt {
+.latest-blog-post .excerpt,
+.featured-event .excerpt,
+.jobs-intro .excerpt {
   margin-left: 25.53191%; }
 
 .subscription-channels li {
@@ -1765,19 +1815,9 @@ a.jump-to-menu {
     zoom: 1;
     display: inline; }
 
-.pep-widget {
-  /* === 3 cols
-  li {
-      @include span-columns( 3 ); 
-      
-      &:nth-child(2) {
-          margin-right: gutter(); 
-      }
-  }
-  === end */ }
-  .pep-widget .widget-title {
-    position: relative;
-    padding-right: 6em; }
+.pep-widget .widget-title {
+  position: relative;
+  padding-right: 6em; }
 
 .rss-link {
   position: absolute;
@@ -1785,13 +1825,10 @@ a.jump-to-menu {
   right: 0; }
 
 /* Footer */
-.main-footer-links .container {
-  padding: 0 2em 0.75em; }
-
 .sitemap a {
   text-align: left; }
 .sitemap .tier-1 {
-  width: 16.666%;
+  width: 16.6667%;
   border: 0; }
   .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9, .sitemap .tier-1.element-10 {
     border: 0; }
@@ -1801,7 +1838,7 @@ a.jump-to-menu {
 .footer-links a {
   padding: 0.3em 0.75em; }
 
-/* Feedback form */
+/* Feedback form -- DELETE LATER */
 .feedback h2, .feedback h3 {
   display: inline-block; }
 .feedback h3 {
