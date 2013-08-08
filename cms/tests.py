@@ -50,3 +50,10 @@ class ContentManagableAdminTests(unittest.TestCase):
         obj = mock.Mock()
         admin.save_model(request=request, obj=obj, form=None, change=False)
         self.assertEqual(obj.creator, request.user, "save_model didn't set obj.creator to request.user")
+
+    def test_update_model(self):
+        admin = self.make_admin()
+        request = mock.Mock()
+        obj = mock.Mock()
+        admin.save_model(request=request, obj=obj, form=None, change=True)
+        self.assertEqual(obj.last_modified_by, request.user, "save_model didn't set obj.last_modified_by to request.user")
