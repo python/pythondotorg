@@ -9,6 +9,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # homepage
     url(r'^$', TemplateView.as_view(template_name="python/index.html"), name='home'),
+    url(r'^shell/$', TemplateView.as_view(template_name="python/shell.html"), name='home'),
 
     # python section landing pages
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
