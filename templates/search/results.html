@@ -1,0 +1,45 @@
+
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python serp"{% endblock %}
+
+{% block content %}
+            
+            <h2>Search Results</h2>
+            
+            <p><strong>{# number_of_results #}</strong> results found.</p>
+            
+            {% for result in page.object_list %}
+                <div class="search-result {% result|search_include %}">
+                    
+                    {# === PAGES === #}
+                    {% with result|search_include as page %}
+                        {% include 'includes/page.html' %}
+                    {% endwith %}
+                    
+                    {# === EVENTS === #}
+                    {% with result|search_include as event %}
+                        {% include 'includes/event.html' %}
+                    {% endwith %}
+                    
+                    {# === JOBS === #}
+                    {% with result|search_include as job %}
+                        {% include 'includes/job.html' %}
+                    {% endwith %}
+                    
+                    <p class="result-source"><a href="{# result.url #}">{# result.url #}</a></p>
+                </div>
+                
+            {% empty %}
+                <div class="search-result">
+                    <p>Sorry, no results found.</p>
+                </div>
+            {% endfor %}
+            
+            {# additional search form after results #}
+            <input id="s" class="search-field" type="search" tabindex="1" placeholder="Search" role="textbox" name="s">
+            <button id="submit" class="search-button" tabindex="3" title="Submit this Search" name="submit" type="submit"> Search </button>
+            
+{% endblock %}
+
+{# visited links should be a different color, add style to css #}
