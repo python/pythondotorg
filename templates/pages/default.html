@@ -10,12 +10,13 @@
 TODO: format breadcrumbs
 
 {% sitetree_breadcrumbs from "main" using "mytrees/mybreadcrumbs.html" %}
+{% endcomment %}
 
 <ul class="breadcrumbs menu">
     <li><a href="#">Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
     <li>This Page</li>
 </ul>
-{% endcomment %}
+
 {% endblock breadcrumbs %}
 
 
@@ -23,11 +24,11 @@ TODO: format breadcrumbs
 
 
 {% block content %}
-<div class="text">
-    
-    {{ page.content }}
-    
-</div>
+    <article class="text">
+        
+        {{ page.content }}
+        
+    </article>
 {% endblock content %}
 
 
