@@ -1,5 +1,5 @@
         
-        <h3 class="serp-headline"><a href="{# result.url #}">JOB: {# result.job_title #}</a></h3>
-        <p class="job-location">{# result.job_location #}</p>
+        <h3 class="serp-headline"><a href="{# result.url #}"><span class="label">Job:</span> {# result.job_title #}</a></h3>
+        <p class="job-location"><span class="label">Location:</span> {# result.job_location #}</p>
         
-        <p>{# result.content #}</p>
+        <p>{# result.content, truncated with <mark> tag around keyword matches #}</p>

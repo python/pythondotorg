@@ -218,7 +218,7 @@ label {
     &.active {
         font-weight: bold; 
     }
-}
+}alert
 
 input, textarea {
     width: 100%;
@@ -2161,6 +2161,35 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 
+/* ! ===== Search Results pages and templates for individual content types/models ===== */
+.search-again {
+    
+    /*input*/ #s { }
+    /*button*/ #submit { }
+}
+
+.search-result {
+    
+    /*span*/ .label { }
+    
+    p { }
+    
+    mark { }
+}
+    /*h3*/ .serp-headline { }
+    /*p*/ .event-placetime { }
+    /*p*/ .job-location { }
+    
+.result-source {
+    
+    a { }
+}
+
+.serp-empty {
+    
+}
+
+
 /* ! ===== FOOTER elements ===== */
 
 %footer-anchor-style {
@@ -2352,12 +2381,12 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
  * When we want to review the markup for W3 and similar errors, turn some of these on 
  * Uses :not selectors a bunch, so only modern browsers will support them
  */
-@import "debug";
+//@import "debug";
 //@include modernizr_links;
 //@include debug_links;
 //@include debug_images;
 //@include debug_misc;
-@include debug_deprecated;
+//@include debug_deprecated;
 //@include debug_empty;
 
 /* Keep this at the bottom since it will create a huge set of data */

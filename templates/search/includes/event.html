@@ -1,5 +1,5 @@
         
-        <h3 class="serp-headline"><a href="{# result.url #}">{# result.title #}</a></h3>
+        <h3 class="serp-headline"><a href="{# result.url #}"><span class="label">Event:</span> {# result.title #}</a></h3>
         <p class="event-placetime">{# result.event_date #} | {# result.event_location #}</p>
         
-        <p>{# result.content #}</p>
+        <p>{# result.content truncated with <mark> tag around keyword matches #}</p>
