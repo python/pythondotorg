@@ -6,18 +6,24 @@
 <!--[if IE 8]>         <html class="no-js ie8 lt-ie9">             <![endif]-->
 <!--[if gt IE 8]><!--> <html class="no-js" lang="en">              <!--<![endif]-->
 
-<head prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb# website: http://ogp.me/ns/website# article: http://ogp.me/ns/article#">
+<head>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-
+    <link rel="prefetch" href="//ajax.googleapis.com/">
+    
+    <meta name="application-name" content="{{ SITE_INFO.site_name }}">
+    <meta name="msapplication-tooltip" content="{{ SITE_INFO.site_descript }}">
+    <meta name="apple-mobile-web-app-title" content="{{ SITE_INFO.site_name }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="HandheldFriendly" content="True">
-    <meta name="MobileOptimized" content="320">
     <meta name="format-detection" content="telephone=no">
     <meta http-equiv="cleartype" content="on">
+    <meta http-equiv="imagetoolbar" content="false">{# Kills IE6's images toolbar. Still useful. #}
 
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
 
@@ -35,7 +41,7 @@
     {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
     <![endif]-->
 
-    <!-- Place icon files in the root if possible (let browsers look for them where they expect them to be) -->
+    {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
     <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico">
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ STATIC_URL }}apple-touch-icon-144x144-precomposed.png">
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL }}apple-touch-icon-114x114-precomposed.png">
@@ -43,30 +49,58 @@
     <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}apple-touch-icon-precomposed.png">
     <link rel="apple-touch-icon" href="{{ STATIC_URL }}apple-touch-icon-precomposed.png">
 
-    <!-- Tile icon for Win8 (144x144 + tile color) -->
+    {# Tile icon for Win8 (144x144 + tile color) #}
     <meta name="msapplication-TileImage" content="{{ STATIC_URL }}metro-icon-144x144-precomposed.png"><!-- white shape -->
     <meta name="msapplication-TileColor" content="#3673a5"><!-- python blue -->
+    <meta name="msapplication-navbutton-color" content="#3673a5">
+    
+    <meta property="og:site_name" content="{{ SITE_INFO.site_name }}">
+    <meta property="og:type" content="website">
 
-    <!-- SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page -->
-    <meta property="og:site_name" content="Python.org Redesign Preview" />
-    <meta property="og:type" content="website" />
-
-    <title>{% block page_title %}Python.org Redesign Preview{% endblock %}</title>
-    <meta property="og:title" content="Python RWD Wireframes" />
-
-    <meta name="description" content="">
-    <meta name="og:description" content="">
-    <!-- For articles, single view, use the following:
-    <meta property="og:article:published_time" content="" />
-    <meta property="og:article:modified_time" content="" />
-    <meta property="og:article:author" content="" />
-    <meta property="og:article:section" content="" /> A high-level section name. E.g. Technology
-    <meta property="og:article:tag" content="" /> Tag words associated with this article
-    -->
-    <meta property="og:url" content="" /> <!-- permalink to the curent page -->
-    <meta property="og:image" content="" /> <!-- If no specific image is part of the content, we should specify a default -->
-    <meta property="og:video" content="" />
-
+    <title>{% block page_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}</title>
+    <meta property="og:title" content="{% block og_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}">
+    
+    {# SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page #}
+    <meta name="description" content="{% block page-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
+    <meta name="og:description" content="{% block og-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
+    <meta name="keywords" content="{% block page-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
+    <meta property="og:tag" content="{% block og-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
+    <meta property="og:published_time" content="{% block og-publishedtime %}{% endblock %}">
+    <meta property="og:modified_time" content="{% block og-modifiedtime %}{% endblock %}">
+    <meta property="og:author" content="{% block og-author %}{% endblock %}">
+    <meta property="og:section" content="{% block og-section %}{% endblock %}"> {# A high-level section name. E.g. Technology #}
+    <meta property="og:url" content="{% block og-url %}{{ get_absolute_url }}{% endblock %}">{# permalink to the curent page #}
+    <meta property="og:image" content="{% block og-image %}{% endblock %}">{# A path to an image used on the page. Helpful for telling crawlers what image to use for a page preview. Can be an array, meaning, there can be more than one of these tags (duplicate the WHOLE tag). #}
+    <meta property="og:video" content="{% block og-video %}{% endblock %}">
+    
+    <link rel="author" href="{{ STATIC_URL }}humans.txt">
+    
+    {% comment %} No support for these yet... 
+     
+    <link rel="sitemap" type="application/xml" title="{{ SITE_INFO.site_name }} Sitemap" href="/sitemap.xml">
+    
+    <link rel="search" type="application/opensearchdescription+xml" title="Search under the www.python.org Domain" href="/search-pysite.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within the Python Wiki" href="/search-pywiki.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within Python Books at Google Book Search" href="/search-pybooks.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within the Python Documentation" href="/search-pydocs.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search for a Module in the Standard Library" href="/search-pymodules.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search for Packages inside the Cheeseshop (PyPI)" href="/search-pycheese.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search Archives of the Main Python Mailing List" href="/search-pythonlist.xml">
+    
+     * Need to support Twitter cards? Info about that here:
+     * https://github.com/h5bp/html5-boilerplate/blob/master/doc/extend.md#twitter-cards
+     * 
+     * RSS/Atom feeds:
+     * <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
+     * <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
+     *
+     * Hey everybody, there is a shortlink version of this page! 
+     * <link rel="shortlink" href="">
+     *
+     * Have a web app? Unobtrusively tell users where to get it: 
+     * <meta name="apple-itunes-app" content="app-id=APP_ID,app-argument=SOME_TEXT">
+    {% endcomment %}
+    
 </head>
 
 <body {% block body_attributes %}{% endblock %}>
@@ -220,7 +254,7 @@
 
                     <div class="shrubbery">
                         <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2>
-                        <h3>Python.org Beta only gets better if we hear from you.</h3>
+                        <h3>{{ SITE_INFO.site_name }} Beta only gets better if we hear from you.</h3>
                         <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</a></p>
                     </div>
 
@@ -233,6 +267,7 @@
 
             <div class="site-base">
                 <div class="container">
+                    {# These need to be hooked up to a URL and page content at some point #}
                     <ul class="footer-links navigation menu do-not-print" role="tree">
                         <li class="tier-1 element-1"><a href="#">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
                         <li class="tier-1 element-2"><a href="#">Diversity <span class="say-no-more">Initiatives</span></a></li>
