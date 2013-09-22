@@ -51,4 +51,4 @@ class NameSlugModel(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        return super(NameSlugModel, self).save(*args, **kwargs)
+        return super().save(*args, **kwargs)

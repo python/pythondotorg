@@ -10,7 +10,7 @@ class PepListView(TemplateView):
     template_name = 'peps/list.html'
 
     def get_context_data(self, *args, **kwargs):
-        context = super(PepListView, self).get_context_data(*args, **kwargs)
+        context = super().get_context_data(*args, **kwargs)
         context['categories'] = PepCategory.objects.select_related('peps').all()
         context['statuses'] = PepStatus.objects.all()
         context['types'] = PepType.objects.all()
