@@ -3,7 +3,7 @@
 
                     <h2 class="widget-title">
                         <span class="prompt">&gt;&gt;&gt;</span> <a href="{% url 'pep_list' %}">Python Enhancement Proposals<span class="say-no-more"> (PEPs)</span></a>: The future of Python<span class="say-no-more"> is discussed here.</span>
-                        <a aria-hidden="true" class="rss-link" href="#"><span class="icon-feed"></span> RSS</a>
+                        <a aria-hidden="true" class="rss-link" href="{% url 'pep_rss' %}"><span class="icon-feed"></span> RSS</a>
                     </h2>
 
                     {% get_latest_accepted_peps as peps %}
