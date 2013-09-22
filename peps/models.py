@@ -74,3 +74,5 @@ class Pep(ContentManageable):
         names = [x.name for x in self.owners.all()]
         return ",".join(names)
 
+    def get_absolute_url(self):
+        return self.url
