@@ -142,6 +142,7 @@ INSTALLED_APPS = (
     'events',
     'minutes',
     'peps',
+    'blogs',
 
     'allauth',
     'allauth.account',
@@ -188,6 +189,10 @@ LOGGING = {
 
 COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
+
+### Blog Feed URL
+PYTHON_BLOG_FEED_URL = "http://feeds.feedburner.com/PythonInsider"
+PYTHON_BLOG_URL = "http://blog.python.org"
 
 ### Pipeline
 

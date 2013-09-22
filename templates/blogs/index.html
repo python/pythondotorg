@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+
+{% block body_attributes %}class="python blog"{% endblock %}
+
+{% block header_content %}
+                <div class="latest-blog-post">
+
+                    <h2 class="welcome-message">Welcome to the <span class="blog-name">Python Insider</span></h2>
+
+                    <h1 class="call-to-action">{{ latest_entry.title }}</h1>
+
+                    <p class="date-posted"><time datetime="{{ latest_entry.pub_date|date:"Y-m-d H:i|s" }}">{{ latest_entry.pub_date|date:"l, F j, Y" }}</time></p>
+                    <p class="excerpt">{{ latest_entry.summary|striptags|truncatewords:50|safe }}
+                    <a class="readmore" href="{{ latest_entry.url }}">Read more</a></p>
+                </div>
+{% endblock header_content %}
+
+
+
+{% block content %}
+                <div class="row">
+
+        		    <div class="most-recent-posts">
+        		        <div class="shrubbery">
+                            <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
+                            <p class="give-me-more"><a href="{{ blog_url }}" title="More News">More</a></p>
+                            <ul class="list-recent-posts menu">
+
+                                {% for entry in entries %}
+                                <li>
+                                    <h3 class="event-title"><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
+                                    <p><time datetime="{{ entry.pub_date|date:"Y-m-d" }}">{{ entry.pub_date|date:"m/d" }}<span class="say-no-more">/{{ entry.pub_date|date:"Y" }}</span></time></p>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="small-widget subscribe-widget last">
+                        <h2 class="widget-title"><span class="blog-name">Python Insider</span> Subscriptions</h2>
+                        <p>Subscribe to Python Insider via:</p>
+                        <ul class="subscription-channels menu">
+                            <li><a href="{{ feed_url }}"><span aria-hidden="true" class="icon-feed"></span>RSS</a></li>
+                            <li><a href="#"><span aria-hidden="true" class="icon-email"></span>Email</a></li>
+                            <li><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
+                        </ul>
+                        <p>Also check out the <a href="#">Python-Dev mailing list</a></p>
+                    </div>
+
+                </div>
+
+        		<div class="row">
+
+        		    <div class="triple-widget translations-widget">
+        		        <h2 class="widget-title">Translations</h2>
+        		        <ul class="menu">
+                            {% for t in translations %}
+                            <li><a href="{{ t.url }}">{{ t.name }}</a></li>
+                            {% endfor %}
+        		        </ul>
+        		    </div>
+
+        		    <div class="triple-widget authors-widget">
+        		        <h2 class="widget-title">Contributors</h2>
+        		        <ul class="menu">
+                            {% for c in contributors %}
+                            <li><a href="{% url 'users:user_detail' slug=c.user.username %}">{{ c.get_display_name }}</a></li>
+                            {% endfor %}
+        		        </ul>
+        		    </div>
+
+        		    <div class="triple-widget archive-widget last">
+        		        <h2 class="widget-title">Blog Archives</h2>
+        		        <ul class="menu">
+        		            <li><a href="#year-archive">2012 (8)</a>
+        		                <ul class="months menu">
+        		                    <li><a href="#month-archive">November (1)</a></li>
+        		                    <li><a href="#month-archive">October (2)</a></li>
+        		                    <li><a href="#month-archive">August (1)</a></li>
+        		                    <li><a href="#month-archive">June (2)</a></li>
+        		                    <li><a href="#month-archive">May (1)</a></li>
+        		                    <li><a href="#month-archive">March (1)</a></li>
+        		                </ul>
+        		            </li>
+        		            <li><a href="#year-archive">2011 (25)</a></li>
+        		        </ul>
+        		    </div>
+
+                </div>
+
+
+                <div class="row">
+
+        		    <div class="medium-widget author-blogs-widget">
+        		        <h2 class="widget-title">Python-Dev Blogs</h2>
+        		        <p class="give-me-more"><a href="#" title="More News">More</a></p>
+        		        <ul class="menu">
+        		            <li><a class="developer-name" href="#">Jesse Noller</a>: <a class="developer-post-name" href="#">The Code Of Conduct</a> <span class="time-posted">1 hour ago</span></li>
+        		            <li><a class="developer-name" href="#">PyPy Status Blog</a>: <a class="developer-post-name" href="#">PyPy related internship at NCAR</a> <span class="time-posted">5 hours ago</span></li>
+        		            <li><a class="developer-name" href="#">Tarek Ziad&eacute;</a>: <a class="developer-post-name" href="#">What The Feuille?</a> <span class="time-posted">4 days ago</span></li>
+        		        </ul>
+        		    </div>
+
+        		    <div class="medium-widget copyright-widget last">
+        		        <h2 class="widget-title">Copyright</h2>
+                    <p>Python Insider by the <a href="#">Python Core Developers</a> is licensed under a <a href="#">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href="#">blog.python.org</a>.</p>
+        		    </div>
+
+                </div>
+{% endblock content %}
