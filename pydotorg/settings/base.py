@@ -15,6 +15,14 @@ ADMINS = [
     ('Frank', 'frank.wiles@gmail.com'),
 ]
 
+# General project information
+# These are available in the template as SITE_INFO.<title>
+SITE_VARIABLES = {
+    'site_name': 'Python.org',
+    'site_descript': 'The official home of the Python Programming Language',
+}
+
+
 ### Databases
 
 DATABASES = {
