@@ -8,8 +8,7 @@ from .models import PepType, PepStatus, PepOwner, PepCategory, Pep
 
 class PEPTests(TestCase):
 
-    def test_list_view(self):
-        """ Setup some PEPs for testing """
+    def setUp(self):
         call_command('generate_initial_pep_data')
 
         self.standards_type = PepType.objects.get(abbreviation='S')
@@ -57,6 +56,8 @@ class PEPTests(TestCase):
         self.pep2.owners.add(self.owner2)
         self.pep2.owners.add(self.owner3)
 
+    def test_list_view(self):
+        """ Setup some PEPs for testing """
         owner_string = self.pep2.get_owner_names()
         self.assertTrue('Jeff Triplett' in owner_string)
         self.assertTrue('Jacob Kaplan-Moss' in owner_string)
@@ -77,6 +78,10 @@ class PEPTests(TestCase):
 
         self.assertTrue(self.pep1 in context['peps'])
         self.assertTrue(self.pep2 in context['peps'])
+
+    def test_latest_rss_feed(self):
+        response = self.client.get(reverse('pep_rss'))
+        self.assertEqual(response.status_code, 200)
 
 
 
