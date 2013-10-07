@@ -4,7 +4,7 @@ import requests
 import lxml.html
 from lxml import etree
 
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 
 from ...models import Minutes
 
