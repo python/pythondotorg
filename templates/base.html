@@ -12,13 +12,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
     <link rel="prefetch" href="//ajax.googleapis.com/">
-    
+
     <meta name="application-name" content="{{ SITE_INFO.site_name }}">
     <meta name="msapplication-tooltip" content="{{ SITE_INFO.site_descript }}">
     <meta name="apple-mobile-web-app-title" content="{{ SITE_INFO.site_name }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    
+
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="HandheldFriendly" content="True">
     <meta name="format-detection" content="telephone=no">
@@ -53,13 +53,13 @@
     <meta name="msapplication-TileImage" content="{{ STATIC_URL }}metro-icon-144x144-precomposed.png"><!-- white shape -->
     <meta name="msapplication-TileColor" content="#3673a5"><!-- python blue -->
     <meta name="msapplication-navbutton-color" content="#3673a5">
-    
+
     <meta property="og:site_name" content="{{ SITE_INFO.site_name }}">
     <meta property="og:type" content="website">
 
     <title>{% block page_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}</title>
     <meta property="og:title" content="{% block og_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}">
-    
+
     {# SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page #}
     <meta name="description" content="{% block page-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
     <meta name="og:description" content="{% block og-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
@@ -72,13 +72,13 @@
     <meta property="og:url" content="{% block og-url %}{{ get_absolute_url }}{% endblock %}">{# permalink to the curent page #}
     <meta property="og:image" content="{% block og-image %}{% endblock %}">{# A path to an image used on the page. Helpful for telling crawlers what image to use for a page preview. Can be an array, meaning, there can be more than one of these tags (duplicate the WHOLE tag). #}
     <meta property="og:video" content="{% block og-video %}{% endblock %}">
-    
+
     <link rel="author" href="{{ STATIC_URL }}humans.txt">
-    
-    {% comment %} No support for these yet... 
-     
+
+    {% comment %} No support for these yet...
+
     <link rel="sitemap" type="application/xml" title="{{ SITE_INFO.site_name }} Sitemap" href="/sitemap.xml">
-    
+
     <link rel="search" type="application/opensearchdescription+xml" title="Search under the www.python.org Domain" href="/search-pysite.xml">
     <link rel="search" type="application/opensearchdescription+xml" title="Search within the Python Wiki" href="/search-pywiki.xml">
     <link rel="search" type="application/opensearchdescription+xml" title="Search within Python Books at Google Book Search" href="/search-pybooks.xml">
@@ -86,21 +86,21 @@
     <link rel="search" type="application/opensearchdescription+xml" title="Search for a Module in the Standard Library" href="/search-pymodules.xml">
     <link rel="search" type="application/opensearchdescription+xml" title="Search for Packages inside the Cheeseshop (PyPI)" href="/search-pycheese.xml">
     <link rel="search" type="application/opensearchdescription+xml" title="Search Archives of the Main Python Mailing List" href="/search-pythonlist.xml">
-    
+
      * Need to support Twitter cards? Info about that here:
      * https://github.com/h5bp/html5-boilerplate/blob/master/doc/extend.md#twitter-cards
-     * 
+     *
      * RSS/Atom feeds:
      * <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
      * <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
      *
-     * Hey everybody, there is a shortlink version of this page! 
+     * Hey everybody, there is a shortlink version of this page!
      * <link rel="shortlink" href="">
      *
-     * Have a web app? Unobtrusively tell users where to get it: 
+     * Have a web app? Unobtrusively tell users where to get it:
      * <meta name="apple-itunes-app" content="app-id=APP_ID,app-argument=SOME_TEXT">
     {% endcomment %}
-    
+
 </head>
 
 <body {% block body_attributes %}{% endblock %}>
@@ -276,7 +276,7 @@
 
                     <div class="copyright">
                         <p><small>
-                            <span class="pre">Copyright &copy;1990-{% now 'Y' %}.</span>
+                            <span class="pre">Copyright &copy;2001-{% now 'Y' %}.</span>
                             <span class="pre"><a href="#">Python Software Foundation</a>.</span>
                             <a class="pre" href="#">Legal Statements.</a>
                         </small></p>
