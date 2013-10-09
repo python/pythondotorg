@@ -34,6 +34,11 @@ class Command(BaseCommand):
 
         for match in matches:
             path = self._build_path(match)
+
+            # Skip homepage
+            if path == '':
+                continue
+
             try:
                 data = parse_page(os.path.dirname(match))
             except Exception as e:
