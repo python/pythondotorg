@@ -28,13 +28,16 @@ PAGE_PATH_RE = re.compile(r"""
 )
 
 is_valid_page_path = validators.RegexValidator(
-    regex = PAGE_PATH_RE,
-    message = ('Please enter a valid URL segment, e.g. "foo" or "foo/bar". '
+    regex=PAGE_PATH_RE,
+    message=('Please enter a valid URL segment, e.g. "foo" or "foo/bar". '
                'Only lowercase letters, numbers, and hyphens are allowed.'),
 )
 
+
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
+    keywords = models.CharField(max_length=1000, blank=True, help_text="HTTP meta-keywords")
+    description = models.TextField(blank=True, help_text="HTTP meta-description")
     path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=True, db_index=True)
@@ -51,4 +54,7 @@ class Page(ContentManageable):
         self.path = self.path.strip('/')
 
     def __str__(self):
-        return self.title
+        if self.title:
+            return self.title
+        else:
+            return 'No Title'
