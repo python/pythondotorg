@@ -53,8 +53,11 @@ class Page(ContentManageable):
         # Strip leading and trailing slashes off self.path.
         self.path = self.path.strip('/')
 
-    def __str__(self):
+    def get_title(self):
         if self.title:
             return self.title
         else:
-            return 'No Title'
+            return '** No Title **'
+
+    def __str__(self):
+        return self.title
