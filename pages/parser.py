@@ -13,7 +13,7 @@ def read_content_file(dirpath):
     # Read page content
     c_ht = os.path.join(dirpath, 'content.ht')
     c_rst = os.path.join(dirpath, 'content.rst')
-    body_html = os.path.join(dirpath, 'body.html')
+
     if os.path.exists(c_ht):
         raw_input = open(c_ht, 'rb').read()
         detection = chardet.detect(raw_input)
@@ -31,13 +31,6 @@ def read_content_file(dirpath):
         msg = email.message_from_string(rst_msg)
         filename = c_rst
 
-    elif os.path.exists(body_html):
-        html_text = open(body_html, 'r').read()
-        html_msg = """Content-type: text/html
-
-%s""" % html_text.lstrip()
-        msg = email.message_from_string(html_msg)
-        filename = body_html
     else:
         return None, None
 

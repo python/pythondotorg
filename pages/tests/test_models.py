@@ -14,6 +14,10 @@ class PageModelTests(BasePageTests):
     def test_draft(self):
         self.assertQuerysetEqual(Page.objects.draft(), ['<Page: Two>'])
 
+    def test_get_title(self):
+        one = Page.objects.get(path='one')
+        self.assertEqual(one.get_title(), 'One')
+
 
 @ddt.ddt
 class PagePathReTests(unittest.TestCase):
