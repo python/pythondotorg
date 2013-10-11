@@ -1,0 +1,121 @@
+Content-type: text/x-rst
+Title: About
+Nav: 
+        Getting Started gettingstarted
+        Applications apps
+        Success Stories success
+        Quotes quotes
+        Website website
+        Help help
+
+About Python
+============
+
+Python is a remarkably powerful dynamic programming language that is used in a
+wide variety of `application domains </about/apps>`__. Python is often
+compared to Tcl, Perl, Ruby, Scheme or Java. Some of its key distinguishing
+features include:
+
+* very clear, readable syntax
+* strong introspection capabilities
+* intuitive object orientation
+* natural expression of procedural code
+* full modularity, supporting hierarchical packages
+* exception-based error handling
+* very high level dynamic data types
+* extensive standard libraries and third party modules for virtually every task
+* extensions and modules easily written in C, C++ (or Java for Jython, or .NET languages for IronPython)
+* embeddable within applications as a scripting interface
+
+Python is powerful... and fast
+------------------------------
+
+Fans of Python use the phrase "batteries included" to describe the
+`standard library <http://docs.python.org/3/library/>`_, which covers
+everything from asynchronous processing to zip files. The language itself
+is a flexible powerhouse that can handle practically any 
+`problem domain </about/apps>`__.
+Build your own web server in three lines of code. Build flexible
+data-driven code using Python's powerful and dynamic introspection
+capabilities and advanced language features such as `meta-classes
+<http://www.onlamp.com/pub/a/python/2003/04/17/metaclasses.html>`_,
+`duck typing <http://en.wikipedia.org/wiki/Duck_typing>`_ and
+`decorators </dev/peps/pep-0318/>`_. 
+
+Python lets you write the code you need, quickly. And, thanks to a highly
+optimized byte compiler and support libraries, Python code runs more than 
+fast enough for most applications. The traditional implementation of CPython
+uses a bytecode virtual machine; `PyPy <http://pypy.org/>`_
+supports just-in-time (JIT) compilation to machine code. Also, Jython and 
+IronPython (see below) support JIT compilation on their respective 
+virtual machine implementations.
+
+Python plays well with others
+-----------------------------
+
+Python can integrate with `COM <http://sourceforge.net/projects/pywin32/>`_, `.NET
+<http://www.zope.org/Members/Brian/PythonNet>`_, and `CORBA
+<http://aspn.activestate.com/ASPN/Cookbook/Python/Recipe/81254>`_ objects.  
+
+For Java libraries, use `Jython <http://www.jython.org>`_, an
+implementation of Python for the Java Virtual Machine.   
+
+For .NET, try `IronPython <http://www.ironpython.net/>`_ ,
+Microsoft's new implementation of Python for .NET, or `Python for .NET 
+<http://pythonnet.sourceforge.net/>`_.
+
+Python is also supported for the `Internet Communications Engine (ICE) 
+<http://www.zeroc.com/ice.html>`_ and many other integration technologies.
+
+If you find something that Python cannot do, or if you need the
+performance advantage of low-level code, you can write `extension
+modules <http://docs.python.org/3/extending/>`_ in C or C++, or
+wrap existing code with `SWIG <http://www.swig.org/>`_ or 
+`Boost.Python <http://www.boost.org/libs/python/doc/>`_. Wrapped modules
+appear to your program exactly like native Python code. That's
+language integration made easy. You can also go the opposite route and
+`embed Python <http://docs.python.org/3/extending/embedding.html>`_ in your
+own application, providing your users with a language they'll enjoy
+using. 
+
+Python runs everywhere
+----------------------
+
+Python is available for all major operating systems: Windows,
+Linux/Unix, OS/2, Mac, Amiga, among others. There are even
+versions that run on `.NET <http://ironpython.net/>`__ and 
+the `Java virtual machine <http://www.jython.org/>`_. You'll be pleased to
+know that the same source code will run unchanged across all
+implementations.
+
+Your favorite system isn't listed here? It may still support Python if 
+there's a C compiler for it. Ask around on `news:comp.lang.python
+<news:comp.lang.python>`__ - or just try compiling Python yourself.
+
+Python is friendly... and easy to learn
+---------------------------------------
+
+The Python newsgroup is known as one of the friendliest around. The avid
+developer and user `community </community>`_ maintains a 
+`wiki <http://wiki.python.org/moin/>`_, hosts international and local 
+`conferences </community/workshops>`_, runs development sprints, 
+and contributes to online code repositories.
+
+Python also comes with complete `documentation </doc>`_, both integrated into
+the language and as separate web pages. Online tutorials target both the
+`seasoned programmer
+<http://wiki.python.org/moin/BeginnersGuide/Programmers>`_ and the
+`newcomer <http://wiki.python.org/moin/BeginnersGuide/NonProgrammers>`_.
+All are designed to make you productive quickly. The availability of
+first-rate `books <http://wiki.python.org/moin/PythonBooks>`_ completes
+the learning package.
+
+Python is Open
+--------------
+
+The Python implementation is under an open source license that
+makes it **freely usable and distributable, even for commercial use**.
+The `Python license </psf/license/>`__ is administered by the `Python Software Foundation </psf/>`__.
+
+Take a look at `application domains </about/apps>`__ where Python is used, or
+try the `current download </download/>`__ for yourself.
