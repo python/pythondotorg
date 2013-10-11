@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils import timezone
 
 from markupfield.fields import MarkupField
 
