@@ -15,3 +15,8 @@ class PageView(DetailView):
     def get_queryset(self):
         # FIXME: show draft pages to... certain people... once we define who.
         return Page.objects.published()
+
+    def get_extra_context(self, *args, **kwargs):
+        context = self.super().get_extra_context(*args, **kwargs)
+        context['in_pages_app'] = True
+        return context

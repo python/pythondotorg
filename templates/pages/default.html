@@ -6,16 +6,16 @@
 {% block breadcrumbs %}
 {% load sitetree %}
 
+
+{% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
+
 {% comment %}
 TODO: format breadcrumbs
-
-{% sitetree_breadcrumbs from "main" using "mytrees/mybreadcrumbs.html" %}
-{% endcomment %}
-
 <ul class="breadcrumbs menu">
     <li><a href="#">Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
     <li>This Page</li>
 </ul>
+{% endcomment %}
 
 {% endblock breadcrumbs %}
 
@@ -25,9 +25,9 @@ TODO: format breadcrumbs
 
 {% block content %}
     <article class="text">
-        
+
         {{ page.content }}
-        
+
     </article>
 {% endblock content %}
 
@@ -51,9 +51,9 @@ TODO: should this partially come from sitetree?
     </div>
 
     <div class="twitter-widget sidebar-widget">
-        
+
         <!-- No good! Using the old Twitter API. Should content become part of the DB anyway? -->
-        
+
         <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
         <script type="text/javascript">// <![CDATA[
         new TWTR.Widget({
