@@ -71,7 +71,7 @@ new style formatting</span>
 
 {% block intro_copy %}
         <div class="introduction">
-            <p>Python is a programming language that lets you work quickly <span class="breaker"></span>and integrate systems more effectively. <a class="readmore" href="#">Learn More</a></p>
+            {% box 'homepage-introduction' %}
         </div>
 {% endblock %}
 
@@ -83,31 +83,19 @@ new style formatting</span>
                     {% load boxes %}
                     
                     <div class="small-widget get-started-widget">
-                    {% box 'homepage-get-started' %}
+                        {% box 'homepage-get-started' %}
                     </div>
                     
                     <div class="small-widget download-widget">
-
-                        <h2 class="widget-title"><span aria-hidden="true" class="icon-download"></span>Download</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>
-                        <p>Latest: <a href="#">Python 2.7.1</a> <a href="#">Python 3.4</a></p>
-
+                        {% box 'homepage-downloads' %}
                     </div>
 
                     <div class="small-widget documentation-widget">
-
-                        <h2 class="widget-title"><span aria-hidden="true" class="icon-documentation"></span>Docs</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>
-                        <p><a href="#">docs.python.org</a></p>
-
+                        {% box 'homepage-documentation' %}
                     </div>
 
                     <div class="small-widget jobs-widget last">
-
-                        <h2 class="widget-title"><span aria-hidden="true" class="icon-jobs"></span>Jobs</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>
-                        <p><a href="#">jobs.python.org</a></p>
-
+                        {% box 'homepage-jobs' %}
                     </div>
 
                 </div>
