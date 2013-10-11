@@ -1,3 +1,149 @@
+/* ! ===== LOCAL EXTENDABLE STYLES ===== 
+ *
+ * "Local" mixins can be used with the @extend operative. 
+ * If the rule name has a % in front of it, it will not be output as part of the file, only if called with @extend
+ * Unfortunately, the @extend operative does not work inside a media query or mix-in
+ */
+
+/* Color Spaces: use for consistency */
+%blue-colorspace {
+    @include vertical-gradient( darken($blue, 20%), darken($blue, 10%) );
+    @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) );
+}
+
+%blue-colorbox {
+    @extend %blue-colorspace;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+    
+    .button {
+        @extend %button-style-yellow;
+    }
+}
+
+%grey-colorspace {
+    @include vertical-gradient( $grey-lightest, darken($grey-lightest, 5%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
+}
+
+%grey-colorbox {
+    @extend %grey-colorspace;
+    border: 1px solid $border-color;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
+%yellow-colorspace {
+    @include vertical-gradient( lighten( $yellow, 18%), lighten( $yellow, 8%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.05) );
+}
+
+%yellow-colorbox {
+    @extend %yellow-colorspace;
+    border: 1px solid darken( $yellow, 6% );
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
+
+/* Buttons */
+%button-style {
+    cursor: pointer; 
+    color: darken($grey, 10%) !important; 
+    font-weight: normal; 
+    margin-bottom: rhythm(.25); 
+    padding: .4em .75em .35em; 
+    text-align: left; 
+    white-space: nowrap; 
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
+    @include pe-border( $color-top: $border-color, $color-right: $border-color, $color-bottom: $grey-light, $color-left: $border-color );
+    @include border-radius();
+    @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
+    
+    &:hover, &:focus, &:active {
+        background-color: inherit;
+        color: darken($grey, 30%) !important;
+        @include vertical-gradient( lighten( $grey-light, 30% ), lighten($grey-light, 25%) );
+    }
+}
+
+%button-style-yellow {
+    @extend %button-style;
+    background-color: lighten($yellow, 10%);
+    @include vertical-gradient( lighten($yellow, 10%), $yellow );
+    @include pe-border( $color-top: darken($yellow, 20%), $color-right: darken($yellow, 20%), $color-bottom: darken($yellow, 20%), $color-left: darken($yellow, 20%) );
+    
+    &:hover, &:active {
+        background-color: inherit;
+        @include vertical-gradient( lighten($yellow, 20%), $yellow );
+    }
+}
+
+%button-style-blue {
+    @extend %button-style;
+    color: $grey-lightest !important;
+    background-color: $blue;
+    text-shadow: none;
+    @include vertical-gradient( $blue, darken($blue, 10%) );
+    @include pe-border( $color-top: lighten($blue, 5%), $color-right: $blue, $color-bottom: $blue, $color-left: lighten($blue, 5%) );
+    @include box-shadow( inset 0 0 5px rgba($blue, 0.2) );
+    
+    &:hover, &:active {
+        background: inherit; 
+        color: $grey-lighterest !important;
+        @include vertical-gradient(darken($blue, 5%), darken($blue, 15%) );
+    }
+}
+
+%link-style {
+    border-bottom: 1px solid lighten($yellow, 10%);
+    text-decoration: none;
+    
+    &:hover, &:focus {
+        border-bottom-color: $yellow;
+    }
+}
+
+%link-style-on-blue {
+
+}
+
+
+/* Other elements */
+%indent-time-elements {
+    
+    li {
+        border-top: 1px solid $border-color;
+        padding-left: 4em;
+        padding-top: rhythm(0.25);
+        padding-bottom: rhythm(0.25);
+        position: relative;
+        
+        time {
+            position: absolute; 
+            top: 50%;
+            left: 0;
+            margin-top: -.75em;
+        }
+    }
+}
+
+%square-block-buttons {
+    /* Used in the pagination UL anchors, and in the Previous Next pattern */
+    display: block; 
+    color: $grey-light; 
+    padding: .5em .75em .4em; 
+    border: 1px solid $border-color; 
+    background-color: transparent; 
+}
+
+
+/* ! ===== Mixins ===== */
+
 @mixin embossed_text {
 	@include text-shadow( 0 1px 1px rgba(255,255,255,0.8), 0 -1px 1px rgba(0,0,0,0.2)  ); 
 }

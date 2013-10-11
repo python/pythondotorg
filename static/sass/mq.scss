@@ -1,9 +1,11 @@
 @import "base";
 @import "functions";
 @import "mixins";
+@import "flexslider";
 
 /* Mixins for media query parts */
 @import "layout";
+
 
 @mixin javascript_tag( $content ) {
     content: $content; 
@@ -90,9 +92,9 @@
         @include javascript_tag( 'drawer_navigation' ); 
     }
     
-    @include min_width_640(); 
+    @include min_width_640; 
     
-    @include drawer_nav_fortouch(); 
+    @include drawer_nav_fortouch; 
 }
 
 
@@ -103,7 +105,9 @@
         @include javascript_tag( 'drawer_navigation' ); 
     }
     
-    @include min_width_800(); 
+    @include min_width_800; 
+    
+    @include flexslider_mq_medium; 
 }
 
 
@@ -114,14 +118,16 @@
         @include javascript_tag( 'drawer_navigation load_supernavs' ); 
     }
     
-    @include horizontal_nav(); 
+    @include horizontal_nav; 
     
-    @include min_width_940(); 
+    @include min_width_940; 
+    
+    @include flexslider_mq_large; 
     
     /* I don't like including this again.
      * The problem is, touch device styles are being clobbered by contents in the horizontal_nav_dropdowns mixin 
      * We need the contents of that mixin to function in the Social Share and Font Adjust drop downs */
-    @include drawer_nav_fortouch(); 
+    @include drawer_nav_fortouch; 
 }
 
 
@@ -132,7 +138,7 @@
         @include javascript_tag( 'drawer_navigation load_supernavs' ); 
     }
     
-    @include min_width_1024();
+    @include min_width_1024;
 }
 
 
@@ -143,5 +149,13 @@
         @include javascript_tag( 'drawer_navigation load_supernavs' ); 
     }
     
-    @include min_width_1200();
+    @include min_width_1200;
 }
+
+
+/* http://dev.w3.org/csswg/css-device-adapt/
+ * http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
+ * for IE10 Snap Mode on Metro
+ */
+@-ms-viewport { width: device-width; }
+@viewport { width: device-width; }

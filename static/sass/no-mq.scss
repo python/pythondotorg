@@ -1,6 +1,7 @@
 @import "base";
 @import "functions";
 @import "mixins";
+@import "flexslider";
 
 /* Mixin for media query parts */
 @import "layout";
@@ -20,10 +21,7 @@
 
 @include min_width_940();
 
-
-/* Additional media query contents that we want to deliver to non-media query enabled browsers */
-
-//@include min_width_60em(); 
+@include flexslider_mq_large; 
 
 
 /* ! ===== lt-IE9 rules ===== */

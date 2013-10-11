@@ -5,26 +5,24 @@
 /*
  * Set variables that any script can use
  */
-var hastouch = has_feature( "touch" );
-var hasplaceholder = has_feature( "placeholder" );
-var hasgeneratedcontent = has_feature( "generatedcontent" );
-var is_ltie9 = has_feature( "lt-ie9" );
-
-if(!window.Retina) {
-    console.log( "Retina.js has not loaded" );
+if( !window.Modernizr ) {
+    var hastouch = has_feature( "touch" ),
+        hasplaceholder = has_feature( "placeholder" ),
+        hasgeneratedcontent = has_feature( "generatedcontent" ),
+        is_ltie9 = has_feature( "lt-ie9" );
 } else {
-    var is_retina = Retina.isRetina();
+    var hastouch = false,
+        hasplaceholder = false,
+        hasgeneratedcontent = false,
+        is_ltie9 = false;
 }
 
-/* Run a log for testing */
-//console.log( "hastouch=" + hastouch );
-//console.log( "is_ltie9=" + is_ltie9 );
-//console.log( "is_retina=" + is_retina );
-
-if ( is_retina ) {
-    $("html").addClass( "retina" ); 
-} else {
+if( !window.Retina ) { 
+    var is_retina = false; 
     $("html").addClass( "no-retina" ); 
+} else {
+    var is_retina = Retina.isRetina(); 
+    $("html").addClass( "retina" ); 
 }
 
 
@@ -54,7 +52,6 @@ supernavs_loaded = false;
 function on_resize_orientationchange() {
 
     // Check if a container is empty !$.trim( $('#mainnav').html() ).length
-
 
     /*
      * "Watch" the body:after { content } to find out how wide the viewport is.
@@ -205,15 +202,53 @@ $().ready(function() {
         $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
         return false;
     });
-
+    
+    /*
+     * Load a slideshow on the homepage. Set the animationtype and detect for the library first.  
+     */
+    if ( hastouch ) {
+        var animationtype = "slide"; 
+    } else {
+        var animationtype = "fade"; 
+    }
+    if ( !window.flexslider ) {
+        
+        $("html").addClass( "flexslide" ); 
+         
+        $('#dive-into-python').flexslider({
+            animation: animationtype,
+            direction: 'horizontal',
+            animationLoop: true,
+            slideshow: true,
+    	    slideshowSpeed: 8000,
+    	    animationSpeed: 600,
+    	    randomize: false,
+    	    smoothHeight: false,
+    	    pauseOnAction: true,
+    	    pauseOnHover: true,
+    	    useCSS: true, // use CSS transitions if available
+    	    controlNav: true, // Create navigation for paging control of each slide
+    	    directionNav: false, // Create navigation for previous/next navigation
+    	    prevText: "Prev.", 
+    	    nextText: "Next", 
+    	    touch: hastouch,
+            start: function(slider){
+                $(this).fadeIn(); 
+                $('body').removeClass('loading');
+            }
+        });
+    } else {
+        $("html").addClass( "no-flexslide" ); 
+    }
+    
 
     /*
      * Change or store the body font-size and save it into a cookie
      * Scales the font-size up or down by about 2 pixels.
      * Requires jQuery.cookie.js
      */
-    if(!window.cookie) {
-        console.log( "cookie.js has not loaded" );
+    if ( !window.cookie ) {
+        //console.log( "cookie.js has not loaded" );
     } else {
 
         var $cookie_name = "Python-FontSize";
@@ -331,51 +366,5 @@ $().ready(function() {
  * Used in tandem with Modernizr for the best effect. Pass this function values of a Modernizr class name.
  */
 function has_feature( feature ) {
-    if ( $("html").hasClass( feature ) ) {
-        return true;
-    } else {
-        return false;
-    }
+    if ( $("html").hasClass( feature ) ) { return true; } else { return false; }
 }
-
-
-/*
- * DELETE LATER -- DEV ONLY
- * Get the viewport dimensions. Edit this and refine as needed.
- * Used to bind media-query-like conditions to Javscript actions.
- */
-function getViewport() {
-
-    var viewPortWidth;
-    var viewPortHeight;
-
-    // the more standards compliant browsers (mozilla/netscape/opera/IE7) use window.innerWidth and window.innerHeight
-    if (typeof window.innerWidth != 'undefined') {
-        viewPortWidth = window.innerWidth,
-        viewPortHeight = window.innerHeight
-    }
-
-    // IE6 in standards compliant mode (i.e. with a valid doctype as the first line in the document)
-    else if (typeof document.documentElement != 'undefined'
-    && typeof document.documentElement.clientWidth !=
-    'undefined' && document.documentElement.clientWidth !== 0) {
-        viewPortWidth = document.documentElement.clientWidth,
-        viewPortHeight = document.documentElement.clientHeight
-    }
-
-    // older versions of IE
-    else {
-        viewPortWidth = document.getElementsByTagName('body')[0].clientWidth,
-        viewPortHeight = document.getElementsByTagName('body')[0].clientHeight
-    }
-    return [viewPortWidth, viewPortHeight];
-}
-
-
-/*
- * J's "make the browser tell me how big the viewport is on resize" script.
- */
-$('#test-window-size').html(''+getViewport()+'');
-$(window).resize(function() {
-	$('#test-window-size').html(''+getViewport()+'');
-});

@@ -3,25 +3,70 @@
 {% block body_attributes %}class="python home"{% endblock %}
 
 {% block header_content %}
-        <div class="slideshow">
-            <div class="slide-code">
-                <code style="display: block;">
-                    <div>&nbsp;1&nbsp;  <strong>>>> def g(x):</strong></div>
-                    &nbsp;2&nbsp;  <strong>... &nbsp;&nbsp;&nbsp;&nbsp;yield from range(x, 0, -1)</strong><br>
-                    &nbsp;3&nbsp;  <strong>... &nbsp;&nbsp;&nbsp;&nbsp;yield from range(x)</strong><br>
-                    &nbsp;4&nbsp;  <strong>...</strong><br>
-                    &nbsp;5&nbsp;  <strong>>>> list(g(5))</strong><br>
-                          6&nbsp;  <span>[5, 4, 3, 2, 1, 0, 1, 2, 3, 4]</span>
-                </code>
-            </div>
+        
+        <div id="dive-into-python" class="flex-slideshow slideshow">
+            
+            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" href="/shell/">&gt;&gt;&gt;</a></li></ul>
+            
+            <!-- Ideas for slides came from https://wiki.python.org/moin/SimplePrograms -->
+            <ul class="slides menu">
+                <li>
+                
+                    <div class="slide-code">
+<pre><code><span class="comment"># Simple output</span>
+>>> print 'Hello, I'm Python!'
 
-            <div class="slide-copy">
-                <h1>Python 3.3</h1>
-                <p><a href="#">PEP 380</a> adds the <code>yield from</code> expression, allowing a generator to delegate part of its operations to another generator. This allows a section of code containing yield to be factored out and placed in another generator. Additionally, the subgenerator is allowed to return with a value, and the value is made available to the delegating generator.</p>
-            </div>
+<span class="comment"># 2 Input, assignment</span>
+>>> name = raw_input('What is your name?\n')
+... print 'Hi, %s.' % name</code></pre>
+                    </div>
+                    
+                    <div class="slide-copy">
+                        <h1>Quick &amp; Easy to Learn</h1>
+                        <p>Experienced programmers in any other language can pick up Python very quickly, while beginners find the clean syntax and indentation structure easy to learn. <a href="http://docs.python.org/3/tutorial/">Whet your appetite</a> with our Python overview.</p>
+                    </div>
+                    
+                </li>
+                <li>
+                
+                    <div class="slide-code">
+<pre><code><span class="comment"># For loop, built-in enumerate function, 
+new style formatting</span>
+>>> friends = ['john', 'pat', 'gary', 'michael']
+... for i, name in enumerate(friends):
+...    print "iteration {iteration} is {name}".format(iteration=i, name=name)</code></pre>
+                    </div>
+                    
+                    <div class="slide-copy">
+                        <h1>All the Flow You&rsquo;d Expect</h1>
+                        <p>Python knows the usual control flow statements that other languages speak &mdash; if, for, while and range() &mdash; with some of it own twists, of course. <a href="http://docs.python.org/3/tutorial/controlflow.html">More control flow tools</a></p>
+                    </div>
+                    
+                </li>
+                <li>
+                
+                    <div class="slide-code">
+<pre><code><span class="comment"># Write Fibonacci series up to n</span>
+>>> def fib(n):    
+...    a, b = 0, 1
+...    while a &lt; n:
+...        print(a, end=' ')
+...        a, b = b, a+b
+...    print()
+... <span class="comment"># Now call the function we just defined:</span>
+... fib(1000)
+<span class="output">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610</span></code></pre>
+                    </div>
+                    
+                    <div class="slide-copy">
+                        <h1>Functions Defined</h1>
+                        <p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="http://docs.python.org/3/tutorial/controlflow.html#defining-functions">More about defining functions</a></p>
+                    </div>
+                
+                </li>
+            </ul>
         </div>
-
-        {# <div class="temp-arrow"></div> #}
+ 
 {% endblock header_content %}
 
 {% block intro_copy %}

@@ -180,14 +180,14 @@
     /*modernizr*/ .no-touch .search-button { display: inline; }
     
     .slide-copy {
-        padding: 30px 40px;
+        //padding: 30px 40px;
         
         p { font-size: 1em; }
     }
     
     .introduction {
         // font-size: px2em( 22px ); 
-        padding: 0 1em;
+        padding: 0 1.5em;
     }
     
     .call-to-action { @include fontface-adjust( $headertwo ); }
@@ -499,11 +499,55 @@
         &:focus { width: 15em; }
     }
     
+    .home .header-banner { margin: 0 2em 0 1em; }
+    
+    .slideshow .slides li { @include clearfix(); }
+    
     .slide-code, .slide-copy {
         float: left;
-        min-height: 300px;
         width: 50%;
+        min-height: 280px;
     }
+    
+        .slide-code {
+            position: relative; 
+            line-height: 1.5; 
+        }
+        
+        .js .launch-shell { display: block; }
+        
+        /* <a class="launch-shell" href="/shell/">
+            <span class="message">Launch Interactive Shell</span><span class="icon">&gt;&gt;&gt;</span>
+        </a> */
+        .flexslide .launch-shell { 
+            display: block; 
+            position: absolute; 
+                top: 1.25em; right: 52%; 
+            z-index: 100; 
+            
+            span, a { display: inline-block; }
+            
+            .button { padding-bottom: .2em; }
+            
+            .message { 
+                white-space: nowrap; 
+                padding: .4em .75em .35em;
+                opacity: 0; 
+                color: $grey-light; 
+                @include vertical-gradient( $grey-dark, darken($grey-dark, 8%) );
+                @include pe-border( $color-top: #444, $color-right: #444, $color-bottom: #444, $color-left: #444 );
+                @include border-radius();
+                @include box-shadow( 1px 1px 1px rgba(#000, 0.05) );
+                @include transition( all .25s ease-in-out ); 
+            }
+            
+            li:hover .message, li:focus .message { opacity: 1; }
+        }
+        
+        .no-touch .launch-shell {
+            
+            
+        }
     
     .introduction {
         text-align: center; 
