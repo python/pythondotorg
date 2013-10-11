@@ -1,0 +1,198 @@
+[
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>The Python Software Foundation maintains and supports open-source Python software</h4>\r\n                                <p>The PSF runs <a href=\"#\">PyCon</a>, supports conferences around the world, and funds Python-related development with a grants program. <a href=\"#\">Learn more about the PSF</a>.\r\n                            </li>", 
+        "updated": "2013-10-11T19:20:08.895Z", 
+        "created": "2013-10-11T19:20:08.893Z", 
+        "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>The Python Software Foundation maintains and supports open-source Python software</h4>\r\n                                <p>The PSF runs <a href=\"#\">PyCon</a>, supports conferences around the world, and funds Python-related development with a grants program. <a href=\"#\">Learn more about the PSF</a>.\r\n                            </li>", 
+        "label": "supernav-python-about", 
+        "last_modified_by": null
+    }, 
+    "pk": 1
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <p class=\"date-posted\"><small>Monday, November 19, 2012</small></p>\r\n                                <h4>Featured Event Title</h4>\r\n                                <p class=\"excerpt\"><small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <a class=\"readmore\" href=\"#\">Read more</a></small></p>\r\n                            </li>", 
+        "updated": "2013-10-11T19:24:34.021Z", 
+        "created": "2013-10-11T19:20:46.910Z", 
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <p class=\"date-posted\"><small>Monday, November 19, 2012</small></p>\r\n                                <h4>Featured Event Title</h4>\r\n                                <p class=\"excerpt\"><small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <a class=\"readmore\" href=\"#\">Read more</a></small></p>\r\n                            </li>", 
+        "label": "supernav-python-events", 
+        "last_modified_by": 1
+    }, 
+    "pk": 2
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<li class=\"tier-2 super-navigation\">\r\n    <p class=\"date-posted\"><small>Monday, March 4, 2013</small></p>\r\n    <h4>Introducing Electronic Contributor Agreements</h4>\r\n    <p class=\"excerpt\">\r\n        <small><br />\r\nWe're happy to announce the new way to file a contributor agreement: on the web at&nbsp;<a href=\"http://www.python.org/psf/contrib/contrib-form/\">http://www.python.org/psf/contrib/contrib-form/</a>.<br />\r\n<br />\r\nThrough the use of&nbsp;<a href=\"https://www.echosign.adobe.com/en/home.html\">Adobe's EchoSign</a>, we got rid of the old hand-written, print out, scan or photograph, then fax or email of your form ...<a class=\"readmore\" href=\"http://feedproxy.google.com/~r/PythonInsider/~3/tGNCqyOiun4/introducing-electronic-contributor.html\">Read more</a></small>\r\n    </p>\r\n</li>", 
+        "updated": "2013-10-11T19:24:30.112Z", 
+        "created": "2013-10-11T19:21:09.179Z", 
+        "content": "<li class=\"tier-2 super-navigation\">\r\n    <p class=\"date-posted\"><small>Monday, March 4, 2013</small></p>\r\n    <h4>Introducing Electronic Contributor Agreements</h4>\r\n    <p class=\"excerpt\">\r\n        <small><br />\r\nWe're happy to announce the new way to file a contributor agreement: on the web at&nbsp;<a href=\"http://www.python.org/psf/contrib/contrib-form/\">http://www.python.org/psf/contrib/contrib-form/</a>.<br />\r\n<br />\r\nThrough the use of&nbsp;<a href=\"https://www.echosign.adobe.com/en/home.html\">Adobe's EchoSign</a>, we got rid of the old hand-written, print out, scan or photograph, then fax or email of your form ...<a class=\"readmore\" href=\"http://feedproxy.google.com/~r/PythonInsider/~3/tGNCqyOiun4/introducing-electronic-contributor.html\">Read more</a></small>\r\n    </p>\r\n</li>", 
+        "label": "supernav-python-blog", 
+        "last_modified_by": 1
+    }, 
+    "pk": 3
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                \r\n                                <img src=\"/static/img/google-trans.png\" alt=\"Google\">\r\n                    \r\n                                <blockquote class=\"success-quote\">\r\n                                    Python allows us to produce maintainable features in record times, with a minimum of developers.\r\n                                </blockquote>\r\n                                <p class=\"quote-by\"><cite>Cuong Do, Software Architect</cite>, YouTube.com</p>\r\n                                \r\n                            </li>", 
+        "updated": "2013-10-11T19:24:24.715Z", 
+        "created": "2013-10-11T19:21:24.310Z", 
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                \r\n                                <img src=\"/static/img/google-trans.png\" alt=\"Google\">\r\n                    \r\n                                <blockquote class=\"success-quote\">\r\n                                    Python allows us to produce maintainable features in record times, with a minimum of developers.\r\n                                </blockquote>\r\n                                <p class=\"quote-by\"><cite>Cuong Do, Software Architect</cite>, YouTube.com</p>\r\n                                \r\n                            </li>", 
+        "label": "supernav-python-success-stories", 
+        "last_modified_by": 1
+    }, 
+    "pk": 4
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Local Events</h4>\r\n                                <p>Here are some events and groups in your area.</p>\r\n                                <ul class=\"menu\">\r\n                                    <li><time datetime=\"\">9/30<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Royal Python Society Meetup, Providence RI</a></li>\r\n                                    <li><time datetime=\"\">10/4<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Users Group, Boston MA</a></li>\r\n                                    <li><time datetime=\"\">10/5<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Enthusiasts, Cambridge MA</a></li>\r\n                            </ul>\r\n                            </li>", 
+        "updated": "2013-10-11T19:24:20.418Z", 
+        "created": "2013-10-11T19:21:37.439Z", 
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Local Events</h4>\r\n                                <p>Here are some events and groups in your area.</p>\r\n                                <ul class=\"menu\">\r\n                                    <li><time datetime=\"\">9/30<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Royal Python Society Meetup, Providence RI</a></li>\r\n                                    <li><time datetime=\"\">10/4<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Users Group, Boston MA</a></li>\r\n                                    <li><time datetime=\"\">10/5<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Enthusiasts, Cambridge MA</a></li>\r\n                            </ul>\r\n                            </li>", 
+        "label": "supernav-python-community", 
+        "last_modified_by": 1
+    }, 
+    "pk": 5
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation; download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or look visit the <a href=\"/documentation.php#docs-by-version\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"#\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"#\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>", 
+        "updated": "2013-10-11T19:24:14.995Z", 
+        "created": "2013-10-11T19:22:54.013Z", 
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation; download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or look visit the <a href=\"/documentation.php#docs-by-version\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"#\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"#\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>", 
+        "label": "supernav-python-documentation", 
+        "last_modified_by": 1
+    }, 
+    "pk": 6
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Download for Mac OSX</h4>\r\n                                <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href=\"#\">View the full list</a>.\r\n                                <p>\r\n                                    <a class=\"button\" href=\"#\">Python 3.3.0</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.7.3</a>\r\n                                </p>\r\n                            </li>", 
+        "updated": "2013-10-11T19:24:11.005Z", 
+        "created": "2013-10-11T19:23:20.756Z", 
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Download for Mac OSX</h4>\r\n                                <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href=\"#\">View the full list</a>.\r\n                                <p>\r\n                                    <a class=\"button\" href=\"#\">Python 3.3.0</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.7.3</a>\r\n                                </p>\r\n                            </li>", 
+        "label": "supernav-python-downloads", 
+        "last_modified_by": 1
+    }, 
+    "pk": 7
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "Thanks for submitting your feedback!", 
+        "updated": "2013-10-11T19:24:07.023Z", 
+        "created": "2013-10-11T19:23:37.641Z", 
+        "content": "Thanks for submitting your feedback!", 
+        "label": "feedbacks-complete", 
+        "last_modified_by": 1
+    }, 
+    "pk": 8
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n<p><a href=\"#\">Start with our Beginner\u2019s Guide</a></p>", 
+        "updated": "2013-10-11T17:25:22.405Z", 
+        "created": "2013-10-11T17:25:22.402Z", 
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n<p><a href=\"#\">Start with our Beginner\u2019s Guide</a></p>", 
+        "label": "homepage-get-started", 
+        "last_modified_by": null
+    }, 
+    "pk": 9
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p>Latest: <a href=\"#\">Python 2.7.1</a> <a href=\"#\">Python 3.4</a></p>", 
+        "updated": "2013-10-11T19:25:35.286Z", 
+        "created": "2013-10-11T19:25:35.283Z", 
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p>Latest: <a href=\"#\">Python 2.7.1</a> <a href=\"#\">Python 3.4</a></p>", 
+        "label": "homepage-downloads", 
+        "last_modified_by": null
+    }, 
+    "pk": 10
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>Docs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">docs.python.org</a></p>", 
+        "updated": "2013-10-11T19:26:23.204Z", 
+        "created": "2013-10-11T19:26:23.201Z", 
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>Docs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">docs.python.org</a></p>", 
+        "label": "homepage-documentation", 
+        "last_modified_by": null
+    }, 
+    "pk": 11
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">jobs.python.org</a></p>", 
+        "updated": "2013-10-11T19:27:35.468Z", 
+        "created": "2013-10-11T19:27:35.466Z", 
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">jobs.python.org</a></p>", 
+        "label": "homepage-jobs", 
+        "last_modified_by": null
+    }, 
+    "pk": 12
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<p>Python is a programming language that lets you work quickly <span class=\"breaker\"></span>and integrate systems more effectively. <a class=\"readmore\" href=\"#\">Learn More</a></p>", 
+        "updated": "2013-10-11T19:38:09.929Z", 
+        "created": "2013-10-11T19:38:09.925Z", 
+        "content": "<p>Python is a programming language that lets you work quickly <span class=\"breaker\"></span>and integrate systems more effectively. <a class=\"readmore\" href=\"#\">Learn More</a></p>", 
+        "label": "homepage-introduction", 
+        "last_modified_by": null
+    }, 
+    "pk": 13
+},
+{
+    "model": "boxes.box", 
+    "fields": {
+        "content_markup_type": "html", 
+        "creator": 1, 
+        "_content_rendered": "<h2 class=\"widget-title\">\r\n    <span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"#\">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class=\"readmore\" href=\"#\">Learn more</a> </p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"{% url 'users:user_membership_edit' %}\">Become a Member</a>\r\n    <a class=\"button\" href=\"#\">Donate to the PSF</a>\r\n</p>", 
+        "updated": "2013-10-11T19:51:21.423Z", 
+        "created": "2013-10-11T19:51:21.418Z", 
+        "content": "<h2 class=\"widget-title\">\r\n    <span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"#\">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class=\"readmore\" href=\"#\">Learn more</a> </p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"{% url 'users:user_membership_edit' %}\">Become a Member</a>\r\n    <a class=\"button\" href=\"#\">Donate to the PSF</a>\r\n</p>", 
+        "label": "widget-about-psf", 
+        "last_modified_by": null
+    }, 
+    "pk": 14
+}
+]

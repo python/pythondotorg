@@ -410,66 +410,70 @@
             box-shadow: none !important;
             text-shadow: none !important;
         }
+        
         body {
             font-size: 10pt; 
             line-height: 1.67; 
         }
-        a, a:visited {
-            text-decoration: underline !important;
-        }
-        *[role="main"] a[href]:after {
-            content: " (" attr(href) ")";
-            font-size: 75%; 
-        }
+        
+        a, a:visited { text-decoration: underline !important; }
+        
+        *[role="main"] a[href]:after, 
         *[role="main"] abbr[title]:after {
             content: " (" attr(title) ")";
             font-size: 75%; 
         }
-        .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+        
+        .ir a:after, a[href^="javascript:"]:after, 
+        a[href^="#"]:after {
             content: "";
         }
+        
         pre, blockquote {
             border: 1px solid #999;
             page-break-inside: avoid;
         }
-        thead {
-            display: table-header-group; /* h5bp.com/t */
-        }
-        tr, img {
-            page-break-inside: avoid;
-        }
-        img {
-            max-width: 100% !important;
-        }
-        @page {
-            margin: 0.5cm;
-        }
+        
+        thead { display: table-header-group; /* h5bp.com/t */ }
+        
+        tr, img { page-break-inside: avoid; }
+        
+        img { max-width: 100% !important; }
+        
+        @page { margin: 0.5cm; }
+       
         p, h2, h3 {
             orphans: 3;
             widows: 3;
         }
-        h2, h3 {
-            page-break-after: avoid;
-        }
+        h2, h3 { page-break-after: avoid; }
         
         /* Hide parts of the layout that overcomplicate paged output */
-        .do-not-print, .screen-reader-text, .invisible, .jump-to-menu, .jump-link, #site-map-link {
-            display: none; 
-        }
+        .do-not-print, 
+        .screen-reader-text, 
+        .invisible, 
+        .jump-to-menu, 
+        .jump-link, 
+        #site-map-link,
+        .feedback-flag,
+        #leave_feedback { display: none; }
+        
         .say-no-more {
             display: inline; 
             visibility: visible; 
         }
-        .blog-widget, .event-widget {
+        
+        .blog-widget, 
+        .event-widget {
                 
-            li {
-                padding-left: 6em; 
-            }
+            li { padding-left: 6em; }
         }
+        
         .site-headline a {
             display: block; 
             
             .python-logo, .psf-logo { display: none; }
+            /* Forces an image to be printed as if it were inline, not a background image */
             .python & { content: image-url("python-logo_print.png"); }
             .psf & { content: image-url("psf-logo_print.png"); }
         }

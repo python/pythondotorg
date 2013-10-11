@@ -1280,7 +1280,7 @@ a.button,
   position: absolute;
   top: 1.25em;
   right: 52%;
-  z-index: 100; }
+  z-index: 50; }
   .flexslide .launch-shell span, .flexslide .launch-shell a {
     display: inline-block; }
   .flexslide .launch-shell .button {

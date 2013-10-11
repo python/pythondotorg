@@ -2937,15 +2937,13 @@ p.quote-by-organization {
   a, a:visited {
     text-decoration: underline !important; }
 
-  *[role="main"] a[href]:after {
-    content: " (" attr(href) ")";
-    font-size: 75%; }
-
+  *[role="main"] a[href]:after,
   *[role="main"] abbr[title]:after {
     content: " (" attr(title) ")";
     font-size: 75%; }
 
-  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
+  .ir a:after, a[href^="javascript:"]:after,
+  a[href^="#"]:after {
     content: ""; }
 
   pre, blockquote {
@@ -2973,18 +2971,27 @@ p.quote-by-organization {
     page-break-after: avoid; }
 
   /* Hide parts of the layout that overcomplicate paged output */
-  .do-not-print, .screen-reader-text, .invisible, .jump-to-menu, .jump-link, #site-map-link {
+  .do-not-print,
+  .screen-reader-text,
+  .invisible,
+  .jump-to-menu,
+  .jump-link,
+  #site-map-link,
+  .feedback-flag,
+  #leave_feedback {
     display: none; }
 
   .say-no-more {
     display: inline;
     visibility: visible; }
 
-  .blog-widget li, .event-widget li {
+  .blog-widget li,
+  .event-widget li {
     padding-left: 6em; }
 
   .site-headline a {
-    display: block; }
+    display: block;
+    /* Forces an image to be printed as if it were inline, not a background image */ }
     .site-headline a .python-logo, .site-headline a .psf-logo {
       display: none; }
     .python .site-headline a {
