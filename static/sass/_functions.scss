@@ -466,6 +466,13 @@
                 padding-left: 6em; 
             }
         }
+        .site-headline a {
+            display: block; 
+            
+            .python-logo, .psf-logo { display: none; }
+            .python & { content: image-url("python-logo_print.png"); }
+            .psf & { content: image-url("psf-logo_print.png"); }
+        }
     }
     
 }

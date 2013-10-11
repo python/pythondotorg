@@ -481,12 +481,19 @@
 /* ! ===== Larger than 800px - Medium ===== */
 @mixin min_width_800() {
     
-    .site-headline a img {
-        width: 290px * .88; 
-        height: 82px * .88; 
-    }
-    
     .site-headline { margin: .25em 0 .5em; }
+    
+    .site-headline a {
+    
+        .python-logo {
+            width: 290px * .88; 
+            height: 82px * .88; 
+        }
+        .psf-logo {
+            width: 334px * .88; 
+            height: 82px * .88; 
+        }
+    }
     
     .options-bar { margin: rhythm( .5 ) 0; }
     
@@ -597,8 +604,8 @@
     }
     
     .welcome-to-the-foundation {
-        padding-top: 1em;
-        padding-bottom: 1em;
+        padding-top: 2em;
+        padding-bottom: 2em;
     }
     
     /* Blog landing page */
@@ -866,9 +873,16 @@
         & > div:nth-of-type(4n+5) { clear: left; }
     }
     
-    .site-headline a img {
-        width: 290px; 
-        height: 82px; 
+    .site-headline a {
+    
+        .python-logo {
+            width: 290px; 
+            height: 82px; 
+        }
+        .psf-logo {
+            width: 334px; 
+            height: 82px; 
+        }
     }
         .search-field {
             width: 14em;

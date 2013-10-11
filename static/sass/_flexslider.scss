@@ -143,6 +143,12 @@
         
         .home-slideshow & .flex-next:hover { background-color: $grey-lightest;  }
     }
+    
+    @media print {
+        .flex-control-nav, 
+        .flex-direction-nav,
+        .flex-control-paging { display: none; } 
+    }
 }
 
 

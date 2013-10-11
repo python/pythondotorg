@@ -35,7 +35,7 @@
 }
 
 /* IE 7 and 8 needed a width on the container... wasn't inheriting it from the contents */
-.site-headline a, .site-headline a img {
+.site-headline a, .site-headline a .python-logo {
     width: 290px; 
     height: 82px; 
 }

@@ -1520,12 +1520,15 @@ html[xmlns] .slides { display: block; }
     display: none;
     speak: none; }
 
-  .site-headline a img {
-    width: 255.2px;
-    height: 72.16px; }
-
   .site-headline {
     margin: 0.25em 0 0.5em; }
+
+  .site-headline a .python-logo {
+    width: 255.2px;
+    height: 72.16px; }
+  .site-headline a .psf-logo {
+    width: 293.92px;
+    height: 72.16px; }
 
   .options-bar {
     margin: 0.875em 0; }
@@ -1650,8 +1653,8 @@ html[xmlns] .slides { display: block; }
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
-    padding-top: 1em;
-    padding-bottom: 1em; }
+    padding-top: 2em;
+    padding-bottom: 2em; }
 
   /* Blog landing page */
   /*h2*/
@@ -2072,8 +2075,11 @@ html[xmlns] .slides { display: block; }
   .four-col > div:nth-of-type(4n+5) {
     clear: left; }
 
-  .site-headline a img {
+  .site-headline a .python-logo {
     width: 290px;
+    height: 82px; }
+  .site-headline a .psf-logo {
+    width: 334px;
     height: 82px; }
 
   .search-field {

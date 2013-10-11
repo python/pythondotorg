@@ -133,9 +133,7 @@
             <div class="container">
 
                 <h1 class="site-headline">
-                    <a href="/">
-                        <img src="{{ STATIC_URL }}img/python-top-logo.png" alt="python&trade;">
-                    </a>
+                        {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
                 </h1>
 
                 <div class="options-bar do-not-print">

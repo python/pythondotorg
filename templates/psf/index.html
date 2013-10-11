@@ -13,6 +13,9 @@
 {% endblock %}
 
 
+{# Need to insert the URL tag for the PSF landing page #}
+{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+
 {% block header-banner_attributes %}do-not-print{% endblock %}
 
 {% block header_content %}

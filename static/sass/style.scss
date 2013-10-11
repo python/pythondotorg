@@ -456,8 +456,12 @@ h2.not-column {
         display: block; 
         margin: 0 auto;
         
-        img {
+        .python-logo {
             width: 290px * .75; 
+            height: 82px * .75; 
+        }
+        .psf-logo {
+            width: 334px * .75; 
             height: 82px * .75; 
         }
     }
@@ -1332,7 +1336,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
     padding: rhythm( .75 ) 0;
-    background: url('../img/success-glow2.png') center -230px no-repeat;
+    background: center -230px no-repeat image-url("success-glow2.png") transparent;
     // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
     
     img { padding: 10px 30px; }
