@@ -1,17 +1,18 @@
 {% extends "base.html" %}
+{% load boxes %}
 
 {% block body_attributes %}class="python home"{% endblock %}
 
 {% block header_content %}
-        
+
         <div id="dive-into-python" class="flex-slideshow slideshow">
-            
+
             <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" href="/shell/">&gt;&gt;&gt;</a></li></ul>
-            
+
             <!-- Ideas for slides came from https://wiki.python.org/moin/SimplePrograms -->
             <ul class="slides menu">
                 <li>
-                
+
                     <div class="slide-code">
 <pre><code><span class="comment"># Simple output</span>
 >>> print 'Hello, I'm Python!'
@@ -20,34 +21,34 @@
 >>> name = raw_input('What is your name?\n')
 ... print 'Hi, %s.' % name</code></pre>
                     </div>
-                    
+
                     <div class="slide-copy">
                         <h1>Quick &amp; Easy to Learn</h1>
                         <p>Experienced programmers in any other language can pick up Python very quickly, while beginners find the clean syntax and indentation structure easy to learn. <a href="http://docs.python.org/3/tutorial/">Whet your appetite</a> with our Python overview.</p>
                     </div>
-                    
+
                 </li>
                 <li>
-                
+
                     <div class="slide-code">
-<pre><code><span class="comment"># For loop, built-in enumerate function, 
+<pre><code><span class="comment"># For loop, built-in enumerate function,
 new style formatting</span>
 >>> friends = ['john', 'pat', 'gary', 'michael']
 ... for i, name in enumerate(friends):
 ...    print "iteration {iteration} is {name}".format(iteration=i, name=name)</code></pre>
                     </div>
-                    
+
                     <div class="slide-copy">
                         <h1>All the Flow You&rsquo;d Expect</h1>
                         <p>Python knows the usual control flow statements that other languages speak &mdash; if, for, while and range() &mdash; with some of it own twists, of course. <a href="http://docs.python.org/3/tutorial/controlflow.html">More control flow tools</a></p>
                     </div>
-                    
+
                 </li>
                 <li>
-                
+
                     <div class="slide-code">
 <pre><code><span class="comment"># Write Fibonacci series up to n</span>
->>> def fib(n):    
+>>> def fib(n):
 ...    a, b = 0, 1
 ...    while a &lt; n:
 ...        print(a, end=' ')
@@ -57,16 +58,16 @@ new style formatting</span>
 ... fib(1000)
 <span class="output">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610</span></code></pre>
                     </div>
-                    
+
                     <div class="slide-copy">
                         <h1>Functions Defined</h1>
                         <p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="http://docs.python.org/3/tutorial/controlflow.html#defining-functions">More about defining functions</a></p>
                     </div>
-                
+
                 </li>
             </ul>
         </div>
- 
+
 {% endblock header_content %}
 
 {% block intro_copy %}
@@ -80,12 +81,11 @@ new style formatting</span>
 {% block content %}
 
                 <div class="row">
-                    {% load boxes %}
-                    
+
                     <div class="small-widget get-started-widget">
                         {% box 'homepage-get-started' %}
                     </div>
-                    
+
                     <div class="small-widget download-widget">
                         {% box 'homepage-downloads' %}
                     </div>
