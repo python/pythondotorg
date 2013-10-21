@@ -383,7 +383,7 @@
     }
     
     /* Shorten the amount of blue space under the nav on inner pages */
-    .no-touch  .inner .main-navigation {
+    .no-touch  .default-page .main-navigation {
         position: relative; 
         margin-bottom: -.0625em; 
     }
@@ -435,7 +435,7 @@
     }
     
     /* Shorten the amount of blue space under the nav on inner pages */
-    .no-touch .inner .main-navigation {
+    .no-touch .default-page .main-navigation {
         position: relative; 
         margin-bottom: -1.375em; 
     }
@@ -469,7 +469,7 @@
             width: 100%; 
         }
         
-        .inner .main-header { position: static; }
+        .default-page .main-header { position: static; }
         
         .main-navigation {
             display: block; 

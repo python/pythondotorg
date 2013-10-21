@@ -220,35 +220,39 @@ $().ready(function() {
     }
     if ( !window.flexslider ) {
         
-        $("html").addClass( "flexslide" ); 
-         
-        $('#dive-into-python').flexslider({
-            animation: animationtype,
-            direction: 'horizontal',
-            animationLoop: true,
-            slideshow: true,
-    	    slideshowSpeed: 8000,
-    	    animationSpeed: 600,
-    	    randomize: false,
-    	    smoothHeight: false,
-    	    pauseOnAction: true,
-    	    pauseOnHover: true,
-    	    useCSS: true, // use CSS transitions if available
-    	    controlNav: true, // Create navigation for paging control of each slide
-    	    directionNav: false, // Create navigation for previous/next navigation
-    	    prevText: "Prev.", 
-    	    nextText: "Next", 
-    	    touch: hastouch,
-            start: function(slider){
-                $(this).fadeIn(); 
-                $('body').removeClass('loading');
-            }
-        });
+        if ( $("body").hasClass( 'home' ) ) {
+        
+            $("html").addClass( "flexslide" ); 
+             
+            $('#dive-into-python').flexslider({
+                animation: animationtype,
+                direction: 'horizontal',
+                animationLoop: true,
+                slideshow: true,
+        	    slideshowSpeed: 8000,
+        	    animationSpeed: 600,
+        	    randomize: false,
+        	    smoothHeight: false,
+        	    pauseOnAction: true,
+        	    pauseOnHover: true,
+        	    useCSS: true, // use CSS transitions if available
+        	    controlNav: true, // Create navigation for paging control of each slide
+        	    directionNav: false, // Create navigation for previous/next navigation
+        	    prevText: "Prev.", 
+        	    nextText: "Next", 
+        	    touch: hastouch,
+                start: function(slider){
+                    $(this).fadeIn(); 
+                    $('body').removeClass('loading');
+                }
+            });
+        }
+        
     } else {
         $("html").addClass( "no-flexslide" ); 
     }
     
-
+    
     /*
      * Change or store the body font-size and save it into a cookie
      * Scales the font-size up or down by about 2 pixels.

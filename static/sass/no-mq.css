@@ -479,7 +479,7 @@ a.button,
 /* Header-banners (not home) */
 .header-banner {
   padding: 1em; }
-  .home .header-banner, .inner .header-banner {
+  .home .header-banner, .default-page .header-banner {
     padding: 0; }
 
 .about-banner,
@@ -491,7 +491,7 @@ a.button,
 
 .main-header {
   /* Shorten the amount of blue space under the nav on inner pages */ }
-  .inner .main-header {
+  .default-page .main-header {
     position: relative;
     z-index: 10; }
 
@@ -1022,7 +1022,7 @@ a.button,
 /* end @for */
 .content-wrapper {
   /* Increase the amount of white space under the nav on inner pages */ }
-  .inner .content-wrapper {
+  .default-page .content-wrapper {
     padding-top: 2em; }
 
 /* Main content with sidebars */
@@ -1753,7 +1753,7 @@ a.button,
     font-size: 0.875em; }
 
 /* Shorten the amount of blue space under the nav on inner pages */
-.no-touch .inner .main-navigation {
+.no-touch .default-page .main-navigation {
   position: relative;
   margin-bottom: -1.375em; }
 
@@ -1906,6 +1906,14 @@ a.button,
 
 /*aside*/
 /*aside*/
+.text {
+  /* Make the intro/first paragraphs slightly larger? */ }
+  .text > p:first-of-type {
+    color: #666666;
+    font-size: 1.125em;
+    line-height: 1.75;
+    margin-bottom: 1.75em; }
+
 /* Widgets in main content */
 .small-widget p, .small-widget li, .medium-widget p, .medium-widget li, .psf-widget p, .psf-widget li, .python-needs-you-widget p, .python-needs-you-widget li, .documentation-help p, .documentation-help li {
   font-size: 0.9375em; }

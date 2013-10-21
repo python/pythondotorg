@@ -822,9 +822,11 @@ a.jump-to-menu {
 .text, 
 .sidebar-widget {
     
-    & > h1, 
-    & > .alpha {
-        @include leader(1); 
+    .page-title {
+        color: $grey; 
+        @include fontface-adjust( $kilo ); 
+        @include leader(.75); 
+        @include trailer(.5); 
     }
     
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
@@ -832,6 +834,7 @@ a.jump-to-menu {
         margin-bottom: rhythm(0.75);
     }
     
+    /* Hyphenate specific container elements */
     p, dd, blockquote, address {
         @include pe-hyphenate(); 
     }
@@ -862,17 +865,14 @@ a.jump-to-menu {
         @extend %link-style;
         display: inline;
         
-        //&.external, &[rel='external'] {
-            /* Try to break long URLs instead of a very messy right rag */
-            //@include break-long-urls(); 
-        //}
+        /* Decided not to use this, the style was too obtrusive 
         &.external:before, &[rel='external']:before {
-            content: '\21f1'; /* An external link unicode icon */
+            content: '\21f1'; // An external link unicode icon, looks like a box with arrow pointing up to left from bottom right.
             display: inline-block; 
             font-weight: bold; 
             color: $grey-light; 
             margin-right: .5em; 
-        }
+        } */
     }
     
     /* This is a mess and dumb. Figure out a better way */
@@ -1896,7 +1896,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         span { display: block; }
     }
         .job-tags { margin-bottom: 0; }
-
+ 
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {

@@ -197,9 +197,7 @@
         padding: 1em;
         
         .home &, 
-        .inner & { 
-            padding: 0; 
-        }
+        .default-page & { padding: 0; }
     }
     
     .about-banner, 
@@ -212,7 +210,7 @@
     .main-header {
         
         /* Shorten the amount of blue space under the nav on inner pages */
-        .inner & {
+        .default-page & {
             position: relative; 
             z-index: 10;  
         }
@@ -306,7 +304,7 @@
     .content-wrapper {
         
         /* Increase the amount of white space under the nav on inner pages */
-        .inner & { padding-top: 2em; }
+        .default-page & { padding-top: 2em; }
     }
     
     /* Main content with sidebars */
@@ -1023,6 +1021,17 @@
     /*aside*/ .left-sidebar { }
     /*aside*/ .right-sidebar { }
     
+    .text {
+        
+        /* Make the intro/first paragraphs slightly larger? */
+        & > p:first-of-type { 
+            color: $grey; 
+            font-size: 1.125em; 
+            line-height: 1.75; 
+            margin-bottom: rhythm(1);
+        }
+    }
+    
     /* Widgets in main content */
     .small-widget, .medium-widget, .psf-widget, .python-needs-you-widget, .documentation-help {
         
@@ -1198,7 +1207,7 @@
     /* Main content with sidebars */
     .main-content { 
         
-        .inner &.with-left-sidebar { @include pad( 1, 1 ); }
+        .default-page &.with-left-sidebar { @include pad( 1, 1 ); }
     }
     
     .event-description, 

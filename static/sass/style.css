@@ -716,23 +716,23 @@ img, embed, object, video {
   max-width: 100%; }
 
 .giga {
-  font-size: 3em; }
+  font-size: 2.5em; }
   .fontface .giga {
-    font-size: 3.45em; }
+    font-size: 2.875em; }
     .fontface .giga span:before {
       font-size: .875em; }
 
 .mega {
-  font-size: 2.5em; }
+  font-size: 2.25em; }
   .fontface .mega {
-    font-size: 2.875em; }
+    font-size: 2.5875em; }
     .fontface .mega span:before {
       font-size: .875em; }
 
 .kilo {
-  font-size: 2.25em; }
+  font-size: 2em; }
   .fontface .kilo {
-    font-size: 2.5875em; }
+    font-size: 2.3em; }
     .fontface .kilo span:before {
       font-size: .875em; }
 
@@ -1496,12 +1496,21 @@ a.jump-to-menu {
 .text,
 .sidebar-widget {
   /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
+  /* Hyphenate specific container elements */
   /* This is a mess and dumb. Figure out a better way */
   /* Prettier tables if authors use the correct elements */ }
-  .text > h1, .text > .alpha,
-  .sidebar-widget > h1,
-  .sidebar-widget > .alpha {
-    margin-top: 1.75em; }
+  .text .page-title,
+  .sidebar-widget .page-title {
+    color: #666666;
+    font-size: 2em;
+    margin-top: 1.3125em;
+    margin-bottom: 0.875em; }
+    .fontface .text .page-title, .fontface
+    .sidebar-widget .page-title {
+      font-size: 2.3em; }
+      .fontface .text .page-title span:before, .fontface
+      .sidebar-widget .page-title span:before {
+        font-size: .875em; }
   .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
   .sidebar-widget p,
   .sidebar-widget ul,
@@ -1574,16 +1583,14 @@ a.jump-to-menu {
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
     display: inline;
-    /* Try to break long URLs instead of a very messy right rag */ }
-    .text a:not(.button).external:before, .text a:not(.button)[rel='external']:before,
-    .sidebar-widget a:not(.button).external:before,
-    .sidebar-widget a:not(.button)[rel='external']:before {
-      content: '\21f1';
-      /* An external link unicode icon */
-      display: inline-block;
-      font-weight: bold;
-      color: #999999;
-      margin-right: .5em; }
+    /* Decided not to use this, the style was too obtrusive 
+    &.external:before, &[rel='external']:before {
+        content: '\21f1'; // An external link unicode icon, looks like a box with arrow pointing up to left from bottom right.
+        display: inline-block; 
+        font-weight: bold; 
+        color: $grey-light; 
+        margin-right: .5em; 
+    } */ }
   .text nav a, .text .menu a, .text .errorlist a, .text form label + ul a,
   .text .sidebar-widget form label + ul a,
   .sidebar-widget form .text label + ul a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
