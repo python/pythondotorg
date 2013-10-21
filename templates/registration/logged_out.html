@@ -1,4 +1,3 @@
-
 {% extends "base.html" %}
 
 
@@ -8,12 +7,16 @@
 {% endblock %}
 
 
-{% block body_attributes %}class="python inner logout"{% endblock %}
+{% block body_attributes %}class="python default-page logout"{% endblock %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 
 {% block content %}
-<p>You have been logged out.</p>
+    <article class="text">
+        
+        <h1 class="giga">You have been logged out.</h1>
+
+    </article>
 {% endblock content %}

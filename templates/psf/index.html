@@ -2,10 +2,12 @@
 
 {% extends "base.html" %}
 
+{% block page_title %}Python Software Foundation | {{ SITE_INFO.site_name }}{% endblock %}
+
 {% block body_attributes %}class="psf"{% endblock %}
 
-
 {% block main-nav_attributes %}psf-navigation{% endblock %}
+
 
 {% block main_navigation %}
 {% load sitetree %}

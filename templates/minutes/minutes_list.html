@@ -1,8 +1,11 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="psf inner minutes"{% endblock %}
+{% block page_title %}PSF Meeting Minutes | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="psf default-page minutes"{% endblock %}
 
 {% block main-nav_attributes %}psf-navigation{% endblock %}
+
 
 {% block main_navigation %}
 {% load sitetree %}

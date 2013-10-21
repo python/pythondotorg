@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
+{% block page_title %}Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="python users inner"{% endblock %}
 
 {% block main_navigation %}
 {% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
-
-
-{% block body_attributes %}class="python users inner"{% endblock %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
