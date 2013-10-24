@@ -65,7 +65,6 @@
     @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
     
     &:hover, &:focus, &:active {
-        background-color: inherit;
         color: darken($grey, 30%) !important;
         @include vertical-gradient( lighten( $grey-light, 30% ), lighten($grey-light, 25%) );
     }
@@ -73,7 +72,6 @@
 
 %button-style-yellow {
     @extend %button-style;
-    background-color: lighten($yellow, 10%);
     @include vertical-gradient( lighten($yellow, 10%), $yellow );
     @include pe-border( $color-top: darken($yellow, 20%), $color-right: darken($yellow, 20%), $color-bottom: darken($yellow, 20%), $color-left: darken($yellow, 20%) );
     
@@ -86,7 +84,6 @@
 %button-style-blue {
     @extend %button-style;
     color: $grey-lightest !important;
-    background-color: $blue;
     text-shadow: none;
     @include vertical-gradient( $blue, darken($blue, 10%) );
     @include pe-border( $color-top: lighten($blue, 5%), $color-right: $blue, $color-bottom: $blue, $color-left: lighten($blue, 5%) );

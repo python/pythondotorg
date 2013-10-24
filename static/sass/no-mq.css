@@ -412,10 +412,12 @@ body {
 
 input[type="submit"],
 input[type="reset"],
+button,
 .button,
 a.button,
 .button {
   display: inline-block;
+  vertical-align: baseline;
   width: auto; }
 
 /* Simple Column Structure */

@@ -459,10 +459,12 @@ html[xmlns] .slides { display: block; }
 
   input[type="submit"],
   input[type="reset"],
+  button,
   .button,
   a.button,
   .button {
     display: inline-block;
+    vertical-align: baseline;
     width: auto; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 39.9375em) and (max-width: 58.75em) {

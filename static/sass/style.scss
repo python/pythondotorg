@@ -242,7 +242,11 @@ input[type=submit], input[type=reset], button, a.button, .button {
     display: block; 
 }
 
-input[type=reset] {
+.primaryAction  {
+    
+}
+
+input[type=reset], button.secondaryAction {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
     @include pe-border( $color-top: $border-color, $color-bottom: darken( $grey-light, 10% ) ); 
     
@@ -329,33 +333,6 @@ h2.not-column {
 .larger { font-size: 120%; }
 
 .indent { padding-left: 2em; }
-
-
-/* ! ===== ICONS ===== */
-    
-/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
-.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
-	font-family: 'Pythonicon';
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	-webkit-font-smoothing: antialiased;
-	margin-right: .5em; 
-}
-
-.icon-alert, .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
-	
-	/* Hide a unicode fallback character when we supply it by default. 
-	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
-	 */
-	span {
-    	display: none; 
-	}
-}
-
 
 
 /* ! ===== MAJOR PAGE ELEMENTS ===== */
@@ -530,13 +507,11 @@ a.jump-to-menu {
     border-left: 1px solid lighten( $darkerblue, 8% );
     
     .icon-search:before {
-        font-size: 1.5em;
-        vertical-align: text-bottom;
-        margin: 0 .25em;
+        font-size: 1.75em;
+        vertical-align: middle;
+        margin: 0 .125em 0 .25em;
     }
-    .no-touch {
-        border-left: 0; 
-    }
+    .no-touch { border-left: 0; }
 }
 
 /*input*/ .search-field {
@@ -1735,7 +1710,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .download-list-widget {
     
-    .list-row-headings, .list-row-container li { font-size: px2em( 14px ); }
+    .list-row-headings, 
+    .list-row-container li { font-size: px2em( 14px ); }
+    
+    .list-row-container { margin-bottom: .5em; }
     
     /*modernizr*/ .no-touch & .list-row-container {
         height: 16.75em; 
@@ -1820,9 +1798,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== SIDEBAR syles ===== */
 
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/ 
-.main-sidebar {
-     
-}
+.main-sidebar { }
 
 .left-sidebar {
     
@@ -2214,6 +2190,30 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 //@include debug_misc;
 //@include debug_deprecated;
 //@include debug_empty;
+
+
+/* ! ===== ICONS ===== */
+    
+/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
+.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-google-plus, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+	font-family: 'Pythonicon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+    margin-right: .5em; 
+    
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	/* Hide a unicode fallback character when we supply it by default. 
+	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
+	 */
+	span { display: none; }
+}
 
 /* Keep this at the bottom since it will create a huge set of data */
 @import "fonts";
