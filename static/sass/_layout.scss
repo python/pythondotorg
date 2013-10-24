@@ -124,8 +124,7 @@
     input[type="reset"], 
     button, 
     .button, 
-    a.button, 
-    .button {
+    a.button {
         display: inline-block; 
         vertical-align: baseline; 
         width: auto;
@@ -168,6 +167,14 @@
     .options-bar {
         float: right; 
         width: auto;  
+    }
+    
+    .main-navigation {
+        
+        /*modernizr*/ .touch & .subnav {
+            
+            &:before { border-color: transparent; }
+        }
     }
     
     .search-field {

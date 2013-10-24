@@ -137,10 +137,9 @@
                 </h1>
 
                 <div class="options-bar do-not-print">
-
-                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a>
-
-                    <form class="search-the-site" action="#" method="get">
+                    
+                    {# Its a little ugly, but no space between elements makes the inline-block style work better #}
+                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="#" method="get">
                         <fieldset title="Search Python.org">
 
                             <span aria-hidden="true" class="icon-search"></span>
@@ -156,14 +155,10 @@
                             <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
 
                         </fieldset>
-                    </form>
-
-                    <span class="breaker"></span>
-
-                    <div class="adjust-font-size">
+                    </form><span class="breaker"></span><div class="adjust-font-size">
                         <ul class="navigation menu" aria-label="Adjust Text Size on Page">
                             <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#"><strong><small>A</small> A</strong></a>
+                                <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
                                 <ul class="subnav menu">
                                     <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
                                     <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</li>
@@ -171,12 +166,10 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div>
-
-                    <div class="winkwink-nudgenudge">
+                    </div><div class="winkwink-nudgenudge">
                         <ul class="navigation menu" aria-label="Social Media Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#">Socialize</a>
+                                <a href="#" class="action-trigger">Socialize</a>
                                 <ul class="subnav menu">
                                     <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
                                     <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
@@ -186,8 +179,14 @@
                                 </ul>
                             </li>
                         </ul>
+                    </div><div class="account-signin">
+                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#fixme">Sign In</a>
+                            </li>
+                        </ul>
                     </div>
-
+                    
                 </div><!-- end options-bar -->
 
                 <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">

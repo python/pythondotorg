@@ -256,54 +256,57 @@ $().ready(function() {
     /*
      * Change or store the body font-size and save it into a cookie
      * Scales the font-size up or down by about 2 pixels.
-     * Requires jQuery.cookie.js
+     * Requires jQuery.cookie.js. Only load for touch devices.
      */
     if ( !window.cookie ) {
         //console.log( "cookie.js has not loaded" );
     } else {
-
-        var $cookie_name = "Python-FontSize";
-        var elem = "body";
-        var originalFontSize = $(elem).css("font-size");
-    
-        // if exists load saved value, otherwise store it
-        if($.cookie($cookie_name)) {
-            var $getSize = $.cookie($cookie_name);
-            $(elem).css({fontSize : $getSize + ($getSize.indexOf("px")!=-1 ? "" : "px")}); // IE fix for double "pxpx" error
-        } else {
-            $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
-        }
-    
-        // reset link
-        $(".text-reset").bind("click", function() {
-            $(elem).css("font-size", originalFontSize);
-            $.cookie($cookie_name, originalFontSize);
-            return false;
-        });
-    
-        // text "A+" link
-        $(".text-grow").bind("click", function() {
-            var currentFontSize = $(elem).css("font-size");
-            var currentFontSizeNum = parseFloat(currentFontSize, 10);
-            var newFontSize = Math.round( currentFontSizeNum*1.125 );
-            if (newFontSize) {
-                $(elem).css("font-size", newFontSize);
-                $.cookie($cookie_name, newFontSize);
+        
+        if ( hastouch ) {
+            
+            var $cookie_name = "Python-FontSize";
+            var elem = "body";
+            var originalFontSize = $(elem).css("font-size");
+        
+            // if exists load saved value, otherwise store it
+            if($.cookie($cookie_name)) {
+                var $getSize = $.cookie($cookie_name);
+                $(elem).css({fontSize : $getSize + ($getSize.indexOf("px")!=-1 ? "" : "px")}); // IE fix for double "pxpx" error
+            } else {
+                $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
             }
-            return false;
-        });
-    
-        // text "A-" link
-        $(".text-shrink").bind("click", function() {
-            var currentFontSize = $(elem).css("font-size");
-            var currentFontSizeNum = parseFloat(currentFontSize, 10);
-            var newFontSize = Math.round( currentFontSizeNum*0.89 );
-            if (newFontSize) {
-                $(elem).css("font-size", newFontSize);
-                $.cookie($cookie_name, newFontSize);
-            }
-            return false;
-        });
+        
+            // reset link
+            $(".text-reset").bind("click", function() {
+                $(elem).css("font-size", originalFontSize);
+                $.cookie($cookie_name, originalFontSize);
+                return false;
+            });
+        
+            // text "A+" link
+            $(".text-grow").bind("click", function() {
+                var currentFontSize = $(elem).css("font-size");
+                var currentFontSizeNum = parseFloat(currentFontSize, 10);
+                var newFontSize = Math.round( currentFontSizeNum*1.125 );
+                if (newFontSize) {
+                    $(elem).css("font-size", newFontSize);
+                    $.cookie($cookie_name, newFontSize);
+                }
+                return false;
+            });
+        
+            // text "A-" link
+            $(".text-shrink").bind("click", function() {
+                var currentFontSize = $(elem).css("font-size");
+                var currentFontSizeNum = parseFloat(currentFontSize, 10);
+                var newFontSize = Math.round( currentFontSizeNum*0.89 );
+                if (newFontSize) {
+                    $(elem).css("font-size", newFontSize);
+                    $.cookie($cookie_name, newFontSize);
+                }
+                return false;
+            });
+        } // end hastouch
     }
 
     /* If there is no HTML5 placeholder present, run a javascript equivalent */

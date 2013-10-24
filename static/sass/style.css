@@ -501,9 +501,6 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: normal; }
 
 /* Minimal base styles */
-a:hover, a:active {
-  outline: none; }
-
 ul, ol {
   margin-left: 1.5em; }
 
@@ -1077,9 +1074,8 @@ h2.not-column {
   -ms-border-radius: 6px;
   -o-border-radius: 6px;
   border-radius: 6px; }
-  .options-bar form, .options-bar div {
-    padding: 0.35em 0.2em 0.3em;
-    vertical-align: middle; }
+  .options-bar form {
+    padding: 0.35em 0.2em 0.3em; }
   .options-bar .breaker {
     display: block;
     width: 100%;
@@ -1089,38 +1085,47 @@ h2.not-column {
     border-top: 1px solid #070a0c;
     border-bottom: 1px solid #2d3e4d; }
 
+#site-map-link,
 .jump-to-menu,
 .search-the-site,
-.icon-search-alt,
+.icon-search,
+.icon-search:before,
 input#s,
 .adjust-font-size,
-.winkwink-nudgenudge {
+.winkwink-nudgenudge,
+.account-signin {
   display: -moz-inline-stack;
   display: inline-block;
-  vertical-align: baseline; }
-  .lt-ie8 .jump-to-menu, .lt-ie8
+  vertical-align: middle; }
+  .lt-ie8 #site-map-link, .lt-ie8
+  .jump-to-menu, .lt-ie8
   .search-the-site, .lt-ie8
-  .icon-search-alt, .lt-ie8
+  .icon-search, .lt-ie8
+  .icon-search:before, .lt-ie8
   input#s, .lt-ie8
   .adjust-font-size, .lt-ie8
-  .winkwink-nudgenudge {
+  .winkwink-nudgenudge, .lt-ie8
+  .account-signin {
     vertical-align: auto;
     zoom: 1;
     display: inline; }
 
-.jump-to-menu,
-.search-the-site,
-.adjust-font-size {
-  margin-right: -.35em; }
+.touch .search-the-site,
+.winkwink-nudgenudge,
+.account-signin {
+  border-left: 1px solid #2d3e4d; }
 
-a.jump-to-menu {
-  color: #bbbbbb;
-  padding: 0.45em 0.75em 0.35em;
-  border-right: 1px solid #070a0c;
-  vertical-align: middle; }
-  a.jump-to-menu:hover, a.jump-to-menu:focus {
+.touch #site-map-link,
+.jump-to-menu,
+.adjust-font-size,
+.winkwink-nudgenudge {
+  border-right: 1px solid #070a0c; }
+
+#site-map-link {
+  color: #bbbbbb; }
+  #site-map-link:hover, #site-map-link:focus {
     color: white; }
-  .no-touch a.jump-to-menu {
+  .no-touch #site-map-link {
     display: none; }
 
 .menu-icon {
@@ -1131,11 +1136,9 @@ a.jump-to-menu {
 /*form*/
 .search-the-site {
   text-align: left;
-  padding: 0.35em 0.2em 0.3em;
-  border-left: 1px solid #2d3e4d; }
+  padding: 0.35em 0.2em 0.3em; }
   .search-the-site .icon-search:before {
     font-size: 1.75em;
-    vertical-align: middle;
     margin: 0 0.125em 0 0.25em; }
   .search-the-site .no-touch {
     border-left: 0; }
@@ -1170,69 +1173,131 @@ a.jump-to-menu {
     color: #bbbbbb; }
 
 .search-button {
-  /* Small screens (phones) have their own form controls */
-  display: none;
   margin-right: 0.2em;
   margin-bottom: 0;
-  text-shadow: none; }
+  text-shadow: none;
+  /* Small screens (phones) have their own form controls */ }
+  .touch .search-button {
+    display: none; }
 
-.adjust-font-size, .winkwink-nudgenudge {
-  border-left: 1px solid #2d3e4d;
+.no-touch .adjust-font-size {
+  display: none; }
+
+.adjust-font-size,
+.winkwink-nudgenudge,
+.account-signin {
   text-align: center;
   overflow: visible;
   /*ul*/
   /*li*/
   /*li*/
-  /*ul*/ }
+  /*ul*/
+  /*.close-subnav {
+      @include pe-border( $color-bottom: $grey-light ); 
+      
+      .close-text { padding: .9em 3.25em .8em 1em; }
+  }*/ }
   .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
   .adjust-font-size .sidebar-widget form label + ul,
-  .sidebar-widget form .adjust-font-size label + ul, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist, .winkwink-nudgenudge .text form label + ul, .text form .winkwink-nudgenudge label + ul,
+  .sidebar-widget form .adjust-font-size label + ul,
+  .winkwink-nudgenudge .menu,
+  .winkwink-nudgenudge .errorlist,
+  .winkwink-nudgenudge .text form label + ul,
+  .text form .winkwink-nudgenudge label + ul,
   .winkwink-nudgenudge .sidebar-widget form label + ul,
-  .sidebar-widget form .winkwink-nudgenudge label + ul {
+  .sidebar-widget form .winkwink-nudgenudge label + ul,
+  .account-signin .menu,
+  .account-signin .errorlist,
+  .account-signin .text form label + ul,
+  .text form .account-signin label + ul,
+  .account-signin .sidebar-widget form label + ul,
+  .sidebar-widget form .account-signin label + ul {
     margin-bottom: 0; }
-  .adjust-font-size .tier-1, .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-1, .winkwink-nudgenudge .tier-2 {
+  .adjust-font-size .tier-1, .adjust-font-size .tier-2,
+  .winkwink-nudgenudge .tier-1,
+  .winkwink-nudgenudge .tier-2,
+  .account-signin .tier-1,
+  .account-signin .tier-2 {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
-    .adjust-font-size .tier-1 > a, .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-1 > a, .winkwink-nudgenudge .tier-2 > a {
+    .adjust-font-size .tier-1 > a, .adjust-font-size .tier-2 > a,
+    .winkwink-nudgenudge .tier-1 > a,
+    .winkwink-nudgenudge .tier-2 > a,
+    .account-signin .tier-1 > a,
+    .account-signin .tier-2 > a {
       display: block;
       padding: 0.5em 1.5em 0.4em 1em;
       position: relative; }
-  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
+  .adjust-font-size .tier-1,
+  .winkwink-nudgenudge .tier-1,
+  .account-signin .tier-1 {
     display: block;
     width: 100%; }
-    .adjust-font-size .tier-1 > a, .winkwink-nudgenudge .tier-1 > a {
+    .adjust-font-size .tier-1 > a,
+    .winkwink-nudgenudge .tier-1 > a,
+    .account-signin .tier-1 > a {
       text-align: center; }
-  .adjust-font-size .tier-2 > a, .winkwink-nudgenudge .tier-2 > a {
+  .adjust-font-size .tier-2 > a,
+  .winkwink-nudgenudge .tier-2 > a,
+  .account-signin .tier-2 > a {
     text-align: left; }
   .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
   .adjust-font-size .sidebar-widget form label + ul,
-  .sidebar-widget form .adjust-font-size label + ul, .winkwink-nudgenudge .menu, .winkwink-nudgenudge .errorlist, .winkwink-nudgenudge .text form label + ul, .text form .winkwink-nudgenudge label + ul,
+  .sidebar-widget form .adjust-font-size label + ul,
+  .winkwink-nudgenudge .menu,
+  .winkwink-nudgenudge .errorlist,
+  .winkwink-nudgenudge .text form label + ul,
+  .text form .winkwink-nudgenudge label + ul,
   .winkwink-nudgenudge .sidebar-widget form label + ul,
-  .sidebar-widget form .winkwink-nudgenudge label + ul {
+  .sidebar-widget form .winkwink-nudgenudge label + ul,
+  .account-signin .menu,
+  .account-signin .errorlist,
+  .account-signin .text form label + ul,
+  .text form .account-signin label + ul,
+  .account-signin .sidebar-widget form label + ul,
+  .sidebar-widget form .account-signin label + ul {
     *zoom: 1; }
     .adjust-font-size .menu:after, .adjust-font-size .errorlist:after, .adjust-font-size .text form label + ul:after, .text form .adjust-font-size label + ul:after,
     .adjust-font-size .sidebar-widget form label + ul:after,
-    .sidebar-widget form .adjust-font-size label + ul:after, .winkwink-nudgenudge .menu:after, .winkwink-nudgenudge .errorlist:after, .winkwink-nudgenudge .text form label + ul:after, .text form .winkwink-nudgenudge label + ul:after,
+    .sidebar-widget form .adjust-font-size label + ul:after,
+    .winkwink-nudgenudge .menu:after,
+    .winkwink-nudgenudge .errorlist:after,
+    .winkwink-nudgenudge .text form label + ul:after,
+    .text form .winkwink-nudgenudge label + ul:after,
     .winkwink-nudgenudge .sidebar-widget form label + ul:after,
-    .sidebar-widget form .winkwink-nudgenudge label + ul:after {
+    .sidebar-widget form .winkwink-nudgenudge label + ul:after,
+    .account-signin .menu:after,
+    .account-signin .errorlist:after,
+    .account-signin .text form label + ul:after,
+    .text form .account-signin label + ul:after,
+    .account-signin .sidebar-widget form label + ul:after,
+    .sidebar-widget form .account-signin label + ul:after {
       content: "";
       display: table;
       clear: both; }
-  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
+  .adjust-font-size .tier-1,
+  .winkwink-nudgenudge .tier-1,
+  .account-signin .tier-1 {
     position: relative; }
-  .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
+  .adjust-font-size .subnav,
+  .winkwink-nudgenudge .subnav,
+  .account-signin .subnav {
     position: absolute;
     z-index: 100;
     text-align: left;
     /*modernizr*/
     /*modernizr*/ }
-    .no-touch .adjust-font-size .subnav, .no-touch .winkwink-nudgenudge .subnav {
+    .no-touch .adjust-font-size .subnav, .no-touch
+    .winkwink-nudgenudge .subnav, .no-touch
+    .account-signin .subnav {
       min-width: 100%;
       top: -9999px;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
       transition: all 0s ease; }
-    .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
+    .touch .adjust-font-size .subnav, .touch
+    .winkwink-nudgenudge .subnav, .touch
+    .account-signin .subnav {
       top: 120%;
       display: none;
       opacity: 0;
@@ -1243,7 +1308,9 @@ a.jump-to-menu {
       -webkit-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       -moz-box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6);
       box-shadow: 0 0.25em 0.75em rgba(0, 0, 0, 0.6); }
-      .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
+      .touch .adjust-font-size .subnav:before, .touch
+      .winkwink-nudgenudge .subnav:before, .touch
+      .account-signin .subnav:before {
         position: absolute;
         content: "";
         width: 0;
@@ -1253,73 +1320,209 @@ a.jump-to-menu {
         border-width: 0.75em;
         top: -1.45em;
         display: block; }
-  .no-touch .adjust-font-size .element-1:hover .subnav, .no-touch .adjust-font-size .element-1:focus .subnav, .no-touch .adjust-font-size .element-2:hover .subnav, .no-touch .adjust-font-size .element-2:focus .subnav, .no-touch .adjust-font-size .element-3:hover .subnav, .no-touch .adjust-font-size .element-3:focus .subnav, .no-touch .adjust-font-size .element-4:hover .subnav, .no-touch .adjust-font-size .element-4:focus .subnav, .no-touch .winkwink-nudgenudge .element-1:hover .subnav, .no-touch .winkwink-nudgenudge .element-1:focus .subnav, .no-touch .winkwink-nudgenudge .element-2:hover .subnav, .no-touch .winkwink-nudgenudge .element-2:focus .subnav, .no-touch .winkwink-nudgenudge .element-3:hover .subnav, .no-touch .winkwink-nudgenudge .element-3:focus .subnav, .no-touch .winkwink-nudgenudge .element-4:hover .subnav, .no-touch .winkwink-nudgenudge .element-4:focus .subnav {
+  .no-touch .adjust-font-size .element-1:hover .subnav, .no-touch .adjust-font-size .element-1:focus .subnav, .no-touch .adjust-font-size .element-2:hover .subnav, .no-touch .adjust-font-size .element-2:focus .subnav, .no-touch .adjust-font-size .element-3:hover .subnav, .no-touch .adjust-font-size .element-3:focus .subnav, .no-touch .adjust-font-size .element-4:hover .subnav, .no-touch .adjust-font-size .element-4:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-1:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-1:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-2:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-2:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-3:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-3:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-4:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-4:focus .subnav, .no-touch
+  .account-signin .element-1:hover .subnav, .no-touch
+  .account-signin .element-1:focus .subnav, .no-touch
+  .account-signin .element-2:hover .subnav, .no-touch
+  .account-signin .element-2:focus .subnav, .no-touch
+  .account-signin .element-3:hover .subnav, .no-touch
+  .account-signin .element-3:focus .subnav, .no-touch
+  .account-signin .element-4:hover .subnav, .no-touch
+  .account-signin .element-4:focus .subnav {
     left: 0;
     top: 100%;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .no-touch .adjust-font-size .element-5:hover .subnav, .no-touch .adjust-font-size .element-5:focus .subnav, .no-touch .adjust-font-size .element-6:hover .subnav, .no-touch .adjust-font-size .element-6:focus .subnav, .no-touch .adjust-font-size .element-7:hover .subnav, .no-touch .adjust-font-size .element-7:focus .subnav, .no-touch .adjust-font-size .element-8:hover .subnav, .no-touch .adjust-font-size .element-8:focus .subnav, .no-touch .adjust-font-size .last:hover .subnav, .no-touch .adjust-font-size .last:focus .subnav, .no-touch .winkwink-nudgenudge .element-5:hover .subnav, .no-touch .winkwink-nudgenudge .element-5:focus .subnav, .no-touch .winkwink-nudgenudge .element-6:hover .subnav, .no-touch .winkwink-nudgenudge .element-6:focus .subnav, .no-touch .winkwink-nudgenudge .element-7:hover .subnav, .no-touch .winkwink-nudgenudge .element-7:focus .subnav, .no-touch .winkwink-nudgenudge .element-8:hover .subnav, .no-touch .winkwink-nudgenudge .element-8:focus .subnav, .no-touch .winkwink-nudgenudge .last:hover .subnav, .no-touch .winkwink-nudgenudge .last:focus .subnav {
+  .no-touch .adjust-font-size .element-5:hover .subnav, .no-touch .adjust-font-size .element-5:focus .subnav, .no-touch .adjust-font-size .element-6:hover .subnav, .no-touch .adjust-font-size .element-6:focus .subnav, .no-touch .adjust-font-size .element-7:hover .subnav, .no-touch .adjust-font-size .element-7:focus .subnav, .no-touch .adjust-font-size .element-8:hover .subnav, .no-touch .adjust-font-size .element-8:focus .subnav, .no-touch .adjust-font-size .last:hover .subnav, .no-touch .adjust-font-size .last:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-5:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-5:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-6:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-6:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-7:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-7:focus .subnav, .no-touch
+  .winkwink-nudgenudge .element-8:hover .subnav, .no-touch
+  .winkwink-nudgenudge .element-8:focus .subnav, .no-touch
+  .winkwink-nudgenudge .last:hover .subnav, .no-touch
+  .winkwink-nudgenudge .last:focus .subnav, .no-touch
+  .account-signin .element-5:hover .subnav, .no-touch
+  .account-signin .element-5:focus .subnav, .no-touch
+  .account-signin .element-6:hover .subnav, .no-touch
+  .account-signin .element-6:focus .subnav, .no-touch
+  .account-signin .element-7:hover .subnav, .no-touch
+  .account-signin .element-7:focus .subnav, .no-touch
+  .account-signin .element-8:hover .subnav, .no-touch
+  .account-signin .element-8:focus .subnav, .no-touch
+  .account-signin .last:hover .subnav, .no-touch
+  .account-signin .last:focus .subnav {
     right: 0;
     top: 100%;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
-  .touch .adjust-font-size .element-1, .touch .adjust-font-size .element-2, .touch .adjust-font-size .element-3, .touch .adjust-font-size .element-4, .touch .winkwink-nudgenudge .element-1, .touch .winkwink-nudgenudge .element-2, .touch .winkwink-nudgenudge .element-3, .touch .winkwink-nudgenudge .element-4 {
+  .touch .adjust-font-size .element-1, .touch .adjust-font-size .element-2, .touch .adjust-font-size .element-3, .touch .adjust-font-size .element-4, .touch
+  .winkwink-nudgenudge .element-1, .touch
+  .winkwink-nudgenudge .element-2, .touch
+  .winkwink-nudgenudge .element-3, .touch
+  .winkwink-nudgenudge .element-4, .touch
+  .account-signin .element-1, .touch
+  .account-signin .element-2, .touch
+  .account-signin .element-3, .touch
+  .account-signin .element-4 {
     /* Position the pointer element */ }
-    .touch .adjust-font-size .element-1:hover .subnav, .touch .adjust-font-size .element-1 .subnav.touched, .touch .adjust-font-size .element-2:hover .subnav, .touch .adjust-font-size .element-2 .subnav.touched, .touch .adjust-font-size .element-3:hover .subnav, .touch .adjust-font-size .element-3 .subnav.touched, .touch .adjust-font-size .element-4:hover .subnav, .touch .adjust-font-size .element-4 .subnav.touched, .touch .winkwink-nudgenudge .element-1:hover .subnav, .touch .winkwink-nudgenudge .element-1 .subnav.touched, .touch .winkwink-nudgenudge .element-2:hover .subnav, .touch .winkwink-nudgenudge .element-2 .subnav.touched, .touch .winkwink-nudgenudge .element-3:hover .subnav, .touch .winkwink-nudgenudge .element-3 .subnav.touched, .touch .winkwink-nudgenudge .element-4:hover .subnav, .touch .winkwink-nudgenudge .element-4 .subnav.touched {
+    .touch .adjust-font-size .element-1:hover .subnav, .touch .adjust-font-size .element-1 .subnav.touched, .touch .adjust-font-size .element-2:hover .subnav, .touch .adjust-font-size .element-2 .subnav.touched, .touch .adjust-font-size .element-3:hover .subnav, .touch .adjust-font-size .element-3 .subnav.touched, .touch .adjust-font-size .element-4:hover .subnav, .touch .adjust-font-size .element-4 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-1:hover .subnav, .touch
+    .winkwink-nudgenudge .element-1 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-2:hover .subnav, .touch
+    .winkwink-nudgenudge .element-2 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-3:hover .subnav, .touch
+    .winkwink-nudgenudge .element-3 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-4:hover .subnav, .touch
+    .winkwink-nudgenudge .element-4 .subnav.touched, .touch
+    .account-signin .element-1:hover .subnav, .touch
+    .account-signin .element-1 .subnav.touched, .touch
+    .account-signin .element-2:hover .subnav, .touch
+    .account-signin .element-2 .subnav.touched, .touch
+    .account-signin .element-3:hover .subnav, .touch
+    .account-signin .element-3 .subnav.touched, .touch
+    .account-signin .element-4:hover .subnav, .touch
+    .account-signin .element-4 .subnav.touched {
       display: block;
       opacity: 1;
       left: 0; }
-    .touch .adjust-font-size .element-1 .subnav:before, .touch .adjust-font-size .element-2 .subnav:before, .touch .adjust-font-size .element-3 .subnav:before, .touch .adjust-font-size .element-4 .subnav:before, .touch .winkwink-nudgenudge .element-1 .subnav:before, .touch .winkwink-nudgenudge .element-2 .subnav:before, .touch .winkwink-nudgenudge .element-3 .subnav:before, .touch .winkwink-nudgenudge .element-4 .subnav:before {
+    .touch .adjust-font-size .element-1 .subnav:before, .touch .adjust-font-size .element-2 .subnav:before, .touch .adjust-font-size .element-3 .subnav:before, .touch .adjust-font-size .element-4 .subnav:before, .touch
+    .winkwink-nudgenudge .element-1 .subnav:before, .touch
+    .winkwink-nudgenudge .element-2 .subnav:before, .touch
+    .winkwink-nudgenudge .element-3 .subnav:before, .touch
+    .winkwink-nudgenudge .element-4 .subnav:before, .touch
+    .account-signin .element-1 .subnav:before, .touch
+    .account-signin .element-2 .subnav:before, .touch
+    .account-signin .element-3 .subnav:before, .touch
+    .account-signin .element-4 .subnav:before {
       left: 1.5em; }
-  .touch .adjust-font-size .element-5, .touch .adjust-font-size .element-6, .touch .adjust-font-size .element-7, .touch .adjust-font-size .element-8, .touch .adjust-font-size .last, .touch .winkwink-nudgenudge .element-5, .touch .winkwink-nudgenudge .element-6, .touch .winkwink-nudgenudge .element-7, .touch .winkwink-nudgenudge .element-8, .touch .winkwink-nudgenudge .last {
+  .touch .adjust-font-size .element-5, .touch .adjust-font-size .element-6, .touch .adjust-font-size .element-7, .touch .adjust-font-size .element-8, .touch .adjust-font-size .last, .touch
+  .winkwink-nudgenudge .element-5, .touch
+  .winkwink-nudgenudge .element-6, .touch
+  .winkwink-nudgenudge .element-7, .touch
+  .winkwink-nudgenudge .element-8, .touch
+  .winkwink-nudgenudge .last, .touch
+  .account-signin .element-5, .touch
+  .account-signin .element-6, .touch
+  .account-signin .element-7, .touch
+  .account-signin .element-8, .touch
+  .account-signin .last {
     /* Position the pointer element */ }
-    .touch .adjust-font-size .element-5:hover .subnav, .touch .adjust-font-size .element-5 .subnav.touched, .touch .adjust-font-size .element-6:hover .subnav, .touch .adjust-font-size .element-6 .subnav.touched, .touch .adjust-font-size .element-7:hover .subnav, .touch .adjust-font-size .element-7 .subnav.touched, .touch .adjust-font-size .element-8:hover .subnav, .touch .adjust-font-size .element-8 .subnav.touched, .touch .adjust-font-size .last:hover .subnav, .touch .adjust-font-size .last .subnav.touched, .touch .winkwink-nudgenudge .element-5:hover .subnav, .touch .winkwink-nudgenudge .element-5 .subnav.touched, .touch .winkwink-nudgenudge .element-6:hover .subnav, .touch .winkwink-nudgenudge .element-6 .subnav.touched, .touch .winkwink-nudgenudge .element-7:hover .subnav, .touch .winkwink-nudgenudge .element-7 .subnav.touched, .touch .winkwink-nudgenudge .element-8:hover .subnav, .touch .winkwink-nudgenudge .element-8 .subnav.touched, .touch .winkwink-nudgenudge .last:hover .subnav, .touch .winkwink-nudgenudge .last .subnav.touched {
+    .touch .adjust-font-size .element-5:hover .subnav, .touch .adjust-font-size .element-5 .subnav.touched, .touch .adjust-font-size .element-6:hover .subnav, .touch .adjust-font-size .element-6 .subnav.touched, .touch .adjust-font-size .element-7:hover .subnav, .touch .adjust-font-size .element-7 .subnav.touched, .touch .adjust-font-size .element-8:hover .subnav, .touch .adjust-font-size .element-8 .subnav.touched, .touch .adjust-font-size .last:hover .subnav, .touch .adjust-font-size .last .subnav.touched, .touch
+    .winkwink-nudgenudge .element-5:hover .subnav, .touch
+    .winkwink-nudgenudge .element-5 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-6:hover .subnav, .touch
+    .winkwink-nudgenudge .element-6 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-7:hover .subnav, .touch
+    .winkwink-nudgenudge .element-7 .subnav.touched, .touch
+    .winkwink-nudgenudge .element-8:hover .subnav, .touch
+    .winkwink-nudgenudge .element-8 .subnav.touched, .touch
+    .winkwink-nudgenudge .last:hover .subnav, .touch
+    .winkwink-nudgenudge .last .subnav.touched, .touch
+    .account-signin .element-5:hover .subnav, .touch
+    .account-signin .element-5 .subnav.touched, .touch
+    .account-signin .element-6:hover .subnav, .touch
+    .account-signin .element-6 .subnav.touched, .touch
+    .account-signin .element-7:hover .subnav, .touch
+    .account-signin .element-7 .subnav.touched, .touch
+    .account-signin .element-8:hover .subnav, .touch
+    .account-signin .element-8 .subnav.touched, .touch
+    .account-signin .last:hover .subnav, .touch
+    .account-signin .last .subnav.touched {
       display: block;
       opacity: 1;
       right: 0; }
-    .touch .adjust-font-size .element-5 .subnav:before, .touch .adjust-font-size .element-6 .subnav:before, .touch .adjust-font-size .element-7 .subnav:before, .touch .adjust-font-size .element-8 .subnav:before, .touch .adjust-font-size .last .subnav:before, .touch .winkwink-nudgenudge .element-5 .subnav:before, .touch .winkwink-nudgenudge .element-6 .subnav:before, .touch .winkwink-nudgenudge .element-7 .subnav:before, .touch .winkwink-nudgenudge .element-8 .subnav:before, .touch .winkwink-nudgenudge .last .subnav:before {
+    .touch .adjust-font-size .element-5 .subnav:before, .touch .adjust-font-size .element-6 .subnav:before, .touch .adjust-font-size .element-7 .subnav:before, .touch .adjust-font-size .element-8 .subnav:before, .touch .adjust-font-size .last .subnav:before, .touch
+    .winkwink-nudgenudge .element-5 .subnav:before, .touch
+    .winkwink-nudgenudge .element-6 .subnav:before, .touch
+    .winkwink-nudgenudge .element-7 .subnav:before, .touch
+    .winkwink-nudgenudge .element-8 .subnav:before, .touch
+    .winkwink-nudgenudge .last .subnav:before, .touch
+    .account-signin .element-5 .subnav:before, .touch
+    .account-signin .element-6 .subnav:before, .touch
+    .account-signin .element-7 .subnav:before, .touch
+    .account-signin .element-8 .subnav:before, .touch
+    .account-signin .last .subnav:before {
       left: auto;
       right: 1.5em; }
-  .adjust-font-size .tier-2, .winkwink-nudgenudge .tier-2 {
+  .adjust-font-size .tier-2,
+  .winkwink-nudgenudge .tier-2,
+  .account-signin .tier-2 {
     display: block;
     min-width: 100%; }
-    .adjust-font-size .tier-2 a, .winkwink-nudgenudge .tier-2 a {
+    .adjust-font-size .tier-2 a,
+    .winkwink-nudgenudge .tier-2 a,
+    .account-signin .tier-2 a {
       white-space: nowrap; }
-  .adjust-font-size a, .winkwink-nudgenudge a {
+  .adjust-font-size a,
+  .winkwink-nudgenudge a,
+  .account-signin a {
     color: #bbbbbb;
     background-color: transparent; }
-  .adjust-font-size .tier-1, .winkwink-nudgenudge .tier-1 {
+  .adjust-font-size .tier-1,
+  .winkwink-nudgenudge .tier-1,
+  .account-signin .tier-1 {
     float: none; }
-    .adjust-font-size .tier-1:hover > a, .winkwink-nudgenudge .tier-1:hover > a {
+    .adjust-font-size .tier-1:hover > a,
+    .winkwink-nudgenudge .tier-1:hover > a,
+    .account-signin .tier-1:hover > a {
       color: #555;
       background-color: #caccce; }
-  .adjust-font-size .subnav, .winkwink-nudgenudge .subnav {
+  .adjust-font-size .subnav,
+  .winkwink-nudgenudge .subnav,
+  .account-signin .subnav {
     background-color: #caccce;
     /*modernizr*/ }
-    .adjust-font-size .subnav a, .winkwink-nudgenudge .subnav a {
+    .adjust-font-size .subnav a,
+    .winkwink-nudgenudge .subnav a,
+    .account-signin .subnav a {
       color: #555; }
-      .adjust-font-size .subnav a:hover, .adjust-font-size .subnav a:focus, .winkwink-nudgenudge .subnav a:hover, .winkwink-nudgenudge .subnav a:focus {
+      .adjust-font-size .subnav a:hover, .adjust-font-size .subnav a:focus,
+      .winkwink-nudgenudge .subnav a:hover,
+      .winkwink-nudgenudge .subnav a:focus,
+      .account-signin .subnav a:hover,
+      .account-signin .subnav a:focus {
         color: #e6e8ea;
         background-color: #999999; }
-      .touch .adjust-font-size .subnav a .tier-2, .touch .winkwink-nudgenudge .subnav a .tier-2 {
+      .touch .adjust-font-size .subnav a .tier-2, .touch
+      .winkwink-nudgenudge .subnav a .tier-2, .touch
+      .account-signin .subnav a .tier-2 {
         padding-top: .75em;
         padding-bottom: .6em; }
-    .adjust-font-size .subnav .text-reset, .winkwink-nudgenudge .subnav .text-reset {
+    .adjust-font-size .subnav .text-reset,
+    .winkwink-nudgenudge .subnav .text-reset,
+    .account-signin .subnav .text-reset {
       color: #888; }
-    .touch .adjust-font-size .subnav, .touch .winkwink-nudgenudge .subnav {
+    .touch .adjust-font-size .subnav, .touch
+    .winkwink-nudgenudge .subnav, .touch
+    .account-signin .subnav {
       top: 135%;
       border: 3px solid #666666; }
-      .touch .adjust-font-size .subnav:before, .touch .winkwink-nudgenudge .subnav:before {
+      .touch .adjust-font-size .subnav:before, .touch
+      .winkwink-nudgenudge .subnav:before, .touch
+      .account-signin .subnav:before {
         top: -1.6em;
         border-color: transparent transparent #666666 transparent; }
-  .adjust-font-size .close-subnav, .winkwink-nudgenudge .close-subnav {
-    border-bottom: 1px solid #999999; }
-    .adjust-font-size .close-subnav .close-text, .winkwink-nudgenudge .close-subnav .close-text {
-      padding: 0.9em 3.25em 0.8em 1em; }
+
+#site-map-link,
+.adjust-font-size .tier-1 > a,
+.winkwink-nudgenudge .tier-1 > a,
+.account-signin .tier-1 > a {
+  padding: 1em 1em 0.875em; }
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
@@ -3031,8 +3234,6 @@ Paths for the CSS need to be relative ot the stylesheet. Path to the inline file
 }
 
 Since we are importing the data of the entire font, try to make sure only the neccesary fonts are listed here!
-
-IcoMoon base64 encodes gerat, but Firefox prefers 'url(data:font-woff;base64' instead of 'url(data:application/x-font-woff;charset=utf-8;base64'. 
 
  */
 @font-face {

@@ -414,8 +414,7 @@ input[type="submit"],
 input[type="reset"],
 button,
 .button,
-a.button,
-.button {
+a.button {
   display: inline-block;
   vertical-align: baseline;
   width: auto; }
@@ -450,6 +449,11 @@ a.button,
 .options-bar {
   float: right;
   width: auto; }
+
+.main-navigation {
+  /*modernizr*/ }
+  .touch .main-navigation .subnav:before {
+    border-color: transparent; }
 
 .search-field {
   -webkit-transition: width 0.3s ease-in-out;

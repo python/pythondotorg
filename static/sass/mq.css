@@ -461,8 +461,7 @@ html[xmlns] .slides { display: block; }
   input[type="reset"],
   button,
   .button,
-  a.button,
-  .button {
+  a.button {
     display: inline-block;
     vertical-align: baseline;
     width: auto; } }
@@ -635,6 +634,74 @@ html[xmlns] .slides { display: block; }
     display: none;
     speak: none; }
 
+  /* The order in which we include these is important */
+    /*
+<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
+            <a href="/about/" title="" class="">About</a>
+            <ul class="subnav menu" role="menu" aria-hidden="true">
+                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
+                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
+! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
+
+*/
+  .touch body, .touch #touchnav-wrapper {
+    position: relative;
+    width: 100%; }
+  .touch .default-page .main-header {
+    position: static; }
+  .touch .main-navigation {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100%;
+    overflow: scroll;
+    /* styles that are not being applied because they are inside .no-touch in other nav patterns */
+    text-align: center;
+    font-size: 1.125em;
+    /* Reset some styles from the drop down menus */ }
+    .touch .main-navigation a {
+      text-align: center;
+      padding: 0.65em 1.25em 0.55em; }
+    .touch .main-navigation .tier-2 {
+      font-size: 0.875em; }
+    .touch .main-navigation .subnav {
+      position: static;
+      display: block;
+      opacity: 1;
+      border-top: 0;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none; }
+
+  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+  .touch #touchnav-wrapper {
+    -webkit-transition: -webkit-transform 300ms ease;
+    -moz-transition: -moz-transform 300ms ease;
+    -o-transition: -o-transform 300ms ease;
+    transition: transform 300ms ease;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden; }
+  .touch .show-sidemenu #touchnav-wrapper {
+    -webkit-transform: translate3d(260px, 0, 0);
+    -moz-transform: translate3d(260px, 0, 0);
+    -ms-transform: translate3d(260px, 0, 0);
+    -o-transform: translate3d(260px, 0, 0);
+    transform: translate3d(260px, 0, 0); }
+
   /* Simple Column Structure */
   .three-col {
     /* Only works if we are using all single .column, not .double-col as well */ }
@@ -665,6 +732,11 @@ html[xmlns] .slides { display: block; }
   .options-bar {
     float: right;
     width: auto; }
+
+  .main-navigation {
+    /*modernizr*/ }
+    .touch .main-navigation .subnav:before {
+      border-color: transparent; }
 
   .search-field {
     -webkit-transition: width 0.3s ease-in-out;
@@ -1447,74 +1519,7 @@ html[xmlns] .slides { display: block; }
 
   .feedback-flag {
     top: 21em;
-    right: -2.4em; }
-
-    /*
-<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
-    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
-            <a href="/about/" title="" class="">About</a>
-            <ul class="subnav menu" role="menu" aria-hidden="true">
-                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
-                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-
-! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
-! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
-
-*/
-  .touch body, .touch #touchnav-wrapper {
-    position: relative;
-    width: 100%; }
-  .touch .default-page .main-header {
-    position: static; }
-  .touch .main-navigation {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: -260px;
-    width: 260px;
-    height: 100%;
-    overflow: scroll;
-    /* styles that are not being applied because they are inside .no-touch in other nav patterns */
-    text-align: center;
-    font-size: 1.125em;
-    /* Reset some styles from the drop down menus */ }
-    .touch .main-navigation a {
-      text-align: center;
-      padding: 0.65em 1.25em 0.55em; }
-    .touch .main-navigation .tier-2 {
-      font-size: 0.875em; }
-    .touch .main-navigation .subnav {
-      position: static;
-      display: block;
-      opacity: 1;
-      border-top: 0;
-      -webkit-box-shadow: none;
-      -moz-box-shadow: none;
-      box-shadow: none; }
-
-  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
-  .touch #touchnav-wrapper {
-    -webkit-transition: -webkit-transform 300ms ease;
-    -moz-transition: -moz-transform 300ms ease;
-    -o-transition: -o-transform 300ms ease;
-    transition: transform 300ms ease;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden; }
-  .touch .show-sidemenu #touchnav-wrapper {
-    -webkit-transform: translate3d(260px, 0, 0);
-    -moz-transform: translate3d(260px, 0, 0);
-    -ms-transform: translate3d(260px, 0, 0);
-    -o-transform: translate3d(260px, 0, 0);
-    transform: translate3d(260px, 0, 0); } }
+    right: -2.4em; } }
 /* - - - Larger than 800px - - - */
 @media (min-width: 50em) {
   body:after {

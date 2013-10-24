@@ -457,10 +457,7 @@ $optionsbar-text: #bbb;
     line-height: 1em;
     @include border-radius(); 
     
-    form, div {
-        padding: 0.35em 0.2em 0.3em;
-        vertical-align: middle;
-    }
+    form { padding: 0.35em 0.2em 0.3em; }
     
     .breaker {
         @include breaker_bar(); 
@@ -469,26 +466,29 @@ $optionsbar-text: #bbb;
     }
 }
 
+#site-map-link, 
 .jump-to-menu, 
 .search-the-site, 
-.icon-search-alt, 
+.icon-search, 
+.icon-search:before, 
 input#s, 
 .adjust-font-size, 
-.winkwink-nudgenudge {
-    @include pe-inline-block(); 
-}
+.winkwink-nudgenudge, 
+.account-signin { @include pe-inline-block( middle ); }
 
+.touch .search-the-site,
+.winkwink-nudgenudge, 
+.account-signin { border-left: 1px solid lighten( $darkerblue, 8% ); }
+
+.touch #site-map-link,
 .jump-to-menu, 
-.search-the-site, 
-.adjust-font-size {
-    margin-right: -.35em; 
-}
+.adjust-font-size, 
+.winkwink-nudgenudge { border-right: 1px solid darken( $darkerblue, 12% ); }
 
-a.jump-to-menu {
+#site-map-link {
     color: $optionsbar-text; 
-    padding: .45em .75em .35em;
-    border-right: 1px solid darken( $darkerblue, 12% );
-    vertical-align: middle;
+    //vertical-align: middle;
+    //padding: .875em 1em .75em; 
     
     &:hover, &:focus { color: $white; }
     
@@ -504,11 +504,10 @@ a.jump-to-menu {
 /*form*/ .search-the-site {
     text-align: left; 
     padding: .35em .2em .3em;
-    border-left: 1px solid lighten( $darkerblue, 8% );
     
     .icon-search:before {
         font-size: 1.75em;
-        vertical-align: middle;
+        //vertical-align: text-bottom;
         margin: 0 .125em 0 .25em;
     }
     .no-touch { border-left: 0; }
@@ -536,26 +535,26 @@ a.jump-to-menu {
         @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */
     }
     
-    &:blur {
-        color: $optionsbar-text;
-    }
+    &:blur { color: $optionsbar-text; }
 }
 
 .search-button {
-    /* Small screens (phones) have their own form controls */
-    display: none; 
     @extend %button-style-blue;
     margin-right: 0.2em;
     margin-bottom: 0;
     text-shadow: none;
     
-    &:hover, &:focus, &:active {
-        
-    }
+    /* Small screens (phones) have their own form controls */
+    .touch & { display: none; }
+    
+    // &:hover, &:focus, &:active { }
 }
 
-.adjust-font-size, .winkwink-nudgenudge {
-    border-left: 1px solid lighten( $darkerblue, 8% );
+.no-touch .adjust-font-size { display: none; }
+
+.adjust-font-size, 
+.winkwink-nudgenudge,
+.account-signin {
     @include horizontal_nav_base();
     @include horizontal_nav_dropdowns(); 
     
@@ -588,9 +587,9 @@ a.jump-to-menu {
                 padding-bottom: .6em; 
             }
         }
-        .text-reset {
-            color: #888; 
-        }
+        
+        .text-reset { color: #888; }
+        
         /*modernizr*/ .touch & {
             top: 135%;
             border: 3px solid $grey; 
@@ -601,17 +600,22 @@ a.jump-to-menu {
             }
         }
     }
-    .close-subnav {
+    
+    /*.close-subnav {
         @include pe-border( $color-bottom: $grey-light ); 
         
-        .close-text {
-            padding: .9em 3.25em .8em 1em; 
-        }
-    }
+        .close-text { padding: .9em 3.25em .8em 1em; }
+    }*/
 }
-    .text-shrink { }
-    .text-grow { }
-    .text-reset { }
+
+#site-map-link, 
+.adjust-font-size .tier-1 > a, 
+.winkwink-nudgenudge .tier-1 > a,
+.account-signin .tier-1 > a { padding: 1em 1em .875em; }
+
+    //.text-shrink { }
+    //.text-grow { }
+    //.text-reset { }
 
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
