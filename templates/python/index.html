@@ -143,10 +143,32 @@ Hi, Python</span></code></pre>
                     </div>
 
                 </div>
-
-                {% include 'components/blog-event-list.html' %}
-
-                {% include 'components/medium-widgets.html' %}
+                
+                <div class="list-widgets row">
+                    
+                    <div class="medium-widget blog-widget">
+                        {% include 'components/blog-posts.html' %}
+                    </div>
+                    
+                    <div class="medium-widget event-widget last">
+                        {% include 'components/event-posts.html' %}
+                    </div>
+                    
+                </div>
+                
+                <div class="row">
+                    
+                    <div class="medium-widget success-stories-widget">
+                        {% include 'components/success-story.html' %}
+                    </div>
+                    
+                    <div class="medium-widget applications-widget last">
+                        <div class="shrubbery">
+                            {% box 'widget-use-python-for' %}
+                        </div><!-- end .shrubbery -->
+                    </div>
+                    
+                </div>
 
                 {% include 'components/pep-widget.html' %}
 

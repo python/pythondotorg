@@ -1,12 +1,10 @@
-                <div class="row">
-
-                    <div class="medium-widget success-stories-widget">
-
-                        {% load successstories %}
-                        {% get_stories_latest limit=1 as success_stories %}
-                        {% for story in success_stories %}
+{% load successstories %}
+                        
                         <div class="shrubbery">
-
+                            
+                            {% get_stories_latest limit=1 as success_stories %}
+                            {% for story in success_stories %}
+                        
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-success-stories"></span>Success Stories</h2>
                             <p class="give-me-more"><a href="{% url 'success_story_list' %}" title="More Success Stories">More</a></p>
 
@@ -22,24 +20,6 @@
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                        {% endfor %}
-
-                    </div>
-
-                    <div class="medium-widget statistics-widget last">
-
-                        <div class="shrubbery">
-
-                            <h2 class="widget-title"><span aria-hidden="true" class="icon-statistics"></span>Statistics</h2>
-                            <p class="give-me-more"><a href="#" title="More Statistics">More</a></p>
-
-                            <div class="stat">
-                                <h3 class="number">300,000</h3>
-                                <p class="explanation">average downloads per month</p>
-                            </div>
-                        </div>
-
-                    </div>
-
-                </div>
+                            {% endfor %}
+                        
+                        </div><!-- end .shrubbery -->

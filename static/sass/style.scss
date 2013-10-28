@@ -26,6 +26,12 @@
  * Can we figure out a way to get rid of ALL uses of !important?
  *
  * Search for "This is a mess and dumb" and fix that issue
+ *
+ * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well. 
+ * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE. 
+ *
+ * Search for properties that begin with * and make them ie7 specific instead. 
+ * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance. 
  */
 
 
@@ -211,7 +217,7 @@ input, textarea {
     width: 100%;
     padding: .65em;
     margin-bottom: rhythm( .5 ); 
-    border: 1px solid $border-color; 
+    border: 1px solid $default-border-color; 
     @include border-radius(); 
     @include pe-box-sizing( border-box ); 
 }
@@ -248,7 +254,7 @@ input[type=submit], input[type=reset], button, a.button, .button {
 
 input[type=reset], button.secondaryAction {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
-    @include pe-border( $color-top: $border-color, $color-bottom: darken( $grey-light, 10% ) ); 
+    @include pe-border( $color-top: $default-border-color, $color-bottom: darken( $grey-light, 10% ) ); 
     
     &:hover, &:focus, &:active {
         color: $white; 
@@ -284,10 +290,7 @@ $colpad:    1em;
     padding-left: $colpad; 
     padding-right: $colpad; 
 }
-
-.column {
-    padding-bottom: rhythm( 1 ); 
-}
+.column { padding-bottom: rhythm( 1 ); }
 
 /* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
 h1.not-column {
@@ -337,13 +340,11 @@ h2.not-column {
 
 /* ! ===== MAJOR PAGE ELEMENTS ===== */
 
-%hovered-state {
+%topbar-hovered-state {
     color: $white;
     @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
     
-    &:before {
-        left: 50%;
-    }
+    &:before { left: 50%; }
 }
 
 .top-bar {
@@ -371,14 +372,10 @@ h2.not-column {
             margin-left: -.25em; 
         }
         
-        &:hover, &:focus {
-            @extend %hovered-state; 
-        }
+        &:hover, &:focus { @extend %topbar-hovered-state; }
     }
     
-    li {
-        border-top: 3px solid $blue; 
-    }
+    li { border-top: 3px solid $blue; }
     
     .python-meta, .python-meta a:before { border-top-color: $blue; }
     .psf-meta, .psf-meta a:before { border-top-color: $psf; }
@@ -392,24 +389,20 @@ h2.not-column {
     .docs & .docs-meta a, 
     .pypi & .pypi-meta a,
     .jobs & .jobs-meta a, 
-    .shop & .shop-meta a {
-        @extend %hovered-state;
-    }
+    .shop & .shop-meta a { @extend %topbar-hovered-state; }
 }
 
 .meta-navigation { 
     text-align: center; 
     
-    /*ul*/ .menu {
-        margin-bottom: 0; 
-    }
+    /*ul*/ .menu { margin-bottom: 0; }
+    
     .say-no-more {
         display: inline; 
         visibility: visible; 
     }
-    .jump-link {
-        background-color: darken( $darkerblue, 7% );
-    }
+    
+    .jump-link { background-color: darken( $darkerblue, 7% ); }
 }
 
 
@@ -729,9 +722,7 @@ input#s,
         color: $yellow; 
         text-decoration: underline;
         
-        &:hover, &:focus {
-            color: $white;
-        }
+        &:hover, &:focus { color: $white; }
     }
     
     .breaker { display: none; }
@@ -742,9 +733,7 @@ input#s,
 .documentation-banner, 
 .latest-blog-post, 
 .featured-event, 
-.jobs-intro {
-    text-align: left; 
-}
+.jobs-intro { text-align: left; }
 
 /*h1*/ .call-to-action {
     color: $yellow;
@@ -834,10 +823,8 @@ input#s,
             @extend %button-style-blue; 
         }
         
-        /* Tricky, but trying to remove bullets from ULs in forms when containing radios or checkboxes */
-        label + ul {
-            @extend .menu; 
-        }
+        /* Remove bullets from ULs in forms when containing radios or checkboxes */
+        label + ul { @extend .menu; }
     }
     
     a:not(.button) {
@@ -976,9 +963,7 @@ input#s,
         &:last-child { margin-bottom: 0; }
     }
     
-    li > a {
-        display: inline-block; 
-    }
+    li > a { display: inline-block; }
 }
 
 .small-widget, 
@@ -1010,7 +995,7 @@ input#s,
 .sidebar-widget {
     
     .python & { border-top: 4px solid lighten($blue, 20%); }
-    .psf-home & { border-top: 5px solid $border-color; }
+    .psf-home & { border-top: 5px solid $default-border-color; }
     .docs & { border-top: 5px solid $yellow; }
     .pypl & { border-top: 5px solid $green; }
     .jobs & { border-top: 5px solid lighten($purple, 20%); }
@@ -1102,7 +1087,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
 }
     
-.statistics-widget {
+/*.statistics-widget {
     padding-left: .75em; 
     
     .stat {
@@ -1128,11 +1113,20 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         margin-bottom: 0;
         text-align: center; 
     }
+}*/
+
+.applications-widget {
+    padding-left: .75em; 
+    
+    ul { border-top: 1px solid $default-border-color; }
+    
+    li {
+        padding: .5em 0 .4em; 
+        border-bottom: 1px solid $default-border-color; 
+    }
 }
 
-.triple-widget {
-    @extend .small-widget; 
-}
+.triple-widget { @extend .small-widget; }
 
 .shrubbery {
     position: relative; 
@@ -1146,9 +1140,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         a {
             color: $grey-light;
             
-            &:hover, &:active {
-                color: $grey;
-            }
+            &:hover, &:active { color: $grey; }
         }
     }
 }
@@ -1183,7 +1175,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
     .pep-list {
-        border-top: 1px solid $border-color;
+        border-top: 1px solid $default-border-color;
         line-height: 1.2em;
         margin: 0;
         
@@ -1539,23 +1531,21 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     /*a*/ .tag {
         white-space: nowrap; 
         color: $grey; 
-        font-size: px2em( 13px ); 
+        font-size: px2em( 14px ); 
         vertical-align: baseline; 
         padding: .2em .4em .1em; 
         background-color: $grey-lightest; 
-        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $border-color ); 
+        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $default-border-color ); 
         
         &:hover, &:focus {
             color: $default-color; 
             background-color: darken( $grey-lightest, 8% ); 
-            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $border-color, 8% ) ); 
+            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $default-border-color, 8% ) ); 
         }
     }
 }
 
-.github-widget {
-    
-}
+.github-widget { }
 
 .git-avatar, .git-repo {
     display: inline-block; 
@@ -1575,7 +1565,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .list-row-container {
-    border: 1px solid $border-color;
+    border: 1px solid $default-border-color;
     
     li {
         padding: .5em .5em .4em .75em;
@@ -1673,7 +1663,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     .prev-button-text, 
     .next-button-text {
         display: block; 
-        border-bottom: 1px solid $border-color; 
+        border-bottom: 1px solid $default-border-color; 
         padding-bottom: .5em; 
     }
     
@@ -1697,7 +1687,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     /* Special rules for specific templates */
     .single-event & {
         margin-top: rhythm( .75 ); 
-        border-top: 1px solid $border-color; 
+        border-top: 1px solid $default-border-color; 
     }
 }
 
@@ -1881,7 +1871,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
     padding: .5em 0;
-    border-bottom: 1px solid $border-color; 
+    border-bottom: 1px solid $default-border-color; 
     
     li { @include pe-inline-block(); }
     
@@ -1925,7 +1915,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $border-color; 
+    border-bottom: 1px solid $default-border-color; 
     margin-bottom: 2em; 
     
     li {
@@ -2047,10 +2037,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     .subnav {
         font-size: px2em(16px);
         margin-bottom: 0; 
-        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $border-color, 4% ) );
+        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $default-border-color, 4% ) );
         
         li {
-            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $border-color, 4% ) ); 
+            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $default-border-color, 4% ) ); 
         }
         
         a:hover, a:focus { background-color: lighten( $grey-lightest, 2% ); }

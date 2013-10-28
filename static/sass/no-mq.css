@@ -101,7 +101,6 @@
 /* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
-/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative. 
@@ -303,7 +302,6 @@ html[xmlns] .slides { display: block; }
 /* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
-/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative. 

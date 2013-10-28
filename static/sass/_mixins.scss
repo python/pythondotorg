@@ -29,7 +29,7 @@
 
 %grey-colorbox {
     @extend %grey-colorspace;
-    border: 1px solid $border-color;
+    border: 1px solid $default-border-color;
     margin-bottom: 0.5em;
     padding: 1.25em;
     @include pie-clearfix();
@@ -60,7 +60,7 @@
     white-space: nowrap; 
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
     @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
-    @include pe-border( $color-top: $border-color, $color-right: $border-color, $color-bottom: $grey-light, $color-left: $border-color );
+    @include pe-border( $color-top: $default-border-color, $color-right: $default-border-color, $color-bottom: $grey-light, $color-left: $default-border-color );
     @include border-radius();
     @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
     
@@ -114,7 +114,7 @@
 %indent-time-elements {
     
     li {
-        border-top: 1px solid $border-color;
+        border-top: 1px solid $default-border-color;
         padding-left: 4em;
         padding-top: rhythm(0.25);
         padding-bottom: rhythm(0.25);
@@ -134,7 +134,7 @@
     display: block; 
     color: $grey-light; 
     padding: .5em .75em .4em; 
-    border: 1px solid $border-color; 
+    border: 1px solid $default-border-color; 
     background-color: transparent; 
 }
 

@@ -99,6 +99,10 @@
      *
      * Have a web app? Unobtrusively tell users where to get it:
      * <meta name="apple-itunes-app" content="app-id=APP_ID,app-argument=SOME_TEXT">
+     *
+     * Support "page flipping" in modern browsers, where applicable (nt all pages would have a prev/next relationship)
+     * <link rel="next" href="/next"/>
+     * <link rel="prev" href="/prev"/>
     {% endcomment %}
 
 </head>
@@ -118,11 +122,15 @@
                 </div>
 
                 <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
-                <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close</a>
+                <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
+                </a>
 
                 {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
 
-                <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network</a>
+                <a id="python-network" class="jump-link" href="#top" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network
+                </a>
 
             </nav>
 
@@ -155,7 +163,7 @@
                             <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
 
                         </fieldset>
-                    </form><span class="breaker"></span><div class="adjust-font-size">
+                    </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">
                         <ul class="navigation menu" aria-label="Adjust Text Size on Page">
                             <li class="tier-1 last" aria-haspopup="true">
                                 <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>

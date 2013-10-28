@@ -101,7 +101,6 @@
 /* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
-/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative. 
@@ -589,7 +588,9 @@ input[type="checkbox"] {
 button, input[type="button"], input[type="reset"], input[type="submit"] {
   cursor: pointer;
   -webkit-appearance: button;
-  *overflow: visible; }
+  -moz-appearance: button; }
+  .lt-ie8 button, .lt-ie8 input[type="button"], .lt-ie8 input[type="reset"], .lt-ie8 input[type="submit"] {
+    overflow: visible; }
 
 button[disabled], input[disabled] {
   cursor: default; }
@@ -653,6 +654,12 @@ svg:not(:root) {
  * Can we figure out a way to get rid of ALL uses of !important?
  *
  * Search for "This is a mess and dumb" and fix that issue
+ *
+ * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well. 
+ * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE. 
+ *
+ * Search for properties that begin with * and make them ie7 specific instead. 
+ * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance. 
  */
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 html {
@@ -1759,7 +1766,7 @@ input#s,
   .sidebar-widget form {
     line-height: 1.625em;
     margin-bottom: 0.875em;
-    /* Tricky, but trying to remove bullets from ULs in forms when containing radios or checkboxes */ }
+    /* Remove bullets from ULs in forms when containing radios or checkboxes */ }
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
     display: inline;
@@ -2101,38 +2108,40 @@ input#s,
   .success-stories-widget .quote-from p {
     font-size: 0.875em; }
 
-.statistics-widget {
+/*.statistics-widget {
+    padding-left: .75em; 
+    
+    .stat {
+        background: lighten($blue, 50%);
+        padding: 0.7em 1em 0.875em;
+        border: 1px solid lighten($blue, 40%);
+        @include border-radius;
+        @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
+    }
+    
+    .number {
+        color: $grey;
+        font-size: px2em( 42px );
+        line-height: 1em;
+        margin-top: 0;
+        margin-bottom: .05em;
+        text-align: center;
+    }
+    .explanation {
+        font-family: $default-font-italic;
+        font-size: px2em( 18px );
+        line-height: 1.2em;
+        margin-bottom: 0;
+        text-align: center; 
+    }
+}*/
+.applications-widget {
   padding-left: .75em; }
-  .statistics-widget .stat {
-    background: #e9f1f8;
-    padding: 0.7em 1em 0.875em;
-    border: 1px solid #c2d9ec;
-    -webkit-border-radius: 6px;
-    -moz-border-radius: 6px;
-    -ms-border-radius: 6px;
-    -o-border-radius: 6px;
-    border-radius: 6px;
-    background-color: #d6e5f2;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE9F1F8', endColorstr='#FFD6E5F2');
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e9f1f8), color-stop(90%, #d6e5f2));
-    background-image: -webkit-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
-    background-image: -moz-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
-    background-image: -o-linear-gradient(#e9f1f8 10%, #d6e5f2 90%);
-    background-image: linear-gradient(#e9f1f8 10%, #d6e5f2 90%); }
-  .statistics-widget .number {
-    color: #666666;
-    font-size: 2.625em;
-    line-height: 1em;
-    margin-top: 0;
-    margin-bottom: .05em;
-    text-align: center; }
-  .statistics-widget .explanation {
-    font-family: SourceSansProItalic, Arial, sans-serif;
-    font-size: 1.125em;
-    line-height: 1.2em;
-    margin-bottom: 0;
-    text-align: center; }
+  .applications-widget ul {
+    border-top: 1px solid #caccce; }
+  .applications-widget li {
+    padding: 0.5em 0 0.4em;
+    border-bottom: 1px solid #caccce; }
 
 .shrubbery {
   position: relative; }
@@ -2438,7 +2447,7 @@ p.quote-by-organization {
   .tag-wrapper .tag {
     white-space: nowrap;
     color: #666666;
-    font-size: 0.8125em;
+    font-size: 0.875em;
     vertical-align: baseline;
     padding: 0.2em 0.4em 0.1em;
     background-color: #e6e8ea;
@@ -3112,8 +3121,9 @@ p.quote-by-organization {
 .invisible {
   visibility: hidden; }
 
+/* Need to hide from Screenreaders, but not from others? Use aria-hidden="true" on the element itself */
 @media print {
-  * {
+  *, *:before, *:after {
     background: transparent !important;
     color: black !important;
     /* Black prints faster: h5bp.com/s */
@@ -3127,13 +3137,15 @@ p.quote-by-organization {
   a, a:visited {
     text-decoration: underline !important; }
 
-  *[role="main"] a[href]:after,
+  *[role="main"] a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 75%; }
+
   *[role="main"] abbr[title]:after {
     content: " (" attr(title) ")";
     font-size: 75%; }
 
-  .ir a:after, a[href^="javascript:"]:after,
-  a[href^="#"]:after {
+  .ir a:after, a[href^="javascript:"]:after, a[href^="#"]:after {
     content: ""; }
 
   pre, blockquote {
@@ -3157,7 +3169,7 @@ p.quote-by-organization {
     orphans: 3;
     widows: 3; }
 
-  h2, h3 {
+  h1, h2, h3 {
     page-break-after: avoid; }
 
   /* Hide parts of the layout that overcomplicate paged output */
