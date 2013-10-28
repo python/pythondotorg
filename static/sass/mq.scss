@@ -92,9 +92,10 @@
         @include javascript_tag( 'drawer_navigation' ); 
     }
     
-    @include min_width_640; 
-    
+    /* The order in which we include these is important */
     @include drawer_nav_fortouch; 
+    
+    @include min_width_640; 
 }
 
 

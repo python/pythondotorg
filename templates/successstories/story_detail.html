@@ -1,6 +1,8 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="python inner success-story"{% endblock %}
+{% block page_title %}{{ story.name }} | Our Success Stories | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="python default-page success-story"{% endblock %}
 
 
 {% block breadcrumbs %}

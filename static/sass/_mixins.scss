@@ -29,7 +29,7 @@
 
 %grey-colorbox {
     @extend %grey-colorspace;
-    border: 1px solid $border-color;
+    border: 1px solid $default-border-color;
     margin-bottom: 0.5em;
     padding: 1.25em;
     @include pie-clearfix();
@@ -60,12 +60,11 @@
     white-space: nowrap; 
     text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
     @include vertical-gradient( lighten( $grey-light, 25% ), lighten($grey-light, 20%) );
-    @include pe-border( $color-top: $border-color, $color-right: $border-color, $color-bottom: $grey-light, $color-left: $border-color );
+    @include pe-border( $color-top: $default-border-color, $color-right: $default-border-color, $color-bottom: $grey-light, $color-left: $default-border-color );
     @include border-radius();
     @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
     
     &:hover, &:focus, &:active {
-        background-color: inherit;
         color: darken($grey, 30%) !important;
         @include vertical-gradient( lighten( $grey-light, 30% ), lighten($grey-light, 25%) );
     }
@@ -73,7 +72,6 @@
 
 %button-style-yellow {
     @extend %button-style;
-    background-color: lighten($yellow, 10%);
     @include vertical-gradient( lighten($yellow, 10%), $yellow );
     @include pe-border( $color-top: darken($yellow, 20%), $color-right: darken($yellow, 20%), $color-bottom: darken($yellow, 20%), $color-left: darken($yellow, 20%) );
     
@@ -86,7 +84,6 @@
 %button-style-blue {
     @extend %button-style;
     color: $grey-lightest !important;
-    background-color: $blue;
     text-shadow: none;
     @include vertical-gradient( $blue, darken($blue, 10%) );
     @include pe-border( $color-top: lighten($blue, 5%), $color-right: $blue, $color-bottom: $blue, $color-left: lighten($blue, 5%) );
@@ -117,7 +114,7 @@
 %indent-time-elements {
     
     li {
-        border-top: 1px solid $border-color;
+        border-top: 1px solid $default-border-color;
         padding-left: 4em;
         padding-top: rhythm(0.25);
         padding-bottom: rhythm(0.25);
@@ -137,7 +134,7 @@
     display: block; 
     color: $grey-light; 
     padding: .5em .75em .4em; 
-    border: 1px solid $border-color; 
+    border: 1px solid $default-border-color; 
     background-color: transparent; 
 }
 
@@ -383,7 +380,7 @@
     }
     
     /* Shorten the amount of blue space under the nav on inner pages */
-    .no-touch  .inner .main-navigation {
+    .no-touch  .default-page .main-navigation {
         position: relative; 
         margin-bottom: -.0625em; 
     }
@@ -435,7 +432,7 @@
     }
     
     /* Shorten the amount of blue space under the nav on inner pages */
-    .no-touch .inner .main-navigation {
+    .no-touch .default-page .main-navigation {
         position: relative; 
         margin-bottom: -1.375em; 
     }
@@ -469,7 +466,7 @@
             width: 100%; 
         }
         
-        .inner .main-header { position: static; }
+        .default-page .main-header { position: static; }
         
         .main-navigation {
             display: block; 

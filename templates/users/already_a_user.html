@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block page_title %}Existing User Found | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
+
 {% block body_attributes %}class="psf users inner"{% endblock %}
 
 
@@ -17,7 +19,7 @@
 {% block content %}
 
 <div class="user-feedback level-notice">
-    <p role="alert">You are already a user!</p>
+    <p role="alert">You are already a user (the email matches one in our system)!</p>
 </div>
 
 {% endblock content %}

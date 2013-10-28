@@ -84,7 +84,7 @@ $link-color: $blue;
 $link-hover: $darkerblue;
 
 $code-green: #11a611; 
-$border-color: $grey-lighter; /* Set a generic border color here to keep them consistent */
+$default-border-color: $grey-lighter; /* Set a generic border color here to keep them consistent */
 
 
 /* Typography */
@@ -94,9 +94,9 @@ $round-to-nearest-half-line : true; /* Allows the adjust-font-size-to and lines-
 $base-font-size             : 16px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
 $base-line-height           : 28px; /* Useful to set this here, but don't echo it anywhere. Used in calculations */
 
-$giga: 48px;
-$mega: 40px;
-$kilo: 36px;
+$giga: 40px;
+$mega: 36px;
+$kilo: 32px;
 $headerone: 28px;
 $headertwo: 24px;
 $headerthree: 21px;

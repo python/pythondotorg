@@ -26,6 +26,12 @@
  * Can we figure out a way to get rid of ALL uses of !important?
  *
  * Search for "This is a mess and dumb" and fix that issue
+ *
+ * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well. 
+ * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE. 
+ *
+ * Search for properties that begin with * and make them ie7 specific instead. 
+ * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance. 
  */
 
 
@@ -211,7 +217,7 @@ input, textarea {
     width: 100%;
     padding: .65em;
     margin-bottom: rhythm( .5 ); 
-    border: 1px solid $border-color; 
+    border: 1px solid $default-border-color; 
     @include border-radius(); 
     @include pe-box-sizing( border-box ); 
 }
@@ -242,9 +248,13 @@ input[type=submit], input[type=reset], button, a.button, .button {
     display: block; 
 }
 
-input[type=reset] {
+.primaryAction  {
+    
+}
+
+input[type=reset], button.secondaryAction {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
-    @include pe-border( $color-top: $border-color, $color-bottom: darken( $grey-light, 10% ) ); 
+    @include pe-border( $color-top: $default-border-color, $color-bottom: darken( $grey-light, 10% ) ); 
     
     &:hover, &:focus, &:active {
         color: $white; 
@@ -280,10 +290,7 @@ $colpad:    1em;
     padding-left: $colpad; 
     padding-right: $colpad; 
 }
-
-.column {
-    padding-bottom: rhythm( 1 ); 
-}
+.column { padding-bottom: rhythm( 1 ); }
 
 /* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
 h1.not-column {
@@ -331,42 +338,13 @@ h2.not-column {
 .indent { padding-left: 2em; }
 
 
-/* ! ===== ICONS ===== */
-    
-/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
-.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
-	font-family: 'Pythonicon';
-	speak: none;
-	font-style: normal;
-	font-weight: normal;
-	font-variant: normal;
-	text-transform: none;
-	line-height: 1;
-	-webkit-font-smoothing: antialiased;
-	margin-right: .5em; 
-}
-
-.icon-alert, .icon-arrow-down, .icon-arrow-left, .icon-arrow-right, .icon-arrow-up, .icon-calendar, .icon-close, .icon-code, .icon-documentation, .icon-email, .icon-facebook, .icon-feed, .icon-freenode, .icon-get-started, .icon-github, .icon-google-plus, .icon-help, .icon-pypi, .icon-python, .icon-python-alt, .icon-search, .icon-sitemap, .icon-stack-overflow, .icon-statistics, .icon-success-stories, .icon-text-resize, .icon-thumbs-down, .icon-thumbs-up, .icon-twitter, .icon-versions, .icon-community, .icon-download, .icon-news, .icon-jobs, .icon-beginner, .icon-moderate, .icon-advanced, .icon-search-alt, .icon-megaphone {
-	
-	/* Hide a unicode fallback character when we supply it by default. 
-	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
-	 */
-	span {
-    	display: none; 
-	}
-}
-
-
-
 /* ! ===== MAJOR PAGE ELEMENTS ===== */
 
-%hovered-state {
+%topbar-hovered-state {
     color: $white;
     @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
     
-    &:before {
-        left: 50%;
-    }
+    &:before { left: 50%; }
 }
 
 .top-bar {
@@ -394,14 +372,10 @@ h2.not-column {
             margin-left: -.25em; 
         }
         
-        &:hover, &:focus {
-            @extend %hovered-state; 
-        }
+        &:hover, &:focus { @extend %topbar-hovered-state; }
     }
     
-    li {
-        border-top: 3px solid $blue; 
-    }
+    li { border-top: 3px solid $blue; }
     
     .python-meta, .python-meta a:before { border-top-color: $blue; }
     .psf-meta, .psf-meta a:before { border-top-color: $psf; }
@@ -415,24 +389,20 @@ h2.not-column {
     .docs & .docs-meta a, 
     .pypi & .pypi-meta a,
     .jobs & .jobs-meta a, 
-    .shop & .shop-meta a {
-        @extend %hovered-state;
-    }
+    .shop & .shop-meta a { @extend %topbar-hovered-state; }
 }
 
 .meta-navigation { 
     text-align: center; 
     
-    /*ul*/ .menu {
-        margin-bottom: 0; 
-    }
+    /*ul*/ .menu { margin-bottom: 0; }
+    
     .say-no-more {
         display: inline; 
         visibility: visible; 
     }
-    .jump-link {
-        background-color: darken( $darkerblue, 7% );
-    }
+    
+    .jump-link { background-color: darken( $darkerblue, 7% ); }
 }
 
 
@@ -480,10 +450,7 @@ $optionsbar-text: #bbb;
     line-height: 1em;
     @include border-radius(); 
     
-    form, div {
-        padding: 0.35em 0.2em 0.3em;
-        vertical-align: middle;
-    }
+    form { padding: 0.35em 0.2em 0.3em; }
     
     .breaker {
         @include breaker_bar(); 
@@ -492,26 +459,29 @@ $optionsbar-text: #bbb;
     }
 }
 
+#site-map-link, 
 .jump-to-menu, 
 .search-the-site, 
-.icon-search-alt, 
+.icon-search, 
+.icon-search:before, 
 input#s, 
 .adjust-font-size, 
-.winkwink-nudgenudge {
-    @include pe-inline-block(); 
-}
+.winkwink-nudgenudge, 
+.account-signin { @include pe-inline-block( middle ); }
 
+.touch .search-the-site,
+.winkwink-nudgenudge, 
+.account-signin { border-left: 1px solid lighten( $darkerblue, 8% ); }
+
+.touch #site-map-link,
 .jump-to-menu, 
-.search-the-site, 
-.adjust-font-size {
-    margin-right: -.35em; 
-}
+.adjust-font-size, 
+.winkwink-nudgenudge { border-right: 1px solid darken( $darkerblue, 12% ); }
 
-a.jump-to-menu {
+#site-map-link {
     color: $optionsbar-text; 
-    padding: .45em .75em .35em;
-    border-right: 1px solid darken( $darkerblue, 12% );
-    vertical-align: middle;
+    //vertical-align: middle;
+    //padding: .875em 1em .75em; 
     
     &:hover, &:focus { color: $white; }
     
@@ -527,16 +497,13 @@ a.jump-to-menu {
 /*form*/ .search-the-site {
     text-align: left; 
     padding: .35em .2em .3em;
-    border-left: 1px solid lighten( $darkerblue, 8% );
     
     .icon-search:before {
-        font-size: 1.5em;
-        vertical-align: text-bottom;
-        margin: 0 .25em;
+        font-size: 1.75em;
+        //vertical-align: text-bottom;
+        margin: 0 .125em 0 .25em;
     }
-    .no-touch {
-        border-left: 0; 
-    }
+    .no-touch { border-left: 0; }
 }
 
 /*input*/ .search-field {
@@ -561,26 +528,26 @@ a.jump-to-menu {
         @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */
     }
     
-    &:blur {
-        color: $optionsbar-text;
-    }
+    &:blur { color: $optionsbar-text; }
 }
 
 .search-button {
-    /* Small screens (phones) have their own form controls */
-    display: none; 
     @extend %button-style-blue;
     margin-right: 0.2em;
     margin-bottom: 0;
     text-shadow: none;
     
-    &:hover, &:focus, &:active {
-        
-    }
+    /* Small screens (phones) have their own form controls */
+    .touch & { display: none; }
+    
+    // &:hover, &:focus, &:active { }
 }
 
-.adjust-font-size, .winkwink-nudgenudge {
-    border-left: 1px solid lighten( $darkerblue, 8% );
+.no-touch .adjust-font-size { display: none; }
+
+.adjust-font-size, 
+.winkwink-nudgenudge,
+.account-signin {
     @include horizontal_nav_base();
     @include horizontal_nav_dropdowns(); 
     
@@ -613,9 +580,9 @@ a.jump-to-menu {
                 padding-bottom: .6em; 
             }
         }
-        .text-reset {
-            color: #888; 
-        }
+        
+        .text-reset { color: #888; }
+        
         /*modernizr*/ .touch & {
             top: 135%;
             border: 3px solid $grey; 
@@ -626,17 +593,22 @@ a.jump-to-menu {
             }
         }
     }
-    .close-subnav {
+    
+    /*.close-subnav {
         @include pe-border( $color-bottom: $grey-light ); 
         
-        .close-text {
-            padding: .9em 3.25em .8em 1em; 
-        }
-    }
+        .close-text { padding: .9em 3.25em .8em 1em; }
+    }*/
 }
-    .text-shrink { }
-    .text-grow { }
-    .text-reset { }
+
+#site-map-link, 
+.adjust-font-size .tier-1 > a, 
+.winkwink-nudgenudge .tier-1 > a,
+.account-signin .tier-1 > a { padding: 1em 1em .875em; }
+
+    //.text-shrink { }
+    //.text-grow { }
+    //.text-reset { }
 
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
@@ -750,9 +722,7 @@ a.jump-to-menu {
         color: $yellow; 
         text-decoration: underline;
         
-        &:hover, &:focus {
-            color: $white;
-        }
+        &:hover, &:focus { color: $white; }
     }
     
     .breaker { display: none; }
@@ -763,9 +733,7 @@ a.jump-to-menu {
 .documentation-banner, 
 .latest-blog-post, 
 .featured-event, 
-.jobs-intro {
-    text-align: left; 
-}
+.jobs-intro { text-align: left; }
 
 /*h1*/ .call-to-action {
     color: $yellow;
@@ -822,9 +790,11 @@ a.jump-to-menu {
 .text, 
 .sidebar-widget {
     
-    & > h1, 
-    & > .alpha {
-        @include leader(1); 
+    .page-title {
+        color: $grey; 
+        @include fontface-adjust( $kilo ); 
+        @include leader(.75); 
+        @include trailer(.5); 
     }
     
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
@@ -832,6 +802,7 @@ a.jump-to-menu {
         margin-bottom: rhythm(0.75);
     }
     
+    /* Hyphenate specific container elements */
     p, dd, blockquote, address {
         @include pe-hyphenate(); 
     }
@@ -852,27 +823,22 @@ a.jump-to-menu {
             @extend %button-style-blue; 
         }
         
-        /* Tricky, but trying to remove bullets from ULs in forms when containing radios or checkboxes */
-        label + ul {
-            @extend .menu; 
-        }
+        /* Remove bullets from ULs in forms when containing radios or checkboxes */
+        label + ul { @extend .menu; }
     }
     
     a:not(.button) {
         @extend %link-style;
         display: inline;
         
-        //&.external, &[rel='external'] {
-            /* Try to break long URLs instead of a very messy right rag */
-            //@include break-long-urls(); 
-        //}
+        /* Decided not to use this, the style was too obtrusive 
         &.external:before, &[rel='external']:before {
-            content: '\21f1'; /* An external link unicode icon */
+            content: '\21f1'; // An external link unicode icon, looks like a box with arrow pointing up to left from bottom right.
             display: inline-block; 
             font-weight: bold; 
             color: $grey-light; 
             margin-right: .5em; 
-        }
+        } */
     }
     
     /* This is a mess and dumb. Figure out a better way */
@@ -997,9 +963,7 @@ a.jump-to-menu {
         &:last-child { margin-bottom: 0; }
     }
     
-    li > a {
-        display: inline-block; 
-    }
+    li > a { display: inline-block; }
 }
 
 .small-widget, 
@@ -1031,7 +995,7 @@ a.jump-to-menu {
 .sidebar-widget {
     
     .python & { border-top: 4px solid lighten($blue, 20%); }
-    .psf-home & { border-top: 5px solid $border-color; }
+    .psf-home & { border-top: 5px solid $default-border-color; }
     .docs & { border-top: 5px solid $yellow; }
     .pypl & { border-top: 5px solid $green; }
     .jobs & { border-top: 5px solid lighten($purple, 20%); }
@@ -1123,7 +1087,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
 }
     
-.statistics-widget {
+/*.statistics-widget {
     padding-left: .75em; 
     
     .stat {
@@ -1149,11 +1113,20 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         margin-bottom: 0;
         text-align: center; 
     }
+}*/
+
+.applications-widget {
+    padding-left: .75em; 
+    
+    ul { border-top: 1px solid $default-border-color; }
+    
+    li {
+        padding: .5em 0 .4em; 
+        border-bottom: 1px solid $default-border-color; 
+    }
 }
 
-.triple-widget {
-    @extend .small-widget; 
-}
+.triple-widget { @extend .small-widget; }
 
 .shrubbery {
     position: relative; 
@@ -1167,9 +1140,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         a {
             color: $grey-light;
             
-            &:hover, &:active {
-                color: $grey;
-            }
+            &:hover, &:active { color: $grey; }
         }
     }
 }
@@ -1204,7 +1175,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
     .pep-list {
-        border-top: 1px solid $border-color;
+        border-top: 1px solid $default-border-color;
         line-height: 1.2em;
         margin: 0;
         
@@ -1560,23 +1531,21 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     /*a*/ .tag {
         white-space: nowrap; 
         color: $grey; 
-        font-size: px2em( 13px ); 
+        font-size: px2em( 14px ); 
         vertical-align: baseline; 
         padding: .2em .4em .1em; 
         background-color: $grey-lightest; 
-        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $border-color ); 
+        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $default-border-color ); 
         
         &:hover, &:focus {
             color: $default-color; 
             background-color: darken( $grey-lightest, 8% ); 
-            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $border-color, 8% ) ); 
+            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $default-border-color, 8% ) ); 
         }
     }
 }
 
-.github-widget {
-    
-}
+.github-widget { }
 
 .git-avatar, .git-repo {
     display: inline-block; 
@@ -1596,7 +1565,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .list-row-container {
-    border: 1px solid $border-color;
+    border: 1px solid $default-border-color;
     
     li {
         padding: .5em .5em .4em .75em;
@@ -1694,7 +1663,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     .prev-button-text, 
     .next-button-text {
         display: block; 
-        border-bottom: 1px solid $border-color; 
+        border-bottom: 1px solid $default-border-color; 
         padding-bottom: .5em; 
     }
     
@@ -1718,7 +1687,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     /* Special rules for specific templates */
     .single-event & {
         margin-top: rhythm( .75 ); 
-        border-top: 1px solid $border-color; 
+        border-top: 1px solid $default-border-color; 
     }
 }
 
@@ -1735,7 +1704,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .download-list-widget {
     
-    .list-row-headings, .list-row-container li { font-size: px2em( 14px ); }
+    .list-row-headings, 
+    .list-row-container li { font-size: px2em( 14px ); }
+    
+    .list-row-container { margin-bottom: .5em; }
     
     /*modernizr*/ .no-touch & .list-row-container {
         height: 16.75em; 
@@ -1820,9 +1792,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== SIDEBAR syles ===== */
 
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/ 
-.main-sidebar {
-     
-}
+.main-sidebar { }
 
 .left-sidebar {
     
@@ -1896,12 +1866,12 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         span { display: block; }
     }
         .job-tags { margin-bottom: 0; }
-
+ 
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
     padding: .5em 0;
-    border-bottom: 1px solid $border-color; 
+    border-bottom: 1px solid $default-border-color; 
     
     li { @include pe-inline-block(); }
     
@@ -1945,7 +1915,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $border-color; 
+    border-bottom: 1px solid $default-border-color; 
     margin-bottom: 2em; 
     
     li {
@@ -2067,10 +2037,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     .subnav {
         font-size: px2em(16px);
         margin-bottom: 0; 
-        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $border-color, 4% ) );
+        @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $default-border-color, 4% ) );
         
         li {
-            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $border-color, 4% ) ); 
+            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $default-border-color, 4% ) ); 
         }
         
         a:hover, a:focus { background-color: lighten( $grey-lightest, 2% ); }
@@ -2214,6 +2184,30 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 //@include debug_misc;
 //@include debug_deprecated;
 //@include debug_empty;
+
+
+/* ! ===== ICONS ===== */
+    
+/* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
+.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-google-plus, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+	font-family: 'Pythonicon';
+	speak: none;
+	font-style: normal;
+	font-weight: normal;
+	font-variant: normal;
+	text-transform: none;
+	line-height: 1;
+    margin-right: .5em; 
+    
+	/* Better Font Rendering =========== */
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	/* Hide a unicode fallback character when we supply it by default. 
+	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
+	 */
+	span { display: none; }
+}
 
 /* Keep this at the bottom since it will create a huge set of data */
 @import "fonts";

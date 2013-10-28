@@ -1,13 +1,13 @@
 {% extends "base.html" %}
 
+{% block page_title %}Submit Your Success Story | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="python success-stories"{% endblock %}
 
 {% block main_navigation %}
 {% load sitetree %}
 {% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
 {% endblock %}
-
-
-{% block body_attributes %}class="python success-stories"{% endblock %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}

@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="python pages inner"{% endblock %}
+{% block body_attributes %}class="python pages default-page"{% endblock %}
 
 
 {% block breadcrumbs %}
@@ -23,9 +23,20 @@ TODO: format breadcrumbs
 {% block content_attributes %}with-left-sidebar{% endblock %}
 
 
+{% comment %}
+Possible to insert the title of the parent page if available? 
+Example: "Getting Started | About | Python.org" where "About" is the parent page/section of "Getting Started"
+{% endcomment %}
+{% block page_title %}{{ page.title }} | {{ SITE_INFO.site_name }}{% endblock %}
+
+
 {% block content %}
     <article class="text">
-
+        
+        <header class="article-header">
+            <h1 class="page-title">{{ page.title }}</h1>
+        </header>
+        
         {{ page.content }}
 
     </article>
@@ -52,7 +63,7 @@ TODO: should this partially come from sitetree?
 
     <div class="twitter-widget sidebar-widget">
 
-        <!-- No good! Using the old Twitter API. Should content become part of the DB anyway? -->
+        <!-- No good! Using the old Twitter API. Should content become part of the DB anyway?
 
         <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
         <script type="text/javascript">// <![CDATA[
@@ -81,7 +92,7 @@ TODO: should this partially come from sitetree?
             behavior: 'all'
           }
         }).render().setUser('ThePSF').start();
-        // ]]></script>
+        // ]]></script> -->
     </div>
 
     <div class="psf-sidebar-widget sidebar-widget">

@@ -7,40 +7,85 @@
 
         <div id="dive-into-python" class="flex-slideshow slideshow">
 
-            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" href="/shell/">&gt;&gt;&gt;</a></li></ul>
+            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" href="/shell/">&gt;_</a></li></ul>
 
-            <!-- Ideas for slides came from https://wiki.python.org/moin/SimplePrograms -->
             <ul class="slides menu">
                 <li>
 
                     <div class="slide-code">
-<pre><code><span class="comment"># Simple output</span>
+<pre><code><span class="comment"># Simple output (with Unicode)</span>
 >>> print 'Hello, I'm Python!'
+<span class="output">Hello, I'm Python!</span>
 
-<span class="comment"># 2 Input, assignment</span>
->>> name = raw_input('What is your name?\n')
-... print 'Hi, %s.' % name</code></pre>
+<span class="comment"># Input, assignment</span>
+>>> name = input('What is your name?\n')
+>>> print 'Hi, %s.' % name
+<span class="output">What is your name?
+Python
+Hi, Python</span></code></pre>
                     </div>
 
                     <div class="slide-copy">
                         <h1>Quick &amp; Easy to Learn</h1>
-                        <p>Experienced programmers in any other language can pick up Python very quickly, while beginners find the clean syntax and indentation structure easy to learn. <a href="http://docs.python.org/3/tutorial/">Whet your appetite</a> with our Python overview.</p>
+                        <p>Experienced programmers in any other language can pick up Python very quickly, and beginners find the clean syntax and indentation structure easy to learn. <a href="http://docs.python.org/3.3/tutorial/">Whet your appetite</a> with our Python overview.</p>
                     </div>
 
                 </li>
                 <li>
 
                     <div class="slide-code">
-<pre><code><span class="comment"># For loop, built-in enumerate function,
-new style formatting</span>
->>> friends = ['john', 'pat', 'gary', 'michael']
-... for i, name in enumerate(friends):
-...    print "iteration {iteration} is {name}".format(iteration=i, name=name)</code></pre>
+<pre><code><span class="comment"># Simple arithmetics</span>
+>>> 1 / 2
+<span class="output">0.5</span>
+>>> 2 ** 3
+<span class="output">8</span>
+>>> 17 / 3  <span class="comment"># classic division returns a float</span>
+<span class="output">5.666666666666667</span>
+>>> 17 // 3  <span class="comment"># floor division</span>
+<span class="output">5</span></code></pre>
+                    </div>
+
+                    <div class="slide-copy">
+                        <h1>Intuitive Interpretation</h1>
+                        <p>Calculations are simple with Python, and expression syntax is straightforward: the operators <code>+</code>, <code>-</code>, <code>*</code> and <code>/</code> work as expected; parentheses <code>()</code> can be used for grouping. <a href="http://docs.python.org/3.3/tutorial/introduction.html#using-python-as-a-calculator">More about simple math functions</a>.</p>
+                    </div>
+
+                </li>
+                <li>
+
+                    <div class="slide-code">
+<pre><code><span class="comment"># List comprehensions</span>
+>>> fruits = ['Banana', 'Apple', 'Strawberry']
+>>> fruits = [fruit.strip() for fruit in fruits]
+>>> print(fruits)
+<span class="output">['Banana', 'Apple', 'Strawberry']</span>
+
+<span class="comment"># List and the enumerate function</span>
+>>> list(enumerate(fruits))
+<span class="output">[(0, 'Banana'), (1, 'Apple'), (2, 'Strawberry')]</span></code></pre>
+                    </div>
+
+                    <div class="slide-copy">
+                        <h1>Compound Data Types</h1>
+                        <p>Lists (known as arrays in other languages) are one of the compound data type that Python understands. Lists can be indexed, sliced and manipulated with other built-in functions. <a href="http://docs.python.org/3.3/tutorial/introduction.html#lists">More about lists</a></p>
+                    </div>
+
+                </li>
+                <li>
+
+                    <div class="slide-code">
+<pre><code><span class="comment"># For loop on a list</span>
+>>> list = [2, 4, 6, 8]
+>>> sum = 0
+>>> for num in list:
+>>>     sum = sum + num
+>>> print("The sum is:", sum)
+<span class="output">The sum is: 20</span></code></pre>
                     </div>
 
                     <div class="slide-copy">
                         <h1>All the Flow You&rsquo;d Expect</h1>
-                        <p>Python knows the usual control flow statements that other languages speak &mdash; if, for, while and range() &mdash; with some of it own twists, of course. <a href="http://docs.python.org/3/tutorial/controlflow.html">More control flow tools</a></p>
+                        <p>Python knows the usual control flow statements that other languages speak &mdash; <code>if</code>, <code>for</code>, <code>while</code> and <code>range</code> &mdash; with some of it own twists, of course. <a href="http://docs.python.org/3.3/tutorial/controlflow.html">More control flow tools</a></p>
                     </div>
 
                 </li>
@@ -49,19 +94,18 @@ new style formatting</span>
                     <div class="slide-code">
 <pre><code><span class="comment"># Write Fibonacci series up to n</span>
 >>> def fib(n):
-...    a, b = 0, 1
-...    while a &lt; n:
-...        print(a, end=' ')
-...        a, b = b, a+b
-...    print()
-... <span class="comment"># Now call the function we just defined:</span>
-... fib(1000)
+>>>     a, b = 0, 1
+>>>     while a &lt; n:
+>>>         print(a, end=' ')
+>>>         a, b = b, a+b
+>>>     print()
+>>> fib(1000)
 <span class="output">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610</span></code></pre>
                     </div>
 
                     <div class="slide-copy">
                         <h1>Functions Defined</h1>
-                        <p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="http://docs.python.org/3/tutorial/controlflow.html#defining-functions">More about defining functions</a></p>
+                        <p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="http://docs.python.org/3.3/tutorial/controlflow.html#defining-functions">More about defining functions</a></p>
                     </div>
 
                 </li>
@@ -99,10 +143,32 @@ new style formatting</span>
                     </div>
 
                 </div>
-
-                {% include 'components/blog-event-list.html' %}
-
-                {% include 'components/medium-widgets.html' %}
+                
+                <div class="list-widgets row">
+                    
+                    <div class="medium-widget blog-widget">
+                        {% include 'components/blog-posts.html' %}
+                    </div>
+                    
+                    <div class="medium-widget event-widget last">
+                        {% include 'components/event-posts.html' %}
+                    </div>
+                    
+                </div>
+                
+                <div class="row">
+                    
+                    <div class="medium-widget success-stories-widget">
+                        {% include 'components/success-story.html' %}
+                    </div>
+                    
+                    <div class="medium-widget applications-widget last">
+                        <div class="shrubbery">
+                            {% box 'widget-use-python-for' %}
+                        </div><!-- end .shrubbery -->
+                    </div>
+                    
+                </div>
 
                 {% include 'components/pep-widget.html' %}
 

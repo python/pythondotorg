@@ -110,7 +110,7 @@ Load a specific fixture:
 `./manage.py loaddata fixtures/[name].json`
 
 Load all fixture files: 
-`find ./fixtures -name "*.json" -exec manage.py loaddata {} \;`
+`find ./fixtures -name "*.json" -exec ./manage.py loaddata {} \;`
 
 List All the active DBs: 
 `psql -U postgres -c '\l'`

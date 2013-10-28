@@ -99,6 +99,10 @@
      *
      * Have a web app? Unobtrusively tell users where to get it:
      * <meta name="apple-itunes-app" content="app-id=APP_ID,app-argument=SOME_TEXT">
+     *
+     * Support "page flipping" in modern browsers, where applicable (nt all pages would have a prev/next relationship)
+     * <link rel="next" href="/next"/>
+     * <link rel="prev" href="/prev"/>
     {% endcomment %}
 
 </head>
@@ -118,11 +122,15 @@
                 </div>
 
                 <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
-                <a id="close-python-network" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close</a>
+                <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
+                </a>
 
                 {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
 
-                <a id="python-network" class="jump-link" href="#top"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network</a>
+                <a id="python-network" class="jump-link" href="#top" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network
+                </a>
 
             </nav>
 
@@ -137,10 +145,9 @@
                 </h1>
 
                 <div class="options-bar do-not-print">
-
-                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a>
-
-                    <form class="search-the-site" action="#" method="get">
+                    
+                    {# Its a little ugly, but no space between elements makes the inline-block style work better #}
+                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="#" method="get">
                         <fieldset title="Search Python.org">
 
                             <span aria-hidden="true" class="icon-search"></span>
@@ -156,14 +163,10 @@
                             <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
 
                         </fieldset>
-                    </form>
-
-                    <span class="breaker"></span>
-
-                    <div class="adjust-font-size">
+                    </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">
                         <ul class="navigation menu" aria-label="Adjust Text Size on Page">
                             <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#"><strong><small>A</small> A</strong></a>
+                                <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
                                 <ul class="subnav menu">
                                     <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
                                     <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</li>
@@ -171,12 +174,10 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div>
-
-                    <div class="winkwink-nudgenudge">
+                    </div><div class="winkwink-nudgenudge">
                         <ul class="navigation menu" aria-label="Social Media Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#">Socialize</a>
+                                <a href="#" class="action-trigger">Socialize</a>
                                 <ul class="subnav menu">
                                     <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
                                     <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
@@ -186,8 +187,14 @@
                                 </ul>
                             </li>
                         </ul>
+                    </div><div class="account-signin">
+                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#fixme">Sign In</a>
+                            </li>
+                        </ul>
                     </div>
-
+                    
                 </div><!-- end options-bar -->
 
                 <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
@@ -295,7 +302,7 @@
 
         <!-- Feedback Flag -->
         <div class="feedback-flag">
-            <a class="feedback-label" href="#leave_feedback"><span aria-hidden="true" class="icon-megaphone"></span> Feedback</a>
+            <a id="feedback-trigger" class="feedback-label" href="#leave_feedback"><span aria-hidden="true" class="icon-megaphone"></span> Feedback</a>
         </div>
 
 

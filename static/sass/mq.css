@@ -101,7 +101,6 @@
 /* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
-/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative. 
@@ -303,7 +302,6 @@ html[xmlns] .slides { display: block; }
 /* Manage our preferred reset as a Mix-in instead of relying on Compass or Blueprint */
 /* HTML5 Boilerplate Non-semantic helper classes */
 /* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
-/* Normalize has some good features, but most seem to be worked into HTML5 Boilterplate already. Keep this here for reference in case we run into a funny old IE issue that one of these rules may address */
 /* ! ===== LOCAL EXTENDABLE STYLES ===== 
  *
  * "Local" mixins can be used with the @extend operative. 
@@ -459,10 +457,11 @@ html[xmlns] .slides { display: block; }
 
   input[type="submit"],
   input[type="reset"],
+  button,
   .button,
-  a.button,
-  .button {
+  a.button {
     display: inline-block;
+    vertical-align: baseline;
     width: auto; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 39.9375em) and (max-width: 58.75em) {
@@ -623,7 +622,7 @@ html[xmlns] .slides { display: block; }
       box-shadow: 0 0.5em 0.5em rgba(0, 0, 0, 0.3); }
 
   /* Shorten the amount of blue space under the nav on inner pages */
-  .no-touch .inner .main-navigation {
+  .no-touch .default-page .main-navigation {
     position: relative;
     margin-bottom: -.0625em; } }
 /* - - - Larger than 640px - - - */
@@ -632,6 +631,74 @@ html[xmlns] .slides { display: block; }
     content: "drawer_navigation";
     display: none;
     speak: none; }
+
+  /* The order in which we include these is important */
+    /*
+<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
+    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
+            <a href="/about/" title="" class="">About</a>
+            <ul class="subnav menu" role="menu" aria-hidden="true">
+                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
+                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>
+
+! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
+! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
+
+*/
+  .touch body, .touch #touchnav-wrapper {
+    position: relative;
+    width: 100%; }
+  .touch .default-page .main-header {
+    position: static; }
+  .touch .main-navigation {
+    display: block;
+    position: absolute;
+    top: 0;
+    left: -260px;
+    width: 260px;
+    height: 100%;
+    overflow: scroll;
+    /* styles that are not being applied because they are inside .no-touch in other nav patterns */
+    text-align: center;
+    font-size: 1.125em;
+    /* Reset some styles from the drop down menus */ }
+    .touch .main-navigation a {
+      text-align: center;
+      padding: 0.65em 1.25em 0.55em; }
+    .touch .main-navigation .tier-2 {
+      font-size: 0.875em; }
+    .touch .main-navigation .subnav {
+      position: static;
+      display: block;
+      opacity: 1;
+      border-top: 0;
+      -webkit-box-shadow: none;
+      -moz-box-shadow: none;
+      box-shadow: none; }
+
+  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
+  .touch #touchnav-wrapper {
+    -webkit-transition: -webkit-transform 300ms ease;
+    -moz-transition: -moz-transform 300ms ease;
+    -o-transition: -o-transform 300ms ease;
+    transition: transform 300ms ease;
+    -webkit-transform: translate3d(0, 0, 0);
+    -moz-transform: translate3d(0, 0, 0);
+    -ms-transform: translate3d(0, 0, 0);
+    -o-transform: translate3d(0, 0, 0);
+    transform: translate3d(0, 0, 0);
+    -webkit-backface-visibility: hidden; }
+  .touch .show-sidemenu #touchnav-wrapper {
+    -webkit-transform: translate3d(260px, 0, 0);
+    -moz-transform: translate3d(260px, 0, 0);
+    -ms-transform: translate3d(260px, 0, 0);
+    -o-transform: translate3d(260px, 0, 0);
+    transform: translate3d(260px, 0, 0); }
 
   /* Simple Column Structure */
   .three-col {
@@ -664,6 +731,11 @@ html[xmlns] .slides { display: block; }
     float: right;
     width: auto; }
 
+  .main-navigation {
+    /*modernizr*/ }
+    .touch .main-navigation .subnav:before {
+      border-color: transparent; }
+
   .search-field {
     -webkit-transition: width 0.3s ease-in-out;
     -moz-transition: width 0.3s ease-in-out;
@@ -694,7 +766,7 @@ html[xmlns] .slides { display: block; }
   /* Header-banners (not home) */
   .header-banner {
     padding: 1em; }
-    .home .header-banner, .inner .header-banner {
+    .home .header-banner, .default-page .header-banner {
       padding: 0; }
 
   .about-banner,
@@ -706,7 +778,7 @@ html[xmlns] .slides { display: block; }
 
   .main-header {
     /* Shorten the amount of blue space under the nav on inner pages */ }
-    .inner .main-header {
+    .default-page .main-header {
       position: relative;
       z-index: 10; }
 
@@ -1237,7 +1309,7 @@ html[xmlns] .slides { display: block; }
   /* end @for */
   .content-wrapper {
     /* Increase the amount of white space under the nav on inner pages */ }
-    .inner .content-wrapper {
+    .default-page .content-wrapper {
       padding-top: 2em; }
 
   /* Main content with sidebars */
@@ -1445,74 +1517,7 @@ html[xmlns] .slides { display: block; }
 
   .feedback-flag {
     top: 21em;
-    right: -2.4em; }
-
-    /*
-<nav id="mainnav" class="python-navigation main-navigation do-not-print" role="navigation">
-    <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-        <li id="about" class="tier-1 element-1  with-supernav" aria-haspopup="true">
-            <a href="/about/" title="" class="">About</a>
-            <ul class="subnav menu" role="menu" aria-hidden="true">
-                <li class="tier-2 element-1" role="treeitem"><a href="/inner/" title="">History / Mission</a></li>
-                <li class="tier-2 element-2" role="treeitem"><a href="/inner/" title="">Applications</a></li>
-            </ul>
-        </li>
-    </ul>
-</nav>
-
-! Because "touch" is present, we assume that the browser can handle cssTransform3d and cssTransition, which might be dangerous
-! If there is no javascript running, than the .jump-to-menu link will jump to #site-map (footer) and the .main-navigatin will remain offscreen, which is not such a bad fallback. 
-
-*/
-  .touch body, .touch #touchnav-wrapper {
-    position: relative;
-    width: 100%; }
-  .touch .inner .main-header {
-    position: static; }
-  .touch .main-navigation {
-    display: block;
-    position: absolute;
-    top: 0;
-    left: -260px;
-    width: 260px;
-    height: 100%;
-    overflow: scroll;
-    /* styles that are not being applied because they are inside .no-touch in other nav patterns */
-    text-align: center;
-    font-size: 1.125em;
-    /* Reset some styles from the drop down menus */ }
-    .touch .main-navigation a {
-      text-align: center;
-      padding: 0.65em 1.25em 0.55em; }
-    .touch .main-navigation .tier-2 {
-      font-size: 0.875em; }
-    .touch .main-navigation .subnav {
-      position: static;
-      display: block;
-      opacity: 1;
-      border-top: 0;
-      -webkit-box-shadow: none;
-      -moz-box-shadow: none;
-      box-shadow: none; }
-
-  /* TO DO: With Javascript, look for a left-right swipe action and also trigger the menu to open */
-  .touch #touchnav-wrapper {
-    -webkit-transition: -webkit-transform 300ms ease;
-    -moz-transition: -moz-transform 300ms ease;
-    -o-transition: -o-transform 300ms ease;
-    transition: transform 300ms ease;
-    -webkit-transform: translate3d(0, 0, 0);
-    -moz-transform: translate3d(0, 0, 0);
-    -ms-transform: translate3d(0, 0, 0);
-    -o-transform: translate3d(0, 0, 0);
-    transform: translate3d(0, 0, 0);
-    -webkit-backface-visibility: hidden; }
-  .touch .show-sidemenu #touchnav-wrapper {
-    -webkit-transform: translate3d(260px, 0, 0);
-    -moz-transform: translate3d(260px, 0, 0);
-    -ms-transform: translate3d(260px, 0, 0);
-    -o-transform: translate3d(260px, 0, 0);
-    transform: translate3d(260px, 0, 0); } }
+    right: -2.4em; } }
 /* - - - Larger than 800px - - - */
 @media (min-width: 50em) {
   body:after {
@@ -2061,7 +2066,7 @@ html[xmlns] .slides { display: block; }
       font-size: 0.875em; }
 
   /* Shorten the amount of blue space under the nav on inner pages */
-  .no-touch .inner .main-navigation {
+  .no-touch .default-page .main-navigation {
     position: relative;
     margin-bottom: -1.375em; }
 
@@ -2214,6 +2219,14 @@ html[xmlns] .slides { display: block; }
 
   /*aside*/
   /*aside*/
+  .text {
+    /* Make the intro/first paragraphs slightly larger? */ }
+    .text > p:first-of-type {
+      color: #666666;
+      font-size: 1.125em;
+      line-height: 1.75;
+      margin-bottom: 1.75em; }
+
   /* Widgets in main content */
   .small-widget p, .small-widget li, .medium-widget p, .medium-widget li, .psf-widget p, .psf-widget li, .python-needs-you-widget p, .python-needs-you-widget li, .documentation-help p, .documentation-help li {
     font-size: 0.9375em; }
@@ -2378,7 +2391,7 @@ html[xmlns] .slides { display: block; }
   .touch body, .touch #touchnav-wrapper {
     position: relative;
     width: 100%; }
-  .touch .inner .main-header {
+  .touch .default-page .main-header {
     position: static; }
   .touch .main-navigation {
     display: block;
@@ -2472,7 +2485,7 @@ html[xmlns] .slides { display: block; }
     margin-top: 1em; }
 
   /* Main content with sidebars */
-  .inner .main-content.with-left-sidebar {
+  .default-page .main-content.with-left-sidebar {
     padding-left: 8.51064%;
     padding-right: 8.51064%; }
 
