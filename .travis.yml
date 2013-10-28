@@ -12,7 +12,7 @@ before_script:
   - psql -c 'create database "python.org";' -U postgres
 script:
   - coverage run manage.py test
-  - coverage report --fail-under=90
+  - coverage report --fail-under=85
 notifications:
     irc:
         channels:
