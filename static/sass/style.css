@@ -3196,9 +3196,13 @@ p.quote-by-organization {
     /* Forces an image to be printed as if it were inline, not a background image */ }
     .site-headline a .python-logo, .site-headline a .psf-logo {
       display: none; }
-    .python .site-headline a {
+    .python .site-headline a:before {
+      width: 290px;
+      height: 82px;
       content: url('../img/python-logo_print.png?1381516753'); }
-    .psf .site-headline a {
+    .psf .site-headline a:before {
+      width: 334px;
+      height: 82px;
       content: url('../img/psf-logo_print.png?1381515396'); } }
 /* 
  * When we want to review the markup for W3 and similar errors, turn some of these on 

@@ -482,8 +482,16 @@
             
             .python-logo, .psf-logo { display: none; }
             /* Forces an image to be printed as if it were inline, not a background image */
-            .python & { content: image-url("python-logo_print.png"); }
-            .psf & { content: image-url("psf-logo_print.png"); }
+            .python &:before { 
+                width: 290px;
+                height: 82px;
+                content: image-url("python-logo_print.png"); 
+            }
+            .psf &:before { 
+                width: 334px;
+                height: 82px;
+                content: image-url("psf-logo_print.png"); 
+            }
         }
     }
     
