@@ -1,0 +1,57 @@
+{# ===== PSF Default Content PAGE ===== #}
+
+{% extends "base.html" %}
+
+{% block page_title %}Python Software Foundation | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="psf pages default-page"{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+
+
+{% block breadcrumbs %}
+    {% load sitetree %}
+
+    {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
+{% endblock breadcrumbs %}
+
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+
+{% block content %}
+    <article class="text">
+        
+        <header class="article-header">
+            <h1 class="page-title">{{ page.title }}</h1>
+        </header>
+        
+        {{ page.content }}
+
+    </article>
+{% endblock content %}
+
+
+{% block left_sidebar %}
+    {% comment %}
+    TODO: should this partially come from sitetree?
+    {% endcomment %}
+
+    <aside class="left-sidebar" role="secondary">
+    
+        <div class="section-navigation sidebar-widget">
+            <!-- navigation for this section... all siblings should be included -->
+            <ul class="section-nav menu" role="menu" aria-hidden="false">
+                <li class="tier-1 element-1" role="treeitem"><a href="#fixme-inner">Insert Child pages or siblings Here</a></li>
+            </ul>
+        </div>
+    
+        <div class="psf-sidebar-widget sidebar-widget">
+            <!-- Define this widget and create it in the Admin -->
+            <h3 class="widget-title">The PSF</h3>
+            <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
+        </div>
+    </aside>
+{% endblock left_sidebar %}
