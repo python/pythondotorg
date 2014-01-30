@@ -6,8 +6,6 @@ from companies.models import Company
 
 
 class SponsorViewTests(TestCase):
-    urls = 'sponsors.urls'
-
     def setUp(self):
         self.company1 = Company.objects.create(name='Python')
 

@@ -5,9 +5,6 @@ from ..models import Feedback, FeedbackCategory, IssueType
 
 
 class FeedbackViewTests(TestCase):
-
-    urls = 'feedbacks.urls'
-
     def setUp(self):
         self.name = 'Kevin Arnold'
         self.email = 'kevinarnold@example.com'
