@@ -3,12 +3,13 @@ python:
   - "3.3"
 env:
   - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org
+  - TIMEOUT=1000
 before_install:
   - sudo apt-get update -qq
 install:
   - pip install --quiet --upgrade pip
-  - pip install --quiet --use-mirrors -r requirements.txt
-  - pip install --quiet --use-mirrors -r dev-requirements.txt
+  - pip install --quiet -r requirements.txt
+  - pip install --quiet -r dev-requirements.txt
 before_script:
   - psql -c 'create database "python.org";' -U postgres
 script:
