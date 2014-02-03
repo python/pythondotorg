@@ -9,8 +9,6 @@ User = get_user_model()
 
 
 class StoryTestCase(TestCase):
-    urls = 'successstories.urls'
-
     def setUp(self):
         self.category = StoryCategory.objects.create(name='Arts')
 
@@ -88,7 +86,8 @@ class StoryViewTests(StoryTestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
-        self.assertRedirects(response, '/three/')
+        new_story = Story.objects.get(**post_data)
+        self.assertRedirects(response, new_story.get_absolute_url())
 
         stories = Story.objects.draft().filter(slug__exact='three')
         self.assertEqual(len(stories), 1)
