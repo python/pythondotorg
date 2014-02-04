@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
@@ -8,6 +9,7 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from .managers import JobManager
+from .listeners import on_comment_was_posted
 from cms.models import ContentManageable, NameSlugModel
 
 
@@ -103,3 +105,5 @@ class Job(ContentManageable):
     def editable(self):
         return self.status in (self.STATUS_DRAFT, self.STATUS_REVIEW,
             self.STATUS_REJECTED)
+
+comment_was_posted.connect(on_comment_was_posted)
