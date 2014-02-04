@@ -10,6 +10,7 @@ from ..models import Job
 from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory, ReviewJobFactory
 from companies.factories import CompanyFactory
 from companies.models import Company
+from django_comments_xtd.utils import mail_sent_queue
 
 
 class JobsViewTests(TestCase):
@@ -306,7 +307,10 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=1')
+
+        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
+
         self.assertEqual(mail.outbox[0].to, [self.creator.email])
 
         form = comments.get_form()(self.job1)
@@ -322,6 +326,8 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=2')
+
+        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 3)
         self.assertEqual(mail.outbox[1].to, [self.creator.email])
         self.assertEqual(mail.outbox[2].to, [self.superuser.email])
