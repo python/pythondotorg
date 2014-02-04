@@ -67,7 +67,7 @@
         <p>Comments are only viewable between the submitter and job reviewers.</p>
         {% load comments %}
         {% get_comment_count for object as comment_count %}
-        <h2>Review Company <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+        <h2>Review Job <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
         {% render_comment_list for object %}
         <hr>
         {% render_comment_form for object %}
