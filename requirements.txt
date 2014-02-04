@@ -25,7 +25,9 @@ https://bitbucket.org/andrewgodwin/south/get/59f6bae8b1a501ca14a5f23f8b11c44c42f
 
 git+https://github.com/bradjasper/django-jsonfield.git@c21b18
 
-git+https://github.com/danirus/django-comments-xtd.git@cc096c
+# TODO: replace ince https://github.com/danirus/django-comments-xtd/pull/16 is merged 
+git+https://github.com/fcurella/django-comments-xtd.git@patch-1
+#git+https://github.com/danirus/django-comments-xtd.git@cc096c
 
 # django-markupfield with Py3 support. Can be removed when 1.1 is released.
 git+git://github.com/jamesturk/django-markupfield.git@70dc74
