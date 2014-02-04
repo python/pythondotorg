@@ -185,8 +185,6 @@ LOGGING = {
     }
 }
 
-#EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 ### Comments
 
 COMMENTS_APP = 'django_comments_xtd'
