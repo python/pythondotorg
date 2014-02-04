@@ -62,7 +62,7 @@
         {{ object.company.about }}
         {% endif %}
 
-        {% if under_review %}
+        {% if under_review or request.user == object.creator %}
         <hr>
         <p>Comments are only viewable between the submitter and job reviewers.</p>
         {% load comments %}
