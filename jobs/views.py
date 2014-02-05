@@ -149,11 +149,12 @@ class JobDetail(DetailView):
         return Job.objects.select_related().filter(created__gt=threshold)
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(
+        ctx = super().get_context_data(
             category_jobs=self.object.category.jobs.select_related('company__name')[:5],
-            user_can_edit=(self.object.creator == self.request.user),
-            **kwargs
+            user_can_edit=(self.object.creator == self.request.user)
         )
+        ctx.update(kwargs)
+        return ctx
 
 
 class JobDetailReview(LoginRequiredMixin, SuperuserRequiredMixin, JobDetail):
@@ -163,11 +164,12 @@ class JobDetailReview(LoginRequiredMixin, SuperuserRequiredMixin, JobDetail):
         return Job.objects.all()
 
     def get_context_data(self, **kwargs):
-        return super().get_context_data(
+        ctx = super().get_context_data(
             user_can_edit=(self.object.creator == self.request.user),
             under_review=True,
-            **kwargs
         )
+        ctx.update(kwargs)
+        return ctx
 
 
 class JobCreate(CreateView):

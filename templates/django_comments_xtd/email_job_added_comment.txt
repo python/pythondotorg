@@ -1,0 +1,15 @@
+{% load i18n %}
+{{ user_name }},
+
+{% blocktrans %}There is a new comment on your job posting.{% endblocktrans %}
+
+Post: {{ content_object.title }}
+URL:  http://{{ site.domain }}{{ content_object.get_absolute_url }}
+Sent by: {{ comment.name }}, {{ comment.submit_date|date:"SHORT_DATE_FORMAT" }}
+
+--- Comment: ---
+{{ comment.comment }}
+
+--
+{% trans "Kind regards" %},
+{{ site }}

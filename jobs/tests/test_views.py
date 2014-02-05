@@ -1,4 +1,7 @@
+from django.contrib import comments
 from django.contrib.auth import get_user_model
+from django.core import mail
+
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -7,6 +10,7 @@ from ..models import Job
 from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory, ReviewJobFactory
 from companies.factories import CompanyFactory
 from companies.models import Company
+from django_comments_xtd.utils import mail_sent_queue
 
 
 class JobsViewTests(TestCase):
@@ -185,11 +189,19 @@ class JobsReviewTests(TestCase):
 
         self.super_username = 'kevinarnold'
         self.super_email = 'kevinarnold@example.com'
-        self.password = 'secret'
+        self.super_password = 'secret'
+
+        self.creator_username = 'johndoe'
+        self.creator_email = 'johndoe@example.com'
+        self.creator_password = 'secret'
 
         User = get_user_model()
-        creator = User.objects.create_superuser(self.super_username,
-            self.super_email, self.password)
+        self.creator = User.objects.create_user(self.creator_username,
+            self.creator_email, self.creator_password)
+
+        self.superuser = User.objects.create_superuser(self.super_username,
+            self.super_email, self.super_password)
+
 
         self.company = CompanyFactory(
             name='Kulfun Games',
@@ -213,8 +225,8 @@ class JobsReviewTests(TestCase):
             city='Memphis',
             region='TN',
             country='USA',
-            email=creator.email,
-            creator=creator
+            email=self.creator.email,
+            creator=self.creator
         )
         self.job1.job_types.add(self.job_type)
 
@@ -225,8 +237,8 @@ class JobsReviewTests(TestCase):
             city='Memphis',
             region='TN',
             country='USA',
-            email=creator.email,
-            creator=creator
+            email=self.creator.email,
+            creator=self.creator
         )
         self.job2.job_types.add(self.job_type)
 
@@ -237,18 +249,19 @@ class JobsReviewTests(TestCase):
             city='Memphis',
             region='TN',
             country='USA',
-            email=creator.email,
-            creator=creator
+            email=self.creator.email,
+            creator=self.creator
         )
         self.job3.job_types.add(self.job_type)
 
     def test_job_review(self):
+
         url = reverse('jobs:job_review')
 
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
 
-        self.client.login(username=self.super_username, password=self.password)
+        self.client.login(username=self.super_username, password=self.super_password)
 
         response = self.client.get(url)
 
@@ -272,3 +285,49 @@ class JobsReviewTests(TestCase):
 
         response = self.client.post(url, data={'job_id': 999999, 'action': 'approve'})
         self.assertEqual(response.status_code, 302)
+
+    def test_job_comment(self):
+        mail.outbox = []
+        self.client.login(username=self.super_username, password=self.super_password)
+
+        form = comments.get_form()(self.job1)
+        url = reverse('comments-post-comment')
+
+        form_data = {
+            'name': 'Reviewer',
+            'email': self.superuser.email,
+            'url': 'http://example.com',
+            'comment': 'Lorem ispum',
+            'reply_to': 0,
+            'post': 'Post'
+        }
+        form_data.update(form.initial)
+
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=1')
+
+        mail_sent_queue.get(block=True)
+        self.assertEqual(len(mail.outbox), 1)
+
+        self.assertEqual(mail.outbox[0].to, [self.creator.email])
+
+        form = comments.get_form()(self.job1)
+        form_data = {
+            'name': 'creator',
+            'email': self.creator.email,
+            'url': 'http://example.com',
+            'comment': 'Lorem ispum',
+            'reply_to': 0,
+            'post': 'Post'
+        }
+        form_data.update(form.initial)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=2')
+
+        mail_sent_queue.get(block=True)
+        self.assertEqual(len(mail.outbox), 3)
+        self.assertEqual(mail.outbox[1].to, [self.creator.email])
+        self.assertEqual(mail.outbox[2].to, [self.superuser.email])

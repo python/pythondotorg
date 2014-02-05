@@ -189,6 +189,7 @@ LOGGING = {
 
 COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
+COMMENTS_XTD_FORM_CLASS = "jobs.forms.JobCommentForm"
 
 ### Blog Feed URL
 PYTHON_BLOG_FEED_URL = "http://feeds.feedburner.com/PythonInsider"
