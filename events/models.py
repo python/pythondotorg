@@ -68,6 +68,7 @@ class EventManager(models.Manager):
 
 
 class Event(ContentManageable):
+    uid = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)
     calendar = models.ForeignKey(Calendar, related_name='events')
 
