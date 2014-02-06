@@ -24,8 +24,8 @@ class EventsModelsTests(TestCase):
 
         ot = OccurringRule.objects.create(
             event=self.event,
-            datetime_start=occurring_time_dtstart,
-            datetime_end=occurring_time_dtend,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtend,
         )
 
         self.assertEqual(self.event.next_time.dt_start, occurring_time_dtstart)
@@ -33,8 +33,8 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertTrue(ot.valid_dt_end())
 
-        ot.datetime_start = now - datetime.timedelta(days=5)
-        ot.datetime_end = now - datetime.timedelta(days=3)
+        ot.dt_start = now - datetime.timedelta(days=5)
+        ot.dt_end = now - datetime.timedelta(days=3)
         ot.save()
 
         event = Event.objects.get(pk=self.event.pk)
@@ -94,8 +94,8 @@ class EventsModelsTests(TestCase):
 
         ot = OccurringRule.objects.create(
             event=self.event,
-            datetime_start=occurring_time_dtstart,
-            datetime_end=occurring_time_dtend,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtend,
         )
 
         recurring_time_dtstart = now + datetime.timedelta(days=3)
@@ -125,8 +125,8 @@ class EventsModelsTests(TestCase):
 
         datetime_rule_ev1 = OccurringRule.objects.create(
             event=self.event,
-            datetime_start=occurring_time_ev1_dtstart,
-            datetime_end=occurring_time_ev1_dtend,
+            dt_start=occurring_time_ev1_dtstart,
+            dt_end=occurring_time_ev1_dtend,
         )
 
         event2 = Event.objects.create(creator=self.user, calendar=self.calendar)
@@ -138,8 +138,8 @@ class EventsModelsTests(TestCase):
 
         datetime_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            datetime_start=occurring_time_ev2_dtstart,
-            datetime_end=occurring_time_ev2_dtend,
+            dt_start=occurring_time_ev2_dtstart,
+            dt_end=occurring_time_ev2_dtend,
         )
 
         self.assertEqual(self.event.next_event, event2)
@@ -147,8 +147,8 @@ class EventsModelsTests(TestCase):
         datetime_rule_ev2.delete()
         date_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            date_start=occurring_time_ev2_dtstart.date(),
-            date_end=occurring_time_ev2_dtend.date(),
+            dt_start=occurring_time_ev2_dtstart.date(),
+            dt_end=occurring_time_ev2_dtend.date(),
         )
         self.assertEqual(self.event.next_event, event2)
 
@@ -157,13 +157,13 @@ class EventsModelsTests(TestCase):
 
         OccurringRule.objects.create(
             event=self.event,
-            date_start=occurring_time_ev1_dtstart.date(),
-            date_end=occurring_time_ev1_dtend.date(),
+            dt_start=occurring_time_ev1_dtstart.date(),
+            dt_end=occurring_time_ev1_dtend.date(),
         )
         OccurringRule.objects.create(
             event=event2,
-            datetime_start=occurring_time_ev2_dtstart,
-            datetime_end=occurring_time_ev2_dtend,
+            dt_start=occurring_time_ev2_dtstart,
+            dt_end=occurring_time_ev2_dtend,
         )
         self.assertEqual(self.event.next_event, event2)
 
@@ -175,8 +175,8 @@ class EventsModelsTests(TestCase):
 
         datetime_rule_ev1 = OccurringRule.objects.create(
             event=self.event,
-            datetime_start=occurring_time_ev1_dtstart,
-            datetime_end=occurring_time_ev1_dtend,
+            dt_start=occurring_time_ev1_dtstart,
+            dt_end=occurring_time_ev1_dtend,
         )
 
         event2 = Event.objects.create(title='event2', creator=self.user, calendar=self.calendar)
@@ -188,8 +188,8 @@ class EventsModelsTests(TestCase):
 
         datetime_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            datetime_start=occurring_time_ev2_dtstart,
-            datetime_end=occurring_time_ev2_dtend,
+            dt_start=occurring_time_ev2_dtstart,
+            dt_end=occurring_time_ev2_dtend,
         )
 
         self.assertEqual(self.event.previous_event, event2)
@@ -198,8 +198,8 @@ class EventsModelsTests(TestCase):
 
         date_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            date_start=occurring_time_ev2_dtstart.date(),
-            date_end=occurring_time_ev2_dtend.date(),
+            dt_start=occurring_time_ev2_dtstart.date(),
+            dt_end=occurring_time_ev2_dtend.date(),
         )
 
         self.assertEqual(self.event.previous_event, event2)
@@ -209,12 +209,12 @@ class EventsModelsTests(TestCase):
 
         OccurringRule.objects.create(
             event=self.event,
-            date_start=occurring_time_ev1_dtstart.date(),
-            date_end=occurring_time_ev1_dtend.date(),
+            dt_start=occurring_time_ev1_dtstart.date(),
+            dt_end=occurring_time_ev1_dtend.date(),
         )
         OccurringRule.objects.create(
             event=event2,
-            datetime_start=occurring_time_ev2_dtstart,
-            datetime_end=occurring_time_ev2_dtend,
+            dt_start=occurring_time_ev2_dtstart,
+            dt_end=occurring_time_ev2_dtend,
         )
         self.assertEqual(self.event.previous_event, event2)
