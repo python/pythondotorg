@@ -19,6 +19,7 @@ chardet2==2.0.3
 
 pytz==2013b
 python-dateutil==2.1
+git+https://github.com/dmfrey/FileLock@a547edd8dd5822226017126fab2322800c9d7d7e
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
 https://bitbucket.org/andrewgodwin/south/get/59f6bae8b1a501ca14a5f23f8b11c44c42f33147.zip

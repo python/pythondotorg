@@ -25,11 +25,21 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 # Create your models here.
 class Calendar(ContentManageable):
+    url = models.URLField('URL', blank=True, null=True)
     name = models.CharField(max_length=100)
     description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
+
+    def import_ics(self, url=None):
+        if url is None and self.url is None:
+            raise RuntimeError("Calendar must have a url field set, or you must pass a URL to `.import_ics()`.")
+        if url is None:
+            url = self.url
+        from .importer import ICSImporter
+        importer = ICSImporter(url=url)
+        importer.import_calendar()
 
 
 class EventCategory(NameSlugModel):
