@@ -26,6 +26,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 # Create your models here.
 class Calendar(ContentManageable):
     name = models.CharField(max_length=100)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
