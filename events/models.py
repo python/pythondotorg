@@ -59,12 +59,12 @@ class EventManager(models.Manager):
     def for_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
-        return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
+        return self.filter(Q(occurring_rule__datetime_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
 
     def until_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
-        return self.filter(Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
+        return self.filter(Q(occurring_rule__datetime_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
 
 
 class Event(ContentManageable):
@@ -147,12 +147,22 @@ class OccurringRule(RuleMixin, models.Model):
     Shares the same API of `RecurringRule`.
     """
     event = models.OneToOneField(Event, related_name='occurring_rule')
-    dt_start = models.DateTimeField(default=timezone.now)
-    dt_end = models.DateTimeField(default=timezone.now)
+    datetime_start = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    datetime_end = models.DateTimeField(default=timezone.now, null=True, blank=True)
+    date_start = models.DateField(default=timezone.now, null=True, blank=True)
+    date_end = models.DateField(default=timezone.now, null=True, blank=True)
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
         return '%s %s - %s' % (self.event.title, date(self.dt_start.strftime, strftime), date(self.dt_end.strftime, strftime))
+
+    @property
+    def dt_start(self):
+        return self.datetime_start or self.date_start
+
+    @property
+    def dt_end(self):
+        return self.datetime_end or self.date_end
 
     @property
     def begin(self):

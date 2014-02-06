@@ -14,7 +14,7 @@ class EventsModelsTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='username', password='password')
         self.calendar = Calendar.objects.create(creator=self.user)
-        self.event = Event.objects.create(creator=self.user, calendar=self.calendar)
+        self.event = Event.objects.create(title='event', creator=self.user, calendar=self.calendar)
 
     def test_occurring_event(self):
         now = seconds_resolution(timezone.now())
@@ -24,8 +24,8 @@ class EventsModelsTests(TestCase):
 
         ot = OccurringRule.objects.create(
             event=self.event,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_dtstart,
+            datetime_end=occurring_time_dtend,
         )
 
         self.assertEqual(self.event.next_time.dt_start, occurring_time_dtstart)
@@ -33,8 +33,8 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertTrue(ot.valid_dt_end())
 
-        ot.dt_start = now - datetime.timedelta(days=5)
-        ot.dt_end = now - datetime.timedelta(days=3)
+        ot.datetime_start = now - datetime.timedelta(days=5)
+        ot.datetime_end = now - datetime.timedelta(days=3)
         ot.save()
 
         event = Event.objects.get(pk=self.event.pk)
@@ -94,8 +94,8 @@ class EventsModelsTests(TestCase):
 
         ot = OccurringRule.objects.create(
             event=self.event,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_dtstart,
+            datetime_end=occurring_time_dtend,
         )
 
         recurring_time_dtstart = now + datetime.timedelta(days=3)
@@ -120,53 +120,101 @@ class EventsModelsTests(TestCase):
     def test_event_pagination_next(self):
         now = seconds_resolution(timezone.now())
 
-        occurring_time_dtstart = now + datetime.timedelta(days=3)
-        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=5)
+        occurring_time_ev1_dtstart = now + datetime.timedelta(days=3)
+        occurring_time_ev1_dtend = occurring_time_ev1_dtstart + datetime.timedelta(days=5)
 
-        OccurringRule.objects.create(
+        datetime_rule_ev1 = OccurringRule.objects.create(
             event=self.event,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_ev1_dtstart,
+            datetime_end=occurring_time_ev1_dtend,
         )
 
         event2 = Event.objects.create(creator=self.user, calendar=self.calendar)
 
         now = seconds_resolution(timezone.now())
 
-        occurring_time_dtstart = now + datetime.timedelta(days=4)
-        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=6)
+        occurring_time_ev2_dtstart = now + datetime.timedelta(days=4)
+        occurring_time_ev2_dtend = occurring_time_ev2_dtstart + datetime.timedelta(days=6)
 
-        OccurringRule.objects.create(
+        datetime_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_ev2_dtstart,
+            datetime_end=occurring_time_ev2_dtend,
         )
 
+        self.assertEqual(self.event.next_event, event2)
+
+        datetime_rule_ev2.delete()
+        date_rule_ev2 = OccurringRule.objects.create(
+            event=event2,
+            date_start=occurring_time_ev2_dtstart.date(),
+            date_end=occurring_time_ev2_dtend.date(),
+        )
+        self.assertEqual(self.event.next_event, event2)
+
+        datetime_rule_ev1.delete()
+        date_rule_ev2.delete()
+
+        OccurringRule.objects.create(
+            event=self.event,
+            date_start=occurring_time_ev1_dtstart.date(),
+            date_end=occurring_time_ev1_dtend.date(),
+        )
+        OccurringRule.objects.create(
+            event=event2,
+            datetime_start=occurring_time_ev2_dtstart,
+            datetime_end=occurring_time_ev2_dtend,
+        )
         self.assertEqual(self.event.next_event, event2)
 
     def test_event_pagination_previous(self):
         now = seconds_resolution(timezone.now())
 
-        occurring_time_dtstart = now + datetime.timedelta(days=3)
-        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=5)
+        occurring_time_ev1_dtstart = now + datetime.timedelta(days=3)
+        occurring_time_ev1_dtend = occurring_time_ev1_dtstart + datetime.timedelta(days=5)
 
-        OccurringRule.objects.create(
+        datetime_rule_ev1 = OccurringRule.objects.create(
             event=self.event,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_ev1_dtstart,
+            datetime_end=occurring_time_ev1_dtend,
         )
 
-        event2 = Event.objects.create(creator=self.user, calendar=self.calendar)
+        event2 = Event.objects.create(title='event2', creator=self.user, calendar=self.calendar)
 
         now = seconds_resolution(timezone.now())
 
-        occurring_time_dtstart = now + datetime.timedelta(days=2)
-        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=1)
+        occurring_time_ev2_dtstart = now + datetime.timedelta(days=2)
+        occurring_time_ev2_dtend = occurring_time_ev2_dtstart + datetime.timedelta(days=1)
 
-        OccurringRule.objects.create(
+        datetime_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            dt_start=occurring_time_dtstart,
-            dt_end=occurring_time_dtend,
+            datetime_start=occurring_time_ev2_dtstart,
+            datetime_end=occurring_time_ev2_dtend,
         )
 
+        self.assertEqual(self.event.previous_event, event2)
+
+        datetime_rule_ev2.delete()
+
+        date_rule_ev2 = OccurringRule.objects.create(
+            event=event2,
+            date_start=occurring_time_ev2_dtstart.date(),
+            date_end=occurring_time_ev2_dtend.date(),
+        )
+
+        self.assertEqual(self.event.previous_event, event2)
+
+        datetime_rule_ev1.delete()
+        date_rule_ev2.delete()
+
+        OccurringRule.objects.create(
+            event=self.event,
+            date_start=occurring_time_ev1_dtstart.date(),
+            date_end=occurring_time_ev1_dtend.date(),
+        )
+        OccurringRule.objects.create(
+            event=event2,
+            datetime_start=occurring_time_ev2_dtstart,
+            datetime_end=occurring_time_ev2_dtend,
+        )
         self.assertEqual(self.event.previous_event, event2)
