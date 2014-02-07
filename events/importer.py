@@ -30,6 +30,10 @@ class ICSImporter(object):
         dt_start = event_data['DTSTART'].dt
         dt_end = event_data['DTEND'].dt
 
+        # Django will already convert to datetime by setting the time to 0:00,
+        # but won't add any timezone information.
+        # Let's assume the timezone is the same as the calendar.
+
         if dt_start.resolution == DATE_RESOLUTION:
             dt_start = date_to_datetime(dt_start, tzinfo=self.calendar_timezone)
         if dt_end.resolution == DATE_RESOLUTION:
