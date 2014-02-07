@@ -11,7 +11,7 @@ class MockRequest(object):
 class TemplateProcessorsTestCase(TestCase):
     def test_url_name(self):
         mock_request = MockRequest(path='/inner/')
-        self.assertEqual({'URL_NAMESPACE': None, 'URL_NAME': 'inner'}, context_processors.url_name(mock_request))
+        self.assertEqual({'URL_NAMESPACE': '', 'URL_NAME': 'inner'}, context_processors.url_name(mock_request))
 
         mock_request = MockRequest(path='/events/')
         self.assertEqual({'URL_NAMESPACE': 'events', 'URL_NAME': 'events:event_list'}, context_processors.url_name(mock_request))
