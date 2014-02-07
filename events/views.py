@@ -4,7 +4,11 @@ import datetime
 from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
-from .models import Event, EventCategory, EventLocation
+from .models import Calendar, Event, EventCategory, EventLocation
+
+
+class CalendarList(ListView):
+    model = Calendar
 
 
 class EventDetail(DetailView):
@@ -33,7 +37,7 @@ class EventList(ListView):
         return None
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now())
+        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
 
     def get_context_data(self, **kwargs):
         featured_events = self.get_queryset().filter(featured=True)
@@ -45,9 +49,7 @@ class EventList(ListView):
         kwargs['event_categories'] = EventCategory.objects.all()[:10]
         kwargs['event_locations'] = EventLocation.objects.all()[:10]
         kwargs['object'] = self.get_object()
-
         return super().get_context_data(**kwargs)
-
 
 class EventListByDate(EventList):
 
@@ -58,12 +60,12 @@ class EventListByDate(EventList):
         return datetime.date(year, month, day)
 
     def get_queryset(self):
-        return Event.objects.for_datetime(self.get_object())
+        return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs['calendar_slug'])
 
 
 class EventListByCategory(EventList):
     def get_object(self, queryset=None):
-        return EventCategory.objects.get(slug=self.kwargs['slug'])
+        return EventCategory.objects.get(calendar__slug=self.kwargs['calendar_slug'], slug=self.kwargs['slug'])
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -72,7 +74,7 @@ class EventListByCategory(EventList):
 
 class EventListByLocation(EventList):
     def get_object(self, queryset=None):
-        return EventLocation.objects.get(pk=self.kwargs['pk'])
+        return EventLocation.objects.get(calendar__slug=self.kwargs['calendar_slug'], pk=self.kwargs['pk'])
 
     def get_queryset(self):
         qs = super().get_queryset()
@@ -83,8 +85,11 @@ class EventCategoryList(ListView):
     model = EventCategory
     paginate_by = 30
 
+    def get_queryset(self):
+        return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])
+
     def get_context_data(self, **kwargs):
-        kwargs['event_categories'] = EventCategory.objects.all()[:10]
+        kwargs['event_categories'] = self.get_queryset()[:10]
 
         return super().get_context_data(**kwargs)
 
@@ -92,3 +97,6 @@ class EventCategoryList(ListView):
 class EventLocationList(ListView):
     model = EventLocation
     paginate_by = 30
+
+    def get_queryset(self):
+        return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])

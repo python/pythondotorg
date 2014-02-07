@@ -90,7 +90,7 @@
                         {% for category in event_categories %}
                         <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
                         {% endfor %}
-                        <li><a class="readmore" href="{% url 'events:eventcategory_list' %}">More Types</a></li>
+                        <li><a class="readmore" href="{% url 'events:eventcategory_list' calendar_slug=view.kwargs.calendar_slug %}">More Types</a></li>
                     </ul>
                 </div>
                 {% endif %}
@@ -103,7 +103,7 @@
                         {% for location in event_locations %}
                         <li><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></li>
                         {% endfor %}
-                       <li><a class="readmore" href="{% url 'events:eventlocation_list' %}">More Locations</a></li>
+                       <li><a class="readmore" href="{% url 'events:eventlocation_list' calendar_slug=view.kwargs.calendar_slug %}">More Locations</a></li>
                     </ul>
                 </div>
                 {% endif %}
