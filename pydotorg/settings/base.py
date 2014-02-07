@@ -89,6 +89,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "allauth.socialaccount.context_processors.socialaccount",
     "django.contrib.messages.context_processors.messages",
     "pydotorg.context_processors.site_info",
+    "pydotorg.context_processors.url_name",
 ]
 
 ### URLs, WSGI, middleware, etc.
