@@ -11,7 +11,7 @@ from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRul
 class EventsViewsTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user)
+        self.calendar = Calendar.objects.create(creator=self.user, slug="test-calendar")
         self.event = Event.objects.create(creator=self.user, calendar=self.calendar)
 
         self.now = timezone.now()

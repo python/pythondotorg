@@ -13,7 +13,7 @@ from dateutil.rrule import rrule, WEEKLY
 class EventsModelsTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user)
+        self.calendar = Calendar.objects.create(creator=self.user, slug='test-calendar')
         self.event = Event.objects.create(title='event', creator=self.user, calendar=self.calendar)
 
     def test_occurring_event(self):

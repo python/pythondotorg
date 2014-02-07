@@ -27,6 +27,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 class Calendar(ContentManageable):
     url = models.URLField('URL', blank=True, null=True)
     name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):

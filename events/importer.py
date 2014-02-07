@@ -47,6 +47,7 @@ class ICSImporter(object):
             title = event_data['SUMMARY']
             description = event_data['DESCRIPTION']
             location, _ = EventLocation.objects.get_or_create(
+                calendar=calendar,
                 name=event_data['LOCATION']
             )
             defaults = {
