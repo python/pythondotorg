@@ -4,9 +4,10 @@
 Renders sitetrees according to the current URL namespace and name.
 
 For example, for a URL with namespace = 'events' and name 'event_list', it will
-render a tree called 'events' and a tree called 'events:event_list'.
+render a tree called 'events' and/or a tree called 'events:event_list', if any
+of these exists.
 
-If the URL is not namespaced, it will only load a trer with the same name of the
+If the URL is not namespaced, it will only load a tree with the same name of the
 URL, ie: 'event_list'.
 {% endcomment %}
 
