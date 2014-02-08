@@ -11,10 +11,6 @@ TIME_RESOLUTION = timedelta(0, 0, 1)
 
 
 class ICSImporter(object):
-    def __init__(self, url):
-        self.url = url
-        super().__init__()
-
     def create_or_update_model(self, model_class, **kwargs):
         defaults = kwargs.get('defaults', {})
         instance, created = model_class.objects.get_or_create(**kwargs)
@@ -63,10 +59,16 @@ class ICSImporter(object):
             event, _ = self.create_or_update_model(Event, uid=uid, defaults=defaults)
             self.import_occurrence(event, event_data)
 
-    def import_calendar(self):
-        response = requests.get(self.url)
+    def fetch(self, url):
+        response = requests.get(url)
+        return response.content
 
-        parsed_calendar = ICalendar.from_ical(response.content)
+    def from_url(self, url):
+        ical = self.fetch(url)
+        return self.parse(ical)
+
+    def parse(self, ical):
+        parsed_calendar = ICalendar.from_ical(ical)
         calendar_name = parsed_calendar['X-WR-CALNAME']
         description = parsed_calendar.get('X-WR-CALDESC', None)
         self.calendar_timezone = pytz.timezone(parsed_calendar['X-WR-TIMEZONE'])

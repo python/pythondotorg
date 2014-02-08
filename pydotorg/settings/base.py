@@ -158,6 +158,7 @@ INSTALLED_APPS = (
 SOUTH_TESTS_MIGRATE = False
 TEST_RUNNER = 'discover_runner.DiscoverRunner'
 TEST_DISCOVER_TOP_LEVEL = BASE
+SKIP_NETWORK_TESTS = True
 
 ### Logging
 

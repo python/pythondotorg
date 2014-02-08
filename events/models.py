@@ -36,14 +36,14 @@ class Calendar(ContentManageable):
     def get_absolute_url(self):
         return reverse('events:event_list', kwargs={'calendar_slug': self.slug})
 
-    def import_ics(self, url=None):
+    def from_url(self, url=None):
         if url is None and self.url is None:
             raise RuntimeError("Calendar must have a url field set, or you must pass a URL to `.import_ics()`.")
         if url is None:
             url = self.url
         from .importer import ICSImporter
-        importer = ICSImporter(url=url)
-        importer.import_calendar()
+        importer = ICSImporter()
+        importer.from_url(url)
 
 
 class EventCategory(NameSlugModel):
