@@ -105,7 +105,6 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTH_USER_MODEL = 'users.User'
-SOUTH_TESTS_MIGRATE = False
 
 WSGI_APPLICATION = 'pydotorg.wsgi.application'
 
