@@ -29,7 +29,7 @@ class Story(NameSlugModel, ContentManageable):
     company_name = models.CharField(max_length=500)
     company_url = models.URLField()
     company = models.ForeignKey(Company, blank=True, null=True, related_name='success_stories')
-    category = models.ForeignKey(StoryCategory)
+    category = models.ForeignKey(StoryCategory, related_name='success_stories')
     author = models.CharField(max_length=500)
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
