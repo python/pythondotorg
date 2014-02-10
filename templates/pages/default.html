@@ -1,13 +1,12 @@
 {% extends "base.html" %}
+{% load sitetree %}
 
 {% block body_attributes %}class="python pages default-page"{% endblock %}
 
 
 {% block breadcrumbs %}
-{% load sitetree %}
 
-
-{% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
+{% sitetree_breadcrumbs from "main" %}
 
 {% comment %}
 TODO: format breadcrumbs
