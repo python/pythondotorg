@@ -33,6 +33,6 @@ class MinutesModelTests(TestCase):
         )
 
     def test_date_methods(self):
-        self.assertEqual(self.m1.get_date_year, '2012')
-        self.assertEqual(self.m1.get_date_month, '01')
-        self.assertEqual(self.m1.get_date_day, '01')
+        self.assertEqual(self.m1.get_date_year(), '2012')
+        self.assertEqual(self.m1.get_date_month(), '01')
+        self.assertEqual(self.m1.get_date_day(), '01')
