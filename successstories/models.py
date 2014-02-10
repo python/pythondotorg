@@ -39,6 +39,7 @@ class Story(NameSlugModel, ContentManageable):
     objects = StoryManager()
 
     class Meta:
+        ordering = ('-created',)
         verbose_name = 'story'
         verbose_name_plural = 'stories'
 
