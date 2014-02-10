@@ -1,13 +1,16 @@
 {% extends "base.html" %}
 {% load boxes %}
 
+{% block extra_scripts %}
+{% endblock extra_scripts%}
+
 {% block body_attributes %}class="python home"{% endblock %}
 
 {% block header_content %}
 
         <div id="dive-into-python" class="flex-slideshow slideshow">
 
-            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" href="/shell/">&gt;_</a></li></ul>
+            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" data-shell-container="#dive-into-python" href="/shell/">&gt;_</a></li></ul>
 
             <ul class="slides menu">
                 <li>

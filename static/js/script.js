@@ -209,7 +209,20 @@ $().ready(function() {
         return false;
     });
     
-    
+    /*
+     * Load interactive shell on the homepage.
+    */
+    function loadShell(e) {
+        var CONSOLE_URL = 'https://www.pythonanywhere.com/python-dot-org-console/';
+        e.preventDefault();
+        shellDiv = $($(e.target).data('shell-container'));
+
+        var iframe = $('<iframe>').width('100%').height(shellDiv.height());
+        $(iframe).attr('src', CONSOLE_URL);
+        shellDiv.html(iframe);
+    }
+    $('.button.prompt').click(loadShell);
+
     /*
      * Load a slideshow on the homepage. Set the animationtype and detect for the library first.  
      */
