@@ -217,7 +217,10 @@ $().ready(function() {
         e.preventDefault();
         shellDiv = $($(e.target).data('shell-container'));
 
-        var iframe = $('<iframe>').width('100%').height(shellDiv.height());
+        // The iframe's DIV containing the shell has a min-height: 300px 
+        var shellHeight = 300;
+        shellDiv.animate({height: shellHeight});
+        var iframe = $('<iframe>').width('100%').height(shellHeight);
         $(iframe).attr('src', CONSOLE_URL);
         shellDiv.html(iframe);
     }
