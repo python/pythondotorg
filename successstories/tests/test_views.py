@@ -57,8 +57,9 @@ class StoryViewTests(StoryTestCase):
         url = reverse('success_story_list_category', kwargs={'slug': self.category.slug})
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(len(r.context['stories']), 1)
-        self.assertEqual(r.context['stories'][0].pk, self.story1.pk)
+        self.assertEqual(r.context['object'], self.category)
+        self.assertEqual(len(r.context['object'].success_stories.all()), 2)
+        self.assertEqual(r.context['object'].success_stories.all()[0].pk, self.story2.pk)
 
     def test_story_create(self):
         username = 'kevinarnold'
