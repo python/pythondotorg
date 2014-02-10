@@ -7,7 +7,6 @@
 			<li>
 				<a href="{% sitetree_url for item %}" {% if item.hint %}title="{{ item.hint }}"{% endif %}>{{ item.title_resolved }}</a><span class="prompt">&gt;&gt;&gt;</span>
 			</li>
-			<li>&gt;</li>
 		{% else %}
 			{% if item.title_resolved %}
 				<li>{{ item.title_resolved }}</li>
