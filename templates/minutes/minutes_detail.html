@@ -42,15 +42,9 @@
 {% block left_sidebar %}
 <aside class="left-sidebar" role="secondary">
 
-    <div class="section-navigation sidebar-widget">
+    {% include "components/navigation-widget.html" %}
 
-        <!-- navigation for this section... all siblings should be included -->
-        <ul class="section-nav menu" role="menu" aria-hidden="false">
-            <li class="tier-1 element-1" role="treeitem"><a href="#fix-me" title="" class="">About</a></li>
-            <li class="tier-1 element-2" role="treeitem"><a href="#fix-me" title="">Executive summary</a></li>
-            <li class="tier-1 element-3" role="treeitem"><a href="#fix-me" title="">Mission statement</a></li>
-            <li class="tier-1 element-4" role="treeitem"><a href="#fix-me" title="">Public records</a></li>
-        </ul>
+    <div class="section-navigation sidebar-widget">
 
         <h2>{{ minutes.date.year }}</h2>
         <ul class="section-nav menu" role="menu" aria-hidden="false">
