@@ -1,22 +1,11 @@
 {% extends "base.html" %}
+{% load sitetree %}
 
 {% block body_attributes %}class="python pages default-page"{% endblock %}
 
 
 {% block breadcrumbs %}
-{% load sitetree %}
-
-
-{% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
-
-{% comment %}
-TODO: format breadcrumbs
-<ul class="breadcrumbs menu">
-    <li><a href="#">Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li>This Page</li>
-</ul>
-{% endcomment %}
-
+{% sitetree_breadcrumbs from "main" %}
 {% endblock breadcrumbs %}
 
 

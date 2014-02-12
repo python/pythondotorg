@@ -27,7 +27,18 @@ class Minutes(ContentManageable):
 
     def get_absolute_url(self):
         return reverse('minutes_detail', kwargs={
-            'year': self.date.strftime("%Y"),
-            'month': self.date.strftime("%m").zfill(2),
-            'day': self.date.strftime("%d").zfill(2),
+            'year': self.get_date_year(),
+            'month': self.get_date_month(),
+            'day': self.get_date_day(),
         })
+
+    # Helper methods for sitetree
+    def get_date_year(self):
+        return self.date.strftime("%Y")
+
+    def get_date_month(self):
+        return self.date.strftime("%m").zfill(2)
+
+    def get_date_day(self):
+        return self.date.strftime("%d").zfill(2)
+

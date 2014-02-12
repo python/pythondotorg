@@ -7,11 +7,7 @@
 
 
 {% block breadcrumbs %}
-<ul class="breadcrumbs menu">
-    <li><a href=".">Python Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li><a href="{% url 'success_story_list' %}">Success Stories</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li>{{ object.category.name }}</li>
-</ul> 
+{% sitetree_breadcrumbs from "main" %}
 {% endblock breadcrumbs %}
 
 

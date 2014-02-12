@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load sitetree %}
 
 {% block page_title %}{{ minutes.date|date }} | PSF Meeting Minutes | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -13,13 +14,7 @@
 
 
 {% block breadcrumbs %}
-<ul class="breadcrumbs menu">
-    <li><a href="#fix-me">PSF Home</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li><a href="#fix-me">About</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li><a href="#fix-me">Public Records</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li><a href="{% url 'minutes_list' %}">Board Meeting Minutes</a><span class="prompt"><span>&gt;&gt;&gt;</span></span></li>
-    <li>Minutes for {{ minutes.date|date }}</li>
-</ul>
+{% sitetree_breadcrumbs from "main" %}
 {% endblock breadcrumbs %}
 
 

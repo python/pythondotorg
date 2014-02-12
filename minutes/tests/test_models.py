@@ -31,3 +31,8 @@ class MinutesModelTests(TestCase):
             Minutes.objects.published(),
             ['<Minutes: PSF Meeting Minutes January 01, 2012>']
         )
+
+    def test_date_methods(self):
+        self.assertEqual(self.m1.get_date_year(), '2012')
+        self.assertEqual(self.m1.get_date_month(), '01')
+        self.assertEqual(self.m1.get_date_day(), '01')

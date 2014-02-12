@@ -1,7 +1,7 @@
 from django.views.generic import CreateView, DetailView, ListView
 
 from .forms import StoryForm
-from .models import Story
+from .models import Story, StoryCategory
 
 
 class StoryCreate(CreateView):
@@ -28,7 +28,5 @@ class StoryList(ListView):
         return Story.objects.select_related().published()
 
 
-class StoryListCategory(StoryList):
-
-    def get_queryset(self):
-        return super().get_queryset().filter(category__slug=self.kwargs['slug'])
+class StoryListCategory(DetailView):
+    model = StoryCategory
