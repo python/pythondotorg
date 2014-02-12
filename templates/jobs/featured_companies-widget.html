@@ -1,7 +1,14 @@
+{% load imagekit %}
+
+{% if featured_companies %}
 <div class="sidebar-widget">
     <h3 class="widget-title">Featured Companies</h3>
-    <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
-    <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
-    <p><a href="#"><img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it"></a></p>
+    {% for company in featured_companies %}
+    {% if company.logo %}
+    {% thumbnail '240x80' company.logo as th %}
+    <p>{% if company.url %}<a href="{{ company.url }}" rel="no-follow">{% endif %}<img src="{{ th.url }}" alt="{{ company.name }} logo" width="{{ th.width }}" height="{{ th.height }}">{% if company.url %}</a>{% endif %}</p>
+    {% endif %}
+    {% endfor %}
     <p>Want your jobs to be featured? <a href="#">Find out more</a>.</p>
 </div>
+{% endif %}
