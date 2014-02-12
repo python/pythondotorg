@@ -75,6 +75,8 @@ class Job(ContentManageable):
     telecommuting = models.BooleanField(default=True)
     agencies = models.BooleanField(default=True)
 
+    is_featured = models.BooleanField(default=False, db_index=True)
+
     objects = JobManager()
 
     class Meta:

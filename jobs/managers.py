@@ -22,6 +22,9 @@ class JobQuerySet(QuerySet):
     def removed(self):
         return self.filter(status__exact=self.model.STATUS_REMOVED)
 
+    def featured(self):
+        return self.filter(is_featured=True)
+
     def review(self):
         return self.filter(status__in=[
             self.model.STATUS_REVIEW,
@@ -49,6 +52,9 @@ class JobManager(Manager):
 
     def removed(self):
         return self.get_query_set().removed()
+
+    def featured(self):
+        return self.get_query_set().featured()
 
     def review(self):
         return self.get_query_set().review()

@@ -42,6 +42,7 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
+            is_featured=True
         )
         self.job.job_types.add(self.job_type)
 
@@ -73,6 +74,8 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertEqual(response.context['companies_count'], 1)
 
+        self.assertEqual(len(response.context['featured_companies']), 1)
+
     def test_job_list_mine(self):
         url = reverse('jobs:job_list_mine')
 
@@ -94,7 +97,8 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            creator=creator
+            creator=creator,
+            is_featured=True
         )
 
         self.client.login(username=username, password=password)
@@ -104,6 +108,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.context['jobs_count'], 2)
         self.assertEqual(response.context['companies_count'], 1)
+        self.assertEqual(len(response.context['featured_companies']), 1)
 
     def test_job_detail(self):
         url = self.job.get_absolute_url()
@@ -112,6 +117,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertEqual(response.context['companies_count'], 1)
+        self.assertEqual(len(response.context['featured_companies']), 1)
 
     def test_job_create(self):
         url = reverse('jobs:job_create')
