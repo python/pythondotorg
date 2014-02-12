@@ -232,7 +232,7 @@ $().ready(function() {
         $(iframe).attr('src', CONSOLE_URL);
         shellDiv.html(iframe);
     }
-    $('.button.prompt').click(loadShell);
+    $('#start-shell').click(loadShell);
 
     /*
      * Load a slideshow on the homepage. Set the animationtype and detect for the library first.
