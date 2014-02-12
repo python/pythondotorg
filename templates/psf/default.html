@@ -35,19 +35,10 @@
 
 
 {% block left_sidebar %}
-    {% comment %}
-    TODO: should this partially come from sitetree?
-    {% endcomment %}
-
     <aside class="left-sidebar" role="secondary">
     
-        <div class="section-navigation sidebar-widget">
-            <!-- navigation for this section... all siblings should be included -->
-            <ul class="section-nav menu" role="menu" aria-hidden="false">
-                <li class="tier-1 element-1" role="treeitem"><a href="#fixme-inner">Insert Child pages or siblings Here</a></li>
-            </ul>
-        </div>
-    
+        {% include "components/navigation-widget.html" %}
+
         <div class="psf-sidebar-widget sidebar-widget">
             <!-- Define this widget and create it in the Admin -->
             <h3 class="widget-title">The PSF</h3>
