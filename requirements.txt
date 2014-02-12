@@ -17,6 +17,7 @@ cssselect==0.8
 git+https://code.google.com/p/feedparser/@dc3bd29bfc1b#egg=feedparser
 icalendar==3.6.1
 chardet2==2.0.3
+django-imagekit==3.2
 
 pytz==2013b
 python-dateutil==2.1

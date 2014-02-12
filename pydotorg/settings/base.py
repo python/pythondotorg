@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'sitetree',
     'south',
     'timedelta',
+    'imagekit',
 
     'users',
     'boxes',
