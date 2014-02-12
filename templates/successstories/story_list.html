@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load sitetree %}
+{% load imagekit %}
 
 {% block page_title %}Our Success Stories | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -34,12 +35,13 @@
 {% block content %}
     <div class="row">
         {% for story in object_list %}
+            {% thumbnail '240x80' story.company.logo as th %}
             <div class="medium-widget success-story {% if forloop.last == True %}last{% endif %}">
                 <div class="shrubbery">
                 
                     <!-- This should be a company logo, if available, and not be output at all if there is not a logo -->
                     <!-- This set of four stories, really, needs to be only stories that have companies/logos arttached to them -->
-                    <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
+                    {% if story.company.logo %}<img src="{{ th.url }}" alt="{{ story.name }}" width="{{ th.width }}" height="{{ th.height }}">{% endif %}
                     <h2 class="widget-title"><a href="{{ story.get_absolute_url }}">{{ story.name }}</a></h2>
                     <p class="success-quote">
                         <!-- Should there be a character limit on pull_quote with a trailing ellipses? The textarea is freeform on the backend, which alows them to vary greatly in length -->
