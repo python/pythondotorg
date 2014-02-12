@@ -25,22 +25,41 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 # Create your models here.
 class Calendar(ContentManageable):
+    url = models.URLField('URL', blank=True, null=True)
     name = models.CharField(max_length=100)
+    slug = models.SlugField(unique=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
 
+    def get_absolute_url(self):
+        return reverse('events:event_list', kwargs={'calendar_slug': self.slug})
+
+    def from_url(self, url=None):
+        if url is None and self.url is None:
+            raise RuntimeError("Calendar must have a url field set, or you must pass a URL to `.import_ics()`.")
+        if url is None:
+            url = self.url
+        from .importer import ICSImporter
+        importer = ICSImporter()
+        importer.from_url(url)
+
 
 class EventCategory(NameSlugModel):
+    calendar = models.ForeignKey(Calendar, related_name='categories', null=True, blank=True)
+
     class Meta:
         verbose_name_plural = 'event categories'
         ordering = ('name',)
 
     def get_absolute_url(self):
-        return reverse('events:eventlist_category', kwargs={'slug': self.slug})
+        return reverse('events:eventlist_category', kwargs={'calendar_slug': self.calendar.slug, 'slug': self.slug})
 
 
 class EventLocation(models.Model):
+    calendar = models.ForeignKey(Calendar, related_name='locations', null=True, blank=True)
+
     name = models.CharField(max_length=255)
     address = models.CharField(blank=True, null=True, max_length=255)
     url = models.URLField('URL', blank=True, null=True)
@@ -52,7 +71,7 @@ class EventLocation(models.Model):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('events:eventlist_location', kwargs={'pk': self.pk})
+        return reverse('events:eventlist_location', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.pk})
 
 
 class EventManager(models.Manager):
@@ -68,6 +87,7 @@ class EventManager(models.Manager):
 
 
 class Event(ContentManageable):
+    uid = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)
     calendar = models.ForeignKey(Calendar, related_name='events')
 
@@ -83,13 +103,13 @@ class Event(ContentManageable):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('events:event_detail', kwargs={'pk': self.pk})
+        return reverse('events:event_detail', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.pk})
 
     @cached_property
     def previous_event(self):
         dt = self.next_time.dt_end
         try:
-            return Event.objects.until_datetime(dt)[0]
+            return Event.objects.until_datetime(dt).filter(calendar=self.calendar)[0]
         except IndexError:
             return None
 
@@ -97,7 +117,7 @@ class Event(ContentManageable):
     def next_event(self):
         dt = self.next_time.dt_start
         try:
-            return Event.objects.for_datetime(dt)[0]
+            return Event.objects.for_datetime(dt).filter(calendar=self.calendar)[0]
         except IndexError:
             return None
 

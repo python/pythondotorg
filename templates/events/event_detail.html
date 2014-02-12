@@ -103,20 +103,20 @@
                             <p><select name="" id="dataRangeSelect">
                                 <option value="-">-- Change your date range</option>
                                 {% with next_7 as dt %}
-                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 7 days</option>
+                                <option value="{% url 'events:eventlist_date' calendar_slug=view.kwargs.calendar_slug year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 7 days</option>
                                 {% endwith %}
 
                                 {% with next_30 as dt %}
-                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 30 days</option>
+                                <option value="{% url 'events:eventlist_date' calendar_slug=view.kwargs.calendar_slug year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 30 days</option>
                                 {% endwith %}
 
                                 {% with next_90 as dt %}
-                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 90 days</option>
+                                <option value="{% url 'events:eventlist_date' calendar_slug=view.kwargs.calendar_slug year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next 90 days</option>
                                 {% endwith %}
 
 
                                 {% with next_365 as dt %}
-                                <option value="{% url 'events:eventlist_date' year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next year</option>
+                                <option value="{% url 'events:eventlist_date' calendar_slug=view.kwargs.calendar_slug year=dt|date:'Y' month=dt|date:'m' day=dt|date:'d' %}">The next year</option>
                                 {% endwith %}
 
                             </select></p>

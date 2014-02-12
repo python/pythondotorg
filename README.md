@@ -103,6 +103,9 @@ Create a super user (for a new DB):
 Install Meeting Minutes:
 `./manage.py import_psf_meeting_notes`
 
+Import calendars:
+`./manage.py import_ics_calendars`
+
 Want to save some data from your DB before nuking it, and then load it back in? 
 `./manage.py dumpdata --format=json --indent=4 [app-name] > fixtures/[app-name].json`
 

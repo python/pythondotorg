@@ -11,7 +11,7 @@ from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRul
 class EventsViewsTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user)
+        self.calendar = Calendar.objects.create(creator=self.user, slug="test-calendar")
         self.event = Event.objects.create(creator=self.user, calendar=self.calendar)
 
         self.now = timezone.now()
@@ -25,8 +25,16 @@ class EventsViewsTests(TestCase):
             finish=recurring_time_dtend,
         )
 
+    def test_calendar_list(self):
+        calendars_count = Calendar.objects.count()
+        url = reverse('events:calendar_list')
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), calendars_count)
+
     def test_event_list(self):
-        url = reverse('events:event_list')
+        url = reverse('events:event_list', kwargs={"calendar_slug": self.calendar.slug})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -35,10 +43,11 @@ class EventsViewsTests(TestCase):
     def test_event_list_category(self):
         category = EventCategory.objects.create(
             name='Sprints',
-            slug='sprints'
+            slug='sprints',
+            calendar=self.calendar
         )
         self.event.categories.add(category)
-        url = reverse('events:eventlist_category', kwargs={'slug': category.slug})
+        url = reverse('events:eventlist_category', kwargs={'calendar_slug': self.calendar.slug, 'slug': category.slug})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -48,11 +57,12 @@ class EventsViewsTests(TestCase):
 
     def test_event_list_location(self):
         venue = EventLocation.objects.create(
-            name='PSF HQ'
+            name='PSF HQ',
+            calendar=self.calendar
         )
         self.event.venue = venue
         self.event.save()
-        url = reverse('events:eventlist_location', kwargs={'pk': venue.pk})
+        url = reverse('events:eventlist_location', kwargs={'calendar_slug': self.calendar.slug, 'pk': venue.pk})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -63,6 +73,7 @@ class EventsViewsTests(TestCase):
     def test_event_list_date(self):
         dt = self.now - datetime.timedelta(days=2)
         url = reverse('events:eventlist_date', kwargs={
+            'calendar_slug': self.calendar.slug,
             'year': dt.year,
             'month': "%02d" % dt.month,
             'day': "%02d" % dt.day,
@@ -74,11 +85,12 @@ class EventsViewsTests(TestCase):
 
     def test_eventlocation_list(self):
         venue = EventLocation.objects.create(
-            name='PSF HQ'
+            name='PSF HQ',
+            calendar=self.calendar
         )
         self.event.venue = venue
         self.event.save()
-        url = reverse('events:eventlocation_list')
+        url = reverse('events:eventlocation_list', kwargs={'calendar_slug': self.calendar.slug})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -87,17 +99,18 @@ class EventsViewsTests(TestCase):
     def test_eventcategory_list(self):
         category = EventCategory.objects.create(
             name='Sprints',
-            slug='sprints'
+            slug='sprints',
+            calendar=self.calendar
         )
         self.event.categories.add(category)
-        url = reverse('events:eventcategory_list')
+        url = reverse('events:eventcategory_list', kwargs={'calendar_slug': self.calendar.slug})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
         self.assertTrue(category in response.context['object_list'])
 
     def test_event_detail(self):
-        url = reverse('events:event_detail', kwargs={'pk': self.event.pk})
+        url = reverse('events:event_detail', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.event.pk})
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
