@@ -10,11 +10,19 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, T
 
 from .forms import JobForm
 from .models import Job, JobType, JobCategory
+from companies.models import Company
 
 THRESHOLD_DAYS = 30
 
 
-class JobList(ListView):
+class JobMixin(object):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['jobs_count'] = Job.objects.count()
+        context['companies_count'] = Company.objects.filter(jobs__isnull=False).distinct().count()
+        return context
+
+class JobList(JobMixin, ListView):
     model = Job
     paginate_by = 25
 
@@ -23,7 +31,7 @@ class JobList(ListView):
         return super().get_queryset().approved().select_related().filter(created__gt=threshold)
 
 
-class JobListMine(ListView):
+class JobListMine(JobMixin, ListView):
     model = Job
     paginate_by = 25
 
@@ -56,7 +64,7 @@ class JobListLocation(JobList):
         return super().get_queryset().filter(location_slug=self.kwargs['slug'])
 
 
-class JobTypes(TemplateView):
+class JobTypes(JobMixin, TemplateView):
     """ View to simply list JobType instances that have current jobs """
     template_name = "jobs/job_types.html"
 
@@ -72,7 +80,7 @@ class JobTypes(TemplateView):
         return context
 
 
-class JobCategories(TemplateView):
+class JobCategories(JobMixin, TemplateView):
     """ View to simply list JobCategory instances that have current jobs """
     template_name = "jobs/job_categories.html"
 
@@ -88,7 +96,7 @@ class JobCategories(TemplateView):
         return context
 
 
-class JobLocations(TemplateView):
+class JobLocations(JobMixin, TemplateView):
     """ View to simply list distinct Countries that have current jobs """
     template_name = "jobs/job_locations.html"
 
@@ -103,7 +111,7 @@ class JobLocations(TemplateView):
         return context
 
 
-class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
+class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, JobMixin, ListView):
     template_name = 'jobs/job_review.html'
     paginate_by = 20
 
@@ -140,7 +148,7 @@ class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, ListView):
         return redirect('jobs:job_review')
 
 
-class JobDetail(DetailView):
+class JobDetail(JobMixin, DetailView):
     model = Job
 
     def get_queryset(self):
@@ -172,7 +180,7 @@ class JobDetailReview(LoginRequiredMixin, SuperuserRequiredMixin, JobDetail):
         return ctx
 
 
-class JobCreate(CreateView):
+class JobCreate(JobMixin, CreateView):
     model = Job
     form_class = JobForm
 
@@ -185,7 +193,7 @@ class JobCreate(CreateView):
         return kwargs
 
 
-class JobEdit(UpdateView):
+class JobEdit(JobMixin, UpdateView):
     model = Job
     form_class = JobForm
 
@@ -194,7 +202,7 @@ class JobEdit(UpdateView):
         #return self.request.user.job_set.exclude(status=self.model.STATUS_APPROVED)
 
 
-class JobChangeStatus(LoginRequiredMixin, View):
+class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
     """
     Abstract class to change a job's status; see the concrete implentations below.
     """

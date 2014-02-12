@@ -20,6 +20,10 @@ class JobsViewTests(TestCase):
             slug='kulfun-games',
         )
 
+        self.company2 = CompanyFactory(
+            name='Acme Corp',
+            slug='acme-corp',
+        )
         self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
@@ -66,6 +70,9 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.status_code, 200)
 
+        self.assertEqual(response.context['jobs_count'], 1)
+        self.assertEqual(response.context['companies_count'], 1)
+
     def test_job_list_mine(self):
         url = reverse('jobs:job_list_mine')
 
@@ -95,12 +102,16 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(response.context['jobs_count'], 2)
+        self.assertEqual(response.context['companies_count'], 1)
 
     def test_job_detail(self):
         url = self.job.get_absolute_url()
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['jobs_count'], 1)
+        self.assertEqual(response.context['companies_count'], 1)
 
     def test_job_create(self):
         url = reverse('jobs:job_create')
