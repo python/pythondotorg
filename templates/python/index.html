@@ -7,7 +7,7 @@
 
         <div id="dive-into-python" class="flex-slideshow slideshow">
 
-            <ul class="launch-shell menu"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" data-shell-container="#dive-into-python" href="/shell/">&gt;_</a></li></ul>
+            <ul class="launch-shell menu" style="display: none;"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" data-shell-container="#dive-into-python" href="/shell/">&gt;_</a></li></ul>
 
             <ul class="slides menu">
                 <li>
@@ -143,31 +143,31 @@ Hi, Python</span></code></pre>
                     </div>
 
                 </div>
-                
+
                 <div class="list-widgets row">
-                    
+
                     <div class="medium-widget blog-widget">
                         {% include 'components/blog-posts.html' %}
                     </div>
-                    
+
                     <div class="medium-widget event-widget last">
                         {% include 'components/event-posts.html' %}
                     </div>
-                    
+
                 </div>
-                
+
                 <div class="row">
-                    
+
                     <div class="medium-widget success-stories-widget">
                         {% include 'components/success-story.html' %}
                     </div>
-                    
+
                     <div class="medium-widget applications-widget last">
                         <div class="shrubbery">
                             {% box 'widget-use-python-for' %}
                         </div><!-- end .shrubbery -->
                     </div>
-                    
+
                 </div>
 
                 {% include 'components/pep-widget.html' %}

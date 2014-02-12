@@ -17,12 +17,12 @@ if( !window.Modernizr ) {
         is_ltie9 = false;
 }
 
-if( !window.Retina ) { 
-    var is_retina = false; 
-    $("html").addClass( "no-retina" ); 
+if( !window.Retina ) {
+    var is_retina = false;
+    $("html").addClass( "no-retina" );
 } else {
-    var is_retina = Retina.isRetina(); 
-    $("html").addClass( "retina" ); 
+    var is_retina = Retina.isRetina();
+    $("html").addClass( "retina" );
 }
 
 
@@ -30,7 +30,7 @@ if( !window.Retina ) {
 /* /mobile/i.test(navigator.userAgent) && !window.location.hash && setTimeout(function () { window.scrollTo(0, 0); }, 1000); */
 
 
-/* Load, Resize and Orientation change methods 
+/* Load, Resize and Orientation change methods
  * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 */
 
 //initial load
@@ -40,7 +40,7 @@ $(window).load( function() { on_resize_orientationchange(); });
 $(window).resize( function() { on_resize_orientationchange(); });
 
 //check for the orientation event and bind accordingly
-if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', on_resize_orientationchange, false); } 
+if (window.DeviceOrientationEvent) { window.addEventListener('orientationchange', on_resize_orientationchange, false); }
 
 
 /* Variables to set to true later and check */
@@ -66,81 +66,81 @@ function on_resize_orientationchange() {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         scroll_fired = true;
     }
-    
-    
+
+
     /* Click the menu button and add a class to the body for a "drawer" */
     if ( mq_tag.indexOf("drawer_navigation") !=-1 ) {
-        
+
         /* TO DO: Look for a left-right swipe action (on the #touchnav-wrapper?) and also trigger the menu to open/close */
         $( "#site-map-link" ).click( function() {
-            $("body").toggleClass("show-sidemenu"); 
+            $("body").toggleClass("show-sidemenu");
             //console.log( "! #site-map-link has been tapped" );
-            return false; 
-        }); 
-        
+            return false;
+        });
+
     } else {
-        
+
         /* If "drawer_navigation" is not present, treat the Menu button as a scroller down to the footer */
         $("#site-map-link").click(function() {
             $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 500);
             return false;
         });
     }
-    
-    
+
+
     /* Load a supernav into the About dropdown */
     if ( ! hastouch ) {
-    
+
         if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
-    
+
             $.get("/box/supernav-python-about/",
                 function(data){
                  $('li#about .subnav').append( data );
                 }, "html");
             $('li#about').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-downloads/",
                 function(data){
                  $('li#downloads .subnav').append( data );
                 }, "html");
             $('li#downloads').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-documentation/",
                 function(data){
                  $('li#documentation .subnav').append( data );
                 }, "html");
             $('li#documentation').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-community/",
                 function(data){
                  $('li#community .subnav').append( data );
                 }, "html");
             $('li#community').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-success-stories/",
                 function(data){
                  $('li#success-stories .subnav').append( data );
                 }, "html");
             $('li#success-stories').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-blog/",
                 function(data){
                  $('li#blog .subnav').append( data );
                 }, "html");
             $('li#blog').addClass("with-supernav");
-    
+
             $.get("/box/supernav-python-events/",
                 function(data){
                  $('li#events .subnav').append( data );
                 }, "html");
             $('li#events').addClass("with-supernav");
-    
+
             supernavs_loaded = true;
             //console.log( "! supernavs_loaded has fired" );
         }
     }
-    
-    
+
+
     /* Load a Google Map into the Community landing page
     if ( mq_tag.indexOf("local_meetup_map") !=-1 && ! local_meetups_loaded ) {
 
@@ -192,7 +192,7 @@ $().ready(function() {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         return false;
     });
-    
+
     $("#python-network").click(function() {
         $('body, html').animate({ scrollTop: $('#top').offset().top }, 300);
         return false;
@@ -202,13 +202,21 @@ $().ready(function() {
         $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
         return false;
     });
-    
+
     $("#feedback-trigger").click(function() {
         $("body").animate({ scrollTop: $('#leave_feedback').offset().top }, 400);
         $('#feedback_form').slideDown();
         return false;
     });
-    
+
+    /*
+     * Ensure PythonAnywhere shell is available
+     */
+     $.get('https://www.pythonanywhere.com/python-dot-org-live-consoles-status', function (data) {
+        if(data.status == 'OK') {
+            $('#launch-shell').toggle();
+        }
+     });
     /*
      * Load interactive shell on the homepage.
     */
@@ -217,7 +225,7 @@ $().ready(function() {
         e.preventDefault();
         shellDiv = $($(e.target).data('shell-container'));
 
-        // The iframe's DIV containing the shell has a min-height: 300px 
+        // The iframe's DIV containing the shell has a min-height: 300px
         var shellHeight = 300;
         shellDiv.animate({height: shellHeight});
         var iframe = $('<iframe>').width('100%').height(shellHeight);
@@ -227,19 +235,19 @@ $().ready(function() {
     $('.button.prompt').click(loadShell);
 
     /*
-     * Load a slideshow on the homepage. Set the animationtype and detect for the library first.  
+     * Load a slideshow on the homepage. Set the animationtype and detect for the library first.
      */
     if ( hastouch ) {
-        var animationtype = "slide"; 
+        var animationtype = "slide";
     } else {
-        var animationtype = "fade"; 
+        var animationtype = "fade";
     }
     if ( !window.flexslider ) {
-        
+
         if ( $("body").hasClass( 'home' ) ) {
-        
-            $("html").addClass( "flexslide" ); 
-             
+
+            $("html").addClass( "flexslide" );
+
             $('#dive-into-python').flexslider({
                 animation: animationtype,
                 direction: 'horizontal',
@@ -254,21 +262,21 @@ $().ready(function() {
         	    useCSS: true, // use CSS transitions if available
         	    controlNav: true, // Create navigation for paging control of each slide
         	    directionNav: false, // Create navigation for previous/next navigation
-        	    prevText: "Prev.", 
-        	    nextText: "Next", 
+        	    prevText: "Prev.",
+        	    nextText: "Next",
         	    touch: hastouch,
                 start: function(slider){
-                    $(this).fadeIn(); 
+                    $(this).fadeIn();
                     $('body').removeClass('loading');
                 }
             });
         }
-        
+
     } else {
-        $("html").addClass( "no-flexslide" ); 
+        $("html").addClass( "no-flexslide" );
     }
-    
-    
+
+
     /*
      * Change or store the body font-size and save it into a cookie
      * Scales the font-size up or down by about 2 pixels.
@@ -277,13 +285,13 @@ $().ready(function() {
     if ( !window.cookie ) {
         //console.log( "cookie.js has not loaded" );
     } else {
-        
+
         if ( hastouch ) {
-            
+
             var $cookie_name = "Python-FontSize";
             var elem = "body";
             var originalFontSize = $(elem).css("font-size");
-        
+
             // if exists load saved value, otherwise store it
             if($.cookie($cookie_name)) {
                 var $getSize = $.cookie($cookie_name);
@@ -291,14 +299,14 @@ $().ready(function() {
             } else {
                 $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
             }
-        
+
             // reset link
             $(".text-reset").bind("click", function() {
                 $(elem).css("font-size", originalFontSize);
                 $.cookie($cookie_name, originalFontSize);
                 return false;
             });
-        
+
             // text "A+" link
             $(".text-grow").bind("click", function() {
                 var currentFontSize = $(elem).css("font-size");
@@ -310,7 +318,7 @@ $().ready(function() {
                 }
                 return false;
             });
-        
+
             // text "A-" link
             $(".text-shrink").bind("click", function() {
                 var currentFontSize = $(elem).css("font-size");
@@ -359,10 +367,10 @@ $().ready(function() {
 		$(iden).slideToggle();
 	});
 
-    
-    /* 
-     * Add a class to the selected radio/checkbox parent label 
-     * Requires inputs to be nested in labels: 
+
+    /*
+     * Add a class to the selected radio/checkbox parent label
+     * Requires inputs to be nested in labels:
      * <label for="checkbox2"><input id="checkbox2" name="checkbox" type="checkbox">Choice B</label>
      * <label for="radio1"><input id="radio1" name="radio" type="radio" checked="checked">Option 1</label>
      */
@@ -381,8 +389,8 @@ $().ready(function() {
     $('input:checkbox').each(function() {
         $('label:has(input:checkbox:checked)').addClass('active');
     });
-    
-    
+
+
     /* Non-media query enabled browsers need any critical content on page load. */
     if ( is_ltie9 ) {
         //console.log( "! something has fired because this is a non-media-query browser" );
