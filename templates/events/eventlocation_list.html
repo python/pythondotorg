@@ -13,7 +13,7 @@
 {% block content %}
 
                 <div class="most-recent-events">
-    		        
+    		        {% comment %}
                     <div class="more-by-location">
                         <h3 class="widget-title">Find Events near you <!-- HTML5 geolocation? --></h3>
                         
@@ -32,6 +32,7 @@
                             </fieldset>
                         </form>
                     </div>
+                    {% endcomment %}
                     
                     {% for location in object_list %}
                     <h2 class="location-title"><span class="event-location">{{ location.name }}</span></h2>

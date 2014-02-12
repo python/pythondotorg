@@ -84,12 +84,13 @@
             <aside class="right-sidebar">
                 
                 <div class="sidebar-widget more-by-location">
-                    <h3 class="widget-title">Explore events near <!-- The current location--><a href="#all-events-for-this-location">Santa Clara, CA</a></h3>
+                    <h3 class="widget-title">Explore events{# near <!-- The current location--><a href="{{ object.venue.get_absolute_url }}">{{ object.venue.name }}</a> #}</h3>
                 
                     <!-- If we wanna have more fun with it, we can allow the user to choose to expand the location matching before they go anywhere and load more events below with Ajax -->
                         
                     <form>
-                        <fieldset title="Narrow or expand the event search by location and timeframe">
+                        <fieldset title="Narrow or expand the event search by timeframe">
+                            {% comment %}
                             <p><select name="">
                                 <option value="-">-- Change your location range</option>
                                 <option value="-">Within 10 miles</option>
@@ -97,6 +98,7 @@
                                 <option value="-">Within 100 miles</option>
                                 <option value="-">Within 250 miles</option>
                             </select></p>
+                            {% endcomment %}
                             
                             <p><select name="" id="dataRangeSelect">
                                 <option value="-">-- Change your date range</option>
