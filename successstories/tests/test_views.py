@@ -36,6 +36,7 @@ class StoryViewTests(StoryTestCase):
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.context['story'].pk, self.story1.pk)
+        self.assertEqual(len(r.context['category_list']), 1)
 
     def test_story_list(self):
         url = reverse('success_story_list')
