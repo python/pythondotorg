@@ -21,8 +21,12 @@ if( !window.Retina ) {
     var is_retina = false;
     $("html").addClass( "no-retina" );
 } else {
-    var is_retina = Retina.isRetina();
-    $("html").addClass( "retina" );
+    var is_retina = Retina.isRetina(); 
+    if ( is_retina ) {
+        $("html").addClass( "retina" ); 
+    } else {
+        $("html").addClass( "no-retina" ); 
+    }
 }
 
 
@@ -65,29 +69,29 @@ function on_resize_orientationchange() {
     if ( mq_tag.indexOf("animatebody") !=-1 && ! scroll_fired ) {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         scroll_fired = true;
-    }
-
-
+    } else { scroll_fired = false; }
+    
+    
     /* Click the menu button and add a class to the body for a "drawer" */
     if ( mq_tag.indexOf("drawer_navigation") !=-1 ) {
-
+        
         /* TO DO: Look for a left-right swipe action (on the #touchnav-wrapper?) and also trigger the menu to open/close */
         $( "#site-map-link" ).click( function() {
-            $("body").toggleClass("show-sidemenu");
+            $("body").toggleClass("show-sidemenu"); 
             //console.log( "! #site-map-link has been tapped" );
-            return false;
-        });
-
+            return false; 
+        }); 
+        
     } else {
-
+        
         /* If "drawer_navigation" is not present, treat the Menu button as a scroller down to the footer */
         $("#site-map-link").click(function() {
             $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 500);
             return false;
         });
     }
-
-
+    
+    
     /* Load a supernav into the About dropdown */
     if ( ! hastouch ) {
 
