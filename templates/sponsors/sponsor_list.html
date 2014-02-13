@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load boxes %}
 
 {% block page_title %}Our Sponsors | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -34,29 +35,24 @@
 {% block right_sidebar %}
     <aside class="right-sidebar" role="secondary">
         
-        <div class="sidebar-widget membership-widget">
-            <h3 class="widget-title">Become a Member</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-            <p><a href="#">Membership FAQ</a><br/><a href="#">Membership Forms</a></p>
+        <div class="sidebar-widget psf-sidebar-widget1">
+            {% box 'psf-widget1' %}
+            
         </div>
 
-        <div class="sidebar-widget donate-widget">
-            <h3 class="widget-title">Donate</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-            <p><a href="#">How to Contribute</a></p>
+        <div class="sidebar-widget psf-sidebar-widget2">
+            {% box 'psf-widget2' %}
+            
         </div>
 
-        <div class="sidebar-widget volunteer-widget">
-            <h3 class="widget-title">Volunteer</h3>
-            <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-            <p><a href="#">How to Volunteer</a></p>
+        <div class="sidebar-widget psf-sidebar-widget3">
+            {% box 'psf-widget3' %}
+            
         </div>
 
-        <div class="sidebar-widget loa-widget last">
-            <h3 class="widget-title">League of Awesome</h3>
-            <p>Thanks to these companies for their volunteer services. </p>
-            <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
-            <p><a href="#">More Awesomeness</a></p>
+        <div class="sidebar-widget psf-sidebar-widget4 last">
+            {% box 'psf-widget4' %}
+            
         </div>
         
     </aside>

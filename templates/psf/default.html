@@ -1,6 +1,7 @@
 {# ===== PSF Default Content PAGE ===== #}
 
 {% extends "base.html" %}
+{% load boxes %}
 
 {% block page_title %}Python Software Foundation | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -40,9 +41,10 @@
         {% include "components/navigation-widget.html" %}
 
         <div class="psf-sidebar-widget sidebar-widget">
-            <!-- Define this widget and create it in the Admin -->
-            <h3 class="widget-title">The PSF</h3>
-            <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
+            {% box 'widget-sidebar-aboutpsf' %}
+
         </div>
+        
     </aside>
+    
 {% endblock left_sidebar %}

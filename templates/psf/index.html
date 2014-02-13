@@ -1,6 +1,7 @@
 {# ===== PSF LANDING PAGE ===== #}
 
 {% extends "base.html" %}
+{% load boxes %}
 
 {% block page_title %}Python Software Foundation | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -22,7 +23,8 @@
 
 {% block header_content %}
                 <div class="welcome-to-the-foundation">
-                    <h1 class="call-to-action">The Python Software Foundation is an organization devoted to advancing open source technology related to the Python programming language. </h1>
+                    {% box 'psf-banner' %}
+                    
                 </div>
 {% endblock header_content %}
 
@@ -30,29 +32,24 @@
 {% block content %}
                 <div class="row">
 
-        		    <div class="small-widget membership-widget">
-                        <h2 class="widget-title">Become a Member</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-                        <p><a href="#">Membership FAQ</a><br /><a href="#">Membership Forms</a></p>
+        		    <div class="small-widget psf-widget1">
+                        {% box 'psf-widget1' %}
+
                     </div>
 
-                    <div class="small-widget donate-widget">
-                        <h2 class="widget-title">Donate</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-                        <p><a href="#">How to Contribute</a></p>
+                    <div class="small-widget psf-widget2">
+                        {% box 'psf-widget2' %}
+
                     </div>
 
-                    <div class="small-widget volunteer-widget">
-                        <h2 class="widget-title">Volunteer</h2>
-                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor.</p>
-                        <p><a href="#">How to Volunteer</a></p>
+                    <div class="small-widget psf-widget3">
+                        {% box 'psf-widget3' %}
+                        
                     </div>
 
-                    <div class="small-widget loa-widget last">
-                        <h2 class="widget-title">League of Awesome</h2>
-                        <p>Thanks to these companies for their volunteer services. </p>
-                        <img src="http://placehold.it/240x80" alt="Placeholder image from placehold.it">
-                        <p><a href="#">More Awesomeness</a></p>
+                    <div class="small-widget psf-widget4 last">
+                        {% box 'psf-widget4' %}
+                        
                     </div>
 
                 </div>
@@ -61,31 +58,40 @@
         		<div class="row">
 
                     <div class="medium-widget grants-widget">
-                        <h2 class="widget-title">PSF Grants Program</h2>
-                        <p>The Python Software Foundation welcomes grant proposals for projects related to the development of Python, Python-related technology, and educational resources.</p>
-                        <p><a class="button" href="#">Proposal Guidelines</a></p>
-                        <p><a class="button" href="#">Grant FAQs & Samples</a></p>
+                        {% box 'psf-grants' %}
+
                     </div>
 
                     <div class="medium-widget news-wiki-widget last">
-
+                        
+                        {% comment %}
+                        There is some dynamic content needed in this box. Below is the markup/idea for the content. 
+                        
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF News </h2>
                             <p class="give-me-more"><a href="#" title="More PSF News">More</a></p>
+                            
+                            ** Dynamic: 
                             <ul class="menu">
                                 <li><a href="#">Simon Cross Awarded Community Service Award</a></li>
                                 <li><a href="#">Kenneth Gonsalves Posthumously Awarded Community Service Award</a></li>
                                 <li><a href="#">Announcing the 2012 Distinguished Service Award &ndash; John Hunter</a></li>
                                 <li><a href="#">Welcome New PSF Members!</a></li>
                             </ul>
+                            ** 
+                            
                         </div>
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF Wiki </h2>
                             <p class="give-me-more"><a href="#" title="Enter PSF Wiki">Enter</a></p>
                             <p><strong class="uppercase">MEMBERS ONLY:</strong> The PSF Members&rsquo; Wiki is provided for collaboration amongst PSF members on internal projects. Become a member to see what exciting things we have in store for the Python family.</p>
                         </div>
-
+                        {% endcomment %}
+                        
+                        {% box 'psf-news' %}
+                        
                     </div>
 
                 </div>
+
 {% endblock content %}

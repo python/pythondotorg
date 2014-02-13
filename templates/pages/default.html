@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load boxes %}
 {% load sitetree %}
 
 {% block body_attributes %}class="python pages default-page"{% endblock %}
@@ -40,10 +41,12 @@ TODO: should this partially come from sitetree?
 <aside class="left-sidebar" role="secondary">
 
     {% include "components/navigation-widget.html" %}
-
+    
+    {% comment %}
+    
+    No good! Using the old Twitter API. Connect via Twitter another way. 
+    
     <div class="twitter-widget sidebar-widget">
-
-        <!-- No good! Using the old Twitter API. Should content become part of the DB anyway?
 
         <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
         <script type="text/javascript">// <![CDATA[
@@ -72,12 +75,15 @@ TODO: should this partially come from sitetree?
             behavior: 'all'
           }
         }).render().setUser('ThePSF').start();
-        // ]]></script> -->
+        // ]]></script> 
     </div>
+    {% endcomment %}
 
     <div class="psf-sidebar-widget sidebar-widget">
-        <h3 class="widget-title">The PSF</h3>
-        <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
+        {% box 'widget-sidebar-aboutpsf' %}
+        
     </div>
+    
 </aside>
+
 {% endblock left_sidebar %}
