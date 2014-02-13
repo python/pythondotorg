@@ -41,6 +41,7 @@ class Release(ContentManageable, NameSlugModel):
     )
     release_date = models.DateTimeField(default=timezone.now)
     release_page = models.ForeignKey(Page, related_name='release')
+    release_notes_url = models.URLField('Release Notes URL', blank=True)
 
     objects = ReleaseManager()
 
