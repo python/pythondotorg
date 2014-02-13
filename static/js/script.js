@@ -189,6 +189,18 @@ function on_resize_orientationchange() {
 /* Initiate some other functions as well. Fires on first page load or when called. */
 $().ready(function() {
 
+    /*
+     * Ensure PythonAnywhere is open for business and only fires on homepage
+    */
+    if($('body#homepage').length) {
+        var launch_shell = $('#launch-shell');
+        launch_shell.toggle();
+        $.get('https://www.pythonanywhere.com/python-dot-org-live-consoles-status', function (data) {
+            if(data.status == 'OK') {
+                launch_shell.toggle();
+            }
+         });
+    }
     /* Animate some scrolling for smoother transitions */
 
     /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
@@ -213,14 +225,6 @@ $().ready(function() {
         return false;
     });
 
-    /*
-     * Ensure PythonAnywhere shell is available
-     */
-     $.get('https://www.pythonanywhere.com/python-dot-org-live-consoles-status', function (data) {
-        if(data.status == 'OK') {
-            $('#launch-shell').toggle();
-        }
-     });
     /*
      * Load interactive shell on the homepage.
     */
