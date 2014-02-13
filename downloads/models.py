@@ -2,9 +2,10 @@ from django.db import models
 from django.utils import timezone
 
 from cms.models import ContentManageable, NameSlugModel
-from pages.models import Page, is_valid_page_path
+from pages.models import Page
 
 from .managers import ReleaseManager
+
 
 class OS(ContentManageable, NameSlugModel):
     """ OS for Python release """
@@ -58,16 +59,15 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     versions for example Windows and MacOS 32 vs 64 bit each file needs to be
     added separately
     """
-    os = models.ForeignKey(OS, related_name="releases")
+    os = models.ForeignKey(OS, related_name="releases", verbose_name='OS')
     release = models.ForeignKey(Release, related_name="files")
     description = models.TextField(blank=True)
     is_source = models.BooleanField(default=False)
-    path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
-    md5_sum = models.CharField(max_length=200, blank=True)
+    url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")
+    md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
 
     class Meta:
         verbose_name = 'Release File'
         verbose_name_plural = 'Release Files'
-        ordering = ('-release__is_active', 'release__name', 'os__name')
-
+        ordering = ('-release__is_published', 'release__name', 'os__name')
