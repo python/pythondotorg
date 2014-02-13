@@ -144,6 +144,7 @@ INSTALLED_APPS = (
     'minutes',
     'peps',
     'blogs',
+    'downloads',
 
     'allauth',
     'allauth.account',
