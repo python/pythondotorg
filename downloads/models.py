@@ -49,7 +49,7 @@ class Release(ContentManageable, NameSlugModel):
         ordering = ('name', )
 
     def __str__(self):
-        return "Python {0}".format(self.name)
+        return self.name
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):

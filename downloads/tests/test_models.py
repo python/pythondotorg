@@ -4,6 +4,10 @@ from .base import BaseDownloadTests
 
 class DownloadModelTests(BaseDownloadTests):
 
+    def test_stringification(self):
+        self.assertEqual(str(self.osx), 'Mac OSX')
+        self.assertEqual(str(self.release_275), 'Python 2.7.5')
+
     def test_published(self):
         published_releases = Release.objects.published()
         self.assertEqual(len(published_releases), 2)
