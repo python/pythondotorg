@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load boxes %}
 
 {% block page_title %}Our Blogs | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -39,14 +40,8 @@
                     </div>
 
                     <div class="small-widget subscribe-widget last">
-                        <h2 class="widget-title"><span class="blog-name">Python Insider</span> Subscriptions</h2>
-                        <p>Subscribe to Python Insider via:</p>
-                        <ul class="subscription-channels menu">
-                            <li><a href="{{ feed_url }}"><span aria-hidden="true" class="icon-feed"></span>RSS</a></li>
-                            <li><a href="#"><span aria-hidden="true" class="icon-email"></span>Email</a></li>
-                            <li><a href="#"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
-                        </ul>
-                        <p>Also check out the <a href="#">Python-Dev mailing list</a></p>
+                        {% box 'blogs-subscriptions' %}
+                        
                     </div>
 
                 </div>
@@ -72,6 +67,9 @@
         		    </div>
 
         		    <div class="triple-widget archive-widget last">
+        		        
+        		        {# Still needs to be hooked in. Hide this for now? #}
+        		        
         		        <h2 class="widget-title">Blog Archives</h2>
         		        <ul class="menu">
         		            <li><a href="#year-archive">2012 (8)</a>
@@ -94,6 +92,9 @@
                 <div class="row">
 
         		    <div class="medium-widget author-blogs-widget">
+        		        
+        		        {# Still needs to be hooked in. Hide this for now? #}
+        		        
         		        <h2 class="widget-title">Python-Dev Blogs</h2>
         		        <p class="give-me-more"><a href="#" title="More News">More</a></p>
         		        <ul class="menu">
@@ -104,9 +105,10 @@
         		    </div>
 
         		    <div class="medium-widget copyright-widget last">
-        		        <h2 class="widget-title">Copyright</h2>
-                    <p>Python Insider by the <a href="#">Python Core Developers</a> is licensed under a <a href="#">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href="#">blog.python.org</a>.</p>
+        		        {% box 'blogs-copyright' %}
+
         		    </div>
 
                 </div>
+                
 {% endblock content %}
