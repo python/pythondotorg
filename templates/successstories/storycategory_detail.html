@@ -18,7 +18,6 @@
     
     <article>
         
-        <!-- Need to hook this in -->
         <h1>{{ object.name }}</h1>
         
         <ul class="menu success-story-category">
@@ -26,8 +25,7 @@
             <li><a href="{{ story.get_absolute_url }}">{{ story.name }}</a></li>
             {% endfor %}
         </ul>
-        
-        
+                
     </article>
     
 {% endblock content %}
@@ -38,7 +36,8 @@
   
     <div class="section-navigation sidebar-widget">
         
-        <!-- navigation for this section... All Categories for existing Success Stories -->
+        {# Navigation for this section... All Categories for existing Success Stories #}
+        
         <ul class="section-nav menu" role="menu" aria-hidden="false">
             <li class="tier-1 element-1" role="treeitem"><a href="/success-stories/category/arts/" title="">Arts</a></li>
             <li class="tier-1 element-2" role="treeitem"><a href="/success-stories/category/business/" title="">Business</a></li>
@@ -54,4 +53,5 @@
     </div>
 
 </aside>
+
 {% endblock left_sidebar %}
