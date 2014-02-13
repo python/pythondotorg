@@ -1,7 +1,6 @@
 {% extends "base.html" %}
-
+{% load boxes %}
 {% load community %}
-
 
 {% block page_title %}Our Community | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -13,13 +12,8 @@
 
 {% block header_content %}
                 <div class="community-banner">
-                    <h1 class="call-to-action">
-                        <a href="#">Python&rsquo;s community is vast</a>; <br>
-                        <a href="#">diverse &amp; aims to grow</a>; <br>
-                        <a href="#">Python is Open</a>.
-                    </h1>
+                    {% box 'community-banner' %}
                     
-                    <p>Great software is supported by great people, and Python is no exception. Our user base is fanatical and dedicated to spreading use of the language far and wide. Our community can help support the beginner, the expert, and adds to the ever-increasing open-source knowledge base. </p>
                 </div>
 {% endblock header_content %}
 
@@ -27,16 +21,61 @@
 {% block content_attributes %}with-right-sidebar{% endblock content_attributes %}
 
 
-{# Based on the template python/community.html #}
-
-
 {% block content %}
-<h2>community list</h2>
-{% if object_list %}
-<ul>
-{% for post in object_list %}
-    <li>{% render_template_for post as html %}{{ html }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+    
+    <div class="row">
+                    
+        <div class="small-widget community-widget1">
+            {% box 'community-widget1' %}
+
+        </div>
+        
+        <div class="small-widget community-widget2">
+            {% box 'community-widget2' %}
+
+        </div>
+        
+        <div class="small-widget community-widget3">
+            {% box 'community-widget3' %}
+
+        </div>
+        
+        <div class="small-widget community-widget4 last">
+            <div class="shrubbery">
+                {% box 'community-irc-channels' %}
+                
+            </div>
+            
+            {% comment %}
+            <div class="shrubbery">
+                
+                In favor of the IRC channels Box above, I removed this Twitter feed. 
+                We will probably need to put this back in somewhere once we see how the rest of the community pages start to flesh out. 
+                
+                <h2 class="widget-title"><span aria-hidden="true" class="icon-twitter"></span><a href="http://twitter.com/ThePSF" title="View @The PSF on Twitter">@ThePSF</a></h2>
+                <p class="give-me-more"><a href="#" title="Follow @The PSF on Twitter">Follow</a></p>
+                <ul class="twitter-stream menu"> 
+                    <li><span class="twitteruser">@alex_gaynor</span> DNS is slowly propagating, but <a href="#">http://speed.pypy.org</a> is now hosted by <span class="twittermention">@ThePSF</span>. Thanks <span class="twittermention">@kantrn</span> <span class="twittermention">@jeffhui</span> and <span class="twittermention">@fijall</span>! <a class="view-on-twitter" href="#">View on Twitter</a></li>
+                    <li><span class="twitteruser">@pycon</span> Very proud to announce our latest PyCon 2013 Platinum level sponsor: Rackspace! <a href="#">http://bit.ly/NuP5EU</a> <a href="#">http://www.rackspace.com</a> <span class="twittermention">@rackspace</span> <a class="view-on-twitter" href="#">View on Twitter</a></li>
+                </ul>
+            </div>
+            {% endcomment %}
+            
+        </div>
+    
+    </div><!-- end .row -->
+    
+    <div class="row">
+    
+        <h2>Community List</h2>
+        {% if object_list %}
+        <ul>
+        {% for post in object_list %}
+            <li>{% render_template_for post as html %}{{ html }}</li>
+        {% endfor %}
+        </ul>
+        {% endif %}
+    
+    </div>
+    
 {% endblock content %}
