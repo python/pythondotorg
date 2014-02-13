@@ -63,7 +63,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     os = models.ForeignKey(OS, related_name="releases", verbose_name='OS')
     release = models.ForeignKey(Release, related_name="files")
     description = models.TextField(blank=True)
-    is_source = models.BooleanField(default=False)
+    is_source = models.BooleanField('Is Source Distribution', default=False)
     url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
