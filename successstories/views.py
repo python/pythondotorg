@@ -18,6 +18,11 @@ class StoryDetail(DetailView):
     template_name = 'successstories/story_detail.html'
     context_object_name = 'story'
 
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['category_list'] = StoryCategory.objects.all()
+        return ctx
+
 
 class StoryList(ListView):
     model = Story
