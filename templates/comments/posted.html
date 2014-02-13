@@ -3,6 +3,15 @@
 
 {% block title %}{% trans "Thanks for commenting" %}.{% endblock %}
 
+{% block body_attributes %}class="python default-page"{% endblock %}
+
 {% block content %}
-  <h1>{% trans "Thank you for your comment" %}.</h1>
+
+    <article class="text">
+                
+        <h1 class="giga">{% trans "Thank you for your comment" %}</h1>
+        <p>{% trans "A moderator will review the post before it becomes available on the site." %}</p>
+        
+    </article>
+    
 {% endblock %}
