@@ -1,4 +1,7 @@
+import datetime
+
 from django.test import TestCase
+from django.utils import timezone
 
 from pages.models import Page
 from ..models import OS, Release, ReleaseFile
@@ -22,6 +25,7 @@ class BaseDownloadTests(TestCase):
             name='Python 2.7.5',
             is_published=True,
             release_page=self.release_275_page,
+            release_date=timezone.now() - datetime.timedelta(days=-1)
         )
         self.release_275_windows_32bit = ReleaseFile.objects.create(
             os=self.windows,

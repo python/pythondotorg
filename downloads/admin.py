@@ -22,6 +22,7 @@ class ReleaseAdmin(ContentManageableModelAdmin):
     list_display = ['__str__', 'is_published', 'show_on_download_page']
     list_filter = ['version', 'is_published', 'show_on_download_page']
     search_fields = ['name', 'slug']
+    ordering = ['-release_date']
 
 admin.site.register(OS, OSAdmin)
 admin.site.register(Release, ReleaseAdmin)

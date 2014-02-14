@@ -7,16 +7,16 @@
 
 {% block header_content %}
                 <div class="download-for-current-os">
-                    
-                    {% comment %} 
-                    This should detect the user's OS somewhow and switch between some language and links for each. 
-                    We should support Mac, Windows and Linux detection. 
+
+                    {% comment %}
+                    This should detect the user's OS somewhow and switch between some language and links for each.
+                    We should support Mac, Windows and Linux detection.
                     {% endcomment %}
-                    
+
                     <h1 class="call-to-action">Download the latest version for {# insert version #}&lt;OS Version&gt;</h1>
                     <p class="download-buttons">
-                        {# dynamically generated link? #}<a class="button" href="#">Download Python 3.3.0</a> 
-                        {# dynamically generated link? #}<a class="button" href="#">Download Python 2.7.3</a>
+                        <a class="button" href="{{ latest_python3.get_absolute_url }}">Download {{ latest_python3.name }}</a>
+                        <a class="button" href="{{ latest_python2.get_absolute_url }}">Download {{ latest_python2.name }}</a>
                     </p>
                     {% box 'download-banner' %}
 
@@ -25,12 +25,10 @@
 
 {% block content %}
                 <div class="row download-list-widget">
-                    
-                    {# This whole block needs to be fed dynamically from the releases for Python, or, are they updating this manually somehow? #}
-                    
+
                     <h2 class="widget-title">Looking for a specific release?</h2>
                     <p class="success-quote">Python releases by version number:</p>
-                    
+
                     <div class="list-row-headings">
                         <span class="release-number">Release version</span>
                         <span class="release-date">Release date</span>
@@ -38,123 +36,47 @@
                         <span class="release-enhancements">Click for more</span>
                     </div>
                     <ol class="list-row-container menu">
+                        {% for r in releases %}
                         <li>
-                            <span class="release-number"><a href="#?to-download">Python 3.3.0</a></span> 
-                            <span class="release-date">September 29, 2012</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
+                            <span class="release-number"><a href="{{ r.get_absolute_url }}">{{ r.name }}</a></span>
+                            <span class="release-date">{{ r.release_date|date }}</span>
+                            <span class="release-download"><a href="{{ r.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
+                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release Notes</a></span>
                         </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 3.2.3</a></span> 
-                            <span class="release-date">April 10, 2012</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 3.1.5</a></span> 
-                            <span class="release-date">April 10, 2012</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 3.0.1</a></span> 
-                            <span class="release-date">February 13, 2009</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.7.3</a></span> 
-                            <span class="release-date">April 10, 2012</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.6.8</a></span> 
-                            <span class="release-date">April 10, 2012</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.5.6</a></span> 
-                            <span class="release-date">May 26, 2011</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.4.6</a></span> 
-                            <span class="release-date">December 19, 2008</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.3.7</a></span> 
-                            <span class="release-date">March 11, 2008</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.2.3</a></span> 
-                            <span class="release-date">May 30, 2003</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.1.3 </a></span> 
-                            <span class="release-date">April 8, 2002</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 2.0.1</a></span> 
-                            <span class="release-date">June 2003</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 1.6.1</a></span> 
-                            <span class="release-date">September 2000</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span> 
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
-                        <li>
-                            <span class="release-number"><a href="#?to-download">Python 1.5.2</a></span> 
-                            <span class="release-date">April 1999</span> 
-                            <span class="release-download"><a href="#?to-download"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="#?to-release-page">Release Notes</a></span>
-                        </li>
+                        {% endfor %}
                     </ol>
                     {% box 'download-otherreleases' %}
 
                 </div>
-        		
-        		
+
+
         		<div class="row">
-        		    
+
         		    <div class="small-widget download-widget1">
                         {% box 'download-widget1' %}
 
                     </div>
-                    
+
                     <div class="small-widget download-widget2">
                         {% box 'download-widget2' %}
 
                     </div>
-                    
+
         		    <div class="small-widget download-widget3">
                         {% box 'download-widget3' %}
 
                     </div>
-                    
+
                     <div class="small-widget download-widget3 last">
                         {% box 'download-widget4' %}
 
                     </div>
-                    
+
                 </div>
-                
+
                 <div class="user-feedback level-general">
                     {% box 'usermessage-releaseschedule' %}
 
                 </div>
-                
+
 {% endblock content %}

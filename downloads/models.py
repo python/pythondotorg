@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
 
@@ -17,6 +18,9 @@ class OS(ContentManageable, NameSlugModel):
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('download:download_os_list', kwargs={'os_slug': self.slug})
 
 
 class Release(ContentManageable, NameSlugModel):
@@ -49,9 +53,13 @@ class Release(ContentManageable, NameSlugModel):
         verbose_name = 'Release'
         verbose_name_plural = 'Releases'
         ordering = ('name', )
+        get_latest_by = 'release_date'
 
     def __str__(self):
         return self.name
+
+    def get_absolute_url(self):
+        return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):
