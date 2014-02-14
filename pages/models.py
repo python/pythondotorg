@@ -30,7 +30,7 @@ PAGE_PATH_RE = re.compile(r"""
 is_valid_page_path = validators.RegexValidator(
     regex=PAGE_PATH_RE,
     message=('Please enter a valid URL segment, e.g. "foo" or "foo/bar". '
-               'Only lowercase letters, numbers, and hyphens are allowed.'),
+               'Only lowercase letters, numbers, hyphens and periods are allowed.'),
 )
 
 
