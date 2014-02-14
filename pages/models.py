@@ -19,8 +19,8 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 PAGE_PATH_RE = re.compile(r"""
     ^
     /?                      # We can optionally start with a /
-    ([a-z0-9-]+)            # Then at least one path segment...
-    (/[a-z0-9-]\.+)*        # And then possibly more "/whatever" segments
+    ([a-z0-9-\.]+)            # Then at least one path segment...
+    (/[a-z0-9-\.]+)*        # And then possibly more "/whatever" segments
     /?                      # Possibly ending with a slash
     $
     """,
