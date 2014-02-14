@@ -138,6 +138,8 @@
     background-color: transparent; 
 }
 
+%pie-clearfix { @include pie-clearfix(); }
+
 
 /* ! ===== Mixins ===== */
 

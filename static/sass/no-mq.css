@@ -57,8 +57,8 @@
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
-/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
  * Font-size-adjust: the problem and a solution
  * Not widely supported, can't use this yet */
@@ -110,6 +110,25 @@
 /* Color Spaces: use for consistency */
 /* Buttons */
 /* Other elements */
+.container,
+.row,
+.pep-list-header,
+.pep-index-list li,
+.info-key,
+.listing-company,
+.list-recent-jobs li {
+  *zoom: 1; }
+  .container:after,
+  .row:after,
+  .pep-list-header:after,
+  .pep-index-list li:after,
+  .info-key:after,
+  .listing-company:after,
+  .list-recent-jobs li:after {
+    content: "";
+    display: table;
+    clear: both; }
+
 /* ! ===== Mixins ===== */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
@@ -258,8 +277,8 @@ html[xmlns] .slides { display: block; }
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
-/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
  * Font-size-adjust: the problem and a solution
  * Not widely supported, can't use this yet */
@@ -311,6 +330,25 @@ html[xmlns] .slides { display: block; }
 /* Color Spaces: use for consistency */
 /* Buttons */
 /* Other elements */
+.container,
+.row,
+.pep-list-header,
+.pep-index-list li,
+.info-key,
+.listing-company,
+.list-recent-jobs li {
+  *zoom: 1; }
+  .container:after,
+  .row:after,
+  .pep-list-header:after,
+  .pep-index-list li:after,
+  .info-key:after,
+  .listing-company:after,
+  .list-recent-jobs li:after {
+    content: "";
+    display: table;
+    clear: both; }
+
 /* ! ===== Mixins ===== */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
 /* A pointer mix-in. Something to help make little triangles easy. Apply to a :before or :after element */
@@ -394,12 +432,7 @@ body {
   max-width: 75em;
   width: 100%;
   margin: 0 auto;
-  padding: 0;
-  *zoom: 1; }
-  .container:after {
-    content: "";
-    display: table;
-    clear: both; }
+  padding: 0; }
 
 .introduction {
   font-size: 1.5em; }
@@ -1065,12 +1098,7 @@ a.button {
 
 /* Widgets in main content */
 .row {
-  *zoom: 1;
   margin-bottom: 1em; }
-  .row:after {
-    content: "";
-    display: table;
-    clear: both; }
 
 .small-widget {
   width: 48.93617%;
@@ -1101,14 +1129,7 @@ a.button {
 .pep-list-header,
 .pep-index-list li,
 .info-key {
-  margin: 0 -.5em;
-  *zoom: 1; }
-  .pep-list-header:after,
-  .pep-index-list li:after,
-  .info-key:after {
-    content: "";
-    display: table;
-    clear: both; }
+  margin: 0 -.5em; }
 
 .pep-list-header {
   display: block; }
@@ -1141,13 +1162,6 @@ a.button {
   width: 25%; }
 
 /* Jobs landing page */
-.listing-company {
-  *zoom: 1; }
-  .listing-company:after {
-    content: "";
-    display: table;
-    clear: both; }
-
 .listing-company-category:before {
   content: "Category: ";
   color: #666666; }
@@ -1482,12 +1496,6 @@ a.button {
   width: 23.40426%; }
 
 /* Jobs Section */
-.list-recent-jobs li {
-  *zoom: 1; }
-  .list-recent-jobs li:after {
-    content: "";
-    display: table;
-    clear: both; }
 .list-recent-jobs .listing-company-category a, .list-recent-jobs .listing-job-type a {
   white-space: nowrap; }
 .list-recent-jobs .listing-posted {
@@ -1534,14 +1542,21 @@ a.button {
 /* Forms that are wide enough to have labels and input fields side by side */
 .wide-form p {
   overflow: hidden;
-  *zoom: 1; }
+  *zoom: 1;
+  /* ! This is done the wrong way with SASS. Should be something like #{$form-text-inputs} with $form-text-inputs as a variable */ }
+  .wide-form p label, .wide-form p textarea {
+    display: inline-block;
+    vertical-align: top; }
   .wide-form p label {
-    width: 25%;
-    float: left;
-    margin-top: .5em; }
+    width: 24%; }
   .wide-form p input[type=text], .wide-form p input[type=password], .wide-form p input[type=search], .wide-form p input[type=email], .wide-form p input[type=url], .wide-form p input[type=tel] {
     width: 75%;
-    float: left; }
+    display: inline-block;
+    vertical-align: top; }
+  .wide-form p textarea {
+    width: 75%; }
+  .wide-form p button {
+    margin-left: 24%; }
 
 /* Footer */
 .sitemap, .footer-links, .copyright {

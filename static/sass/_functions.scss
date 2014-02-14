@@ -21,18 +21,18 @@
 }
 
 
-/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
-@mixin adjust-font-size( $font_size, $line_height:$font_size ) {
-	@include adjust-font-size-to( $font_size, lines-for-font-size( $line_height ) );
-}
-
-
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
 @function px2em( $pixel, $base-size:$base-font-size ) {
     /* Remove units for easier math. We are converting to EMs anyway */
     $pixel: clear-units($pixel); 
     $base-size: clear-units($base-size); 
     @return #{$pixel / $base-size}em;
+}
+
+
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
+@mixin adjust-font-size( $font_size, $line_height:$font_size ) {
+	@include adjust-font-size-to( $font_size, lines-for-font-size( $line_height ) );
 }
 
 

@@ -89,8 +89,6 @@ img, embed, object, video { max-width: 100% }
 .mega { @include fontface-adjust( $mega ); }
 .kilo { @include fontface-adjust( $kilo ); }
 
-h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma { line-height: 1.5em; }
-
 h1, .alpha {
     color: $blue;
     //font-family: $default-font;
@@ -140,19 +138,12 @@ h6, .gamma {
     @include leader(1); 
 }
 
-/*p, ul, ol, dl, address, table {
-    margin-bottom: rhythm(0.5);
-}
-
-li > ul, li > ol {
-    margin-bottom: 0; 
-}*/
-
 blockquote {
     position: relative;
     font: italic px2em( 18px ) Georgia, serif;
     line-height: 2; 
-    padding: rhythm(.75) 1em rhythm(.75) 3em;
+    padding-top: rhythm(.75);
+    padding-bottom: rhythm(.75);
     border-top: 3px solid lighten( $yellow, 20% ); 
     border-bottom: 3px solid lighten( $yellow, 20% ); 
     margin-bottom: rhythm(0.75);
@@ -191,7 +182,7 @@ dl {
 
 
 /* ! ===== Form elements ===== */
-form { @include pie-clearfix(); }
+form { @extend %pie-clearfix; }
 
 .errorlist {
     @extend .menu; 
@@ -216,11 +207,12 @@ label {
 input, textarea {
     width: 100%;
     padding: .65em;
-    margin-bottom: rhythm( .5 ); 
     border: 1px solid $default-border-color; 
     @include border-radius(); 
     @include pe-box-sizing( border-box ); 
 }
+
+input, textarea, select { margin-bottom: rhythm( .5 ); }
 
 input[type=checkbox], input[type=radio] {
     width: auto; 
@@ -247,6 +239,8 @@ input[type=submit], input[type=reset], button, a.button, .button {
     @extend %button-style; 
     display: block; 
 }
+
+button[type=submit] { @extend %button-style-blue; }
 
 .primaryAction  {
     
@@ -621,10 +615,10 @@ input#s,
 /* ! ===== Header banner, present on most landing pages ===== */
 
 .header-banner {
+    @extend %pie-clearfix;
     clear: both;
     margin: 0 1em;
     position: relative;
-    @include pie-clearfix;
     
     img {
         display: block; 
@@ -773,6 +767,14 @@ input#s,
     }
 }
 
+.page-title {
+    color: $grey; 
+    word-spacing: .15em; 
+    @include fontface-adjust( $kilo ); 
+    @include leader(.75); 
+    @include trailer(.5); 
+}
+
 .text {
     font-size: 1em; 
     
@@ -789,13 +791,6 @@ input#s,
 /* ! Default body text styles for more comfortable reading */
 .text, 
 .sidebar-widget {
-    
-    .page-title {
-        color: $grey; 
-        @include fontface-adjust( $kilo ); 
-        @include leader(.75); 
-        @include trailer(.5); 
-    }
     
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
     p, ul, ol, dl, blockquote, address, form, table, figure {
@@ -815,12 +810,19 @@ input#s,
         margin: rhythm(0.15) 0;
     }
     
+    blockquote { 
+        padding-left: 3em; 
+        padding-right: 1em;
+    }
+    
     form {
         line-height: 1.625em;
-        margin-bottom: rhythm(0.5); 
+        margin-bottom: rhythm(0.75); 
         
-        button {
+        button, input[type=submit] { 
             @extend %button-style-blue; 
+            font-size: px2em( 18px ); 
+            padding: .4em 1em .35em;
         }
         
         /* Remove bullets from ULs in forms when containing radios or checkboxes */
@@ -843,8 +845,8 @@ input#s,
     
     /* This is a mess and dumb. Figure out a better way */
     nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, .prompt,
-    nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, button:hover, .prompt:hover, 
-    nav a:focus, .menu a:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, button:focus, .prompt:focus {
+    nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, .prompt:hover, 
+    nav a:focus, .menu a:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, .prompt:focus {
         border-bottom: 0; 
     }
     
@@ -982,10 +984,9 @@ input#s,
     
     .prompt { display: none; /* show this at first breakpoint */ }
     
-    & > span:before {
-        color: $grey-light;
-        margin-right: .25em; 
-    }
+    & > span { margin-right: .25em; }
+    
+    & > span:before { color: $grey-light; }
 }
 
 /* ! ===== Section Specific Widget Colorways ===== */
@@ -1074,7 +1075,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     }
     
     .quote-from {
-        @include pie-clearfix;
+        @extend %pie-clearfix;
         
         td {
             padding: .5em;
