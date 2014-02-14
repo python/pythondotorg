@@ -8,97 +8,97 @@
 {% block header_content %}
                 <div class="documentation-banner">
                     {% box 'documentation-banner' %}
-                    
+
                 </div>
 {% endblock header_content %}
 
 
 {% block content %}
                 <div class="row">
-        		    
+
         		    <div class="small-widget beginner-widget">
                         {% box 'documentation-beginners' %}
 
                     </div>
-                    
+
                     <div class="small-widget moderate-widget">
                         {% box 'documentation-moderate' %}
 
                     </div>
-                    
+
                     <div class="small-widget advanced-widget">
                         {% box 'documentation-advanced' %}
-                        
+
                     </div>
-                    
+
                     <div class="small-widget general-widget last">
                         {% box 'documentation-general' %}
 
                     </div>
-                    
+
                 </div>
-                
-                
+
+
                 <div class="row">
-                
+
                     <div id="docs-by-version" class="medium-widget">
-                        
+
                         {# These need to be dynamically driven somehow, or are they going to edit these manually? #}
-                        
+
                         <h2 class="widget-title"><span aria-hidden="true" class="icon-versions"></span>Python 3.x Resources</h2>
                         <ul>
-                            <li><a href="#">Browse Python 3.3.0 Documentation</a> - <a href="#">(Module Index)</a> 
+                            <li><a href="http://docs.python.org/3/">Browse Python 3.3.0 Documentation</a> - <a href="http://docs.python.org/3/py-modindex.html">(Module Index)</a>
                                 <ul>
-                                    <li><a href="#">What's new in Python 3.3</a></li>
-                                    <li><a href="#">Tutorial</a></li>
-                                    <li><a href="#">Library Reference</a></li>
-                                    <li><a href="#">Language Reference</a></li>
-                                    <li><a href="#">Extending and Embedding</a></li>
-                                    <li><a href="#">Python/C API</a></li>
-                                    <li><a href="#">Using Python</a></li>
-                                    <li><a href="#">Python HOWTOs</a></li>
+                                    <li><a href="http://docs.python.org/3/whatsnew/3.3.html">What's new in Python 3.3</a></li>
+                                    <li><a href="http://docs.python.org/3/tutorial/index.html">Tutorial</a></li>
+                                    <li><a href="http://docs.python.org/3/library/index.html">Library Reference</a></li>
+                                    <li><a href="http://docs.python.org/3/reference/index.html">Language Reference</a></li>
+                                    <li><a href="http://docs.python.org/3/extending/index.html">Extending and Embedding</a></li>
+                                    <li><a href="http://docs.python.org/3/c-api/index.html">Python/C API</a></li>
+                                    <li><a href="http://docs.python.org/3/using/index.html">Using Python</a></li>
+                                    <li><a href="http://docs.python.org/3/howto/index.html">Python HOWTOs</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#">Search the online docs</a></li>
-                            <li><a href="#">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
+                            <li><a href="http://docs.python.org/3/search.html">Search the online docs</a></li>
+                            <li><a href="http://docs.python.org/3/download.html">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
                         </ul>
                     </div>
-                    
+
                     <div class="medium-widget last">
                         <h2 class="widget-title"><span aria-hidden="true" class="icon-versions"></span>Python 2.x Resources</h2>
                         <ul>
-                            <li><a href="#">Browse Current Documentation</a> - <a href="#">(Module Index)</a> 
+                            <li><a href="http://docs.python.org/2/">Browse Current Documentation</a> - <a href="http://docs.python.org/2/py-modindex.html">(Module Index)</a>
                                 <ul>
-                                    <li><a href="#">What's new in Python 2.7</a></li>
-                                    <li><a href="#">Tutorial</a></li>
-                                    <li><a href="#">Library Reference</a></li>
-                                    <li><a href="#">Language Reference</a></li>
-                                    <li><a href="#">Extending and Embedding</a></li>
-                                    <li><a href="#">Python/C API</a></li>
-                                    <li><a href="#">Using Python</a></li>
-                                    <li><a href="#">Python HOWTOs</a></li>
+                                    <li><a href="http://docs.python.org/2/whatsnew/2.7.html">What's new in Python 2.7</a></li>
+                                    <li><a href="http://docs.python.org/2/tutorial/index.html">Tutorial</a></li>
+                                    <li><a href="http://docs.python.org/2/library/index.html">Library Reference</a></li>
+                                    <li><a href="http://docs.python.org/2/reference/index.html">Language Reference</a></li>
+                                    <li><a href="http://docs.python.org/2/extending/index.html">Extending and Embedding</a></li>
+                                    <li><a href="http://docs.python.org/2/c-api/index.html">Python/C API</a></li>
+                                    <li><a href="http://docs.python.org/2/using/index.html">Using Python</a></li>
+                                    <li><a href="http://docs.python.org/2/howto/index.html">Python HOWTOs</a></li>
                                 </ul>
                             </li>
-                            <li><a href="#">Search the online docs</a></li>
-                            <li><a href="#">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
+                            <li><a href="http://docs.python.org/2/search.html">Search the online docs</a></li>
+                            <li><a href="http://docs.python.org/2/download.html">Download Current Documentation</a> (multiple formats are available, including typeset versions for printing.)</li>
                         </ul>
                     </div>
-                    
+
                 </div>
-                
+
                 <div class="user-feedback level-general">
                     {% box 'usermessage-helplink' %}
-                    
+
                 </div>
-                
-                
+
+
                 <div class="python-needs-you-widget">
                     <div class="python-logo"></div>
                     {% box 'widget-weneedyou' %}
-                    
+
                 </div>
-                
-                
+
+
                 {% include 'components/pep-widget.html' %}
-                
+
 {% endblock content %}
