@@ -1,0 +1,17 @@
+<!-- download supernav from templates/downloads/supernav.html -->
+<li class="tier-2 super-navigation">
+    <h4>Download for Mac OSX</h4>
+    <p>
+        <a class="button" href="{{ latest_python3.get_absolute_url }}">{{ latest_python3.name }}</a>
+        <a class="button" href="{{ latest_python2.get_absolute_url }}">{{ latest_python2.name }}</a>
+    </p>
+    <p>Not the OS you are looking for? Python can be used on 21 different operating systems and environments. <a href="{% url 'download:download' %}">View the full list</a>.</p>
+
+    <!-- If the current OS is not supported for detection :
+    <h4>Download Python for Any OS</h4>
+    <p>Python can be used on 21 different operating systems and environments.</p>
+    <p>
+        <a class="button" href="{% url 'download:download' %}">View the Full List</a>
+    </p>
+    -->
+</li>

@@ -1,7 +1,11 @@
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.template.loader import render_to_string
 from django.utils import timezone
 
+from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from pages.models import Page
 
@@ -62,6 +66,19 @@ class Release(ContentManageable, NameSlugModel):
         return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
 
 
+@receiver(post_save, sender=Release)
+def update_download_supernav(sender, instance, signal, created, **kwargs):
+    """ Update download supernav """
+    if instance.is_published:
+        content = render_to_string('downloads/supernav.html', {
+            'latest_python2': Release.objects.python2().latest(),
+            'latest_python3': Release.objects.python3().latest(),
+        })
+        box = Box.objects.get(label='supernav-python-downloads')
+        box.content = content
+        box.save()
+
+
 class ReleaseFile(ContentManageable, NameSlugModel):
     """
     Individual files in a release.  If a specific OS/release combo has multiple
@@ -75,6 +92,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
+    download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
 
     class Meta:
         verbose_name = 'Release File'
