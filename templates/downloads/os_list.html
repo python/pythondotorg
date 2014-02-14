@@ -1,0 +1,32 @@
+{% extends "downloads/base.html" %}
+{% load boxes %}
+{% load sitetree %}
+
+{% block body_attributes %}class="python download"{% endblock %}
+
+
+{% block breadcrumbs %}
+{% sitetree_breadcrumbs from "main" %}
+{% endblock breadcrumbs %}
+
+
+{% block page_title %}Python Releases for {{ os.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+
+
+{% block content %}
+    <article class="text">
+        <header class="article-header">
+            <h1 class="page-title">Python Releases for {{ os.name }}</h1>
+        </header>
+
+        <ul>
+            <li><a href="{{ latest_python2.get_absolute_url }}">Latest Python 2.x.x Release - {{ latest_python2.name }}</a></li>
+            <li><a href="{{ latest_python3.get_absolute_url }}">Latest Python 3.x.x Release - {{ latest_python3.name }}</a></li>
+        </ul>
+        <ul>
+            {% for r in releases %}
+            <li><a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a></li>
+            {% endfor %}
+        </ul>
+    </article>
+{% endblock content %}

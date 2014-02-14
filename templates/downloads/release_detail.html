@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load boxes %}
+{% load sitetree %}
+
+{% block body_attributes %}class="python downloads"{% endblock %}
+
+
+{% block breadcrumbs %}
+{% sitetree_breadcrumbs from "main" %}
+{% endblock breadcrumbs %}
+
+
+
+{% block page_title %}Python Release {{ release.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+
+
+{% block content %}
+    <article class="text">
+
+        <header class="article-header">
+            <h1 class="page-title">Python {{ release.name }}</h1>
+        </header>
+
+        <p><strong>Release Date:</strong> {{ release.release_date|date }}</p>
+        {% if release.release_notes_url %}
+        <p><a href="{{ release.release_notes_url }}">Release Notes</a></p>
+        {% endif %}
+
+        <p><a href="{{ release.release_page.get_absolute_url }}">Detailed Release Information</a></p>
+
+        <header class="article-header">
+            <h1 class="page-title">Files</h1>
+        </header>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Version</th>
+              <th>Operating System</th>
+              <th>Description</th>
+              <th>Date</th>
+              <th>MD5 Sum</th>
+              <th>File Size</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for f in release.files.all %}
+              <tr>
+                <td><a href="{{ f.url }}">{{ f.name }}</a></td>
+                <td>{{ f.os.name }}</td>
+                <td>{{ f.description }}</td>
+                <td>{{ r.release.release_date|date }}</td>
+                <td>{{ f.md5_sum }}</td>
+                <td>{{ f.filesize }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </article>
+{% endblock content %}
+
+
