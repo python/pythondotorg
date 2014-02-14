@@ -57,8 +57,8 @@
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
-/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
+/* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
  * Font-size-adjust: the problem and a solution
  * Not widely supported, can't use this yet */
@@ -177,8 +177,9 @@
     clear: both; }
 
 /* Buttons */
-.psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, .search-button, #dive-into-python .flex-control-paging a, .text form button,
-.sidebar-widget form button, .feedback button, input[type=submit], input[type=reset], button, a.button, .button {
+.psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
+.sidebar-widget form button,
+.sidebar-widget form input[type=submit], .feedback button, input[type=submit], input[type=reset], button, a.button, .button {
   cursor: pointer;
   color: #4d4d4d !important;
   font-weight: normal;
@@ -207,10 +208,13 @@
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover,
-  .sidebar-widget form button:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus,
-  .sidebar-widget form button:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active,
-  .sidebar-widget form button:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
+  .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
+  .sidebar-widget form button:hover,
+  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
+  .sidebar-widget form button:focus,
+  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
+  .sidebar-widget form button:active,
+  .sidebar-widget form input[type=submit]:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
     background-color: #d9d9d9;
     *zoom: 1;
@@ -245,8 +249,9 @@
     background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
     background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
 
-.search-button, #dive-into-python .flex-control-paging a, .text form button,
-.sidebar-widget form button, .feedback button {
+button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
+.sidebar-widget form button,
+.sidebar-widget form input[type=submit], .feedback button {
   color: #e6e8ea !important;
   text-shadow: none;
   background-color: #2b5b84;
@@ -264,9 +269,11 @@
   -webkit-box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   -moz-box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2);
   box-shadow: inset 0 0 5px rgba(55, 118, 171, 0.2); }
-  .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover,
-  .sidebar-widget form button:hover, .feedback button:hover, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active,
-  .sidebar-widget form button:active, .feedback button:active {
+  button[type=submit]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
+  .sidebar-widget form button:hover,
+  .sidebar-widget form input[type=submit]:hover, .feedback button:hover, button[type=submit]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
+  .sidebar-widget form button:active,
+  .sidebar-widget form input[type=submit]:active, .feedback button:active {
     background: inherit;
     color: #f2f4f6 !important;
     background-color: #244e71;
@@ -307,6 +314,13 @@
   padding: .5em .75em .4em;
   border: 1px solid #caccce;
   background-color: transparent; }
+
+form, .header-banner, .success-stories-widget .quote-from {
+  *zoom: 1; }
+  form:after, .header-banner:after, .success-stories-widget .quote-from:after {
+    content: "";
+    display: table;
+    clear: both; }
 
 /* ! ===== Mixins ===== */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
@@ -737,9 +751,6 @@ img, embed, object, video {
     .fontface .kilo span:before {
       font-size: .875em; }
 
-h2, .beta, h3, .chi, h4, .delta, h5, .epsilon, h6, .gamma {
-  line-height: 1.5em; }
-
 h1, .alpha {
   color: #3776ab;
   line-height: 1.2em;
@@ -778,18 +789,12 @@ h6, .gamma {
   font-family: SourceSansProBold, Arial, sans-serif;
   margin-top: 1.75em; }
 
-/*p, ul, ol, dl, address, table {
-    margin-bottom: rhythm(0.5);
-}
-
-li > ul, li > ol {
-    margin-bottom: 0; 
-}*/
 blockquote {
   position: relative;
   font: italic 1.125em Georgia, serif;
   line-height: 2;
-  padding: 1.3125em 1em 1.3125em 3em;
+  padding-top: 1.3125em;
+  padding-bottom: 1.3125em;
   border-top: 3px solid #ffeba9;
   border-bottom: 3px solid #ffeba9;
   margin-bottom: 1.3125em;
@@ -820,13 +825,6 @@ dl {
     border-bottom: 1px solid #caccce; }
 
 /* ! ===== Form elements ===== */
-form {
-  *zoom: 1; }
-  form:after {
-    content: "";
-    display: table;
-    clear: both; }
-
 .errorlist {
   color: #b55863;
   margin-bottom: 0; }
@@ -846,7 +844,6 @@ label {
 input, textarea {
   width: 100%;
   padding: .65em;
-  margin-bottom: 0.875em;
   border: 1px solid #caccce;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -856,6 +853,9 @@ input, textarea {
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box; }
+
+input, textarea, select {
+  margin-bottom: 0.875em; }
 
 input[type=checkbox], input[type=radio] {
   width: auto;
@@ -1536,12 +1536,7 @@ input#s,
 .header-banner {
   clear: both;
   margin: 0 1em;
-  position: relative;
-  *zoom: 1; }
-  .header-banner:after {
-    content: "";
-    display: table;
-    clear: both; }
+  position: relative; }
   .header-banner img {
     display: block;
     margin: 0 auto; }
@@ -1665,6 +1660,17 @@ input#s,
   margin-top: 1.3125em;
   padding-bottom: 1.75em; }
 
+.page-title {
+  color: #666666;
+  word-spacing: .15em;
+  font-size: 2em;
+  margin-top: 1.3125em;
+  margin-bottom: 0.875em; }
+  .fontface .page-title {
+    font-size: 2.3em; }
+    .fontface .page-title span:before {
+      font-size: .875em; }
+
 .text {
   font-size: 1em; }
   .text .giga,
@@ -1682,18 +1688,6 @@ input#s,
   /* Hyphenate specific container elements */
   /* This is a mess and dumb. Figure out a better way */
   /* Prettier tables if authors use the correct elements */ }
-  .text .page-title,
-  .sidebar-widget .page-title {
-    color: #666666;
-    font-size: 2em;
-    margin-top: 1.3125em;
-    margin-bottom: 0.875em; }
-    .fontface .text .page-title, .fontface
-    .sidebar-widget .page-title {
-      font-size: 2.3em; }
-      .fontface .text .page-title span:before, .fontface
-      .sidebar-widget .page-title span:before {
-        font-size: .875em; }
   .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
   .sidebar-widget p,
   .sidebar-widget ul,
@@ -1758,11 +1752,20 @@ input#s,
   .sidebar-widget li {
     line-height: 1.625em;
     margin: 0.2625em 0; }
+  .text blockquote,
+  .sidebar-widget blockquote {
+    padding-left: 3em;
+    padding-right: 1em; }
   .text form,
   .sidebar-widget form {
     line-height: 1.625em;
-    margin-bottom: 0.875em;
+    margin-bottom: 1.3125em;
     /* Remove bullets from ULs in forms when containing radios or checkboxes */ }
+    .text form button, .text form input[type=submit],
+    .sidebar-widget form button,
+    .sidebar-widget form input[type=submit] {
+      font-size: 1.125em;
+      padding: .4em 1em .35em; }
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
     display: inline;
@@ -1777,9 +1780,9 @@ input#s,
   .text nav a, .text .menu a, .text .errorlist a, .text form label + ul a,
   .sidebar-widget form .text label + ul a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
   .text nav a:hover, .text .menu a:hover, .text .errorlist a:hover, .text form label + ul a:hover,
-  .sidebar-widget form .text label + ul a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text button:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
+  .sidebar-widget form .text label + ul a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
   .text nav a:focus, .text .menu a:focus, .text .errorlist a:focus, .text form label + ul a:focus,
-  .sidebar-widget form .text label + ul a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text button:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
+  .sidebar-widget form .text label + ul a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
   .sidebar-widget nav a,
   .sidebar-widget .menu a,
   .sidebar-widget .errorlist a,
@@ -1801,7 +1804,6 @@ input#s,
   .sidebar-widget input[type=submit]:hover,
   .sidebar-widget input[type=reset]:hover,
   .sidebar-widget input[type=button]:hover,
-  .sidebar-widget button:hover,
   .sidebar-widget .prompt:hover,
   .sidebar-widget .readmore:hover:before,
   .sidebar-widget .give-me-more a:hover:before,
@@ -1814,7 +1816,6 @@ input#s,
   .sidebar-widget input[type=submit]:focus,
   .sidebar-widget input[type=reset]:focus,
   .sidebar-widget input[type=button]:focus,
-  .sidebar-widget button:focus,
   .sidebar-widget .prompt:focus,
   .sidebar-widget .readmore:focus:before,
   .sidebar-widget .give-me-more a:focus:before,
@@ -1978,10 +1979,12 @@ input#s,
   .give-me-more .listing-company a:before {
     display: none;
     /* show this at first breakpoint */ }
+  .widget-title > span,
+  .listing-company > span {
+    margin-right: .25em; }
   .widget-title > span:before,
   .listing-company > span:before {
-    color: #999999;
-    margin-right: .25em; }
+    color: #999999; }
 
 /* ! ===== Section Specific Widget Colorways ===== */
 .python .small-widget, .python .download-list-widget, .python .most-recent-events, .python .triple-widget, .python .most-recent-posts, .python
@@ -2084,19 +2087,13 @@ input#s,
     color: #666666; }
     .success-stories-widget blockquote a:hover, .success-stories-widget blockquote a:focus, .success-stories-widget blockquote a:active {
       color: #3776ab; }
-.success-stories-widget .quote-from {
-  *zoom: 1; }
-  .success-stories-widget .quote-from:after {
-    content: "";
-    display: table;
-    clear: both; }
-  .success-stories-widget .quote-from td {
-    padding: .5em;
-    vertical-align: middle; }
-  .success-stories-widget .quote-from img {
-    max-height: 5em; }
-  .success-stories-widget .quote-from p {
-    font-size: 0.875em; }
+.success-stories-widget .quote-from td {
+  padding: .5em;
+  vertical-align: middle; }
+.success-stories-widget .quote-from img {
+  max-height: 5em; }
+.success-stories-widget .quote-from p {
+  font-size: 0.875em; }
 
 /*.statistics-widget {
     padding-left: .75em; 

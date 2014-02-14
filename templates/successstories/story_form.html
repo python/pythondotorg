@@ -1,23 +1,25 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block page_title %}Submit Your Success Story | {{ SITE_INFO.site_name }}{% endblock %}
 
-{% block body_attributes %}class="python success-stories"{% endblock %}
-
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
-{% endblock %}
+{% block body_attributes %}class="python default-page success-stories"{% endblock %}
 
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 
 {% block content %}
-<div class="row">
-    <form action="" method="post">{% csrf_token %}
-        {{ form.as_p }}
-        <p><button type="submit" name="Submit">Save</button></p>
-    </form>
-</div>
+    
+    <div class="text">
+    
+        <h1 class="page-title">{% trans "Submit your Success Story" %}</h1>
+        
+        <form class="wide-form" action="" method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <p><button type="submit" name="Submit">{% trans "Submit" %}</button></p>
+        </form>
+    
+    </div>
+    
 {% endblock content %}

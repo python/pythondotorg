@@ -25,6 +25,14 @@
  *  gutter(6); raw math for gutter width
  */
 
+.container, 
+.row, 
+.pep-list-header, 
+.pep-index-list li, 
+.info-key, 
+.listing-company, 
+.list-recent-jobs li { @extend %pie-clearfix; }
+
 
 /* ! ===== Smaller than 400px ===== */
 @mixin max_width_399() {
@@ -110,7 +118,6 @@
         width: 100%; 
         margin: 0 auto; 
         padding: 0;
-        @include pie-clearfix(); 
     }
     
     .introduction { font-size: px2em( $headertwo ); }
@@ -338,10 +345,7 @@
     }
     
     /* Widgets in main content */
-    .row {
-        @include pie-clearfix();
-        margin-bottom: 1em;
-    }
+    .row { margin-bottom: 1em; }
     
     .small-widget {
         @include span-columns( 6 ); 
@@ -368,10 +372,7 @@
     /* PEP landing page */
     .pep-list-header, 
     .pep-index-list li,
-    .info-key {
-        margin: 0 -.5em; 
-        @include pie-clearfix; 
-    }
+    .info-key { margin: 0 -.5em; }
     
     .pep-list-header { display: block; }
     
@@ -399,8 +400,6 @@
     .pep-owner { width: 25%; }
     
     /* Jobs landing page */
-    .listing-company { @include pie-clearfix(); }
-    
     .listing-company-category:before {
         content: "Category: "; 
         color: $grey; 
@@ -715,8 +714,6 @@
     /* Jobs Section */
     .list-recent-jobs {
         
-        li { @include pie-clearfix(); }
-        
         .listing-company-category, .listing-job-type {
         
             a { white-space: nowrap; }
@@ -763,15 +760,25 @@
         p {
             @include clearfix(); 
             
+            label, textarea { 
+                display: inline-block; 
+                vertical-align: top; 
+            }
+            
             label {
-                width: 25%; 
-                float: left; 
-                margin-top: .5em; 
+                width: 24%; 
+                //float: left; 
+                //margin-top: .5em; 
             }
-            @include input_text_types() {
+            /* ! This is done the wrong way with SASS. Should be something like \#{$form-text-inputs} with $form-text-inputs as a variable */
+            @include input_text_types() { 
                 width: 75%; 
-                float: left; 
+                display: inline-block; 
+                vertical-align: top; 
             }
+            textarea { width: 75%; }
+            
+            button { margin-left: 24%; }
         }
     }
     
