@@ -31,7 +31,8 @@ class AlarmInline(admin.StackedInline):
 
 class EventAdmin(ContentManageableModelAdmin):
     inlines = [OccurringRuleInline, RecurringRuleInline, AlarmInline]
-
+    list_display = ['__str__', 'calendar', 'featured']
+    list_filter = ['calendar', 'featured']
 
 admin.site.register(Calendar, CalendarAdmin)
 admin.site.register(EventCategory, ContentManageableModelAdmin)
