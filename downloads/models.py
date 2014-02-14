@@ -70,9 +70,20 @@ class Release(ContentManageable, NameSlugModel):
 def update_download_supernav(sender, instance, signal, created, **kwargs):
     """ Update download supernav """
     if instance.is_published:
+
+        try:
+            latest_python2 = Release.objects.python2().latest()
+        except Release.DoesNotExist:
+            latest_python2 = None
+
+        try:
+            latest_python3 = Release.objects.python3().latest()
+        except Release.DoesNotExist:
+            latest_python3 = None
+
         content = render_to_string('downloads/supernav.html', {
-            'latest_python2': Release.objects.python2().latest(),
-            'latest_python3': Release.objects.python3().latest(),
+            'latest_python2': latest_python2,
+            'latest_python3': latest_python3,
         })
         box = Box.objects.get(label='supernav-python-downloads')
         box.content = content

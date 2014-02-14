@@ -4,12 +4,15 @@ from django.test import TestCase
 from django.utils import timezone
 
 from pages.models import Page
+from boxes.models import Box
 from ..models import OS, Release, ReleaseFile
 
 
 class BaseDownloadTests(TestCase):
 
     def setUp(self):
+        self.download_supernav_box = Box.objects.create(label='supernav-python-downloads')
+
         self.windows = OS.objects.create(name='Windows')
         self.osx = OS.objects.create(name='Mac OSX')
         self.linux = OS.objects.create(name='Linux')
