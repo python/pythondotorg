@@ -65,12 +65,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(event.next_time, None)
         self.assertEqual(Event.objects.for_datetime().count(), 0)
 
-        self.assertEqual(Event.objects.on_date().count(), 0)
-        rt.begin = now
-        rt.finish = now + datetime.timedelta(hours=1)
-        rt.save()
-        self.assertEqual(Event.objects.on_date().count(), 1)
-
     def test_rrule(self):
         now = seconds_resolution(timezone.now())
 

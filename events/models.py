@@ -80,11 +80,6 @@ class EventManager(models.Manager):
             dt = timezone.now()
         return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
 
-    def on_date(self, dt=None):
-        if dt is None:
-            dt = timezone.now().date()
-        return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
-
     def until_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
