@@ -49,10 +49,11 @@ class EventList(ListView):
         kwargs['event_categories'] = EventCategory.objects.all()[:10]
         kwargs['event_locations'] = EventLocation.objects.all()[:10]
         kwargs['object'] = self.get_object()
+        kwargs['events_today'] = Event.objects.on_date(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
         return super().get_context_data(**kwargs)
 
-class EventListByDate(EventList):
 
+class EventListByDate(EventList):
     def get_object(self):
         year = int(self.kwargs['year'])
         month = int(self.kwargs['month'])

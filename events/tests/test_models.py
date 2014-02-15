@@ -56,6 +56,7 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
 
+
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
         rt.save()
@@ -63,6 +64,12 @@ class EventsModelsTests(TestCase):
         event = Event.objects.get(pk=self.event.pk)
         self.assertEqual(event.next_time, None)
         self.assertEqual(Event.objects.for_datetime().count(), 0)
+
+        self.assertEqual(Event.objects.on_date().count(), 0)
+        rt.begin = now
+        rt.finish = now + datetime.timedelta(hours=1)
+        rt.save()
+        self.assertEqual(Event.objects.on_date().count(), 1)
 
     def test_rrule(self):
         now = seconds_resolution(timezone.now())
