@@ -19,7 +19,7 @@ class EventsViewsTests(TestCase):
         recurring_time_dtstart = self.now + datetime.timedelta(days=3)
         recurring_time_dtend = recurring_time_dtstart + datetime.timedelta(days=5)
 
-        RecurringRule.objects.create(
+        self.rule = RecurringRule.objects.create(
             event=self.event,
             begin=recurring_time_dtstart,
             finish=recurring_time_dtend,
@@ -35,6 +35,22 @@ class EventsViewsTests(TestCase):
 
     def test_event_list(self):
         url = reverse('events:event_list', kwargs={"calendar_slug": self.calendar.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
+
+    def test_event_list_past(self):
+        url = reverse('events:event_list_past', kwargs={"calendar_slug": self.calendar.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 0)
+
+        self.rule.begin = self.now - datetime.timedelta(days=3)
+        self.rule.finish = self.now - datetime.timedelta(days=2)
+        self.rule.save()
+
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)

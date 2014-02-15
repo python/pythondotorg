@@ -53,6 +53,11 @@ class EventList(ListView):
         return super().get_context_data(**kwargs)
 
 
+class PastEventList(EventList):
+    def get_queryset(self):
+        return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
+
+
 class EventListByDate(EventList):
     def get_object(self):
         year = int(self.kwargs['year'])
