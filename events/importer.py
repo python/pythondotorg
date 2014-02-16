@@ -3,6 +3,8 @@ from icalendar import Calendar as ICalendar
 import pytz
 import requests
 
+from django.utils.text import slugify
+
 from .models import EventLocation, Event, Calendar, OccurringRule
 from .utils import date_to_datetime
 
@@ -70,13 +72,14 @@ class ICSImporter(object):
     def parse(self, ical):
         parsed_calendar = ICalendar.from_ical(ical)
         calendar_name = parsed_calendar['X-WR-CALNAME']
+        calendar_slug = slugify(calendar_name)
         description = parsed_calendar.get('X-WR-CALDESC', None)
         self.calendar_timezone = pytz.timezone(parsed_calendar['X-WR-TIMEZONE'])
         defaults = {
             'description': description
         }
 
-        calendar, _ = self.create_or_update_model(Calendar, name=calendar_name, defaults=defaults)
+        calendar, _ = self.create_or_update_model(Calendar, name=calendar_name, slug=calendar_slug, defaults=defaults)
         for subcomponent in parsed_calendar.subcomponents:
             if subcomponent.name == 'VEVENT':
                 self.import_event(calendar, subcomponent)
