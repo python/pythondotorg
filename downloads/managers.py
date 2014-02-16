@@ -11,7 +11,9 @@ class ReleaseQuerySet(QuerySet):
 
     def downloads(self):
         """ For the main downloads landing page """
-        return self.filter(is_published=True, show_on_download_page=True)
+        return self.filter(
+            is_published=True,
+            show_on_download_page=True).order_by('-release_date')
 
     def python2(self):
         return self.filter(version=2)
