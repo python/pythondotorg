@@ -1,9 +1,14 @@
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.template.loader import render_to_string
+
 from markupfield.fields import MarkupField
 
 from .managers import StoryManager
+from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from companies.models import Company
 
@@ -34,6 +39,7 @@ class Story(NameSlugModel, ContentManageable):
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
+    featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
     objects = StoryManager()
@@ -61,3 +67,16 @@ class Story(NameSlugModel, ContentManageable):
             return self.company.url
         else:
             return self.company_url
+
+
+@receiver(post_save, sender=Story)
+def update_successstories_supernav(sender, instance, signal, created, **kwargs):
+    """ Update download supernav """
+    if instance.is_published and instance.featured:
+        content = render_to_string('successstories/supernav.html', {
+            'story': instance,
+        })
+
+        box = Box.objects.get(label='supernav-python-success-stories')
+        box.content = content
+        box.save()

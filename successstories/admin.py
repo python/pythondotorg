@@ -18,7 +18,7 @@ class StoryAdmin(ContentManageableModelAdmin):
 
     def get_list_display(self, request):
         fields = list(super().get_list_display(request))
-        return fields + ['is_published']
+        return fields + ['is_published', 'featured']
 
 
 admin.site.register(StoryCategory, StoryCategoryAdmin)
