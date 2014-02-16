@@ -1,4 +1,4 @@
-from django.views.generic import DetailView, TemplateView
+from django.views.generic import DetailView, TemplateView, ListView
 
 from .models import OS, Release
 
@@ -24,6 +24,12 @@ class DownloadHome(DownloadBase, TemplateView):
         })
 
         return context
+
+
+class DownloadFullOSList(DownloadBase, ListView):
+    template_name = 'downloads/full_os_list.html'
+    context_object_name = 'os_list'
+    model = OS
 
 
 class DownloadOSList(DownloadBase, DetailView):
