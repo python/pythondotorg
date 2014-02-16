@@ -90,9 +90,16 @@ def update_supernav():
     for o in OS.objects.all():
         data = {
             'os': o,
-            'python2': latest_python2.download_file_for_os(o.slug),
-            'python3': latest_python3.download_file_for_os(o.slug),
+            'python2': None,
+            'python3': None,
         }
+
+        if latest_python2:
+            data['python2'] = latest_python2.download_file_for_os(o.slug)
+
+        if latest_python3:
+            data['python3'] = latest_python3.download_file_for_os(o.slug)
+
         python_files.append(data)
 
     content = render_to_string('downloads/supernav.html', {
