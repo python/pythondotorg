@@ -19,8 +19,30 @@ class DownloadHome(DownloadBase, TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        try:
+            latest_python2 = Release.objects.python2().latest()
+        except Release.DoesNotExist:
+            latest_python2 = None
+
+        try:
+            latest_python3 = Release.objects.python3().latest()
+        except Release.DoesNotExist:
+            latest_python3 = None
+
+        python_files = []
+        for o in OS.objects.all():
+            data = {
+                'os': o,
+                'python2': latest_python2.download_file_for_os(o.slug),
+                'python3': latest_python3.download_file_for_os(o.slug),
+            }
+            python_files.append(data)
+
         context.update({
             'releases': Release.objects.downloads(),
+            'latest_python2': latest_python2,
+            'latest_python3': latest_python3,
+            'python_files': python_files,
         })
 
         return context

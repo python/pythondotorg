@@ -65,29 +65,52 @@ class Release(ContentManageable, NameSlugModel):
     def get_absolute_url(self):
         return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
 
+    def download_file_for_os(self, os_slug):
+        """ Given an OS slug return the appropriate download file """
+        try:
+            file = self.files.get(os__slug=os_slug, download_button=True)
+        except ReleaseFile.DoesNotExist:
+            file = None
+
+        return file
+
+
+def update_supernav():
+    try:
+        latest_python2 = Release.objects.python2().latest()
+    except Release.DoesNotExist:
+        latest_python2 = None
+
+    try:
+        latest_python3 = Release.objects.python3().latest()
+    except Release.DoesNotExist:
+        latest_python3 = None
+
+    python_files = []
+    for o in OS.objects.all():
+        data = {
+            'os': o,
+            'python2': latest_python2.download_file_for_os(o.slug),
+            'python3': latest_python3.download_file_for_os(o.slug),
+        }
+        python_files.append(data)
+
+    content = render_to_string('downloads/supernav.html', {
+        'latest_python2': latest_python2,
+        'latest_python3': latest_python3,
+        'python_files': python_files,
+    })
+
+    box = Box.objects.get(label='supernav-python-downloads')
+    box.content = content
+    box.save()
+
 
 @receiver(post_save, sender=Release)
 def update_download_supernav(sender, instance, signal, created, **kwargs):
     """ Update download supernav """
     if instance.is_published:
-
-        try:
-            latest_python2 = Release.objects.python2().latest()
-        except Release.DoesNotExist:
-            latest_python2 = None
-
-        try:
-            latest_python3 = Release.objects.python3().latest()
-        except Release.DoesNotExist:
-            latest_python3 = None
-
-        content = render_to_string('downloads/supernav.html', {
-            'latest_python2': latest_python2,
-            'latest_python3': latest_python3,
-        })
-        box = Box.objects.get(label='supernav-python-downloads')
-        box.content = content
-        box.save()
+        update_supernav()
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):

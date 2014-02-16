@@ -6,21 +6,26 @@
 {% block body_attributes %}class="python download"{% endblock %}
 
 {% block header_content %}
-                <div class="download-for-current-os">
-
-                    {% comment %}
-                    This should detect the user's OS somewhow and switch between some language and links for each.
-                    We should support Mac, Windows and Linux detection.
-                    {% endcomment %}
-
-                    <h1 class="call-to-action">Download the latest version for {# insert version #}&lt;OS Version&gt;</h1>
+        <div class="download-for-current-os">
+            {% for data in python_files %}
+                <div class="download-os-{{ data.os.slug }}" style="display: none;">
+                    <h1 class="call-to-action">Download the latest version for {{ data.os.name }}</h1>
                     <p class="download-buttons">
-                        <a class="button" href="{{ latest_python3.get_absolute_url }}">Download {{ latest_python3.name }}</a>
-                        <a class="button" href="{{ latest_python2.get_absolute_url }}">Download {{ latest_python2.name }}</a>
+                        <a class="button" href="{{ data.python3.get_absolute_url }}">Download {{ data.python3.release.name }}</a>
+                        <a class="button" href="{{ data.python2.get_absolute_url }}">Download {{ data.python2.release.name }}</a>
                     </p>
-                    {% box 'download-banner' %}
-
                 </div>
+            {% endfor %}
+            <div class="download-unknown">
+                <h1 class="call-to-action">Download the latest versions of Python</h1>
+                <p class="download-buttons">
+                    <a class="button" href="{{ latest_python3.get_absolute_url }}">Download {{ latest_python3.name }}</a>
+                    <a class="button" href="{{ latest_python2.get_absolute_url }}">Download {{ latest_python2.name }}</a>
+                </p>
+            </div>
+            {% box 'download-banner' %}
+
+        </div>
 {% endblock header_content %}
 
 {% block content %}

@@ -21,11 +21,11 @@ if( !window.Retina ) {
     var is_retina = false;
     $("html").addClass( "no-retina" );
 } else {
-    var is_retina = Retina.isRetina(); 
+    var is_retina = Retina.isRetina();
     if ( is_retina ) {
-        $("html").addClass( "retina" ); 
+        $("html").addClass( "retina" );
     } else {
-        $("html").addClass( "no-retina" ); 
+        $("html").addClass( "no-retina" );
     }
 }
 
@@ -70,28 +70,28 @@ function on_resize_orientationchange() {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         scroll_fired = true;
     } else { scroll_fired = false; }
-    
-    
+
+
     /* Click the menu button and add a class to the body for a "drawer" */
     if ( mq_tag.indexOf("drawer_navigation") !=-1 ) {
-        
+
         /* TO DO: Look for a left-right swipe action (on the #touchnav-wrapper?) and also trigger the menu to open/close */
         $( "#site-map-link" ).click( function() {
-            $("body").toggleClass("show-sidemenu"); 
+            $("body").toggleClass("show-sidemenu");
             //console.log( "! #site-map-link has been tapped" );
-            return false; 
-        }); 
-        
+            return false;
+        });
+
     } else {
-        
+
         /* If "drawer_navigation" is not present, treat the Menu button as a scroller down to the footer */
         $("#site-map-link").click(function() {
             $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 500);
             return false;
         });
     }
-    
-    
+
+
     /* Load a supernav into the About dropdown */
     if ( ! hastouch ) {
 
@@ -106,6 +106,23 @@ function on_resize_orientationchange() {
             $.get("/box/supernav-python-downloads/",
                 function(data){
                  $('li#downloads .subnav').append( data );
+                    /* Toggle Download buttons by OS detection */
+                    if (navigator.appVersion.indexOf("Win")!=-1) {
+                        $('.download-unknown').hide();
+                        $('.download-os-windows').show();
+                    }
+                    if (navigator.appVersion.indexOf("Mac")!=-1) {
+                        $('.download-unknown').hide();
+                        $('.download-os-mac-osx').show();
+                    }
+                    if (navigator.appVersion.indexOf("X11")!=-1) {
+                        $('.download-unknown').hide();
+                        $('.download-os-linux').show();
+                    }
+                    if (navigator.appVersion.indexOf("Linux")!=-1) {
+                        $('.download-unknown').hide();
+                        $('.download-os-linux').show();
+                    }
                 }, "html");
             $('li#downloads').addClass("with-supernav");
 
@@ -191,7 +208,7 @@ $().ready(function() {
 
     /*
      * Ensure PythonAnywhere is open for business and only fires on homepage
-    */
+     */
     if($('body#homepage').length) {
         var launch_shell = $('#launch-shell');
         launch_shell.toggle();
