@@ -34,10 +34,15 @@ class EventAdmin(ContentManageableModelAdmin):
     list_display = ['__str__', 'calendar', 'featured']
     list_filter = ['calendar', 'featured']
 
+
+class EventLocationAdmin(admin.ModelAdmin):
+    list_filter = ['calendar']
+
+
 admin.site.register(Calendar, CalendarAdmin)
 admin.site.register(EventCategory, ContentManageableModelAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(OccurringRule)
 admin.site.register(RecurringRule)
 admin.site.register(Alarm, ContentManageableModelAdmin)
-admin.site.register(EventLocation)
+admin.site.register(EventLocation, EventLocationAdmin)
