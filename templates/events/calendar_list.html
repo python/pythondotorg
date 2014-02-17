@@ -1,7 +1,19 @@
-{% extends "waitforit.html" %}
-
-{% comment %}
 {% extends "base.html" %}
+{% load boxes %}
+
+{% block page_title %}Our Events | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="python events list-calendars"{% endblock %}
-{% endcomment %}
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+<div class="shrubbery">
+    <h2 class="widget-title">Featured Python Calendars</h2>
+    <ul class="list">
+{% for object in object_list %}
+        <li><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></li>
+{% endfor %}
+    </ul>
+</div>
+{% endblock content %}
