@@ -55,6 +55,7 @@ class ICSImporter(object):
             defaults = {
                 'title': title,
                 'description': description,
+                'description_markup_type': 'markdown',
                 'venue': location,
                 'calendar': calendar
             }
