@@ -37,7 +37,7 @@ class EventList(ListView):
         return None
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
 
     def get_context_data(self, **kwargs):
         featured_events = self.get_queryset().filter(featured=True)
