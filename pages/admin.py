@@ -1,7 +1,11 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
-from .models import Page
+from .models import Page, Image
+
+
+class ImageInlineAdmin(admin.StackedInline):
+    model = Image
 
 
 class PagePathFilter(admin.SimpleListFilter):
@@ -35,10 +39,10 @@ class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
     list_display = ('get_title', 'path')
     list_filter = [PagePathFilter]
+    inlines = [ImageInlineAdmin]
     fieldsets = [
         (None, {'fields': ('title', 'keywords', 'description', 'path', 'content', 'content_markup_type', 'is_published')}),
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
     ]
-
 
 admin.site.register(Page, PageAdmin)

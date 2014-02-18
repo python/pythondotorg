@@ -6,6 +6,7 @@ that pages don't have any actual notion of where they live; instead, they're
 positioned into the URL structure using the nav app.
 """
 
+import os
 import re
 from django.conf import settings
 from django.core import validators
@@ -61,3 +62,15 @@ class Page(ContentManageable):
 
     def __str__(self):
         return self.title
+
+
+def page_image_path(instance, filename):
+    return os.path.join(settings.MEDIA_ROOT, instance.page.path, filename)
+
+
+class Image(models.Model):
+    page = models.ForeignKey('pages.Page')
+    image = models.ImageField(upload_to=page_image_path)
+
+    def __str__(self):
+        return self.image.url
