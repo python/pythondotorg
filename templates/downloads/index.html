@@ -9,10 +9,14 @@
         <div class="download-for-current-os">
             {% for data in python_files %}
                 <div class="download-os-{{ data.os.slug }}" style="display: none;">
+                    {% if data.os.name == 'Linux' %}
+                    <h1 class="call-to-action">Download the latest sources for Linux</h1>
+                    {% else %}
                     <h1 class="call-to-action">Download the latest version for {{ data.os.name }}</h1>
+                    {% endif %}
                     <p class="download-buttons">
-                        <a class="button" href="{{ data.python3.get_absolute_url }}">Download {{ data.python3.release.name }}</a>
-                        <a class="button" href="{{ data.python2.get_absolute_url }}">Download {{ data.python2.release.name }}</a>
+                        <a class="button" href="{{ data.python3.url }}">Download {{ data.python3.release.name }}</a>
+                        <a class="button" href="{{ data.python2.url }}">Download {{ data.python2.release.name }}</a>
                     </p>
                 </div>
             {% endfor %}
