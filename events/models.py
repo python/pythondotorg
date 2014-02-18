@@ -99,6 +99,9 @@ class Event(ContentManageable):
 
     objects = EventManager()
 
+    class Meta:
+        ordering = ('-occurring_rule__dt_start',)
+
     def __str__(self):
         return self.title
 

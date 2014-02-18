@@ -11,6 +11,42 @@ class CalendarList(ListView):
     model = Calendar
 
 
+class EventListBase(ListView):
+    model = Event
+    paginate_by = 6
+
+    def get_object(self, queryset=None):
+        return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        featured_events = self.get_queryset().filter(featured=True)
+        try:
+            context['featured'] = featured_events[0]
+        except IndexError:
+            pass
+
+        context['event_categories'] = EventCategory.objects.all()[:10]
+        context['event_locations'] = EventLocation.objects.all()[:10]
+        context['object'] = self.get_object()
+        return context
+
+
+class EventHomepage(EventListBase):
+    """ Main Event Landing Page """
+    template_name = 'events/event_list.html'
+
+    def get_object(self, queryset=None):
+        return None
+
+    def get_queryset(self):
+        return Event.objects.for_datetime(timezone.now()).order_by('occurring_rule__dt_start')
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 class EventDetail(DetailView):
     model = Event
 
@@ -29,29 +65,16 @@ class EventDetail(DetailView):
         return data
 
 
-class EventList(ListView):
-    model = Event
-    paginate_by = 6
-
-    def get_object(self, queryset=None):
-        return None
+class EventList(EventListBase):
 
     def get_queryset(self):
         return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
 
     def get_context_data(self, **kwargs):
-        featured_events = self.get_queryset().filter(featured=True)
-        try:
-            kwargs['featured'] = featured_events[0]
-        except IndexError:
-            pass
-
-        kwargs['event_categories'] = EventCategory.objects.all()[:10]
-        kwargs['event_locations'] = EventLocation.objects.all()[:10]
-        kwargs['object'] = self.get_object()
-        kwargs['events_today'] = Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
-        kwargs['calendar'] = Calendar.objects.get(slug=self.kwargs['calendar_slug'])
-        return super().get_context_data(**kwargs)
+        context = super().get_context_data(**kwargs)
+        context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
+        context['calendar'] = Calendar.objects.get(slug=self.kwargs['calendar_slug'])
+        return context
 
 
 class PastEventList(EventList):

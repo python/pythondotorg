@@ -2,6 +2,7 @@ from django.conf.urls import url, patterns
 from . import views
 
 urlpatterns = patterns('',
+    url(r'calendars/$', views.CalendarList.as_view(), name='calendar_list'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/(?P<slug>[-_\w]+)/$', views.EventListByCategory.as_view(), name='eventlist_category'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/$', views.EventCategoryList.as_view(), name='eventcategory_list'),
     url(r'(?P<calendar_slug>[-_\w]+)/locations/(?P<pk>\d+)/$', views.EventListByLocation.as_view(), name='eventlist_location'),
@@ -10,5 +11,5 @@ urlpatterns = patterns('',
     url(r'(?P<calendar_slug>[-_\w]+)/(?P<pk>\d+)/$', views.EventDetail.as_view(), name='event_detail'),
     url(r'(?P<calendar_slug>[-_\w]+)/past/$', views.PastEventList.as_view(), name='event_list_past'),
     url(r'(?P<calendar_slug>[-_\w]+)/$', views.EventList.as_view(), name='event_list'),
-    url(r'$', views.CalendarList.as_view(), name='calendar_list'),
+    url(r'$', views.EventHomepage.as_view(), name='events'),
 )
