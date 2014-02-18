@@ -4,6 +4,7 @@
 
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
 @function clear-units($value){
+    
     @if type-of($value) == "number" {
         @if (unitless($value)) {
             @return $value;
@@ -19,6 +20,11 @@
         @return $value;
     }
 }
+
+@function strip-units($value) {
+    @return $value / ($value * 0 + 1);
+}
+/* NOTE: Neither of these work on units with decimal points. */
 
 
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */

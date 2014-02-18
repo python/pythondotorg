@@ -57,6 +57,7 @@
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
+/* NOTE: Neither of these work on units with decimal points. */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
 /* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
@@ -753,7 +754,7 @@ img, embed, object, video {
 
 h1, .alpha {
   color: #3776ab;
-  line-height: 1.2em;
+  line-height: 1em;
   font-size: 1.75em;
   margin-bottom: 0.4375em; }
 
@@ -761,7 +762,7 @@ h2, .beta {
   color: #999999;
   font-family: SourceSansProBold, Arial, sans-serif;
   font-size: 1.5em;
-  margin-top: 1.75em;
+  margin-top: 1.3125em;
   margin-bottom: 0.32813em; }
 
 h3, .chi {
@@ -1656,16 +1657,16 @@ input#s,
     padding: 0.25em; }
 
 /* ! ===== Main Content ===== */
-.main-content > article {
-  margin-top: 1.3125em;
+.main-content {
   padding-bottom: 1.75em; }
+  .main-content > article {
+    margin-top: 1.3125em;
+    padding-bottom: 1.75em; }
 
 .page-title {
   color: #666666;
   word-spacing: .15em;
-  font-size: 2em;
-  margin-top: 1.3125em;
-  margin-bottom: 0.875em; }
+  font-size: 2em; }
   .fontface .page-title {
     font-size: 2.3em; }
     .fontface .page-title span:before {
@@ -1681,13 +1682,39 @@ input#s,
 .sidebar-widget {
   padding-bottom: 1.3125em; }
 
+/* Want to test/debug vertical rhythm? 
+ * http://compass-style.org/reference/compass/layout/grid_background/ 
+ * Set $show-baseline-grid-backgrounds to true; 
+ *
+ * To tweak the base font size and line height according to the width of the reading container, try this calculator:
+ * http://www.pearsonified.com/typography/
+ */
 /* ! Default body text styles for more comfortable reading */
 .text,
 .sidebar-widget {
+  background-image: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(5%, rgba(17, 166, 17, 0.5)), color-stop(5%, rgba(17, 166, 17, 0)));
+  background-image: -webkit-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
+  background-image: -moz-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
+  background-image: -o-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
+  background-image: linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
+  -webkit-background-size: 100% 28px;
+  -moz-background-size: 100% 28px;
+  -o-background-size: 100% 28px;
+  background-size: 100% 28px;
+  background-position: left top;
+  /* Its not great to define headers in more than one place... fix this later please */
   /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
   /* Hyphenate specific container elements */
   /* This is a mess and dumb. Figure out a better way */
   /* Prettier tables if authors use the correct elements */ }
+  .text h1,
+  .sidebar-widget h1 {
+    margin-top: 1em;
+    margin-bottom: .25em; }
+  .text .page-title,
+  .sidebar-widget .page-title {
+    margin-top: 1.3125em;
+    margin-bottom: 0.875em; }
   .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
   .sidebar-widget p,
   .sidebar-widget ul,
@@ -1698,7 +1725,8 @@ input#s,
   .sidebar-widget form,
   .sidebar-widget table,
   .sidebar-widget figure {
-    margin-bottom: 1.3125em; }
+    margin-bottom: 1.3125em;
+    line-height: 1.875; }
   .text p, .text dd, .text blockquote, .text address,
   .sidebar-widget p,
   .sidebar-widget dd,
@@ -1750,7 +1778,7 @@ input#s,
     margin-bottom: 0; }
   .text li,
   .sidebar-widget li {
-    line-height: 1.625em;
+    line-height: 1.65em;
     margin: 0.2625em 0; }
   .text blockquote,
   .sidebar-widget blockquote {

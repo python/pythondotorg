@@ -92,7 +92,7 @@ img, embed, object, video { max-width: 100% }
 h1, .alpha {
     color: $blue;
     //font-family: $default-font;
-    line-height: 1.2em;
+    line-height: 1em;
     font-size: px2em( $headerone ); 
     @include trailer(.25);
     //@include fontface-adjust( 28px ); 
@@ -102,7 +102,7 @@ h2, .beta {
     color: $grey-light;
     font-family: $default-font-bold;
     font-size: px2em( $headertwo ); 
-    @include leader(1); 
+    @include leader(.75); 
     @include trailer(.1875);
     //@include fontface-adjust( 24px );
 }
@@ -756,6 +756,7 @@ input#s,
 /* ! ===== Main Content ===== */
 
 .main-content {
+    padding-bottom: rhythm( 1 );
     
     &.with-left-sidebar { }
     
@@ -771,8 +772,6 @@ input#s,
     color: $grey; 
     word-spacing: .15em; 
     @include fontface-adjust( $kilo ); 
-    @include leader(.75); 
-    @include trailer(.5); 
 }
 
 .text {
@@ -788,13 +787,43 @@ input#s,
 .sidebar-widget { padding-bottom: rhythm( .75 ); }
 
 
+/* Want to test/debug vertical rhythm? 
+ * http://compass-style.org/reference/compass/layout/grid_background/ 
+ * Set $show-baseline-grid-backgrounds to true; 
+ *
+ * To tweak the base font size and line height according to the width of the reading container, try this calculator:
+ * http://www.pearsonified.com/typography/
+ */
+$grid-background-baseline-height: $base-line-height; 
+$grid-background-baseline-color: rgba( $code-green, .5 ); 
+$show-baseline-grid-backgrounds: false; 
+
+
 /* ! Default body text styles for more comfortable reading */
 .text, 
 .sidebar-widget {
+    @include baseline-grid-background();
+    
+    /* Its not great to define headers in more than one place... fix this later please */
+    h1 { 
+        margin-top: 1em; 
+        margin-bottom: .25em; 
+    }
+    
+    .page-title { 
+        @include leader(.75); 
+        @include trailer(.5); 
+    }
+    
+    h2 { }
+    h3 { }
+    h4 { }
+    h5 { }
     
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
     p, ul, ol, dl, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
+        line-height: 1.875;
     }
     
     /* Hyphenate specific container elements */
@@ -806,7 +835,7 @@ input#s,
     li > ol { margin-bottom: 0; }
     
     li {
-        line-height: 1.625em;
+        line-height: 1.65em;
         margin: rhythm(0.15) 0;
     }
     

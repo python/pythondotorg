@@ -1034,6 +1034,7 @@
         &.with-left-sidebar { @include pad( .5, .5 ); }
     }
         .single-event-title { @include fontface-adjust( 32px ); }
+    
     /*aside*/ .left-sidebar { }
     /*aside*/ .right-sidebar { }
     
@@ -1043,8 +1044,8 @@
         & > p:first-of-type { 
             color: $grey; 
             font-size: 1.125em; 
-            line-height: 1.75; 
-            margin-bottom: rhythm(1);
+            line-height: 1.6875; 
+            margin-bottom: 1.25em;
         }
     }
     

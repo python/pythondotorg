@@ -57,6 +57,7 @@
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
+/* NOTE: Neither of these work on units with decimal points. */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
 /* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
@@ -277,6 +278,7 @@ html[xmlns] .slides { display: block; }
  * Functional mixins – Items we would like to keep consistent from project to project
  */
 /* Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 */
+/* NOTE: Neither of these work on units with decimal points. */
 /* Easy little function to do the math of pixel to EM conversion for us. Needs a base-font-size set in _base.scss */
 /* Shorthand for a set of useful text/line-height resizing functions. easier to remember... */
 /* 
@@ -1930,8 +1932,8 @@ a.button {
   .text > p:first-of-type {
     color: #666666;
     font-size: 1.125em;
-    line-height: 1.75;
-    margin-bottom: 1.75em; }
+    line-height: 1.6875;
+    margin-bottom: 1.25em; }
 
 /* Widgets in main content */
 .small-widget p, .small-widget li, .medium-widget p, .medium-widget li, .psf-widget p, .psf-widget li, .python-needs-you-widget p, .python-needs-you-widget li, .documentation-help p, .documentation-help li {
