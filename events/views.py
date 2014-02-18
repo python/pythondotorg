@@ -50,6 +50,7 @@ class EventList(ListView):
         kwargs['event_locations'] = EventLocation.objects.all()[:10]
         kwargs['object'] = self.get_object()
         kwargs['events_today'] = Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
+        kwargs['calendar'] = Calendar.objects.get(slug=self.kwargs['calendar_slug'])
         return super().get_context_data(**kwargs)
 
 

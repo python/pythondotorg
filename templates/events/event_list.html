@@ -29,93 +29,102 @@
 {# Based on python/events.html #}
 
 {% block content %}
-                <div class="most-recent-events">
-                    <div class="shrubbery">
-                        <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>
-                        {% if page_obj.has_next %}
-                        <p class="give-me-more"><a href="?page={{ page_obj.next_page_number }}" title="More Events">More</a></p>
+        
+        <header class="article-header">
+            <h3>from the {{ calendar.name }}</h3>
+        </header>
+        
+        <div class="most-recent-events">
+            <div class="shrubbery">
+                <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>
+                {% if page_obj.has_next %}
+                <p class="give-me-more"><a href="?page={{ page_obj.next_page_number }}" title="More Events">More</a></p>
+                {% endif %}
+                <ul class="list-recent-events menu">
+                {% for object in object_list %}
+                    <li>
+                        <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
+                        <p>
+                            {% with object.next_time as next_time %}
+                            {% if next_time.single_day %}
+                            <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span> {{ next_time.dt_start|date:"fA"|lower }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}{% endif %}</time>
+                            {% else %}
+                            <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
+                            {% endif %}
+
+                            {% if object.venue %}
+                            <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
+                            {% endif %}
+                            {% endwith %}
+                        </p>
+                    </li>
+                {% endfor %}
+                </ul>
+            </div>
+
+            {% if events_today %}
+            <h3 class="widget-title just-missed">You just missed...</h3>
+            <ul class="list-recent-events menu">
+                {% for object in events_today %}
+                <li>
+                    <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
+                    <p>
+                        {% with object.next_time as next_time %}
+                        {% if next_time.single_day %}
+                        <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span> {{ next_time.dt_start|date:"fA"|lower }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}{% endif %}</time>
+                        {% else %}
+                        <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
                         {% endif %}
-                        <ul class="list-recent-events menu">
-                        {% for object in object_list %}
-                            <li>
-                                <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
-                                <p>
-                                    {% with object.next_time as next_time %}
-                                    {% if next_time.single_day %}
-                                    <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span> {{ next_time.dt_start|date:"fA"|lower }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}{% endif %}</time>
-                                    {% else %}
-                                    <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
-                                    {% endif %}
-
-                                    {% if object.venue %}
-                                    <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
-                                    {% endif %}
-                                    {% endwith %}
-                                </p>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                    </div>
-
-                    {% if events_today %}
-                    <h3 class="widget-title just-missed">You just missed...</h3>
-                    <ul class="list-recent-events menu">
-                        {% for object in events_today %}
-                        <li>
-                            <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
-                            <p>
-                                {% with object.next_time as next_time %}
-                                {% if next_time.single_day %}
-                                <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span> {{ next_time.dt_start|date:"fA"|lower }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}{% endif %}</time>
-                                {% else %}
-                                <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
-                                {% endif %}
-                                {% if object.venue %}
-                                <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
-                                {% endif %}
-                                {% endwith %}
-                            </p>
-                        </li>
-                        {% endfor %}
-                    </ul>
-                    {% endif %}
-                </div>
+                        {% if object.venue %}
+                        <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
+                        {% endif %}
+                        {% endwith %}
+                    </p>
+                </li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
 {% endblock content %}
 
 
 
 {% block right_sidebar %}
-            <aside class="right-sidebar" role="secondary">
-                {% if event_categories %}
-                <div class="sidebar-widget eventtypes-widget">
-                    <h2 class="widget-title">Event Categories</h2>
-                    <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
-                    <ul class="menu">
-                        {% for category in event_categories %}
-                        <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
-                        {% endfor %}
-                        <li><a class="readmore" href="{% url 'events:eventcategory_list' calendar_slug=view.kwargs.calendar_slug %}">More Types</a></li>
-                    </ul>
-                </div>
-                {% endif %}
+    <aside class="right-sidebar" role="secondary">
+        <div class="sidebar-widget subscribe-widget">
+            {% box 'events-subscriptions' %}
 
-                {% if event_locations %}
-                <div class="sidebar-widget authors-widget">
-                    <h2 class="widget-title">Event Locations</h2>
-                    <p class="give-me-more"><a href="#" title="More Event Locations">More</a></p>
-                    <ul class="menu">
-                        {% for location in event_locations %}
-                        <li><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></li>
-                        {% endfor %}
-                       <li><a class="readmore" href="{% url 'events:eventlocation_list' calendar_slug=view.kwargs.calendar_slug %}">More Locations</a></li>
-                    </ul>
-                </div>
-                {% endif %}
-
-                <div class="sidebar-widget subscribe-widget">
-                    {% box 'events-subscriptions' %}
-
-    		    </div>
-
-            </aside>
+	    </div>
+        
+        {% if event_categories %}
+        <div class="sidebar-widget eventtypes-widget">
+            <h2 class="widget-title">Event Categories</h2>
+            <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
+            <ul class="menu">
+                {% for category in event_categories %}
+                <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+                {% endfor %}
+                <li><a class="readmore" href="{% url 'events:eventcategory_list' calendar_slug=view.kwargs.calendar_slug %}">More Types</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        
+        {% comment %}
+        Less useful to look at and use than I thought they might be. 
+        Titles of locations are the whole address most times, and unless someone in the DB controlled the way they were written and presented, this might always be a mess 
+        {% if event_locations %}
+        <div class="sidebar-widget authors-widget">
+            <h2 class="widget-title">Event Locations</h2>
+            <p class="give-me-more"><a href="#" title="More Event Locations">More</a></p>
+            <ul class="menu">
+                {% for location in event_locations %}
+                <li><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></li>
+                {% endfor %}
+               <li><a class="readmore" href="{% url 'events:eventlocation_list' calendar_slug=view.kwargs.calendar_slug %}">More Locations</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        {% endcomment %}
+        
+    </aside>
 {% endblock right_sidebar %}

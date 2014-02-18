@@ -125,3 +125,18 @@ DATABASES = {
     'default': dj_database_url.config(default='postgres://localhost:{port#}/{DBName, probably python.org}')
 }
 ```
+
+Go into PSQL and dump a DB backup: 
+```
+cd /Applications/Postgres.app/Contents/MacOS/bin
+./pg_dump <db_name> > path/to/file.name
+./pg_dump python.org > ~/github/python/development.dump
+```
+
+Reload a DB dump from a file: 
+```
+./pg_restore -d <db_name> <path-to-file>
+./pg_restore --clean -d python.org ~/github/python/preview.dump
+```
+
+See here for the `--clean` methods http://www.postgresql.org/docs/9.2/static/app-pgrestore.html
