@@ -1,9 +1,11 @@
 <!-- successstories supernav from templates/successstories/supernav.html -->
        <li class="tier-2 super-navigation">
-
+            {% comment %}
+            Not currently working... not valid image being returned. 
             {% if story.image %}
             <img src="{{ story.image.url }}" alt="{{ story.get_company_name }}">
             {% endif %}
+            {% endcomment %}
             <blockquote class="success-quote">
                 {{ story.pull_quote }}
             </blockquote>
