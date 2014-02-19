@@ -147,13 +147,13 @@
                 <div class="options-bar do-not-print">
 
                     {# Its a little ugly, but no space between elements makes the inline-block style work better #}
-                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="#" method="get">
+                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">
                         <fieldset title="Search Python.org">
 
                             <span aria-hidden="true" class="icon-search"></span>
 
                             <label class="screen-reader-text" for="search-field">Search This Site</label>
-                            <input id="s" name="s" type="search" role="textbox" class="search-field" placeholder="Search" tabindex="1">
+                            <input id="s" name="q" type="search" role="textbox" class="search-field" placeholder="Search" tabindex="1">
 
                             <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
                                 GO

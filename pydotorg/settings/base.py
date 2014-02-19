@@ -130,6 +130,7 @@ INSTALLED_APPS = (
     'south',
     'timedelta',
     'imagekit',
+    'haystack',
 
     'users',
     'boxes',

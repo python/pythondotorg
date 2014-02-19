@@ -21,6 +21,8 @@
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
  * Site: susy.oddbird.net
+ * 
+ * Would like to remove the dependence on Susy by using a simpler grid structure : J. Hogue
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
@@ -533,7 +535,7 @@ ol ol ol {
 ol ol ol ol {
   list-style: lower-alpha; }
 
-nav ul, menu ul, .menu, .errorlist, .text form label + ul,
+nav ul, menu ul, .menu, form ul, .errorlist, .text form label + ul,
 .sidebar-widget form label + ul, .tabs {
   margin-left: 0;
   list-style: none;
@@ -837,10 +839,12 @@ dl {
 
 label {
   display: block;
+  color: #999999;
+  font-weight: bold;
   margin-top: 0.875em;
   margin-top: 0.21875em; }
   label.active {
-    font-weight: bold; }
+    color: #3776ab; }
 
 input, textarea {
   width: 100%;
@@ -891,7 +895,7 @@ input:-moz-placeholder {
 input[type=submit], input[type=reset], button, a.button, .button {
   display: block; }
 
-input[type=reset], button.secondaryAction {
+input[type=reset], button.secondaryAction[type=submit] {
   background-color: #999999;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB3B3B3', endColorstr='#FF999999');
@@ -901,8 +905,10 @@ input[type=reset], button.secondaryAction {
   background-image: -o-linear-gradient(#b3b3b3 10%, #999999 90%);
   background-image: linear-gradient(#b3b3b3 10%, #999999 90%);
   border-top: 1px solid #caccce;
-  border-bottom: 1px solid gray; }
-  input[type=reset]:hover, input[type=reset]:focus, input[type=reset]:active, button.secondaryAction:hover, button.secondaryAction:focus, button.secondaryAction:active {
+  border-right: 1px solid #999999;
+  border-bottom: 1px solid gray;
+  border-left: 1px solid #999999; }
+  input[type=reset]:hover, input[type=reset]:focus, input[type=reset]:active, button.secondaryAction[type=submit]:hover, button.secondaryAction[type=submit]:focus, button.secondaryAction[type=submit]:active {
     color: white;
     background-color: #b3b3b3;
     *zoom: 1;
@@ -1033,7 +1039,7 @@ h2.not-column {
 .meta-navigation {
   text-align: center;
   /*ul*/ }
-  .meta-navigation .menu, .meta-navigation .errorlist, .meta-navigation .text form label + ul, .text form .meta-navigation label + ul,
+  .meta-navigation .menu, .meta-navigation form ul, form .meta-navigation ul, .meta-navigation .errorlist, .meta-navigation .text form label + ul, .text form .meta-navigation label + ul,
   .meta-navigation .sidebar-widget form label + ul,
   .sidebar-widget form .meta-navigation label + ul {
     margin-bottom: 0; }
@@ -1201,16 +1207,20 @@ input#s,
       
       .close-text { padding: .9em 3.25em .8em 1em; }
   }*/ }
-  .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
+  .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
   .adjust-font-size .sidebar-widget form label + ul,
   .sidebar-widget form .adjust-font-size label + ul,
   .winkwink-nudgenudge .menu,
+  .winkwink-nudgenudge form ul,
+  form .winkwink-nudgenudge ul,
   .winkwink-nudgenudge .errorlist,
   .winkwink-nudgenudge .text form label + ul,
   .text form .winkwink-nudgenudge label + ul,
   .winkwink-nudgenudge .sidebar-widget form label + ul,
   .sidebar-widget form .winkwink-nudgenudge label + ul,
   .account-signin .menu,
+  .account-signin form ul,
+  form .account-signin ul,
   .account-signin .errorlist,
   .account-signin .text form label + ul,
   .text form .account-signin label + ul,
@@ -1244,37 +1254,35 @@ input#s,
   .winkwink-nudgenudge .tier-2 > a,
   .account-signin .tier-2 > a {
     text-align: left; }
-  .adjust-font-size .menu, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
+  .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
   .adjust-font-size .sidebar-widget form label + ul,
   .sidebar-widget form .adjust-font-size label + ul,
   .winkwink-nudgenudge .menu,
+  .winkwink-nudgenudge form ul,
+  form .winkwink-nudgenudge ul,
   .winkwink-nudgenudge .errorlist,
   .winkwink-nudgenudge .text form label + ul,
   .text form .winkwink-nudgenudge label + ul,
   .winkwink-nudgenudge .sidebar-widget form label + ul,
   .sidebar-widget form .winkwink-nudgenudge label + ul,
   .account-signin .menu,
+  .account-signin form ul,
+  form .account-signin ul,
   .account-signin .errorlist,
   .account-signin .text form label + ul,
   .text form .account-signin label + ul,
   .account-signin .sidebar-widget form label + ul,
   .sidebar-widget form .account-signin label + ul {
     *zoom: 1; }
-    .adjust-font-size .menu:after, .adjust-font-size .errorlist:after, .adjust-font-size .text form label + ul:after, .text form .adjust-font-size label + ul:after,
-    .adjust-font-size .sidebar-widget form label + ul:after,
-    .sidebar-widget form .adjust-font-size label + ul:after,
+    .adjust-font-size .menu:after, .adjust-font-size form ul:after, form .adjust-font-size ul:after, .adjust-font-size .errorlist:after,
     .winkwink-nudgenudge .menu:after,
+    .winkwink-nudgenudge form ul:after,
+    form .winkwink-nudgenudge ul:after,
     .winkwink-nudgenudge .errorlist:after,
-    .winkwink-nudgenudge .text form label + ul:after,
-    .text form .winkwink-nudgenudge label + ul:after,
-    .winkwink-nudgenudge .sidebar-widget form label + ul:after,
-    .sidebar-widget form .winkwink-nudgenudge label + ul:after,
     .account-signin .menu:after,
-    .account-signin .errorlist:after,
-    .account-signin .text form label + ul:after,
-    .text form .account-signin label + ul:after,
-    .account-signin .sidebar-widget form label + ul:after,
-    .sidebar-widget form .account-signin label + ul:after {
+    .account-signin form ul:after,
+    form .account-signin ul:after,
+    .account-signin .errorlist:after {
       content: "";
       display: table;
       clear: both; }
@@ -1672,6 +1680,10 @@ input#s,
     .fontface .page-title span:before {
       font-size: .875em; }
 
+/* For when we dont need to extra size buyt do want the margin */
+.default-title {
+  word-spacing: .15em; }
+
 .text {
   font-size: 1em; }
   .text .giga,
@@ -1692,31 +1704,24 @@ input#s,
 /* ! Default body text styles for more comfortable reading */
 .text,
 .sidebar-widget {
-  background-image: -webkit-gradient(linear, 50% 100%, 50% 0%, color-stop(5%, rgba(17, 166, 17, 0.5)), color-stop(5%, rgba(17, 166, 17, 0)));
-  background-image: -webkit-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
-  background-image: -moz-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
-  background-image: -o-linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
-  background-image: linear-gradient(bottom, rgba(17, 166, 17, 0.5) 5%, rgba(17, 166, 17, 0) 5%);
-  -webkit-background-size: 100% 28px;
-  -moz-background-size: 100% 28px;
-  -o-background-size: 100% 28px;
-  background-size: 100% 28px;
-  background-position: left top;
   /* Its not great to define headers in more than one place... fix this later please */
   /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
   /* Hyphenate specific container elements */
   /* This is a mess and dumb. Figure out a better way */
+  /* I've seen lots of cases where <pre> does not have a <code> inside of it, so we plan for both cases. */
   /* Prettier tables if authors use the correct elements */ }
   .text h1,
   .sidebar-widget h1 {
     margin-top: 1em;
     margin-bottom: .25em; }
-  .text .page-title,
+  .text .default-title, .text .page-title,
+  .sidebar-widget .default-title,
   .sidebar-widget .page-title {
     margin-top: 1.3125em;
     margin-bottom: 0.875em; }
-  .text p, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
+  .text p, .text pre, .text ul, .text ol, .text dl, .text blockquote, .text address, .text form, .text table, .text figure,
   .sidebar-widget p,
+  .sidebar-widget pre,
   .sidebar-widget ul,
   .sidebar-widget ol,
   .sidebar-widget dl,
@@ -1805,17 +1810,14 @@ input#s,
         color: $grey-light; 
         margin-right: .5em; 
     } */ }
-  .text nav a, .text .menu a, .text .errorlist a, .text form label + ul a,
-  .sidebar-widget form .text label + ul a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
-  .text nav a:hover, .text .menu a:hover, .text .errorlist a:hover, .text form label + ul a:hover,
-  .sidebar-widget form .text label + ul a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
-  .text nav a:focus, .text .menu a:focus, .text .errorlist a:focus, .text form label + ul a:focus,
-  .sidebar-widget form .text label + ul a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
+  .text nav a, .text .menu a, .text form ul a, form .text ul a, .text .errorlist a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
+  .text nav a:hover, .text .menu a:hover, .text form ul a:hover, form .text ul a:hover, .text .errorlist a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
+  .text nav a:focus, .text .menu a:focus, .text form ul a:focus, form .text ul a:focus, .text .errorlist a:focus, .text input[type=submit]:focus, .text input[type=reset]:focus, .text input[type=button]:focus, .text .prompt:focus, .text .readmore:focus:before, .text .give-me-more a:focus:before, .give-me-more .text a:focus:before,
   .sidebar-widget nav a,
   .sidebar-widget .menu a,
+  .sidebar-widget form ul a,
+  form .sidebar-widget ul a,
   .sidebar-widget .errorlist a,
-  .text form .sidebar-widget label + ul a,
-  .sidebar-widget form label + ul a,
   .sidebar-widget input[type=submit],
   .sidebar-widget input[type=reset],
   .sidebar-widget input[type=button],
@@ -1826,9 +1828,9 @@ input#s,
   .give-me-more .sidebar-widget a:before,
   .sidebar-widget nav a:hover,
   .sidebar-widget .menu a:hover,
+  .sidebar-widget form ul a:hover,
+  form .sidebar-widget ul a:hover,
   .sidebar-widget .errorlist a:hover,
-  .text form .sidebar-widget label + ul a:hover,
-  .sidebar-widget form label + ul a:hover,
   .sidebar-widget input[type=submit]:hover,
   .sidebar-widget input[type=reset]:hover,
   .sidebar-widget input[type=button]:hover,
@@ -1838,9 +1840,9 @@ input#s,
   .give-me-more .sidebar-widget a:hover:before,
   .sidebar-widget nav a:focus,
   .sidebar-widget .menu a:focus,
+  .sidebar-widget form ul a:focus,
+  form .sidebar-widget ul a:focus,
   .sidebar-widget .errorlist a:focus,
-  .text form .sidebar-widget label + ul a:focus,
-  .sidebar-widget form label + ul a:focus,
   .sidebar-widget input[type=submit]:focus,
   .sidebar-widget input[type=reset]:focus,
   .sidebar-widget input[type=button]:focus,
@@ -1900,12 +1902,16 @@ input#s,
     border-radius: 6px; }
   .text pre,
   .sidebar-widget pre {
-    margin-bottom: 1em;
-    border-left: 5px solid #11a611; }
+    padding: .5em;
+    border-left: 5px solid #11a611;
+    background: #e6e8ea;
+    -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
+    -moz-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
+    box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset; }
   .text pre code,
   .sidebar-widget pre code {
     display: block;
-    padding: 1em;
+    padding: 0;
     margin: 0;
     -webkit-box-shadow: 0;
     -moz-box-shadow: 0;
@@ -2301,7 +2307,7 @@ input#s,
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1361222549') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1370977946') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -3214,11 +3220,11 @@ p.quote-by-organization {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1381516753'); }
+      content: url('../img/python-logo_print.png?1381518535'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1381515396'); } }
+      content: url('../img/psf-logo_print.png?1381518535'); } }
 /* 
  * When we want to review the markup for W3 and similar errors, turn some of these on 
  * Uses :not selectors a bunch, so only modern browsers will support them

@@ -21,6 +21,8 @@
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
  * Site: susy.oddbird.net
+ * 
+ * Would like to remove the dependence on Susy by using a simpler grid structure : J. Hogue
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
@@ -242,6 +244,8 @@ html[xmlns] .slides { display: block; }
  * Susy: Un-obtrusive grids for designers
  * By: Eric A. Meyer and OddBird
  * Site: susy.oddbird.net
+ * 
+ * Would like to remove the dependence on Susy by using a simpler grid structure : J. Hogue
  */
 /* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
  * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
@@ -1352,7 +1356,7 @@ html[xmlns] .slides { display: block; }
     width: 65.95745%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
   .main-content.with-right-sidebar {
     width: 65.95745%;
     float: left;
@@ -1373,13 +1377,13 @@ html[xmlns] .slides { display: block; }
     width: 31.91489%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
 
   .left-sidebar .small-widget, .left-sidebar .medium-widget, .left-sidebar .triple-widget, .right-sidebar .small-widget, .right-sidebar .medium-widget, .right-sidebar .triple-widget {
     float: none;
     width: auto;
     margin-right: auto;
-    *margin-left: auto; }
+    #margin-left: auto; }
 
   /* Widgets in main content */
   .row {
@@ -1447,6 +1451,10 @@ html[xmlns] .slides { display: block; }
     width: 25%; }
 
   /* Jobs landing page */
+  .jobs-intro {
+    padding-top: 2em;
+    padding-bottom: 2em; }
+
   .listing-company-category:before {
     content: "Category: ";
     color: #666666; }
@@ -1492,7 +1500,7 @@ html[xmlns] .slides { display: block; }
       width: 48.93617%;
       float: right;
       margin-right: 0;
-      *margin-left: -20px; }
+      #margin-left: -20px; }
 
   /* Footer */
   .main-footer .jump-link {
@@ -1652,25 +1660,25 @@ html[xmlns] .slides { display: block; }
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
     min-height: 345px;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
+    background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
@@ -1716,7 +1724,7 @@ html[xmlns] .slides { display: block; }
     width: 74.46809%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
   .main-content.with-right-sidebar {
     width: 74.46809%;
     float: left;
@@ -1733,7 +1741,7 @@ html[xmlns] .slides { display: block; }
     width: 23.40426%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
 
   .featured-success-story {
     /*blockquote*/ }
@@ -1766,7 +1774,7 @@ html[xmlns] .slides { display: block; }
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large.png?1375216413') transparent; }
+      background: top left no-repeat url('../img/python-logo-large.png?1375216152') transparent; }
     .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
       margin-right: 34.04255%; }
 
@@ -1798,7 +1806,7 @@ html[xmlns] .slides { display: block; }
     width: 48.93617%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px;
+    #margin-left: -20px;
     text-align: right;
     clear: none; }
 
@@ -1815,7 +1823,7 @@ html[xmlns] .slides { display: block; }
     width: 40.42553%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px;
+    #margin-left: -20px;
     text-align: right; }
 
   .job-meta {
@@ -1828,9 +1836,11 @@ html[xmlns] .slides { display: block; }
     width: 48.93617%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
 
   /* Forms that are wide enough to have labels and input fields side by side */
+  .wide-form ul {
+    margin-left: 24%; }
   .wide-form p {
     overflow: hidden;
     *zoom: 1;
@@ -1848,6 +1858,19 @@ html[xmlns] .slides { display: block; }
       width: 75%; }
     .wide-form p button {
       margin-left: 24%; }
+    .wide-form p button + button {
+      margin-left: 0; }
+
+  .jobs-form ul {
+    margin-top: -3.25em;
+    *zoom: 1; }
+    .jobs-form ul:after {
+      content: "";
+      display: table;
+      clear: both; }
+    .jobs-form ul li {
+      float: left;
+      width: 33%; }
 
   /* Footer */
   .sitemap, .footer-links, .copyright {
