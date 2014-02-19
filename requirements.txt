@@ -20,7 +20,7 @@ icalendar==3.6.1
 chardet2==2.0.3
 django-imagekit==3.2
 django-haystack==2.1.0
-elasticsearch==1.0.0
+pyelasticsearch==0.6.1
 
 pytz==2013b
 python-dateutil==2.1
