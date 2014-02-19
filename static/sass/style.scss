@@ -802,7 +802,7 @@ $show-baseline-grid-backgrounds: false;
 /* ! Default body text styles for more comfortable reading */
 .text, 
 .sidebar-widget {
-    @include baseline-grid-background();
+    //@include baseline-grid-background();
     
     /* Its not great to define headers in more than one place... fix this later please */
     h1 { 
