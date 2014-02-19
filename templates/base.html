@@ -7,7 +7,6 @@
 <!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
 
 <head>
-
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
@@ -104,6 +103,19 @@
      * <link rel="next" href="/next"/>
      * <link rel="prev" href="/prev"/>
     {% endcomment %}
+    
+    {# Asynchronous Analytics snippet #}
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39055973-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
 
 </head>
 
@@ -116,12 +128,12 @@
 
             <nav class="meta-navigation container" role="navigation">
 
-                <!-- Allow Screen readers (hidden for all others) to skip the navigation and get to the main content -->
+                {# Allow Screen readers (hidden for all others) to skip the navigation and get to the main content #}
                 <div class="skip-link screen-reader-text">
                     <a href="#content" title="Skip to content">Skip to content</a>
                 </div>
 
-                <!-- Fallback for browsers that do not display generated content... HTML entity will be the icon instead -->
+                {# Fallback for browsers that do not display generated content... HTML entity will be the icon instead #}
                 <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
                     <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
                 </a>
@@ -141,7 +153,7 @@
             <div class="container">
 
                 <h1 class="site-headline">
-                        {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
+                    {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
                 </h1>
 
                 <div class="options-bar do-not-print">
@@ -159,7 +171,7 @@
                                 GO
                             </button>
 
-                            <!-- I heard IE needs this in order to have the form submit by pressing the enter key. True? -->
+                            {# I heard IE needs this in order to have the form submit by pressing the enter key. True? #}
                             <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
 
                         </fieldset>
@@ -278,28 +290,21 @@
                 <div class="container">
                     {# These need to be hooked up to a URL and page content at some point #}
                     <ul class="footer-links navigation menu do-not-print" role="tree">
-                        <li class="tier-1 element-1"><a href="#">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
-                        <li class="tier-1 element-2"><a href="#">Diversity <span class="say-no-more">Initiatives</span></a></li>
-                        <li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>
+                        <li class="tier-1 element-1"><a href="/about/help/">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
+                        <li class="tier-1 element-2"><a href="/community/diversity/">Diversity <span class="say-no-more">Initiatives</span></a></li>
+                        <!--<li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>-->
                     </ul>
 
                     <div class="copyright">
                         <p><small>
                             <span class="pre">Copyright &copy;2001-{% now 'Y' %}.</span>
-                            <span class="pre"><a href="#">Python Software Foundation</a></span>
-                            <span class="pre"><a href="#">Legal Statements</a></span>
+                            <span class="pre"><a href="/psf/">Python Software Foundation</a></span>
+                            <span class="pre"><a href="/about/legal/">Legal Statements</a></span>
                             <span class="pre"><a href="/privacy/">Privacy Policy</a></span>
                         </small></p>
                     </div>
 
-
-                    <!-- Testing only for small screens - Delete later
-                    <div class="jump-link test-suite svg-test">SVG support <span class="yes">Yes</span><span class="no">No</span></div>
-                    <div class="jump-link test-suite fontface-test">Fontface support <span class="yes">Yes</span><span class="no">No</span></div>
-                    <div class="jump-link test-suite generatedcontent-test">Generatedcontent support <span class="yes">Yes</span><span class="no">No</span></div>
-                    <div class="jump-link test-suite retina-test">Retina Display @1.5 <span class="yes">Yes</span><span class="no">No</span></div> -->
                 </div><!-- end .container -->
-
             </div><!-- end .site-base -->
 
         </footer>
@@ -346,18 +351,6 @@
     {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
     <![endif]-->
 
-    <!-- Asynchronous Analytics snippet -->
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-39055973-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
     {% endblock javascript %}
 
 </body>
