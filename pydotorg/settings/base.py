@@ -97,6 +97,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
 ROOT_URLCONF = 'pydotorg.urls'
 
 MIDDLEWARE_CLASSES = (
+    'pydotorg.middleware.AdminNoCaching',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',

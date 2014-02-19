@@ -64,7 +64,7 @@ class DownloadOSList(DownloadBase, DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'releases': Release.objects.filter(files__os__slug=self.object.slug).select_related()
+            'releases': Release.objects.filter(files__os__slug=self.object.slug).select_related().order_by('-release_date')
         })
         return context
 
