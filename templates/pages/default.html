@@ -42,42 +42,7 @@ TODO: should this partially come from sitetree?
 
     {% include "components/navigation-widget.html" %}
     
-    {% comment %}
-    
-    No good! Using the old Twitter API. Connect via Twitter another way. 
-    
-    <div class="twitter-widget sidebar-widget">
-
-        <script type="text/javascript" src="http://widgets.twimg.com/j/2/widget.js"></script>
-        <script type="text/javascript">// <![CDATA[
-        new TWTR.Widget({
-          version: 2,
-          type: 'profile',
-          rpp: 3,
-          interval: 30000,
-          width: 'auto',
-          height: 300,
-          theme: {
-            shell: {
-              background: '#f2f2f2',
-              color: '#666666'
-            },
-            tweets: {
-              background: '#f2f2f2',
-              color: '#666666',
-              links: '#3776ab'
-            }
-          },
-          features: {
-            scrollbar: false,
-            loop: false,
-            live: false,
-            behavior: 'all'
-          }
-        }).render().setUser('ThePSF').start();
-        // ]]></script> 
-    </div>
-    {% endcomment %}
+    {% include "components/tweets-from-psf.html" %}
 
     <div class="psf-sidebar-widget sidebar-widget">
         {% box 'widget-sidebar-aboutpsf' %}
