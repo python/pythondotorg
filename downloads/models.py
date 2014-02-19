@@ -63,7 +63,10 @@ class Release(ContentManageable, NameSlugModel):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
+        if self.release_page:
+            return self.release_page.get_absolute_url()
+        else:
+            return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
 
     def download_file_for_os(self, os_slug):
         """ Given an OS slug return the appropriate download file """

@@ -3,36 +3,36 @@
 
 
 /* TEAMS */
-	Reolution Systems
+	Revolution Systems
 	Location: Lawrence, KS, USA
 	Site: http://www.revsys.com
 	Twitter: http://twitter.com/revsys
-	
+
 	Guiding Light and Founder: Frank Wiles
 	Twitter: http://twitter.com/fwiles
-	
+
 	Django Guru: Jacob Kaplan-Moss
 	Twitter: http://twitter.com/jacobian
-	
+
 	Back End Developers: Jeff Triplett, Flavio Curella
-	
+
 	- - -
-	
+
 	Project Evolution
 	Location: Providence, RI, USA
 	Site: http://www.projectevolution.com
 	Twitter: http://twitter.com/pe1999
 	Facebook: http://facebook.com/pe1999
-	
+
 	Guiding Light and Founder: Seth Burke
 	Twitter: http://twitter.com/srbpe
-	
+
 	Technology Director: Peter Landry
 	Twitter: http://twitter.com/ubercore
-	
+
 	Design Director: J. Hogue
 	Twitter: http://twitter.com/artinruins
-	
+
 	Front End Development: Barry Menard, Jamie Re
 	Back End Development: Ray Schamp, Ben Spaulding, Matt Mikula
     Client management: Jarrett McPhee
@@ -40,10 +40,10 @@
 
 
 /* THANKS */
-	Jesse Noller, head of the project and client liason at the time. 
-	Van Lindberg, President of the PSF at the time. 
-	The Python Software Foundation board and content-migration volunteers. 
-	You, for reading this. 
+	Jesse Noller, head of the project and client liason at the time.
+	Van Lindberg, President of the PSF at the time.
+	The Python Software Foundation board and content-migration volunteers.
+	You, for reading this.
 
 
 /* SITE */
@@ -53,4 +53,3 @@
 	Software: SASS and Compass, Coda, Sublime Text, Terminal, Adobe CS, Made on Macs
 	Hardware Stack: Ubuntu 12.04, Postgresql 9.x, Nginx, Gunicorn
     Helpers: South, Haystack, Pipeline
-    

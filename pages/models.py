@@ -63,6 +63,9 @@ class Page(ContentManageable):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        return "/{0}".format(self.path)
+
 
 def page_image_path(instance, filename):
     return os.path.join(settings.MEDIA_ROOT, instance.page.path, filename)
