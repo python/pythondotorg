@@ -10,8 +10,10 @@
         <h1>Index of Python Enhancement Proposals</h1>
 
     {% for cat in categories %}
+        
+        {% if cat.peps.all|length > 0 %}
         <h2>{{ cat.name }}</h2>
-
+        
         <div class="pep-list-header">
             <div class="pep-type">Type/Status</div>
             <div class="pep-num">Number</div>
@@ -28,7 +30,8 @@
                 </li>
             {% endfor %}
         </ul>
-
+        {% endif %}
+        
     {% endfor %}
 
         <h2>Numerical List</h2>

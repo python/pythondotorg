@@ -1073,7 +1073,7 @@ a.button {
   width: 65.95745%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px; }
+  *margin-left: -20px; }
 .main-content.with-right-sidebar {
   width: 65.95745%;
   float: left;
@@ -1094,13 +1094,13 @@ a.button {
   width: 31.91489%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px; }
+  *margin-left: -20px; }
 
 .left-sidebar .small-widget, .left-sidebar .medium-widget, .left-sidebar .triple-widget, .right-sidebar .small-widget, .right-sidebar .medium-widget, .right-sidebar .triple-widget {
   float: none;
   width: auto;
   margin-right: auto;
-  #margin-left: auto; }
+  *margin-left: auto; }
 
 /* Widgets in main content */
 .row {
@@ -1217,7 +1217,7 @@ a.button {
     width: 48.93617%;
     float: right;
     margin-right: 0;
-    #margin-left: -20px; }
+    *margin-left: -20px; }
 
 /* Footer */
 .main-footer .jump-link {
@@ -1371,25 +1371,25 @@ a.button {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
   min-height: 345px;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1370977946') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1435,7 +1435,7 @@ a.button {
   width: 74.46809%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px; }
+  *margin-left: -20px; }
 .main-content.with-right-sidebar {
   width: 74.46809%;
   float: left;
@@ -1452,7 +1452,7 @@ a.button {
   width: 23.40426%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px; }
+  *margin-left: -20px; }
 
 .featured-success-story {
   /*blockquote*/ }
@@ -1485,7 +1485,7 @@ a.button {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1375216152') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1375216413') transparent; }
   .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
     margin-right: 34.04255%; }
 
@@ -1517,7 +1517,7 @@ a.button {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px;
+  *margin-left: -20px;
   text-align: right;
   clear: none; }
 
@@ -1534,7 +1534,7 @@ a.button {
   width: 40.42553%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px;
+  *margin-left: -20px;
   text-align: right; }
 
 .job-meta {
@@ -1547,7 +1547,7 @@ a.button {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  #margin-left: -20px; }
+  *margin-left: -20px; }
 
 /* Forms that are wide enough to have labels and input fields side by side */
 .wide-form ul {

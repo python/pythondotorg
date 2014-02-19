@@ -1268,6 +1268,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .pep-index-list {
+    margin-bottom: rhythm( 1.5 ); 
     
     .label {
         font-family: $default-font-bold;
