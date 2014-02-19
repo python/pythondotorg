@@ -182,7 +182,11 @@ dl {
 
 
 /* ! ===== Form elements ===== */
-form { @extend %pie-clearfix; }
+form { 
+    @extend %pie-clearfix; 
+    
+    ul { @extend .menu; }
+}
 
 .errorlist {
     @extend .menu; 
@@ -198,10 +202,12 @@ form { @extend %pie-clearfix; }
 
 label {
     display: block; 
+    color: $grey-light; 
+    font-weight: bold;
     @include leader( .5 );
     @include leader( .125 );
     
-    &.active { font-weight: bold; }
+    &.active { color: $blue; }
 }
 
 input, textarea {
@@ -242,13 +248,11 @@ input[type=submit], input[type=reset], button, a.button, .button {
 
 button[type=submit] { @extend %button-style-blue; }
 
-.primaryAction  {
-    
-}
+.primaryAction { }
 
-input[type=reset], button.secondaryAction {
+input[type=reset], button.secondaryAction[type=submit] {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
-    @include pe-border( $color-top: $default-border-color, $color-bottom: darken( $grey-light, 10% ) ); 
+    @include pe-border( $color-top: $default-border-color, $color-right: $grey-light, $color-bottom: darken( $grey-light, 10% ), $color-left: $grey-light );
     
     &:hover, &:focus, &:active {
         color: $white; 
@@ -774,6 +778,9 @@ input#s,
     @include fontface-adjust( $kilo ); 
 }
 
+/* For when we dont need to extra size buyt do want the margin */
+.default-title { word-spacing: .15em; }
+
 .text {
     font-size: 1em; 
     
@@ -810,7 +817,7 @@ $show-baseline-grid-backgrounds: false;
         margin-bottom: .25em; 
     }
     
-    .page-title { 
+    .default-title, .page-title { 
         @include leader(.75); 
         @include trailer(.5); 
     }
@@ -821,7 +828,7 @@ $show-baseline-grid-backgrounds: false;
     h5 { }
     
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
-    p, ul, ol, dl, blockquote, address, form, table, figure {
+    p, pre, ul, ol, dl, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
         line-height: 1.875;
     }
@@ -920,13 +927,16 @@ $show-baseline-grid-backgrounds: false;
     }
     
     pre {
-        margin-bottom: 1em; 
-    	border-left: 5px solid $code-green; 
+        padding: .5em; 
+        border-left: 5px solid $code-green; 
+    	background: $grey-lightest; 
+    	@include box-shadow( 0 0 .5em rgba( #000, .1 ) inset ); 
     }
     
+    /* I've seen lots of cases where <pre> does not have a <code> inside of it, so we plan for both cases. */
     pre code {
         display: block; 
-        padding: 1em; 
+        padding: 0; 
         margin: 0; 
         @include box-shadow( 0 );
         @include border-radius( 0 );  

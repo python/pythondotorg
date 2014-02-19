@@ -400,6 +400,8 @@
     .pep-owner { width: 25%; }
     
     /* Jobs landing page */
+    .jobs-intro { padding-top: 2em; padding-bottom: 2em; }
+    
     .listing-company-category:before {
         content: "Category: "; 
         color: $grey; 
@@ -757,6 +759,8 @@
     /* Forms that are wide enough to have labels and input fields side by side */
     .wide-form {
         
+        ul { margin-left: 24%; }
+        
         p {
             @include clearfix(); 
             
@@ -779,6 +783,21 @@
             textarea { width: 75%; }
             
             button { margin-left: 24%; }
+            
+            button + button { margin-left: 0; }
+        }
+    }
+    
+    .jobs-form {
+        
+        ul {
+            margin-top: -3.25em; 
+            @include pie-clearfix; 
+            
+            li {
+                float: left; 
+                width: 33%;
+            } 
         }
     }
     
