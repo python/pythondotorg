@@ -6,6 +6,7 @@ from .models import Page, Image
 
 class ImageInlineAdmin(admin.StackedInline):
     model = Image
+    extra = 1
 
 
 class PagePathFilter(admin.SimpleListFilter):
