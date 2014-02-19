@@ -3,13 +3,19 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}Python Software Foundation | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}{{ page.title }} | Python Software Foundation{% endblock %}
 
 {% block body_attributes %}class="psf pages default-page"{% endblock %}
 
+{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+
 {% block main-nav_attributes %}psf-navigation{% endblock %}
 
-{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
 
 
 {% block breadcrumbs %}
