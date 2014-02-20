@@ -13,6 +13,10 @@ TIME_RESOLUTION = timedelta(0, 0, 1)
 
 
 class ICSImporter(object):
+    def __init__(self, calendar):
+        self.calendar = calendar
+        super().__init__()
+
     def create_or_update_model(self, model_class, **kwargs):
         defaults = kwargs.get('defaults', {})
         instance, created = model_class.objects.get_or_create(**kwargs)
@@ -66,7 +70,9 @@ class ICSImporter(object):
         response = requests.get(url)
         return response.content
 
-    def from_url(self, url):
+    def from_url(self, url=None):
+        if url is None:
+            url = self.calendar.url
         ical = self.fetch(url)
         return self.parse(ical)
 
@@ -80,7 +86,6 @@ class ICSImporter(object):
             'description': description
         }
 
-        calendar, _ = self.create_or_update_model(Calendar, name=calendar_name, slug=calendar_slug, defaults=defaults)
         for subcomponent in parsed_calendar.subcomponents:
             if subcomponent.name == 'VEVENT':
-                self.import_event(calendar, subcomponent)
+                self.import_event(self.calendar, subcomponent)

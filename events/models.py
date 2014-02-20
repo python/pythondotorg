@@ -42,7 +42,7 @@ class Calendar(ContentManageable):
         if url is None:
             url = self.url
         from .importer import ICSImporter
-        importer = ICSImporter()
+        importer = ICSImporter(calendar=self)
         importer.from_url(url)
 
 
