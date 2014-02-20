@@ -374,8 +374,8 @@
     }
     input:valid, textarea:valid {  }
     button[disabled], input[disabled] { cursor: default; }
-    input[type="checkbox"], input[type="radio"] { @include box-sizing( border-box ); padding: 0; *width: 13px; *height: 13px; }
-    input[type="search"] { -webkit-appearance: textfield; @include box-sizing( border-box ); }
+    input[type="checkbox"], input[type="radio"] { padding: 0; *width: 13px; *height: 13px; }
+    input[type="search"] { -webkit-appearance: textfield; }
     input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
     
     .no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
