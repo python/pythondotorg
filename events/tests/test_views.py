@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRule
+from ..templatetags.events import get_events_upcoming
 
 
 class EventsViewsTests(TestCase):
@@ -131,3 +132,10 @@ class EventsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.event, response.context['object'])
+
+    def test_upcoming_tag(self):
+        self.assertEqual(len(get_events_upcoming()), 1)
+        self.rule.begin = self.now - datetime.timedelta(days=3)
+        self.rule.finish = self.now - datetime.timedelta(days=2)
+        self.rule.save()
+        self.assertEqual(len(get_events_upcoming()), 0)
