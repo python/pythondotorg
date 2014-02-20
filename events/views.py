@@ -55,13 +55,14 @@ class EventDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        dt = data['object'].next_time.dt_start
-        data.update({
-            'next_7': dt + datetime.timedelta(days=7),
-            'next_30': dt + datetime.timedelta(days=30),
-            'next_90': dt + datetime.timedelta(days=90),
-            'next_365': dt + datetime.timedelta(days=365),
-        })
+        if data['object'].next_time:
+            dt = data['object'].next_time.dt_start
+            data.update({
+                'next_7': dt + datetime.timedelta(days=7),
+                'next_30': dt + datetime.timedelta(days=30),
+                'next_90': dt + datetime.timedelta(days=90),
+                'next_365': dt + datetime.timedelta(days=365),
+            })
         return data
 
 
