@@ -41,7 +41,7 @@
 
                     <div class="small-widget subscribe-widget last">
                         {% box 'blogs-subscriptions' %}
-                        
+
                     </div>
 
                 </div>
@@ -67,9 +67,9 @@
         		    </div>
 
         		    <div class="triple-widget archive-widget last">
-        		        
+
         		        {# Still needs to be hooked in. Hide this for now? #}
-        		        
+
         		        <h2 class="widget-title">Blog Archives</h2>
         		        <ul class="menu">
         		            <li><a href="#year-archive">2012 (8)</a>
@@ -91,10 +91,11 @@
 
                 <div class="row">
 
+{% comment %}
         		    <div class="medium-widget author-blogs-widget">
-        		        
+
         		        {# Still needs to be hooked in. Hide this for now? #}
-        		        
+
         		        <h2 class="widget-title">Python-Dev Blogs</h2>
         		        <p class="give-me-more"><a href="#" title="More News">More</a></p>
         		        <ul class="menu">
@@ -103,12 +104,12 @@
         		            <li><a class="developer-name" href="#">Tarek Ziad&eacute;</a>: <a class="developer-post-name" href="#">What The Feuille?</a> <span class="time-posted">4 days ago</span></li>
         		        </ul>
         		    </div>
-
+{% endcomment %}
         		    <div class="medium-widget copyright-widget last">
         		        {% box 'blogs-copyright' %}
 
         		    </div>
 
                 </div>
-                
+
 {% endblock content %}
