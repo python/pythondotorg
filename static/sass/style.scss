@@ -59,10 +59,7 @@ body, input, textarea, select, button {
     font: normal 100%/1.625 $default-font;
 }
 
-header, nav, section, article, aside, figure, footer, 
-div, ul, li, dl, dt, dd, input, textarea {
-    @include pe-box-sizing( border-box ); 
-}
+* { @include pe-box-sizing( border-box ); }
 
 a, a:active, a:visited, a:hover, a:visited:hover { 
 	color: $link-color;
@@ -215,7 +212,6 @@ input, textarea {
     padding: .65em;
     border: 1px solid $default-border-color; 
     @include border-radius(); 
-    @include pe-box-sizing( border-box ); 
 }
 
 input, textarea, select { margin-bottom: rhythm( .5 ); }
@@ -260,22 +256,17 @@ input[type=reset], button.secondaryAction[type=submit] {
     }
 }
 
-b, strong {
-    //font-weight: normal; 
-    //font-style: normal; 
-    font-family: $default-font-bold; 
-}
+/* Reset for a special case */
+input[type=image] { width: auto; }
 
-i, em {
-    //font-weight: normal; 
-    //font-style: normal; 
-    font-family: $default-font-italic; 
-}
+b, strong { font-family: $default-font-bold; }
+
+i, em { font-family: $default-font-italic; }
 
 abbr, dfn { border-bottom: 1px dotted $blue; }
 
 
-/* ! ===== Simple Column Structure ===== */
+/* ! ===== Simple Column Structure – Need to roll this out more widely ===== */
 $colpadpx:  16px; 
 $colpad:    1em; 
 
