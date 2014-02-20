@@ -25,7 +25,6 @@ class BlogHome(TemplateView):
             'translations': Translation.objects.all(),
             'contributors': Contributor.objects.all(),
             'blog_url': settings.PYTHON_BLOG_URL,
-            'feed_url': settings.PYTHON_BLOG_FEED_URL,
         })
 
         return context

@@ -17,7 +17,11 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['code_samples'] = CodeSample.objects.published()[:5]
+
+        context.update({
+            'code_samples': CodeSample.objects.published()[:5],
+            'blog_url': settings.PYTHON_BLOG_URL,
+        })
         return context
 
 
