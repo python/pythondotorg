@@ -3,7 +3,7 @@ from django.test import TestCase
 from .models import CodeSample
 
 
-class SCodeSampleModelTests(TestCase):
+class CodeSampleModelTests(TestCase):
     def setUp(self):
         self.sample2 = CodeSample.objects.create(
             code='Code One',
