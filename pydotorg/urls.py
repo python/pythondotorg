@@ -4,12 +4,13 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 from django.conf import settings
 
+from . import views
 
 admin.autodiscover()
 
 urlpatterns = patterns('',
     # homepage
-    url(r'^$', TemplateView.as_view(template_name="python/index.html"), name='home'),
+    url(r'^$', views.IndexView.as_view(), name='home'),
     url(r'^shell/$', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
     # python section landing pages

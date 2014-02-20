@@ -148,6 +148,7 @@ INSTALLED_APPS = (
     'peps',
     'blogs',
     'downloads',
+    'codesamples',
 
     'allauth',
     'allauth.account',
