@@ -33,6 +33,9 @@ class Command(BaseCommand):
         return filename.strip('/')
 
     def copy_image(self, content_path, image):
+        if image.startswith('http'):
+            return
+
         if image.startswith('/'):
             image = image[1:]
             src = os.path.join(os.path.dirname(self.SVN_REPO_PATH), image)
