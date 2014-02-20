@@ -30,9 +30,11 @@
 
 {% block content %}
         
+        {% if calendar %}
         <header class="article-header">
             <h3>from the {{ calendar.name }}</h3>
         </header>
+        {% endif %}
         
         <div class="most-recent-events">
             <div class="shrubbery">
