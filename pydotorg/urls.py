@@ -50,7 +50,7 @@ urlpatterns = patterns('',
 
 if settings.DEBUG:
     # it's a secret to everyone
-    urlpatterns = patterns('',
+    urlpatterns += patterns('',
         url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
     )
 
