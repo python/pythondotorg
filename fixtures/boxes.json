@@ -18,10 +18,10 @@
     "fields": {
         "content_markup_type": "html", 
         "creator": 1, 
-        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <p class=\"date-posted\"><small>Monday, November 19, 2012</small></p>\r\n                                <h4>Featured Event Title</h4>\r\n                                <p class=\"excerpt\"><small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <a class=\"readmore\" href=\"#\">Read more</a></small></p>\r\n                            </li>", 
+        "_content_rendered": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>", 
         "updated": "2013-10-11T19:24:34.021Z", 
         "created": "2013-10-11T19:20:46.910Z", 
-        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <p class=\"date-posted\"><small>Monday, November 19, 2012</small></p>\r\n                                <h4>Featured Event Title</h4>\r\n                                <p class=\"excerpt\"><small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. <a class=\"readmore\" href=\"#\">Read more</a></small></p>\r\n                            </li>", 
+        "content": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>", 
         "label": "supernav-python-events", 
         "last_modified_by": 1
     }, 
