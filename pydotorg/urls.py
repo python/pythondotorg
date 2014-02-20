@@ -11,6 +11,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
+    url(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^shell/$', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
     # python section landing pages
