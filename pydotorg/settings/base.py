@@ -13,6 +13,7 @@ ADMINS = [
     ("JKM", "jacob@jacobian.org"),
     ('Jeff', 'jeff.triplett+pythondotorg@gmail.com'),
     ('Frank', 'frank.wiles@gmail.com'),
+    ("Flavio Curella", "flavio@revsys.com"),
 ]
 
 # General project information
