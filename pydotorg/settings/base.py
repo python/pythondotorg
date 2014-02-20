@@ -6,7 +6,7 @@ import dj_database_url
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 DEBUG = TEMPLATE_DEBUG = True
 SITE_ID = 1
-SECRET_KEY = 'hu9h&&%j*tcj2o9!k2w%ao=fcw&$0z$)la$&8vl+s$4y%r946h'
+SECRET_KEY = ''
 
 # Until Sentry works on Py3, do errors the old-fashioned way.
 ADMINS = [
