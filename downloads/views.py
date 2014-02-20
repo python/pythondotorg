@@ -57,9 +57,7 @@ class DownloadFullOSList(DownloadBase, ListView):
 class DownloadOSList(DownloadBase, DetailView):
     template_name = 'downloads/os_list.html'
     context_object_name = 'os'
-
-    def get_object(self):
-        return OS.objects.get(slug=self.kwargs['os_slug'])
+    model = OS
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
