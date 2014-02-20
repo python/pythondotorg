@@ -1,7 +1,7 @@
 python.org
 ==========
 
-[![Build Status](https://next.travis-ci.com/proevo/pythondotorg.png?token=rzZWMj7qjjfKoW211CMz&branch=master)](https://next.travis-ci.com/proevo/pythondotorg)
+[![Build Status](https://travis-ci.org/python/pythondotorg.png?branch=master)](https://travis-ci.org/python/pythondotorg)
 
 The new python.org!
 
@@ -74,7 +74,7 @@ Generate an HTML report with `coverage html` if you like.
 Cheatsheet for Front End devs that know enough to be dangerous
 -------------
 
-But not really enough to remember all these CLI commands by heart. 
+But not really enough to remember all these CLI commands by heart.
 
 ### Spinning up a VM
 
@@ -93,7 +93,7 @@ But not really enough to remember all these CLI commands by heart.
 4. `createdb python.org`
 5. `./manage.py syncdb`
 6. `./manage.py migrate`
-7. Install data below if you like. 
+7. Install data below if you like.
 
 ### Other Useful Commands
 
@@ -106,16 +106,16 @@ Install Meeting Minutes:
 Import calendars:
 `./manage.py import_ics_calendars`
 
-Want to save some data from your DB before nuking it, and then load it back in? 
+Want to save some data from your DB before nuking it, and then load it back in?
 `./manage.py dumpdata --format=json --indent=4 [app-name] > fixtures/[app-name].json`
 
-Load a specific fixture: 
+Load a specific fixture:
 `./manage.py loaddata fixtures/[name].json`
 
-Load all fixture files: 
+Load all fixture files:
 `find ./fixtures -name "*.json" -exec ./manage.py loaddata {} \;`
 
-List All the active DBs: 
+List All the active DBs:
 `psql -U postgres -c '\l'`
 esq from window... `q`
 
@@ -126,14 +126,14 @@ DATABASES = {
 }
 ```
 
-Go into PSQL and dump a DB backup: 
+Go into PSQL and dump a DB backup:
 ```
 cd /Applications/Postgres.app/Contents/MacOS/bin
 ./pg_dump <db_name> > path/to/file.name
 ./pg_dump python.org > ~/github/python/development.dump
 ```
 
-Reload a DB dump from a file: 
+Reload a DB dump from a file:
 ```
 ./pg_restore -d <db_name> <path-to-file>
 ./pg_restore --clean -d python.org ~/github/python/preview.dump
