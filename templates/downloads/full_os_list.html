@@ -21,7 +21,7 @@
 
         <ul>
             {% for o in os_list %}
-            <li><a href="{% url 'download:download_os_list' os_slug=o.slug %}">{{ o.name }}</a></li>
+            <li><a href="{% url 'download:download_os_list' slug=o.slug %}">{{ o.name }}</a></li>
             {% endfor %}
         </ul>
     </article>
