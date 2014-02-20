@@ -55,9 +55,9 @@ Hi, Python</span></code></pre>
                     <div class="slide-code">
 <pre><code><span class="comment"># List comprehensions</span>
 >>> fruits = ['Banana', 'Apple', 'Strawberry']
->>> fruits = [fruit.strip() for fruit in fruits]
->>> print(fruits)
-<span class="output">['Banana', 'Apple', 'Strawberry']</span>
+>>> loud_fruits = [fruit.upper() for fruit in fruits]
+>>> print(loud_fruits)
+<span class="output">['BANANA', 'APPLE', 'STRAWBERRY']</span>
 
 <span class="comment"># List and the enumerate function</span>
 >>> list(enumerate(fruits))
