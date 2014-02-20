@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load boxes codesamples %}
+{% load boxes %}
 
 {% block body_attributes %}class="python home" id="homepage"{% endblock %}
 
@@ -8,7 +8,6 @@
 
             <ul class="launch-shell menu" id="launch-shell"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_</a></li></ul>
 
-            {% get_code_samples_latest limit=5 as code_samples %}
             <ul class="slides menu">
                 {% for sample in code_samples %}
                 <li>
