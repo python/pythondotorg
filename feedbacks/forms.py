@@ -34,7 +34,7 @@ class FeedbackForm(ContentManageableModelForm):
         if is_beta_tester and (not email or not len(email.strip())):
             msg = 'An email address is required for beta testers.'
             self._errors['email'] = self.error_class([msg])
-            del cleaned_data['email']
+            cleaned_data.pop('email', None)
 
         return cleaned_data
 
