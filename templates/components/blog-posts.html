@@ -1,15 +1,13 @@
+{% load blogs %}
                         <div class="shrubbery">
-                            
-                            <!-- Need to hook this up and make it pull out 5 new blog activities -->
-                            
+                        
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
-                            <p class="give-me-more"><a href="#fixme" title="More News">More</a></p>
+                            <p class="give-me-more"><a href="{{ blog_url }}" title="More News">More</a></p>
                             
                             <ul class="menu">
-                                <li><time datetime="2012-09-29">9/29<span class="say-no-more">/2012</span></time> <a href="#example">Python 3.3.0 released</a></li>
-                                <li><time datetime="2012-09-24">9/24<span class="say-no-more">/2012</span></time> <a href="#example">Third rc for Python 3.3.0 released</a></li>
-                                <li><time datetime="2012-09-14">9/14<span class="say-no-more">/2012</span></time> <a href="#example">Python Software Foundation announces Distinguished Service Award</a></li>
-                                <li><time datetime="2012-09-11">9/11<span class="say-no-more">/2012</span></time> <a href="#example">ConFoo conference in Canada, February 25th - March 13th</a></li>
-                                <li><time datetime="2012-09-09">9/9<span class="say-no-more">/2012</span></time> <a href="#example">Second rc for Python 3.3.0 released</a></li>
+                                {% get_latest_blog_entries limit=5 as entries %}
+                                {% for entry in entries %}
+                                <li><time datetime="{{ entry.pub_date|date:'c' }}">{{ entry.pub_date|date:"SHORT_DATE_FORMAT"|slice:":5" }}<span class="say-no-more">/{{ entry.pub_date|date:"Y" }}</span></time> <a href="{{ entry.url }}">{{ entry.summary|striptags|truncatewords:10|safe }}</a></li>
+                                {% endfor %}
                             </ul>
                         </div><!-- end .shrubbery -->
