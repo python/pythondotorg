@@ -1,6 +1,7 @@
 # Create your views here.
 import datetime
 
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from django.views.generic import DetailView, ListView
 
@@ -74,7 +75,7 @@ class EventList(EventListBase):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
-        context['calendar'] = Calendar.objects.get(slug=self.kwargs['calendar_slug'])
+        context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
         return context
 
 

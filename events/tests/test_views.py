@@ -41,6 +41,11 @@ class EventsViewsTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
 
+        url = reverse('events:event_list_past', kwargs={"calendar_slug": 'unexisting'})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
     def test_event_list_past(self):
         url = reverse('events:event_list_past', kwargs={"calendar_slug": self.calendar.slug})
         response = self.client.get(url)
