@@ -1,4 +1,4 @@
-{% load blogs %}
+{% load blogs cms %}
                         <div class="shrubbery">
                         
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
@@ -7,7 +7,7 @@
                             <ul class="menu">
                                 {% get_latest_blog_entries limit=5 as entries %}
                                 {% for entry in entries %}
-                                <li><time datetime="{{ entry.pub_date|date:'c' }}">{{ entry.pub_date|date:"SHORT_DATE_FORMAT"|slice:":5" }}<span class="say-no-more">/{{ entry.pub_date|date:"Y" }}</span></time> <a href="{{ entry.url }}">{{ entry.summary|striptags|truncatewords:10|safe }}</a></li>
+                                <li>{{ entry.pub_date|iso_time_tag }} <a href="{{ entry.url }}">{{ entry.summary|striptags|truncatewords:10|safe }}</a></li>
                                 {% endfor %}
                             </ul>
                         </div><!-- end .shrubbery -->

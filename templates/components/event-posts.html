@@ -1,4 +1,4 @@
-{% load events %}
+{% load events cms %}
                         <div class="shrubbery">
                         
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>
@@ -8,7 +8,7 @@
                                 {% get_events_upcoming limit=5 as events %}
                                 {% for event in events %}
                                 {% with event.next_time as next_time %}
-                                <li><time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"SHORT_DATE_FORMAT"|slice:":5" }}<span class="say-no-more">/{{ next_time.dt_start|date:"Y" }}</span></time> <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
+                                <li>{{ next_time.dt_start|iso_time_tag }} <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
                                 {% endwith %}
                                 {% endfor %}
                             </ul>
