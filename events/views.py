@@ -80,6 +80,8 @@ class EventList(EventListBase):
 
 
 class PastEventList(EventList):
+    template_name = 'events/event_list_past.html'
+
     def get_queryset(self):
         return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
 
