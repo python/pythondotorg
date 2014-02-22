@@ -1,6 +1,9 @@
 import unittest
 from unittest import mock
 from .admin import ContentManageableModelAdmin
+import datetime
+from cms.templatetags.cms import iso_time_tag
+
 
 class ContentManagableAdminTests(unittest.TestCase):
     def make_admin(self, **kwargs):
@@ -57,3 +60,10 @@ class ContentManagableAdminTests(unittest.TestCase):
         obj = mock.Mock()
         admin.save_model(request=request, obj=obj, form=None, change=True)
         self.assertEqual(obj.last_modified_by, request.user, "save_model didn't set obj.last_modified_by to request.user")
+
+
+class TemplateTagsTest(unittest.TestCase):
+    def test_iso_time_tag(self):
+        now = datetime.datetime(2014,1, 1, 12, 0)
+        time_tag = iso_time_tag(now)
+        self.assertEqual(time_tag, '<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>')
