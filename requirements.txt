@@ -35,8 +35,7 @@ git+https://github.com/bradjasper/django-jsonfield.git@c21b18
 git+https://github.com/fcurella/django-comments-xtd.git@patch-2
 #git+https://github.com/danirus/django-comments-xtd.git@cc096c
 
-# django-markupfield with Py3 support. Can be removed when 1.1 is released.
-git+git://github.com/jamesturk/django-markupfield.git@70dc74
+django-markupfield==1.2.0
 
 # django-allauth
 git+git://github.com/jefftriplett/django-allauth.git@3b10d6
