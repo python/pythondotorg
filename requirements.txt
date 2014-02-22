@@ -27,7 +27,7 @@ pytz==2013b
 python-dateutil==2.1
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
-https://bitbucket.org/andrewgodwin/south/get/59f6bae8b1a501ca14a5f23f8b11c44c42f33147.zip
+South==0.8.4
 
 git+https://github.com/bradjasper/django-jsonfield.git@c21b18
 
