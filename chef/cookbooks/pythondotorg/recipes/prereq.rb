@@ -20,6 +20,10 @@ package "libbz2-dev" do
   action :install
 end
 
+package "subversion" do
+  action :install
+end
+
 remote_file "#{Chef::Config[:file_cache_path]}/Python-3.3.0.tar.bz2" do
   source "http://python.org/ftp/python/3.3.0/Python-3.3.0.tar.bz2"
   mode "0644"
