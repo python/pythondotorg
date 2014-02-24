@@ -10,13 +10,19 @@
 {% endblock breadcrumbs %}
 
 
-{% block page_title %}Python Releases for {{ os.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}
+{% if os.slug == 'source' %}Python Source Releases{% else %}Python Releases for {{ os.name }}{% endif %} | {{ SITE_INFO.site_name }}
+{% endblock %}
 
 
 {% block content %}
     <article class="text">
         <header class="article-header">
+            {% if os.slug == 'source' %}
+            <h1 class="page-title">Python Source Releases</h1>
+            {% else %}
             <h1 class="page-title">Python Releases for {{ os.name }}</h1>
+            {% endif %}
         </header>
 
         <ul>

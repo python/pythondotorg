@@ -117,11 +117,11 @@ function on_resize_orientationchange() {
                     }
                     if (navigator.appVersion.indexOf("X11")!=-1) {
                         $('.download-unknown').hide();
-                        $('.download-os-linux').show();
+                        $('.download-os-source').show();
                     }
                     if (navigator.appVersion.indexOf("Linux")!=-1) {
                         $('.download-unknown').hide();
-                        $('.download-os-linux').show();
+                        $('.download-os-source').show();
                     }
                 }, "html");
             $('li#downloads').addClass("with-supernav");

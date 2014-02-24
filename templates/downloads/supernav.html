@@ -2,7 +2,7 @@
 <li class="tier-2 super-navigation">
     {% for data in python_files %}
     <div class="download-os-{{ data.os.slug }}" style="display: none;">
-        {% if data.os.name == 'Linux' %}
+        {% if data.os.slug == 'source' %}
         <h3>Python Source</h3>
         {% else %}
         <h4>Download for {{ data.os.name }}</h4>
