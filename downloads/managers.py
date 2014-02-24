@@ -16,10 +16,10 @@ class ReleaseQuerySet(QuerySet):
             show_on_download_page=True).order_by('-release_date')
 
     def python2(self):
-        return self.filter(version=2)
+        return self.filter(version=2, is_published=True)
 
     def python3(self):
-        return self.filter(version=3)
+        return self.filter(version=3, is_published=True)
 
 
 class ReleaseManager(Manager):

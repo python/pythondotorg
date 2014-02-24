@@ -36,7 +36,7 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_python3(self):
         versions = Release.objects.python3()
-        self.assertEqual(len(versions), 2)
+        self.assertEqual(len(versions), 1)
         self.assertFalse(self.release_275 in versions)
-        self.assertTrue(self.draft_release in versions)
+        self.assertFalse(self.draft_release in versions)
         self.assertTrue(self.hidden_release in versions)
