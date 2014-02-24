@@ -269,22 +269,6 @@
                 </div><!-- end .container -->
             </div> <!-- end .main-footer-links -->
 
-            <div id="leave_feedback" class="feedback">
-                <div class="container">
-
-                    <div class="shrubbery">
-                        <h2 class="widget-title"><span aria-hidden="true" class="icon-megaphone"></span>Feedback Wanted!</h2>
-                        <h3>{{ SITE_INFO.site_name }} only gets better if we hear from you.</h3>
-                        <p><a href="#feedback_form" class="accordion-trigger"><strong>Click here</strong> to report a problem or leave a constructive suggestion</a></p>
-                    </div>
-
-                    <div id="feedback_form" class="row accordion-wrapper">
-                        {% load feedbacks_tags %}
-                        {% get_feedback_form %}
-                    </div>
-                </div>
-            </div>
-
             <div class="site-base">
                 <div class="container">
                     {# These need to be hooked up to a URL and page content at some point #}
@@ -307,12 +291,6 @@
             </div><!-- end .site-base -->
 
         </footer>
-
-
-        <!-- Feedback Flag -->
-        <div class="feedback-flag">
-            <a id="feedback-trigger" class="feedback-label" href="#leave_feedback"><span aria-hidden="true" class="icon-megaphone"></span> Feedback</a>
-        </div>
 
 
         <div id="nojs" class="do-not-print">
