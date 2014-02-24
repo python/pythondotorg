@@ -4,9 +4,17 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 from django.conf import settings
 
+from tastypie.api import Api
+from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
+
 from . import views
 
 admin.autodiscover()
+
+v1_api = Api(api_name='v1')
+v1_api.register(OSResource())
+v1_api.register(ReleaseResource())
+v1_api.register(ReleaseFileResource())
 
 urlpatterns = patterns('',
     # homepage
@@ -45,6 +53,9 @@ urlpatterns = patterns('',
     url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/', include(admin.site.urls)),
+
+    # api
+    url(r'^api/', include(v1_api.urls)),
 
     # it's a secret to everyone
     url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
