@@ -102,20 +102,6 @@
     "fields": {
         "content_markup_type": "html", 
         "creator": 1, 
-        "_content_rendered": "Thanks for submitting your feedback!", 
-        "updated": "2013-10-11T19:24:07.023Z", 
-        "created": "2013-10-11T19:23:37.641Z", 
-        "content": "Thanks for submitting your feedback!", 
-        "label": "feedbacks-complete", 
-        "last_modified_by": 1
-    }, 
-    "pk": 8
-},
-{
-    "model": "boxes.box", 
-    "fields": {
-        "content_markup_type": "html", 
-        "creator": 1, 
         "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n<p><a href=\"#\">Start with our Beginner\u2019s Guide</a></p>", 
         "updated": "2013-10-11T17:25:22.405Z", 
         "created": "2013-10-11T17:25:22.402Z", 

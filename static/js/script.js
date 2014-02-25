@@ -236,12 +236,6 @@ $().ready(function() {
         return false;
     });
 
-    $("#feedback-trigger").click(function() {
-        $("body").animate({ scrollTop: $('#leave_feedback').offset().top }, 400);
-        $('#feedback_form').slideDown();
-        return false;
-    });
-
     /*
      * Load interactive shell on the homepage.
     */

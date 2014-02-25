@@ -460,29 +460,6 @@
         li { display: inline-block; }
     }
     
-    /* Feedback form -- DELETE LATER */
-    .feedback {
-        padding-left: 1em; 
-        padding-right: 1em; 
-        
-        .widget-title {
-            position: relative; 
-            padding-left: 3em; 
-        }
-        .icon-megaphone {
-            font-size: 3em;
-            position: absolute;
-            top: -.125em;
-            left: -.1875em;
-        }
-        h3 {
-            margin-top: 0; 
-            padding-left: 3em; 
-        }
-    }
-    .feedback-flag {
-        top: 21em; right: -2.4em; 
-    }
 }
 
 
@@ -843,55 +820,6 @@
             visibility: visible; 
         }
     }
-    
-    /* Feedback form -- DELETE LATER */
-    .feedback {
-        padding-left: 0; 
-        padding-right: 0; 
-        
-        .shrubbery { @include squish(1,1); }
-        
-        .accordion-wrapper { @include squish(1,1); }
-        
-        label[for=id_name], 
-        label[for=id_email], 
-        label[for=id_country], 
-        label[for=id_issue_type], 
-        label[for=id_comment] {
-            display: inline-block; 
-            text-align: right; 
-            width: columns(2); 
-            margin-right: gutter(); 
-        }
-        #id_name, 
-        #id_email, 
-        #id_country, 
-        #id_issue_type, 
-        #id_comment {
-            display: inline-block; 
-            width: columns(8); 
-        }
-        /*<ul>
-            <li>
-                <label for="id_feedback_categories_0">
-                    <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
-                </label>
-            </li>
-        </ul>*/
-        ul {
-            margin-left: columns(2) + gutter(); 
-            @include clearfix(); 
-            
-            li {
-                float: left; 
-                width: 46%; 
-                margin-right: 3%; 
-            }
-        }
-        
-        button { margin-left: columns(2) + gutter(); }
-    
-    } /* end Feedback form */
 }
 
 
@@ -1181,17 +1109,6 @@
     .footer-links {
         
         a { padding: 0.3em 0.75em; }
-    }
-    
-    /* Feedback form -- DELETE LATER */
-    .feedback {
-    
-        h2, h3 { display: inline-block; }
-        h3 {
-            padding-left: .125em; 
-            margin-bottom: .125em; 
-        }
-        .shrubbery p { padding-left: 4.5em; }
     }
 }
 
