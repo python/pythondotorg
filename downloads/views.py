@@ -20,12 +20,12 @@ class DownloadHome(DownloadBase, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            latest_python2 = Release.objects.python2().latest()
+            latest_python2 = Release.objects.released().python2().latest()
         except Release.DoesNotExist:
             latest_python2 = None
 
         try:
-            latest_python3 = Release.objects.python3().latest()
+            latest_python3 = Release.objects.released().python3().latest()
         except Release.DoesNotExist:
             latest_python3 = None
 
