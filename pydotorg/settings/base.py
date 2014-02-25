@@ -132,6 +132,7 @@ INSTALLED_APPS = (
     'timedelta',
     'imagekit',
     'haystack',
+    'honeypot',
 
     'users',
     'boxes',
@@ -198,6 +199,9 @@ COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
 COMMENTS_XTD_FORM_CLASS = "jobs.forms.JobCommentForm"
 
+# Honeypot
+HONEYPOT_FIELD_NAME = 'email_body_text'
+HONEYPOT_VALUE = 'write your message'
 ### Blog Feed URL
 PYTHON_BLOG_FEED_URL = "http://feeds.feedburner.com/PythonInsider"
 PYTHON_BLOG_URL = "http://blog.python.org"
