@@ -52,7 +52,7 @@ class ReleaseFileResource(GenericResource):
         fields = [
             'name', 'slug',
             'creator', 'last_modified_by',
-            'os', 'release', 'description', 'is_source', 'url',
+            'os', 'release', 'description', 'is_source', 'url', 'gpg_signature_file',
             'md5_sum', 'filesize', 'download_button',
         ]
         filtering = {
