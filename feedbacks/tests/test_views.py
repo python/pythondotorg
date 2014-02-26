@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -28,7 +29,8 @@ class FeedbackViewTests(TestCase):
             'country': 'United States',
             'feedback_categories': [self.feature_category_2.pk, self.feature_category_3.pk],
             'issue_type': self.issue_type_2.pk,
-            'comment': 'The site is great!'
+            'comment': 'The site is great!',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
         response = self.client.post(url, post_data)
@@ -52,6 +54,7 @@ class FeedbackViewTests(TestCase):
             'country': 'United States',
             'feedback_categories': [self.feature_category_2.pk, self.feature_category_3.pk],
             'issue_type': self.issue_type_2.pk,
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
         response = self.client.post(url, post_data)
@@ -66,7 +69,8 @@ class FeedbackViewTests(TestCase):
 
         post_data = {
             'is_beta_tester': True,
-            'comment': 'Ihasbeta tester invite!'
+            'comment': 'Ihasbeta tester invite!',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE
         }
 
         response = self.client.post(url, post_data)

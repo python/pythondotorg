@@ -4,6 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import CreateView
 from django.views.generic.base import TemplateView
 
+from honeypot.decorators import check_honeypot
+
 from .forms import FeedbackForm
 from .models import Feedback
 
@@ -21,6 +23,7 @@ class FeedbackCreate(CreateView):
     # pages means the whole site gets uncacheable. So we disable CSRF for this
     # view. This means an outsider can spoof feedback, but that's probably OK -
     # the ramifications of such an "attack" are minor at most.
+    @method_decorator(check_honeypot)
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
