@@ -468,7 +468,9 @@
         .invisible, 
         .jump-to-menu, 
         .jump-link, 
-        #site-map-link { display: none; }
+        #site-map-link,
+        .feedback-flag,
+        #leave_feedback { display: none; }
         
         .say-no-more {
             display: inline; 

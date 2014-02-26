@@ -525,7 +525,7 @@ html[xmlns] .slides { display: block; }
       /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
       .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
         display: block;
-        padding: 0.5em 1.5em 0.4em 1em;
+        padding: .5em 1.5em .4em 1em;
         position: relative; }
     .main-navigation .tier-1 {
       display: block;
@@ -708,7 +708,7 @@ html[xmlns] .slides { display: block; }
     /* Reset some styles from the drop down menus */ }
     .touch .main-navigation a {
       text-align: center;
-      padding: 0.65em 1.25em 0.55em; }
+      padding: .65em 1.25em .55em; }
     .touch .main-navigation .tier-2 {
       font-size: 0.875em; }
     .touch .main-navigation .subnav {
@@ -1418,7 +1418,7 @@ html[xmlns] .slides { display: block; }
   .pep-list-header,
   .pep-index-list li,
   .info-key {
-    margin: 0 -0.5em; }
+    margin: 0 -.5em; }
 
   .pep-list-header {
     display: block; }
@@ -1521,7 +1521,27 @@ html[xmlns] .slides { display: block; }
     clear: both;
     text-align: center; }
     .footer-links li {
-      display: inline-block; } }
+      display: inline-block; }
+
+  /* Feedback form -- DELETE LATER */
+  .feedback {
+    padding-left: 1em;
+    padding-right: 1em; }
+    .feedback .widget-title {
+      position: relative;
+      padding-left: 3em; }
+    .feedback .icon-megaphone {
+      font-size: 3em;
+      position: absolute;
+      top: -.125em;
+      left: -.1875em; }
+    .feedback h3 {
+      margin-top: 0;
+      padding-left: 3em; }
+
+  .feedback-flag {
+    top: 21em;
+    right: -2.4em; } }
 /* - - - Larger than 800px - - - */
 @media (min-width: 50em) {
   body:after {
@@ -1530,7 +1550,7 @@ html[xmlns] .slides { display: block; }
     speak: none; }
 
   .site-headline {
-    margin: 0.25em 0 0.5em; }
+    margin: .25em 0 .5em; }
 
   .site-headline a .python-logo {
     width: 255.2px;
@@ -1544,7 +1564,7 @@ html[xmlns] .slides { display: block; }
 
   .search-field {
     background: white;
-    padding: 0.4em 0.5em 0.3em;
+    padding: .4em .5em .3em;
     margin-right: .5em;
     width: 11em; }
     .search-field:focus {
@@ -1584,7 +1604,7 @@ html[xmlns] .slides { display: block; }
       padding-bottom: .2em; }
     .flexslide .launch-shell .message {
       white-space: nowrap;
-      padding: 0.4em 0.75em 0.35em;
+      padding: .4em .75em .35em;
       opacity: 0;
       color: #999999;
       background-color: #1f1f1f;
@@ -1640,25 +1660,25 @@ html[xmlns] .slides { display: block; }
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1393282203') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1363296285') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1393282203') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1363149778') transparent;
     min-height: 345px;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1393282203') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1363304389') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
     /* Why is this needed? */
-    background: 140% 0 no-repeat url('../img/landing-community.png?1393282203') transparent;
+    background: 140% 0 no-repeat url('../img/landing-community.png?1363149778') transparent;
     padding-bottom: .75em; }
 
   .welcome-to-the-foundation {
@@ -1754,7 +1774,7 @@ html[xmlns] .slides { display: block; }
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large.png?1393282203') transparent; }
+      background: top left no-repeat url('../img/python-logo-large.png?1375216413') transparent; }
     .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
       margin-right: 34.04255%; }
 
@@ -1874,6 +1894,51 @@ html[xmlns] .slides { display: block; }
     display: inline;
     visibility: visible; }
 
+  /* Feedback form -- DELETE LATER */
+  .feedback {
+    padding-left: 0;
+    padding-right: 0;
+    /*<ul>
+        <li>
+            <label for="id_feedback_categories_0">
+                <input id="id_feedback_categories_0" name="feedback_categories" type="checkbox" value="1"> Python Downloads
+            </label>
+        </li>
+    </ul>*/ }
+    .feedback .shrubbery {
+      margin-left: 8.51064%;
+      margin-right: 8.51064%; }
+    .feedback .accordion-wrapper {
+      margin-left: 8.51064%;
+      margin-right: 8.51064%; }
+    .feedback label[for=id_name],
+    .feedback label[for=id_email],
+    .feedback label[for=id_country],
+    .feedback label[for=id_issue_type],
+    .feedback label[for=id_comment] {
+      display: inline-block;
+      text-align: right;
+      width: 14.89362%;
+      margin-right: 2.12766%; }
+    .feedback #id_name,
+    .feedback #id_email,
+    .feedback #id_country,
+    .feedback #id_issue_type,
+    .feedback #id_comment {
+      display: inline-block;
+      width: 65.95745%; }
+    .feedback ul {
+      margin-left: 17.02128%;
+      overflow: hidden;
+      *zoom: 1; }
+      .feedback ul li {
+        float: left;
+        width: 46%;
+        margin-right: 3%; }
+    .feedback button {
+      margin-left: 17.02128%; }
+
+  /* end Feedback form */
   .flex-slideshow.default-slideshow .caption-wrapper {
     position: absolute;
     top: 1em;
@@ -1910,7 +1975,7 @@ html[xmlns] .slides { display: block; }
       /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
       .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
         display: block;
-        padding: 0.5em 1.5em 0.4em 1em;
+        padding: .5em 1.5em .4em 1em;
         position: relative; }
     .main-navigation .tier-1 {
       display: block;
@@ -2036,7 +2101,7 @@ html[xmlns] .slides { display: block; }
       .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
         width: auto; }
       .no-touch .main-navigation .tier-1 > a {
-        padding: 0.65em 1.25em 0.55em; }
+        padding: .65em 1.25em .55em; }
     .no-touch .main-navigation .tier-2 {
       font-size: 0.875em; }
 
@@ -2298,6 +2363,15 @@ html[xmlns] .slides { display: block; }
   .footer-links a {
     padding: 0.3em 0.75em; }
 
+  /* Feedback form -- DELETE LATER */
+  .feedback h2, .feedback h3 {
+    display: inline-block; }
+  .feedback h3 {
+    padding-left: .125em;
+    margin-bottom: .125em; }
+  .feedback .shrubbery p {
+    padding-left: 4.5em; }
+
   .flex-slideshow.home-slideshow .caption-wrapper {
     float: left;
     width: 49%; }
@@ -2373,7 +2447,7 @@ html[xmlns] .slides { display: block; }
     /* Reset some styles from the drop down menus */ }
     .touch .main-navigation a {
       text-align: center;
-      padding: 0.65em 1.25em 0.55em; }
+      padding: .65em 1.25em .55em; }
     .touch .main-navigation .tier-2 {
       font-size: 0.875em; }
     .touch .main-navigation .subnav {
