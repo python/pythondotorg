@@ -42,6 +42,11 @@ class Release(ContentManageable, NameSlugModel):
     )
     version = models.IntegerField(default=PYTHON2, choices=PYTHON_VERSION_CHOICES)
     is_published = models.BooleanField(default=False, db_index=True)
+    pre_release = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Boolean to denote pre-release/beta/RC versions",
+    )
     show_on_download_page = models.BooleanField(
         default=True,
         db_index=True,
@@ -80,12 +85,12 @@ class Release(ContentManageable, NameSlugModel):
 
 def update_supernav():
     try:
-        latest_python2 = Release.objects.python2().latest()
+        latest_python2 = Release.objects.released().python2().latest()
     except Release.DoesNotExist:
         latest_python2 = None
 
     try:
-        latest_python3 = Release.objects.python3().latest()
+        latest_python3 = Release.objects.released().python3().latest()
     except Release.DoesNotExist:
         latest_python3 = None
 
@@ -134,10 +139,13 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     description = models.TextField(blank=True)
     is_source = models.BooleanField('Is Source Distribution', default=False)
     url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")
+    gpg_signature_file = models.URLField('GPG SIG URL',
+        blank=True,
+        help_text="GPG Signature URL"
+    )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
-
     class Meta:
         verbose_name = 'Release File'
         verbose_name_plural = 'Release Files'

@@ -74,3 +74,12 @@ class BaseDownloadTests(TestCase):
             show_on_download_page=False,
             release_page=self.release_275_page,
         )
+
+        self.pre_release = Release.objects.create(
+            version=Release.PYTHON3,
+            name='Python 3.9.90',
+            is_published=True,
+            pre_release=True,
+            show_on_download_page=True,
+            release_page=self.release_275_page,
+        )

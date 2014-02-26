@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load honeypot %}
 
 {% block page_title %}Edit Membership | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -117,7 +118,10 @@
             {{ form.psf_announcements }}
         </div>
     
-        <p><button type="submit" name="Submit">Save Profile</button></p>
+        <p>
+          {% render_honeypot_field %}
+          <button type="submit" name="Submit">Save Profile</button>
+        </p>
     </form>
 
 </article>

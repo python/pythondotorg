@@ -41,6 +41,7 @@
               <th>Date</th>
               <th>MD5 Sum</th>
               <th>File Size</th>
+              <th>GPG</th>
             </tr>
           </thead>
           <tbody>
@@ -52,6 +53,7 @@
                 <td>{{ r.release.release_date|date }}</td>
                 <td>{{ f.md5_sum }}</td>
                 <td>{{ f.filesize }}</td>
+                <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
               </tr>
             {% endfor %}
           </tbody>

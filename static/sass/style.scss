@@ -2120,67 +2120,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 
-/* ! ===== Temporary Feedback Form for the Beta site ===== */
-.feedback {
-    @extend %yellow-colorspace; 
-    border-top: 1px solid $yellow; 
-    padding-top: rhythm(); 
-    
-    .widget-title { font-family: $default-font-bold; }
-    
-    h3 { margin-top: 0; }
-    
-    .shrubbery {
-        padding-bottom: rhythm( .25 ); 
-        
-        a { color: $blue; }
-    }
-    
-    .accordion-wrapper {
-        padding-top: rhythm( .75 ); 
-        border-top: 1px solid $yellow; 
-    }
-    
-    .helptext {
-        font-style: italic; 
-        font-size: px2em( 14px ); 
-    }
-
-    ul {
-        margin-left: 0; 
-        list-style: none; 
-        
-        label { margin-top: 0.5em; }
-    }
-    
-    button { @extend %button-style-blue; }
-}
-
-.feedback-flag {
-    @extend %yellow-colorspace; 
-    position: absolute; 
-    top: 29.25em; right: -2.4em; 
-    @include transform( rotate(90deg) ); 
-    
-    border: 1px solid darken( $yellow, 6% );
-    padding: .3em .6em;
-    
-    .icon-megaphone:before {
-        color: $blue; 
-    }
-    .feedback-label {
-        color: $blue; 
-        font-family: $default-font-bold;  
-    }
-} /* end Feedback */
-
-.accordion-wrapper {
-    display: none; 
-    
-    .no-js & { display: block; }
-}
-
-
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
     

@@ -13,13 +13,20 @@ class ReleaseQuerySet(QuerySet):
         """ For the main downloads landing page """
         return self.filter(
             is_published=True,
-            show_on_download_page=True).order_by('-release_date')
+            show_on_download_page=True,
+        ).order_by('-release_date')
 
     def python2(self):
         return self.filter(version=2, is_published=True)
 
     def python3(self):
         return self.filter(version=3, is_published=True)
+
+    def pre_release(self):
+        return self.filter(pre_release=True)
+
+    def released(self):
+        return self.filter(is_published=True, pre_release=False)
 
 
 class ReleaseManager(Manager):
@@ -41,3 +48,9 @@ class ReleaseManager(Manager):
 
     def python3(self):
         return self.get_query_set().python3()
+
+    def pre_release(self):
+        return self.get_query_set().pre_release()
+
+    def released(self):
+        return self.get_query_set().released()

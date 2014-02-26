@@ -36,6 +36,7 @@ git+https://github.com/bradjasper/django-jsonfield.git@c21b18
 git+https://github.com/fcurella/django-comments-xtd.git@patch-2
 #git+https://github.com/danirus/django-comments-xtd.git@cc096c
 
+django-honeypot==0.4.0
 django-markupfield==1.2.0
 
 # django-allauth

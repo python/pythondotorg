@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load honeypot %}
+
 {% block page_title %}Edit Profile | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="psf users default-page"{% endblock %}
@@ -57,7 +59,10 @@
                 </ul>
             {% endcomment %}
         
-            <p><button type="submit" name="Submit">Save Profile</button></p>
+            <p>
+                {% render_honeypot_field %}
+                <button type="submit" name="Submit">Save Profile</button>
+            </p>
         </form>
     </article>
     
