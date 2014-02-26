@@ -3,7 +3,9 @@ from django.contrib.auth.models import AbstractUser
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
+
 from markupfield.fields import MarkupField
+from tastypie.models import create_api_key
 
 from .managers import UserManager
 
@@ -36,6 +38,8 @@ class User(AbstractUser):
 
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})
+
+models.signals.post_save.connect(create_api_key, sender=User)
 
 
 class Membership(models.Model):

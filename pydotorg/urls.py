@@ -5,6 +5,7 @@ from django.views.generic.base import TemplateView
 from django.conf import settings
 
 from . import views
+from .urls_api import v1_api
 
 admin.autodiscover()
 
@@ -44,6 +45,9 @@ urlpatterns = patterns('',
     url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/', include(admin.site.urls)),
+
+    # api
+    url(r'^api/', include(v1_api.urls)),
 
     # it's a secret to everyone
     url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),

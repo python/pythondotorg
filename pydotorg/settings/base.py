@@ -158,6 +158,10 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.github',
     #'allauth.socialaccount.providers.openid',
     #'allauth.socialaccount.providers.twitter',
+    
+    # Tastypie needs the `users` app to be already loaded.
+    'tastypie',
+
 )
 
 ### Testing
