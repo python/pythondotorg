@@ -29,13 +29,14 @@ class ReleaseResource(GenericResource):
         fields = [
             'name', 'slug',
             'creator', 'last_modified_by',
-            'version', 'is_published', 'release_date',
+            'version', 'is_published', 'release_date', 'pre_release',
             'release_page', 'release_notes_url', 'show_on_download_page',
         ]
         filtering = {
             'name': ('exact',),
             'slug': ('exact',),
             'is_published': ('exact',),
+            'pre_release': ('exact',),
             'version': ('exact', 'startswith',),
             'release_date': (ALL,)
         }
