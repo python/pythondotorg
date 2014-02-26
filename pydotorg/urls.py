@@ -4,17 +4,10 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView
 from django.conf import settings
 
-from tastypie.api import Api
-from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
-
 from . import views
+from .urls_api import v1_api
 
 admin.autodiscover()
-
-v1_api = Api(api_name='v1')
-v1_api.register(OSResource())
-v1_api.register(ReleaseResource())
-v1_api.register(ReleaseFileResource())
 
 urlpatterns = patterns('',
     # homepage
