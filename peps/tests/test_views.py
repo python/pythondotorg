@@ -2,8 +2,10 @@ from django.test import TestCase
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 
-from . import admin # Coverage FTW
-from .models import PepType, PepStatus, PepOwner, PepCategory, Pep
+from .. import admin # Coverage FTW
+from ..models import PepType, PepStatus, PepOwner, PepCategory, Pep
+
+import json
 
 
 class PEPTests(TestCase):
@@ -84,4 +86,12 @@ class PEPTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
 
+    def test_api_views(self):
+        response = self.client.get('/api/v1/peps/pep/', content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content.decode('utf-8'))
+        self.assertEqual(len(data['objects']), 2)
+
+        response = self.client.get('/api/v1/peps/pep/%s/' % self.pep1.pk, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
 
