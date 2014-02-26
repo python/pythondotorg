@@ -25,7 +25,10 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 # Create your models here.
 class Calendar(ContentManageable):
-    url = models.URLField('URL', blank=True, null=True)
+    url = models.URLField('URL iCal', blank=True, null=True)
+    rss = models.URLField('RSS Feed', blank=True, null=True)
+    embed = models.URLField('URL embed', blank=True, null=True)
+    twitter = models.URLField('Twitter feed', blank=True, null=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
