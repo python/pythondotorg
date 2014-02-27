@@ -13,8 +13,10 @@ class PageView(DetailView):
     slug_field = 'path'
 
     def get_queryset(self):
-        # FIXME: show draft pages to... certain people... once we define who.
-        return Page.objects.published()
+        if self.request.user.is_staff:
+            return Page.objects.all()
+        else:
+            return Page.objects.published()
 
     def get_extra_context(self, *args, **kwargs):
         context = self.super().get_extra_context(*args, **kwargs)
