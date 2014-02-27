@@ -616,6 +616,11 @@
             width: columns( 4 );
         }
 
+        .date-posted time {
+            position: relative;
+            top: 30px;
+        }
+
         .excerpt { @include pre( 4 ); }
     }
 
