@@ -108,7 +108,7 @@ class EventListByCategory(EventList):
 
 class EventListByLocation(EventList):
     def get_object(self, queryset=None):
-        return EventLocation.objects.get(calendar__slug=self.kwargs['calendar_slug'], pk=self.kwargs['pk'])
+        return get_object_or_404(EventLocation, calendar__slug=self.kwargs['calendar_slug'], pk=self.kwargs['pk'])
 
     def get_queryset(self):
         qs = super().get_queryset()

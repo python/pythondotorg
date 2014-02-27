@@ -92,6 +92,11 @@ class EventsViewsTests(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(len(response.context['event_locations']), 1)
 
+        url = reverse('events:eventlist_location', kwargs={'calendar_slug': self.calendar.slug, 'pk': 1234})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
     def test_event_list_date(self):
         dt = self.now - datetime.timedelta(days=2)
         url = reverse('events:eventlist_date', kwargs={
