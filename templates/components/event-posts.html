@@ -8,7 +8,7 @@
                                 {% get_events_upcoming limit=5 as events %}
                                 {% for event in events %}
                                 {% with event.next_time as next_time %}
-                                <li>{{ next_time.dt_start|iso_time_tag }} <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
+                                <li>{% iso_time_tag next_time.dt_start %} <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
                                 {% endwith %}
                                 {% endfor %}
                             </ul>
