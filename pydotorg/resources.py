@@ -112,7 +112,7 @@ class OnlyPublishedAuthorization(StaffAuthorization):
         if not bundle.request.user.is_staff:
             return bundle.obj.is_published
         else:
-            return super().read_list(object_list, bundle)
+            return super().read_detail(object_list, bundle)
 
 
 class GenericResource(ModelResource):
