@@ -270,7 +270,14 @@
             </div> <!-- end .main-footer-links -->
 
             <div class="site-base">
-                <div class="container">
+                <div class="container" style="position: relative">
+                    <div class="collaborate" style="right: 16px; top: 48px; position: absolute;">
+                        <a href="https://github.com/python/pythondotorg">
+                            <img src="{{ STATIC_URL }}github-mark-32px.png">
+                        </a>
+                    </div>
+
+
                     {# These need to be hooked up to a URL and page content at some point #}
                     <ul class="footer-links navigation menu do-not-print" role="tree">
                         <li class="tier-1 element-1"><a href="/about/help/">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
@@ -286,7 +293,6 @@
                             <span class="pre"><a href="/privacy/">Privacy Policy</a></span>
                         </small></p>
                     </div>
-
                 </div><!-- end .container -->
             </div><!-- end .site-base -->
 
