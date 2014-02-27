@@ -127,7 +127,7 @@ class Event(ContentManageable):
         except IndexError:
             return None
 
-    @cached_property
+    @property
     def next_time(self):
         """
         Return the OccurringRule or RecurringRule with the closest `dt_start` from now.
@@ -140,7 +140,7 @@ class Event(ContentManageable):
         except OccurringRule.DoesNotExist:
             pass
         else:
-            if occurring_rule.dt_start > now:
+            if occurring_rule and occurring_rule.dt_start > now:
                 occurring_start = (occurring_rule.dt_start, occurring_rule)
 
         rrules = self.recurring_rules.filter(finish__gt=now)
@@ -159,6 +159,35 @@ class Event(ContentManageable):
         except IndexError:
             return None
 
+    @property
+    def previous_time(self):
+        now = timezone.now()
+        recurring_end = occurring_end = None
+
+        try:
+            occurring_rule = self.occurring_rule
+        except OccurringRule.DoesNotExist:
+            pass
+        else:
+            if occurring_rule and occurring_rule.dt_end < now:
+                occurring_end = (occurring_rule.dt_end, occurring_rule)
+
+        rrules = self.recurring_rules.filter(begin__lt=now)
+        recurring_ends = [(rule.dt_end, rule) for rule in rrules if rule.dt_end is not None]
+        recurring_ends.sort(key=itemgetter(0), reverse=True)
+
+        try:
+            recurring_end = recurring_ends[0]
+        except IndexError:
+            pass
+
+        ends = [i for i in (recurring_end, occurring_end) if i is not None]
+        ends.sort(key=itemgetter(0), reverse=True)
+        try:
+            return ends[0][1]
+        except IndexError:
+            return None
+
 
 class RuleMixin(object):
     def valid_dt_end(self):
@@ -174,6 +203,7 @@ class OccurringRule(RuleMixin, models.Model):
     event = models.OneToOneField(Event, related_name='occurring_rule')
     dt_start = models.DateTimeField(default=timezone.now)
     dt_end = models.DateTimeField(default=timezone.now)
+    all_day = models.BooleanField(default=False)
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
@@ -215,6 +245,7 @@ class RecurringRule(RuleMixin, models.Model):
     duration = TimedeltaField(default='15 mins')
     interval = models.PositiveSmallIntegerField(default=1)
     frequency = models.PositiveSmallIntegerField(FREQ_CHOICES, default=WEEKLY)
+    all_day = models.BooleanField(default=False)
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
