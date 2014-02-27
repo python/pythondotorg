@@ -1,8 +1,10 @@
 import unittest
 from unittest import mock
+
+from django.template import Template, Context
+
 from .admin import ContentManageableModelAdmin
 import datetime
-from cms.templatetags.cms import iso_time_tag
 
 
 class ContentManagableAdminTests(unittest.TestCase):
@@ -65,5 +67,6 @@ class ContentManagableAdminTests(unittest.TestCase):
 class TemplateTagsTest(unittest.TestCase):
     def test_iso_time_tag(self):
         now = datetime.datetime(2014,1, 1, 12, 0)
-        time_tag = iso_time_tag(now)
-        self.assertEqual(time_tag, '<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>')
+        template = Template("{% load cms %}{% iso_time_tag now %}")
+        rendered = template.render(Context({'now': now}))
+        self.assertTrue('<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>' in rendered)
