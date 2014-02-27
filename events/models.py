@@ -211,6 +211,7 @@ class OccurringRule(RuleMixin, models.Model):
     event = models.OneToOneField(Event, related_name='occurring_rule')
     dt_start = models.DateTimeField(default=timezone.now)
     dt_end = models.DateTimeField(default=timezone.now)
+    all_day = models.BooleanField(default=False)
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
@@ -252,6 +253,7 @@ class RecurringRule(RuleMixin, models.Model):
     duration = TimedeltaField(default='15 mins')
     interval = models.PositiveSmallIntegerField(default=1)
     frequency = models.PositiveSmallIntegerField(FREQ_CHOICES, default=WEEKLY)
+    all_day = models.BooleanField(default=False)
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
