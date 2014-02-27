@@ -1,4 +1,4 @@
-@charset "UTF-8";
+@charset "US-ASCII";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
@@ -363,18 +363,18 @@ html[xmlns] .slides { display: block; }
 /* Base styles for a navigation with dropdowns mixin */
 /* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
 /* A single row of main navigation -- DESKTOP ONLY */
-/* 
- * ! ===== START Media Queries ===== 
+/*
+ * ! ===== START Media Queries =====
  *
  * Define media queries here as mix-ins. Deliver the ones we want inside of complete mqs in mq.scss
- * Alternately, deliver the rule-sets that we want to IE7 and 8 to render 
- * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss. 
+ * Alternately, deliver the rule-sets that we want to IE7 and 8 to render
+ * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss.
  *
- * Column structure =  
- * 
+ * Column structure =
+ *
  *  Susy mix-ins with examples:
- *  @include span-columns(3 omega, 12); 
- *  @include omega; 
+ *  @include span-columns(3 omega, 12);
+ *  @include omega;
  *  @include prefix(3); 3 columns of padding before
  *  @include suffix(3); 3 columns of padding after
  *  @include pad(3,3); 3 columns of padding on each side
@@ -542,9 +542,9 @@ a.button {
 .with-supernav .super-navigation {
   display: none; }
 
-/* 
- * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
- * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097 
+/*
+ * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets.
+ * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097
  */
 .python-navigation {
   background-color: #2d618c;
@@ -1073,7 +1073,7 @@ a.button {
   width: 65.95745%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px; }
+  #margin-left: -20px; }
 .main-content.with-right-sidebar {
   width: 65.95745%;
   float: left;
@@ -1094,13 +1094,13 @@ a.button {
   width: 31.91489%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px; }
+  #margin-left: -20px; }
 
 .left-sidebar .small-widget, .left-sidebar .medium-widget, .left-sidebar .triple-widget, .right-sidebar .small-widget, .right-sidebar .medium-widget, .right-sidebar .triple-widget {
   float: none;
   width: auto;
   margin-right: auto;
-  *margin-left: auto; }
+  #margin-left: auto; }
 
 /* Widgets in main content */
 .row {
@@ -1135,7 +1135,7 @@ a.button {
 .pep-list-header,
 .pep-index-list li,
 .info-key {
-  margin: 0 -0.5em; }
+  margin: 0 -.5em; }
 
 .pep-list-header {
   display: block; }
@@ -1217,7 +1217,7 @@ a.button {
     width: 48.93617%;
     float: right;
     margin-right: 0;
-    *margin-left: -20px; }
+    #margin-left: -20px; }
 
 /* Footer */
 .main-footer .jump-link {
@@ -1241,7 +1241,7 @@ a.button {
     display: inline-block; }
 
 .site-headline {
-  margin: 0.25em 0 0.5em; }
+  margin: .25em 0 .5em; }
 
 .site-headline a .python-logo {
   width: 255.2px;
@@ -1255,7 +1255,7 @@ a.button {
 
 .search-field {
   background: white;
-  padding: 0.4em 0.5em 0.3em;
+  padding: .4em .5em .3em;
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
@@ -1295,7 +1295,7 @@ a.button {
     padding-bottom: .2em; }
   .flexslide .launch-shell .message {
     white-space: nowrap;
-    padding: 0.4em 0.75em 0.35em;
+    padding: .4em .75em .35em;
     opacity: 0;
     color: #999999;
     background-color: #1f1f1f;
@@ -1351,25 +1351,25 @@ a.button {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1393282203') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1393490577') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1393282203') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1393490577') transparent;
   min-height: 345px;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1393282203') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1393490577') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
   /* Why is this needed? */
-  background: 140% 0 no-repeat url('../img/landing-community.png?1393282203') transparent;
+  background: 140% 0 no-repeat url('../img/landing-community.png?1393490577') transparent;
   padding-bottom: .75em; }
 
 .welcome-to-the-foundation {
@@ -1415,7 +1415,7 @@ a.button {
   width: 74.46809%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px; }
+  #margin-left: -20px; }
 .main-content.with-right-sidebar {
   width: 74.46809%;
   float: left;
@@ -1432,7 +1432,7 @@ a.button {
   width: 23.40426%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px; }
+  #margin-left: -20px; }
 
 .featured-success-story {
   /*blockquote*/ }
@@ -1465,7 +1465,7 @@ a.button {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1393282203') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1393490577') transparent; }
   .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
     margin-right: 34.04255%; }
 
@@ -1497,7 +1497,7 @@ a.button {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px;
+  #margin-left: -20px;
   text-align: right;
   clear: none; }
 
@@ -1514,7 +1514,7 @@ a.button {
   width: 40.42553%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px;
+  #margin-left: -20px;
   text-align: right; }
 
 .job-meta {
@@ -1527,7 +1527,7 @@ a.button {
   width: 48.93617%;
   float: right;
   margin-right: 0;
-  *margin-left: -20px; }
+  #margin-left: -20px; }
 
 /* Forms that are wide enough to have labels and input fields side by side */
 .wide-form ul {
@@ -1601,7 +1601,7 @@ a.button {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
       display: block;
-      padding: 0.5em 1.5em 0.4em 1em;
+      padding: .5em 1.5em .4em 1em;
       position: relative; }
   .main-navigation .tier-1 {
     display: block;
@@ -1727,7 +1727,7 @@ a.button {
     .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
       width: auto; }
     .no-touch .main-navigation .tier-1 > a {
-      padding: 0.65em 1.25em 0.55em; }
+      padding: .65em 1.25em .55em; }
   .no-touch .main-navigation .tier-2 {
     font-size: 0.875em; }
 
@@ -1771,7 +1771,7 @@ a.button {
             <h2>Download for Mac OSX</h2>
             <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
             </p><p>
-                <a class="button">Python 3.3.0</a> 
+                <a class="button">Python 3.3.0</a>
                 <a class="button">Python 2.7.3</a>
             </p>
         </li></ul>
