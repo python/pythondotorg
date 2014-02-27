@@ -16,7 +16,7 @@
                         {{ object.title|striptags }}
                     </h1>
                     
-                    {% with object.next_time as next_time %}
+                    {% with object.next_or_previous_time as next_time %}
                     {% if next_time.single_day %}
                     <!-- Single date with start and end times -->
                     <h3 class="single-event-date">
@@ -31,8 +31,8 @@
 
                     <!-- Different start and end dates -->
                     <h3 class="single-event-date">
-                        <time class="date-start" datetime="{{ next_time.dt_start|date:'Y-m-d H:i' }}">From {{ next_time.dt_start|date:"d N" }} at {{ next_time.dt_start|date:"fA"|lower }}</time> 
-                        <time class="date-end" datetime="{{ next_time.dt_end|date:'Y-m-d H:i' }}">through {{ next_time.dt_end|date:"d N" }} at {{ next_time.dt_end|date:"fA"|lower }}</time>, 
+                        <time class="date-start" datetime="{{ next_time.dt_start|date:'c' }}">From {{ next_time.dt_start|date:"d N" }} at {{ next_time.dt_start|date:"fA"|lower }}</time> 
+                        <time class="date-end" datetime="{{ next_time.dt_end|date:'c' }}">through {{ next_time.dt_end|date:"d N" }} at {{ next_time.dt_end|date:"fA"|lower }}</time>, 
                         <time class="year" datetime="{{ next_time.dt_end|date:"Y" }}">{{ next_time.dt_end|date:"Y" }}</time>
                     </h3>
                     {% endif %}

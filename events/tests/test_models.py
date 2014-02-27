@@ -30,6 +30,7 @@ class EventsModelsTests(TestCase):
 
         self.assertEqual(self.event.next_time.dt_start, occurring_time_dtstart)
         self.assertEqual(self.event.previous_time, None)
+        self.assertEqual(self.event.next_or_previous_time.dt_start, occurring_time_dtstart)
         self.assertFalse(self.event.next_time.single_day)
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertTrue(ot.valid_dt_end())
@@ -42,7 +43,9 @@ class EventsModelsTests(TestCase):
         self.assertEqual(event.next_time, None)
         self.assertEqual(Event.objects.for_datetime().count(), 0)
         self.assertEqual(self.event.previous_time.dt_start, ot.dt_start)
+        self.assertEqual(self.event.next_or_previous_time.dt_start, ot.dt_start)
         self.assertEqual(self.event.next_time, None)
+        self.assertTrue(self.event.is_past)
 
     def test_recurring_event(self):
         now = seconds_resolution(timezone.now())

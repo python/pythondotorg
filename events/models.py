@@ -188,6 +188,14 @@ class Event(ContentManageable):
         except IndexError:
             return None
 
+    @property
+    def next_or_previous_time(self):
+        return self.next_time or self.previous_time
+
+    @property
+    def is_past(self):
+        return self.next_time == None
+
 
 class RuleMixin(object):
     def valid_dt_end(self):
