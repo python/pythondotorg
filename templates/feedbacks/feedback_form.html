@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+{% block body_attributes %}class="python feedbacks"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+<div class="row">
+  <h3>Python.org Beta only gets better if we hear from you.</h3>
+  <p>Report a problem, leave a constructive suggestion, or to volunteer as a Beta tester.</p>
+  {% include "feedbacks/includes/feedback_form.html" %}
+</div>
+{% endblock content %}

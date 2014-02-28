@@ -1,0 +1,9 @@
+{% load honeypot %}
+
+<form action="/feedbacks/" method="post">{% csrf_token %}
+    {{ form.as_p }}
+    <p>
+      {% render_honeypot_field %}
+        <button type="submit" name="Submit">Submit Feedback</button>
+    </p>
+</form>
