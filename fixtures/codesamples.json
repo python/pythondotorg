@@ -3,7 +3,7 @@
     "model": "codesamples.codesample",
     "fields": {
       "copy_markup_type": "html",
-      "code": "<pre><code><span class=\"comment\"># Simple output (with Unicode)</span>\r\n>>> print(\"Hello, I'm Python!\")\r\n<span class=\"output\">Hello, I'm Python!</span>\r\n\r\n<span class=\"comment\"># Input, assignment</span>\r\n>>> name = input('What is your name?\\n')\r\n>>> print('Hi, %s.' % name)\r\n<span class=\"output\">What is your name?\r\nPython\r\nHi, Python</span></code></pre>",
+      "code": "<pre><code><span class=\"comment\"># Simple output (with Unicode)</span>\r\n>>> print(\"Hello, I'm Python!\")\r\n<span class=\"output\">Hello, I'm Python!</span>\r\n\r\n<span class=\"comment\"># Input, assignment</span>\r\n>>> name = input('What is your name?\\n')\r\n>>> print('Hi, %s.' % name)\r\n<span class=\"output\">What is your name?\r\nPython\r\nHi, Python.</span></code></pre>",
       "_copy_rendered": "<h1>Quick &amp; Easy to Learn</h1>\r\n                        <p>Experienced programmers in any other language can pick up Python very quickly, and beginners find the clean syntax and indentation structure easy to learn. <a href=\"http://docs.python.org/3.3/tutorial/\">Whet your appetite</a> with our Python overview.</p>\r\n                    </div>",
       "is_published": true,
       "copy": "<h1>Quick &amp; Easy to Learn</h1>\r\n                        <p>Experienced programmers in any other language can pick up Python very quickly, and beginners find the clean syntax and indentation structure easy to learn. <a href=\"http://docs.python.org/3.3/tutorial/\">Whet your appetite</a> with our Python overview.</p>\r\n",
