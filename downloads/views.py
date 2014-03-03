@@ -8,8 +8,8 @@ class DownloadBase(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'latest_python2': Release.objects.python2().latest(),
-            'latest_python3': Release.objects.python3().latest(),
+            'latest_python2': Release.objects.released().python2().latest(),
+            'latest_python3': Release.objects.released().python3().latest(),
         })
         return context
 
