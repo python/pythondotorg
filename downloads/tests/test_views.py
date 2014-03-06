@@ -20,6 +20,10 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        url = reverse('download:download_release_detail', kwargs={'release_slug': 'fake_slug'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_download_os_list(self):
         url = reverse('download:download_os_list', kwargs={'slug': self.linux.slug})
         response = self.client.get(url)
