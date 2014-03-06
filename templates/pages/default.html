@@ -21,8 +21,16 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 
 
 {% block content %}
+    {% if not page.is_published %}
+    <div class="user-feedback level-notice">
+        <p role="alert">This page is a draft and it hasn't been published yet. Only staff users can see it.</p>
+    </div>
+    {% endif %}
     <article class="text">
-        
+        {% if request.user.is_staff %}
+        <a role="button" class="button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a>
+        {% endif %}
+
         <header class="article-header">
             <h1 class="page-title">{{ page.title }}</h1>
         </header>

@@ -38,8 +38,8 @@ class PagePathFilter(admin.SimpleListFilter):
 
 class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
-    list_display = ('get_title', 'path')
-    list_filter = [PagePathFilter]
+    list_display = ('get_title', 'path', 'is_published',)
+    list_filter = [PagePathFilter, 'is_published']
     inlines = [ImageInlineAdmin]
     fieldsets = [
         (None, {'fields': ('title', 'keywords', 'description', 'path', 'content', 'content_markup_type', 'is_published')}),

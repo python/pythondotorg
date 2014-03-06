@@ -25,7 +25,10 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 # Create your models here.
 class Calendar(ContentManageable):
-    url = models.URLField('URL', blank=True, null=True)
+    url = models.URLField('URL iCal', blank=True, null=True)
+    rss = models.URLField('RSS Feed', blank=True, null=True)
+    embed = models.URLField('URL embed', blank=True, null=True)
+    twitter = models.URLField('Twitter feed', blank=True, null=True)
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
     description = models.CharField(max_length=255, null=True, blank=True)
@@ -124,7 +127,7 @@ class Event(ContentManageable):
         except IndexError:
             return None
 
-    @cached_property
+    @property
     def next_time(self):
         """
         Return the OccurringRule or RecurringRule with the closest `dt_start` from now.
@@ -137,7 +140,7 @@ class Event(ContentManageable):
         except OccurringRule.DoesNotExist:
             pass
         else:
-            if occurring_rule.dt_start > now:
+            if occurring_rule and occurring_rule.dt_start > now:
                 occurring_start = (occurring_rule.dt_start, occurring_rule)
 
         rrules = self.recurring_rules.filter(finish__gt=now)
@@ -155,6 +158,43 @@ class Event(ContentManageable):
             return starts[0][1]
         except IndexError:
             return None
+
+    @property
+    def previous_time(self):
+        now = timezone.now()
+        recurring_end = occurring_end = None
+
+        try:
+            occurring_rule = self.occurring_rule
+        except OccurringRule.DoesNotExist:
+            pass
+        else:
+            if occurring_rule and occurring_rule.dt_end < now:
+                occurring_end = (occurring_rule.dt_end, occurring_rule)
+
+        rrules = self.recurring_rules.filter(begin__lt=now)
+        recurring_ends = [(rule.dt_end, rule) for rule in rrules if rule.dt_end is not None]
+        recurring_ends.sort(key=itemgetter(0), reverse=True)
+
+        try:
+            recurring_end = recurring_ends[0]
+        except IndexError:
+            pass
+
+        ends = [i for i in (recurring_end, occurring_end) if i is not None]
+        ends.sort(key=itemgetter(0), reverse=True)
+        try:
+            return ends[0][1]
+        except IndexError:
+            return None
+
+    @property
+    def next_or_previous_time(self):
+        return self.next_time or self.previous_time
+
+    @property
+    def is_past(self):
+        return self.next_time == None
 
 
 class RuleMixin(object):

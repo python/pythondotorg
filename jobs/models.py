@@ -72,7 +72,7 @@ class Job(ContentManageable):
     dt_start = models.DateTimeField('Job start date', blank=True, null=True)
     dt_end = models.DateTimeField('Job end date', blank=True, null=True)
 
-    telecommuting = models.BooleanField(default=True)
+    telecommuting = models.BooleanField(default=False)
     agencies = models.BooleanField(default=True)
 
     is_featured = models.BooleanField(default=False, db_index=True)

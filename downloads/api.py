@@ -5,6 +5,8 @@ from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
 
 from .models import OS, Release, ReleaseFile
 
+from pages.api import PageResource
+
 
 class OSResource(GenericResource):
     class Meta(GenericResource.Meta):
@@ -22,6 +24,8 @@ class OSResource(GenericResource):
 
 
 class ReleaseResource(GenericResource):
+    release_page = fields.ToOneField(PageResource, 'release_page')
+
     class Meta(GenericResource.Meta):
         queryset = Release.objects.all()
         resource_name = 'downloads/release'

@@ -1,5 +1,5 @@
 from django.views.generic import DetailView, TemplateView, ListView
-
+from django.http import Http404
 from .models import OS, Release
 
 
@@ -8,8 +8,8 @@ class DownloadBase(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'latest_python2': Release.objects.python2().latest(),
-            'latest_python3': Release.objects.python3().latest(),
+            'latest_python2': Release.objects.released().python2().latest(),
+            'latest_python3': Release.objects.released().python3().latest(),
         })
         return context
 
@@ -73,4 +73,7 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
     context_object_name = 'release'
 
     def get_object(self):
-        return self.get_queryset().select_related().get(slug=self.kwargs['release_slug'])
+        try:
+            return self.get_queryset().select_related().get(slug=self.kwargs['release_slug'])
+        except self.model.DoesNotExist:
+            raise Http404

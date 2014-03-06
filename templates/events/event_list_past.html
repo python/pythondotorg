@@ -47,17 +47,13 @@
                     <li>
                         <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
                         <p>
-                            {% with object.next_time as next_time %}
-                            {% if next_time.single_day %}
-                            <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span> {{ next_time.dt_start|date:"fA"|lower }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}{% endif %}</time>
-                            {% else %}
-                            <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
-                            {% endif %}
+                            {% with object.previous_time as next_time %}
+                            {% include "events/includes/time_tag.html" %}
+                            {% endwith %}
 
                             {% if object.venue %}
                             <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
                             {% endif %}
-                            {% endwith %}
                         </p>
                     </li>
                 {% endfor %}
@@ -71,6 +67,15 @@
 {% block right_sidebar %}
     <aside class="right-sidebar" role="secondary">
         <div class="sidebar-widget subscribe-widget">
+            <h2 class="widget-title">Python Event Subscriptions</h2>
+            <p>Subscribe to Python Event Calendars:</p>
+            <ul class="menu">
+                {% if calendar.embed %}<li><a href="{{ calendar.embed }}"><span aria-hidden="true" class="icon-embed"></span>Embeddable widget</a></li>{% endif %}
+                {% if calendar.rss %}<li><a href="{{ calendar.rss }}"><span aria-hidden="true" class="icon-feed"></span>Events via RSS</a></li>{% endif %}
+                {% if calendar.url %}<li><a href="{{ calendar.url }}"><span aria-hidden="true" class="icon-ical"></span>Events in iCal format</a></li>{% endif %}
+                {% if calendar.twitter %}<li><a href="{{ calendar.twitter }}"><span aria-hidden="true" class="icon-twitter"></span>Events on Twitter</a></li>{% endif %}
+            </ul>
+
             {% box 'events-subscriptions' %}
 
         </div>

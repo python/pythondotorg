@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
 from ..models import OS, Release, ReleaseFile
+from pages.models import Page
 
 import json
 
@@ -19,6 +20,10 @@ class DownloadViewsTests(BaseDownloadTests):
         url = reverse('download:download_release_detail', kwargs={'release_slug': self.release_275.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+        url = reverse('download:download_release_detail', kwargs={'release_slug': 'fake_slug'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_download_os_list(self):
         url = reverse('download:download_os_list', kwargs={'slug': self.linux.slug})
@@ -78,3 +83,29 @@ class DownloadApiViewsTest(BaseDownloadTests):
 
         response = self.json_client('delete', url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 204)
+
+    def test_get_release(self):
+        url = '/api/v1/downloads/release/'
+        self.client.logout()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_post_release(self):
+        release_page = Page.objects.create(
+            title='python 3.3',
+            path='/rels/3-3/',
+            content='python 3.3. released'
+        )
+        url = '/api/v1/downloads/release/'
+        data = {
+            'name': 'python 3.3',
+            'slug': 'py3-3',
+            'release_page': '/api/v1/pages/page/%d/' % release_page.pk           
+        }
+
+        self.client.logout()
+        response = self.json_client('post', url, data)
+        self.assertEqual(response.status_code, 401)
+
+        response = self.json_client('post', url, data, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 201)
