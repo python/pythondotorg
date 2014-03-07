@@ -18,9 +18,9 @@ THRESHOLD_DAYS = 30
 class JobMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['jobs_count'] = Job.objects.count()
-        context['companies_count'] = Company.objects.filter(jobs__isnull=False).distinct().count()
-        context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status__exact=Job.STATUS_APPROVED).distinct()
+        context['jobs_count'] = Job.objects.approved().count()
+        context['companies_count'] = Company.objects.filter(jobs__status=Job.STATUS_APPROVED, jobs__isnull=False).distinct().count()
+        context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status=Job.STATUS_APPROVED).distinct()
         return context
 
 class JobList(JobMixin, ListView):

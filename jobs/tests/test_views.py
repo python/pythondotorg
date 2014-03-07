@@ -7,7 +7,10 @@ from django.test import TestCase
 
 from .. import admin  # coverage FTW
 from ..models import Job
-from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory, ReviewJobFactory
+from ..factories import (
+    ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
+    ReviewJobFactory
+)
 from companies.factories import CompanyFactory
 from companies.models import Company
 from django_comments_xtd.utils import mail_sent_queue
@@ -45,6 +48,18 @@ class JobsViewTests(TestCase):
             is_featured=True
         )
         self.job.job_types.add(self.job_type)
+
+        self.job_draft = DraftJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email='hr@company.com',
+            is_featured=True
+        )
+        self.job_draft.job_types.add(self.job_type)
 
     def test_job_list(self):
         url = reverse('jobs:job_list')
