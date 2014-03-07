@@ -60,7 +60,7 @@ class PepResource(GenericResource):
     type = fields.ToOneField(PepTypeResource, 'type')
     status = fields.ToOneField(PepStatusResource, 'status')
     category = fields.ToOneField(PepCategoryResource, 'category')
-    owners = fields.ToManyField(PepOwnerResource, 'owners')
+    owners = fields.ToManyField(PepOwnerResource, 'owners', blank=True)
 
     class Meta(GenericResource.Meta):
         queryset = Pep.objects.all()
