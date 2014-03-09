@@ -198,8 +198,8 @@ class JobEdit(JobMixin, UpdateView):
     form_class = JobForm
 
     def get_queryset(self):
-        return self.request.user.job_set.all()
-        #return self.request.user.job_set.exclude(status=self.model.STATUS_APPROVED)
+        return self.request.user.jobs_job_creator.all()
+        #return self.request.user.jobs_job_creator.exclude(status=self.model.STATUS_APPROVED)
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
@@ -207,7 +207,7 @@ class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
     Abstract class to change a job's status; see the concrete implentations below.
     """
     def post(self, request, pk):
-        job = get_object_or_404(self.request.user.job_set, pk=pk)
+        job = get_object_or_404(self.request.user.jobs_job_creator, pk=pk)
         job.status = self.new_status
         job.save()
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
