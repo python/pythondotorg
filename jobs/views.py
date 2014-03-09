@@ -28,8 +28,7 @@ class JobList(JobMixin, ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
-        return super().get_queryset().approved().select_related().filter(created__gt=threshold)
+        return super().get_queryset().approved().select_related()
 
 
 class JobListMine(JobMixin, ListView):
