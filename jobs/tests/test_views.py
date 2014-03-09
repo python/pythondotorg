@@ -125,6 +125,32 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['companies_count'], 1)
         self.assertEqual(len(response.context['featured_companies']), 1)
 
+    def test_job_edit(self):
+        username = 'kevinarnold'
+        email = 'kevinarnold@example.com'
+        password = 'secret'
+
+        User = get_user_model()
+        creator = User.objects.create_user(username, email, password)
+
+        job = ApprovedJobFactory(
+            company=self.company,
+            description='My job listing',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email='hr@company.com',
+            creator=creator,
+            is_featured=True
+        )
+
+        self.client.login(username=username, password=password)
+        url = reverse('jobs:job_edit', kwargs={'pk': job.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_job_detail(self):
         url = self.job.get_absolute_url()
         response = self.client.get(url)
