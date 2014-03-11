@@ -14,3 +14,9 @@ before_script:
 script:
   - coverage run manage.py test
   - coverage report --fail-under=85
+notifications:
+    irc:
+        channels:
+            - "irc.freenode.net#python-dev"
+        on_success: change
+        on_failure: always
