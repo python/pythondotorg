@@ -60,7 +60,7 @@ class JobCommentForm(CommentForm):
             required=False,
             widget=forms.TextInput(attrs={'placeholder':_('website')}))
         self.fields['comment'] = forms.CharField(
-            widget=forms.Textarea(attrs={'placeholder':_('comment')}), 
+            widget=forms.Textarea(attrs={'placeholder':_('comment')}),
             max_length=comments_settings.COMMENT_MAX_LENGTH)
 
     def get_comment_model(self):

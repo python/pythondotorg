@@ -100,7 +100,7 @@ class DownloadApiViewsTest(BaseDownloadTests):
         data = {
             'name': 'python 3.3',
             'slug': 'py3-3',
-            'release_page': '/api/v1/pages/page/%d/' % release_page.pk           
+            'release_page': '/api/v1/pages/page/%d/' % release_page.pk
         }
 
         self.client.logout()

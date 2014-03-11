@@ -18,4 +18,3 @@ class PepListView(TemplateView):
         context['peps'] = Pep.objects.all().order_by('number')
 
         return context
-

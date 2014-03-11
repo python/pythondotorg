@@ -13,7 +13,7 @@ class Migration(DataMigration):
         for event in Event.objects.exclude(description_markup_type='html'):
             event.description_markup_type = 'html'
             event.save()
-        # Note: Don't use "from appname.models import ModelName". 
+        # Note: Don't use "from appname.models import ModelName".
         # Use orm.ModelName to refer to models in this application,
         # and orm['appname.ModelName'] for models in other applications.
 

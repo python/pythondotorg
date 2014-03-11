@@ -33,4 +33,3 @@ class BlogEntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
 
 admin.site.register(BlogEntry, BlogEntryAdmin)
-

@@ -82,6 +82,3 @@ class PEPTests(TestCase):
     def test_latest_rss_feed(self):
         response = self.client.get(reverse('pep_rss'))
         self.assertEqual(response.status_code, 200)
-
-
-

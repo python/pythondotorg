@@ -13,5 +13,3 @@ class BlogParserTest(TestCase):
     def test_entries(self):
         """ Make sure we can parse RSS entries """
         self.assertEqual(len(self.entries), 25)
-
-

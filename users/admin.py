@@ -39,4 +39,3 @@ except admin.sites.NotRegistered:
     pass
 finally:
     admin.site.register(ApiKey, ApiKeyAdmin)
-
