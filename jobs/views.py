@@ -12,7 +12,7 @@ from .forms import JobForm
 from .models import Job, JobType, JobCategory
 from companies.models import Company
 
-THRESHOLD_DAYS = 30
+THRESHOLD_DAYS = 90
 
 
 class JobMixin(object):
