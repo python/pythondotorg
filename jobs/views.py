@@ -1,6 +1,6 @@
 import datetime
 
-from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
+from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -14,6 +14,9 @@ from companies.models import Company
 
 THRESHOLD_DAYS = 90
 
+
+class JobBoardAdminRequiredMixin(GroupRequiredMixin):
+    group_required = "Job Board Admin"
 
 class JobMixin(object):
     def get_context_data(self, **kwargs):
@@ -111,7 +114,7 @@ class JobLocations(JobMixin, TemplateView):
         return context
 
 
-class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, JobMixin, ListView):
+class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListView):
     template_name = 'jobs/job_review.html'
     paginate_by = 20
 
@@ -165,7 +168,7 @@ class JobDetail(JobMixin, DetailView):
         return ctx
 
 
-class JobDetailReview(LoginRequiredMixin, SuperuserRequiredMixin, JobDetail):
+class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
 
     def get_queryset(self):
         # TODO: Add moderator info...
