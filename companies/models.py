@@ -19,3 +19,4 @@ class Company(NameSlugModel):
     class Meta:
         verbose_name = _('company')
         verbose_name_plural = _('companies')
+        ordering = ('name', )
