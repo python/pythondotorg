@@ -54,7 +54,7 @@ STATICFILES_DIRS = (os.path.join(BASE, 'static'), MEDIA_ROOT)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
-### Auth
+### Authentication
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
