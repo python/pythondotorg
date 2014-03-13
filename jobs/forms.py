@@ -37,7 +37,7 @@ class JobForm(ContentManageableModelForm):
         super().__init__(*args, **kwargs)
         self.fields['job_types'].help_text = None
         self.fields['telecommuting'].label = 'Is telecommuting allowed?'
-        self.fields['agencies'].label = 'Is job on behalf of an agency?'
+        self.fields['agencies'].label = 'Agencies are OK to contact?'
 
 
 class JobCommentForm(CommentForm):
