@@ -83,7 +83,7 @@
             <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></li>
 
             {% if object.url %}
-            <li><strong>Web</strong>: <a class="reference external" href="{{ object.company.url }}">{{ object.url }}</a></li>
+            <li><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></li>
             {% endif %}
         </ul>
 
