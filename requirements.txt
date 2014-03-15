@@ -4,7 +4,8 @@ django-discover-runner==0.3
 # TODO: uncomment this when django-markup 0.5 is released 
 #django-markup==0.5
 https://github.com/bartTC/django-markup/archive/ed661e20fc7042076977ee039f7bc1b7cb85b670.zip
-django-pipeline==1.3.6
+# Use django-pipeline 1.3.23+ when they are released.
+git+https://github.com/cyberdelia/django-pipeline@f78a3ee121278f44e7c2109439c59070eb4ac4eb
 django-sitetree==0.9.4
 django-secure==1.0
 Django==1.5.4
