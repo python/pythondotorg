@@ -37,8 +37,9 @@ class Job(ContentManageable):
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
     job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True)
-    company = models.ForeignKey('companies.Company', related_name='jobs')
+    company = models.ForeignKey('companies.Company', related_name='jobs', null=True, blank=True)
 
+    company_name = models.CharField(max_length=100, blank=True)
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100, db_index=True)
