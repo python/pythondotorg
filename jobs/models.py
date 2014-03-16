@@ -98,10 +98,12 @@ class Job(ContentManageable):
             self.dt_start = timezone.now()
             self.dt_end = timezone.now() + self.NEW_THRESHOLD
 
-        try:
-            self.company = Company.objects.get(name=self.company_name)
-        except Company.DoesNotExist:
-            self.company = None
+        # Try to get company relation on initial job creation
+        if self.pk is None:
+            try:
+                self.company = Company.objects.get(name=self.company_name)
+            except Company.DoesNotExist:
+                self.company = None
 
         return super().save(**kwargs)
 

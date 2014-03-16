@@ -25,7 +25,7 @@
         <span class="listing-company-name">
             {% if object.is_new %}<span class="listing-new">New</span>
             {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
-            {% endif %}<span class="company-name">{% firstof object.company.name object.company_name %}</span>
+            {% endif %}<span class="company-name">{% firstof object.company_name object.company.name %}</span>
         </span>
         <span class="listing-location"><a href="{% if object.company %}{% url 'jobs:job_list_location' slug=object.location_slug %}{% else %}#{% endif %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
     </h1>
@@ -157,7 +157,7 @@
 
         <ul class="menu">
             {% for job in category_jobs %}
-            <li><a href="{% if object.company %}{% url 'jobs:job_list_company' slug=object.company.slug %}{% else %}#{% endif %}">{% firstof job.company.name job.company_name %}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+            <li><a href="{% if object.company %}{% url 'jobs:job_list_company' slug=object.company.slug %}{% else %}#{% endif %}">{% firstof job.company_name job.company.name %}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
