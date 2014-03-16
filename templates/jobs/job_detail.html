@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}Job Listing at {{ object.company.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}Job Listing at {% firstof object.company_name object.company.name %} | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="jobs default-page single-job"{% endblock %}
 
@@ -57,9 +57,9 @@
         {{ object.requirements }}
         {% endif %}
 
-        {% if object.company.about %}
+        {% if object.company_description %}
         <h2>About the Company</h2>
-        {{ object.company.about }}
+        {{ object.company_description }}
         {% endif %}
 
         {% if under_review or request.user == object.creator %}

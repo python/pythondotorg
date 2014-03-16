@@ -18,6 +18,7 @@ class JobForm(ContentManageableModelForm):
             'category',
             'job_types',
             'company_name',
+            'company_description',
             'city',
             'region',
             'country',

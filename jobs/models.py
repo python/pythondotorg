@@ -41,6 +41,7 @@ class Job(ContentManageable):
     company = models.ForeignKey('companies.Company', related_name='jobs', null=True, blank=True)
 
     company_name = models.CharField(max_length=100, blank=True)
+    company_description = MarkupField(blank=True, null=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100, db_index=True)
@@ -104,6 +105,11 @@ class Job(ContentManageable):
                 self.company = Company.objects.get(name=self.company_name)
             except Company.DoesNotExist:
                 self.company = None
+    
+        # If we didn't get some info in the company description and we have
+        # a company relation - store that on job now
+        if self.company and not self.company_description.raw.strip():
+            self.company_description.raw = self.company.about
 
         return super().save(**kwargs)
 
