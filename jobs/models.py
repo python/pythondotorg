@@ -11,6 +11,7 @@ from markupfield.fields import MarkupField
 from .managers import JobManager
 from .listeners import on_comment_was_posted
 from cms.models import ContentManageable, NameSlugModel
+from companies.models import Company
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -96,6 +97,11 @@ class Job(ContentManageable):
         if not self.dt_start and self.status == self.STATUS_APPROVED:
             self.dt_start = timezone.now()
             self.dt_end = timezone.now() + self.NEW_THRESHOLD
+
+        try:
+            self.company = Company.objects.get(name=self.company_name)
+        except Company.DoesNotExist:
+            self.company = None
 
         return super().save(**kwargs)
 
