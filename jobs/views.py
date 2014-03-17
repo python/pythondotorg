@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
@@ -194,6 +195,11 @@ class JobCreate(JobMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['company_list'] = json.dumps(list(Company.objects.values_list('name', flat=True).order_by('name')))
+        return ctx
 
 
 class JobEdit(JobMixin, UpdateView):

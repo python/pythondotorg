@@ -11,6 +11,7 @@ from markupfield.fields import MarkupField
 from .managers import JobManager
 from .listeners import on_comment_was_posted
 from cms.models import ContentManageable, NameSlugModel
+from companies.models import Company
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -37,8 +38,10 @@ class Job(ContentManageable):
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
     job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True)
-    company = models.ForeignKey('companies.Company', related_name='jobs')
+    company = models.ForeignKey('companies.Company', related_name='jobs', null=True, blank=True)
 
+    company_name = models.CharField(max_length=100, blank=True)
+    company_description = MarkupField(blank=True, null=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100, db_index=True)
@@ -95,6 +98,18 @@ class Job(ContentManageable):
         if not self.dt_start and self.status == self.STATUS_APPROVED:
             self.dt_start = timezone.now()
             self.dt_end = timezone.now() + self.NEW_THRESHOLD
+
+        # Try to get company relation on initial job creation
+        if self.pk is None:
+            try:
+                self.company = Company.objects.get(name=self.company_name)
+            except Company.DoesNotExist:
+                self.company = None
+    
+        # If we didn't get some info in the company description and we have
+        # a company relation - store that on job now
+        if self.company and not self.company_description.raw.strip():
+            self.company_description.raw = self.company.about
 
         return super().save(**kwargs)
 

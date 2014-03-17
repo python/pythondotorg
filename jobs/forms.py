@@ -17,7 +17,8 @@ class JobForm(ContentManageableModelForm):
         fields = (
             'category',
             'job_types',
-            'company',
+            'company_name',
+            'company_description',
             'city',
             'region',
             'country',

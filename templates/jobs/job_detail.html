@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}Job Listing at {{ object.company.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}Job Listing at {% firstof object.company_name object.company.name %} | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="jobs default-page single-job"{% endblock %}
 
@@ -21,14 +21,13 @@
 {% block content %}
 {% load companies %}
 <article class="text">
-
 	<h1 class="listing-company">
         <span class="listing-company-name">
             {% if object.is_new %}<span class="listing-new">New</span>
             {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
-            {% endif %}<span class="company-name">{{ object.company.name }}</span>
+            {% endif %}<span class="company-name">{% firstof object.company_name object.company.name %}</span>
         </span>
-        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
+        <span class="listing-location"><a href="{% if object.company %}{% url 'jobs:job_list_location' slug=object.location_slug %}{% else %}#{% endif %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
     </h1>
 
     <!-- User input html/markup/rst/whatever -->
@@ -58,9 +57,9 @@
         {{ object.requirements }}
         {% endif %}
 
-        {% if object.company.about %}
+        {% if object.company_description %}
         <h2>About the Company</h2>
-        {{ object.company.about }}
+        {{ object.company_description }}
         {% endif %}
 
         {% if under_review or request.user == object.creator %}
@@ -158,7 +157,7 @@
 
         <ul class="menu">
             {% for job in category_jobs %}
-            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+            <li><a href="{% if object.company %}{% url 'jobs:job_list_company' slug=object.company.slug %}{% else %}#{% endif %}">{% firstof job.company_name job.company.name %}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
