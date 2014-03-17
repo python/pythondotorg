@@ -1,10 +1,8 @@
 #
-# Cookbook Name:: postgresql
-# Recipe:: server
+# Cookbook Name:: postgresql_test
+# Recipe:: default
 #
-# Author:: Joshua Timberman (<joshua@opscode.com>)
-# Author:: Lamont Granquist (<lamont@opscode.com>)#
-# Copyright 2009-2011, Opscode, Inc.
+# Copyright 2012, Opscode, Inc.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -19,16 +17,13 @@
 # limitations under the License.
 #
 
-include_recipe "postgresql::client"
+module Helpers
+  module Postgresql
+    require 'chef/mixin/shell_out'
+    include Chef::Mixin::ShellOut
+    include MiniTest::Chef::Assertions
+    include MiniTest::Chef::Context
+    include MiniTest::Chef::Resources
 
-node['postgresql']['server']['packages'].each do |pg_pack|
-
-  package pg_pack
-
-end
-
-service "postgresql" do
-  service_name node['postgresql']['server']['service_name']
-  supports :restart => true, :status => true, :reload => true
-  action [:enable, :start]
+  end
 end

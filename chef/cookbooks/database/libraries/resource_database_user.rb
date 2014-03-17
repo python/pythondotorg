@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,6 +31,7 @@ class Chef
         @table = nil
         @host = 'localhost'
         @privileges = [:all]
+        @grant_option = false
 
         @allowed_actions.push(:create, :drop, :grant)
         @action = :create
@@ -56,8 +57,7 @@ class Chef
         set_or_return(
           :password,
           arg,
-          :kind_of => String,
-          :required => true
+          :kind_of => String
         )
       end
 
@@ -82,6 +82,14 @@ class Chef
           :privileges,
           arg,
           :kind_of => Array
+        )
+      end
+
+      def grant_option(arg=nil)
+        set_or_return(
+          :grant_option,
+          arg,
+          :kind_of => [ TrueClass, FalseClass ], :default => false
         )
       end
 

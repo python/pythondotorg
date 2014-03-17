@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,7 +36,9 @@ class Chef
           unless exists?
             begin
               Chef::Log.debug("#{@new_resource}: Creating database #{new_resource.database_name}")
-              db.execute("CREATE DATABASE [#{new_resource.database_name}]").do
+              create_sql = "CREATE DATABASE [#{new_resource.database_name}]"
+              create_sql += " COLLATE #{new_resource.collation}" if new_resource.collation
+              db.execute(create_sql).do
               @new_resource.updated_by_last_action(true)
             ensure
               close
@@ -48,7 +50,7 @@ class Chef
           if exists?
             begin
               Chef::Log.debug("#{@new_resource}: Dropping database #{new_resource.database_name}")
-              db.execute("DROP DATABASE #{new_resource.database_name}").do
+              db.execute("DROP DATABASE [#{new_resource.database_name}]").do
               @new_resource.updated_by_last_action(true)
             ensure
               close
@@ -60,8 +62,8 @@ class Chef
           if exists?
             begin
               #db.select_db(@new_resource.database_name) if @new_resource.database_name
-              Chef::Log.debug("#{@new_resource}: Performing query [#{new_resource.sql}]")
-              db.execute(@new_resource.sql).do
+              Chef::Log.debug("#{@new_resource}: Performing query [#{new_resource.sql_query}]")
+              db.execute(@new_resource.sql_query).do
               @new_resource.updated_by_last_action(true)
             ensure
               close
@@ -75,7 +77,7 @@ class Chef
           begin
             result = db.execute("SELECT name FROM sys.databases")
             result.each do |row|
-              if row['name'] =~ /#{@new_resource.database_name}/i
+              if row['name'] == @new_resource.database_name
                 exists = true
                 break
               end

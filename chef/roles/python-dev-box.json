@@ -1,16 +1,17 @@
 {
   "chef_type": "role",
   "description": "Runs a development version of pythondotorg",
-  "name": "pe-dev-box",
+  "name": "python-dev-box",
   "env_run_lists": {},
 
   "run_list": [
     "recipe[apt]",
+    "recipe[pythondotorg::locale]",
     "recipe[build-essential]",
     "recipe[python]",
     "recipe[ruby::1.9.1]",
-    "recipe[postgresql::server]",
     "recipe[postgresql::client]",
+    "recipe[postgresql::server]",
     "recipe[git]",
     "recipe[mercurial]",
     "recipe[pythondotorg::db]",
@@ -19,21 +20,11 @@
   ],
 
   "default_attributes": {
-
-    "pythondotorg": {
-
-      "branch": "master",
-      "settings_file": "development",
-      "environment_label": "development",
-
-      "database": {
-        "user": "vagrant",
-        "name": "python.org",
-        "password": "yuki"
+    "postgresql": {
+      "password": {
+        "postgres": "pydotorg"
       }
-
     }
-
   },
 
   "override_attributes": {},
