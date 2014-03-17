@@ -15,30 +15,15 @@ end
 
 deploy_location = "/home/#{user}"
 
-execute "echo 'source #{deploy_location}/ENV/bin/activate' >> #{deploy_location}/.bash_profile" do
-  not_if "grep ENV/bin/activate #{deploy_location}/.bash_profile"
-end
-
 execute "echo 'alias remount=\"sudo mount -t vboxsf -o remount,uid=1000,gid=1000 pythondotorg /home/vagrant/pythondotorg\"' >> #{deploy_location}/.bash_profile" do
   not_if "grep remount #{deploy_location}/.bash_profile"
 end
 
-template "/bin/pyvenvex" do
-  source "pyvenvex.py.erb"
-  owner "#{user}"
-  group "#{user}"
-  mode 0755
-  variables(
-    :python3_path => "/usr/local/bin/python3.3"
-  )
-end
-
-execute "pyvenv" do
-  cwd "#{deploy_location}"
-  user "#{user}"
-  group "#{user}"
-  command "pyvenvex --clear ENV"
-  not_if { ::File.exists?("/ENV/bin/activate") }
+python_virtualenv "/home/vagrant/ENV" do
+  interpreter "python3.3"
+  owner "vagrant"
+  group "vagrant"
+  action :create
 end
 
 ve_path = "#{deploy_location}/ENV"
@@ -46,8 +31,9 @@ ve_path = "#{deploy_location}/ENV"
 manage_py = "cd #{deploy_location}/pythondotorg/; #{::File.join(ve_path, "bin", "python")} manage.py"
 
 
-execute "#{::File.join(ve_path, "bin", "pip")} install -r /home/vagrant/pythondotorg/requirements.txt" do
-  user "#{user}"
+python_pip "-r /home/vagrant/pythondotorg/requirements.txt" do
+  virtualenv "/home/vagrant/ENV"
+  user "vagrant"
 end
 
 execute "#{manage_py} syncdb --noinput" do
@@ -60,3 +46,7 @@ end
 #   user "#{user}"
 #   cwd "#{deploy_location}/pythondotorg/"
 # end
+
+execute "echo 'source #{deploy_location}/ENV/bin/activate' >> #{deploy_location}/.bash_profile" do
+  not_if "grep ENV/bin/activate #{deploy_location}/.bash_profile"
+end

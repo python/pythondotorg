@@ -47,8 +47,7 @@ if servers.length > 0
     group 'root'
     mode 00644
     variables(
-      :proxy => servers[0]['ipaddress'],
-      :port => node['apt']['cacher_port']
+      :proxy => servers[0]['ipaddress']
       )
   end.run_action(:create)
 else
