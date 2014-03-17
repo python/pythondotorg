@@ -18,23 +18,45 @@
 # limitations under the License.
 #
 
-# Ubuntu's python-setuptools, python-pip and python-virtualenv packages 
-# are broken...this feels like Rubygems!
-# http://stackoverflow.com/questions/4324558/whats-the-proper-way-to-install-pip-virtualenv-and-distribute-for-python
-# https://bitbucket.org/ianb/pip/issue/104/pip-uninstall-on-ubuntu-linux
-remote_file "#{Chef::Config[:file_cache_path]}/distribute_setup.py" do
-  source "http://python-distribute.org/distribute_setup.py"
-  mode "0644"
-  not_if "which pip"
+# Where does pip get installed?
+# platform/method: path (proof)
+# redhat/package: /usr/bin/pip (sha a8a3a3)
+# omnibus/source: /opt/local/bin/pip (sha 29ce9874)
+
+if node['python']['install_method'] == 'source'
+  pip_binary = "#{node['python']['prefix_dir']}/bin/pip"
+elsif platform_family?("rhel")
+  pip_binary = "/usr/bin/pip"
+elsif platform_family?("smartos")
+  pip_binary = "/opt/local/bin/pip"
+else
+  pip_binary = "/usr/local/bin/pip"
 end
 
-use_version = node['python']['distribute_install_py_version']
+cookbook_file "#{Chef::Config[:file_cache_path]}/ez_setup.py" do
+  source 'ez_setup.py'
+  mode "0644"
+  not_if "#{node['python']['binary']} -c 'import setuptools'"
+end
 
-bash "install-pip" do
+cookbook_file "#{Chef::Config[:file_cache_path]}/get-pip.py" do
+  source 'get-pip.py'
+  mode "0644"
+  not_if { ::File.exists?(pip_binary) }
+end
+
+execute "install-setuptools" do
   cwd Chef::Config[:file_cache_path]
-  code <<-EOF
-  python#{use_version} distribute_setup.py
-  easy_install pip
+  command <<-EOF
+  #{node['python']['binary']} ez_setup.py
   EOF
-  not_if "which pip"
+  not_if "#{node['python']['binary']} -c 'import setuptools'"
+end
+
+execute "install-pip" do
+  cwd Chef::Config[:file_cache_path]
+  command <<-EOF
+  #{node['python']['binary']} get-pip.py
+  EOF
+  not_if { ::File.exists?(pip_binary) }
 end

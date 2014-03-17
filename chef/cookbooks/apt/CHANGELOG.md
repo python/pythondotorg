@@ -1,21 +1,3 @@
-## v1.8.4:
-
-* [COOK-2171] - Update README to clarify required Chef version: 10.18.0
-  or higher.
-
-## v1.8.2:
-
-* [COOK-2112] - need [] around "arch" in sources.list entries
-* [COOK-2171] - fixes a regression in the notification
-
-## v1.8.0:
-
-* [COOK-2143] - Allow for a custom cacher-ng port
-* [COOK-2171] - On `apt_repository.run_action(:add)` the source file
-  is not created.
-* [COOK-2184] - apt::cacher-ng, use `cacher_port` attribute in
-  acng.conf
-
 ## v1.7.0:
 
 * [COOK-2082] - add "arch" parameter to apt_repository LWRP

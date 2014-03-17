@@ -23,10 +23,11 @@ end
 
 # install apt key from keyserver
 def install_key_from_keyserver(key, keyserver)
-  execute "install-key #{key}" do
-    command "apt-key adv --keyserver #{keyserver} --recv #{key}"
-    action :run
-    not_if "apt-key list | grep #{key}"
+  unless system("apt-key list | grep #{key}")
+    execute "install-key #{key}" do
+      command "apt-key adv --keyserver #{keyserver} --recv #{key}"
+      action :nothing
+    end.run_action(:run)
   end
 end
 
@@ -46,28 +47,29 @@ def install_key_from_uri(uri)
   key_name = uri.split(/\//).last
   cached_keyfile = "#{Chef::Config[:file_cache_path]}/#{key_name}"
   if new_resource.key =~ /http/
-    remote_file cached_keyfile do
+    r = remote_file cached_keyfile do
       source new_resource.key
       mode 00644
-      action :create
+      action :nothing
     end
   else
-    cookbook_file cached_keyfile do
+    r = cookbook_file cached_keyfile do
       source new_resource.key
       cookbook new_resource.cookbook
       mode 00644
-      action :create
+      action :nothing
     end
   end
 
-  execute "install-key #{key_name}" do
-    command "apt-key add #{cached_keyfile}"
-    action :run
-    not_if do
-      installed_ids = extract_gpg_ids_from_cmd("apt-key finger")
-      key_ids = extract_gpg_ids_from_cmd("gpg --with-fingerprint #{cached_keyfile}")
-      (installed_ids & key_ids).sort == key_ids.sort
-    end
+  r.run_action(:create)
+
+  installed_ids = extract_gpg_ids_from_cmd("apt-key finger")
+  key_ids = extract_gpg_ids_from_cmd("gpg --with-fingerprint #{cached_keyfile}")
+  unless (installed_ids & key_ids).sort == key_ids.sort
+    execute "install-key #{key_name}" do
+      command "apt-key add #{cached_keyfile}"
+      action :nothing
+    end.run_action(:run)
   end
 end
 
@@ -75,7 +77,7 @@ end
 def build_repo(uri, distribution, components, arch, add_deb_src)
   components = components.join(' ') if components.respond_to?(:join)
   repo_info = "#{uri} #{distribution} #{components}\n"
-  repo_info = "[arch=#{arch}] #{repo_info}" if arch
+  repo_info = "arch=#{arch} #{repo_info}" if arch
   repo =  "deb     #{repo_info}"
   repo << "deb-src #{repo_info}" if add_deb_src
   repo
@@ -83,45 +85,40 @@ end
 
 action :add do
   new_resource.updated_by_last_action(false)
-  @repo_file = nil
 
-  recipe_eval do
-    # add key
-    if new_resource.keyserver && new_resource.key
-      install_key_from_keyserver(new_resource.key, new_resource.keyserver)
-    elsif new_resource.key
-      install_key_from_uri(new_resource.key)
-    end
-
-    file "/var/lib/apt/periodic/update-success-stamp" do
-      action :nothing
-    end
-
-    execute "apt-get update" do
-      ignore_failure true
-      action :nothing
-    end
-
-    # build repo file
-    repository = build_repo(new_resource.uri,
-                            new_resource.distribution,
-                            new_resource.components,
-                            new_resource.arch,
-                            new_resource.deb_src)
-
-    @repo_file = file "/etc/apt/sources.list.d/#{new_resource.name}.list" do
-      owner "root"
-      group "root"
-      mode 00644
-      content repository
-      action :create
-      notifies :delete, "file[/var/lib/apt/periodic/update-success-stamp]", :immediately
-      notifies :run, "execute[apt-get update]", :immediately if new_resource.cache_rebuild
-    end
+  # add key
+  if new_resource.keyserver && new_resource.key
+    install_key_from_keyserver(new_resource.key, new_resource.keyserver)
+  elsif new_resource.key
+    install_key_from_uri(new_resource.key)
   end
 
-  raise RuntimeError, "The repository file to create is nil, cannot continue." if @repo_file.nil?
-  new_resource.updated_by_last_action(@repo_file.updated?)
+  execute "apt-get update" do
+    ignore_failure true
+    action :nothing
+  end
+
+  file "/var/lib/apt/periodic/update-success-stamp" do
+    action :nothing
+  end
+
+  # build repo file
+  repository = build_repo(new_resource.uri,
+                           new_resource.distribution,
+                           new_resource.components,
+                           new_resource.arch,
+                           new_resource.deb_src)
+
+  f = file "/etc/apt/sources.list.d/#{new_resource.name}.list" do
+    owner "root"
+    group "root"
+    mode 00644
+    content repository
+    action :create
+    notifies :delete, resources(:file => "/var/lib/apt/periodic/update-success-stamp"), :immediately
+    notifies :run, resources(:execute => "apt-get update"), :immediately if new_resource.cache_rebuild
+  end
+  new_resource.updated_by_last_action(f.updated?)
 end
 
 action :remove do
