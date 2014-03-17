@@ -18,7 +18,7 @@ urlpatterns = patterns('',
     # python section landing pages
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
     url(r'^downloads/', include('downloads.urls', namespace='download')),
-    url(r'^documentation/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
+    url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     #url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
     url(r'^blog/$', TemplateView.as_view(template_name="python/blog.html"), name='blog'),
     url(r'^blogs/$', include('blogs.urls')),
