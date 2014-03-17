@@ -41,6 +41,7 @@ class Job(ContentManageable):
 
     company_name = models.CharField(max_length=100, blank=True, null=True)
     company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    job_title = models.CharField(blank=True, null=True, max_length=100)
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
