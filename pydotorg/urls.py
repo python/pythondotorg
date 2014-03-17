@@ -9,6 +9,8 @@ from .urls_api import v1_api
 
 admin.autodiscover()
 
+# Hack to fix admindocs bug. See https://code.djangoproject.com/ticket/6681.
+# Please remove this when we upgrade to Django 1.7.
 from django.contrib.admindocs import utils as ad_utils
 parse_rst = """
 def parse_rst(text, default_reference_context, thing_being_parsed=None):
