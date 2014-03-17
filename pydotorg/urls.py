@@ -38,8 +38,30 @@ def parse_rst(text, default_reference_context, thing_being_parsed=None):
                 source_path=thing_being_parsed, destination_path=None,
                 writer_name='html', settings_overrides=overrides)
     return mark_safe(parts['fragment'])
+
+def create_reference_role(rolename, urlbase):
+    def _role(name, rawtext, text, lineno, inliner, options=None, content=None):
+        if options is None:
+            options = {}
+        if content is None:
+            content = []
+        node = docutils.nodes.reference(rawtext, text, refuri=(urlbase % (inliner.document.settings.link_base, text.lower())), **options)
+        return [node], []
+    docutils.parsers.rst.roles.register_canonical_role(rolename, _role)
+
+
+def default_reference_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+    if options is None:
+        options = {}
+    if content is None:
+        content = []
+    context = inliner.document.settings.default_reference_context
+    node = docutils.nodes.reference(rawtext, text, refuri=(ROLES[context] % (inliner.document.settings.link_base, text.lower())), **options)
+    return [node], []
 """
 exec(parse_rst, ad_utils.__dict__)
+import docutils.parsers.rst.roles
+docutils.parsers.rst.roles.DEFAULT_INTERPRETED_ROLE = 'title-reference'
 
 urlpatterns = patterns('',
     # homepage
