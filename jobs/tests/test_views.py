@@ -193,7 +193,7 @@ class JobsViewTests(TestCase):
         self.assertNotEqual(job.updated, None)
         self.assertEqual(job.creator, None)
 
-        self.assertEqual(job.status, 'draft')
+        self.assertEqual(job.status, 'review')
 
     def test_job_types(self):
         job_type2 = JobTypeFactory(
@@ -240,6 +240,24 @@ class JobsViewTests(TestCase):
         content = str(response.content)
         self.assertTrue('Memphis' in content)
         self.assertFalse('Lawrence' in content)
+
+    def test_job_display_name(self):
+        self.assertEqual(self.job.display_name, self.job.company.name)
+
+        self.job.company_name = 'ABC'
+        self.assertEqual(self.job.display_name, self.job.company_name)
+
+        self.job.company_name = ''
+        self.assertEqual(self.job.display_name, self.job.company.name)
+
+    def test_job_display_about(self):
+        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)
+
+        self.job.company_description.raw = 'XYZ'
+        self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
+
+        self.job.company_description = '     '
+        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)        
 
 
 class JobsReviewTests(TestCase):
