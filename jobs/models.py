@@ -72,7 +72,7 @@ class Job(ContentManageable):
         (STATUS_REMOVED, 'removed'),
         (STATUS_EXPIRED, 'expired'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT, db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_REVIEW, db_index=True)
     dt_start = models.DateTimeField('Job start date', blank=True, null=True)
     dt_end = models.DateTimeField('Job end date', blank=True, null=True)
 
@@ -104,6 +104,16 @@ class Job(ContentManageable):
 
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
+
+    @property
+    def display_name(self):
+        return self.company_name or getattr(self.company, 'name', '')
+
+    @property
+    def display_description(self):
+        if self.company_description.raw.strip():
+            return self.company_description
+        return getattr(self.company, 'about', '')
 
     @property
     def is_new(self):
