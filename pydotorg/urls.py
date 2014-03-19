@@ -63,6 +63,7 @@ exec(parse_rst, ad_utils.__dict__)
 import docutils.parsers.rst.roles
 docutils.parsers.rst.roles.DEFAULT_INTERPRETED_ROLE = 'title-reference'
 
+
 urlpatterns = patterns('',
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
