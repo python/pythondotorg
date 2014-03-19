@@ -21,7 +21,7 @@
         <h1>{{ object.name }}</h1>
         
         <ul class="menu success-story-category">
-            {% for story in object.success_stories.all %}
+            {% for story in object.success_stories.published %}
             <li><a href="{{ story.get_absolute_url }}">{{ story.name }}</a></li>
             {% endfor %}
         </ul>
