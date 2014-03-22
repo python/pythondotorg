@@ -47,6 +47,7 @@ class Job(ContentManageable):
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100, db_index=True)
     location_slug = models.SlugField(max_length=350, editable=False)
+    country_slug = models.SlugField(max_length=100, editable=False)
 
     description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
@@ -95,6 +96,7 @@ class Job(ContentManageable):
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
+        self.country_slug = slugify(self.country)
 
         if not self.dt_start and self.status == self.STATUS_APPROVED:
             self.dt_start = timezone.now()
