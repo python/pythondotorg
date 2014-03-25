@@ -49,7 +49,7 @@
                         <li>
                             <span class="release-number"><a href="{{ r.get_absolute_url }}">{{ r.name }}</a></span>
                             <span class="release-date">{{ r.release_date|date }}</span>
-                            <span class="release-download"><a href="{{ r.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
+                            <span class="release-download"><a href="{{ r.release_page.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
                             <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release Notes</a></span>
                         </li>
                         {% endfor %}
