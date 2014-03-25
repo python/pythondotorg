@@ -14,6 +14,10 @@ class UserFactory(factory.DjangoModelFactory):
     email_privacy = User.EMAIL_PUBLIC
 
 
+class StaffUserFactory(UserFactory):
+    is_staff = True
+
+
 class MembershipFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Membership
     FACTORY_DJANGO_GET_OR_CREATE = ('creator',)
