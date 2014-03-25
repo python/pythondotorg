@@ -6,9 +6,9 @@
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
 # You may obtain a copy of the License at
-# 
+#
 #     http://www.apache.org/licenses/LICENSE-2.0
-# 
+#
 # Unless required by applicable law or agreed to in writing, software
 # distributed under the License is distributed on an "AS IS" BASIS,
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,10 +25,20 @@ class Chef
 
       def initialize(name, run_context=nil)
         super
+        @sql_roles = {}
         @resource_name = :sql_server_database_user
         @provider = Chef::Provider::Database::SqlServerUser
+        @allowed_actions.push(:alter_roles)
       end
+    end
 
+    def sql_roles(arg=nil)
+      Chef::Log.debug("Received roles: #{arg.inspect}")
+      set_or_return(
+          :sql_roles,
+          arg,
+          :kind_of => Hash
+      )
     end
   end
 end

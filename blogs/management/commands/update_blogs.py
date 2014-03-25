@@ -37,5 +37,3 @@ class Command(BaseCommand):
         # Update Related Blogs
         for blog in RelatedBlog.objects.all():
             blog.update_blog_data()
-
-

@@ -1,5 +1,0 @@
-cookbook "apt" do
-  configuration "default"
-  configuration "cacher-ng"
-  configuration "lwrps"
-end

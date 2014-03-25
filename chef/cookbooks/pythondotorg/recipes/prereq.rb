@@ -24,22 +24,21 @@ package "subversion" do
   action :install
 end
 
-remote_file "#{Chef::Config[:file_cache_path]}/Python-3.3.0.tar.bz2" do
-  source "http://python.org/ftp/python/3.3.0/Python-3.3.0.tar.bz2"
-  mode "0644"
-  not_if { ::File.exists?("/usr/local/bin/python3.3") }
-  notifies :run, "execute[install-python33]", :immediately
+package "libxslt-dev" do
+  action :install
 end
 
-execute "install-python33" do
-    cwd Chef::Config[:file_cache_path]
-    command <<-EOF
-    tar jxf Python-3.3.0.tar.bz2
-    cd Python-3.3.0
-    ./configure
-    make &&  make install
-    EOF
-    action :nothing
+apt_repository "deadsnakes-python" do
+  uri "http://ppa.launchpad.net/fkrull/deadsnakes/ubuntu precise main"
+  keyserver "keyserver.ubuntu.com"
+  key "DB82666C"
+end
+
+package "python3.3" do
+  action :install
+end
+package "python3.3-dev" do
+  action :install
 end
 
 # support libraries for PIL

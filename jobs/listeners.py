@@ -36,8 +36,8 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     html_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.html")
 
     message_context = Context({ 'user_name': name,
-                                'comment': comment, 
-                                'content_object': job, 
+                                'comment': comment,
+                                'content_object': job,
                                 'site': Site.objects.get_current() })
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)

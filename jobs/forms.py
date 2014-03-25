@@ -37,7 +37,7 @@ class JobForm(ContentManageableModelForm):
         super().__init__(*args, **kwargs)
         self.fields['job_types'].help_text = None
         self.fields['telecommuting'].label = 'Is telecommuting allowed?'
-        self.fields['agencies'].label = 'Is job on behalf of an agency?'
+        self.fields['agencies'].label = 'Agencies are OK to contact?'
 
 
 class JobCommentForm(CommentForm):
@@ -60,7 +60,7 @@ class JobCommentForm(CommentForm):
             required=False,
             widget=forms.TextInput(attrs={'placeholder':_('website')}))
         self.fields['comment'] = forms.CharField(
-            widget=forms.Textarea(attrs={'placeholder':_('comment')}), 
+            widget=forms.Textarea(attrs={'placeholder':_('comment')}),
             max_length=comments_settings.COMMENT_MAX_LENGTH)
 
     def get_comment_model(self):

@@ -9,6 +9,61 @@ from .urls_api import v1_api
 
 admin.autodiscover()
 
+# Hack to fix admindocs bug. See https://code.djangoproject.com/ticket/6681.
+# Please remove this when we upgrade to Django 1.7.
+from django.contrib.admindocs import utils as ad_utils
+parse_rst = """
+def parse_rst(text, default_reference_context, thing_being_parsed=None):
+    \"\"\"
+    Convert the string from reST to an XHTML fragment.
+    \"\"\"
+    overrides = {
+        'doctitle_xform': True,
+        'inital_header_level': 3,
+        "default_reference_context": default_reference_context,
+        "link_base": reverse('django-admindocs-docroot').rstrip('/')
+    }
+    if thing_being_parsed:
+        thing_being_parsed = force_bytes("<%s>" % thing_being_parsed)
+    # Wrap ``text`` in some reST that sets the default role to ``cmsreference``,
+    # then restores it.
+    source = \"\"\"
+.. default-role:: cmsreference
+
+%s
+
+.. default-role::
+\"\"\"
+    parts = docutils.core.publish_parts(source % text,
+                source_path=thing_being_parsed, destination_path=None,
+                writer_name='html', settings_overrides=overrides)
+    return mark_safe(parts['fragment'])
+
+def create_reference_role(rolename, urlbase):
+    def _role(name, rawtext, text, lineno, inliner, options=None, content=None):
+        if options is None:
+            options = {}
+        if content is None:
+            content = []
+        node = docutils.nodes.reference(rawtext, text, refuri=(urlbase % (inliner.document.settings.link_base, text.lower())), **options)
+        return [node], []
+    docutils.parsers.rst.roles.register_canonical_role(rolename, _role)
+
+
+def default_reference_role(name, rawtext, text, lineno, inliner, options=None, content=None):
+    if options is None:
+        options = {}
+    if content is None:
+        content = []
+    context = inliner.document.settings.default_reference_context
+    node = docutils.nodes.reference(rawtext, text, refuri=(ROLES[context] % (inliner.document.settings.link_base, text.lower())), **options)
+    return [node], []
+"""
+exec(parse_rst, ad_utils.__dict__)
+import docutils.parsers.rst.roles
+docutils.parsers.rst.roles.DEFAULT_INTERPRETED_ROLE = 'title-reference'
+
+
 urlpatterns = patterns('',
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
@@ -18,7 +73,7 @@ urlpatterns = patterns('',
     # python section landing pages
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
     url(r'^downloads/', include('downloads.urls', namespace='download')),
-    url(r'^documentation/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
+    url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     #url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
     url(r'^blog/$', TemplateView.as_view(template_name="python/blog.html"), name='blog'),
     url(r'^blogs/$', include('blogs.urls')),
@@ -44,6 +99,7 @@ urlpatterns = patterns('',
     url(r'^peps/', include('peps.urls')),
     url(r'^search/', include('haystack.urls')),
     # admin
+    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin.site.urls)),
 
     # api
@@ -51,9 +107,6 @@ urlpatterns = patterns('',
 
     # it's a secret to everyone
     url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
-
-    # Fall back on CMS'd pages as the last resort.
-    url(r'', include('pages.urls')),
 )
 
 urlpatterns += staticfiles_urlpatterns()

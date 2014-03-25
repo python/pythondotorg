@@ -35,9 +35,9 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.archived().count(), 1)
 
     def test_draft_manager(self):
-        self.assertEqual(Job.objects.draft().count(), 1)
+        self.assertEqual(Job.objects.draft().count(), 0)
         factories.DraftJobFactory()
-        self.assertEqual(Job.objects.draft().count(), 2)
+        self.assertEqual(Job.objects.draft().count(), 1)
 
     def test_expired_manager(self):
         self.assertEqual(Job.objects.expired().count(), 0)
@@ -55,6 +55,6 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.removed().count(), 1)
 
     def test_review_manager(self):
-        self.assertEqual(Job.objects.review().count(), 0)
-        factories.ReviewJobFactory()
         self.assertEqual(Job.objects.review().count(), 1)
+        factories.ReviewJobFactory()
+        self.assertEqual(Job.objects.review().count(), 2)

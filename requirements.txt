@@ -1,13 +1,15 @@
 dj-database-url==0.2.1
-django-braces==1.0.0
+django-braces==1.4.0
 django-discover-runner==0.3
-django-markup==0.4
-django-pipeline==1.3.6
+# TODO: uncomment this when django-markup 0.5 is released 
+#django-markup==0.5
+https://github.com/bartTC/django-markup/archive/ed661e20fc7042076977ee039f7bc1b7cb85b670.zip
+django-pipeline==1.3.23
 django-sitetree==0.9.4
 django-secure==1.0
 Django==1.5.4
 docutils==0.11
-factory-boy==2.0.2
+factory-boy==2.3.1
 Markdown==2.2.1
 Pillow==2.0.0
 psycopg2==2.4.5
@@ -21,20 +23,17 @@ chardet2==2.0.3
 django-imagekit==3.2
 django-haystack==2.1.0
 pyelasticsearch==0.6.1
-Sphinx==1.2.1
+Sphinx==1.2.2
 django-tastypie==0.11.0
 
 pytz==2013b
-python-dateutil==2.1
+python-dateutil==2.2
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 
 South==0.8.4
 
 git+https://github.com/bradjasper/django-jsonfield.git@c21b18
-
-# TODO: replace once https://github.com/danirus/django-comments-xtd/pull/16 is merged
-git+https://github.com/fcurella/django-comments-xtd.git@patch-2
-#git+https://github.com/danirus/django-comments-xtd.git@cc096c
+git+https://github.com/danirus/django-comments-xtd.git@182b54afc62e5d3967be75ac6ed8b19071764a6d
 
 django-honeypot==0.4.0
 django-markupfield==1.2.0

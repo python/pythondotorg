@@ -24,7 +24,7 @@ include_recipe "xfs"
   Chef::Application.fatal!("Required db_snapshot configuration #{key} not found.", -47) unless node.db_snapshot.has_key? key
 end
 
-connection_info = {:host => localhost, :username => node.db_snapshot.username, :password => node.db_snapshot.password}
+connection_info = {:host => "localhost", :username => node.db_snapshot.username, :password => node.db_snapshot.password}
 
 mysql_database "locking tables for #{node.db_snapshot.app_environment}" do
   connection connection_info

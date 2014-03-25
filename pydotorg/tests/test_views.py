@@ -11,3 +11,8 @@ class ViewTests(TestCase):
         url = reverse('pydotorg-devfixture')
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
+
+    def test_admin_docs(self):
+        url = reverse('django-admindocs-tags')
+        resp = self.client.get(url)
+        self.assertEqual(resp.status_code, 200)

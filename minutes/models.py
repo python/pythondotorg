@@ -41,4 +41,3 @@ class Minutes(ContentManageable):
 
     def get_date_day(self):
         return self.date.strftime("%d").zfill(2)
-

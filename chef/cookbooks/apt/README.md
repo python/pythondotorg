@@ -7,26 +7,6 @@ the apt-cacher-ng caching proxy and proxy clients. It also includes a
 LWRP for managing APT repositories in /etc/apt/sources.list.d as well as
 an LWRP for pinning packages via /etc/apt/preferences.d.
 
-Requirements
-============
-
-Version 1.8.2+ of this cookbook requires **Chef 10.16.4** or later.
-
-If your Chef version is earlier than 10.16.4, use version 1.7.0 of
-this cookbook.
-
-See [CHEF-3493](http://tickets.opscode.com/browse/CHEF-3493) and
-[this code comment](http://bit.ly/VgvCgf) for more information on this
-requirement.
-
-Platform
---------
-
-* Debian
-* Ubuntu
-
-May work with or without modification on other Debian derivatives.
-
 Recipes
 =======
 
@@ -56,9 +36,6 @@ cacher-client
 Configures the node to use the `apt-cacher-ng` server as a client. If you
 want to restrict your node to using the `apt-cacher-ng` server in your
 Environment, set `['apt']['cacher-client']['restrict_environment']` to `true`.
-To use a cacher server (or standard proxy server) not available via search
-set the atttribute `['apt']['cacher-ipaddress']` and for a custom port
-set `['apt']['cacher_port']`
 
 Resources/Providers
 ===================

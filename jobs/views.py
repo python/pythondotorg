@@ -1,6 +1,6 @@
 import datetime
 
-from braces.views import LoginRequiredMixin, SuperuserRequiredMixin
+from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
 from django.db.models import Q
 from django.http import Http404
@@ -12,15 +12,18 @@ from .forms import JobForm
 from .models import Job, JobType, JobCategory
 from companies.models import Company
 
-THRESHOLD_DAYS = 30
+THRESHOLD_DAYS = 90
 
+
+class JobBoardAdminRequiredMixin(GroupRequiredMixin):
+    group_required = "Job Board Admin"
 
 class JobMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['jobs_count'] = Job.objects.count()
-        context['companies_count'] = Company.objects.filter(jobs__isnull=False).distinct().count()
-        context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status__exact=Job.STATUS_APPROVED).distinct()
+        context['jobs_count'] = Job.objects.approved().count()
+        context['companies_count'] = Company.objects.filter(jobs__status=Job.STATUS_APPROVED, jobs__isnull=False).distinct().count()
+        context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status=Job.STATUS_APPROVED).distinct()
         return context
 
 class JobList(JobMixin, ListView):
@@ -28,8 +31,7 @@ class JobList(JobMixin, ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        threshold = timezone.now() - datetime.timedelta(days=THRESHOLD_DAYS)
-        return super().get_queryset().approved().select_related().filter(created__gt=threshold)
+        return super().get_queryset().approved().select_related()
 
 
 class JobListMine(JobMixin, ListView):
@@ -112,7 +114,7 @@ class JobLocations(JobMixin, TemplateView):
         return context
 
 
-class JobReview(LoginRequiredMixin, SuperuserRequiredMixin, JobMixin, ListView):
+class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListView):
     template_name = 'jobs/job_review.html'
     paginate_by = 20
 
@@ -166,7 +168,7 @@ class JobDetail(JobMixin, DetailView):
         return ctx
 
 
-class JobDetailReview(LoginRequiredMixin, SuperuserRequiredMixin, JobDetail):
+class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
 
     def get_queryset(self):
         # TODO: Add moderator info...
@@ -199,8 +201,8 @@ class JobEdit(JobMixin, UpdateView):
     form_class = JobForm
 
     def get_queryset(self):
-        return self.request.user.job_set.all()
-        #return self.request.user.job_set.exclude(status=self.model.STATUS_APPROVED)
+        return self.request.user.jobs_job_creator.all()
+        #return self.request.user.jobs_job_creator.exclude(status=self.model.STATUS_APPROVED)
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
@@ -208,7 +210,7 @@ class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
     Abstract class to change a job's status; see the concrete implentations below.
     """
     def post(self, request, pk):
-        job = get_object_or_404(self.request.user.job_set, pk=pk)
+        job = get_object_or_404(self.request.user.jobs_job_creator, pk=pk)
         job.status = self.new_status
         job.save()
         messages.add_message(self.request, messages.SUCCESS, self.success_message)

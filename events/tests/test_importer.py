@@ -24,4 +24,4 @@ class EventsImporterTestCase(TestCase):
     @unittest.skipIf(settings.SKIP_NETWORK_TESTS, 'Network tests are disabled.')
     def test_url(self):
         importer = ICSImporter(self.calendar)
-        importer.from_url()        
+        importer.from_url()

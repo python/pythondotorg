@@ -11,13 +11,13 @@ force = False
 gpg_command = /usr/bin/gpg
 gpg_decrypt = %(gpg_command)s -d --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
 gpg_encrypt = %(gpg_command)s -c --verbose --no-use-agent --batch --yes --passphrase-fd %(passphrase_fd)s -o %(output_file)s %(input_file)s
-gpg_passphrase = 
+gpg_passphrase =
 guess_mime_type = False
 host_base = s3.amazonaws.com
 host_bucket = %(bucket)s.s3.amazonaws.com
 human_readable_sizes = False
 preserve_attrs = True
-proxy_host = 
+proxy_host =
 proxy_port = 0
 recv_chunk = 4096
 secret_key = <%= @aws['aws_secret_access_key'] %>

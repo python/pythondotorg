@@ -1,5 +1,6 @@
 {
   "name": "python",
+  "version": "1.4.4",
   "description": "Installs Python, pip and virtualenv. Includes LWRPs for managing Python packages with `pip` and `virtualenv` isolated Python environments.",
   "long_description": "",
   "maintainer": "Opscode, Inc.",
@@ -11,10 +12,12 @@
     "centos": ">= 0.0.0",
     "redhat": ">= 0.0.0",
     "fedora": ">= 0.0.0",
-    "freebsd": ">= 0.0.0"
+    "freebsd": ">= 0.0.0",
+    "smartos": ">= 0.0.0"
   },
   "dependencies": {
-    "build-essential": ">= 0.0.0"
+    "build-essential": ">= 0.0.0",
+    "yum": ">= 0.0.0"
   },
   "recommendations": {
   },
@@ -36,6 +39,5 @@
     "python::source": "Installs python from source.",
     "python::pip": "Installs pip from source.",
     "python::virtualenv": "Installs virtualenv using the python_pip resource."
-  },
-  "version": "1.0.4"
+  }
 }

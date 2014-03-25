@@ -54,7 +54,7 @@ STATICFILES_DIRS = (os.path.join(BASE, 'static'), MEDIA_ROOT)
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
-### Auth
+### Authentication
 
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
@@ -105,6 +105,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'pages.middleware.PageFallbackMiddleware',
+    'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
 )
 
 AUTH_USER_MODEL = 'users.User'
@@ -118,6 +120,7 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.sites',
+    'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.comments',
@@ -158,7 +161,7 @@ INSTALLED_APPS = (
     #'allauth.socialaccount.providers.github',
     #'allauth.socialaccount.providers.openid',
     #'allauth.socialaccount.providers.twitter',
-    
+
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
 

@@ -49,22 +49,22 @@ class ICSImporter(object):
         self.create_or_update_model(OccurringRule, event=event, defaults=defaults)
 
     def import_event(self, calendar, event_data):
-            uid = event_data['UID']
-            title = event_data['SUMMARY']
-            description = event_data['DESCRIPTION']
-            location, _ = EventLocation.objects.get_or_create(
-                calendar=calendar,
-                name=event_data['LOCATION']
-            )
-            defaults = {
-                'title': title,
-                'description': description,
-                'description_markup_type': 'html',
-                'venue': location,
-                'calendar': calendar
-            }
-            event, _ = self.create_or_update_model(Event, uid=uid, defaults=defaults)
-            self.import_occurrence(event, event_data)
+        uid = event_data['UID']
+        title = event_data['SUMMARY']
+        description = event_data['DESCRIPTION']
+        location, _ = EventLocation.objects.get_or_create(
+            calendar=calendar,
+            name=event_data['LOCATION']
+        )
+        defaults = {
+            'title': title,
+            'description': description,
+            'description_markup_type': 'html',
+            'venue': location,
+            'calendar': calendar
+        }
+        event, _ = self.create_or_update_model(Event, uid=uid, defaults=defaults)
+        self.import_occurrence(event, event_data)
 
     def fetch(self, url):
         response = requests.get(url)

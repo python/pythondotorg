@@ -37,12 +37,17 @@ class Job(ContentManageable):
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
     job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True)
-    company = models.ForeignKey('companies.Company', related_name='jobs')
+    company = models.ForeignKey('companies.Company', related_name='jobs', blank=True, null=True)
+
+    company_name = models.CharField(max_length=100, blank=True, null=True)
+    company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    job_title = models.CharField(blank=True, null=True, max_length=100)
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
     country = models.CharField(max_length=100, db_index=True)
     location_slug = models.SlugField(max_length=350, editable=False)
+    country_slug = models.SlugField(max_length=100, editable=False)
 
     description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
@@ -68,7 +73,7 @@ class Job(ContentManageable):
         (STATUS_REMOVED, 'removed'),
         (STATUS_EXPIRED, 'expired'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_DRAFT, db_index=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_REVIEW, db_index=True)
     dt_start = models.DateTimeField('Job start date', blank=True, null=True)
     dt_end = models.DateTimeField('Job end date', blank=True, null=True)
 
@@ -91,6 +96,7 @@ class Job(ContentManageable):
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
+        self.country_slug = slugify(self.country)
 
         if not self.dt_start and self.status == self.STATUS_APPROVED:
             self.dt_start = timezone.now()
@@ -100,6 +106,16 @@ class Job(ContentManageable):
 
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
+
+    @property
+    def display_name(self):
+        return self.company_name or getattr(self.company, 'name', '')
+
+    @property
+    def display_description(self):
+        if self.company_description.raw.strip():
+            return self.company_description
+        return getattr(self.company, 'about', '')
 
     @property
     def is_new(self):

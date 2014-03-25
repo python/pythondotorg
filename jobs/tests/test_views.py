@@ -7,7 +7,10 @@ from django.test import TestCase
 
 from .. import admin  # coverage FTW
 from ..models import Job
-from ..factories import ApprovedJobFactory, JobCategoryFactory, JobTypeFactory, ReviewJobFactory
+from ..factories import (
+    ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
+    ReviewJobFactory
+)
 from companies.factories import CompanyFactory
 from companies.models import Company
 from django_comments_xtd.utils import mail_sent_queue
@@ -45,6 +48,18 @@ class JobsViewTests(TestCase):
             is_featured=True
         )
         self.job.job_types.add(self.job_type)
+
+        self.job_draft = DraftJobFactory(
+            company=self.company,
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email='hr@company.com',
+            is_featured=True
+        )
+        self.job_draft.job_types.add(self.job_type)
 
     def test_job_list(self):
         url = reverse('jobs:job_list')
@@ -110,6 +125,32 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['companies_count'], 1)
         self.assertEqual(len(response.context['featured_companies']), 1)
 
+    def test_job_edit(self):
+        username = 'kevinarnold'
+        email = 'kevinarnold@example.com'
+        password = 'secret'
+
+        User = get_user_model()
+        creator = User.objects.create_user(username, email, password)
+
+        job = ApprovedJobFactory(
+            company=self.company,
+            description='My job listing',
+            category=self.job_category,
+            city='Memphis',
+            region='TN',
+            country='USA',
+            email='hr@company.com',
+            creator=creator,
+            is_featured=True
+        )
+
+        self.client.login(username=username, password=password)
+        url = reverse('jobs:job_edit', kwargs={'pk': job.pk})
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
     def test_job_detail(self):
         url = self.job.get_absolute_url()
         response = self.client.get(url)
@@ -152,7 +193,7 @@ class JobsViewTests(TestCase):
         self.assertNotEqual(job.updated, None)
         self.assertEqual(job.creator, None)
 
-        self.assertEqual(job.status, 'draft')
+        self.assertEqual(job.status, 'review')
 
     def test_job_types(self):
         job_type2 = JobTypeFactory(
@@ -199,6 +240,24 @@ class JobsViewTests(TestCase):
         content = str(response.content)
         self.assertTrue('Memphis' in content)
         self.assertFalse('Lawrence' in content)
+
+    def test_job_display_name(self):
+        self.assertEqual(self.job.display_name, self.job.company.name)
+
+        self.job.company_name = 'ABC'
+        self.assertEqual(self.job.display_name, self.job.company_name)
+
+        self.job.company_name = ''
+        self.assertEqual(self.job.display_name, self.job.company.name)
+
+    def test_job_display_about(self):
+        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)
+
+        self.job.company_description.raw = 'XYZ'
+        self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
+
+        self.job.company_description = '     '
+        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)        
 
 
 class JobsReviewTests(TestCase):

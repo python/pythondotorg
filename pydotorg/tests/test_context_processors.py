@@ -15,3 +15,12 @@ class TemplateProcessorsTestCase(TestCase):
 
         mock_request = MockRequest(path='/events/calendars/')
         self.assertEqual({'URL_NAMESPACE': 'events', 'URL_NAME': 'events:calendar_list'}, context_processors.url_name(mock_request))
+
+        mock_request = MockRequest(path='/getit/releases/3.3.3/not-an-actual-thing/')
+        self.assertEqual({}, context_processors.url_name(mock_request))
+
+        mock_request = MockRequest(path='/getit/releases/3.3.3/\r\n/')
+        self.assertEqual({}, context_processors.url_name(mock_request))
+
+        mock_request = MockRequest(path='/nothing/here/')
+        self.assertEqual({}, context_processors.url_name(mock_request))

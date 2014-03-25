@@ -12,6 +12,8 @@ class BaseDownloadTests(TestCase):
 
     def setUp(self):
         self.download_supernav_box = Box.objects.create(label='supernav-python-downloads')
+        self.download_supernav_box.content.markup_type = 'html'
+        self.download_supernav_box.save()
 
         self.windows = OS.objects.create(name='Windows')
         self.osx = OS.objects.create(name='Mac OSX')
