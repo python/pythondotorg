@@ -583,9 +583,11 @@
     }
     
     .community-banner {
-        text-align: left; /* Why is this needed? */
-        background: 140% 0 no-repeat image-url("landing-community.png") transparent;
-        padding-bottom: .75em; 
+        text-align: left; // Why is this needed?
+        background: 110% 0 no-repeat image-url("landing-community.png") transparent;
+        min-height: 345px; 
+        padding-bottom: 2em;
+        margin-bottom: -1.25em;
     }
     
     .welcome-to-the-foundation {
@@ -940,8 +942,7 @@
     /* Header-banners */
     .about-banner, 
     .download-for-current-os, 
-    .documentation-banner, 
-    .community-banner {
+    .documentation-banner {
         @include pad( 0,5 ); 
         
         & p:last-child { margin-bottom: 0; }
@@ -952,20 +953,16 @@
         
         p { @include post( 1,7 ); }
     }
-        .about-banner {
-            background-position: 110% 0px;
+        .about-banner, .documentation-banner {
+            background-position: 110% 0;
         }
         .download-for-current-os {
             background-position: 115% 0; 
             padding-bottom: 6em;
             margin-bottom: -3em;
         }
-        .documentation-banner {
-            background-position: 110% 0;
-        }
         .community-banner {
-            background-position: 105% 0; 
-            min-height: 320px; 
+            background-position: 100% 0; 
         }
         .featured-success-story {
             
@@ -1134,11 +1131,10 @@
     
     .community-banner {
         @include pad( 0,6 ); 
-        background-position: 95% 0; 
         
         p { margin-right: 0; }
     }
-        
+    
     .latest-blog-post, 
     .featured-event, 
     .jobs-intro {
@@ -1198,5 +1194,5 @@
         }
     }
     
-    .community-banner { background-position: 95% 0; }
+    .community-banner { background-position: 90% 0; }
 }
