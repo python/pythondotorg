@@ -33,6 +33,7 @@ class EventAdmin(ContentManageableModelAdmin):
     inlines = [OccurringRuleInline, RecurringRuleInline, AlarmInline]
     list_display = ['__str__', 'calendar', 'featured']
     list_filter = ['calendar', 'featured']
+    search_fields = ['title']
 
 
 class EventLocationAdmin(admin.ModelAdmin):
