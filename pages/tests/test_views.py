@@ -19,6 +19,10 @@ class PageViewTests(BasePageTests):
         r = self.client.get('/one/')
         self.assertEqual(r.status_code, 200)
 
+    def test_with_query_string(self):
+        r = self.client.get('/one/?foo')
+        self.assertEqual(r.context['page'], self.p1)
+
     def test_redirect(self):
         """
         Check that redirects still have priority over pages.

@@ -16,7 +16,7 @@ class PageFallbackMiddleware(object):
         if response.status_code != 404:
             return response
 
-        full_path = request.get_full_path()[1:]
+        full_path = request.path[1:]
 
         page = None
         qs = self.get_queryset(request)
