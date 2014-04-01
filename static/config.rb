@@ -31,3 +31,6 @@ output_style = :compressed
 # preferred_syntax = :sass
 # and then run:
 # sass-convert -R --from scss --to sass sass scss && rm -rf sass && mv scss sass
+
+# Expect UTF-8 encoded scss stylesheets by default.
+Encoding.default_external = "UTF-8"
