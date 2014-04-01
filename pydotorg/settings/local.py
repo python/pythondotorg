@@ -2,7 +2,14 @@ from .base import *
 
 DEBUG = True
 TEMPLATE_DEBUG = True
-PYTHON_ORG_CONTENT_SVN_PATH='/Users/flavio/working_copies/beta.python.org/build/data'
+
+# If you have an existing SVN checkout locally, put the path below.
+#PYTHON_ORG_CONTENT_SVN_PATH=''
+
+PYTHON_ORG_CONTENT_SVN_URL='https://svn.python.org/www/trunk/beta.python.org'
+
+# Local path where the SVN checkout will be stored. Defaults to '/tmp'.
+#SVN_CHECKOUT_PATH=''
 
 HAYSTACK_CONNECTIONS = {
     'default': {
