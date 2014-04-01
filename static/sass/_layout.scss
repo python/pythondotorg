@@ -519,21 +519,31 @@
             
             span, a { display: inline-block; }
             
-            .button { padding-bottom: .2em; }
-            
-            .message { 
-                white-space: nowrap; 
-                padding: .4em .75em .35em;
-                opacity: 0; 
-                color: $grey-light; 
-                @include vertical-gradient( $grey-dark, darken($grey-dark, 8%) );
-                @include pe-border( $color-top: #444, $color-right: #444, $color-bottom: #444, $color-left: #444 );
-                @include border-radius();
-                @include box-shadow( 1px 1px 1px rgba(#000, 0.05) );
-                @include transition( all .25s ease-in-out ); 
+            .button {
+                padding-bottom: .2em;
+
+                .message { 
+                    opacity: 0; 
+                    position: absolute;
+                        top: -9999px; right: 2.6em;
+                    white-space: nowrap; 
+                    padding: .4em .75em .35em;
+                    color: $grey-light; 
+                    @include vertical-gradient( $grey-dark, darken($grey-dark, 8%) );
+                    @include pe-border( $color-top: #444, $color-right: #444, $color-bottom: #444, $color-left: #444 );
+                    @include border-radius();
+                    @include box-shadow( 1px 1px 1px rgba(#000, 0.05) );
+                    @include transition( opacity .25s ease-in-out, top 0s linear .25s); 
+                }
+
+                &:hover .message {
+                    opacity: 1;
+                    top: 0;
+                    @include transition( opacity .25s ease-in-out, top 0s linear); 
+                }
             }
             
-            li:hover .message, li:focus .message { opacity: 1; }
+            /*li:hover .message, li:focus .message { opacity: 1; }*/
         }
         
         .no-touch .launch-shell {
