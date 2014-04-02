@@ -6,7 +6,13 @@
 {% block header_content %}
         <div id="dive-into-python" class="flex-slideshow slideshow">
 
-            <ul class="launch-shell menu" id="launch-shell"><li><span class="message">Launch Interactive Shell</span><a class="button prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_</a></li></ul>
+            <ul class="launch-shell menu" id="launch-shell">
+                <li>
+                    <a class="button prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_
+                        <span class="message">Launch Interactive Shell</span>
+                    </a>
+                </li>
+            </ul>
 
             <ul class="slides menu">
                 {% for sample in code_samples %}
