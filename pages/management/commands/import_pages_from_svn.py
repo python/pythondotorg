@@ -72,9 +72,21 @@ class Command(BaseCommand):
         page.save()
 
     def handle(self, *args, **kwargs):
-        self.SVN_REPO_PATH = getattr(settings, 'PYTHON_ORG_CONTENT_SVN_PATH', None)
+        self.SVN_REPO_PATH =      getattr(settings, 'PYTHON_ORG_CONTENT_SVN_PATH', None)
+        self.SVN_REPO_URL =       getattr(settings, 'PYTHON_ORG_CONTENT_SVN_URL',  None)
+        self.SVN_CHECKOUT_PATH =  getattr(settings, 'SVN_CHECKOUT_PATH', '/tmp')
+
         if self.SVN_REPO_PATH is None:
-            raise ImproperlyConfigured("PYTHON_ORG_CONTENT_SVN_PATH not defined in settings")
+            if self.SVN_REPO_URL:
+                import subprocess
+                with subprocess.Popen(['svn', 'co', self.SVN_REPO_URL, self.SVN_CHECKOUT_PATH]):
+                    print('Checking out from:', self.SVN_REPO_URL)
+                self.SVN_REPO_PATH = self.SVN_CHECKOUT_PATH + '/build/data'
+                print('Checkout complete. Proceeding with build.')
+            else:
+                raise ImproperlyConfigured("No PYTHON_ORG_CONTENT_SVN_PATH or "\
+                                              "PYTHON_ORG_CONTENT_SVN_URL "\
+                                              "defined in settings")
 
         matches = []
         for root, dirnames, filenames in os.walk(self.SVN_REPO_PATH):
@@ -91,6 +103,7 @@ class Command(BaseCommand):
 
             try:
                 data = parse_page(os.path.dirname(match))
+                print('[ Build ]', path)
             except Exception as e:
                 print("Unable to parse {0}".format(match))
                 traceback.print_exc()
@@ -98,10 +111,10 @@ class Command(BaseCommand):
 
             try:
                 defaults = {
-                    'title': data['headers'].get('Title', ''),
-                    'keywords': data['headers'].get('Keywords', ''),
-                    'description': data['headers'].get('Description', ''),
-                    'content': data['content'],
+                    'title':               data['headers'].get('Title', ''),
+                    'keywords':            data['headers'].get('Keywords', ''),
+                    'description':         data['headers'].get('Description', ''),
+                    'content':             data['content'],
                     'content_markup_type': data['content_type'],
                 }
 
