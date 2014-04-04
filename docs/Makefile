@@ -99,7 +99,8 @@ devhelp:
 	@echo "# devhelp"
 
 epub:
-	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(BUILDDIR)/epub
+	EPUBAUTHOR = -A Python Software Foundation -R 3.4.0 -V 3.4.0
+	$(SPHINXBUILD) -b epub $(ALLSPHINXOPTS) $(EPUBAUTHOR) $(BUILDDIR)/epub
 	@echo
 	@echo "Build finished. The epub file is in $(BUILDDIR)/epub."
 
