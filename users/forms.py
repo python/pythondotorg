@@ -47,6 +47,7 @@ class UserProfileForm(ModelForm):
 class MembershipForm(ModelForm):
 
     COC_CHOICES = (
+        ('', ''),
         (True, 'Yes'),
         (False, 'No')
     )
@@ -66,8 +67,7 @@ class MembershipForm(ModelForm):
         self.fields['postal_code'].required = True
 
         code_of_conduct = self.fields['psf_code_of_conduct']
-        code_of_conduct.widget = forms.RadioSelect(choices=self.COC_CHOICES)
-        code_of_conduct.initial = True
+        code_of_conduct.widget = forms.Select(choices=self.COC_CHOICES)
 
         announcements = self.fields['psf_announcements']
         announcements.widget = forms.RadioSelect(choices=self.ACCOUNCEMENT_CHOICES)
