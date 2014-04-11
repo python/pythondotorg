@@ -33,7 +33,8 @@ class PageFallbackMiddleware(object):
                 pass
         if page is not None:
             response = PageView.as_view()(request, path=full_path)
-            response.render()
+            if hasattr(response, 'render'):
+                response.render()
 
         # No page was found. Return the response.
         return response
