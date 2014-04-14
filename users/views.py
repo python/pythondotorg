@@ -43,6 +43,8 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        if not self.request.user.is_authenticated():
+            return redirect('account_login')
         if self.request.user.has_membership:
             return redirect('users:user_membership_edit')
 
