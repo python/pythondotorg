@@ -13,6 +13,13 @@
 
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
+{% block extra_js %}
+    <script type="text/javascript">
+        jQuery(window).load(function($) {
+            $('#id_login').focus();
+        });
+    </script>
+{% endblock extra_js %}
 
 {% block content %}
 <div class="row">

@@ -1,34 +1,15 @@
-{% extends "base.html" %}
-
+{% extends "users/base.html" %}
+{% load users_tags %}
 {% block page_title %}Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="python users default-page"{% endblock %}
 
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
-{% endblock %}
+{% block user_content %}
 
-
-{% block content_attributes %}with-right-sidebar{% endblock %}
-
-
-{% block content %}
-
-    {% if request.user %}
-    <div class="user-profile-controls">
-        <ul class="menu">
-            <li>Manage your Information: </li>
-            <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
-            <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
-        </ul>
-    </div>
-    {% endif %}
-    
     <article class="text">
         <div class="active-user-list">
-        
-            <h1>Current Python.org Users and PSF Members</h1>
+
+            <h1 class="default-title">Current Python.org Users and PSF Members</h1>
             <div class="list-row-headings">
                 <span class="user-name">User Name</span>
                 <span class="user-location">Location</span>
@@ -38,14 +19,14 @@
             {% for user in user_list %}
                 <li>
                     <span class="user-name"><a href="{{ user.get_absolute_url }}">{% firstof user.get_full_name user.username %}</a></span>
-                    <span class="user-location">{# {{ user|user_location|default:"Not Specified" }} #}</span>
+                    <span class="user-location">{{ user|user_location|default:"" }}</span>
                     <span class="user-psfmember-status"><span class="icon-python" aria-hidden="true"></span>Yes</span>
                     {% comment %}If not a member, simply output <span class="user-psfmember-status"></span> {% endcomment %}
                 </li>
             {% endfor %}
             </ul>
         </div>
-        
+
         <!-- Pagination -->
         <ul class="pagination menu">
             {% if page_obj.has_previous %}
@@ -53,11 +34,11 @@
             {% else %}
                 <li class="previous"><a class="disabled" href="">Prev</a></li>
             {% endif %}
-        
+
             {% for page in paginator.page_range %}
             <li><a {% if page_obj.number == page %}class="active" {% endif %}href="?page={{ page }}">{{ page }}</a></li>
             {% endfor %}
-        
+
             {% if page_obj.has_next %}
                 <li class="next"><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
             {% else %}
@@ -66,4 +47,4 @@
         </ul>
     </article>
 
-{% endblock content %}
+{% endblock user_content %}
