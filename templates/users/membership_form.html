@@ -90,13 +90,12 @@
 
         {% if request.user.has_membership %}
         <div class="horizontal-menu">
-          <p>I have previously agreed to the <a href="/psf/codeofconduct/">PSF Code of Conduct</a>.
+          <p>I have previously agreed to the <a href="/psf/codeofconduct/">PSF Code of Conduct</a>.</p>
         </div>
         {% else %}
         {# only display CoC on intial creation #}
         <div class="psf-codeofconduct">
             {% box 'psf-codeofconduct' %}
-
         </div>
 
         <div class="horizontal-menu">

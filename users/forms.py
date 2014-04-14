@@ -71,8 +71,8 @@ class MembershipForm(ModelForm):
         code_of_conduct.widget = forms.Select(choices=self.COC_CHOICES)
 
         announcements = self.fields['psf_announcements']
-        announcements.widget = forms.RadioSelect(choices=self.ACCOUNCEMENT_CHOICES)
-        announcements.initial = True
+        announcements.widget = forms.CheckboxInput()
+        announcements.initial = False
 
     class Meta(object):
         model = Membership

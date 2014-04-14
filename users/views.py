@@ -1,7 +1,9 @@
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
+from django.conf import settings
+from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
@@ -41,6 +43,9 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        if self.request.user.has_membership:
+            return redirect('users:user_membership_edit')
+
         return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
@@ -55,6 +60,16 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
         if self.request.user.is_authenticated():
             self.object.creator = self.request.user
         self.object.save()
+
+        # Send subscription email to mailing lists
+        if settings.MAILING_LIST_PSF_MEMBERS and self.object.psf_announcements:
+            send_mail(
+                subject='PSF Members Announce Signup from python.org',
+                message='subscribe',
+                from_email=self.object.creator.email,
+                recipient_list=[settings.MAILING_LIST_PSF_MEMBERS],
+            )
+
         return super().form_valid(form)
 
     def get_success_url(self):
