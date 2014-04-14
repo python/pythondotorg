@@ -115,7 +115,7 @@ WSGI_APPLICATION = 'pydotorg.wsgi.application'
 
 ### Apps
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -165,7 +165,7 @@ INSTALLED_APPS = (
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
 
-)
+]
 
 ### Testing
 
