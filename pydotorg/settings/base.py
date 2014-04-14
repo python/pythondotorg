@@ -68,6 +68,7 @@ LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -115,7 +116,7 @@ WSGI_APPLICATION = 'pydotorg.wsgi.application'
 
 ### Apps
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -165,7 +166,7 @@ INSTALLED_APPS = (
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
 
-)
+]
 
 ### Testing
 
@@ -206,12 +207,16 @@ COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
 COMMENTS_XTD_FORM_CLASS = "jobs.forms.JobCommentForm"
 
-# Honeypot
+### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'
 HONEYPOT_VALUE = 'write your message'
+
 ### Blog Feed URL
 PYTHON_BLOG_FEED_URL = "http://feeds.feedburner.com/PythonInsider"
 PYTHON_BLOG_URL = "http://blog.python.org"
+
+### Registration mailing lists
+MAILING_LIST_PSF_MEMBERS = "psf-members-announce@python.org"
 
 ### Pipeline
 
