@@ -1,7 +1,7 @@
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
-from django.shortcuts import render, redirect
+from django.shortcuts import render
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
