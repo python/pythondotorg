@@ -70,7 +70,7 @@ class Membership(models.Model):
 
     def __str__(self):
         if self.creator:
-            return "Membership object for user: %s" % self.creator.username
+            return "Membership for user: %s" % self.creator.username
         else:
             return "Membership '%s'" % self.legal_name
 
