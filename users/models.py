@@ -39,6 +39,13 @@ class User(AbstractUser):
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})
 
+    @property
+    def has_membership(self):
+        if self.membership.all().exists():
+            return True
+        else:
+            return False
+
 models.signals.post_save.connect(create_api_key, sender=User)
 
 
@@ -58,7 +65,7 @@ class Membership(models.Model):
     created = models.DateTimeField(default=timezone.now, blank=True)
     updated = models.DateTimeField(blank=True)
     # FIXME: This should be a OneToOneField
-    creator = models.ForeignKey(User, null=True, blank=True)
+    creator = models.ForeignKey(User, null=True, blank=True, related_name='membership')
 #    creator = models.OneToOneField(User, null=True, blank=True)
 
     def __str__(self):

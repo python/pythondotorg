@@ -1,14 +1,10 @@
-{% extends "base.html" %}
+{% extends "users/base.html" %}
+{% load users_tags %}
 
 {% block page_title %}{% firstof object.get_full_name object %} | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="psf users default-page"{% endblock %}
 
-
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
-{% endblock %}
 
 {% block main-nav_attributes %}psf-navigation{% endblock %}
 
@@ -16,37 +12,28 @@
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 
-{% block content %}
+{% block user_content %}
 
-    {% if request.user %}
-    <div class="user-profile-controls">
-        <ul class="menu">
-            <li>Manage your Information: </li>
-            <li><a href="{% url 'users:user_profile_edit' %}">Edit your profile</a></li>
-            <li><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
-        </ul>
-    </div>
-    {% endif %}
-    
     <div class="return-link">
         <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
     </div>
-    
+
     <article class="text">
         <div class="user-profile-display">
-        
+
             <div class="user-profile-name">
                 <p><span class="profile-label">Name:</span> {% firstof object.get_full_name object %}</p>
             </div>
-            {% comment %}
+            <div class="user-profile-membership">
+                <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span> PSF Member?</span> Yes</p>
+            </div>
             <div class="user-profile-location">
                 <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
             </div>
-            {% endcomment %}
             <div class="user-profile-bio">
-                {{ object.bio }}
+                <p><span class="profile-label">Bio:</span></p> {{ object.bio }}
             </div>
-        
+
             {% comment %}
                 All possible supported networks with icons.
                 We don't need to support all of these through the profile if you do not want to
@@ -63,8 +50,8 @@
                 </ul>
             </div>
             {% endcomment %}
-        
+
         </div>
     </article>
 
-{% endblock content %}
+{% endblock user_content %}

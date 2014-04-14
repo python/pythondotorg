@@ -17,10 +17,10 @@ def parse_location(user):
     path = ''
 
     # FIXME: Change this when Membership.creator becomes a OneToOneField
-    try:
-        membership = user.membership_set.all()[0]
-    except IndexError:
-        return ''
+    if user.membership.exists():
+        membership = user.membership.all()[0]
+    else:
+        return path
 
     #try:
     #    membership = user.membership

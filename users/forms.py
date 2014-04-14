@@ -45,6 +45,7 @@ class UserProfileForm(ModelForm):
 
 
 class MembershipForm(ModelForm):
+    """ PSF Membership creation form """
 
     COC_CHOICES = (
         ('', ''),
@@ -92,3 +93,18 @@ class MembershipForm(ModelForm):
         if not data:
             raise forms.ValidationError('Agreeing to the code of conduct is required.')
         return data
+
+
+class MembershipUpdateForm(MembershipForm):
+    """
+    PSF Membership update form
+
+    NOTE: This disallows changing of the members acceptance of the Code of
+    Conduct on purpose per the PSF.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        del(self.fields['psf_code_of_conduct'])
+

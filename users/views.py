@@ -1,13 +1,13 @@
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.core.urlresolvers import reverse
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
 
 from honeypot.decorators import check_honeypot
 
-from .forms import UserCreationForm, UserProfileForm, MembershipForm
+from .forms import UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm
 from .models import User, Membership
 
 
@@ -34,7 +34,7 @@ class SignupView(CreateView):
         return super().form_valid(form)
 
 
-class MembershipUpdate(CreateView):
+class MembershipCreate(LoginRequiredMixin, CreateView):
     form_class = MembershipForm
     model = Membership
     template_name = 'users/membership_form.html'
@@ -42,6 +42,36 @@ class MembershipUpdate(CreateView):
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        if self.request.user.email:
+            kwargs['initial'] = {'email_address': self.request.user.email}
+
+        return kwargs
+
+    def form_valid(self, form):
+        self.object = form.save(commit=False)
+        if self.request.user.is_authenticated():
+            self.object.creator = self.request.user
+        self.object.save()
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('users:user_membership_thanks')
+
+
+class MembershipUpdate(LoginRequiredMixin, UpdateView):
+    form_class = MembershipUpdateForm
+    model = Membership
+    template_name = 'users/membership_form.html'
+
+    @method_decorator(check_honeypot)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_object(self):
+        return self.request.user.membership.all()[0]
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
