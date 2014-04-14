@@ -107,4 +107,4 @@ class MembershipUpdateForm(MembershipForm):
         super().__init__(*args, **kwargs)
 
         del(self.fields['psf_code_of_conduct'])
-
+        del(self.fields['psf_announcements'])
