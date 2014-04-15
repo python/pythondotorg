@@ -73,3 +73,18 @@ class UsersViewsTestCase(TestCase):
         }
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
+
+    def test_user_detail(self):
+        # Ensure detail page is viewable without login, but that edit URLs
+        # do not appear
+        user = User.objects.create_user(username='username', password='password')
+        detail_url = reverse('users:user_detail', kwargs={'slug': user.username})
+        edit_url = reverse('users:user_profile_edit')
+        response = self.client.get(detail_url)
+        self.assertNotContains(response, edit_url)
+
+        # Ensure edit url is available to logged in users
+        self.client.login(username='username', password='password')
+        response = self.client.get(detail_url)
+        self.assertContains(response, edit_url)
+

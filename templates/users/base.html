@@ -15,7 +15,7 @@
 
 {% block content %}
 
-    {% if request.user %}
+    {% if request.user.is_authenticated %}
     <div class="user-profile-controls">
         <ul class="menu">
             <li>Manage your Information: </li>
