@@ -216,7 +216,7 @@ PYTHON_BLOG_FEED_URL = "http://feeds.feedburner.com/PythonInsider"
 PYTHON_BLOG_URL = "http://blog.python.org"
 
 ### Registration mailing lists
-MAILING_LIST_PSF_MEMBERS = "psf-members-announce@python.org"
+MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
 ### Pipeline
 
