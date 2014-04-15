@@ -10,12 +10,17 @@ User = get_user_model()
 
 
 class UsersViewsTestCase(TestCase):
+    def setUp(self):
+        self.user = User.objects.create_user(
+            username='username',
+            password='password',
+        )
+
     def test_membership_create(self):
         url = reverse('users:user_membership_create')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)  # Requires login now
 
-        user = User.objects.create_user(username='username', password='password')
         self.client.login(username='username', password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -41,8 +46,7 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)  # Requires login now
 
-        user = User.objects.create_user(username='username', password='password')
-        membership = MembershipFactory(creator=user)
+        membership = MembershipFactory(creator=self.user)
         self.client.login(username='username', password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
@@ -62,7 +66,6 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
 
     def test_user_update(self):
-        User.objects.create_user(username='username', password='password')
         self.client.login(username='username', password='password')
         url = reverse('users:user_profile_edit')
         response = self.client.get(url)
@@ -77,8 +80,7 @@ class UsersViewsTestCase(TestCase):
     def test_user_detail(self):
         # Ensure detail page is viewable without login, but that edit URLs
         # do not appear
-        user = User.objects.create_user(username='username', password='password')
-        detail_url = reverse('users:user_detail', kwargs={'slug': user.username})
+        detail_url = reverse('users:user_detail', kwargs={'slug': self.user.username})
         edit_url = reverse('users:user_profile_edit')
         response = self.client.get(detail_url)
         self.assertNotContains(response, edit_url)
