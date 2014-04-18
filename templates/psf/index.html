@@ -1,7 +1,7 @@
 {# ===== PSF LANDING PAGE ===== #}
 
 {% extends "base.html" %}
-{% load boxes %}
+{% load boxes sponsors %}
 
 {% block page_title %}Python Software Foundation{% endblock %}
 
@@ -24,7 +24,7 @@
 {% block header_content %}
                 <div class="welcome-to-the-foundation">
                     {% box 'psf-banner' %}
-                    
+
                 </div>
 {% endblock header_content %}
 
@@ -34,22 +34,21 @@
 
         		    <div class="small-widget psf-widget1">
                         {% box 'psf-widget1' %}
-
                     </div>
 
                     <div class="small-widget psf-widget2">
                         {% box 'psf-widget2' %}
-
                     </div>
 
                     <div class="small-widget psf-widget3">
                         {% box 'psf-widget3' %}
-                        
                     </div>
 
                     <div class="small-widget psf-widget4 last">
-                        {% box 'psf-widget4' %}
-                        
+                        <h2 class="widget-title">Sponsors</h2>
+                        {% featured_sponsor_rotation %}
+                        <p><a class="button" href="/psf/sponsorship/">Sponsorship Possibilities</a></p>
+                        <p><a href="/psf/members/#sponsor-members">PSF Sponsors</a></p>
                     </div>
 
                 </div>
@@ -59,27 +58,26 @@
 
                     <div class="medium-widget grants-widget">
                         {% box 'psf-grants' %}
-
                     </div>
 
                     <div class="medium-widget news-wiki-widget last">
-                        
+
                         {% comment %}
-                        There is some dynamic content needed in this box. Below is the markup/idea for the content. 
-                        
+                        There is some dynamic content needed in this box. Below is the markup/idea for the content.
+
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF News </h2>
                             <p class="give-me-more"><a href="#" title="More PSF News">More</a></p>
-                            
-                            ** Dynamic: 
+
+                            ** Dynamic:
                             <ul class="menu">
                                 <li><a href="#">Simon Cross Awarded Community Service Award</a></li>
                                 <li><a href="#">Kenneth Gonsalves Posthumously Awarded Community Service Award</a></li>
                                 <li><a href="#">Announcing the 2012 Distinguished Service Award &ndash; John Hunter</a></li>
                                 <li><a href="#">Welcome New PSF Members!</a></li>
                             </ul>
-                            ** 
-                            
+                            **
+
                         </div>
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF Wiki </h2>
@@ -87,9 +85,9 @@
                             <p><strong class="uppercase">MEMBERS ONLY:</strong> The PSF Members&rsquo; Wiki is provided for collaboration amongst PSF members on internal projects. Become a member to see what exciting things we have in store for the Python family.</p>
                         </div>
                         {% endcomment %}
-                        
+
                         {% box 'psf-news' %}
-                        
+
                     </div>
 
                 </div>

@@ -263,31 +263,57 @@ $().ready(function() {
     }
     if ( !window.flexslider ) {
 
-        if ( $("body").hasClass( 'home' ) ) {
+        /* Grab body and html tags only once */
+        var body = $('body');
+        var html = $('html');
 
-            $("html").addClass( "flexslide" );
+        if ( body.hasClass( 'home' ) ) {
+
+            html.addClass( "flexslide" );
 
             $('#dive-into-python').flexslider({
                 animation: animationtype,
                 direction: 'horizontal',
                 animationLoop: true,
                 slideshow: true,
-        	    slideshowSpeed: 8000,
-        	    animationSpeed: 600,
-        	    randomize: false,
-        	    smoothHeight: false,
-        	    pauseOnAction: true,
-        	    pauseOnHover: true,
-        	    useCSS: true, // use CSS transitions if available
-        	    controlNav: true, // Create navigation for paging control of each slide
-        	    directionNav: false, // Create navigation for previous/next navigation
-        	    prevText: "Prev.",
-        	    nextText: "Next",
-        	    touch: hastouch,
+                slideshowSpeed: 8000,
+                animationSpeed: 600,
+                randomize: false,
+                smoothHeight: false,
+                pauseOnAction: true,
+                pauseOnHover: true,
+                useCSS: true, // use CSS transitions if available
+                controlNav: true, // Create navigation for paging control of each slide
+                directionNav: false, // Create navigation for previous/next navigation
+                prevText: "Prev.",
+                nextText: "Next",
+                touch: hastouch,
                 start: function(slider){
                     $(this).fadeIn();
                     $('body').removeClass('loading');
                 }
+            });
+
+        }
+
+        if( body.hasClass('psf') ) {
+            html.addClass( "flexslide" );
+            // PSF Sponsor rotation
+            $('#sponsor-rotation').flexslider({
+                animation: 'slide',
+                direction: 'horizontal',
+                animationLoop: true,
+                slideshow: true,
+                slideshowSpeed: 8000,
+                animationSpeed: 600,
+                randomize: true,
+                smoothHeight: false,
+                pauseOnAction: true,
+                pauseOnHover: true,
+                controlNav: false,
+                directionNav: false,
+                useCSS: true, // use CSS transitions if available
+                touch: hastouch,
             });
         }
 

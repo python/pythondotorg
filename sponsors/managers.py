@@ -9,6 +9,9 @@ class SponsorQuerySet(QuerySet):
     def published(self):
         return self.filter(is_published=True)
 
+    def featured(self):
+        return self.published().filter(featured=True)
+
 
 class SponsorManager(Manager):
     def get_query_set(self):
@@ -19,3 +22,6 @@ class SponsorManager(Manager):
 
     def published(self):
         return self.get_query_set().published()
+
+    def featured(self):
+        return self.get_query_set().featured()
