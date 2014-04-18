@@ -60,8 +60,7 @@ The box will be provisioned by Chef with Python 3.3, a virtualenv set up with re
 Running tests
 -------------
 
-Install `coverage` (`pip install coverage`), then::
-
+    $ pip install -r dev-requirements.txt
     $ coverage run manage.py test
     $ coverage report
 
