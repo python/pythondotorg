@@ -2,7 +2,7 @@
 from south.utils import datetime_utils as datetime
 from south.db import db
 from south.v2 import DataMigration
-from django.db import models
+from django.db import models, IntegrityError
 
 
 class Migration(DataMigration):
@@ -32,7 +32,7 @@ class Migration(DataMigration):
                 em.verified = True
                 em.primary = True
                 em.save()
-            except models.IntegrityError:
+            except IntegrityError:
                 pass
 
     def backwards(self, orm):
