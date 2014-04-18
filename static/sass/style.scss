@@ -3,14 +3,14 @@
 @import "mixins";
 @import "flexslider";
 
-@include html5boilerplate_reset; 
+@include html5boilerplate_reset;
 
 
-/* 
- * Main CSS styles for linear content. Design for Mobile first! 
- * 
- * Use attribute selectors when it makes sense: 
- * [class*=wrapper] means any class that is exactly "wrapper". Not as useful as these: 
+/*
+ * Main CSS styles for linear content. Design for Mobile first!
+ *
+ * Use attribute selectors when it makes sense:
+ * [class*=wrapper] means any class that is exactly "wrapper". Not as useful as these:
  * See http://24ways.org/2012/a-harder-working-class/
  * [class*=pod] means any class containing the expression "pod"
  * [href^=http] means any href that starts with "http"
@@ -18,20 +18,20 @@
  */
 
 
-/* 
+/*
  * KNOWN Bugs and rendering issues
  *
- * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well. 
+ * When italic is used, in Android browsers (newer), they render in the italic font AND are additionally obliqued/skewed. Might be an OS thing, I've seen this happen with other sites as well.
  *
  * Can we figure out a way to get rid of ALL uses of !important?
  *
  * Search for "This is a mess and dumb" and fix that issue
  *
- * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well. 
- * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE. 
+ * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well.
+ * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE.
  *
- * Search for properties that begin with * and make them ie7 specific instead. 
- * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance. 
+ * Search for properties that begin with * and make them ie7 specific instead.
+ * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance.
  */
 
 
@@ -39,18 +39,18 @@
 
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 html {
-    background-color: darken($blue, 10%); 
+    background-color: darken($blue, 10%);
     font: normal 100%/1.625 $default-font;
 }
 
 body {
    color: $default-color;
-   background-color: $white; 
-   
+   background-color: $white;
+
     /* Label the body with our media query parameters. Then check with JS to coordinate @media changes */
     &:after {
-        content: 'small'; 
-        display: none; 
+        content: 'small';
+        display: none;
     }
 }
 
@@ -61,7 +61,7 @@ body, input, textarea, select, button {
 
 * { @include pe-box-sizing( border-box ); }
 
-a, a:active, a:visited, a:hover, a:visited:hover { 
+a, a:active, a:visited, a:hover, a:visited:hover {
 	color: $link-color;
 	text-decoration: none;
 }
@@ -70,9 +70,9 @@ a:hover, a:focus { color: $link-hover; }
 
 /*modernizr*/ .touch a[href^="tel:"] { border-bottom: 1px dotted $default-color; }
 
-a img { 
-    display: block; 
-    margin: 0 auto; 
+a img {
+    display: block;
+    margin: 0 auto;
 }
 
 /* Set the highlight colors. These selection declarations have to be separate */
@@ -90,16 +90,16 @@ h1, .alpha {
     color: $blue;
     //font-family: $default-font;
     line-height: 1em;
-    font-size: px2em( $headerone ); 
+    font-size: px2em( $headerone );
     @include trailer(.25);
-    //@include fontface-adjust( 28px ); 
+    //@include fontface-adjust( 28px );
 }
 
 h2, .beta {
     color: $grey-light;
     font-family: $default-font-bold;
-    font-size: px2em( $headertwo ); 
-    @include leader(.75); 
+    font-size: px2em( $headertwo );
+    @include leader(.75);
     @include trailer(.1875);
     //@include fontface-adjust( 24px );
 }
@@ -107,129 +107,129 @@ h2, .beta {
 h3, .chi {
     color: $grey-darker;
     //font-family: $default-font-bold;
-    font-size: px2em( $headerthree ); 
-    @include leader(1); 
+    font-size: px2em( $headerthree );
+    @include leader(1);
     @include trailer(.25);
-    //@include fontface-adjust( 21px ); 
+    //@include fontface-adjust( 21px );
 }
 
 h4, .delta {
     color: $grey-darker;
     font-family: $default-font-bold;
-    font-size: px2em( $headerfour ); 
-    @include leader(.75); 
+    font-size: px2em( $headerfour );
+    @include leader(.75);
     @include trailer(.25);
 }
 
 h5, .epsilon {
     color: $grey-darker;
     font-family: $default-font-bold;
-    text-transform: uppercase; 
-    letter-spacing: 0.0625em; 
-    @include leader(1); 
+    text-transform: uppercase;
+    letter-spacing: 0.0625em;
+    @include leader(1);
 }
 
 h6, .gamma {
     color: $grey-darker;
-    font-family: $default-font-bold; 
-    @include leader(1); 
+    font-family: $default-font-bold;
+    @include leader(1);
 }
 
 blockquote {
     position: relative;
     font: italic px2em( 18px ) Georgia, serif;
-    line-height: 2; 
+    line-height: 2;
     padding-top: rhythm(.75);
     padding-bottom: rhythm(.75);
-    border-top: 3px solid lighten( $yellow, 20% ); 
-    border-bottom: 3px solid lighten( $yellow, 20% ); 
+    border-top: 3px solid lighten( $yellow, 20% );
+    border-bottom: 3px solid lighten( $yellow, 20% );
     margin-bottom: rhythm(0.75);
-    
+
     /*&:before, &:after {
-        color: $grey-lighter; 
-        font-style: normal; 
+        color: $grey-lighter;
+        font-style: normal;
         font-size: 4em;
         position: absolute;
     }
-    
+
     &:before {
         content: "“";
-        top: -.25em; 
+        top: -.25em;
         left: 0;
     }*/
-    
+
     footer { font: normal px2em( 14px, 18px ) $default-font; }
-    
+
     em { font-style: normal; }
 }
 
 dl {
-    border-top: 1px solid $grey-lightest; 
-    
+    border-top: 1px solid $grey-lightest;
+
     dt {
-        font-family: $default-font-bold; 
+        font-family: $default-font-bold;
         border-bottom: 1px solid $grey-lightest;
     }
-    
+
     dd {
-        padding-left: 1.5em; 
+        padding-left: 1.5em;
         border-bottom: 1px solid $grey-lighter;
     }
 }
 
 
 /* ! ===== Form elements ===== */
-form { 
-    @extend %pie-clearfix; 
-    
+form {
+    @extend %pie-clearfix;
+
     ul { @extend .menu; }
 }
 
 .errorlist {
-    @extend .menu; 
-    color: $red; 
-    margin-bottom: 0; 
-    
+    @extend .menu;
+    color: $red;
+    margin-bottom: 0;
+
     &:before { @extend .icon-arrow-down; }
-    
+
     & + label { margin-top: 0; }
 }
 
 .error-message { color: $red; }
 
 label {
-    display: block; 
-    color: $grey-light; 
+    display: block;
+    color: $grey-light;
     font-weight: bold;
     @include leader( .5 );
     @include leader( .125 );
-    
+
     &.active { color: $blue; }
 }
 
 input, textarea {
     width: 100%;
     padding: .65em;
-    border: 1px solid $default-border-color; 
-    @include border-radius(); 
+    border: 1px solid $default-border-color;
+    @include border-radius();
 }
 
 input, textarea, select { margin-bottom: rhythm( .5 ); }
 
 input[type=checkbox], input[type=radio] {
-    width: auto; 
-    border: none; 
-    margin-right: .25em; 
+    width: auto;
+    border: none;
+    margin-right: .25em;
 }
 
 input[type=radio] { margin-bottom: .25em;  }
 
 input {
-    
+
     /*modernizr*/ .no-touch &:focus { @include box-shadow( 0px 0px 10px rgba( 0,0,0,0.2 ) ); }
-    
+
     &[required=required] { border-color: $red; }
-    
+
     &[required=required]:focus { @include box-shadow( 0px 0px 10px rgba( 255,0,0,0.5 ) ); }
 }
 
@@ -238,8 +238,8 @@ input:-moz-placeholder { color: $grey-light; font-style: italic; }
 
 /* Not a mistake... I repeat a.button and .button so I do not need to add !important to the color declaration */
 input[type=submit], input[type=reset], button, a.button, .button {
-    @extend %button-style; 
-    display: block; 
+    @extend %button-style;
+    display: block;
 }
 
 button[type=submit] { @extend %button-style-blue; }
@@ -249,9 +249,9 @@ button[type=submit] { @extend %button-style-blue; }
 input[type=reset], button.secondaryAction[type=submit] {
     @include vertical-gradient( lighten( $grey-light, 10% ), $grey-light );
     @include pe-border( $color-top: $default-border-color, $color-right: $grey-light, $color-bottom: darken( $grey-light, 10% ), $color-left: $grey-light );
-    
+
     &:hover, &:focus, &:active {
-        color: $white; 
+        color: $white;
         @include vertical-gradient( $grey-light, lighten( $grey-light, 10% ) );
     }
 }
@@ -267,28 +267,28 @@ abbr, dfn { border-bottom: 1px dotted $blue; }
 
 
 /* ! ===== Simple Column Structure – Need to roll this out more widely ===== */
-$colpadpx:  16px; 
-$colpad:    1em; 
+$colpadpx:  16px;
+$colpad:    1em;
 
 .col-row {
-    margin: 0 - $colpad; 
-    @include clearfix(); 
+    margin: 0 - $colpad;
+    @include clearfix();
 }
 
 .column, .not-column {
-    padding-left: $colpad; 
-    padding-right: $colpad; 
+    padding-left: $colpad;
+    padding-right: $colpad;
 }
 .column { padding-bottom: rhythm( 1 ); }
 
 /* Because of em-nesting, if you adjust the $colpad above, you will need to adjust these values as well */
 h1.not-column {
-    padding-left: px2em( $colpadpx, $headerone ); 
+    padding-left: px2em( $colpadpx, $headerone );
     padding-right: px2em( $colpadpx, $headerone );
 }
 
 h2.not-column {
-    padding-left: px2em( $colpadpx, $headertwo ); 
+    padding-left: px2em( $colpadpx, $headertwo );
     padding-right: px2em( $colpadpx, $headertwo );
 }
 
@@ -300,25 +300,25 @@ h2.not-column {
 
 /* Our own little class for progressive text. Yes, it is a Monty Python reference */
 .say-no-more {
-    display: none; 
-    visibility: hidden; 
+    display: none;
+    visibility: hidden;
 }
 
 /* Styling for a series of angle brackets... >>> */
 .prompt {
     font-family: $alt-font;
     font-size: 120%;
-    letter-spacing: -.0625em; 
+    letter-spacing: -.0625em;
 }
 
 /* Used on "Read More" or "More" links (duh)  */
 .readmore, .give-me-more a {
-    white-space: nowrap; 
-    
+    white-space: nowrap;
+
     &:before {
-        @extend .prompt; 
-        content: ">>>"; 
-        margin-right: .25em; 
+        @extend .prompt;
+        content: ">>>";
+        margin-right: .25em;
     }
 }
 
@@ -332,65 +332,65 @@ h2.not-column {
 %topbar-hovered-state {
     color: $white;
     @include vertical-gradient( $top-color: #13191e, $bottom-color: #1f2a32 );
-    
+
     &:before { left: 50%; }
 }
 
 .top-bar {
-    color: #bbb; 
+    color: #bbb;
     background-color: $darkerblue;
     border-bottom: 1px solid $darkblue;
-   
+
     a {
-        position: relative; 
-        display: block; 
-        color: $grey-light; 
-        background: transparent; 
+        position: relative;
+        display: block;
+        color: $grey-light;
+        background: transparent;
         text-align: center;
-        padding: .5em .75em .4em; 
-        @include adjust-font-size( 16px ); 
-        
+        padding: .5em .75em .4em;
+        @include adjust-font-size( 16px );
+
         /* no fallback for .no-generatedcontent. This is a progressive enhancement */
         &:before {
             @include pointer( .5em );
             border-right-color: transparent;
             border-bottom-color: transparent;
-            border-left-color: transparent; 
-            top: 0; 
-            left: -9999px; 
-            margin-left: -.25em; 
+            border-left-color: transparent;
+            top: 0;
+            left: -9999px;
+            margin-left: -.25em;
         }
-        
+
         &:hover, &:focus { @extend %topbar-hovered-state; }
     }
-    
+
     li { border-top: 3px solid $blue; }
-    
+
     .python-meta, .python-meta a:before { border-top-color: $blue; }
     .psf-meta, .psf-meta a:before { border-top-color: $psf; }
     .docs-meta, .docs-meta a:before { border-top-color: $yellow; }
     .pypi-meta, .pypi-meta a:before { border-top-color: $green; }
     .jobs-meta, .jobs-meta a:before { border-top-color: $purple; }
     .shop-meta, .shop-meta a:before { border-top-color: $red; }
-    
-    .python & .python-meta a, 
+
+    .python & .python-meta a,
     .psf & .psf-meta a,
-    .docs & .docs-meta a, 
+    .docs & .docs-meta a,
     .pypi & .pypi-meta a,
-    .jobs & .jobs-meta a, 
+    .jobs & .jobs-meta a,
     .shop & .shop-meta a { @extend %topbar-hovered-state; }
 }
 
-.meta-navigation { 
-    text-align: center; 
-    
+.meta-navigation {
+    text-align: center;
+
     /*ul*/ .menu { margin-bottom: 0; }
-    
+
     .say-no-more {
-        display: inline; 
-        visibility: visible; 
+        display: inline;
+        visibility: visible;
     }
-    
+
     .jump-link { background-color: darken( $darkerblue, 7% ); }
 }
 
@@ -400,9 +400,9 @@ h2.not-column {
     @extend %blue-colorspace;
     border-top: 1px solid #191919;
     border-bottom: 1px solid #444;
-    
+
     .container {
-        text-align: center; 
+        text-align: center;
         padding: .75em 1em;
     }
 }
@@ -410,18 +410,18 @@ h2.not-column {
 /*h1*/ .site-headline {
     color: $white;
     margin: 0.15em auto 0.2em;
-     
+
     a {
-        display: block; 
+        display: block;
         margin: 0 auto;
-        
+
         .python-logo {
-            width: 290px * .75; 
-            height: 82px * .75; 
+            width: 290px * .75;
+            height: 82px * .75;
         }
         .psf-logo {
-            width: 334px * .75; 
-            height: 82px * .75; 
+            width: 334px * .75;
+            height: 82px * .75;
         }
     }
 }
@@ -430,63 +430,63 @@ h2.not-column {
 $optionsbar-text: #bbb;
 
 .options-bar {
-    width: 100%; 
-    color: $optionsbar-text; 
-    margin-bottom: rhythm( .75 ); 
+    width: 100%;
+    color: $optionsbar-text;
+    margin-bottom: rhythm( .75 );
     border-top: 1px solid lighten( $darkerblue, 8% );
     border-bottom: 1px solid darken( $darkerblue, 12% );
-    background-color: $darkerblue; 
+    background-color: $darkerblue;
     line-height: 1em;
-    @include border-radius(); 
-    
+    @include border-radius();
+
     form { padding: 0.35em 0.2em 0.3em; }
-    
+
     .breaker {
-        @include breaker_bar(); 
-        border-top: 1px solid darken( $darkerblue, 12% ); 
+        @include breaker_bar();
+        border-top: 1px solid darken( $darkerblue, 12% );
         border-bottom: 1px solid lighten( $darkerblue, 8% );
     }
 }
 
-#site-map-link, 
-.jump-to-menu, 
-.search-the-site, 
-.icon-search, 
-.icon-search:before, 
-input#s, 
-.adjust-font-size, 
-.winkwink-nudgenudge, 
+#site-map-link,
+.jump-to-menu,
+.search-the-site,
+.icon-search,
+.icon-search:before,
+input#s,
+.adjust-font-size,
+.winkwink-nudgenudge,
 .account-signin { @include pe-inline-block( middle ); }
 
 .touch .search-the-site,
-.winkwink-nudgenudge, 
+.winkwink-nudgenudge,
 .account-signin { border-left: 1px solid lighten( $darkerblue, 8% ); }
 
 .touch #site-map-link,
-.jump-to-menu, 
-.adjust-font-size, 
+.jump-to-menu,
+.adjust-font-size,
 .winkwink-nudgenudge { border-right: 1px solid darken( $darkerblue, 12% ); }
 
 #site-map-link {
-    color: $optionsbar-text; 
+    color: $optionsbar-text;
     //vertical-align: middle;
-    //padding: .875em 1em .75em; 
-    
+    //padding: .875em 1em .75em;
+
     &:hover, &:focus { color: $white; }
-    
+
     .no-touch & { display: none; }
 }
 
 .menu-icon {
-    display: inline-block; 
-    font-size: px2em( 20px ); 
-    margin: -.125em -.125em 0 0; 
+    display: inline-block;
+    font-size: px2em( 20px );
+    margin: -.125em -.125em 0 0;
 }
 
 /*form*/ .search-the-site {
-    text-align: left; 
+    text-align: left;
     padding: .35em .2em .3em;
-    
+
     .icon-search:before {
         font-size: 1.75em;
         //vertical-align: text-bottom;
@@ -496,27 +496,27 @@ input#s,
 }
 
 /*input*/ .search-field {
-    width: 4.5em; 
-    margin-bottom: 0; 
+    width: 4.5em;
+    margin-bottom: 0;
     color: $optionsbar-text;
-    background-color: transparent; 
-    border: none; 
-    margin: .125em 0; 
-    padding: .4em 0 .3em; 
-    @include border-radius( 0px ); 
-    
+    background-color: transparent;
+    border: none;
+    margin: .125em 0;
+    padding: .4em 0 .3em;
+    @include border-radius( 0px );
+
     &::-webkit-input-placeholder { color: $optionsbar-text; font-style: normal; }
     &:-moz-placeholder { color: $optionsbar-text; font-style: normal; }
-    
+
     &:focus {
-        background-color: $white; 
-        color: $default-color; 
-        padding: .4em .5em .3em; 
-        
+        background-color: $white;
+        color: $default-color;
+        padding: .4em .5em .3em;
+
         /* removed this line because it was making the height fluctuate on focus:
         @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */
     }
-    
+
     &:blur { color: $optionsbar-text; }
 }
 
@@ -525,73 +525,73 @@ input#s,
     margin-right: 0.2em;
     margin-bottom: 0;
     text-shadow: none;
-    
+
     /* Small screens (phones) have their own form controls */
     .touch & { display: none; }
-    
+
     // &:hover, &:focus, &:active { }
 }
 
 .no-touch .adjust-font-size { display: none; }
 
-.adjust-font-size, 
+.adjust-font-size,
 .winkwink-nudgenudge,
 .account-signin {
     @include horizontal_nav_base();
-    @include horizontal_nav_dropdowns(); 
-    
+    @include horizontal_nav_dropdowns();
+
     a {
-        color: $optionsbar-text; 
-        background-color: transparent; 
+        color: $optionsbar-text;
+        background-color: transparent;
     }
-    
+
     .tier-1 {
-        float: none; 
-        
+        float: none;
+
         &:hover > a {
-            color: #555; 
-            background-color: $grey-lighter; 
+            color: #555;
+            background-color: $grey-lighter;
         }
     }
-    
+
     .subnav {
-        background-color: $grey-lighter; 
-        
+        background-color: $grey-lighter;
+
         a {
             color: #555;
-            
+
             &:hover, &:focus {
-                color: $grey-lightest; 
-                background-color: $grey-light; 
+                color: $grey-lightest;
+                background-color: $grey-light;
             }
             .touch & .tier-2 {
-                padding-top: .75em; 
-                padding-bottom: .6em; 
+                padding-top: .75em;
+                padding-bottom: .6em;
             }
         }
-        
+
         .text-reset { color: #888; }
-        
+
         /*modernizr*/ .touch & {
             top: 135%;
-            border: 3px solid $grey; 
-            
+            border: 3px solid $grey;
+
             &:before {
-                top: -1.6em; 
-                border-color: transparent transparent $grey transparent; 
+                top: -1.6em;
+                border-color: transparent transparent $grey transparent;
             }
         }
     }
-    
+
     /*.close-subnav {
-        @include pe-border( $color-bottom: $grey-light ); 
-        
+        @include pe-border( $color-bottom: $grey-light );
+
         .close-text { padding: .9em 3.25em .8em 1em; }
     }*/
 }
 
-#site-map-link, 
-.adjust-font-size .tier-1 > a, 
+#site-map-link,
+.adjust-font-size .tier-1 > a,
 .winkwink-nudgenudge .tier-1 > a,
 .account-signin .tier-1 > a { padding: 1em 1em .875em; }
 
@@ -614,21 +614,21 @@ input#s,
     clear: both;
     margin: 0 1em;
     position: relative;
-    
+
     img {
-        display: block; 
-        margin: 0 auto; 
+        display: block;
+        margin: 0 auto;
     }
-    
+
     p { color: $grey-lightest; }
-    
+
     a:not(.button), a:not(.readmore) {
-        @extend %link-style; 
+        @extend %link-style;
         color: $yellow;
-        
+
         &:hover, &:focus { color: #fff; }
     }
-    
+
     .button, a.button {
         @extend %button-style-yellow;
     }
@@ -636,92 +636,92 @@ input#s,
 
 /* Interactive Shell and default Slideshow */
 .home .slideshow {
-    margin: 0 auto; 
+    margin: 0 auto;
     max-width: px2em( 980px );
     background: $darkerblue;
-    @include box-shadow( inset 0 0 30px rgba(#000, .6) ); 
+    @include box-shadow( inset 0 0 30px rgba(#000, .6) );
 }
 
-    .slide-code, 
+    .slide-code,
     .slide-copy { text-align: left; }
 
     .slide-code {
         overflow: auto;
         padding: 1.25em 1.5em;
-        
+
         code {
-            display: inline-block; 
+            display: inline-block;
             color: $code-green;
-            
+
             .comment { color: $grey; }
-            
+
             .output { color: $grey-lighterer; }
         }
     }
-    
+
     .js .launch-shell, .no-js .launch-shell { display: none; }
-    
+
     .slide-copy {
         background: darken($blue, 22%);
         padding: 1.25em 2.5em;
-        
+
         h1 {
             color: $yellow;
-            font-size: px2em( $headerthree ); 
-            font-family: $default-font-bold; 
+            font-size: px2em( $headerthree );
+            font-family: $default-font-bold;
         }
     }
-    
+
     /* Avoid IDs if you can. In this case, these styles are intended to be very specific */
     #dive-into-python .flex-control-paging {
         position: absolute;
             bottom: 0; left: 50%;
-        padding: 0 0 1em; 
+        padding: 0 0 1em;
         margin-left: 0;
         width: 50%;
-        max-width: 30.75em; 
-        
-        a { 
-            @extend %button-style-blue; 
-            @include opacity( .7 ); 
-            
+        max-width: 30.75em;
+
+        a {
+            @extend %button-style-blue;
+            @include opacity( .7 );
+
             &:hover, &:focus { @include opacity( 1 ); }
         }
-        
-        .flex-active { 
-            color: $yellow !important; 
-            @include opacity( 1 ); 
+
+        .flex-active {
+            color: $yellow !important;
+            @include opacity( 1 );
         }
     }
 
 .introduction {
     color: $grey-lighter;
     font-size: px2em( 20px );
-    text-align: left; 
-    padding: 0.25em 0.5em; 
-    @include leader(.5); 
+    text-align: left;
+    padding: 0.25em 0.5em;
+    @include leader(.5);
     @include trailer(.5);
-    
+
     p {
         line-height: 1.4em;
-        margin-bottom: 0; 
+        margin-bottom: 0;
     }
-    
+
     a, a:link, a:visited {
-        color: $yellow; 
+        color: $yellow;
         text-decoration: underline;
-        
+
         &:hover, &:focus { color: $white; }
     }
-    
+
     .breaker { display: none; }
 }
 
-.about-banner, 
-.download-for-current-os, 
-.documentation-banner, 
-.latest-blog-post, 
-.featured-event, 
+.about-banner,
+.download-for-current-os,
+.documentation-banner,
+.latest-blog-post,
+.featured-event,
 .jobs-intro { text-align: left; }
 
 /*h1*/ .call-to-action {
@@ -730,20 +730,20 @@ input#s,
     line-height: 1.25em;
     @include leader( .25 );
     @include trailer( .25 );
-    
+
     a {
-        color: $yellow; 
-        border-bottom: 2px dotted $blue; 
+        color: $yellow;
+        border-bottom: 2px dotted $blue;
         line-height: 1.35em;
-        
+
         &:hover, &:focus { color: $grey-lightest; }
-    } 
+    }
 }
 
 .content-wrapper {
-    padding: 0; 
+    padding: 0;
     @include vertical-gradient( #fcfcfc, #f9f9f9 );
-    
+
     .container { padding: 0.25em; }
 }
 
@@ -752,217 +752,217 @@ input#s,
 
 .main-content {
     padding-bottom: rhythm( 1 );
-    
+
     &.with-left-sidebar { }
-    
+
     &.with-right-sidebar { }
-    
+
     & > article {
-        margin-top: rhythm( .75 ); 
+        margin-top: rhythm( .75 );
         padding-bottom: rhythm( 1 );
     }
 }
 
 .page-title {
-    color: $grey; 
-    word-spacing: .15em; 
-    @include fontface-adjust( $kilo ); 
+    color: $grey;
+    word-spacing: .15em;
+    @include fontface-adjust( $kilo );
 }
 
 /* For when we dont need to extra size buyt do want the margin */
 .default-title { word-spacing: .15em; }
 
 .text {
-    font-size: 1em; 
-    
-    .giga, 
-    .mega, 
+    font-size: 1em;
+
+    .giga,
+    .mega,
     .kilo {
-        color: $blue; 
+        color: $blue;
     }
 }
 
 .sidebar-widget { padding-bottom: rhythm( .75 ); }
 
 
-/* Want to test/debug vertical rhythm? 
- * http://compass-style.org/reference/compass/layout/grid_background/ 
- * Set $show-baseline-grid-backgrounds to true; 
+/* Want to test/debug vertical rhythm?
+ * http://compass-style.org/reference/compass/layout/grid_background/
+ * Set $show-baseline-grid-backgrounds to true;
  *
  * To tweak the base font size and line height according to the width of the reading container, try this calculator:
  * http://www.pearsonified.com/typography/
  */
-$grid-background-baseline-height: $base-line-height; 
-$grid-background-baseline-color: rgba( $code-green, .5 ); 
-$show-baseline-grid-backgrounds: false; 
+$grid-background-baseline-height: $base-line-height;
+$grid-background-baseline-color: rgba( $code-green, .5 );
+$show-baseline-grid-backgrounds: false;
 
 
 /* ! Default body text styles for more comfortable reading */
-.text, 
+.text,
 .sidebar-widget {
     //@include baseline-grid-background();
-    
+
     /* Its not great to define headers in more than one place... fix this later please */
-    h1 { 
-        margin-top: 1em; 
-        margin-bottom: .25em; 
+    h1 {
+        margin-top: 1em;
+        margin-bottom: .25em;
     }
-    
-    .default-title, .page-title { 
-        @include leader(.75); 
-        @include trailer(.5); 
+
+    .default-title, .page-title {
+        @include leader(.75);
+        @include trailer(.5);
     }
-    
+
     h2 { }
     h3 { }
     h4 { }
     h5 { }
-    
+
     /* blockquotes should contain <p> tags, so remove it from this list when you fix blockquote markup sitewide */
     p, pre, ul, ol, dl, blockquote, address, form, table, figure {
         margin-bottom: rhythm(0.75);
         line-height: 1.875;
     }
-    
+
     /* Hyphenate specific container elements */
     p, dd, blockquote, address {
-        @include pe-hyphenate(); 
+        @include pe-hyphenate();
     }
-    
-    li > ul, 
+
+    li > ul,
     li > ol { margin-bottom: 0; }
-    
+
     li {
         line-height: 1.65em;
         margin: rhythm(0.15) 0;
     }
-    
-    blockquote { 
-        padding-left: 3em; 
+
+    blockquote {
+        padding-left: 3em;
         padding-right: 1em;
     }
-    
+
     form {
         line-height: 1.625em;
-        margin-bottom: rhythm(0.75); 
-        
-        button, input[type=submit] { 
-            @extend %button-style-blue; 
-            font-size: px2em( 18px ); 
+        margin-bottom: rhythm(0.75);
+
+        button, input[type=submit] {
+            @extend %button-style-blue;
+            font-size: px2em( 18px );
             padding: .4em 1em .35em;
         }
-        
+
         /* Remove bullets from ULs in forms when containing radios or checkboxes */
         label + ul { @extend .menu; }
     }
-    
+
     a:not(.button) {
         @extend %link-style;
         display: inline;
-        
-        /* Decided not to use this, the style was too obtrusive 
+
+        /* Decided not to use this, the style was too obtrusive
         &.external:before, &[rel='external']:before {
             content: '\21f1'; // An external link unicode icon, looks like a box with arrow pointing up to left from bottom right.
-            display: inline-block; 
-            font-weight: bold; 
-            color: $grey-light; 
-            margin-right: .5em; 
+            display: inline-block;
+            font-weight: bold;
+            color: $grey-light;
+            margin-right: .5em;
         } */
     }
-    
+
     /* This is a mess and dumb. Figure out a better way */
     nav a, .menu a, input[type=submit], input[type=reset], input[type=button], button, .prompt,
-    nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, .prompt:hover, 
+    nav a:hover, .menu a:hover, input[type=submit]:hover, input[type=reset]:hover, input[type=button]:hover, .prompt:hover,
     nav a:focus, .menu a:focus, input[type=submit]:focus, input[type=reset]:focus, input[type=button]:focus, .prompt:focus {
-        border-bottom: 0; 
+        border-bottom: 0;
     }
-    
+
     figcaption {
-        font-style: italic; 
-        font-size: px2em( 14px ); 
+        font-style: italic;
+        font-size: px2em( 14px );
     }
-    
-    abbr[title], 
+
+    abbr[title],
     dfn[title] { border-bottom: 1px dotted $blue; }
-    
+
     abbr[title] {
         font-size: .875em;
         text-transform: uppercase;
         letter-spacing: 0.125em;
     }
-    
-    var { 
-        color: $grey-darker; 
-        font-size: 104%; 
-        font-weight: 700; 
+
+    var {
+        color: $grey-darker;
+        font-size: 104%;
+        font-weight: 700;
     }
-    
+
     code, kbd, samp { display: inline-block;  }
-    
+
     code, samp { border: 0; }
-    
-    samp { 
-        border-bottom: 1px solid $grey-lighter; 
-        background-color: $grey-lightest; 
-        padding: .125em .375em 0; 
-        margin: 0 .25em; 
+
+    samp {
+        border-bottom: 1px solid $grey-lighter;
+        background-color: $grey-lightest;
+        padding: .125em .375em 0;
+        margin: 0 .25em;
     }
-    
+
     code, kbd {
-        padding: .125em .375em 0; 
-        margin: 0 -.0625em; 
-        background: $grey-lightest; 
-        background: rgba( $grey-lightest, .5 ); 
-        @include box-shadow( 0 0 .5em rgba( #000, .1 ) inset ); 
-        @include border-radius(); 
+        padding: .125em .375em 0;
+        margin: 0 -.0625em;
+        background: $grey-lightest;
+        background: rgba( $grey-lightest, .5 );
+        @include box-shadow( 0 0 .5em rgba( #000, .1 ) inset );
+        @include border-radius();
     }
-    
+
     pre {
-        padding: .5em; 
-        border-left: 5px solid $code-green; 
-    	background: $grey-lightest; 
-    	@include box-shadow( 0 0 .5em rgba( #000, .1 ) inset ); 
+        padding: .5em;
+        border-left: 5px solid $code-green;
+    	background: $grey-lightest;
+    	@include box-shadow( 0 0 .5em rgba( #000, .1 ) inset );
     }
-    
+
     /* I've seen lots of cases where <pre> does not have a <code> inside of it, so we plan for both cases. */
     pre code {
-        display: block; 
-        padding: 0; 
-        margin: 0; 
+        display: block;
+        padding: 0;
+        margin: 0;
         @include box-shadow( 0 );
-        @include border-radius( 0 );  
+        @include border-radius( 0 );
     }
-    
+
     s, strike, del { color: $grey-light; }
-    
+
     /* Prettier tables if authors use the correct elements */
     table {
-            
+
         caption {
             caption-side: top;
             color: $default-color;
-            font-size: px2em( 18px ); 
+            font-size: px2em( 18px );
             text-align: left;
-            @include trailer(1); 
+            @include trailer(1);
         }
-        
+
         thead, tfoot { border-bottom: 1px solid $grey-lighterer; }
-        
+
         tr {
-            background-color: #f6f6f6; 
-            
+            background-color: #f6f6f6;
+
             & th { background-color: #f0f0f0; }
         }
-        
+
         tr:nth-of-type(even), tr.even { background-color: #f0f0f0; }
-        
+
         th, td {
-            padding: .25em .5em .2em; 
-            border-left: 2px solid $white; 
-            
+            padding: .25em .5em .2em;
+            border-left: 2px solid $white;
+
             &:first-child { border-left: none; }
         }
-        
+
         tfoot { border-top: 1px solid $grey-lighterer; }
     }
 }
@@ -982,49 +982,49 @@ $show-baseline-grid-backgrounds: false;
 %widget {
     border-top: 5px solid $grey-lightest; // default fallback
     padding: 1.25em;
-    
+
     h4 {
         border-top: 1px solid $grey-lightest;
         margin-top: 1.75em;
         padding-top: 0.5em;
     }
-    
+
     p, ul {
-        margin-bottom: rhythm( .5 ); 
-        
+        margin-bottom: rhythm( .5 );
+
         &:last-child { margin-bottom: 0; }
     }
-    
+
     li > a { display: inline-block; }
 }
 
-.small-widget, 
-.medium-widget, 
+.small-widget,
+.medium-widget,
 .sidebar-widget {
     @extend %widget;
 }
 
-.widget-title, 
+.widget-title,
 .listing-company {
-    color: $default-color; 
+    color: $default-color;
     line-height: 1.25em;
-    margin: 0 0 0.1em; 
-    font-family: $alt-font; 
-    @include fontface-adjust( $headerthree ); 
-    
+    margin: 0 0 0.1em;
+    font-family: $alt-font;
+    @include fontface-adjust( $headerthree );
+
     .prompt { display: none; /* show this at first breakpoint */ }
-    
+
     & > span { margin-right: .25em; }
-    
+
     & > span:before { color: $grey-light; }
 }
 
 /* ! ===== Section Specific Widget Colorways ===== */
 
-.small-widget, 
-.medium-widget, 
+.small-widget,
+.medium-widget,
 .sidebar-widget {
-    
+
     .python & { border-top: 4px solid lighten($blue, 20%); }
     .psf-home & { border-top: 5px solid $default-border-color; }
     .docs & { border-top: 5px solid $yellow; }
@@ -1040,7 +1040,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 @for $i from 1 through length($names) {
 
-    .#{nth($names, $i)} .widget-title > span:before, 
+    .#{nth($names, $i)} .widget-title > span:before,
     .#{nth($names, $i)} .listing-company > span:before { color: nth($colors, $i); }
 }
 
@@ -1050,7 +1050,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .get-started-widget { }
 
 .download-widget {
-    
+
     p:last-child a { white-space: nowrap; }
 }
 
@@ -1064,14 +1064,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     font-style: italic;
     margin-bottom: .75em;
 }
-    
+
 .download-list-widget { @extend .small-widget; }
 
 .blog-widget { @extend %indent-time-elements; }
 
 .blog-name {
     display: block;
-    font-family: $default-font-bold; 
+    font-family: $default-font-bold;
     letter-spacing: 0.01em;
 }
 
@@ -1080,47 +1080,47 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .most-recent-events { @extend .small-widget; }
 
 .success-stories-widget {
-    
+
     blockquote {
         //position: relative;
         color: $grey;
         background-color: lighten($yellow, 15%);
         padding: rhythm(.4) 1em rhythm(.5);
-        margin-bottom: rhythm( .25 ); 
+        margin-bottom: rhythm( .25 );
         @include adjust-font-size( 16px );
         @include vertical-gradient( lighten($yellow, 15%), lighten($yellow, 10%) );
         @include border-radius;
-        
+
         &:after {
-            @include pointer( 1.5em ); 
-                left: 20%; bottom: -2.875em; 
-            border-top-color: lighten($yellow, 10%); 
+            @include pointer( 1.5em );
+                left: 20%; bottom: -2.875em;
+            border-top-color: lighten($yellow, 10%);
         }
-        
+
         a {
-            color: $grey; 
-            
+            color: $grey;
+
             &:hover, &:focus, &:active { color: $blue; }
         }
     }
-    
+
     .quote-from {
         @extend %pie-clearfix;
-        
+
         td {
             padding: .5em;
             vertical-align: middle;
         }
-        
+
         img { max-height: 5em; }
-        
+
         p { font-size: px2em( 14px ); }
     }
 }
-    
+
 /*.statistics-widget {
-    padding-left: .75em; 
-    
+    padding-left: .75em;
+
     .stat {
         background: lighten($blue, 50%);
         padding: 0.7em 1em 0.875em;
@@ -1128,7 +1128,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         @include border-radius;
         @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
     }
-    
+
     .number {
         color: $grey;
         font-size: px2em( 42px );
@@ -1142,35 +1142,35 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         font-size: px2em( 18px );
         line-height: 1.2em;
         margin-bottom: 0;
-        text-align: center; 
+        text-align: center;
     }
 }*/
 
 .applications-widget {
-    padding-left: .75em; 
-    
+    padding-left: .75em;
+
     ul { border-top: 1px solid $default-border-color; }
-    
+
     li {
-        padding: .5em 0 .4em; 
-        border-bottom: 1px solid $default-border-color; 
+        padding: .5em 0 .4em;
+        border-bottom: 1px solid $default-border-color;
     }
 }
 
 .triple-widget { @extend .small-widget; }
 
 .shrubbery {
-    position: relative; 
-    
+    position: relative;
+
     .give-me-more {
         color: $grey-lighter;
         display: none;
         position: absolute;
         top: .25em; right: .25em;
-        
+
         a {
             color: $grey-light;
-            
+
             &:hover, &:active { color: $grey; }
         }
     }
@@ -1183,25 +1183,25 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== PEP Widget ===== */
 .pep-widget {
     @extend %grey-colorbox;
-    margin-bottom: rhythm( .75 ); 
-    
+    margin-bottom: rhythm( .75 );
+
     .widget-title {
         color: lighten($grey, 5%);
         margin-bottom: 0.35em;
         @include fontface-adjust( 18px );
-        
+
         a {
             color: $blue;
-            
+
             &:hover, &:active { color: $darkblue; }
         }
     }
-    
+
     .pep-number {
-        color: $grey; 
-        font-family: $default-font-bold;  
-        display: inline-block; 
-        width: 3em; 
+        color: $grey;
+        font-family: $default-font-bold;
+        display: inline-block;
+        width: 3em;
     }
 }
 
@@ -1209,18 +1209,18 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         border-top: 1px solid $default-border-color;
         line-height: 1.2em;
         margin: 0;
-        
+
         li {
-            display: block; 
+            display: block;
             line-height: 1.35em;
-            
+
             a {
-                display: block; 
+                display: block;
                 color: $blue;
-                background-color: $grey-lighterest; 
-                border-bottom: 1px solid darken($grey-lighterest, 4%); 
+                background-color: $grey-lighterest;
+                border-bottom: 1px solid darken($grey-lighterest, 4%);
                 padding: .6em .75em .5em;
-                
+
                 &:hover, &:focus, &:active {
                     color: $grey-darker;
                     background-color: lighten($grey-lighterest, 4%);
@@ -1232,7 +1232,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .rss-link {
     @extend .pre;
     line-height: 1em;
-    
+
     span:before { color: $orange; }
 }
 
@@ -1254,45 +1254,45 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .pep-list-header, .pep-index-list li { }
 
 .pep-list-header {
-    font-family: $default-font-bold; 
-    display: none; 
+    font-family: $default-font-bold;
+    display: none;
 }
 
 .pep-index-list {
-    margin-bottom: rhythm( 1.5 ); 
-    
+    margin-bottom: rhythm( 1.5 );
+
     .label {
         font-family: $default-font-bold;
         display: inline-block;
-        width: 20%;  
+        width: 20%;
     }
-    
+
     li {
-        background-color: $grey-lighterest; 
-        border-bottom: 1px solid $grey-lighter;  
+        background-color: $grey-lighterest;
+        border-bottom: 1px solid $grey-lighter;
     }
-    
+
     a {
-        display: inline-block; 
+        display: inline-block;
         color: $blue;
-        
+
         &:hover, &:focus, &:active { color: $grey-darker; }
     }
 }
 
 .pep-type, .pep-num, .pep-title, .pep-owner {
-    padding: .5em .5em .4em; 
-    border-bottom: 1px solid darken($grey-lighterest, 5%); 
+    padding: .5em .5em .4em;
+    border-bottom: 1px solid darken($grey-lighterest, 5%);
 }
 
-/*dl*/ .info-key { 
-    
+/*dl*/ .info-key {
+
     dt, dd {
-        display: block; 
-        float: left; 
-        padding: .5em .5em .4em; 
+        display: block;
+        float: left;
+        padding: .5em .5em .4em;
     }
-    
+
     dt { width: 25%; }
     dd { width: 75%; border-bottom: 1px solid $grey-lightest; }
 }
@@ -1308,30 +1308,30 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         </li>
     </ul> */
 .pep-owner-header {
-    margin: 0 -.5em; 
-    @include clearfix(); 
-    
+    margin: 0 -.5em;
+    @include clearfix();
+
     .label {
         font-family: $default-font-bold;
-        float: left; 
-        width: 50%; 
-        padding: .25em .5em .2em; 
+        float: left;
+        width: 50%;
+        padding: .25em .5em .2em;
     }
 }
 .pep-owner-list {
-    
+
     li {
-        background-color: $grey-lighterest; 
-        border-bottom: 1px solid $grey-lighter;  
+        background-color: $grey-lighterest;
+        border-bottom: 1px solid $grey-lighter;
         @include clearfix();
-        
+
         &:hover { background-color: lighten($grey-lighterest, 4%); }
     }
-    
+
     .owner-name, .owner-email {
-        float: left; 
-        width: 50%; 
-        padding: .5em .5em .4em; 
+        float: left;
+        width: 50%;
+        padding: .5em .5em .4em;
     }
 }
 
@@ -1341,31 +1341,31 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     padding: rhythm( .75 ) 0;
     background: center -230px no-repeat image-url("success-glow2.png") transparent;
     // @include vertical-gradient( rgba(255, 255, 255, 0.5), rgba(255, 255, 255, 0) );
-    
+
     img { padding: 10px 30px; }
-    
+
     /*blockquote*/ .success-quote {
-        color: $yellow; 
-        font-size: px2em( 26px ); 
-        line-height: 1.5; 
+        color: $yellow;
+        font-size: px2em( 26px );
+        line-height: 1.5;
         position: static;
         text-shadow: 0 0 4px rgba(0, 0, 0, 0.5);
-        
+
         &:before, &:after {
             color: lighten($blue, 10%);
-            font-style: normal; 
+            font-style: normal;
             font-size: px2em( 32px );
             line-height: 0;
             vertical-align: text-bottom;
             position: static;
         }
-        
+
         &:before {
             content: "“";
             top: auto; left: auto;
             margin-left: -.2em;
         }
-        
+
         &:after {
             content: "”";
             bottom: auto; right: auto;
@@ -1376,21 +1376,21 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
     a.activity-feed {
         border-bottom: none;
-        font-size: px2em( 12px ); 
-        
+        font-size: px2em( 12px );
+
         span { margin-right: .25em; }
     }
-    
+
     p.quote-by {
         color: $grey-lightest;
         margin-bottom: 0;
     }
-    
+
     p.quote-by-organization { color: $grey-lightest; }
 
 .newest-success-stories {
-    padding-top: rhythm( .75 ); 
-    
+    padding-top: rhythm( .75 );
+
     .widget-title { position: relative; }
 }
 
@@ -1401,16 +1401,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     <h1>{{ story.name }}</h1>
     <p class="company-byline"><a href="{{ story.get_company_url }}">{{ story.get_company_name }}</a></p>*/
     .story-header {
-        background-color: $grey-lighterest; 
-        margin: -1.3em 0 0; 
-        overflow: hidden; 
-        max-height: 24em; 
-        border-bottom: 3px solid $yellow; 
-        
+        background-color: $grey-lighterest;
+        margin: -1.3em 0 0;
+        overflow: hidden;
+        max-height: 24em;
+        border-bottom: 3px solid $yellow;
+
         img {
-            display: block; 
-            margin: 0 auto; 
-            min-width: 100%; 
+            display: block;
+            margin: 0 auto;
+            min-width: 100%;
         }
     }
 
@@ -1420,32 +1420,32 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /*h2*/ .welcome-message {
     font-family: $default-font; /* style like an h4 */
     font-size: px2em( $headerfour );
-    color: darken($yellow, 10%); 
-    @include leader( 0 ); 
-    @include trailer( .5 ); 
-    
+    color: darken($yellow, 10%);
+    @include leader( 0 );
+    @include trailer( .5 );
+
     .fontface & { font-size: px2em( 18px ); }
 }
 
 .latest-blog-post, .featured-event {
-    
+
     .call-to-action { }
-    
+
     .date-posted, .event-date { color: lighten( $grey-light, 6% ); }
-    
+
     p.excerpt { max-width: none; }
-    
+
     .readmore {
-        color: $yellow; 
-        
+        color: $yellow;
+
         &:hover, &:focus { color: $white; }
     }
 }
 
 .most-recent-posts {
-    @extend .small-widget; 
+    @extend .small-widget;
     @extend %indent-time-elements;
-    
+
     li time { position: relative; }
 }
 
@@ -1457,24 +1457,24 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== Events landing page ===== */
 
 .most-recent-events {
-    
+
     .menu { }
 }
 
 /*h3*/ .just-missed {
-    color: $blue; 
-    @include leader( .75 ); 
+    color: $blue;
+    @include leader( .75 );
 }
 
 .list-recent-events, .list-recent-posts {
-    border-top: 1px solid $grey-lighterer; 
-    
+    border-top: 1px solid $grey-lighterer;
+
     li {
         position: relative;
         border-bottom: 1px solid $grey-lighterer;
         padding: 0 0 0.75em;
     }
-    
+
     .event-title {
         font-size: px2em(20px);
         line-height: 1.3em;
@@ -1484,15 +1484,15 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
     /* Event single page */
     .single-event-title {
-        
+
     }
         .single-event-date {
-            @extend %yellow-colorbox; 
+            @extend %yellow-colorbox;
             /* resets as this is an H3 element and it behaves differently */
             margin-top: .75em;
-            margin-bottom: 1.25em; 
-            padding: .5em .75em; 
-            
+            margin-bottom: 1.25em;
+            padding: .5em .75em;
+
             .date-start { }
             .date-end { }
             .single-date { }
@@ -1501,27 +1501,27 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
             .year { }
         }
         .event-description { padding: rhythm( .75 ) 0; }
-        
+
         .more-by-location {
-            @extend %grey-colorspace; 
-            margin-bottom: 0; 
+            @extend %grey-colorspace;
+            margin-bottom: 0;
         }
-        
+
         .most-recent-events .more-by-location { @extend %grey-colorbox; }
-        
+
         .more-by-category { }
-        
+
         .more-by-venue { }
 
 
 /* ! ===== Community landing page ===== */
 .community-success-stories {
-    
+
     blockquote {
         padding: 0;
         color: $grey;
-        line-height: 1.5; 
-        
+        line-height: 1.5;
+
         &:before { content: ''; }
     }
 }
@@ -1533,15 +1533,15 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 /*ul*/ .twitter-stream {
-    
+
     li {
-        background-color: $grey-lighterest; 
-        line-height: 1.3; 
-        padding: .5em; 
-        margin-bottom: .25em; 
-        
+        background-color: $grey-lighterest;
+        line-height: 1.3;
+        padding: .5em;
+        margin-bottom: .25em;
+
         .view-on-twitter {
-            font-family: $default-font-bold; 
+            font-family: $default-font-bold;
             font-size: px2em( 12px, 14px );
         }
     }
@@ -1553,26 +1553,26 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .mapped-events {
     border-top: 3px solid $grey-lightest;
-    
+
     .medium-widget { border-top: 0; }
 }
 
 .tag-wrapper {
-    display: block; 
-    
+    display: block;
+
     /*a*/ .tag {
-        white-space: nowrap; 
-        color: $grey; 
-        font-size: px2em( 14px ); 
-        vertical-align: baseline; 
-        padding: .2em .4em .1em; 
-        background-color: $grey-lightest; 
-        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $default-border-color ); 
-        
+        white-space: nowrap;
+        color: $grey;
+        font-size: px2em( 14px );
+        vertical-align: baseline;
+        padding: .2em .4em .1em;
+        background-color: $grey-lightest;
+        @include pe-border( $color-top: $grey-lighterest, $color-bottom: $default-border-color );
+
         &:hover, &:focus {
-            color: $default-color; 
-            background-color: darken( $grey-lightest, 8% ); 
-            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $default-border-color, 8% ) ); 
+            color: $default-color;
+            background-color: darken( $grey-lightest, 8% );
+            @include pe-border( $color-top: darken( $grey-lighterest, 8% ), $color-bottom: darken( $default-border-color, 8% ) );
         }
     }
 }
@@ -1580,8 +1580,8 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .github-widget { }
 
 .git-avatar, .git-repo {
-    display: inline-block; 
-    vertical-align: bottom; 
+    display: inline-block;
+    vertical-align: bottom;
 }
 
 .git-avatar { margin-right: .5em; }
@@ -1598,11 +1598,11 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .list-row-container {
     border: 1px solid $default-border-color;
-    
+
     li {
         padding: .5em .5em .4em .75em;
         margin-right: 0;
-        
+
         &:nth-child(odd) { background-color: $grey-lighterest; }
     }
 }
@@ -1616,47 +1616,47 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     <li class="next"><a href="#">Next</a></li>
 </ul> */
 
-.pagination, 
+.pagination,
 .previous-next {
-    display: block; 
-    width: 100%; 
-    text-align: center; 
-    padding-top: rhythm( .75 ); 
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding-top: rhythm( .75 );
 }
 
 .pagination {
-    
+
     li {
-        line-height: 2; 
-        @include pe-inline-block; 
+        line-height: 2;
+        @include pe-inline-block;
     }
-    
+
     a {
-        @extend %square-block-buttons; 
-            
+        @extend %square-block-buttons;
+
         &:hover, &:focus {
-            color: $grey-dark; 
-            background-color: $yellow; 
+            color: $grey-dark;
+            background-color: $yellow;
         }
-        
+
         &.active {
-            color: $grey-lightest; 
-            background-color: $blue; 
+            color: $grey-lightest;
+            background-color: $blue;
         }
-        
-        &.disabled, 
-        &.disabled:hover, 
+
+        &.disabled,
+        &.disabled:hover,
         &.disabled:focus {
             color: $grey-lighter;
-            background-color: transparent; 
+            background-color: transparent;
         }
     }
-    .previous a, .next a, 
-    .previous a:hover, 
-    .next a:hover, 
-    .previous a:focus, 
+    .previous a, .next a,
+    .previous a:hover,
+    .next a:hover,
+    .previous a:focus,
     .next a:focus {
-        border: 0; 
+        border: 0;
     }
 }
 
@@ -1678,56 +1678,56 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 </p>*/
 
 .previous-next {
-    
-    .prev-button, 
+
+    .prev-button,
     .next-button {
         display: block;
-        padding: .5em .75em .4em; 
-        margin-bottom: rhythm( .5); 
-        
-        &:not(.disabled):hover, 
+        padding: .5em .75em .4em;
+        margin-bottom: rhythm( .5);
+
+        &:not(.disabled):hover,
         &:not(.disabled):focus {
-            color: $grey-dark; 
-            background-color: $yellow; 
+            color: $grey-dark;
+            background-color: $yellow;
         }
     }
-    
-    .prev-button-text, 
+
+    .prev-button-text,
     .next-button-text {
-        display: block; 
-        border-bottom: 1px solid $default-border-color; 
-        padding-bottom: .5em; 
+        display: block;
+        border-bottom: 1px solid $default-border-color;
+        padding-bottom: .5em;
     }
-    
+
     .prevnext-description {
-        display: block; 
-        padding-top: .5em; 
+        display: block;
+        padding-top: .5em;
     }
-    
+
     .disabled {
-        
-        .prev-button-text, 
+
+        .prev-button-text,
         .next-button-text {
-            color: $grey-lighter; 
-            border-bottom: 0; 
+            color: $grey-lighter;
+            border-bottom: 0;
         }
     }
-    
-    .icon-arrow-right, 
+
+    .icon-arrow-right,
     .icon-arrow-left { vertical-align: bottom; }
-    
+
     /* Special rules for specific templates */
     .single-event & {
-        margin-top: rhythm( .75 ); 
-        border-top: 1px solid $default-border-color; 
+        margin-top: rhythm( .75 );
+        border-top: 1px solid $default-border-color;
     }
 }
 
 
 /* ! ===== Downloads templates ===== */
-.release-number, 
-.release-date, 
-.release-download, 
+.release-number,
+.release-date,
+.release-download,
 .release-enhancements {
     display: block;
 }
@@ -1735,15 +1735,15 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .release-number { font-family: $default-font-bold; }
 
 .download-list-widget {
-    
-    .list-row-headings, 
+
+    .list-row-headings,
     .list-row-container li { font-size: px2em( 14px ); }
-    
+
     .list-row-container { margin-bottom: .5em; }
-    
+
     /*modernizr*/ .no-touch & .list-row-container {
-        height: 16.75em; 
-        overflow-y: scroll; 
+        height: 16.75em;
+        overflow-y: scroll;
     }
 }
 
@@ -1751,21 +1751,21 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== Blue Widgets ===== */
 .psf-widget, .python-needs-you-widget {
     @extend %blue-colorbox;
-    
+
     .main-content & a:not(.button) {
         color: $yellow;
-        
+
         &:hover, &:focus { color: lighten($yellow, 25%); }
     }
-    
+
     .widget-title, .readmore, .readmore:before {
         color: $yellow;
-        
+
         &:hover, &:focus { color: #fff; }
     }
-    
+
     p { color: $grey-lighter; }
-    
+
     /*p*/ .click-these { margin-bottom: 0; }
 }
 
@@ -1776,15 +1776,15 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     </div>*/
 
 .user-feedback {
-    padding: .75em 1em .65em; 
-    margin-bottom: rhythm( .75 ); 
-    @include border-radius(); 
-    
+    padding: .75em 1em .65em;
+    margin-bottom: rhythm( .75 );
+    @include border-radius();
+
     p { margin-bottom: 0; }
-    
+
     a {
-        text-decoration: underline; 
-        
+        text-decoration: underline;
+
         &:hover, &:focus { color: $grey-darker; }
     }
 }
@@ -1792,83 +1792,83 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* A helpful tip */
 .level-general {
     background-color: lighten($blue, 50%);
-    border: 1px solid lighten($blue, 40%); 
+    border: 1px solid lighten($blue, 40%);
 }
 
 /* A slight warning before completing a task */
 .level-notice {
-    background-color: lighten( $yellow, 30% ); 
-    border: 2px solid $yellow; 
+    background-color: lighten( $yellow, 30% );
+    border: 2px solid $yellow;
 }
 
 /* Something went wrong */
 .level-error {
-    background-color: lighten( $red, 35% ); 
-    border: 2px solid $red; 
-    
+    background-color: lighten( $red, 35% );
+    border: 2px solid $red;
+
     span { color: $red; }
 }
 
 /* Yeah! It worked correctly */
 .level-success {
-    background-color: lighten( $green, 35% ); 
+    background-color: lighten( $green, 35% );
     border: 2px solid $green;
-    
-    span { 
-        color: $green; 
-        margin-right: .5em; 
+
+    span {
+        color: $green;
+        margin-right: .5em;
     }
 }
 
 
 /* ! ===== SIDEBAR syles ===== */
 
-/*<aside class="main-sidebar | right-sidebar | left-sidebar">*/ 
+/*<aside class="main-sidebar | right-sidebar | left-sidebar">*/
 .main-sidebar { }
 
 .left-sidebar {
-    
+
     .sidebar-widget {
-        //padding-top: 0; 
-        margin-bottom: rhythm( .5 ); 
+        //padding-top: 0;
+        margin-bottom: rhythm( .5 );
     }
-    
+
     .twitter-widget { padding: 0; }
-    
+
     .twtr-doc { padding: .75em; }
 }
 
 .right-sidebar {
-    
+
 }
 
 .sidebar-widget {
-     
+
 }
 
 .list-recent-jobs {
-    
+
     li { padding: rhythm( .5 ) .5em; }
 }
 
 /*h2*/ .listing-company {
-    
+
     .listing-new {
-        display: inline-block; 
-        color: $white; 
-        background-color: $red; 
+        display: inline-block;
+        color: $white;
+        background-color: $red;
         font-size: px2em( 14px, 24px );
-        text-transform: uppercase; 
-        letter-spacing: .0625em; 
-        padding: .45em .5em 0; 
-        margin-right: .25em; 
+        text-transform: uppercase;
+        letter-spacing: .0625em;
+        padding: .45em .5em 0;
+        margin-right: .25em;
     }
-    
+
     .listing-location {
-        
+
         a {
-            color: $grey-light; 
-            
+            color: $grey-light;
+
             &:hover, &:focus { color: $blue; }
         }
     }
@@ -1876,69 +1876,70 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .listing-company-category, .listing-job-type, .listing-posted {
     clear: both;
-    display: block; 
+    display: block;
 }
 
 
 /* ! ===== Jobs single page template ===== */
 .listing-company {
-    
+
     .company-name { font-size: 125%; }
 }
     .job-description {
-        
+
     }
-    
+
     .job-post-meta {
-        clear: both; 
+        clear: both;
         border: 1px solid #caccce;
-        padding: rhythm( .5 ) .5em; 
-        @include clearfix(); 
-        
+        padding: rhythm( .5 ) .5em;
+        @include clearfix();
+
         span { display: block; }
     }
         .job-tags { margin-bottom: 0; }
- 
+
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
     padding: .5em 0;
-    border-bottom: 1px solid $default-border-color; 
-    
+    border-bottom: 1px solid $default-border-color;
+    white-space: nowrap;
+
     li { @include pe-inline-block(); }
-    
+
     .prompt { margin-left: .5em; }
 }
 
 .section-navigation {
-    border-top: 3px solid lighten($blue, 20%); 
-    background-color: lighten( $blue, 48% ); 
-    padding: rhythm( .5 ) .75em rhythm( .5 ); 
-    
+    border-top: 3px solid lighten($blue, 20%);
+    background-color: lighten( $blue, 48% );
+    padding: rhythm( .5 ) .75em rhythm( .5 );
+
     h2:first-child { @include leader( .375 ); }
-    
+
     h3:first-child { @include leader( .375 ); }
 }
 
 .section-nav {
-    
+
     a {
-        display: block; 
-        padding: .3em 0 .2em; 
+        display: block;
+        padding: .3em 0 .2em;
     }
 }
 
 .psf-sidebar-widget {
-    color: $grey-lighterest; 
-    @include vertical-gradient( darken( $blue, 10% ), $blue ); 
-    
+    color: $grey-lighterest;
+    @include vertical-gradient( darken( $blue, 10% ), $blue );
+
     .widget-title {
-        color: $yellow; 
-        margin-top: rhythm( .25 ); 
-        
+        color: $yellow;
+        margin-top: rhythm( .25 );
+
         a {
-            color: $yellow; 
-            
+            color: $yellow;
+
             &:hover, &:focus { color: $white; }
         }
     }
@@ -1947,32 +1948,32 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $default-border-color; 
-    margin-bottom: 2em; 
-    
+    border-bottom: 1px solid $default-border-color;
+    margin-bottom: 2em;
+
     li {
-        @include pe-inline-block(); 
-        margin-right: .75em; 
+        @include pe-inline-block();
+        margin-right: .75em;
     }
-    
+
     & + .return-link {
-        margin-top: - rhythm(.75); 
+        margin-top: - rhythm(.75);
     }
 }
 
 .return-link {padding-bottom: rhythm(1.25); }
 
 .active-user-list {
-    
+
     a {
-        @extend %link-style; 
+        @extend %link-style;
     }
-    
+
     .user-name, .user-location, .user-psfmember-status {
-        display: inline-block; 
-        vertical-align: top; 
+        display: inline-block;
+        vertical-align: top;
     }
-    
+
     .user-name { width: 25%; }
     .user-location { width: 40%; }
     .user-psfmember-status { width: 25%; }
@@ -1981,24 +1982,24 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .profile-label { color: $grey-light; }
 
 .psf-codeofconduct {
-    font-size: px2em( 14px ); 
-    padding: .5em 1em; 
-    margin-bottom: 1em; 
-    background-color: $white; 
-    @include box-shadow( .25em .25em .75em rgba(#000, .15) ); 
+    font-size: px2em( 14px );
+    padding: .5em 1em;
+    margin-bottom: 1em;
+    background-color: $white;
+    @include box-shadow( .25em .25em .75em rgba(#000, .15) );
 }
 
 /*p*/ .horizontal-menu {
-    padding-bottom: rhythm( .75 ); 
-    
+    padding-bottom: rhythm( .75 );
+
     ul, ol {
-        list-style: none; 
-        margin-left: 0; 
+        list-style: none;
+        margin-left: 0;
     }
-    
+
     li {
-        margin-right: 1em; 
-        @include pe-inline-block(); 
+        margin-right: 1em;
+        @include pe-inline-block();
     }
 }
 
@@ -2006,9 +2007,9 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 /* ! ===== FOOTER elements ===== */
 
 %footer-anchor-style {
-    display: block; 
-    text-align: center; 
-    padding: .5em .75em .4em; 
+    display: block;
+    text-align: center;
+    padding: .5em .75em .4em;
 }
 
 .main-footer {
@@ -2016,24 +2017,24 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     color: $grey;
     background-color: $grey-lightest;
     border-top: 1px solid darken($grey-lightest, 5%);
-    
+
     .container { padding: 0 .75em .75em; }
-    
+
     a {
-        color: $grey; 
-        
+        color: $grey;
+
         &:hover, &:focus { color: $default-color; }
     }
-    
+
     .jump-link {
-        @extend %footer-anchor-style; 
+        @extend %footer-anchor-style;
         background-color: darken( $grey-lightest, 2% );
     }
-    
+
     a.jump-link {
-        margin: .75em 0; 
+        margin: .75em 0;
         @include pe-border( $color-top: $grey-lightest, $color-bottom: darken( $grey-lightest, 4% ) );
-        
+
         &:hover, &:focus {
             background-color: darken( $grey-lightest, 4% );
             @include pe-border( $color-top: darken( $grey-lightest, 2% ), $color-bottom: darken( $grey-lightest, 6% ) );
@@ -2042,39 +2043,39 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .sitemap, .footer-links {
-    
+
     a {
-        @extend %footer-anchor-style; 
+        @extend %footer-anchor-style;
     }
 }
 
 .sitemap {
-    padding-bottom: .5em; 
-    
+    padding-bottom: .5em;
+
     .tier-1 {
-        margin-bottom: rhythm(.75); 
-        
+        margin-bottom: rhythm(.75);
+
         & > a {
-            color: $link-color; 
+            color: $link-color;
             padding: .4em .5em .3em;
             font-family: $alt-font-bold;
             font-size: px2em(20px);
-            @include leader(.5); 
+            @include leader(.5);
             @include trailer(0);
-            
+
             &:hover, &:focus { color: $grey-darker; }
         }
     }
-    
+
     .subnav {
         font-size: px2em(16px);
-        margin-bottom: 0; 
+        margin-bottom: 0;
         @include pe-border( $color-bottom: lighten( $grey-lightest, 6% ), $color-top: lighten( $default-border-color, 4% ) );
-        
+
         li {
-            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $default-border-color, 4% ) ); 
+            @include pe-border( $color-top: lighten( $grey-lightest, 6% ), $color-bottom: lighten( $default-border-color, 4% ) );
         }
-        
+
         a:hover, a:focus { background-color: lighten( $grey-lightest, 2% ); }
     }
 }
@@ -2082,18 +2083,18 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .site-base {
     @extend %blue-colorspace;
     border-top: 1px solid #111;
-    
+
     .container { padding: 1em; }
 }
 
 .footer-links {
     margin-bottom: 0.5em;
-    
+
     a {
         color: lighten($blue, 25%);
         font-family: $alt-font-bold;
         @include fontface-adjust( 18px );
-        
+
         &:hover, &:focus {
             color: lighten($yellow, 30%);
             text-shadow: 0 0 5px rgba( $yellow, 0.2);
@@ -2105,13 +2106,13 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     clear: both;
     color: lighten($blue, 20%);
     font-size: px2em( 12px );
-    text-align: center; 
+    text-align: center;
     margin-bottom: 0;
-    
+
     a {
         border-bottom: 1px dotted lighten($blue, 10%);
         color: lighten($blue, 20%);
-        
+
         &:hover, &:focus {
             color: $white;
             text-decoration: none;
@@ -2122,30 +2123,30 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
-    
+
     /* Resets for when slideshows are inside the .text */
     .text & ul, .text & ol { margin-bottom: 0; }
-    
+
     .generatedcontent .text & ul li:before {
-        content: ''; 
-        display: none; 
+        content: '';
+        display: none;
     }
 }
 
-@include flexslider_base(); 
+@include flexslider_base();
 
 
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
 @include no_js_warning;
 
 
-@include html5boilerplate_helpers(); 
+@include html5boilerplate_helpers();
 
-@include html5boilerplate_print(); 
+@include html5boilerplate_print();
 
 
-/* 
- * When we want to review the markup for W3 and similar errors, turn some of these on 
+/*
+ * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
  */
 //@import "debug";
@@ -2158,7 +2159,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 
 /* ! ===== ICONS ===== */
-    
+
 /* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
 .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-google-plus, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
 	font-family: 'Pythonicon';
@@ -2168,14 +2169,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 	font-variant: normal;
 	text-transform: none;
 	line-height: 1;
-    margin-right: .5em; 
-    
+    margin-right: .5em;
+
 	/* Better Font Rendering =========== */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 
-	/* Hide a unicode fallback character when we supply it by default. 
-	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met 
+	/* Hide a unicode fallback character when we supply it by default.
+	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
 	 */
 	span { display: none; }
 }
