@@ -2,9 +2,8 @@
 
 {% load i18n %}
 {% load account %}
-{% load url from future %}
 
-{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block page_title %}{% trans "Sign In to Python.org" %}{% endblock %}
 
 {% block extra_js %}
     <script type="text/javascript">
@@ -14,8 +13,9 @@
     </script>
 {% endblock extra_js %}
 
-{% block content %}
+{% block content_attributes %}with-right-sidebar{% endblock %}
 
+{% block content %}
 <h1>{% trans "Sign In" %}</h1>
 
 {% if socialaccount.providers  %}
@@ -49,3 +49,12 @@ for a {{site_name}} account and sign in below:{% endblocktrans %}</p>
 
 {% endblock %}
 
+{% block right_sidebar %}
+    <aside class="right-sidebar" role="secondary">
+        <div class="sidebar-widget subscribe-widget">
+          <h2 class="widget-title">Register</h2>
+          <p>Don't have a Python.org account yet?</p>
+          <p><a class="button" href="{% url 'account_signup' %}">Create new account</a></p>
+        </div>
+    </aside>
+{% endblock right_sidebar %}

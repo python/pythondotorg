@@ -205,6 +205,10 @@
                                 <a href="{% url 'account_logout' %}" title="Sign Out of Python.org">Sign Out</a>
                                 {% else %}
                                 <a href="{% url 'account_login' %}" title="Sign Up or Sign In to Python.org">Sign In</a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_login' %}">Sign In</a></li>
+                                </ul>
                                 {% endif %}
                             </li>
                         </ul>
