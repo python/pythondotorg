@@ -137,7 +137,6 @@ INSTALLED_APPS = [
     'imagekit',
     'haystack',
     'honeypot',
-    'debug_toolbar',
 
     'users',
     'boxes',
