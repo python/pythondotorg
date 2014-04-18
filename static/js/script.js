@@ -378,6 +378,12 @@ $().ready(function() {
         } // end hastouch
     }
 
+    /* Randomly show a success story  */
+    var success_divs = $("div.success-story-item").get().sort(function(){
+            return Math.round(Math.random())-0.5; //so we get the right +/- combo
+           });
+    $(success_divs[0]).show();
+
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
     if ( hasplaceholder === false ) {
 
