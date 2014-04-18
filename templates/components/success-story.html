@@ -1,12 +1,13 @@
 {% load successstories %}
-                        
+
                         <div class="shrubbery">
-                            
-                            {% get_stories_latest limit=1 as success_stories %}
-                            {% for story in success_stories %}
-                        
+                            {% get_stories_latest limit=5 as success_stories %}
+
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-success-stories"></span>Success Stories</h2>
                             <p class="give-me-more"><a href="{% url 'success_story_list' %}" title="More Success Stories">More</a></p>
+
+                            {% for story in success_stories %}
+                            <div class="success-story-item" style="display: none;">
 
                             <blockquote>
                                 <a href="{{ story.get_absolute_url }}">{{ story.pull_quote }}</a>
@@ -24,6 +25,7 @@
                                     </tr>
                                 </tbody>
                             </table>
+                            </div>
                             {% endfor %}
-                        
+
                         </div><!-- end .shrubbery -->

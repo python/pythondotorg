@@ -23,3 +23,13 @@ class SponsorModelTests(TestCase):
 
     def test_published(self):
         self.assertQuerysetEqual(Sponsor.objects.published(), ['<Sponsor: Python>'])
+
+    def test_featured(self):
+        self.company3 = Company.objects.create(name='Python Featured')
+
+        self.Sponsor3 = Sponsor.objects.create(
+            company=self.company3,
+            is_published=True,
+            featured=True)
+
+        self.assertQuerysetEqual(Sponsor.objects.featured(), ['<Sponsor: Python Featured>'])

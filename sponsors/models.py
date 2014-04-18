@@ -14,6 +14,11 @@ class Sponsor(ContentManageable):
     company = models.ForeignKey(Company)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, blank=True)
     is_published = models.BooleanField(default=False, db_index=True)
+    featured = models.BooleanField(
+        default=False,
+        db_index=True,
+        help_text="Check to include Sponsor in feature rotation",
+    )
 
     objects = SponsorManager()
 
