@@ -23,14 +23,17 @@ class Migration(DataMigration):
         User = get_user_model()
 
         for user in User.objects.filter(is_staff=True):
-            em, created = EmailAddress.objects.get_or_create(
-                user=user,
-                email=user.email,
-            )
+            try:
+                em, created = EmailAddress.objects.get_or_create(
+                    user=user,
+                    email=user.email,
+                )
 
-            em.verified = True
-            em.primary = True
-            em.save()
+                em.verified = True
+                em.primary = True
+                em.save()
+            except models.IntegrityError:
+                pass
 
     def backwards(self, orm):
         "Write your backwards methods here."
