@@ -90,3 +90,38 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(detail_url)
         self.assertContains(response, edit_url)
 
+    def test_special_usernames(self):
+        # Ensure usernames in the forms of:
+        # first.last
+        # user@host.com
+        # are allowed to view their profile pages since we allow them in
+        # the username field
+        u1 = User.objects.create_user(
+            username='user.name',
+            password='password',
+        )
+        detail_url = reverse('users:user_detail', kwargs={'slug': u1.username})
+        edit_url = reverse('users:user_profile_edit')
+
+        self.client.login(username=u1.username, password='password')
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(edit_url)
+        self.assertEqual(response.status_code, 200)
+
+        u2 = User.objects.create_user(
+            username='user@example.com',
+            password='password',
+        )
+
+        detail_url = reverse('users:user_detail', kwargs={'slug': u2.username})
+        edit_url = reverse('users:user_profile_edit')
+
+        self.client.login(username=u2.username, password='password')
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(edit_url)
+        self.assertEqual(response.status_code, 200)
+
