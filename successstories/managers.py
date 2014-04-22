@@ -1,4 +1,5 @@
 from django.db.models import Manager
+from django.db.models import Sum
 from django.db.models.query import QuerySet
 
 
@@ -8,6 +9,9 @@ class StoryQuerySet(QuerySet):
 
     def published(self):
         return self.filter(is_published=True)
+
+    def featured(self):
+        return self.published().filter(featured=True)
 
 
 class StoryManager(Manager):
@@ -19,3 +23,13 @@ class StoryManager(Manager):
 
     def published(self):
         return self.get_query_set().published()
+
+    def featured(self):
+        return self.get_query_set().featured()
+
+    def featured_weight_total(self):
+        amount = self.featured().aggregate(total=Sum('weight'))
+        if amount:
+            return amount['total']
+        return 0
+

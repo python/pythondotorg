@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib import messages
 
 from .models import Story, StoryCategory
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
@@ -18,7 +19,14 @@ class StoryAdmin(ContentManageableModelAdmin):
 
     def get_list_display(self, request):
         fields = list(super().get_list_display(request))
-        return fields + ['is_published', 'featured']
+        return fields + ['is_published', 'featured', 'get_weight_display']
+
+    def save_model(self, request, obj, form, change):
+        """ Alert user to weight inbalance situations """
+        obj.save()
+        weight_total = Story.objects.featured_weight_total()
+        if weight_total != 100:
+            messages.warning(request, "Warning, Success Story Featured Weights do not total 100%")
 
 
 admin.site.register(StoryCategory, StoryCategoryAdmin)
