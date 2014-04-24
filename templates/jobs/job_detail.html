@@ -34,7 +34,11 @@
     <!-- User input html/markup/rst/whatever -->
     <div class="job-description">
 
-        <h2>Job Description {% if under_review %}<small>({{ object.status }})</small>{% endif %}</h2>
+        <h2>Job Title {% if under_review %}<small>({{ object.status }})</small>{% endif %}</h2>
+
+        {{ object.job_title }}
+
+        <h2>Job Description</h2>
 
         {{ object.description }}
 
