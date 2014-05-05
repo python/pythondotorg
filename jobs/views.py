@@ -129,8 +129,7 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             return redirect('jobs:job_review')
 
         if action == 'approve':
-            job.status = Job.STATUS_APPROVED
-            job.save()
+            job.approve(request.user)
             messages.add_message(self.request, messages.SUCCESS, "'%s' approved." % job)
 
         elif action == 'reject':
