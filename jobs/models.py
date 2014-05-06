@@ -9,7 +9,7 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from .managers import JobManager
-from .listeners import (on_comment_was_posted, on_job_was_approved)
+from .listeners import on_comment_was_posted, on_job_was_approved
 from .signals import job_was_approved
 from cms.models import ContentManageable, NameSlugModel
 
@@ -112,7 +112,7 @@ class Job(ContentManageable):
         self.status = Job.STATUS_APPROVED
         self.save()
         job_was_approved.send(sender=self.__class__, job=self,
-                                approving_user=approving_user)
+                              approving_user=approving_user)
 
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
