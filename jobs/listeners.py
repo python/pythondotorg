@@ -48,8 +48,9 @@ def on_job_was_approved(sender, job, approving_user, **kwargs):
     """Handle approving job offer. Currently an email should be sent to the
     person that sent the offer.
     """
-    subject_template = loader.get_template('email/job_was_approved_subject.txt')
-    message_template = loader.get_template('email/job_was_approved.txt')
+    subject_template = loader.get_template(
+            'jobs/email/job_was_approved_subject.txt')
+    message_template = loader.get_template('jobs/email/job_was_approved.txt')
     reviewer_name = '{0} {1}'.format(approving_user.first_name,
                                      approving_user.last_name)
     message_context = Context({'addressee': job.contact,
