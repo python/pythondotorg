@@ -11,3 +11,5 @@ HAYSTACK_CONNECTIONS = {
         'INDEX_NAME': 'haystack',
     },
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
