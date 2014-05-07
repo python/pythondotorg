@@ -14,7 +14,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
 
 class User(AbstractUser):
-    bio = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    bio = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
 
     SEARCH_PRIVATE = 0
     SEARCH_PUBLIC = 1
