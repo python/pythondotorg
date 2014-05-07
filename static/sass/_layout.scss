@@ -786,6 +786,12 @@
                 width: 33%;
             } 
         }
+
+        ul.errorlist {
+            /* Reset margin for errorlist so that messages are not drawn over
+               other labels */
+            margin-top: 0;
+        }
     }
     
     /* Footer */
