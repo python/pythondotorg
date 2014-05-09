@@ -361,7 +361,9 @@ class JobsReviewTests(TestCase):
         # to the offer creator
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to, [self.creator.email])
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.creator.email])
+        self.assertTrue(self.contact in message.body)
         mail.outbox = []
 
         self.client.post(url, data={'job_id': self.job2.pk, 'action': 'reject'})
