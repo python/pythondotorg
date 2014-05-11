@@ -42,3 +42,21 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)
     send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL, [ email, ], html=html_message)
+
+
+def on_job_was_approved(sender, job, approving_user, **kwargs):
+    """Handle approving job offer. Currently an email should be sent to the
+    person that sent the offer.
+    """
+    subject_template = loader.get_template(
+            'jobs/email/job_was_approved_subject.txt')
+    message_template = loader.get_template('jobs/email/job_was_approved.txt')
+    reviewer_name = '{0} {1}'.format(approving_user.first_name,
+                                     approving_user.last_name)
+    message_context = Context({'addressee': job.contact,
+                               'reviewer_name': reviewer_name,
+                              })
+    # subject can't contain newlines, thus strip() call
+    subject = subject_template.render(message_context).strip()
+    message = message_template.render(message_context)
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [job.email])
