@@ -335,6 +335,7 @@ class JobsReviewTests(TestCase):
         self.job3.job_types.add(self.job_type)
 
     def test_job_review(self):
+        # FIXME: refactor to separate tests cases for clarity?
         mail.outbox = []
         url = reverse('jobs:job_review')
 
@@ -352,7 +353,6 @@ class JobsReviewTests(TestCase):
         self.assertTrue(self.job3 in response.context['object_list'])
 
         # no email notifications sent before offer is approved
-        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 0)
         self.client.post(url, data={'job_id': self.job1.pk, 'action': 'approve'})
         j1 = Job.objects.get(pk=self.job1.pk)
@@ -366,9 +366,19 @@ class JobsReviewTests(TestCase):
         self.assertTrue(self.contact in message.body)
         mail.outbox = []
 
+        # no email notifications sent before offer is rejected
+        self.assertEqual(len(mail.outbox), 0)
         self.client.post(url, data={'job_id': self.job2.pk, 'action': 'reject'})
         j2 = Job.objects.get(pk=self.job2.pk)
         self.assertEqual(j2.status, Job.STATUS_REJECTED)
+        # exactly one rejection notification email should sent
+        # to the offer creator
+        mail_sent_queue.get(block=True)
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.creator.email])
+        self.assertTrue(self.contact in message.body)
+        mail.outbox = []
 
         self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
         j3 = Job.objects.get(pk=self.job3.pk)
