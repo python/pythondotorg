@@ -76,6 +76,12 @@
         {% render_comment_list for object %}
         <hr>
         {% render_comment_form for object %}
+        <strong>Insert Canned response:</strong>
+        <select id="canned_response">
+            <option value="empty">---</option>
+            <option value="voluntary">Voluntary</option>
+            <option value="not_python">Not python</option>
+        </select>
         {% endif %}
 
         <h2>Contact Info</h2>
@@ -174,7 +180,7 @@
     </div>
 
     {% include "jobs/featured_companies-widget.html" %}
-    
+
     <div class="sidebar-widget">
         {% box 'jobs-subscribe' %}
 
@@ -182,3 +188,22 @@
 
 </aside>
 {% endblock right_sidebar %}
+{% block extra_js %}
+<script type="text/javascript">
+    // TODO: allow configuring canned responses in admin
+    var voluntary_response = "The Python Job Board is for paid positions only. The Python Community has a separate Wiki for listing voluntary positions available at http://wiki.python.org/moin/VolunteerOpportunities.";
+    var not_python_response = "The Python Job Board is for positions in which the primary role involves the Python programming language or development frameworks based on Python."
+    $(document).ready(function() {
+        $('#canned_response').change(function(){
+            switch ($(this).val()) {
+                case 'voluntary':
+                    $('#id_comment').val(voluntary_response);
+                    break;
+                case 'not_python':
+                    $('#id_comment').val(not_python_response);
+                    break;
+            }
+        });
+    });
+</script>
+{% endblock %}
