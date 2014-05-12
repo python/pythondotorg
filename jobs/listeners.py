@@ -42,3 +42,40 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)
     send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL, [ email, ], html=html_message)
+
+
+def send_job_review_message(job, user, subject_template_path,
+                            message_template_path):
+    """Helper function wrapping logic of sending the review message concerning
+    a job.
+
+    `user` param holds user that performed the review action.
+    """
+    subject_template = loader.get_template(subject_template_path)
+    message_template = loader.get_template(message_template_path)
+    reviewer_name = '{0} {1}'.format(user.first_name, user.last_name)
+    message_context = Context({'addressee': job.contact,
+                               'reviewer_name': reviewer_name,
+                              })
+    # subject can't contain newlines, thus strip() call
+    subject = subject_template.render(message_context).strip()
+    message = message_template.render(message_context)
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [job.email])
+
+
+def on_job_was_approved(sender, job, approving_user, **kwargs):
+    """Handle approving job offer. Currently an email should be sent to the
+    person that sent the offer.
+    """
+    send_job_review_message(job, approving_user,
+                            'jobs/email/job_was_approved_subject.txt',
+                            'jobs/email/job_was_approved.txt')
+
+
+def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
+    """Handle rejecting job offer. Currently an email should be sent to the
+    person that sent the offer.
+    """
+    send_job_review_message(job, rejecting_user,
+                            'jobs/email/job_was_rejected_subject.txt',
+                            'jobs/email/job_was_rejected.txt')
