@@ -133,8 +133,7 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             messages.add_message(self.request, messages.SUCCESS, "'%s' approved." % job)
 
         elif action == 'reject':
-            job.status = Job.STATUS_REJECTED
-            job.save()
+            job.reject(request.user)
             messages.add_message(self.request, messages.SUCCESS, "'%s' rejected." % job)
 
         elif action == 'remove':
