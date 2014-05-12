@@ -76,12 +76,15 @@
         {% render_comment_list for object %}
         <hr>
         {% render_comment_form for object %}
-        <strong>Insert Canned response:</strong>
-        <select id="canned_response">
-            <option value="empty">---</option>
-            <option value="voluntary">Voluntary</option>
-            <option value="not_python">Not python</option>
-        </select>
+        {% if request.user != object.creator %}
+            {% comment %}Display only for reviewer{% endcomment %}
+            <strong>Insert Canned response:</strong>
+            <select id="canned_response">
+                <option value="empty">---</option>
+                <option value="voluntary">Voluntary</option>
+                <option value="not_python">Not python</option>
+            </select>
+        {% endif %}
         {% endif %}
 
         <h2>Contact Info</h2>
@@ -189,6 +192,7 @@
 </aside>
 {% endblock right_sidebar %}
 {% block extra_js %}
+{% if under_review %}
 <script type="text/javascript">
     // TODO: allow configuring canned responses in admin
     var voluntary_response = "The Python Job Board is for paid positions only. The Python Community has a separate Wiki for listing voluntary positions available at http://wiki.python.org/moin/VolunteerOpportunities.";
@@ -206,4 +210,5 @@
         });
     });
 </script>
+{% endif %}
 {% endblock %}
