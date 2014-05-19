@@ -1,1 +1,1 @@
-Job entry rejected
+Python Job Board: Job entry could not be accepted
