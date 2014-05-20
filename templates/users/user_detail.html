@@ -31,7 +31,7 @@
                 <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
             </div>
             <div class="user-profile-bio">
-                <p><span class="profile-label">Bio:</span></p> {{ object.bio }}
+                <p><span class="profile-label">Bio:</span></p> {{ object.bio|escape }}
             </div>
 
             {% comment %}
