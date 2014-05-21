@@ -26,7 +26,7 @@
         <span class="listing-company-name">
             {% if object.is_new %}<span class="listing-new">New</span>
             {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
-            {% endif %}<span class="company-name">{{ object.company.name }}</span>
+            {% endif %}<span class="company-name">{{ object.display_name }}</span>
         </span>
         <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
     </h1>
@@ -62,9 +62,9 @@
         {{ object.requirements }}
         {% endif %}
 
-        {% if object.company.about %}
+        {% if object.display_description %}
         <h2>About the Company</h2>
-        {{ object.company.about }}
+        {{ object.display_description }}
         {% endif %}
 
         {% if under_review or request.user == object.creator %}
@@ -115,7 +115,7 @@
     <div class="job-post-meta">
         <p class="job-meta">
             <!-- Company URL -->
-            {% if object.company.url %}
+            {% if object.company %}
             <span class="company-link"><a href="{{ object.company.url }}">{{ object.company.url }}</a></span>
             {% endif %}
 
@@ -143,7 +143,7 @@
         <a class="prev-button" href="{{ previous.get_absolute_url }}">
             <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
             <span class="prevnext-description">
-                <span class="company-name">{{ previous.company.name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
+                <span class="company-name">{{ previous.display_name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
             </span>
         </a>
         {% else %}
@@ -158,7 +158,7 @@
         <a class="next-button" href="{{ next.get_absolute_url }}">
             <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
             <span class="prevnext-description">
-                <span class="company-name">{{ next.company.name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
+                <span class="company-name">{{ next.display_name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
             </span>
         </a>
         {% else %}
@@ -180,7 +180,7 @@
 
         <ul class="menu">
             {% for job in category_jobs %}
-            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.company.name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.display_name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
             {% endfor %}
         </ul>
         {% endif %}
