@@ -26,8 +26,8 @@
     <tr>
         <td><a href="{% url 'jobs:job_detail_review' pk=object.pk %}">{{ object.pk }}</a></td>
         <td>
-            <p><strong>Company:</strong> {{ object.company.name }}</p>
-            {{ object.description|truncatewords:"50" }}
+            <p><strong>Company:</strong> {{ object.display_name }}</p>
+            {{ object.display_description|truncatewords:"50" }}
         </td>
         <td>{{ object.status }}</td>
         <td>
