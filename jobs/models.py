@@ -9,7 +9,9 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from .managers import JobManager
-from .listeners import on_comment_was_posted
+from .listeners import (on_comment_was_posted, on_job_was_approved,
+                        on_job_was_rejected)
+from .signals import job_was_approved, job_was_rejected
 from cms.models import ContentManageable, NameSlugModel
 
 
@@ -104,6 +106,24 @@ class Job(ContentManageable):
 
         return super().save(**kwargs)
 
+    def approve(self, approving_user):
+        """Updates job status to Job.STATUS_APPROVED after approval was issued
+        by approving_user.
+        """
+        self.status = Job.STATUS_APPROVED
+        self.save()
+        job_was_approved.send(sender=self.__class__, job=self,
+                              approving_user=approving_user)
+
+    def reject(self, rejecting_user):
+        """Updates job status to Job.STATUS_REJECTED after rejection was issued
+        by rejecing_user.
+        """
+        self.status = Job.STATUS_REJECTED
+        self.save()
+        job_was_rejected.send(sender=self.__class__, job=self,
+                              rejecting_user=rejecting_user)
+
     def get_absolute_url(self):
         return reverse('jobs:job_detail', kwargs={'pk': self.pk})
 
@@ -127,3 +147,5 @@ class Job(ContentManageable):
             self.STATUS_REJECTED)
 
 comment_was_posted.connect(on_comment_was_posted)
+job_was_approved.connect(on_job_was_approved)
+job_was_rejected.connect(on_job_was_rejected)

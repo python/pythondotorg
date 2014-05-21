@@ -1,0 +1,23 @@
+Dear {{ addressee }},
+
+Thank you for choosing to list your vacancy on python.org's Job Board.
+
+Your listing is now active and is available to view at {{ job_link }}. If
+you notice any errors in the listing, please notify the Job Board team as
+soon as possible.
+
+To keep the job board fresh and active for job seekers, we'd appreciate if
+you'd let us know as soon as possible when the position is filled so we can
+remove your listing.
+
+Good luck in filling your position,
+
+{{ reviewer_name }}
+Python Job Board
+
+PS: Please consider a donation to the non-profit Python Software Foundation
+(PSF) which runs the Python Job Board, directly supports Python and helps
+build the community of Python programmers. Donations are tax-deductible
+in the US. For more details or to donate, go to:
+
+http://python.org/psf/donations/
