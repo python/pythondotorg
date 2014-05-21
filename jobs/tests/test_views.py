@@ -257,7 +257,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
 
         self.job.company_description = '     '
-        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)        
+        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)
 
 
 class JobsReviewTests(TestCase):
@@ -270,6 +270,7 @@ class JobsReviewTests(TestCase):
         self.creator_username = 'johndoe'
         self.creator_email = 'johndoe@example.com'
         self.creator_password = 'secret'
+        self.contact = 'John Doe'
 
         User = get_user_model()
         self.creator = User.objects.create_user(self.creator_username,
@@ -302,7 +303,8 @@ class JobsReviewTests(TestCase):
             region='TN',
             country='USA',
             email=self.creator.email,
-            creator=self.creator
+            creator=self.creator,
+            contact=self.contact
         )
         self.job1.job_types.add(self.job_type)
 
@@ -314,7 +316,8 @@ class JobsReviewTests(TestCase):
             region='TN',
             country='USA',
             email=self.creator.email,
-            creator=self.creator
+            creator=self.creator,
+            contact=self.contact
         )
         self.job2.job_types.add(self.job_type)
 
@@ -326,12 +329,14 @@ class JobsReviewTests(TestCase):
             region='TN',
             country='USA',
             email=self.creator.email,
-            creator=self.creator
+            creator=self.creator,
+            contact=self.contact
         )
         self.job3.job_types.add(self.job_type)
 
     def test_job_review(self):
-
+        # FIXME: refactor to separate tests cases for clarity?
+        mail.outbox = []
         url = reverse('jobs:job_review')
 
         response = self.client.get(url)
@@ -347,13 +352,33 @@ class JobsReviewTests(TestCase):
         self.assertTrue(self.job2 in response.context['object_list'])
         self.assertTrue(self.job3 in response.context['object_list'])
 
+        # no email notifications sent before offer is approved
+        self.assertEqual(len(mail.outbox), 0)
         self.client.post(url, data={'job_id': self.job1.pk, 'action': 'approve'})
         j1 = Job.objects.get(pk=self.job1.pk)
         self.assertEqual(j1.status, Job.STATUS_APPROVED)
+        # exactly one approval notification email should sent
+        # to the offer creator
+        mail_sent_queue.get(block=True)
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.creator.email])
+        self.assertTrue(self.contact in message.body)
+        mail.outbox = []
 
+        # no email notifications sent before offer is rejected
+        self.assertEqual(len(mail.outbox), 0)
         self.client.post(url, data={'job_id': self.job2.pk, 'action': 'reject'})
         j2 = Job.objects.get(pk=self.job2.pk)
         self.assertEqual(j2.status, Job.STATUS_REJECTED)
+        # exactly one rejection notification email should sent
+        # to the offer creator
+        mail_sent_queue.get(block=True)
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.to, [self.creator.email])
+        self.assertTrue(self.contact in message.body)
+        mail.outbox = []
 
         self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
         j3 = Job.objects.get(pk=self.job3.pk)

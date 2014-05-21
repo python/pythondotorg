@@ -76,6 +76,24 @@
         {% render_comment_list for object %}
         <hr>
         {% render_comment_form for object %}
+        {% if request.user != object.creator %}
+            {% comment %}Display only for reviewer{% endcomment %}
+            <strong>Insert Canned response:</strong>
+            <select id="canned_response">
+                <option value="empty">---</option>
+                <option value="voluntary">Voluntary</option>
+                <option value="not_python">Not python</option>
+            </select>
+            <h3>Review action</h3>
+            <form action="{% url "jobs:job_review" %}" method="post">
+              {% csrf_token %}
+              <input type="hidden" name="job_id" value="{{ job.id }}">
+              <div>
+                <button class="review_button" name="action" value="approve">Approve</button>
+                <button class="review_button" name="action" value="reject">Reject</button>
+              </div>
+            </form>
+        {% endif %}
         {% endif %}
 
         <h2>Contact Info</h2>
@@ -174,7 +192,7 @@
     </div>
 
     {% include "jobs/featured_companies-widget.html" %}
-    
+
     <div class="sidebar-widget">
         {% box 'jobs-subscribe' %}
 
@@ -182,3 +200,37 @@
 
 </aside>
 {% endblock right_sidebar %}
+{% block extra_js %}
+{% if under_review %}
+<script type="text/javascript">
+    // TODO: allow configuring canned responses in admin
+    var voluntary_response = "The Python Job Board is for paid positions only. The Python Community has a separate Wiki for listing voluntary positions available at http://wiki.python.org/moin/VolunteerOpportunities.";
+    var not_python_response = "The Python Job Board is for positions in which the primary role involves the Python programming language or development frameworks based on Python."
+    $(document).ready(function() {
+        var commment_field = $('#id_comment');
+        $('#canned_response').change(function(){
+            switch ($(this).val()) {
+                case 'voluntary':
+                    commment_field.val(voluntary_response);
+                    break;
+                case 'not_python':
+                    commment_field.val(not_python_response);
+                    break;
+            }
+        });
+        $('.review_button').click(function(){
+            if (commment_field.val() != commment_field.attr('placeholder')) {
+                {% comment %}
+                   Currently the comment field uses a placeholder text set in
+                   attr when no text is entered, so we need to check it instead
+                   of checking for empty value.
+                {% endcomment %}
+                return confirm('The comment you entered will be lost. Make sure to submit your comment before accepting/rejecting current job listing. Proceed?');
+            } else {
+                return true;
+            }
+        });
+    });
+</script>
+{% endif %}
+{% endblock %}
