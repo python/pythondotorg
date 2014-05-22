@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}Job Listing at {{ object.company.name }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}Job Listing at {{ object.display_name }} | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="jobs default-page single-job"{% endblock %}
 
@@ -179,9 +179,11 @@
         <h3 class="widget-title">More jobs in <a href="{% url 'jobs:job_list_category' slug=object.category.slug %}">{{ object.category.name }}</a></h3>
 
         <ul class="menu">
-            {% for job in category_jobs %}
-            <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.display_name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
-            {% endfor %}
+            {% if object.company %}
+                {% for job in category_jobs %}
+                <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.display_name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+                {% endfor %}
+            {% endif %}
         </ul>
         {% endif %}
     </div>
