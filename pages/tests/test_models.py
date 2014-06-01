@@ -20,7 +20,7 @@ class PageModelTests(BasePageTests):
 
     def test_get_absolute_url(self):
         one = Page.objects.create(title='Testing', path='test/one.html', content='foo')
-        self.assertEqual('/test/one.html', one.get_absolute_url())
+        self.assertEqual('/test/one.html/', one.get_absolute_url())
 
 
 @ddt.ddt
