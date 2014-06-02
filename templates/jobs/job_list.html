@@ -32,7 +32,7 @@
         <li>
             <h2 class="listing-company">
                 <span class="listing-company-name">
-                    {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<a href="{{ object.get_absolute_url }}">{{ object.company.name }}</a>
+                    {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<a href="{{ object.get_absolute_url }}">{{ object.display_name }}</a>
                 </span>
                 <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
             </h2>
