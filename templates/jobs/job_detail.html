@@ -138,7 +138,7 @@
 
 <!-- Next or Previous Jobs by date posted -->
 <p class="previous-next">
-    {% with object.get_previous_by_created as previous %}
+    {% with object.get_previous_listing as previous %}
         {% if previous %}
         <a class="prev-button" href="{{ previous.get_absolute_url }}">
             <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
@@ -153,7 +153,7 @@
         {% endif %}
     {% endwith %}
 
-    {% with object.get_next_by_created as next %}
+    {% with object.get_next_listing as next %}
         {% if next %}
         <a class="next-button" href="{{ next.get_absolute_url }}">
             <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>

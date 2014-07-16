@@ -146,6 +146,12 @@ class Job(ContentManageable):
         return self.status in (self.STATUS_DRAFT, self.STATUS_REVIEW,
             self.STATUS_REJECTED)
 
+    def get_previous_listing(self):
+        return self.get_previous_by_created(status=self.STATUS_APPROVED)
+
+    def get_next_listing(self):
+        return self.get_next_by_created(status=self.STATUS_APPROVED)
+
 comment_was_posted.connect(on_comment_was_posted)
 job_was_approved.connect(on_job_was_approved)
 job_was_rejected.connect(on_job_was_rejected)
