@@ -3,6 +3,7 @@ from django.contrib.auth import authenticate, login
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
@@ -88,7 +89,10 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
         return super().dispatch(*args, **kwargs)
 
     def get_object(self):
-        return self.request.user.membership.all()[0]
+        try:
+            return self.request.user.membership.all()[0]
+        except IndexError:
+            raise Http404()
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
