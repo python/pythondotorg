@@ -38,6 +38,8 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
+DATE_FORMAT = 'Y-m-j'
+
 ### Files (media and static)
 
 MEDIA_ROOT = os.path.join(BASE, 'media')
