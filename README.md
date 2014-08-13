@@ -10,10 +10,10 @@ Getting going
 
 Requires :sparkles:Python 3.3!:sparkles: (`brew install python3`)
 
-You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in,
+You'll want a virtualenv. Python 3.4 actually includes virtualenv built-in,
 so you can do:
 
-    $ pyvenv-3.3 <env>
+    $ pyvenv-3.4 <env>
     $ source <env>/bin/activate
     (etc)
 
