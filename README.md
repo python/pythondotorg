@@ -8,7 +8,7 @@ The new python.org!
 Getting going
 -------------
 
-Requires :sparkles:Python 3.3!:sparkles: (`brew install python3`)
+Requires :sparkles:Python 3.4!:sparkles: (`brew install python3`)
 
 You'll want a virtualenv. Python 3.4 actually includes virtualenv built-in,
 so you can do:
@@ -19,7 +19,7 @@ so you can do:
 
 But you can also use your existing virtualenv/wrapper:
 
-    $ mkvirtualenv --python=python3.3 <env>
+    $ mkvirtualenv --python=python3.4 <env>
 
 And then it's the standard:
 
@@ -28,7 +28,7 @@ And then it's the standard:
 
 You may need to specify the pip version, even with the virtualenv activated:
 
-    $ pip-3.3 install -r requirements.txt
+    $ pip-3.4 install -r requirements.txt
 
 This expects a local database named "python.org". If you need to change it:
 
@@ -42,9 +42,9 @@ To compile and compress static media, you will need compass and yui-compressor:
 
 NOTE: On OSX you may need to adjust your PATH to be able to find the sass binary, etc.
 
-### Python 3.3 and OSX 10.8.2
+### Python 3.4 and OSX 10.8.2
 
-Homebrew's recipe for python3.3 has some difficulty installing distribute
+Homebrew's recipe for python3.4 has some difficulty installing distribute
 and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/)
 may work better, if you're having trouble.
 
