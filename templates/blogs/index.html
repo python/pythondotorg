@@ -12,7 +12,7 @@
 
                     <h1 class="call-to-action">{{ latest_entry.title }}</h1>
 
-                    <p class="date-posted"><time datetime="{{ latest_entry.pub_date|date:"Y-m-d H:i|s" }}">{{ latest_entry.pub_date|date:"l, F j, Y" }}</time></p>
+                    <p class="date-posted"><time datetime="{{ latest_entry.pub_date|date:"Y-m-d H:i|s" }}">{{ latest_entry.pub_date }}</time></p>
                     <p class="excerpt">{{ latest_entry.summary|striptags|truncatewords:50|safe }}
                     <a class="readmore" href="{{ latest_entry.url }}">Read more</a></p>
                 </div>
@@ -32,7 +32,7 @@
                                 {% for entry in entries %}
                                 <li>
                                     <h3 class="event-title"><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
-                                    <p><time datetime="{{ entry.pub_date|date:"Y-m-d" }}">{{ entry.pub_date|date:"m/d" }}<span class="say-no-more">/{{ entry.pub_date|date:"Y" }}</span></time></p>
+                                    <p><time datetime="{{ entry.pub_date|date:"Y-m-d" }}">{{ entry.pub_date|date }}</time></p>
                                 </li>
                                 {% endfor %}
                             </ul>

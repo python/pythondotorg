@@ -33,13 +33,13 @@
     "model": "codesamples.codesample",
     "fields": {
       "copy_markup_type": "html",
-      "code": "<pre><code><span class=\"comment\"># List comprehensions</span>\r\n>>> fruits = ['Banana', 'Apple', 'Strawberry']\r\n>>> loud_fruits = [fruit.upper() for fruit in fruits]\r\n>>> print(loud_fruits)\r\n<span class=\"output\">['BANANA', 'APPLE', 'STRAWBERRY']</span>\r\n\r\n<span class=\"comment\"># List and the enumerate function</span>\r\n>>> list(enumerate(fruits))\r\n<span class=\"output\">[(0, 'Banana'), (1, 'Apple'), (2, 'Strawberry')]</span></code></pre>",
+      "code": "<pre><code><span class=\"comment\"># List comprehensions</span>\r\n>>> fruits = ['Banana', 'Apple', 'Lime']\r\n>>> loud_fruits = [fruit.upper() for fruit in fruits]\r\n>>> print(loud_fruits)\r\n<span class=\"output\">['BANANA', 'APPLE', 'LIME']</span>\r\n\r\n<span class=\"comment\"># List and the enumerate function</span>\r\n>>> list(enumerate(fruits))\r\n<span class=\"output\">[(0, 'Banana'), (1, 'Apple'), (2, 'Lime')]</span></code></pre>",
       "_copy_rendered": "<h1>Compound Data Types</h1>\r\n                        <p>Lists (known as arrays in other languages) are one of the compound data types that Python understands. Lists can be indexed, sliced and manipulated with other built-in functions. <a href=\"http://docs.python.org/3.3/tutorial/introduction.html#lists\">More about lists</a></p>",
       "is_published": true,
       "copy": "<h1>Compound Data Types</h1>\r\n                        <p>Lists (known as arrays in other languages) are one of the compound data types that Python understands. Lists can be indexed, sliced and manipulated with other built-in functions. <a href=\"http://docs.python.org/3.3/tutorial/introduction.html#lists\">More about lists</a></p>",
       "updated": "2014-02-20T18:06:09.903Z",
       "created": "2014-02-20T18:06:09.903Z",
-      "_code_rendered": "<pre><code><span class=\"comment\"># List comprehensions</span>\r\n>>> fruits = ['Banana', 'Apple', 'Strawberry']\r\n>>> loud_fruits = [fruit.upper() for fruit in fruits]\r\n>>> print(loud_fruits)\r\n<span class=\"output\">['BANANA', 'APPLE', 'STRAWBERRY']</span>\r\n\r\n<span class=\"comment\"># List and the enumerate function</span>\r\n>>> list(enumerate(fruits))\r\n<span class=\"output\">[(0, 'Banana'), (1, 'Apple'), (2, 'Strawberry')]</span></code></pre>",
+      "_code_rendered": "<pre><code><span class=\"comment\"># List comprehensions</span>\r\n>>> fruits = ['Banana', 'Apple', 'Lime']\r\n>>> loud_fruits = [fruit.upper() for fruit in fruits]\r\n>>> print(loud_fruits)\r\n<span class=\"output\">['BANANA', 'APPLE', 'LIME']</span>\r\n\r\n<span class=\"comment\"># List and the enumerate function</span>\r\n>>> list(enumerate(fruits))\r\n<span class=\"output\">[(0, 'Banana'), (1, 'Apple'), (2, 'Lime')]</span></code></pre>",
       "code_markup_type": "html"
     },
     "pk": 3

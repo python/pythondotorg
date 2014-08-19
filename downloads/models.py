@@ -121,11 +121,33 @@ def update_supernav():
     box.save()
 
 
+def update_homepage_download_box():
+    try:
+        latest_python2 = Release.objects.released().python2().latest()
+    except Release.DoesNotExist:
+        latest_python2 = None
+
+    try:
+        latest_python3 = Release.objects.released().python3().latest()
+    except Release.DoesNotExist:
+        latest_python3 = None
+
+    content = render_to_string('downloads/homepage-downloads-box.html', {
+        'latest_python2': latest_python2,
+        'latest_python3': latest_python3,
+    })
+
+    box = Box.objects.get(label='homepage-downloads')
+    box.content = content
+    box.save()
+
+
 @receiver(post_save, sender=Release)
 def update_download_supernav(sender, instance, signal, created, **kwargs):
     """ Update download supernav """
     if instance.is_published:
         update_supernav()
+        update_homepage_download_box()
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):
@@ -139,13 +161,15 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     description = models.TextField(blank=True)
     is_source = models.BooleanField('Is Source Distribution', default=False)
     url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")
-    gpg_signature_file = models.URLField('GPG SIG URL',
+    gpg_signature_file = models.URLField(
+        'GPG SIG URL',
         blank=True,
         help_text="GPG Signature URL"
     )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
+
     class Meta:
         verbose_name = 'Release File'
         verbose_name_plural = 'Release Files'

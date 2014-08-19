@@ -1573,10 +1573,9 @@ a.button {
     float: left;
     width: 33%; }
 .jobs-form ul.errorlist {
-  /* Reset margin for errorlist so that messages are not drawn over other
-     labels */
-  margin-top: 0;
-}
+  /* Reset margin for errorlist so that messages are not drawn over
+     other labels */
+  margin-top: 0; }
 
 /* Footer */
 .sitemap, .footer-links, .copyright {

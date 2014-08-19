@@ -15,6 +15,10 @@ class BaseDownloadTests(TestCase):
         self.download_supernav_box.content.markup_type = 'html'
         self.download_supernav_box.save()
 
+        self.download_homepage_box = Box.objects.create(label='homepage-downloads')
+        self.download_homepage_box.content.markup_type = 'html'
+        self.download_homepage_box.save()
+
         self.windows = OS.objects.create(name='Windows')
         self.osx = OS.objects.create(name='Mac OSX')
         self.linux = OS.objects.create(name='Linux')

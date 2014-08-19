@@ -13,6 +13,17 @@ class JobsModelsTests(TestCase):
             country='USA',
         )
 
+    def create_job(self, **kwargs):
+        job_kwargs = {
+            'city': "Memphis",
+            'region': "TN",
+            "country": "USA",
+        }
+        job_kwargs.update(**kwargs)
+        job = factories.JobFactory(**job_kwargs)
+
+        return job
+
     def test_is_new(self):
         self.assertTrue(self.job.is_new)
 
@@ -58,3 +69,21 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.review().count(), 1)
         factories.ReviewJobFactory()
         self.assertEqual(Job.objects.review().count(), 2)
+
+    def test_get_previous_approved(self):
+        job1 = self.create_job(status=Job.STATUS_APPROVED)
+        job2 = self.create_job()
+        job3 = self.create_job(status=Job.STATUS_APPROVED)
+
+        self.assertEqual(job1.get_next_listing(), job3)
+        self.assertEqual(job3.get_previous_listing(), job1)
+
+        job2.status = Job.STATUS_APPROVED
+        job2.save()
+
+        self.assertEqual(job1.get_next_listing(), job2)
+        self.assertEqual(job2.get_next_listing(), job3)
+
+        self.assertEqual(job3.get_previous_listing(), job2)
+        self.assertEqual(job2.get_previous_listing(), job1)
+
