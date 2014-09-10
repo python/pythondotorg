@@ -14,3 +14,5 @@ static-root
 /static/stylesheets/no-mq.css
 /static/stylesheets/style.css
 tmp/*
+media/*
+pydotorg/settings/mylocal.py
