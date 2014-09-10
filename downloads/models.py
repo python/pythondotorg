@@ -120,6 +120,24 @@ def update_supernav():
     box.content = content
     box.save()
 
+    # Update latest Sources box on Download landing page
+    if latest_python2:
+        latest_python2_source = latest_python2.download_file_for_os('source')
+    else:
+        latest_python2_source = None
+
+    if latest_python3:
+        latest_python3_source = latest_python3.download_file_for_os('source')
+    else:
+        latest_python3_source = None
+
+    source_box = Box.objects.get(label='download-sources')
+    source_content = render_to_string('downloads/download-sources-box.html',{
+        'latest_python2_source': latest_python2_source,
+        'latest_python3_source': latest_python3_source,
+    })
+    source_box.content = source_content
+    source_box.save()
 
 def update_homepage_download_box():
     try:
