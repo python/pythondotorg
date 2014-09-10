@@ -94,7 +94,7 @@ class Event(ContentManageable):
     title = models.CharField(max_length=200)
     calendar = models.ForeignKey(Calendar, related_name='events')
 
-    description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
+    description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=False)
     venue = models.ForeignKey(EventLocation, null=True, blank=True, related_name='events')
 
     categories = models.ManyToManyField(EventCategory, related_name='events', blank=True, null=True)
