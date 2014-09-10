@@ -99,9 +99,6 @@ But not really enough to remember all these CLI commands by heart.
 Create a super user (for a new DB):
 `./manage.py createsuperuser`
 
-Install Meeting Minutes:
-`./manage.py import_psf_meeting_notes`
-
 Import calendars:
 `./manage.py import_ics_calendars`
 
