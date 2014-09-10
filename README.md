@@ -112,10 +112,10 @@ Load all fixture files:
 `find ./fixtures -name "*.json" -exec ./manage.py loaddata {} \;`
 
 List All the active DBs:
-`psql -U postgres -c '\l'`
+`psql -U postgres -c -l`
 esq from window... `q`
 
-If PostGres can't connect to your localhost DB, put this in `pydotorg/settings/local.py`:
+If Postgres can't connect to your localhost DB, put this in `pydotorg/settings/local.py`:
 ```
 DATABASES = {
     'default': dj_database_url.config(default='postgres://localhost:{port#}/{DBName, probably python.org}')
