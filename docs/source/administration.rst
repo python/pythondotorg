@@ -64,7 +64,7 @@ Downloads and Releases
 The ``downloads`` app stores all of the structured data regarding Python releases.  Each ``Release`` object has associated ``ReleaseFile`` objects that contain information on the various download formats Python.org
 supports.
 
-To create a release you simply need to fill in the appropriate information.  Currently the system behaves by redirecting all *Release* links to an associated :ref:`Page <pages>`.  Ultimately the information now displayed on those pages will be incorporated into the ``Release`` objects themselves and the redirects will no longer happen.
+To create a release you simply need to fill in the appropriate information.  Currently if a ``Release`` has an associated ``Release Page`` the system redirects to that to accommodate legacy content, but if the ``Content`` field is filled they are taken to the Release Detail page which shows the content and lists all of the associated downloadable files.
 
 Release Files have a checkbox named 'Download button' that determines which binary/source package download link to display for a given OS.  This information is used by the OS detection JS on the site so pick the package in most widespread use.
 
