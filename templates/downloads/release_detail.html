@@ -22,11 +22,18 @@
         </header>
 
         <p><strong>Release Date:</strong> {{ release.release_date|date }}</p>
+
+        {% if release.content.raw %}
+        {{ release.content.rendered|safe }}
+        {% endif %}
+
         {% if release.release_notes_url %}
         <p><a href="{{ release.release_notes_url }}">Release Notes</a></p>
         {% endif %}
 
+        {% if release.release_page %}
         <p><a href="{{ release.release_page.get_absolute_url }}">Detailed Release Information</a></p>
+        {% endif %}
 
         <header class="article-header">
             <h1 class="page-title">Files</h1>

@@ -1,15 +1,21 @@
 from django.core.urlresolvers import reverse
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.utils import timezone
 
+from markupfield.fields import MarkupField
+
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from pages.models import Page
 
 from .managers import ReleaseManager
+
+
+DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
 class OS(ContentManageable, NameSlugModel):
@@ -53,8 +59,10 @@ class Release(ContentManageable, NameSlugModel):
         help_text="Whether or not to show this release on the main /downloads/ page",
     )
     release_date = models.DateTimeField(default=timezone.now)
-    release_page = models.ForeignKey(Page, related_name='release')
+    release_page = models.ForeignKey(Page, related_name='release', blank=True, null=True)
     release_notes_url = models.URLField('Release Notes URL', blank=True)
+
+    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, default='')
 
     objects = ReleaseManager()
 
@@ -68,7 +76,7 @@ class Release(ContentManageable, NameSlugModel):
         return self.name
 
     def get_absolute_url(self):
-        if self.release_page:
+        if not self.content.raw and self.release_page:
             return self.release_page.get_absolute_url()
         else:
             return reverse('download:download_release_detail', kwargs={'release_slug': self.slug})
@@ -132,12 +140,13 @@ def update_supernav():
         latest_python3_source = None
 
     source_box = Box.objects.get(label='download-sources')
-    source_content = render_to_string('downloads/download-sources-box.html',{
+    source_content = render_to_string('downloads/download-sources-box.html', {
         'latest_python2_source': latest_python2_source,
         'latest_python3_source': latest_python3_source,
     })
     source_box.content = source_content
     source_box.save()
+
 
 def update_homepage_download_box():
     try:
