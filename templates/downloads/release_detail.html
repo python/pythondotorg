@@ -38,7 +38,6 @@
               <th>Version</th>
               <th>Operating System</th>
               <th>Description</th>
-              <th>Date</th>
               <th>MD5 Sum</th>
               <th>File Size</th>
               <th>GPG</th>
@@ -50,7 +49,6 @@
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
-                <td>{{ r.release.release_date|date }}</td>
                 <td>{{ f.md5_sum }}</td>
                 <td>{{ f.filesize }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
