@@ -10,6 +10,7 @@ import json
 
 User = get_user_model()
 
+
 class DownloadViewsTests(BaseDownloadTests):
     def test_download_full_os_list(self):
         url = reverse('download:download_full_os_list')
@@ -34,6 +35,18 @@ class DownloadViewsTests(BaseDownloadTests):
         url = reverse('download:download')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
+
+
+    def test_latest_redirects(self):
+        latest_python2 = Release.objects.released().python2().latest()
+        url = reverse('download:download_latest_python2')
+        response = self.client.get(url)
+        self.assertRedirects(response, latest_python2.get_absolute_url())
+
+        latest_python3 = Release.objects.released().python3().latest()
+        url = reverse('download:download_latest_python3')
+        response = self.client.get(url)
+        self.assertRedirects(response, latest_python3.get_absolute_url())
 
 
 class DownloadApiViewsTest(BaseDownloadTests):

@@ -1,6 +1,39 @@
-from django.views.generic import DetailView, TemplateView, ListView
+from django.core.urlresolvers import reverse
+from django.views.generic import DetailView, TemplateView, ListView, RedirectView
 from django.http import Http404
+
 from .models import OS, Release
+
+
+class DownloadLatestPython2(RedirectView):
+    """ Redirec to latest Python 2 release """
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        try:
+            latest_python2 = Release.objects.released().python2().latest()
+        except Release.DoesNotExist:
+            latest_python2 = None
+
+        if latest_python2:
+            return latest_python2.get_absolute_url()
+        else:
+            return reverse('download')
+
+class DownloadLatestPython3(RedirectView):
+    """ Redirec to latest Python 3 release """
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        try:
+            latest_python3 = Release.objects.released().python3().latest()
+        except Release.DoesNotExist:
+            latest_python3 = None
+
+        if latest_python3:
+            return latest_python3.get_absolute_url()
+        else:
+            return reverse('download')
 
 
 class DownloadBase(object):
