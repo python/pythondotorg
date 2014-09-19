@@ -90,6 +90,11 @@ class Release(ContentManageable, NameSlugModel):
 
         return file
 
+    def files_for_os(self, os_slug):
+        """ Return all files for this release for a given OS """
+        files = self.files.filter(os__slug=os_slug).order_by('-name')
+        return files
+
 
 def update_supernav():
     try:
