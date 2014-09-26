@@ -96,7 +96,6 @@ urlpatterns = patterns('',
     url(r'^users/', include('users.urls', namespace='users')),
 
     url(r'^psf/records/board/minutes/', include('minutes.urls')),
-    url(r'^peps/', include('peps.urls')),
     url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),

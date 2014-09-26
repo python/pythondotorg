@@ -220,6 +220,9 @@ PYTHON_BLOG_URL = "http://blog.python.org"
 ### Registration mailing lists
 MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
+### PEP Repo Location
+PEP_REPO_PATH = ''
+
 ### Pipeline
 
 from .pipeline import (
