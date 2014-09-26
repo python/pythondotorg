@@ -73,6 +73,7 @@ def convert_pep_page(pep_number, content):
     """
     Handle different formats that pep2html.py outputs
     """
+    check_paths()
     data = {
         'title': None,
     }
