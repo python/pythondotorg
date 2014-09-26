@@ -18,7 +18,7 @@ Contents:
    contributing
    administration
    architecture
-
+   pep_generation
 
 Indices and tables
 ==================
