@@ -3,7 +3,7 @@ python.org
 
 [![Build Status](https://travis-ci.org/python/pythondotorg.png?branch=master)](https://travis-ci.org/python/pythondotorg)
 
-The new python.org!
+The new www.python.org!
 
 Getting going
 -------------
