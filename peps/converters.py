@@ -48,7 +48,7 @@ def convert_pep0():
         if not m:
             continue
 
-        b.attrs['href'] = '/peps/pep-{0}/'.format(m.group(1))
+        b.attrs['href'] = '/dev/peps/pep-{0}/'.format(m.group(1))
 
     return ''.join([header.prettify(), pep_content.prettify()])
 
@@ -58,7 +58,7 @@ def get_pep0_page(commit=True):
     Using convert_pep0 above, create a CMS ready pep0 page and return it
     """
     pep0_content = convert_pep0()
-    pep0_page, _ = Page.objects.get_or_create(path='peps/')
+    pep0_page, _ = Page.objects.get_or_create(path='dev/peps/')
     pep0_page.content = pep0_content
     pep0_page.content_markup_type = 'html'
     pep0_page.title = "PEP 0 -- Index of Python Enhancement Proposals (PEPs)"
@@ -127,7 +127,7 @@ def get_pep_page(pep_number, commit=True):
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
 
-    pep_url = 'peps/pep-{0}/'.format(pep_number)
+    pep_url = 'dev/peps/pep-{0}/'.format(pep_number)
     pep_page, _ = Page.objects.get_or_create(path=pep_url)
 
     pep_page.title = pep_content['title']
