@@ -212,7 +212,7 @@ $().ready(function() {
     if($('body#homepage').length) {
         var launch_shell = $('#launch-shell');
         launch_shell.toggle();
-        $.get('https://www.pythonanywhere.com/python-dot-org-live-consoles-status', function (data) {
+        $.get('https://console.python.org/python-dot-org-live-consoles-status', function (data) {
             if(data.status == 'OK') {
                 launch_shell.toggle();
             }
@@ -240,7 +240,7 @@ $().ready(function() {
      * Load interactive shell on the homepage.
     */
     function loadShell(e) {
-        var CONSOLE_URL = 'https://www.pythonanywhere.com/python-dot-org-console/';
+        var CONSOLE_URL = 'https://console.python.org/python-dot-org-console/';
         e.preventDefault();
         shellDiv = $($(e.target).data('shell-container'));
 
