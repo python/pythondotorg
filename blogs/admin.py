@@ -21,9 +21,9 @@ class ContributorAdmin(ContentManageableModelAdmin):
 
     def _display_name(self, obj):
         if obj.user.first_name or obj.user.last_name:
-            return "{0} {1}".format(obj.user.first_name, obj.user.last_name)
+            return "{} {}".format(obj.user.first_name, obj.user.last_name)
         else:
-            return "{0} (PK#{1})".format(obj.user.username, obj.user.pk)
+            return "{} (PK#{})".format(obj.user.username, obj.user.pk)
 
 admin.site.register(Contributor, ContributorAdmin)
 

@@ -53,7 +53,7 @@ def send_job_review_message(job, user, subject_template_path,
     """
     subject_template = loader.get_template(subject_template_path)
     message_template = loader.get_template(message_template_path)
-    reviewer_name = '{0} {1}'.format(user.first_name, user.last_name)
+    reviewer_name = '{} {}'.format(user.first_name, user.last_name)
     message_context = Context({'addressee': job.contact,
                                'reviewer_name': reviewer_name,
                               })

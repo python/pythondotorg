@@ -62,7 +62,7 @@ class Story(NameSlugModel, ContentManageable):
 
     def get_weight_display(self):
         """ Display more useful weight with percent sign in admin """
-        return "{0} %".format(self.weight)
+        return "{} %".format(self.weight)
     get_weight_display.short_description = 'Weight'
 
     def get_company_name(self):

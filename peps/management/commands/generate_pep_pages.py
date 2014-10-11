@@ -41,15 +41,15 @@ class Command(NoArgsCommand):
 
             # Skip files we aren't looking for
             if not f.startswith('pep-') or not f.endswith('.html'):
-                verbose("- Skipping non-PEP file '{0}'".format(f))
+                verbose("- Skipping non-PEP file '{}'".format(f))
                 continue
 
-            verbose("Generating PEP Page from '{0}'".format(f))
+            verbose("Generating PEP Page from '{}'".format(f))
             pep_match = pep_number_re.match(f)
             if pep_match:
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
             else:
-                verbose("- Skipping invalid {0}'".format(f))
+                verbose("- Skipping invalid {}'".format(f))
 
         verbose("== Finished")

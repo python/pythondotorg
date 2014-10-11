@@ -92,7 +92,7 @@ class Command(BaseCommand):
             try:
                 data = parse_page(os.path.dirname(match))
             except Exception as e:
-                print("Unable to parse {0}".format(match))
+                print("Unable to parse {}".format(match))
                 traceback.print_exc()
                 continue
 
@@ -108,6 +108,6 @@ class Command(BaseCommand):
                 page_obj, _ = Page.objects.get_or_create(path=path, defaults=defaults)
                 self.save_images(path, page_obj)
             except Exception as e:
-                print("Unable to create Page object for {0}".format(match))
+                print("Unable to create Page object for {}".format(match))
                 traceback.print_exc()
                 continue
