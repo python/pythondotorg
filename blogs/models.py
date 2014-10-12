@@ -63,7 +63,7 @@ class Contributor(ContentManageable):
 
     def get_display_name(self):
         if self.user.first_name or self.user.last_name:
-            return """{0} {1}""".format(self.user.first_name, self.user.last_name)
+            return """{} {}""".format(self.user.first_name, self.user.last_name)
         else:
             return self.user.username
 

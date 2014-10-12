@@ -94,7 +94,7 @@ class Job(ContentManageable):
         permissions = [('can_moderate_jobs', 'Can moderate Job listings')]
 
     def __str__(self):
-        return 'Job Listing #{0}'.format(self.pk)
+        return 'Job Listing #{}'.format(self.pk)
 
     def save(self, **kwargs):
         self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))

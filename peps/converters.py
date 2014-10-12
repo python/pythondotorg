@@ -48,7 +48,7 @@ def convert_pep0():
         if not m:
             continue
 
-        b.attrs['href'] = '/dev/peps/pep-{0}/'.format(m.group(1))
+        b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
 
     return ''.join([header.prettify(), pep_content.prettify()])
 
@@ -109,7 +109,7 @@ def convert_pep_page(pep_number, content):
                 t.parent.extract()
 
         if not data['title']:
-            data['title'] = "PEP {0}".format(pep_number)
+            data['title'] = "PEP {}".format(pep_number)
 
         data['content'] = soup.prettify()
 
@@ -121,13 +121,13 @@ def get_pep_page(pep_number, commit=True):
     Given a pep_number retrieve original PEP source text, rst, or html.
     Get or create the associated Page and return it
     """
-    pep_path = os.path.join(settings.PEP_REPO_PATH, 'pep-{0}.html'.format(pep_number))
+    pep_path = os.path.join(settings.PEP_REPO_PATH, 'pep-{}.html'.format(pep_number))
     if not os.path.exists(pep_path):
-        print("PEP Path '{0}' does not exist, skipping".format(pep_path))
+        print("PEP Path '{}' does not exist, skipping".format(pep_path))
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
 
-    pep_url = 'dev/peps/pep-{0}/'.format(pep_number)
+    pep_url = 'dev/peps/pep-{}/'.format(pep_number)
     pep_page, _ = Page.objects.get_or_create(path=pep_url)
 
     pep_page.title = pep_content['title']

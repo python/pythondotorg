@@ -59,7 +59,7 @@ class Post(ContentManageable):
         ordering = ['-created']
 
     def __str__(self):
-        return 'Post {0} ({1})'.format(self.get_media_type_display(), self.pk)
+        return 'Post {} ({})'.format(self.get_media_type_display(), self.pk)
 
     def get_absolute_url(self):
         return reverse('community:post_detail', kwargs={'pk': self.pk})
@@ -76,7 +76,7 @@ class Link(ContentManageable):
         ordering = ['-created']
 
     def __str__(self):
-        return 'Link ({0})'.format(self.pk)
+        return 'Link ({})'.format(self.pk)
 
 
 class Photo(ContentManageable):
@@ -93,7 +93,7 @@ class Photo(ContentManageable):
         ordering = ['-created']
 
     def __str__(self):
-        return 'Photo ({0})'.format(self.pk)
+        return 'Photo ({})'.format(self.pk)
 
 
 class Video(ContentManageable):
@@ -110,4 +110,4 @@ class Video(ContentManageable):
         ordering = ['-created']
 
     def __str__(self):
-        return 'Video ({0})'.format(self.pk)
+        return 'Video ({})'.format(self.pk)

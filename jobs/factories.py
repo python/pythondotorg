@@ -8,14 +8,14 @@ class JobCategoryFactory(factory.DjangoModelFactory):
     FACTORY_FOR = JobCategory
     FACTORY_DJANGO_GET_OR_CREATE = ('name',)
 
-    name = factory.Sequence(lambda n: 'Job Category {0}'.format(n))
+    name = factory.Sequence(lambda n: 'Job Category {}'.format(n))
 
 
 class JobTypeFactory(factory.DjangoModelFactory):
     FACTORY_FOR = JobType
     FACTORY_DJANGO_GET_OR_CREATE = ('name',)
 
-    name = factory.Sequence(lambda n: 'Job Type {0}'.format(n))
+    name = factory.Sequence(lambda n: 'Job Type {}'.format(n))
 
 
 class JobFactory(factory.DjangoModelFactory):

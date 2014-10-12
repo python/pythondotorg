@@ -64,7 +64,7 @@ class Page(ContentManageable):
         return self.title
 
     def get_absolute_url(self):
-        return "/{0}/".format(self.path)
+        return "/{}/".format(self.path)
 
 
 def page_image_path(instance, filename):

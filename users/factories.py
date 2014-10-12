@@ -7,7 +7,7 @@ class UserFactory(factory.DjangoModelFactory):
     FACTORY_FOR = User
     FACTORY_DJANGO_GET_OR_CREATE = ('username',)
 
-    username = factory.Sequence(lambda n: 'zombie{0}'.format(n))
+    username = factory.Sequence(lambda n: 'zombie{}'.format(n))
     email = factory.Sequence(lambda n: "zombie%s@example.com" % n)
     #password = ?
     search_visibility = User.SEARCH_PUBLIC
