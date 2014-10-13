@@ -15,3 +15,7 @@ HAYSTACK_CONNECTIONS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 PEP_REPO_PATH = '/Users/frank/work/src/pythondotorg/tmp/peps'
+
+DATABASES = {
+    'default': dj_database_url.parse('sqlite:///pydotorg.db')
+}

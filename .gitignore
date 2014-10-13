@@ -1,6 +1,7 @@
 *.log
 *.pot
 *.pyc
+*.db
 __pycache__
 .vagrant
 build
