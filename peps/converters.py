@@ -8,6 +8,8 @@ from django.core.exceptions import ImproperlyConfigured
 
 from pages.models import Page
 
+PEP_ZERO_TEMPLATE = 'pages/pep-zero.html'
+
 
 def check_paths():
     """ Checks to ensure our PEP_REPO_PATH is setup correctly """
@@ -62,6 +64,7 @@ def get_pep0_page(commit=True):
     pep0_page.content = pep0_content
     pep0_page.content_markup_type = 'html'
     pep0_page.title = "PEP 0 -- Index of Python Enhancement Proposals (PEPs)"
+    pep0_page.template_name = PEP_ZERO_TEMPLATE
 
     if commit:
         pep0_page.save()
