@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
 from . import views
@@ -72,6 +72,13 @@ urlpatterns = patterns('',
 
     # python section landing pages
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
+
+    # Redirect old download links to new downloads pages
+    url(r'^download/$', url='https://www.python.org/downloads/'),
+    url(r'^download/source/$', url='https://www.python.org/downloads/source/'),
+    url(r'^download/mac/$', url='https://www.python.org/downloads/mac-osx/'),
+    url(r'^download/windows/$', url='https://www.python.org/downloads/windows/'),
+
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     #url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
