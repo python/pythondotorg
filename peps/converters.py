@@ -78,6 +78,31 @@ def get_pep0_page(commit=True):
     return pep0_page
 
 
+def fix_headers(soup, data):
+    """ Remove empty or unwanted headers and find our title """
+    header_rows = soup.find_all('th')
+    for t in header_rows:
+        if 'Version:' in t.text:
+            if t.next_sibling.text == '$Revision$':
+                t.parent.extract()
+            if t.next_sibling.text == '':
+                t.parent.extract()
+            print
+        if 'Last-Modified:' in t.text:
+            if '$Date$'in t.next_sibling.text:
+                t.parent.extract()
+            if t.next_sibling.text == '':
+                t.parent.extract()
+        if t.text == 'Title:':
+            data['title'] = t.next_sibling.text
+        if t.text == 'Content-Type:':
+            t.parent.extract()
+        if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
+            t.parent.extract()
+
+    return soup, data
+
+
 def convert_pep_page(pep_number, content):
     """
     Handle different formats that pep2html.py outputs
@@ -92,6 +117,7 @@ def convert_pep_page(pep_number, content):
         data['title'] = soup.title.text
 
         header = soup.body.find('div', class_="header")
+        header, data = fix_headers(header, data)
         data['header'] = header.prettify()
 
         main_content = soup.body.find('div', class_="content")
@@ -102,30 +128,19 @@ def convert_pep_page(pep_number, content):
             data['main_content']
         ])
 
+        if pep_number == '0293':
+            print("oops")
     else:
         soup = BeautifulSoup(content)
 
-        # Attempt to find title in header table
-        header_rows = soup.find_all('th', class_="field-name")
-        for t in header_rows:
-            if 'Version:' in t.text:
-                if t.next_sibling.text in ('$Revision$', ''):
-                    t.parent.extract()
-            if 'Last-Modified:' in t.text:
-                if t.next_sibling.text in ('$Date$', ''):
-                    t.parent.extract()
-            if t.text == 'Title:':
-                data['title'] = t.next_sibling.text
-            if t.text == 'Content-Type:':
-                t.parent.extract()
-            if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
-                t.parent.extract()
-
+        soup, data = fix_headers(soup, data)
         if not data['title']:
             data['title'] = "PEP {}".format(pep_number)
 
         data['content'] = soup.prettify()
 
+    hg_link = "https://hg.python.org/peps/file/tip/pep-{0}.txt".format(pep_number)
+    data['content'] += """Source: <a href="{0}">{0}</a>""".format(hg_link)
     return data
 
 
