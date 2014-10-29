@@ -55,7 +55,6 @@ def convert_pep0():
     # Remove Version from header
     header_rows = header.find_all('th')
     for t in header_rows:
-        print(t)
         if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
             t.parent.extract()
 
