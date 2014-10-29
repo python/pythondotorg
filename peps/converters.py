@@ -52,6 +52,13 @@ def convert_pep0():
 
         b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
 
+    # Remove Version from header
+    header_rows = header.find_all('th')
+    for t in header_rows:
+        print(t)
+        if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
+            t.parent.extract()
+
     return ''.join([header.prettify(), pep_content.prettify()])
 
 
@@ -109,6 +116,8 @@ def convert_pep_page(pep_number, content):
             if t.text == 'Title:':
                 data['title'] = t.next_sibling.text
             if t.text == 'Content-Type:':
+                t.parent.extract()
+            if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
                 t.parent.extract()
 
         if not data['title']:
