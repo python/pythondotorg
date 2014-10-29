@@ -21,7 +21,8 @@ beautifulsoup4==4.3.2
 icalendar==3.6.1
 chardet2==2.0.3
 django-imagekit==3.2
-django-haystack==2.1.0
+django-haystack==2.3.1
+elasticsearch==1.2.0
 pyelasticsearch==0.6.1
 Sphinx==1.2.2
 django-tastypie==0.11.0

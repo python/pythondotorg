@@ -5,7 +5,7 @@
 
     <form method="get" action=".">
         <p>
-            <input type="text" name="q">
+            <input type="text" name="q" value="{{ request.GET.q }}">
             <input type="submit" value="Search">
         </p>
         {% if query %}
@@ -14,10 +14,8 @@
             <ul class="list-recent-events menu">
             {% for result in page.object_list %}
             <li>
-                <h3><a href="/{{ result.path }}">{{ result.title }}</a></h3>
-                <p>
-                    {{ result.description|safe }}
-                </p>
+                {% include result.include_template %}
+            </li>
             {% empty %}
                 <p>No results found.</p>
             {% endfor %}
