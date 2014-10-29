@@ -1,0 +1,11 @@
+<h3>Calendar &ndash; <a href="/{{ result.path }}">{{ result.name }}</a></h3>
+<p>{{ result.description|safe }}</p>
+{% if result.rss %}
+<p><a href="{{ result.rss }}">RSS Feed</a></p>
+{% endif %}
+{% if result.twitter %}
+<p><a href="{{ result.twitter }}">Twitter Feed</a></p>
+{% endif %}
+{% if result.ical %}
+<p><a href="{{ result.ical }}">iCal</a></p>
+{% endif %}
