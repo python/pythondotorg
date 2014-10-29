@@ -108,10 +108,12 @@ def convert_pep_page(pep_number, content):
         # Attempt to find title in header table
         header_rows = soup.find_all('th', class_="field-name")
         for t in header_rows:
-            if t.text == 'Version:' and t.next_sibling.text == '$Revision$':
-                t.next_sibling.string = ''
-            if t.text == 'Last-Modified:' and t.next_sibling.text == '$Date$':
-                t.next_sibling.string = ''
+            if 'Version:' in t.text:
+                if t.next_sibling.text in ('$Revision$', ''):
+                    t.parent.extract()
+            if 'Last-Modified:' in t.text:
+                if t.next_sibling.text in ('$Date$', ''):
+                    t.parent.extract()
             if t.text == 'Title:':
                 data['title'] = t.next_sibling.text
             if t.text == 'Content-Type:':
