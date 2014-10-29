@@ -74,10 +74,10 @@ urlpatterns = patterns('',
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
 
     # Redirect old download links to new downloads pages
-    url(r'^download/$', url='https://www.python.org/downloads/'),
-    url(r'^download/source/$', url='https://www.python.org/downloads/source/'),
-    url(r'^download/mac/$', url='https://www.python.org/downloads/mac-osx/'),
-    url(r'^download/windows/$', url='https://www.python.org/downloads/windows/'),
+    url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/')),
+    url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/')),
+    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/')),
+    url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/')),
 
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
