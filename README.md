@@ -74,18 +74,11 @@ If you hit an error getting this repo setup, file a pull request with helpful in
 
 ### Freetype not found
 
-
-
     _imagingft.c:60:10: fatal error: 'freetype/fterrors.h' file not found
-    
     #include <freetype/fterrors.h>
-    
              ^
-    
     1 error generated.
-    
     error: command 'clang' failed with exit status 1
-
 
 If you've installed freetype (`brew install freetype`), you may need
 to symlink version 2 into location for version 1 as mentioned by [this
