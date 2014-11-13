@@ -18,6 +18,7 @@ THRESHOLD_DAYS = 90
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
 
+
 class JobMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -25,6 +26,7 @@ class JobMixin(object):
         context['companies_count'] = Company.objects.filter(jobs__status=Job.STATUS_APPROVED, jobs__isnull=False).distinct().count()
         context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status=Job.STATUS_APPROVED).distinct()
         return context
+
 
 class JobList(JobMixin, ListView):
     model = Job
@@ -153,9 +155,13 @@ class JobDetail(JobMixin, DetailView):
     model = Job
 
     def get_queryset(self):
-        threshold = timezone.now() - datetime.timedelta(days=90)
+        """ Show only approved jobs to the public, staff can see all jobs """
+        qs = Job.objects.select_related()
 
-        return Job.objects.select_related().filter(created__gt=threshold)
+        if self.request.user.is_staff:
+            return qs
+        else:
+            return qs.filter(status=Job.STATUS_APPROVED)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(

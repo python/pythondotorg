@@ -11,6 +11,8 @@ from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
     ReviewJobFactory
 )
+from users.factories import StaffUserFactory
+
 from companies.factories import CompanyFactory
 from companies.models import Company
 from django_comments_xtd.utils import mail_sent_queue
@@ -160,6 +162,28 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['companies_count'], 1)
         self.assertEqual(len(response.context['featured_companies']), 1)
 
+    def test_job_detail_security(self):
+        """
+        Ensure the public can only see approved jobs, but staff can view
+        all jobs
+        """
+        staff_user = StaffUserFactory()
+
+        response = self.client.get(self.job.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        # Normal users can't see non-approved Jobs
+        response = self.client.get(self.job_draft.get_absolute_url())
+        self.assertEqual(response.status_code, 404)
+
+        # Staff can see everything
+        self.client.login(username=staff_user.username, password='password')
+        response = self.client.get(self.job.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get(self.job_draft.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
     def test_job_create(self):
         url = reverse('jobs:job_create')
         response = self.client.get(url)
@@ -274,12 +298,17 @@ class JobsReviewTests(TestCase):
         self.contact = 'John Doe'
 
         User = get_user_model()
-        self.creator = User.objects.create_user(self.creator_username,
-            self.creator_email, self.creator_password)
+        self.creator = User.objects.create_user(
+            self.creator_username,
+            self.creator_email,
+            self.creator_password
+        )
 
-        self.superuser = User.objects.create_superuser(self.super_username,
-            self.super_email, self.super_password)
-
+        self.superuser = User.objects.create_superuser(
+            self.super_username,
+            self.super_email,
+            self.super_password
+        )
 
         self.company = CompanyFactory(
             name='Kulfun Games',

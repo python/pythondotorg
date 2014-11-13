@@ -9,7 +9,7 @@ class UserFactory(factory.DjangoModelFactory):
 
     username = factory.Sequence(lambda n: 'zombie{}'.format(n))
     email = factory.Sequence(lambda n: "zombie%s@example.com" % n)
-    #password = ?
+    password = factory.PostGenerationMethodCall('set_password', 'password')
     search_visibility = User.SEARCH_PUBLIC
     email_privacy = User.EMAIL_PUBLIC
 
