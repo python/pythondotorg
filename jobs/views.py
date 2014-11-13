@@ -187,7 +187,21 @@ class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail)
         return ctx
 
 
-class JobCreate(JobMixin, CreateView):
+class JobCreateEditMixin(object):
+
+    def form_valid(self, form):
+        self.object = form.save()
+        # Delete existing
+        self.object.job_types.all().delete()
+
+        # Add all of the chosen ones
+        for t in form.cleaned_data['job_types']:
+            self.object.job_types.add(t)
+
+        return super().form_valid(form)
+
+
+class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
     model = Job
     form_class = JobForm
 
@@ -200,7 +214,7 @@ class JobCreate(JobMixin, CreateView):
         return kwargs
 
 
-class JobEdit(JobMixin, UpdateView):
+class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
     model = Job
     form_class = JobForm
 
