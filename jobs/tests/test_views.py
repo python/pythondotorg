@@ -175,6 +175,7 @@ class JobsViewTests(TestCase):
             'category': self.job_category.pk,
             'job_types': [self.job_type.pk],
             'company': company.pk,
+            'job_title': 'Test Job',
             'city': 'San Diego',
             'region': 'CA',
             'country': 'USA',
