@@ -42,8 +42,8 @@ class Job(ContentManageable):
     company = models.ForeignKey('companies.Company', related_name='jobs', blank=True, null=True)
 
     company_name = models.CharField(max_length=100, blank=True, null=True)
-    company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
-    job_title = models.CharField(blank=True, null=True, max_length=100)
+    company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    job_title = models.CharField(max_length=100)
 
     city = models.CharField(max_length=100)
     region = models.CharField(max_length=100)
@@ -51,8 +51,8 @@ class Job(ContentManageable):
     location_slug = models.SlugField(max_length=350, editable=False)
     country_slug = models.SlugField(max_length=100, editable=False)
 
-    description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
-    requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
+    description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
 
     contact = models.CharField(null=True, blank=True, max_length=100)
     email = models.EmailField()
@@ -143,8 +143,11 @@ class Job(ContentManageable):
 
     @property
     def editable(self):
-        return self.status in (self.STATUS_DRAFT, self.STATUS_REVIEW,
-            self.STATUS_REJECTED)
+        return self.status in (
+            self.STATUS_DRAFT,
+            self.STATUS_REVIEW,
+            self.STATUS_REJECTED
+        )
 
     def get_previous_listing(self):
         return self.get_previous_by_created(status=self.STATUS_APPROVED)
