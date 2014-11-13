@@ -206,7 +206,6 @@ class JobEdit(JobMixin, UpdateView):
 
     def get_queryset(self):
         return self.request.user.jobs_job_creator.all()
-        #return self.request.user.jobs_job_creator.exclude(status=self.model.STATUS_APPROVED)
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
