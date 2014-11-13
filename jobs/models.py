@@ -21,8 +21,8 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 class JobType(NameSlugModel):
 
     class Meta(object):
-        verbose_name = 'job type'
-        verbose_name_plural = 'job types'
+        verbose_name = 'job technologies'
+        verbose_name_plural = 'job technologies'
         ordering = ('name', )
 
 
@@ -38,7 +38,7 @@ class Job(ContentManageable):
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
-    job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True)
+    job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True, verbose_name='Job technologies')
     company = models.ForeignKey('companies.Company', related_name='jobs', blank=True, null=True)
 
     company_name = models.CharField(max_length=100, blank=True, null=True)
