@@ -52,16 +52,16 @@ class JobCommentForm(CommentForm):
             kwargs["initial"] = initial
         super(JobCommentForm, self).__init__(*args, **kwargs)
         self.fields['name'] = forms.CharField(
-            widget=forms.TextInput(attrs={'placeholder':_('name')}))
+            widget=forms.TextInput(attrs={'placeholder': _('name')}))
         self.fields['email'] = forms.EmailField(
             label=_("Email"), help_text=_("Required for comment verification"),
-            widget=forms.TextInput(attrs={'placeholder':_('email')})
-            )
+            widget=forms.TextInput(attrs={'placeholder': _('email')})
+        )
         self.fields['url'] = forms.URLField(
             required=False,
-            widget=forms.TextInput(attrs={'placeholder':_('website')}))
+            widget=forms.TextInput(attrs={'placeholder': _('website')}))
         self.fields['comment'] = forms.CharField(
-            widget=forms.Textarea(attrs={'placeholder':_('comment')}),
+            widget=forms.Textarea(attrs={'placeholder': _('comment')}),
             max_length=comments_settings.COMMENT_MAX_LENGTH)
 
     def get_comment_model(self):
