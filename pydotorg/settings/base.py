@@ -23,6 +23,7 @@ SITE_VARIABLES = {
     'site_descript': 'The official home of the Python Programming Language',
 }
 
+APPEND_SLASH = True
 
 ### Databases
 
