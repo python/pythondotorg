@@ -175,8 +175,11 @@ class JobDetail(JobMixin, DetailView):
 class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
 
     def get_queryset(self):
-        # TODO: Add moderator info...
-        return Job.objects.all()
+        """ Only staff and creator can review """
+        if self.request.user.is_staff:
+            return Job.objects.select_related()
+        else:
+            raise Http404()
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
@@ -213,6 +216,14 @@ class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
         kwargs['request'] = self.request
         return kwargs
 
+    def form_valid(self, form):
+        """ set the creator to the current user """
+        form = super().form_valid(form)
+        self.object.creator = self.request.user
+        self.object.save()
+
+        return form
+
 
 class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
     model = Job
@@ -220,6 +231,14 @@ class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
 
     def get_queryset(self):
         return self.request.user.jobs_job_creator.all()
+
+    def form_valid(self, form):
+        """ set last_modified_by to the current user """
+        form = super().form_valid(form)
+        self.object.last_modified_by = self.request.user
+        self.object.save()
+
+        return form
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
