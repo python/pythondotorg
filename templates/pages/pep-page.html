@@ -4,12 +4,6 @@
 
 {% block body_attributes %}class="python pages pep-page"{% endblock %}
 
-
-{% block breadcrumbs %}
-{% sitetree_breadcrumbs from "main" %}
-{% endblock breadcrumbs %}
-
-
 {% block content_attributes %}with-left-sidebar{% endblock %}
 
 
@@ -19,7 +13,21 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 {% endcomment %}
 {% block page_title %}{{ page.title }} | {{ SITE_INFO.site_name }}{% endblock %}
 
-
+{% block breadcrumbs %}
+<ul class="breadcrumbs menu">
+    <li>
+        <a href="/" title="The Python Programming Language">Python</a><span class="prompt">&gt;&gt;&gt;</span>
+    </li>
+    <li>
+        <a href="/dev/">Python Developer's Guide</a><span class="prompt">&gt;&gt;&gt;</span>
+    </li>
+    <li>
+        <a href="/dev/peps/">PEP Index</a><span class="prompt">&gt;&gt;&gt;</span>
+    </li>
+    <li>PEP</li>
+</ul>
+{% endblock %}
+.
 {% block content %}
 <style>
    .pep-page pre {
