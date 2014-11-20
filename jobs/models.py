@@ -39,7 +39,13 @@ class Job(ContentManageable):
 
     category = models.ForeignKey(JobCategory, related_name='jobs')
     job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True, verbose_name='Job technologies')
-    company = models.ForeignKey('companies.Company', related_name='jobs', blank=True, null=True)
+    company = models.ForeignKey(
+        'companies.Company',
+        related_name='jobs',
+        blank=True,
+        null=True,
+        help_text="Choose a specific company here or enter Name and Description Below",
+    )
 
     company_name = models.CharField(max_length=100, blank=True, null=True)
     company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)

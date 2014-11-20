@@ -199,6 +199,8 @@ class JobsViewTests(TestCase):
             'category': self.job_category.pk,
             'job_types': [self.job_type.pk],
             'company': company.pk,
+            'company_name': '',
+            'company_description': '',
             'job_title': 'Test Job',
             'city': 'San Diego',
             'region': 'CA',
@@ -207,6 +209,13 @@ class JobsViewTests(TestCase):
             'email': 'hr@company.com'
         }
 
+        username = 'kevinarnold'
+        email = 'kevinarnold@example.com'
+        password = 'secret'
+
+        User = get_user_model()
+        creator = User.objects.create_user(username, email, password)
+        self.client.login(username=creator.username, password='secret')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
@@ -216,7 +225,6 @@ class JobsViewTests(TestCase):
         job = jobs[0]
         self.assertNotEqual(job.created, None)
         self.assertNotEqual(job.updated, None)
-        self.assertEqual(job.creator, None)
 
         self.assertEqual(job.status, 'review')
 

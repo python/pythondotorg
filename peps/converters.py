@@ -8,7 +8,7 @@ from django.core.exceptions import ImproperlyConfigured
 
 from pages.models import Page
 
-PEP_ZERO_TEMPLATE = 'pages/pep-zero.html'
+PEP_TEMPLATE = 'pages/pep-page.html'
 
 
 def check_paths():
@@ -70,7 +70,7 @@ def get_pep0_page(commit=True):
     pep0_page.content = pep0_content
     pep0_page.content_markup_type = 'html'
     pep0_page.title = "PEP 0 -- Index of Python Enhancement Proposals (PEPs)"
-    pep0_page.template_name = PEP_ZERO_TEMPLATE
+    pep0_page.template_name = PEP_TEMPLATE
 
     if commit:
         pep0_page.save()
@@ -128,8 +128,6 @@ def convert_pep_page(pep_number, content):
             data['main_content']
         ])
 
-        if pep_number == '0293':
-            print("oops")
     else:
         soup = BeautifulSoup(content)
 
@@ -161,6 +159,7 @@ def get_pep_page(pep_number, commit=True):
     pep_page.title = pep_content['title']
     pep_page.content = pep_content['content']
     pep_page.content_markup_type = 'html'
+    pep_page.template_name = PEP_TEMPLATE
 
     if commit:
         pep_page.save()
