@@ -156,7 +156,15 @@ def get_pep_page(pep_number, commit=True):
     pep_url = 'dev/peps/pep-{}/'.format(pep_number)
     pep_page, _ = Page.objects.get_or_create(path=pep_url)
 
-    pep_page.title = pep_content['title']
+    # Remove leading zeros from PEP number for display purposes
+    pep_number_string = str(pep_number)
+    pep_number_string = re.sub(r'^0+', '', pep_number_string)
+
+    pep_page.title = 'PEP {0} - {1}'.format(
+        pep_number_string,
+        pep_content['title']
+    )
+
     pep_page.content = pep_content['content']
     pep_page.content_markup_type = 'html'
     pep_page.template_name = PEP_TEMPLATE
