@@ -24,7 +24,7 @@ class OSResource(GenericResource):
 
 
 class ReleaseResource(GenericResource):
-    release_page = fields.ToOneField(PageResource, 'release_page')
+    release_page = fields.ToOneField(PageResource, 'release_page', null=True, blank=True)
 
     class Meta(GenericResource.Meta):
         queryset = Release.objects.all()

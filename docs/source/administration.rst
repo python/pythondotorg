@@ -84,6 +84,16 @@ The Jobs application is used to display Python jobs on the site. The data items 
 Currently the jobs functionality it masked and the URLs are redirected to the legacy site until the content can be updated.
 
 
+Sponsors
+--------
+
+The Sponsors app is a place to store PSF Sponsors. Sponsors have to be associated to a Company model from
+the companies app.  If they are marked as `is_published` they will be shown on the main sponsor page which
+is located at /sponsors/.
+
+If a Sponsor is marked as `featured` they will be included in the sponsor rotation on the main PSF landing
+page.  In the fourth "Sponsors" column.
+
 Events
 ------
 
