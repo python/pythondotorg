@@ -5,11 +5,12 @@ from bs4 import BeautifulSoup
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.files import File
 
-from pages.models import Page
+from pages.models import Page, Image
 
 PEP_TEMPLATE = 'pages/pep-page.html'
-
+pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
 def check_paths():
     """ Checks to ensure our PEP_REPO_PATH is setup correctly """
@@ -153,8 +154,7 @@ def get_pep_page(pep_number, commit=True):
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
 
-    pep_url = 'dev/peps/pep-{}/'.format(pep_number)
-    pep_page, _ = Page.objects.get_or_create(path=pep_url)
+    pep_page, _ = Page.objects.get_or_create(path=pep_url(pep_number))
 
     # Remove leading zeros from PEP number for display purposes
     pep_number_string = str(pep_number)
@@ -173,3 +173,31 @@ def get_pep_page(pep_number, commit=True):
         pep_page.save()
 
     return pep_page
+
+def add_pep_image(pep_number, path):
+    image_path = os.path.join(settings.PEP_REPO_PATH, path)
+    if not os.path.exists(image_path):
+        print("Image Path '{}' does not exist, skipping".format(image_path))
+
+    try:
+        page = Page.objects.get(path=pep_url(pep_number))
+    except Page.DoesNotExist:
+        print("Could not find backing PEP {}".format(pep_number))
+        return
+
+    image, created = Image.objects.get_or_create(page=page)
+    if created:
+        with open(image_path, 'rb') as image_obj:
+            image.image.save(path, File(image_obj))
+
+        # Old images used to live alongside html, but now they're in different
+        # places, so update the page accordingly.
+        soup = BeautifulSoup(page.content.raw)
+        for img_tag in soup.findAll('img'):
+            if img_tag['src'] == path:
+                img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
+
+        page.content.raw = soup.prettify()
+        page.save()
+
+    return image
