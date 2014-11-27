@@ -64,18 +64,23 @@ def convert_pep0():
 def get_pep0_page(commit=True):
     """
     Using convert_pep0 above, create a CMS ready pep0 page and return it
+
+    pep0 is used as the directory index, but it's also an actual pep, so we
+    return both Page objects.
     """
     pep0_content = convert_pep0()
     pep0_page, _ = Page.objects.get_or_create(path='dev/peps/')
-    pep0_page.content = pep0_content
-    pep0_page.content_markup_type = 'html'
-    pep0_page.title = "PEP 0 -- Index of Python Enhancement Proposals (PEPs)"
-    pep0_page.template_name = PEP_TEMPLATE
+    pep0000_page, _ = Page.objects.get_or_create(path='dev/peps/pep-0000/')
+    for page in [pep0_page, pep0000_page]:
+        page.content = pep0_content
+        page.content_markup_type = 'html'
+        page.title = "PEP 0 -- Index of Python Enhancement Proposals (PEPs)"
+        page.template_name = PEP_TEMPLATE
 
-    if commit:
-        pep0_page.save()
+        if commit:
+            page.save()
 
-    return pep0_page
+    return pep0_page, pep0000_page
 
 
 def fix_headers(soup, data):

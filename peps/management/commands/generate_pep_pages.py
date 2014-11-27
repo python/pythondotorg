@@ -34,7 +34,7 @@ class Command(NoArgsCommand):
         verbose("== Starting PEP page generation")
 
         verbose("Generating PEP0 index page")
-        pep0_page = get_pep0_page()
+        pep0_page, _ = get_pep0_page()
 
         # Find pep pages
         for f in os.listdir(settings.PEP_REPO_PATH):
@@ -42,6 +42,10 @@ class Command(NoArgsCommand):
             # Skip files we aren't looking for
             if not f.startswith('pep-') or not f.endswith('.html'):
                 verbose("- Skipping non-PEP file '{}'".format(f))
+                continue
+
+            if 'pep-0000.html' in f:
+                verbose("- Skipping duplicate PEP0 index")
                 continue
 
             verbose("Generating PEP Page from '{}'".format(f))
