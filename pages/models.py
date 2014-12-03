@@ -30,8 +30,10 @@ PAGE_PATH_RE = re.compile(r"""
 
 is_valid_page_path = validators.RegexValidator(
     regex=PAGE_PATH_RE,
-    message=('Please enter a valid URL segment, e.g. "foo" or "foo/bar". '
-               'Only lowercase letters, numbers, hyphens and periods are allowed.'),
+    message=(
+        'Please enter a valid URL segment, e.g. "foo" or "foo/bar". '
+        'Only lowercase letters, numbers, hyphens and periods are allowed.'
+    ),
 )
 
 
@@ -42,8 +44,11 @@ class Page(ContentManageable):
     path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=True, db_index=True)
-    template_name = models.CharField(max_length=100, blank=True,
-        help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'.")
+    template_name = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'."
+    )
 
     objects = PageManager()
 
@@ -73,7 +78,7 @@ def page_image_path(instance, filename):
 
 class Image(models.Model):
     page = models.ForeignKey('pages.Page')
-    image = models.ImageField(upload_to=page_image_path)
+    image = models.ImageField(upload_to=page_image_path, max_length=400)
 
     def __str__(self):
         return self.image.url
