@@ -15,10 +15,3 @@ class PEPConverterTests(TestCase):
 
         with self.assertRaises(ImproperlyConfigured):
             get_pep0_page()
-
-
-    def test_get_pep0_page__generates_both_pages(self):
-        index, pep0 = get_pep0_page()
-
-        self.assertEqual(index.path, "dev/peps/")
-        self.assertEqual(pep0.path, "dev/peps/pep-0000/")
