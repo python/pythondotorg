@@ -1285,6 +1285,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     border-bottom: 1px solid darken($grey-lighterest, 5%);
 }
 
+.footnote .label {
+    width: 4em;
+}
+
 /*dl*/ .info-key {
 
     dt, dd {

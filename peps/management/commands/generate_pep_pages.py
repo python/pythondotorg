@@ -4,9 +4,9 @@ import os
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
-from peps.converters import get_pep0_page, get_pep_page
+from peps.converters import get_pep0_page, get_pep_page, add_pep_image
 
-pep_number_re = re.compile(r'pep-(\d+)\.html')
+pep_number_re = re.compile(r'pep-(\d+)')
 
 
 class Command(NoArgsCommand):
@@ -23,6 +23,13 @@ class Command(NoArgsCommand):
     """
     help = "Generate PEP Page objects from rendered HTML"
 
+    def is_pep_page(self, path):
+        return path.startswith('pep-') and path.endswith('.html')
+
+    def is_image(self, path):
+        # All images are pngs
+        return path.endswith('.png')
+
     def handle_noargs(self, **options):
         verbosity = int(options['verbosity'])
 
@@ -34,14 +41,25 @@ class Command(NoArgsCommand):
         verbose("== Starting PEP page generation")
 
         verbose("Generating PEP0 index page")
-        pep0_page = get_pep0_page()
+        pep0_page, _ = get_pep0_page()
+
+        image_paths = set()
 
         # Find pep pages
         for f in os.listdir(settings.PEP_REPO_PATH):
 
+            if self.is_image(f):
+                verbose("- Deferring import of image '{}'".format(f))
+                image_paths.add(f)
+                continue
+
             # Skip files we aren't looking for
-            if not f.startswith('pep-') or not f.endswith('.html'):
+            if not self.is_pep_page(f):
                 verbose("- Skipping non-PEP file '{}'".format(f))
+                continue
+
+            if 'pep-0000.html' in f:
+                verbose("- Skipping duplicate PEP0 index")
                 continue
 
             verbose("Generating PEP Page from '{}'".format(f))
@@ -50,6 +68,18 @@ class Command(NoArgsCommand):
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
             else:
-                verbose("- Skipping invalid {}'".format(f))
+                verbose("- Skipping invalid '{}'".format(f))
+
+        # Find pep images. This needs to happen afterwards, because we need
+        for img in image_paths:
+            pep_match = pep_number_re.match(img)
+            if pep_match:
+                pep_number = pep_match.groups(1)[0]
+                verbose("Generating image for PEP {} at '{}'".format(
+                    pep_number, img))
+                add_pep_image(pep_number, img)
+            else:
+                verbose("- Skipping non-PEP related image '{}'".format(img))
+
 
         verbose("== Finished")

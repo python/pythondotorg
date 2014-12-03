@@ -52,13 +52,7 @@ package "libz-dev" do
   action :install
 end
 
-# Compass is used to compile sass files dynamically at deployment
-gem_package 'compass' do
-  version '0.11.7'
-  action :install
-end
-
-gem_package 'susy' do
-  version '1.0.rc.2'  # This is current the pre-release version
-  action :install
+bash "susy installation" do
+  code "sudo gem install susy --version 1.0.rc.2"
+  action :run
 end

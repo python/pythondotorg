@@ -41,11 +41,10 @@ execute "#{manage_py} syncdb --noinput" do
   cwd "#{deploy_location}/pythondotorg/"
 end
 
-# Can't have migrations until South is in Python 3...
-# execute "#{manage_py} migrate" do
-#   user "#{user}"
-#   cwd "#{deploy_location}/pythondotorg/"
-# end
+execute "#{manage_py} migrate" do
+  user "#{user}"
+  cwd "#{deploy_location}/pythondotorg/"
+end
 
 execute "echo 'source #{deploy_location}/ENV/bin/activate' >> #{deploy_location}/.bash_profile" do
   not_if "grep ENV/bin/activate #{deploy_location}/.bash_profile"
