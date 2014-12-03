@@ -41,7 +41,7 @@ class Command(NoArgsCommand):
         verbose("== Starting PEP page generation")
 
         verbose("Generating PEP0 index page")
-        pep0_page = get_pep0_page()
+        pep0_page, _ = get_pep0_page()
 
         image_paths = set()
 
@@ -56,6 +56,10 @@ class Command(NoArgsCommand):
             # Skip files we aren't looking for
             if not self.is_pep_page(f):
                 verbose("- Skipping non-PEP file '{}'".format(f))
+                continue
+
+            if 'pep-0000.html' in f:
+                verbose("- Skipping duplicate PEP0 index")
                 continue
 
             verbose("Generating PEP Page from '{}'".format(f))
