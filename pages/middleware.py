@@ -36,7 +36,8 @@ class PageFallbackMiddleware(object):
                 pass
             if page is not None and not has_slash:
                 scheme = "https" if request.is_secure() else "http"
-                new_url = "%s://%s%s" % (scheme, request.get_host(), full_path)
+                new_path = request.path + '/'
+                new_url = "%s://%s%s" % (scheme, request.get_host(), new_path)
                 return http.HttpResponsePermanentRedirect(new_url)
         if page is not None:
             response = PageView.as_view()(request, path=full_path)
