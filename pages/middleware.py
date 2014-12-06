@@ -35,7 +35,8 @@ class PageFallbackMiddleware(object):
             except Page.DoesNotExist:
                 pass
             if page is not None and not has_slash:
-                new_url = request.build_absolute_uri(full_path)
+                scheme = "https" if request.is_secure() else "http"
+                new_url = "%s://%s%s" % (scheme, request.get_host(), full_path)
                 return http.HttpResponsePermanentRedirect(new_url)
         if page is not None:
             response = PageView.as_view()(request, path=full_path)
