@@ -26,6 +26,7 @@ class PageFallbackMiddleware(object):
         try:
             page = qs.get(path=full_path)
         except Page.DoesNotExist:
+            has_slash = full_path.endswith('/')
             full_path = full_path[:-1] if has_slash else full_path + '/'
             try:
                 page = qs.get(path=full_path)
