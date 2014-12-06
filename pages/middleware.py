@@ -1,4 +1,6 @@
 from django.conf import settings
+from django import http
+from django.utils.http import urlquote
 from .models import Page
 from .views import PageView
 
@@ -26,11 +28,16 @@ class PageFallbackMiddleware(object):
         except Page.DoesNotExist:
             pass
         if settings.APPEND_SLASH and page is None:
-            full_path = full_path[:-1] if full_path.endswith('/') else full_path + '/'
+            has_slash = full_path.endswith('/')
+            full_path = full_path[:-1] if has_slash else full_path + '/'
             try:
                 page = qs.get(path=full_path)
             except Page.DoesNotExist:
                 pass
+            if page is not None and not has_slash:
+                fmt_args = request.scheme, request.host, urlquote(full_path)
+                new_url = "%s://%s%s" % fmt_args
+                return http.HttpResponsePermanentRedirect(new_url)
         if page is not None:
             response = PageView.as_view()(request, path=full_path)
             if hasattr(response, 'render'):
