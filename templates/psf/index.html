@@ -1,7 +1,7 @@
 {# ===== PSF LANDING PAGE ===== #}
 
 {% extends "base.html" %}
-{% load boxes sponsors %}
+{% load boxes sponsors blogs %}
 
 {% block page_title %}Python Software Foundation{% endblock %}
 
@@ -62,33 +62,17 @@
 
                     <div class="medium-widget news-wiki-widget last">
 
-                        {% comment %}
-                        There is some dynamic content needed in this box. Below is the markup/idea for the content.
-
                         <div class="split-widget-wrapper shrubbery">
                             <h2 class="widget-title">PSF News </h2>
-                            <p class="give-me-more"><a href="#" title="More PSF News">More</a></p>
-
-                            ** Dynamic:
+                            {% feed_list 'psf-news' as psf_entries %}
+                            {% if psf_entries %}
                             <ul class="menu">
-                                <li><a href="#">Simon Cross Awarded Community Service Award</a></li>
-                                <li><a href="#">Kenneth Gonsalves Posthumously Awarded Community Service Award</a></li>
-                                <li><a href="#">Announcing the 2012 Distinguished Service Award &ndash; John Hunter</a></li>
-                                <li><a href="#">Welcome New PSF Members!</a></li>
+                              {% for entry in psf_entries %}
+                              <li><a href="{{ entry.url }}">{{ entry.title }}</a></li>
+                              {% endfor %}
                             </ul>
-                            **
-
+                            {% endif %}
                         </div>
-                        <!--
-                        <div class="split-widget-wrapper shrubbery">
-                            <h2 class="widget-title">PSF Wiki </h2>
-                            <p class="give-me-more"><a href="#" title="Enter PSF Wiki">Enter</a></p>
-                            <p><strong class="uppercase">MEMBERS ONLY:</strong> The PSF Members&rsquo; Wiki is provided for collaboration amongst PSF members on internal projects. Become a member to see what exciting things we have in store for the Python family.</p>
-                        </div>
-                        -->
-                        {% endcomment %}
-
-                        {% box 'psf-news' %}
 
                     </div>
 
