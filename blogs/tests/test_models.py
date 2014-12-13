@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Translation, BlogEntry
+from ..models import Translation, BlogEntry, Feed
 
 
 class BlogModelTest(TestCase):
@@ -22,6 +22,11 @@ class BlogModelTest(TestCase):
             summary='Test Summary',
             pub_date=now,
             url='http://www.revsys.com',
+            feed=Feed.objects.create(
+                name='psf blog',
+                website_url='psf.example.org',
+                feed_url='feed.psf.example.org',
+            )
         )
 
         self.assertEqual(str(b), b.title)
