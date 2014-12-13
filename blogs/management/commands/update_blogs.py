@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
@@ -31,6 +33,9 @@ class Command(BaseCommand):
                         url=entry['url'],
                         feed=feed,
                     )
+
+            feed.last_import = datetime.now()
+            feed.save()
 
         # Update the supernav box with the latest entry's info
         update_blog_supernav()
