@@ -617,6 +617,7 @@
     .jobs-intro {
         position: relative; 
         text-align: left;
+        min-height: 130px;
         
         .call-to-action { @include pre( 4 ); }
         
@@ -625,6 +626,12 @@
                 left: 0; 
             width: columns( 4 ); 
         }
+
+        .date-posted time {
+            position: relative;
+            top: 30px;
+        }
+
         
         .excerpt { @include pre( 4 ); }
     }
