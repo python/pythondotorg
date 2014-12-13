@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.conf import settings
 
-from ...models import BlogEntry, RelatedBlog
+from ...models import BlogEntry, RelatedBlog, Feed
 from ...parser import get_all_entries, update_blog_supernav
 
 
@@ -9,27 +9,28 @@ class Command(BaseCommand):
     """ Update blog entries and related blog feed data """
 
     def handle(self, *args, **kwargs):
-        # Update PSF Blog
-        psf_entries = get_all_entries(settings.PYTHON_BLOG_FEED_URL)
+        for feed in Feed.objects.all():
+            entries = get_all_entries(feed.feed_url)
 
-        for entry in psf_entries:
-            try:
-                e = BlogEntry.objects.get(url=entry['url'])
+            for entry in entries:
+                try:
+                    e = BlogEntry.objects.get(url=entry['url'])
 
-                # Update our info if it's changed
-                if e.pub_date < entry['pub_date']:
-                    e.title = entry['title']
-                    e.summary = entry['summary']
-                    e.pub_date = entry['pub_date']
-                    e.save()
+                    # Update our info if it's changed
+                    if e.pub_date < entry['pub_date']:
+                        e.title = entry['title']
+                        e.summary = entry['summary']
+                        e.pub_date = entry['pub_date']
+                        e.save()
 
-            except BlogEntry.DoesNotExist:
-                BlogEntry.objects.create(
-                    title=entry['title'],
-                    summary=entry['summary'],
-                    pub_date=entry['pub_date'],
-                    url=entry['url'],
-                )
+                except BlogEntry.DoesNotExist:
+                    BlogEntry.objects.create(
+                        title=entry['title'],
+                        summary=entry['summary'],
+                        pub_date=entry['pub_date'],
+                        url=entry['url'],
+                        feed=feed,
+                    )
 
         # Update the supernav box with the latest entry's info
         update_blog_supernav()

@@ -2,7 +2,7 @@ from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
 
-from .models import BlogEntry, Contributor, Translation
+from .models import BlogEntry, Contributor, Translation, Feed, FeedAggregate
 
 
 class TranslationAdmin(ContentManageableModelAdmin):
@@ -33,3 +33,11 @@ class BlogEntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
 
 admin.site.register(BlogEntry, BlogEntryAdmin)
+
+class FeedAggregateAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+
+admin.site.register(FeedAggregate, FeedAggregateAdmin)
+
+admin.site.register(Feed)
