@@ -79,6 +79,9 @@ urlpatterns = patterns('',
     url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/')),
     url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/')),
 
+    # duplicated downloads to getit to bypass China's firewall. See
+    # https://github.com/python/pythondotorg/issues/427 for more info.
+    url(r'^getit/$', include('downloads.urls', namespace='getit')),
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     #url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
