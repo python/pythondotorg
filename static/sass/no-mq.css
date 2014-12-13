@@ -1135,7 +1135,7 @@ a.button {
 .pep-list-header,
 .pep-index-list li,
 .info-key {
-  margin: 0 -.5em; }
+  margin: 0 -0.5em; }
 
 .pep-list-header {
   display: block; }
@@ -1241,7 +1241,7 @@ a.button {
     display: inline-block; }
 
 .site-headline {
-  margin: .25em 0 .5em; }
+  margin: 0.25em 0 0.5em; }
 
 .site-headline a .python-logo {
   width: 255.2px;
@@ -1255,7 +1255,7 @@ a.button {
 
 .search-field {
   background: white;
-  padding: .4em .5em .3em;
+  padding: 0.4em 0.5em 0.3em;
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
@@ -1299,7 +1299,7 @@ a.button {
       top: -9999px;
       right: 2.6em;
       white-space: nowrap;
-      padding: .4em .75em .35em;
+      padding: 0.4em 0.75em 0.35em;
       color: #999999;
       background-color: #1f1f1f;
       *zoom: 1;
@@ -1360,24 +1360,24 @@ a.button {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1370977946') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1414305901') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1370977946') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1414305901') transparent;
   min-height: 345px;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1370977946') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1414305901') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
-  background: 110% 0 no-repeat url('../img/landing-community.png?1397224219') transparent;
+  background: 110% 0 no-repeat url('../img/landing-community.png?1418509184') transparent;
   min-height: 345px;
   padding-bottom: 2em;
   margin-bottom: -1.25em; }
@@ -1412,6 +1412,11 @@ a.button {
     position: absolute;
     left: 0;
     width: 31.91489%; }
+  .latest-blog-post .date-posted time,
+  .featured-event .date-posted time,
+  .jobs-intro .date-posted time {
+    position: relative;
+    top: 30px; }
   .latest-blog-post .excerpt,
   .featured-event .excerpt,
   .jobs-intro .excerpt {
@@ -1475,7 +1480,7 @@ a.button {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1375216152') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1414305901') transparent; }
   .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
     margin-right: 34.04255%; }
 
@@ -1615,7 +1620,7 @@ a.button {
     /* We do this more explictly (the descendant selector) to avoid also styling links in the Supernav content */ }
     .main-navigation .tier-1 > a, .main-navigation .tier-2 > a {
       display: block;
-      padding: .5em 1.5em .4em 1em;
+      padding: 0.5em 1.5em 0.4em 1em;
       position: relative; }
   .main-navigation .tier-1 {
     display: block;
@@ -1741,7 +1746,7 @@ a.button {
     .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
       width: auto; }
     .no-touch .main-navigation .tier-1 > a {
-      padding: .65em 1.25em .55em; }
+      padding: 0.65em 1.25em 0.55em; }
   .no-touch .main-navigation .tier-2 {
     font-size: 0.875em; }
 
