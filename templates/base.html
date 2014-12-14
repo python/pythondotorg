@@ -102,6 +102,20 @@
      * <link rel="prev" href="/prev"/>
     {% endcomment %}
 
+    {# Site link search #}
+    <script type="application/ld+json">
+     {
+       "@context": "http://schema.org",
+       "@type": "WebSite",
+       "url": "https://www.python.org/",
+       "potentialAction": {
+         "@type": "SearchAction",
+         "target": "https://www.python.org/search/?q={search_term_string}",
+         "query-input": "required name=search_term_string"
+       }
+     }
+    </script>
+
     {# Asynchronous Analytics snippet #}
     <script type="text/javascript">
     var _gaq = _gaq || [];
