@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.core.management import call_command
 
 from cms.admin import ContentManageableModelAdmin
 
 from .models import BlogEntry, Contributor, Translation
+
 
 
 class TranslationAdmin(ContentManageableModelAdmin):
@@ -31,5 +33,13 @@ admin.site.register(Contributor, ContributorAdmin)
 class BlogEntryAdmin(admin.ModelAdmin):
     list_display = ['title', 'pub_date']
     date_hierarchy = 'pub_date'
+    actions = ['sync_new_entries']
+
+    def sync_new_entries(self, request, queryset):
+        call_command('update_blogs')
+        self.message_user(request, "Blog entries updated.")
+
+    sync_new_entries.short_description = "Sync new blog entries"
+    
 
 admin.site.register(BlogEntry, BlogEntryAdmin)
