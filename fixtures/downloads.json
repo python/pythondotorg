@@ -1,58 +1,46 @@
 [
 {
+    "model": "downloads.release",
     "fields": {
-        "updated": "2014-10-12T07:21:00.314Z", 
-        "created": "2014-10-12T07:21:00.313Z", 
-        "creator": 1, 
-        "last_modified_by": null, 
-        "slug": "linux", 
-        "name": "Linux"
-    }, 
-    "pk": 1, 
-    "model": "downloads.os"
-},
-{
-    "fields": {
-        "release_notes_url": "", 
-        "created": "2014-10-12T07:24:19.701Z", 
-        "release_date": "2014-10-12T07:21:06Z", 
+        "pre_release": false,
+        "show_on_download_page": true,
+        "last_modified_by": null,
         "release_page": null,
-        "pre_release": false, 
-        "creator": 1, 
-        "content": "release content of 3.5.0",
-        "is_published": true, 
-        "version": 3, 
-        "name": "3.5.0", 
-        "updated": "2014-10-12T07:24:19.709Z", 
-        "slug": "350", 
-        "content_markup_type": "restructuredtext", 
-        "_content_rendered": "<p>release content of 3.5.0</p>\n",
-        "last_modified_by": null, 
-        "show_on_download_page": true
-    }, 
-    "pk": 1, 
-    "model": "downloads.release"
+        "content_markup_type": "restructuredtext",
+        "creator": 1,
+        "is_published": true,
+        "updated": "2014-12-17T03:58:49.962Z",
+        "release_date": "2014-12-17T03:56:15Z",
+        "slug": "python-350",
+        "release_notes_url": "",
+        "version": 3,
+        "name": "Python 3.5.0",
+        "_content_rendered": "<p>Content of Python 3.5.0 release.</p>\n",
+        "content": "Content of Python 3.5.0 release.",
+        "created": "2014-12-17T03:58:49.955Z"
+    },
+    "pk": 2
 },
 {
+    "model": "downloads.release",
     "fields": {
-        "release_notes_url": "", 
-        "created": "2014-10-12T07:31:31.506Z", 
-        "release_date": "2014-10-12T07:31:15Z", 
-        "release_page": null, 
-        "pre_release": false, 
-        "creator": 1, 
-        "content": "release content of 2.7.9",
-        "is_published": true, 
-        "version": 2, 
-        "name": "2.7.9", 
-        "updated": "2014-10-12T07:31:31.511Z", 
-        "slug": "279", 
-        "content_markup_type": "restructuredtext", 
-        "_content_rendered": "<p>release content of 2.7.9</p>\n",
-        "last_modified_by": null, 
-        "show_on_download_page": true
-    }, 
-    "pk": 2, 
-    "model": "downloads.release"
+        "pre_release": false,
+        "show_on_download_page": true,
+        "last_modified_by": null,
+        "release_page": null,
+        "content_markup_type": "restructuredtext",
+        "creator": 1,
+        "is_published": true,
+        "updated": "2014-12-17T03:59:34.462Z",
+        "release_date": "2014-12-17T03:59:10Z",
+        "slug": "python-2710",
+        "release_notes_url": "",
+        "version": 2,
+        "name": "python 2.7.10",
+        "_content_rendered": "<p>Content of Python 2.7.10 release.</p>\n",
+        "content": "Content of Python 2.7.10 release.",
+        "created": "2014-12-17T03:59:34.444Z"
+    },
+    "pk": 3
 }
 ]
