@@ -27,7 +27,7 @@ pyelasticsearch==0.6.1
 Sphinx==1.2.3
 django-tastypie==0.11.1
 
-pytz==2013b
+pytz==2014.10
 python-dateutil==2.2
 https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 requests==2.3.0
