@@ -27,5 +27,4 @@ Disallow: /wwwstats/
 Disallow: /webstats/
 Disallow: /ftpstats/
 Disallow: /moin
-Disallow: /pypi
 Disallow: /dev/buildbot/
