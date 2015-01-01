@@ -19,6 +19,8 @@
 
 <p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
 
+<p><strong style="font-size: 150%">You do not need a python.org account to <a href="/download/">download</a> or use Python.</strong>
+
 <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
   {% csrf_token %}
   {{ form.as_p }}
