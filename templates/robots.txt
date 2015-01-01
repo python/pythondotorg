@@ -10,11 +10,8 @@ Disallow: /
 # The Krugle web crawler (though based on Nutch) is OK.
 User-agent: Krugle
 Allow: /
-Disallow: /moin
-Disallow: /pypi
 Disallow: /~guido/orlijn/
-Disallow: /wwwstats/
-Disallow: /ftpstats/
+Disallow: /webstats/
 
 # No one should be crawling us with Nutch.
 User-agent: Nutch
@@ -23,8 +20,4 @@ Disallow: /
 # Hide old versions of the documentation and various large sets of files.
 User-agent: *
 Disallow: /~guido/orlijn/
-Disallow: /wwwstats/
 Disallow: /webstats/
-Disallow: /ftpstats/
-Disallow: /moin
-Disallow: /dev/buildbot/
