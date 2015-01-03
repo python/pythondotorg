@@ -353,7 +353,7 @@
             float: left; 
             width: 33.333333%;
             
-            &.element-6, &.element-7 { width: 16.6666665%; }
+            &.element-6:not(.unstacked), &.element-7:not(.unstacked) { width: 16.6666665%; }
             
             &.element-1 {
                 @include border-top-left-radius( 8px );
