@@ -10,7 +10,7 @@ class EventInline(admin.StackedInline):
 
 
 class CalendarAdmin(ContentManageableModelAdmin):
-    inlines = [EventInline]
+    pass
 
 
 class OccurringRuleInline(admin.StackedInline):
