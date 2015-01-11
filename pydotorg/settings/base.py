@@ -10,10 +10,6 @@ SECRET_KEY = 'its-a-secret-to-everybody'
 
 # Until Sentry works on Py3, do errors the old-fashioned way.
 ADMINS = [
-    ("JKM", "jacob@jacobian.org"),
-    ('Jeff', 'jeff.triplett+pythondotorg@gmail.com'),
-    ('Frank', 'frank.wiles@gmail.com'),
-    ("Flavio Curella", "flavio.curella@gmail.com"),
 ]
 
 # General project information
