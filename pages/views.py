@@ -18,6 +18,10 @@ class PageView(DetailView):
         else:
             return Page.objects.published()
 
+    @property
+    def content_type(self):
+        return self.object.content_type
+
     def get_extra_context(self, *args, **kwargs):
         context = self.super().get_extra_context(*args, **kwargs)
         context['in_pages_app'] = True

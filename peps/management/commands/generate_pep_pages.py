@@ -4,7 +4,9 @@ import os
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
 
-from peps.converters import get_pep0_page, get_pep_page, add_pep_image
+from peps.converters import (
+    get_pep0_page, get_pep_page, add_pep_image, get_peps_rss
+)
 
 pep_number_re = re.compile(r'pep-(\d+)')
 
@@ -39,6 +41,9 @@ class Command(NoArgsCommand):
                 print(msg)
 
         verbose("== Starting PEP page generation")
+
+        verbose("Generating RSS Feed")
+        get_peps_rss()
 
         verbose("Generating PEP0 index page")
         pep0_page, _ = get_pep0_page()
