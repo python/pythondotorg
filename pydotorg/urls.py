@@ -1,13 +1,17 @@
 from django.conf.urls import patterns, include, url
+from django.conf.urls.defaults import handler404
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
+from cms.views import custom_404
 from . import views
 from .urls_api import v1_api
 
 admin.autodiscover()
+
+handler404 = custom_404
 
 # Hack to fix admindocs bug. See https://code.djangoproject.com/ticket/6681.
 # Please remove this when we upgrade to Django 1.7.

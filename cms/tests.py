@@ -2,6 +2,7 @@ import unittest
 from unittest import mock
 
 from django.template import Template, Context
+from django.test import TestCase
 
 from .admin import ContentManageableModelAdmin
 import datetime
@@ -66,7 +67,16 @@ class ContentManagableAdminTests(unittest.TestCase):
 
 class TemplateTagsTest(unittest.TestCase):
     def test_iso_time_tag(self):
-        now = datetime.datetime(2014,1, 1, 12, 0)
+        now = datetime.datetime(2014, 1, 1, 12, 0)
         template = Template("{% load cms %}{% iso_time_tag now %}")
         rendered = template.render(Context({'now': now}))
         self.assertTrue('<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>' in rendered)
+
+
+class Test404(TestCase):
+    def test_custom_404(self):
+        """ Ensure custom 404 is set to 5 minutes """
+        response = self.client.get('/foo-bar/baz/9876')
+        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response['Cache-Control'], 'max-age=300')
+        self.assertTemplateUsed('404.html')
