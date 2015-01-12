@@ -399,6 +399,11 @@ $().ready(function() {
         random_int -= current_weight;
     });
 
+    /* Handle case of only a single success story */
+    if(success_divs.length == 1) {
+        $("div.success-story-item").show();
+    }
+
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
     if ( hasplaceholder === false ) {
 
