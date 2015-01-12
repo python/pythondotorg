@@ -12,6 +12,7 @@ from pages.models import Page, Image
 PEP_TEMPLATE = 'pages/pep-page.html'
 pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
+
 def check_paths():
     """ Checks to ensure our PEP_REPO_PATH is setup correctly """
     if not hasattr(settings, 'PEP_REPO_PATH'):
@@ -179,6 +180,7 @@ def get_pep_page(pep_number, commit=True):
 
     return pep_page
 
+
 def add_pep_image(pep_number, path):
     image_path = os.path.join(settings.PEP_REPO_PATH, path)
     if not os.path.exists(image_path):
@@ -190,8 +192,30 @@ def add_pep_image(pep_number, path):
         print("Could not find backing PEP {}".format(pep_number))
         return
 
-    image, created = Image.objects.get_or_create(page=page)
-    if created:
+    # Find existing images, we have to loop here as we can't use the ORM
+    # to query against image__path
+    existing_images = Image.objects.filter(page=page)
+    MISSING = False
+    FOUND = False
+
+    for image in existing_images:
+        image_root_path = os.path.join(settings.MEDIA_ROOT, page.path, path)
+
+        if image.image.path.endswith(path):
+            FOUND = True
+            # File is missing on disk, recreate
+            if not os.path.exists(image_root_path):
+                MISSING = image
+
+            break
+
+    if not FOUND or MISSING:
+        image = None
+        if MISSING:
+            image = MISSING
+        else:
+            image = Image(page=page)
+
         with open(image_path, 'rb') as image_obj:
             image.image.save(path, File(image_obj))
 
@@ -204,8 +228,10 @@ def add_pep_image(pep_number, path):
 
         page.content.raw = soup.prettify()
         page.save()
+        image.save()
 
     return image
+
 
 def get_peps_rss():
     rss_feed = os.path.join(settings.PEP_REPO_PATH, 'peps.rss')
