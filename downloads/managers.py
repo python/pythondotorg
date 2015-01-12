@@ -22,6 +22,12 @@ class ReleaseQuerySet(QuerySet):
     def python3(self):
         return self.filter(version=3, is_published=True)
 
+    def latest_python2(self):
+        return self.python2().filter(is_latest=True)
+
+    def latest_python3(self):
+        return self.python3().filter(is_latest=True)
+
     def pre_release(self):
         return self.filter(pre_release=True)
 
@@ -48,6 +54,20 @@ class ReleaseManager(Manager):
 
     def python3(self):
         return self.get_query_set().python3()
+
+    def latest_python2(self):
+        qs = self.get_query_set().latest_python2()
+        if qs:
+            return qs[0]
+        else:
+            return None
+
+    def latest_python3(self):
+        qs = self.get_query_set().latest_python3()
+        if qs:
+            return qs[0]
+        else:
+            return None
 
     def pre_release(self):
         return self.get_query_set().pre_release()

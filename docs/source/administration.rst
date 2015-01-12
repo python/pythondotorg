@@ -64,6 +64,13 @@ Downloads and Releases
 The ``downloads`` app stores all of the structured data regarding Python releases.  Each ``Release`` object has associated ``ReleaseFile`` objects that contain information on the various download formats Python.org
 supports.
 
+If the version you are creating should be considered the "latest" release for the major version in question (Python 2.x.x, 3.x.x, etc)
+then check the 'Is this the latest release' checkbox.  When the ``Release`` is saved, the previous version will be automatically
+demoted for you and the new version will be used prominently on the site.  For example the download buttons and supernav links.
+
+**NOTE:** If you make a mistake here, no worries you can just check the box and save on **ANY** version and promote it to being
+the latest release.
+
 To create a release you simply need to fill in the appropriate information.  Currently if a ``Release`` has an associated ``Release Page`` the system redirects to that to accommodate legacy content, but if the ``Content`` field is filled they are taken to the Release Detail page which shows the content and lists all of the associated downloadable files.
 
 Release Files have a checkbox named 'Download button' that determines which binary/source package download link to display for a given OS.  This information is used by the OS detection JS on the site so pick the package in most widespread use. On Source distributions be sure to check the 'Download button' for the .tgz version for widest compatibiity.

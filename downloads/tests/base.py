@@ -34,6 +34,7 @@ class BaseDownloadTests(TestCase):
         self.release_275 = Release.objects.create(
             version=Release.PYTHON2,
             name='Python 2.7.5',
+            is_latest=True,
             is_published=True,
             release_page=self.release_275_page,
             release_date=timezone.now() - datetime.timedelta(days=-1)
@@ -90,4 +91,13 @@ class BaseDownloadTests(TestCase):
             pre_release=True,
             show_on_download_page=True,
             release_page=self.release_275_page,
+        )
+
+        self.python_3 = Release.objects.create(
+            version=Release.PYTHON3,
+            name='Python 3.10',
+            is_latest=True,
+            is_published=True,
+            show_on_download_page=True,
+            release_page=self.release_275_page
         )

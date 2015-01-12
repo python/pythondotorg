@@ -6,12 +6,12 @@ from .models import OS, Release
 
 
 class DownloadLatestPython2(RedirectView):
-    """ Redirec to latest Python 2 release """
+    """ Redirect to latest Python 2 release """
     permanent = False
 
     def get_redirect_url(self, **kwargs):
         try:
-            latest_python2 = Release.objects.released().python2().latest()
+            latest_python2 = Release.objects.latest_python2()
         except Release.DoesNotExist:
             latest_python2 = None
 
@@ -20,13 +20,14 @@ class DownloadLatestPython2(RedirectView):
         else:
             return reverse('download')
 
+
 class DownloadLatestPython3(RedirectView):
-    """ Redirec to latest Python 3 release """
+    """ Redirect to latest Python 3 release """
     permanent = False
 
     def get_redirect_url(self, **kwargs):
         try:
-            latest_python3 = Release.objects.released().python3().latest()
+            latest_python3 = Release.objects.latest_python3()
         except Release.DoesNotExist:
             latest_python3 = None
 
@@ -41,8 +42,8 @@ class DownloadBase(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({
-            'latest_python2': Release.objects.released().python2().latest(),
-            'latest_python3': Release.objects.released().python3().latest(),
+            'latest_python2': Release.objects.latest_python2(),
+            'latest_python3': Release.objects.latest_python3(),
         })
         return context
 
@@ -53,12 +54,12 @@ class DownloadHome(DownloadBase, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         try:
-            latest_python2 = Release.objects.released().python2().latest()
+            latest_python2 = Release.objects.latest_python2()
         except Release.DoesNotExist:
             latest_python2 = None
 
         try:
-            latest_python3 = Release.objects.released().python3().latest()
+            latest_python3 = Release.objects.latest_python3()
         except Release.DoesNotExist:
             latest_python3 = None
 
@@ -96,7 +97,9 @@ class DownloadOSList(DownloadBase, DetailView):
         context = super().get_context_data(**kwargs)
         context.update({
             'os_slug': self.object.slug,
-            'releases': Release.objects.filter(files__os__slug=self.object.slug).select_related().distinct().order_by('-release_date')
+            'releases': Release.objects.filter(
+                files__os__slug=self.object.slug
+            ).select_related().distinct().order_by('-release_date')
         })
         return context
 
@@ -108,6 +111,8 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
 
     def get_object(self):
         try:
-            return self.get_queryset().select_related().get(slug=self.kwargs['release_slug'])
+            return self.get_queryset().select_related().get(
+                slug=self.kwargs['release_slug']
+            )
         except self.model.DoesNotExist:
             raise Http404

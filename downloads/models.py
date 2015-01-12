@@ -47,8 +47,22 @@ class Release(ContentManageable, NameSlugModel):
         (PYTHON1, 'Python 1.x.x'),
     )
     version = models.IntegerField(default=PYTHON2, choices=PYTHON_VERSION_CHOICES)
-    is_published = models.BooleanField(default=False, db_index=True)
+    is_latest = models.BooleanField(
+        verbose_name='Is this the latest release?',
+        default=False,
+        db_index=True,
+        help_text="Set this if this should be considered the latest release "
+                  "for the major version. Previous 'latest' versions will "
+                  "automatically have this flag turned off.",
+    )
+    is_published = models.BooleanField(
+        verbose_name='Is Published?',
+        default=False,
+        db_index=True,
+        help_text="Whether or not this should be considered a released/published version",
+    )
     pre_release = models.BooleanField(
+        verbose_name='Pre-release',
         default=False,
         db_index=True,
         help_text="Boolean to denote pre-release/beta/RC versions",
@@ -98,12 +112,12 @@ class Release(ContentManageable, NameSlugModel):
 
 def update_supernav():
     try:
-        latest_python2 = Release.objects.released().python2().latest()
+        latest_python2 = Release.objects.latest_python2()
     except Release.DoesNotExist:
         latest_python2 = None
 
     try:
-        latest_python3 = Release.objects.released().python3().latest()
+        latest_python3 = Release.objects.latest_python3()
     except Release.DoesNotExist:
         latest_python3 = None
 
@@ -155,12 +169,12 @@ def update_supernav():
 
 def update_homepage_download_box():
     try:
-        latest_python2 = Release.objects.released().python2().latest()
+        latest_python2 = Release.objects.latest_python2()
     except Release.DoesNotExist:
         latest_python2 = None
 
     try:
-        latest_python3 = Release.objects.released().python3().latest()
+        latest_python3 = Release.objects.latest_python3()
     except Release.DoesNotExist:
         latest_python3 = None
 
@@ -175,7 +189,19 @@ def update_homepage_download_box():
 
 
 @receiver(post_save, sender=Release)
-def update_download_supernav(sender, instance, signal, created, **kwargs):
+def promote_latest_release(sender, instance, **kwargs):
+    """ Promote this release to be the latest if this flag is set """
+    if instance.is_latest:
+        # Demote all previous instances
+        Release.objects.filter(
+            version=instance.version
+        ).exclude(
+            pk=instance.pk
+        ).update(is_latest=False)
+
+
+@receiver(post_save, sender=Release)
+def update_download_supernav(sender, instance, **kwargs):
     """ Update download supernav """
     if instance.is_published:
         update_supernav()
