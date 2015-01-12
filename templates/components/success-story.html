@@ -7,7 +7,7 @@
                             <p class="give-me-more"><a href="{% url 'success_story_list' %}" title="More Success Stories">More</a></p>
 
                             {% for story in success_stories %}
-                            <div class="success-story-item" data-weight="{{ story.weight }}" id="success-story-{{ story.pk }}" style="display: none;">
+                            <div class="success-story-item" data-weight="{{ story.weight }}" id="success-story-{{ story.pk }}">
 
                             <blockquote>
                                 <a href="{{ story.get_absolute_url }}">{{ story.pull_quote }}</a>
