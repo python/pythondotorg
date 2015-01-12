@@ -8,11 +8,16 @@ positioned into the URL structure using the nav app.
 
 import os
 import re
+
 from django.conf import settings
 from django.core import validators
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from markupfield.fields import MarkupField
 from cms.models import ContentManageable
+from fastly.utils import purge_url
 from .managers import PageManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -71,6 +76,15 @@ class Page(ContentManageable):
 
     def get_absolute_url(self):
         return "/{}/".format(self.path)
+
+
+@receiver(post_save, sender=Page)
+def purge_fastly_cache(sender, instance, **kwargs):
+    """
+    Purge fastly.com cache if in production and the page is published.
+    Requires settings.FASTLY_API_KEY being set
+    """
+    purge_url('/{}'.format(instance.path))
 
 
 def page_image_path(instance, filename):

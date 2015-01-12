@@ -10,6 +10,7 @@ from markupfield.fields import MarkupField
 
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
+from fastly.utils import purge_url
 from pages.models import Page
 
 from .managers import ReleaseManager
@@ -198,6 +199,25 @@ def promote_latest_release(sender, instance, **kwargs):
         ).exclude(
             pk=instance.pk
         ).update(is_latest=False)
+
+
+@receiver(post_save, sender=Release)
+def purge_fastly_download_pages(sender, instance, **kwargs):
+    """
+    Purge Fastly caches so new Downloads show up more quickly
+    """
+    # Only purge on published instances
+    if instance.is_published:
+        # Purge our common pages
+        purge_url('/downloads/')
+        purge_url('/downloads/latest/python2/')
+        purge_url('/downloads/latest/python3/')
+        purge_url('/downloads/mac-osx/')
+        purge_url('/downloads/source/')
+        purge_url('/downloads/windows/')
+
+        # Purge the release page itself
+        purge_url(instance.get_absolute_url())
 
 
 @receiver(post_save, sender=Release)
