@@ -218,6 +218,10 @@ MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 ### PEP Repo Location
 PEP_REPO_PATH = ''
 
+### Fastly ###
+FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
+                        # be purged on save
+
 ### Pipeline
 
 from .pipeline import (
