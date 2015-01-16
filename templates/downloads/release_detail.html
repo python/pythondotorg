@@ -51,7 +51,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for f in release.files.all %}
+            {% for f in release_files %}
               <tr>
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
