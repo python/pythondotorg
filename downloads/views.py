@@ -116,3 +116,25 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
             )
         except self.model.DoesNotExist:
             raise Http404
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        # Manually add release files for better ordering
+        context['release_files'] = []
+
+        # Add source files
+        context['release_files'].extend(
+            list(self.object.files.filter(os__slug='source').order_by('name'))
+        )
+
+        # Add all other OSes
+        context['release_files'].extend(
+            list(
+                self.object.files.exclude(
+                    os__slug='source'
+                ).order_by('os__slug', 'name')
+            )
+        )
+
+        return context
