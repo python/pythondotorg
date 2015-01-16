@@ -4,7 +4,7 @@ from django.test import TestCase
 
 from boxes.models import Box
 
-from ..models import BlogEntry
+from ..models import BlogEntry, Feed
 
 from .utils import get_test_rss_path
 
@@ -22,8 +22,10 @@ class BlogViewTest(TestCase):
         Test our assignment tag, also ends up testing the update_blogs
         management command
         """
-        with self.settings(PYTHON_BLOG_FEED_URL=self.test_file_path):
-            call_command('update_blogs')
+        Feed.objects.create(
+            id=1, name='psf default', website_url='example.org',
+            feed_url=self.test_file_path)
+        call_command('update_blogs')
 
         resp = self.client.get(reverse('blog'))
         self.assertEqual(resp.status_code, 200)

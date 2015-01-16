@@ -16,6 +16,7 @@ class BlogEntry(models.Model):
     summary = models.TextField(blank=True)
     pub_date = models.DateTimeField()
     url = models.URLField('URL')
+    feed = models.ForeignKey('Feed')
 
     class Meta:
         verbose_name = 'Blog Entry'
@@ -28,6 +29,33 @@ class BlogEntry(models.Model):
     def get_absolute_url(self):
         return self.url
 
+
+class Feed(models.Model):
+    """
+    An RSS feed to import.
+    """
+    name = models.CharField(max_length=200)
+    website_url = models.URLField()
+    feed_url = models.URLField()
+    last_import = models.DateTimeField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class FeedAggregate(models.Model):
+    """
+    An aggregate of RSS feeds.
+
+    These allow people to edit what are in feed-backed content blocks
+    without editing templates.
+    """
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(unique=True)
+    description = models.TextField(help_text="Where this appears on the site")
+    feeds = models.ManyToManyField(Feed)
+
+    def __str__(self):
+        return self.name
 
 class Translation(ContentManageable):
     """ Model to store blog translation links """

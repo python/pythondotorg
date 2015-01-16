@@ -19,10 +19,11 @@ def get_all_entries(feed_url):
 
         entry = {
             'title': e['title'],
-            'summary': e['summary'],
+            'summary': e.get('summary', ''),
             'pub_date': published,
             'url': e['link'],
         }
+
         entries.append(entry)
 
     return entries
@@ -35,7 +36,7 @@ def _render_blog_supernav(entry):
 
 def update_blog_supernav():
     """Retrieve latest entry and update blog supernav item """
-    latest_entry = BlogEntry.objects.latest()
+    latest_entry = BlogEntry.objects.filter(feed_id=1).latest()
     rendered_box = _render_blog_supernav(latest_entry)
 
     box = Box.objects.get(label='supernav-python-blog')

@@ -3,7 +3,7 @@ from django.core.management import call_command
 
 from cms.admin import ContentManageableModelAdmin
 
-from .models import BlogEntry, Contributor, Translation
+from .models import BlogEntry, Contributor, Translation, Feed, FeedAggregate
 
 
 
@@ -43,3 +43,11 @@ class BlogEntryAdmin(admin.ModelAdmin):
     
 
 admin.site.register(BlogEntry, BlogEntryAdmin)
+
+class FeedAggregateAdmin(admin.ModelAdmin):
+    list_display = ['name', 'slug', 'description']
+    prepopulated_fields = {'slug': ('name',)}
+
+admin.site.register(FeedAggregate, FeedAggregateAdmin)
+
+admin.site.register(Feed)
