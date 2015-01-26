@@ -97,3 +97,12 @@ class Image(models.Model):
 
     def __str__(self):
         return self.image.url
+
+
+class DocumentFile(models.Model):
+    page = models.ForeignKey('pages.Page')
+    document = models.FileField(upload_to='files/', max_length=500)
+
+    def __str__(self):
+        return self.document.url
+

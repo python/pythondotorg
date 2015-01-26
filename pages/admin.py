@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from bs4 import BeautifulSoup
 
 from cms.admin import ContentManageableModelAdmin
-from .models import Page, Image
+from .models import Page, Image, DocumentFile
 
 
 class PageAdminImageFileWidget(admin.widgets.AdminFileWidget):
@@ -35,6 +35,15 @@ class ImageInlineAdmin(admin.StackedInline):
 
     formfield_overrides = {
         models.ImageField: {'widget': PageAdminImageFileWidget},
+    }
+
+
+class DocumentFileInlineAdmin(admin.StackedInline):
+    model = DocumentFile
+    extra = 1
+
+    formfield_overrides = {
+        models.FileField: {'widget': PageAdminImageFileWidget},
     }
 
 
@@ -69,7 +78,7 @@ class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
     list_display = ('get_title', 'path', 'is_published',)
     list_filter = [PagePathFilter, 'is_published']
-    inlines = [ImageInlineAdmin]
+    inlines = [ImageInlineAdmin, DocumentFileInlineAdmin]
     fieldsets = [
         (None, {'fields': ('title', 'keywords', 'description', 'path', 'content', 'content_markup_type', 'is_published')}),
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
