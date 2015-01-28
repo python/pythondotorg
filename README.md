@@ -5,6 +5,31 @@ python.org
 
 The new www.python.org!
 
+How to setup the develop environment
+------------------------------------
+
+1. Install [Vagrant](https://www.vagrantup.com/downloads.html).
+
+2. Checkout the code and build the box:
+
+    ```
+    git clone https://github.com/python/pythondotorg.git
+    cd pythondotorg
+    vagrant up
+    ```
+
+3. Run the site:
+
+    ```
+    vagrant ssh
+    ./manage runserver
+    ```
+
+4. Open the site at http://127.0.0.1:8000
+
+5. Open the administrative area with username **admin** and password **admin** at http://127.0.0.1:8000/admin/ 
+
+
 Getting going
 -------------
 
@@ -47,15 +72,6 @@ NOTE: On OSX you may need to adjust your PATH to be able to find the sass binary
 Homebrew's recipe for python3.3 has some difficulty installing distribute
 and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/)
 may work better, if you're having trouble.
-
-### Using Vagrant
-
-You can ignore the above instructions by using [Vagrant](http://www.vagrantup.com/). After installing:
-
-    $ vagrant up
-    $ vagrant ssh
-
-The box will be provisioned by Chef with Python 3.3, a virtualenv set up with requirements installed, and a database ready to use. The virtualenv is activated upon login. You will need to run `./manage.py createsuperuser` to use the admin.
 
 Running tests
 -------------

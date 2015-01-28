@@ -43,3 +43,4 @@ django-markupfield==1.2.0
 git+git://github.com/jefftriplett/django-allauth.git@3b10d6
 
 uWSGI==2.0.8
+ddt==0.8.1
