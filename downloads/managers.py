@@ -36,41 +36,41 @@ class ReleaseQuerySet(QuerySet):
 
 
 class ReleaseManager(Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return ReleaseQuerySet(self.model, using=self._db)
 
     def published(self):
-        return self.get_query_set().published()
+        return self.get_queryset().published()
 
     def draft(self):
-        return self.get_query_set().draft()
+        return self.get_queryset().draft()
 
     def downloads(self):
         """ For the main downloads landing page """
-        return self.get_query_set().downloads()
+        return self.get_queryset().downloads()
 
     def python2(self):
-        return self.get_query_set().python2()
+        return self.get_queryset().python2()
 
     def python3(self):
-        return self.get_query_set().python3()
+        return self.get_queryset().python3()
 
     def latest_python2(self):
-        qs = self.get_query_set().latest_python2()
+        qs = self.get_queryset().latest_python2()
         if qs:
             return qs[0]
         else:
             return None
 
     def latest_python3(self):
-        qs = self.get_query_set().latest_python3()
+        qs = self.get_queryset().latest_python3()
         if qs:
             return qs[0]
         else:
             return None
 
     def pre_release(self):
-        return self.get_query_set().pre_release()
+        return self.get_queryset().pre_release()
 
     def released(self):
-        return self.get_query_set().released()
+        return self.get_queryset().released()

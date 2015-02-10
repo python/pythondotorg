@@ -32,29 +32,29 @@ class JobQuerySet(QuerySet):
 
 
 class JobManager(Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return JobQuerySet(self.model, using=self._db)
 
     def approved(self):
-        return self.get_query_set().approved()
+        return self.get_queryset().approved()
 
     def archived(self):
-        return self.get_query_set().archived()
+        return self.get_queryset().archived()
 
     def draft(self):
-        return self.get_query_set().draft()
+        return self.get_queryset().draft()
 
     def expired(self):
-        return self.get_query_set().expired()
+        return self.get_queryset().expired()
 
     def rejected(self):
-        return self.get_query_set().rejected()
+        return self.get_queryset().rejected()
 
     def removed(self):
-        return self.get_query_set().removed()
+        return self.get_queryset().removed()
 
     def featured(self):
-        return self.get_query_set().featured()
+        return self.get_queryset().featured()
 
     def review(self):
-        return self.get_query_set().review()
+        return self.get_queryset().review()

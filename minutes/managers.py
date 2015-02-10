@@ -11,11 +11,11 @@ class MinutesQuerySet(QuerySet):
 
 
 class MinutesManager(Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return MinutesQuerySet(self.model, using=self._db)
 
     def draft(self):
-        return self.get_query_set().draft()
+        return self.get_queryset().draft()
 
     def published(self):
-        return self.get_query_set().published()
+        return self.get_queryset().published()
