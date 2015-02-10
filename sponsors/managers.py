@@ -14,14 +14,14 @@ class SponsorQuerySet(QuerySet):
 
 
 class SponsorManager(Manager):
-    def get_query_set(self):
+    def get_queryset(self):
         return SponsorQuerySet(self.model, using=self._db)
 
     def draft(self):
-        return self.get_query_set().draft()
+        return self.get_queryset().draft()
 
     def published(self):
-        return self.get_query_set().published()
+        return self.get_queryset().published()
 
     def featured(self):
-        return self.get_query_set().featured()
+        return self.get_queryset().featured()

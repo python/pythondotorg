@@ -13,11 +13,11 @@ class UserQuerySet(QuerySet):
 
 class UserManager(BaseUserManager):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return UserQuerySet(self.model, using=self._db)
 
     def public_email(self):
-        return self.get_query_set().email_is_public()
+        return self.get_queryset().email_is_public()
 
     def searchable(self):
-        return self.get_query_set().searchable()
+        return self.get_queryset().searchable()

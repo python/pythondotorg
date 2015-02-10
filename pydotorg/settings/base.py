@@ -9,8 +9,7 @@ SITE_ID = 1
 SECRET_KEY = 'its-a-secret-to-everybody'
 
 # Until Sentry works on Py3, do errors the old-fashioned way.
-ADMINS = [
-]
+ADMINS = []
 
 # General project information
 # These are available in the template as SITE_INFO.<title>
@@ -129,7 +128,6 @@ INSTALLED_APPS = [
     'jsonfield',
     'pipeline',
     'sitetree',
-    'south',
     'timedelta',
     'imagekit',
     'haystack',
@@ -167,9 +165,6 @@ INSTALLED_APPS = [
 
 ### Testing
 
-SOUTH_TESTS_MIGRATE = False
-TEST_RUNNER = 'discover_runner.DiscoverRunner'
-TEST_DISCOVER_TOP_LEVEL = BASE
 SKIP_NETWORK_TESTS = True
 
 ### Logging

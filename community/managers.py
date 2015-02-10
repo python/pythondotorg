@@ -15,11 +15,11 @@ class PostQuerySet(QuerySet):
 
 class PostManager(Manager):
 
-    def get_query_set(self):
+    def get_queryset(self):
         return PostQuerySet(self.model, using=self._db)
 
     def public(self):
-        return self.get_query_set().public()
+        return self.get_queryset().public()
 
     def private(self):
-        return self.get_query_set().private()
+        return self.get_queryset().private()
