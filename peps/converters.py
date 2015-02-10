@@ -144,6 +144,23 @@ def convert_pep_page(pep_number, content):
 
         data['content'] = soup.prettify()
 
+    # Fix PEP links
+    pep_content = BeautifulSoup(data['content'])
+    body_links = pep_content.find_all("a")
+
+    pep_href_re = re.compile(r'pep-(\d+)\.html')
+
+    for b in body_links:
+        m = pep_href_re.search(b.attrs['href'])
+
+        # Skip anything not matching 'pep-XXXX.html'
+        if not m:
+            continue
+
+        b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
+
+    data['content'] = pep_content.prettify()
+
     hg_link = "https://hg.python.org/peps/file/tip/pep-{0}.txt".format(pep_number)
     data['content'] += """Source: <a href="{0}">{0}</a>""".format(hg_link)
     return data
