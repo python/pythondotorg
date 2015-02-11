@@ -8,7 +8,7 @@ def remove_job_submit_sidebar_box(apps, schema_editor):
     """
     Remove jobs-submitajob box
     """
-    Box = apps.get_models('boxes', 'Box')
+    Box = apps.get_model('boxes', 'Box')
     try:
         submit_box = Box.objects.get(label='jobs-submitajob')
         submit_box.delete()
