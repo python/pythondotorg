@@ -1,9 +1,6 @@
 dj-database-url==0.3.0
 django-braces==1.4.0
 django-discover-runner==1.0
-# TODO: uncomment this when django-markup 0.5 is released
-#django-markup==0.5
-https://github.com/bartTC/django-markup/archive/ed661e20fc7042076977ee039f7bc1b7cb85b670.zip
 django-pipeline==1.4.5
 django-sitetree==1.2.1
 django-secure==1.0.1
@@ -41,7 +38,12 @@ django-jsonfield==0.9.13
 git+https://github.com/danirus/django-comments-xtd.git@182b54afc62e5d3967be75ac6ed8b19071764a6d
 
 django-honeypot==0.4.0
-django-markupfield==1.2.1
+
+# We were using django-markupfield==1.2.1 however it had a Django 1.7 migration
+# issue.  Using revsys fork until our PR (https://github.com/jamesturk/django-markupfield/pull/29)
+# gets merged
+# django-markupfield==1.2.1
+git+https://github.com/revsys/django-markupfield.git@dac6bb508ff27b42687713e145e07100a4c7b29d
 
 # django-allauth
 #git+git://github.com/jefftriplett/django-allauth.git@3b10d6
