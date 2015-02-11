@@ -57,8 +57,8 @@ class Job(ContentManageable):
     location_slug = models.SlugField(max_length=350, editable=False)
     country_slug = models.SlugField(max_length=100, editable=False)
 
-    description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
-    requirements = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
+    description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+    requirements = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
     contact = models.CharField(null=True, blank=True, max_length=100)
     email = models.EmailField()

@@ -195,6 +195,11 @@ class JobsViewTests(TestCase):
             slug='studionow',
         )
 
+        company2 = Company.objects.create(
+            name='OtherStudio',
+            slug='otherstudio',
+        )
+
         post_data = {
             'category': self.job_category.pk,
             'job_types': [self.job_type.pk],
@@ -206,8 +211,25 @@ class JobsViewTests(TestCase):
             'region': 'CA',
             'country': 'USA',
             'description': 'Lorem ipsum dolor sit amet',
+            'requirements': 'Some requirements',
             'email': 'hr@company.com'
         }
+
+        # First test job from anonymous non-logged in user
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+
+        jobs = Job.objects.filter(company__slug='studionow')
+        self.assertEqual(len(jobs), 1)
+
+        job = jobs[0]
+        self.assertNotEqual(job.created, None)
+        self.assertNotEqual(job.updated, None)
+
+        self.assertEqual(job.status, 'review')
+
+        # Now test with logged in user changing to other company
+        post_data['company'] = company2.pk
 
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
@@ -219,13 +241,13 @@ class JobsViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
-        jobs = Job.objects.filter(company__slug='studionow')
+        jobs = Job.objects.filter(company__slug='otherstudio')
         self.assertEqual(len(jobs), 1)
 
         job = jobs[0]
         self.assertNotEqual(job.created, None)
         self.assertNotEqual(job.updated, None)
-
+        self.assertEqual(job.creator, creator)
         self.assertEqual(job.status, 'review')
 
     def test_job_types(self):
