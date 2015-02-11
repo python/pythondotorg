@@ -4,6 +4,18 @@ from __future__ import unicode_literals
 from django.db import models, migrations
 
 
+def remove_job_submit_sidebar_box(apps, schema_editor):
+    """
+    Remove jobs-submitajob box
+    """
+    Box = apps.get_models('boxes', 'Box')
+    try:
+        submit_box = Box.objects.get(label='jobs-submitajob')
+        submit_box.delete()
+    except Box.DoesNotExist:
+        pass
+
+
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -12,4 +24,5 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        migrations.RunPython(remove_job_submit_sidebar_box),
     ]
