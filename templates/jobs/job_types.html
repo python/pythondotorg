@@ -38,11 +38,7 @@
 {% block right_sidebar %}
 <aside class="right-sidebar">
 
-    <div class="sidebar-widget">
-        {% box 'jobs-submitajob' %}
-
-    </div>
-
+    {% include "jobs/submit_a_job-widget.html" %}
     {% include "jobs/featured_companies-widget.html" %}
 
     <div class="sidebar-widget">
