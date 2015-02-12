@@ -12,6 +12,18 @@ class PageView(DetailView):
     slug_url_kwarg = 'path'
     slug_field = 'path'
 
+    def get_template_names(self):
+        """ Use the template defined in the model or a default """
+        names = [self.template_name]
+
+        if self.object and self.template_name_field:
+            name = getattr(self.object, self.template_name_field, None)
+            if name:
+                names.insert(0, name)
+
+        print(names)
+        return names
+
     def get_queryset(self):
         if self.request.user.is_staff:
             return Page.objects.all()
