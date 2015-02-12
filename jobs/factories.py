@@ -26,6 +26,8 @@ class JobFactory(factory.DjangoModelFactory):
     city = 'Lawrence'
     region = 'KS'
     country = 'US'
+    description = 'Test Description'
+    requirements = 'Test Requirements'
 
     @factory.post_generation
     def job_types(self, create, extracted, **kwargs):

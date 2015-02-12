@@ -1,42 +1,35 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import markupfield.fields
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'Company'
-        db.create_table('companies_company', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50)),
-            ('about', self.gf('django.db.models.fields.TextField')(null=True, blank=True)),
-            ('contact', self.gf('django.db.models.fields.CharField')(null=True, blank=True, max_length=100)),
-            ('email', self.gf('django.db.models.fields.EmailField')(null=True, blank=True, max_length=75)),
-            ('url', self.gf('django.db.models.fields.URLField')(null=True, blank=True, max_length=200)),
-        ))
-        db.send_create_signal('companies', ['Company'])
+    dependencies = [
+    ]
 
-
-    def backwards(self, orm):
-        # Deleting model 'Company'
-        db.delete_table('companies_company')
-
-
-    models = {
-        'companies.company': {
-            'Meta': {'object_name': 'Company'},
-            'about': ('django.db.models.fields.TextField', [], {'null': 'True', 'blank': 'True'}),
-            'contact': ('django.db.models.fields.CharField', [], {'null': 'True', 'blank': 'True', 'max_length': '100'}),
-            'email': ('django.db.models.fields.EmailField', [], {'null': 'True', 'blank': 'True', 'max_length': '75'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'}),
-            'url': ('django.db.models.fields.URLField', [], {'null': 'True', 'blank': 'True', 'max_length': '200'})
-        }
-    }
-
-    complete_apps = ['companies']
+    operations = [
+        migrations.CreateModel(
+            name='Company',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=200)),
+                ('slug', models.SlugField(unique=True)),
+                ('about', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
+                ('about_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='restructuredtext', blank=True)),
+                ('contact', models.CharField(max_length=100, blank=True, null=True)),
+                ('_about_rendered', models.TextField(editable=False)),
+                ('email', models.EmailField(max_length=75, blank=True, null=True)),
+                ('url', models.URLField(verbose_name='URL', blank=True, null=True)),
+                ('logo', models.ImageField(upload_to='companies/logos/', blank=True, null=True)),
+            ],
+            options={
+                'verbose_name': 'company',
+                'verbose_name_plural': 'companies',
+                'ordering': ('name',),
+            },
+            bases=(models.Model,),
+        ),
+    ]

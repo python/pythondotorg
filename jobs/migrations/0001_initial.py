@@ -1,159 +1,117 @@
 # -*- coding: utf-8 -*-
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+from __future__ import unicode_literals
+
+from django.db import models, migrations
+import markupfield.fields
+import django.utils.timezone
+from django.conf import settings
 
 
-class Migration(SchemaMigration):
+class Migration(migrations.Migration):
 
-    def forwards(self, orm):
-        # Adding model 'JobType'
-        db.create_table('jobs_jobtype', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50)),
-        ))
-        db.send_create_signal('jobs', ['JobType'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('companies', '0001_initial'),
+    ]
 
-        # Adding model 'JobCategory'
-        db.create_table('jobs_jobcategory', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('name', self.gf('django.db.models.fields.CharField')(max_length=200)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(unique=True, max_length=50)),
-        ))
-        db.send_create_signal('jobs', ['JobCategory'])
-
-        # Adding model 'Job'
-        db.create_table('jobs_job', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(default=datetime.datetime.now, blank=True)),
-            ('updated', self.gf('django.db.models.fields.DateTimeField')(blank=True)),
-            ('creator', self.gf('django.db.models.fields.related.ForeignKey')(related_name='+', to=orm['users.User'], blank=True, null=True)),
-            ('category', self.gf('django.db.models.fields.related.ForeignKey')(related_name='jobs', to=orm['jobs.JobCategory'])),
-            ('company', self.gf('django.db.models.fields.related.ForeignKey')(related_name='jobs', to=orm['companies.Company'])),
-            ('city', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('region', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('country', self.gf('django.db.models.fields.CharField')(max_length=100)),
-            ('location_slug', self.gf('django.db.models.fields.SlugField')(max_length=350)),
-            ('description', self.gf('django.db.models.fields.TextField')()),
-            ('requirements', self.gf('markupfield.fields.MarkupField')(rendered_field=True, blank=True)),
-            ('requirements_markup_type', self.gf('django.db.models.fields.CharField')(default='restructuredtext', blank=True, max_length=30)),
-            ('contact', self.gf('django.db.models.fields.CharField')(blank=True, max_length=100, null=True)),
-            ('_requirements_rendered', self.gf('django.db.models.fields.TextField')()),
-            ('email', self.gf('django.db.models.fields.EmailField')(max_length=75)),
-            ('url', self.gf('django.db.models.fields.URLField')(blank=True, max_length=200, null=True)),
-            ('telecommuting', self.gf('django.db.models.fields.BooleanField')(default=True)),
-            ('agencies', self.gf('django.db.models.fields.BooleanField')(default=True)),
-        ))
-        db.send_create_signal('jobs', ['Job'])
-
-        # Adding M2M table for field job_types on 'Job'
-        m2m_table_name = db.shorten_name('jobs_job_job_types')
-        db.create_table(m2m_table_name, (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('job', models.ForeignKey(orm['jobs.job'], null=False)),
-            ('jobtype', models.ForeignKey(orm['jobs.jobtype'], null=False))
-        ))
-        db.create_unique(m2m_table_name, ['job_id', 'jobtype_id'])
-
-
-    def backwards(self, orm):
-        # Deleting model 'JobType'
-        db.delete_table('jobs_jobtype')
-
-        # Deleting model 'JobCategory'
-        db.delete_table('jobs_jobcategory')
-
-        # Deleting model 'Job'
-        db.delete_table('jobs_job')
-
-        # Removing M2M table for field job_types on 'Job'
-        db.delete_table(db.shorten_name('jobs_job_job_types'))
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.Permission']", 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission', 'ordering': "('content_type__app_label', 'content_type__model', 'codename')"},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'companies.company': {
-            'Meta': {'object_name': 'Company'},
-            'about': ('django.db.models.fields.TextField', [], {'blank': 'True', 'null': 'True'}),
-            'contact': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '100', 'null': 'True'}),
-            'email': ('django.db.models.fields.EmailField', [], {'blank': 'True', 'max_length': '75', 'null': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'}),
-            'url': ('django.db.models.fields.URLField', [], {'blank': 'True', 'max_length': '200', 'null': 'True'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'", 'ordering': "('name',)"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'jobs.job': {
-            'Meta': {'object_name': 'Job', 'ordering': "('-created',)"},
-            '_requirements_rendered': ('django.db.models.fields.TextField', [], {}),
-            'agencies': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'category': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'jobs'", 'to': "orm['jobs.JobCategory']"}),
-            'city': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'company': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'jobs'", 'to': "orm['companies.Company']"}),
-            'contact': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '100', 'null': 'True'}),
-            'country': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now', 'blank': 'True'}),
-            'creator': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'+'", 'to': "orm['users.User']", 'blank': 'True', 'null': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'job_types': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'jobs'", 'to': "orm['jobs.JobType']"}),
-            'location_slug': ('django.db.models.fields.SlugField', [], {'max_length': '350'}),
-            'region': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'requirements': ('markupfield.fields.MarkupField', [], {'rendered_field': 'True', 'blank': 'True'}),
-            'requirements_markup_type': ('django.db.models.fields.CharField', [], {'default': "'restructuredtext'", 'blank': 'True', 'max_length': '30'}),
-            'telecommuting': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'updated': ('django.db.models.fields.DateTimeField', [], {'blank': 'True'}),
-            'url': ('django.db.models.fields.URLField', [], {'blank': 'True', 'max_length': '200', 'null': 'True'})
-        },
-        'jobs.jobcategory': {
-            'Meta': {'object_name': 'JobCategory'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'})
-        },
-        'jobs.jobtype': {
-            'Meta': {'object_name': 'JobType'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '200'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'})
-        },
-        'users.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'blank': 'True', 'max_length': '75'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '30'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.Group']", 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'blank': 'True', 'max_length': '30'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['auth.Permission']", 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        }
-    }
-
-    complete_apps = ['jobs']
+    operations = [
+        migrations.CreateModel(
+            name='Job',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
+                ('updated', models.DateTimeField(blank=True)),
+                ('company_name', models.CharField(max_length=100, blank=True, null=True)),
+                ('company_description', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
+                ('job_title', models.CharField(max_length=100)),
+                ('company_description_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='restructuredtext', blank=True)),
+                ('_company_description_rendered', models.TextField(editable=False)),
+                ('city', models.CharField(max_length=100)),
+                ('region', models.CharField(max_length=100)),
+                ('country', models.CharField(max_length=100, db_index=True)),
+                ('location_slug', models.SlugField(max_length=350, editable=False)),
+                ('country_slug', models.SlugField(max_length=100, editable=False)),
+                ('description', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
+                ('description_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='restructuredtext', blank=True)),
+                ('requirements', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
+                ('contact', models.CharField(max_length=100, blank=True, null=True)),
+                ('_description_rendered', models.TextField(editable=False)),
+                ('requirements_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='restructuredtext', blank=True)),
+                ('_requirements_rendered', models.TextField(editable=False)),
+                ('email', models.EmailField(max_length=75)),
+                ('url', models.URLField(verbose_name='URL', blank=True, null=True)),
+                ('status', models.CharField(max_length=20, choices=[('draft', 'draft'), ('review', 'review'), ('approved', 'approved'), ('rejected', 'rejected'), ('archived', 'archived'), ('removed', 'removed'), ('expired', 'expired')], default='review', db_index=True)),
+                ('dt_start', models.DateTimeField(null=True, verbose_name='Job start date', blank=True)),
+                ('dt_end', models.DateTimeField(null=True, verbose_name='Job end date', blank=True)),
+                ('telecommuting', models.BooleanField(default=False)),
+                ('agencies', models.BooleanField(default=True)),
+                ('is_featured', models.BooleanField(db_index=True, default=False)),
+            ],
+            options={
+                'verbose_name': 'job',
+                'permissions': [('can_moderate_jobs', 'Can moderate Job listings')],
+                'verbose_name_plural': 'jobs',
+                'ordering': ('-created',),
+                'get_latest_by': 'created',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='JobCategory',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=200)),
+                ('slug', models.SlugField(unique=True)),
+            ],
+            options={
+                'verbose_name': 'job category',
+                'verbose_name_plural': 'job categories',
+                'ordering': ('name',),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='JobType',
+            fields=[
+                ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
+                ('name', models.CharField(max_length=200)),
+                ('slug', models.SlugField(unique=True)),
+            ],
+            options={
+                'verbose_name': 'job technologies',
+                'verbose_name_plural': 'job technologies',
+                'ordering': ('name',),
+            },
+            bases=(models.Model,),
+        ),
+        migrations.AddField(
+            model_name='job',
+            name='category',
+            field=models.ForeignKey(to='jobs.JobCategory', related_name='jobs'),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='job',
+            name='company',
+            field=models.ForeignKey(help_text='Choose a specific company here or enter Name and Description Below', null=True, to='companies.Company', related_name='jobs', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='job',
+            name='creator',
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_creator', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='job',
+            name='job_types',
+            field=models.ManyToManyField(to='jobs.JobType', verbose_name='Job technologies', related_name='jobs', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='job',
+            name='last_modified_by',
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_modified', blank=True),
+            preserve_default=True,
+        ),
+    ]

@@ -219,8 +219,11 @@ class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
     def form_valid(self, form):
         """ set the creator to the current user """
         form = super().form_valid(form)
-        self.object.creator = self.request.user
-        self.object.save()
+
+        # Associate Job to user if they are logged in
+        if self.request.user.is_authenticated():
+            self.object.creator = self.request.user
+            self.object.save()
 
         return form
 

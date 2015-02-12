@@ -36,9 +36,12 @@
                 </span>
                 <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
             </h2>
-            <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More Front-end Developer jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+            {% if object.job_types.all %}
+            <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More {{ type.name }} jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</span>
+            {% endif %}
             <span class="listing-posted"><time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></span>
             <span class="listing-company-category"><a href="{% url 'jobs:job_list_category' slug=object.category.slug %}" title="More jobs in {{ object.category.name }}">{{ object.category.name }}</a></span>
+            <span class="listing-job-title">Job Title: {{ object.job_title }}</span>
         </li>
         {% endfor %}
     </ol>
@@ -70,13 +73,9 @@
 {% block right_sidebar %}
 <aside class="right-sidebar">
 
-    <div class="sidebar-widget">
-        {% box 'jobs-submitajob' %}
-
-    </div>
-
+    {% include "jobs/submit_a_job-widget.html" %}
     {% include "jobs/featured_companies-widget.html" %}
-    
+
     <div class="sidebar-widget">
         {% box 'jobs-subscribe' %}
 
