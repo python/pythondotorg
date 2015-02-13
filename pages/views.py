@@ -21,7 +21,6 @@ class PageView(DetailView):
             if name:
                 names.insert(0, name)
 
-        print(names)
         return names
 
     def get_queryset(self):
