@@ -14,11 +14,7 @@ class JobFeed(Feed):
         return Job.objects.approved()[:20]
 
     def item_title(self, item):
-        name = item.company_name
-        if item.company:
-            name = item.company.name
-
-        return "{} - {}".format(item.job_title, name)
+        return "{} - {}".format(item.job_title, item.company_name)
 
     def item_description(self, item):
         """ Description """

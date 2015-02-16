@@ -10,7 +10,6 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, T
 
 from .forms import JobForm
 from .models import Job, JobType, JobCategory
-from companies.models import Company
 
 THRESHOLD_DAYS = 90
 
@@ -23,8 +22,6 @@ class JobMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['jobs_count'] = Job.objects.approved().count()
-        context['companies_count'] = Company.objects.filter(jobs__status=Job.STATUS_APPROVED, jobs__isnull=False).distinct().count()
-        context['featured_companies'] = Company.objects.filter(jobs__is_featured=True, jobs__status=Job.STATUS_APPROVED).distinct()
         return context
 
 
@@ -52,11 +49,6 @@ class JobListMine(JobMixin, ListView):
 class JobListType(JobList):
     def get_queryset(self):
         return super().get_queryset().filter(job_types__slug=self.kwargs['slug'])
-
-
-class JobListCompany(JobList):
-    def get_queryset(self):
-        return super().get_queryset().filter(company__slug=self.kwargs['slug'])
 
 
 class JobListCategory(JobList):

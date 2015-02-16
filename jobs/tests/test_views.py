@@ -13,22 +13,11 @@ from ..factories import (
 )
 from users.factories import StaffUserFactory
 
-from companies.factories import CompanyFactory
-from companies.models import Company
 from django_comments_xtd.utils import mail_sent_queue
 
 
 class JobsViewTests(TestCase):
     def setUp(self):
-        self.company = CompanyFactory(
-            name='Kulfun Games',
-            slug='kulfun-games',
-        )
-
-        self.company2 = CompanyFactory(
-            name='Acme Corp',
-            slug='acme-corp',
-        )
         self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
@@ -40,7 +29,6 @@ class JobsViewTests(TestCase):
         )
 
         self.job = ApprovedJobFactory(
-            company=self.company,
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Memphis',
@@ -52,7 +40,6 @@ class JobsViewTests(TestCase):
         self.job.job_types.add(self.job_type)
 
         self.job_draft = DraftJobFactory(
-            company=self.company,
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Memphis',
@@ -83,16 +70,6 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.status_code, 200)
 
-        url = reverse('jobs:job_list_company', kwargs={'slug': self.company.slug})
-        response = self.client.get(url)
-        self.assertEqual(len(response.context['object_list']), 1)
-        self.assertEqual(response.status_code, 200)
-
-        self.assertEqual(response.context['jobs_count'], 1)
-        self.assertEqual(response.context['companies_count'], 1)
-
-        self.assertEqual(len(response.context['featured_companies']), 1)
-
     def test_job_list_mine(self):
         url = reverse('jobs:job_list_mine')
 
@@ -107,7 +84,6 @@ class JobsViewTests(TestCase):
         creator = User.objects.create_user(username, email, password)
 
         self.job = ApprovedJobFactory(
-            company=self.company,
             description='My job listing',
             category=self.job_category,
             city='Memphis',
@@ -124,8 +100,6 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.context['jobs_count'], 2)
-        self.assertEqual(response.context['companies_count'], 1)
-        self.assertEqual(len(response.context['featured_companies']), 1)
 
     def test_job_edit(self):
         username = 'kevinarnold'
@@ -136,7 +110,6 @@ class JobsViewTests(TestCase):
         creator = User.objects.create_user(username, email, password)
 
         job = ApprovedJobFactory(
-            company=self.company,
             description='My job listing',
             category=self.job_category,
             city='Memphis',
@@ -159,8 +132,6 @@ class JobsViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['jobs_count'], 1)
-        self.assertEqual(response.context['companies_count'], 1)
-        self.assertEqual(len(response.context['featured_companies']), 1)
 
     def test_job_detail_security(self):
         """
@@ -190,22 +161,11 @@ class JobsViewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
 
-        company = Company.objects.create(
-            name='StudioNow',
-            slug='studionow',
-        )
-
-        company2 = Company.objects.create(
-            name='OtherStudio',
-            slug='otherstudio',
-        )
-
         post_data = {
             'category': self.job_category.pk,
             'job_types': [self.job_type.pk],
-            'company': company.pk,
-            'company_name': '',
-            'company_description': '',
+            'company_name': 'Some Company',
+            'company_description': 'Some Description',
             'job_title': 'Test Job',
             'city': 'San Diego',
             'region': 'CA',
@@ -219,7 +179,7 @@ class JobsViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
-        jobs = Job.objects.filter(company__slug='studionow')
+        jobs = Job.objects.filter(company_name='Some Company')
         self.assertEqual(len(jobs), 1)
 
         job = jobs[0]
@@ -228,8 +188,7 @@ class JobsViewTests(TestCase):
 
         self.assertEqual(job.status, 'review')
 
-        # Now test with logged in user changing to other company
-        post_data['company'] = company2.pk
+        post_data['company_name'] = 'Other Studio'
 
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
@@ -241,7 +200,7 @@ class JobsViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
 
-        jobs = Job.objects.filter(company__slug='otherstudio')
+        jobs = Job.objects.filter(company_name='Other Studio')
         self.assertEqual(len(jobs), 1)
 
         job = jobs[0]
@@ -276,7 +235,6 @@ class JobsViewTests(TestCase):
 
     def test_job_locations(self):
         job2 = ReviewJobFactory(
-            company=self.company,
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Lawrence',
@@ -297,22 +255,20 @@ class JobsViewTests(TestCase):
         self.assertFalse('Lawrence' in content)
 
     def test_job_display_name(self):
-        self.assertEqual(self.job.display_name, self.job.company.name)
+        self.assertEqual(self.job.display_name, self.job.company_name)
 
         self.job.company_name = 'ABC'
         self.assertEqual(self.job.display_name, self.job.company_name)
 
         self.job.company_name = ''
-        self.assertEqual(self.job.display_name, self.job.company.name)
+        self.assertEqual(self.job.display_name, self.job.company_name)
 
     def test_job_display_about(self):
-        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)
-
         self.job.company_description.raw = 'XYZ'
         self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
 
         self.job.company_description = '     '
-        self.assertEqual(self.job.display_description.raw, self.job.company.about.raw)
+        self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
 
 
 class JobsReviewTests(TestCase):
@@ -340,11 +296,6 @@ class JobsReviewTests(TestCase):
             self.super_password
         )
 
-        self.company = CompanyFactory(
-            name='Kulfun Games',
-            slug='kulfun-games'
-        )
-
         self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
@@ -356,7 +307,7 @@ class JobsReviewTests(TestCase):
         )
 
         self.job1 = ReviewJobFactory(
-            company=self.company,
+            company_name='Kulfun Games',
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Memphis',
@@ -369,7 +320,7 @@ class JobsReviewTests(TestCase):
         self.job1.job_types.add(self.job_type)
 
         self.job2 = ReviewJobFactory(
-            company=self.company,
+            company_name='Kulfun Games',
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Memphis',
@@ -382,7 +333,7 @@ class JobsReviewTests(TestCase):
         self.job2.job_types.add(self.job_type)
 
         self.job3 = ReviewJobFactory(
-            company=self.company,
+            company_name='Kulfun Games',
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
             city='Memphis',
