@@ -1,9 +1,11 @@
 from django.conf.urls import url, patterns
 
 from . import views
+from . import feeds
 
 urlpatterns = patterns('',
     url(r'^$', views.JobList.as_view(), name='job_list'),
+    url(r'^feed/rss/$', feeds.JobFeed(), name='job_rss'),
     url(r'^create/$', views.JobCreate.as_view(), name='job_create'),
     url(r'^mine/$', views.JobListMine.as_view(), name='job_list_mine'),
     url(r'^review/$', views.JobReview.as_view(), name='job_review'),
