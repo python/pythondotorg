@@ -46,7 +46,9 @@ MEDIA_URL = '/m/'
 STATIC_ROOT = os.path.join(BASE, 'static-root')
 STATIC_URL = '/static/'
 
-STATICFILES_DIRS = (os.path.join(BASE, 'static'), MEDIA_ROOT)
+STATICFILES_DIRS = [
+    os.path.join(BASE, 'static'),
+]
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
 
 
