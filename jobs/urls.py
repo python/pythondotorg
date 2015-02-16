@@ -1,16 +1,17 @@
 from django.conf.urls import url, patterns
 
 from . import views
+from . import feeds
 
 urlpatterns = patterns('',
     url(r'^$', views.JobList.as_view(), name='job_list'),
+    url(r'^feed/rss/$', feeds.JobFeed(), name='job_rss'),
     url(r'^create/$', views.JobCreate.as_view(), name='job_create'),
     url(r'^mine/$', views.JobListMine.as_view(), name='job_list_mine'),
     url(r'^review/$', views.JobReview.as_view(), name='job_review'),
     url(r'^location/(?P<slug>[-_\w]+)/$', views.JobListLocation.as_view(), name='job_list_location'),
     url(r'^type/(?P<slug>[-_\w]+)/$', views.JobListType.as_view(), name='job_list_type'),
     url(r'^category/(?P<slug>[-_\w]+)/$', views.JobListCategory.as_view(), name='job_list_category'),
-    url(r'^company/(?P<slug>[-_\w]+)/$', views.JobListCompany.as_view(), name='job_list_company'),
     url(r'^locations/$', views.JobLocations.as_view(), name='job_locations'),
     url(r'^types/$', views.JobTypes.as_view(), name='job_types'),
     url(r'^categories/$', views.JobCategories.as_view(), name='job_categories'),

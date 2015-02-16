@@ -1,7 +1,6 @@
 import factory
 
 from .models import JobType, JobCategory, Job
-from companies.factories import CompanyFactory
 
 
 class JobCategoryFactory(factory.DjangoModelFactory):
@@ -22,10 +21,12 @@ class JobFactory(factory.DjangoModelFactory):
     FACTORY_FOR = Job
 
     category = factory.SubFactory(JobCategoryFactory)
-    company = factory.SubFactory(CompanyFactory)
     city = 'Lawrence'
     region = 'KS'
     country = 'US'
+    company_name = factory.Sequence(lambda n: 'Company #{}'.format(n))
+    company_description = factory.Sequence(lambda n: 'Company {} Description'.format(n))
+
     description = 'Test Description'
     requirements = 'Test Requirements'
 

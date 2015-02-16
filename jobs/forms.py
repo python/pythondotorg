@@ -17,8 +17,8 @@ class JobForm(ContentManageableModelForm):
         fields = (
             'category',
             'job_types',
+            'other_job_type',
             'job_title',
-            'company',
             'company_name',
             'company_description',
             'city',
@@ -42,25 +42,6 @@ class JobForm(ContentManageableModelForm):
         self.fields['telecommuting'].label = 'Is telecommuting allowed?'
         self.fields['agencies'].label = 'Agencies are OK to contact?'
 
-    def clean(self):
-        """ Ensure a Company is chosen or a name and description are entered """
-        cleaned_data = super(JobForm, self).clean()
-        company = cleaned_data['company']
-        company_name = cleaned_data['company_name']
-        company_description = cleaned_data['company_description']
-
-        if company and (company_name or company_description):
-            raise forms.ValidationError("You cannot pick both a Company and set Company Name and Description")
-
-        if not company:
-            if not company_name and not company_description:
-                raise forms.ValidationError("You either need to choose a company from the Company drop down or enter a Company Name and Company Description")
-            if not company_name:
-                raise forms.ValidationError("Company Name not entered.")
-            if not company_description:
-                raise forms.ValidationError("Company Description not entered.")
-
-        return cleaned_data
 
 class JobCommentForm(CommentForm):
     reply_to = forms.IntegerField(required=True, initial=0, widget=forms.HiddenInput())
