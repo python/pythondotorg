@@ -3,7 +3,7 @@
 <p>There is a new comment on your job posting.</p>
 
 <p>Sent by: {{ comment.name }}, {{ comment.submit_date|date:"SHORT_DATE_FORMAT" }}<br/>
-<a href="http://{{ site.domain }}{{ content_object.get_absolute_url }}">http://{{ site.domain }}{{ content_object.get_absolute_url }}</a></p>
+<a href="https://{{ site.domain }}{{ content_object.get_absolute_url }}">https://{{ site.domain }}{{ content_object.get_absolute_url }}</a></p>
 
 <p>The comment:<br/>
 <i>{{ comment.comment }}</i>
