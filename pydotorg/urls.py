@@ -1,6 +1,7 @@
 from django.conf.urls import patterns, include, url, handler404
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.conf.urls.static import static
 from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
@@ -124,6 +125,4 @@ urlpatterns = patterns('',
 urlpatterns += staticfiles_urlpatterns()
 
 if settings.DEBUG:
-    urlpatterns += patterns('django.contrib.staticfiles.views',
-        url(r'^%s(?P<path>.*)$' % settings.MEDIA_URL[1:], 'serve')
-    )
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
