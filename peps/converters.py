@@ -235,17 +235,17 @@ def add_pep_image(pep_number, path):
 
         with open(image_path, 'rb') as image_obj:
             image.image.save(path, File(image_obj))
-
-        # Old images used to live alongside html, but now they're in different
-        # places, so update the page accordingly.
-        soup = BeautifulSoup(page.content.raw)
-        for img_tag in soup.findAll('img'):
-            if img_tag['src'] == path:
-                img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
-
-        page.content.raw = soup.prettify()
-        page.save()
         image.save()
+
+    # Old images used to live alongside html, but now they're in different
+    # places, so update the page accordingly.
+    soup = BeautifulSoup(page.content.raw)
+    for img_tag in soup.findAll('img'):
+        if img_tag['src'] == path:
+            img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
+
+    page.content.raw = soup.prettify()
+    page.save()
 
     return image
 
