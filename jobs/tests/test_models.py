@@ -87,3 +87,6 @@ class JobsModelsTests(TestCase):
         self.assertEqual(job3.get_previous_listing(), job2)
         self.assertEqual(job2.get_previous_listing(), job1)
 
+    def test_region_optional(self):
+        job = self.create_job(region=None)
+
