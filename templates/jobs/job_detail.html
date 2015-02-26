@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}Job Listing at {{ object.display_name }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}{{ object.display_name }} | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="jobs default-page single-job"{% endblock %}
 

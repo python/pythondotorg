@@ -132,7 +132,7 @@ class Job(ContentManageable):
 
     @property
     def display_name(self):
-        return self.company_name
+        return "%s, %s" % (self.job_title, self.company_name)
 
     @property
     def display_description(self):
