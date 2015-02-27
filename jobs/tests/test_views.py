@@ -255,13 +255,16 @@ class JobsViewTests(TestCase):
         self.assertFalse('Lawrence' in content)
 
     def test_job_display_name(self):
-        self.assertEqual(self.job.display_name, self.job.company_name)
+        self.assertEqual(self.job.display_name, 
+            "%s, %s" % (self.job.job_title, self.job.company_name))
 
         self.job.company_name = 'ABC'
-        self.assertEqual(self.job.display_name, self.job.company_name)
+        self.assertEqual(self.job.display_name,
+            "%s, %s" % (self.job.job_title, self.job.company_name))
 
         self.job.company_name = ''
-        self.assertEqual(self.job.display_name, self.job.company_name)
+        self.assertEqual(self.job.display_name,
+            "%s, %s" % (self.job.job_title, self.job.company_name))
 
     def test_job_display_about(self):
         self.job.company_description.raw = 'XYZ'
