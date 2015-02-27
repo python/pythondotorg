@@ -3,12 +3,6 @@
 
 {% block page_title %}Our Job Types | {{ SITE_INFO.site_name }}{% endblock %}
 
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "jobs-meta" template "sitetree/submenu.html" %}
-{% endblock %}
-
-
 {% block header_content %}
 {% include "jobs/header_content.html" %}
 {% endblock header_content %}

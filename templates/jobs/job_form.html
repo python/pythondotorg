@@ -6,12 +6,6 @@
 {% block body_attributes %}class="jobs job_form"{% endblock %}
 
 
-{% block main_navigation %}
-{% load sitetree %}
-{% sitetree_menu from "main" include "jobs-meta" template "sitetree/submenu.html" %}
-{% endblock %}
-
-
 {% block header_content %}
 {% include "jobs/header_content.html" %}
 {% endblock header_content %}
