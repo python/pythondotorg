@@ -1,0 +1,22 @@
+{% extends "jobs/job_list.html" %}
+
+{% block header_message %}
+    {% with object_list.0 as job %}
+        {% if job.region and job.region != job.country %}
+            {{ job.city }}, {{ job.region }} &ndash; {{ job.country }}
+        {% else %}
+            {{ job.city }} &ndash; {{ job.country }}
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block header_action %}
+    {% with object_list.0 as job %}
+        {{ object_list|length }} Python job{{ object_list|length|pluralize }} in
+        {% if job.region and job.region != job.country %}
+            {{ job.city }}, {{ job.region }} &ndash; {{ job.country }}
+        {% else %}
+            {{ job.city }} &ndash; {{ job.country }}
+        {% endif %}
+    {% endwith %}
+{% endblock %}

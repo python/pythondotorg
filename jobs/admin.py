@@ -5,7 +5,7 @@ from cms.admin import NameSlugAdmin, ContentManageableModelAdmin
 
 
 class JobAdmin(ContentManageableModelAdmin):
-    date_hierarchy = 'dt_start'
+    date_hierarchy = 'created'
     filter_horizontal = ['job_types']
     list_display = ['__str__', 'job_title', 'status', 'company_name']
     list_filter = ['status', 'telecommuting']

@@ -2,14 +2,10 @@
 {% load boxes %}
 
 {% block page_title %}Our Job Types | {{ SITE_INFO.site_name }}{% endblock %}
-
-{% block header_content %}
-{% include "jobs/header_content.html" %}
-{% endblock header_content %}
-
-
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
+{% block header_message %}Jobs by Technology!{% endblock %}
+{% block header_action %}{{ jobs_count }} Python jobs in {{ types|length }} different types.{% endblock %}
 
 {% block content %}
 <div class="row">

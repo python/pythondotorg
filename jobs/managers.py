@@ -1,11 +1,17 @@
 from django.db.models import Manager
+from django.db.models import Q
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 
 class JobTypeQuerySet(QuerySet):
     def active_types(self):
         """ JobTypes with active jobs """
-        return self.filter(jobs__status='approved').distinct()
+        now = timezone.now()
+        return self.filter(
+            jobs__status='approved',
+            jobs__expires__gte=now,
+        ).distinct()
 
 
 class JobTypeManager(Manager):
@@ -22,7 +28,11 @@ class JobTypeManager(Manager):
 class JobCategoryQuerySet(QuerySet):
     def active_categories(self):
         """ JobCategory with active jobs """
-        return self.filter(jobs__status='approved').distinct()
+        now = timezone.now()
+        return self.filter(
+            jobs__status='approved',
+            jobs__expires__gte=now,
+        ).distinct()
 
 
 class JobCategoryManager(Manager):
@@ -64,6 +74,17 @@ class JobQuerySet(QuerySet):
             self.model.STATUS_REVIEW,
         ])
 
+    def visible(self):
+        """
+        Jobs that should be publicly visible on the website. They will have an
+        approved status and be less than 90 days old
+        """
+        now = timezone.now()
+        return self.filter(
+            Q(status__exact=self.model.STATUS_APPROVED) &
+            Q(expires__gte=now)
+        )
+
 
 class JobManager(Manager):
     def get_queryset(self):
@@ -92,3 +113,6 @@ class JobManager(Manager):
 
     def review(self):
         return self.get_queryset().review()
+
+    def visible(self):
+        return self.get_queryset().visible()

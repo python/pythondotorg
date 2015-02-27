@@ -1,0 +1,4 @@
+{% extends "jobs/job_list.html" %}
+
+{% block header_message %}{{ current_type.name }}{% endblock %}
+{% block header_action %}{{ object_list|length }} Python job{{ object_list|length|pluralize }} in {{ current_type.name }}{% endblock %}

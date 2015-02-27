@@ -83,8 +83,7 @@ class Job(ContentManageable):
         (STATUS_EXPIRED, 'expired'),
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_REVIEW, db_index=True)
-    dt_start = models.DateTimeField('Job start date', blank=True, null=True)
-    dt_end = models.DateTimeField('Job end date', blank=True, null=True)
+    expires = models.DateTimeField('Job Listing Expiration Date', blank=True, null=True)
 
     telecommuting = models.BooleanField(default=False)
     agencies = models.BooleanField(default=True)
@@ -112,9 +111,9 @@ class Job(ContentManageable):
         self.location_slug = slugify(location_str)
         self.country_slug = slugify(self.country)
 
-        if not self.dt_start and self.status == self.STATUS_APPROVED:
-            self.dt_start = timezone.now()
-            self.dt_end = timezone.now() + self.NEW_THRESHOLD
+        if not self.expires and self.status == self.STATUS_APPROVED:
+            delta = datetime.timedelta(days=settings.JOB_THRESHOLD_DAYS)
+            self.expires = timezone.now() + delta
 
         return super().save(**kwargs)
 

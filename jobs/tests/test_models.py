@@ -1,3 +1,5 @@
+import datetime
+
 from django.test import TestCase
 from django.utils import timezone
 
@@ -69,6 +71,18 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.review().count(), 1)
         factories.ReviewJobFactory()
         self.assertEqual(Job.objects.review().count(), 2)
+
+    def test_visible_manager(self):
+        j1 = factories.ApprovedJobFactory()
+        j2 = factories.JobFactory()
+        past = timezone.now() - datetime.timedelta(days=1)
+        j3 = factories.ApprovedJobFactory(expires=past)
+
+        visible = Job.objects.visible()
+        self.assertTrue(len(visible), 1)
+        self.assertTrue(j1 in visible)
+        self.assertFalse(j2 in visible)
+        self.assertFalse(j3 in visible)
 
     def test_job_type_active_types_manager(self):
         t1 = factories.JobTypeFactory()

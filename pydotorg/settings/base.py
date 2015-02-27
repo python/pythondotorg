@@ -219,6 +219,9 @@ PEP_REPO_PATH = ''
 FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
                         # be purged on save
 
+# Jobs
+JOB_THRESHOLD_DAYS = 90
+
 ### Pipeline
 
 from .pipeline import (

@@ -3,13 +3,10 @@
 
 {% block page_title %}Job Locations | {{ SITE_INFO.site_name }}{% endblock %}
 
-{% block header_content %}
-{% include "jobs/header_content.html" %}
-{% endblock header_content %}
-
-
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
+{% block header_message %}Jobs by Location!{% endblock %}
+{% block header_action %}{{ jobs_count }} Python jobs {% if jobs|length == 1 %}all from a single location {% else %} in {{ jobs|length }} different location{{ jobs|length|pluralize }}{% endif %}.{% endblock %}
 
 {% block content %}
 <div class="row">

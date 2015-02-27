@@ -228,7 +228,7 @@ class JobsViewTests(TestCase):
         response = self.client.get(create_url)
         self.assertEqual(response.context['form'].initial,
                          {})
-        
+
         user_data = {
             'username': 'phrasebook',
             'email': 'hungarian@example.com',
