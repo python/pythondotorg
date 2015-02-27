@@ -206,6 +206,8 @@ class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
+        if self.request.user.is_authenticated():
+            kwargs['initial'] = {'email': self.request.user.email}
         return kwargs
 
     def form_valid(self, form):

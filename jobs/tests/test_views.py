@@ -209,6 +209,31 @@ class JobsViewTests(TestCase):
         self.assertEqual(job.creator, creator)
         self.assertEqual(job.status, 'review')
 
+    def test_job_create_prepopulate_email(self):
+        create_url = reverse('jobs:job_create')
+
+        # Not logged in, no email prepopulation in the form.
+        response = self.client.get(create_url)
+        self.assertEqual(response.context['form'].initial,
+                         {})
+        
+        user_data = {
+            'username': 'phrasebook',
+            'email': 'hungarian@example.com',
+            'password': 'hovereel',
+        }
+
+        User = get_user_model()
+        creator = User.objects.create_user(**user_data)
+
+        # Logged in, email address is prepopulated.
+        self.client.login(username=user_data['username'],
+                          password=user_data['password'])
+        response = self.client.get(create_url)
+
+        self.assertEqual(response.context['form'].initial,
+                         {'email': user_data['email']})
+
     def test_job_types(self):
         job_type2 = JobTypeFactory(
             name='Senior Developer',
