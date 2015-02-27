@@ -28,7 +28,7 @@
             {% if user_can_edit %}<a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>{% endif %}
             {% endif %}<span class="company-name">{{ object.display_name }}</span>
         </span>
-        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.city }}, {{ object.region }}">{{ object.city }}, {{ object.region }}, {{ object.country }}</a></span>
+        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.display_location }}">{{object.display_location}}</a></span>
     </h1>
 
     <!-- User input html/markup/rst/whatever -->
@@ -143,7 +143,7 @@
         <a class="prev-button" href="{{ previous.get_absolute_url }}">
             <span class="prev-button-text"><span class="icon-arrow-left"><span>&larr;</span></span> Previous</span>
             <span class="prevnext-description">
-                <span class="company-name">{{ previous.display_name }}</span> in <span class="company-location">{{ previous.city }}, {{ previous.region }}, {{ previous.country }}</span>
+                <span class="company-name">{{ previous.display_name }}</span> in <span class="company-location">{{ previous.display_location }}</span>
             </span>
         </a>
         {% else %}
@@ -158,7 +158,7 @@
         <a class="next-button" href="{{ next.get_absolute_url }}">
             <span class="next-button-text">Next <span class="icon-arrow-right"><span>&rarr;</span></span></span>
             <span class="prevnext-description">
-                <span class="company-name">{{ next.display_name }}</span> in <span class="company-location">{{ next.city }}, {{ next.region }}, {{ next.country }}</span>
+                <span class="company-name">{{ next.display_name }}</span> in <span class="company-location">{{ next.display_location }}</span>
             </span>
         </a>
         {% else %}
@@ -181,7 +181,7 @@
         <ul class="menu">
             {% if object.company %}
                 {% for job in category_jobs %}
-                <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.display_name }}, {{ job.city }}, {{ job.region }}, {{ job.country }}</a></li>
+                <li><a href="{% url 'jobs:job_list_company' slug=object.company.slug %}">{{ job.display_location }}</a></li>
                 {% endfor %}
             {% endif %}
         </ul>

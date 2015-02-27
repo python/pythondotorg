@@ -144,6 +144,15 @@ class Job(ContentManageable):
         return self.company_description
 
     @property
+    def display_location(self):
+        location_parts = (self.city, self.region, self.country)
+        location_str = ''
+        for location_part in location_parts:
+            if location_part is not None:
+                location_str = ', '.join([location_str, location_part])
+        return location_str
+
+    @property
     def is_new(self):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
