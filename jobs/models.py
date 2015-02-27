@@ -49,7 +49,7 @@ class Job(ContentManageable):
     job_title = models.CharField(max_length=100)
 
     city = models.CharField(max_length=100)
-    region = models.CharField(max_length=100)
+    region = models.CharField(max_length=100, blank=True, null=True)
     country = models.CharField(max_length=100, db_index=True)
     location_slug = models.SlugField(max_length=350, editable=False)
     country_slug = models.SlugField(max_length=100, editable=False)
@@ -100,7 +100,12 @@ class Job(ContentManageable):
         return 'Job Listing #{}'.format(self.pk)
 
     def save(self, **kwargs):
-        self.location_slug = slugify('%s %s %s' % (self.city, self.region, self.country))
+        location_parts = (self.city, self.region, self.country)
+        location_str = ''
+        for location_part in location_parts:
+            if location_part is not None:
+                location_str = ' '.join([location_str, location_part])
+        self.location_slug = slugify(location_str)
         self.country_slug = slugify(self.country)
 
         if not self.dt_start and self.status == self.STATUS_APPROVED:

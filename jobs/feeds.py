@@ -18,7 +18,9 @@ class JobFeed(Feed):
 
     def item_description(self, item):
         """ Description """
-        location = ",".join([item.city, item.region, item.country])
+        location_parts = (item.city, item.region, item.country)
+        location = ",".join(location_part for location_part in location_parts
+            if location_part is not None)
         return "{}\n{}\n{}".format(
             location,
             item.description,
