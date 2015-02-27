@@ -5,6 +5,48 @@
 
 {% block main-nav_attributes %}jobs-navigation{% endblock %}
 
+{% block main_navigation %}
+<ul class="navigation menu" role="menubar" aria-label="Main Navigation">
+    <li class="tier-1 element-1" aria-haspopup="true">
+        <a href="{% url 'jobs:job_types' %}">Types</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            {% for t in active_types %}
+            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_type' slug=t.slug %}">{{ t.name }}</a></li>
+            {% empty %}
+            <li class="tier-2" role="treeitem">No Active Types</li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li class="tier-1 element-2" aria-haspopup="true">
+        <a href="{% url 'jobs:job_categories' %}">Categories</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            {% for c in active_categories %}
+            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_category' slug=c.slug %}">{{ c.name }}</a></li>
+            {% empty %}
+            <li class="tier-2" role="treeitem">No Active Categories</li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li class="tier-1 element-3">
+        <a href="{% url 'jobs:job_locations' %}">Locations</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            {% for l in active_locations %}
+            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_location' slug=l.location_slug %}">
+                {% if l.region and l.region != l.city %}
+                    {{ l.city }}, {{ l.region }} &ndash; {{ l.country }}
+                {% else %}
+                    {{ l.city }} &ndash; {{ l.country }}
+                {% endif %}
+            </a></li>
+            {% empty %}
+            <li class="tier-2" role="treeitem">No Active Categories</li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li class="tier-1 element-4 last"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
+</ul>
+{% endblock main_navigation %}
+
 {% block right_sidebar %}
 <aside class="right-sidebar">
     {% block right_sidebar_content %}

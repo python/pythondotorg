@@ -21,7 +21,19 @@ class JobBoardAdminRequiredMixin(GroupRequiredMixin):
 class JobMixin(object):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['jobs_count'] = Job.objects.approved().count()
+
+        active_locations = Job.objects.approved().distinct(
+            'location_slug'
+        ).order_by(
+            'location_slug',
+        )
+
+        context.update({
+            'jobs_count': Job.objects.approved().count(),
+            'active_types': JobType.objects.active_types(),
+            'active_categories': JobCategory.objects.active_categories(),
+            'active_locations': active_locations,
+        })
         return context
 
 

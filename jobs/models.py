@@ -8,7 +8,7 @@ from django.template.defaultfilters import slugify
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
-from .managers import JobManager
+from .managers import JobManager, JobTypeManager, JobCategoryManager
 from .listeners import (on_comment_was_posted, on_job_was_approved,
                         on_job_was_rejected)
 from .signals import job_was_approved, job_was_rejected
@@ -20,6 +20,8 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 class JobType(NameSlugModel):
 
+    objects = JobTypeManager()
+
     class Meta(object):
         verbose_name = 'job technologies'
         verbose_name_plural = 'job technologies'
@@ -27,6 +29,8 @@ class JobType(NameSlugModel):
 
 
 class JobCategory(NameSlugModel):
+
+    objects = JobCategoryManager()
 
     class Meta(object):
         verbose_name = 'job category'

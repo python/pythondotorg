@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from .. import factories
-from ..models import Job
+from ..models import Job, JobType, JobCategory
 
 
 class JobsModelsTests(TestCase):
@@ -69,6 +69,29 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.review().count(), 1)
         factories.ReviewJobFactory()
         self.assertEqual(Job.objects.review().count(), 2)
+
+    def test_job_type_active_types_manager(self):
+        t1 = factories.JobTypeFactory()
+        t2 = factories.JobTypeFactory()
+        j1 = factories.ApprovedJobFactory()
+        j1.job_types.add(t1)
+
+        qs = JobType.objects.active_types()
+        self.assertEqual(len(qs), 1)
+        self.assertTrue(t1 in qs)
+        self.assertFalse(t2 in qs)
+
+    def test_job_type_active_categories_manager(self):
+        c1 = factories.JobCategoryFactory()
+        c2 = factories.JobCategoryFactory()
+        j1 = factories.ApprovedJobFactory()
+        j1.category = c1
+        j1.save()
+
+        qs = JobCategory.objects.active_categories()
+        self.assertEqual(len(qs), 1)
+        self.assertTrue(c1 in qs)
+        self.assertFalse(c2 in qs)
 
     def test_get_previous_approved(self):
         job1 = self.create_job(status=Job.STATUS_APPROVED)
