@@ -1,5 +1,6 @@
 import datetime
 
+from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
 
@@ -126,7 +127,6 @@ class JobsModelsTests(TestCase):
 
     def test_region_optional(self):
         job = self.create_job(region=None)
-
         self.assertEqual(job.city, "Memphis")
         self.assertEqual(job.country, "USA")
         self.assertIsNone(job.region)
@@ -137,3 +137,16 @@ class JobsModelsTests(TestCase):
 
         job2 = self.create_job(region=None)
         self.assertEqual(job2.display_location, 'Memphis, USA')
+
+    def test_email_on_submit(self):
+        job = self.create_job()
+        mail.outbox = []
+        self.assertEqual(0, len(mail.outbox))
+        job.status = Job.STATUS_REVIEW
+        job.save()
+        self.assertEqual(1, len(mail.outbox))
+        job.status = Job.STATUS_DRAFT
+        job.save()
+        self.assertEqual(1, len(mail.outbox))
+        expected_subject = "Job Submitted for Approval: {}".format(job.display_name)
+        self.assertEqual(mail.outbox[0].subject, expected_subject)
