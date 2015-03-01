@@ -127,3 +127,6 @@ class JobsModelsTests(TestCase):
     def test_region_optional(self):
         job = self.create_job(region=None)
 
+        self.assertEqual(job.city, "Memphis")
+        self.assertEqual(job.country, "USA")
+        self.assertIsNone(job.region)
