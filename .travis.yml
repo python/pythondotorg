@@ -1,22 +1,25 @@
+sudo: false
 language: python
-python:
-  - "3.3"
+python: "3.3"
+cache:
+  directories:
+    - ~/.cache/pip/wheels
 env:
-  - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org
-before_install:
-  - sudo apt-get update -qq
+  global:
+    - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
+    - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
+    - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org
 install:
-  - pip install --quiet --upgrade pip
-  - pip install --quiet -r requirements.txt
-  - pip install --quiet -r dev-requirements.txt
+  - pip wheel -r dev-requirements.txt
+  - pip install -r dev-requirements.txt
 before_script:
   - psql -c 'create database "python.org";' -U postgres
 script:
-  - coverage run manage.py test
+  - coverage run manage.py test -v2
   - coverage report --fail-under=80
 notifications:
-    irc:
-        channels:
-            - "irc.freenode.net#python-dev"
-        on_success: change
-        on_failure: always
+  irc:
+    channels:
+      - "irc.freenode.net#python-dev"
+    on_success: change
+    on_failure: always
