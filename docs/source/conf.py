@@ -15,6 +15,7 @@
 
 import sys
 import os
+import time
 
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
@@ -49,7 +50,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Python.org Website'
-copyright = '2014, Frank Wiles'
+copyright = '%s, Python Software Foundation' % time.strftime('%Y')
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -103,7 +104,13 @@ pygments_style = 'sphinx'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'default'
+try:
+    import sphinx_rtd_theme
+except ImportError:
+    html_theme = 'default'
+else:
+    html_theme = 'sphinx_rtd_theme'
+    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -132,7 +139,7 @@ html_theme = 'default'
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = ['_static']
+html_static_path = []
 
 # Add any extra paths that contain custom files (such as robots.txt or
 # .htaccess) here, relative to this directory. These files are copied
@@ -202,7 +209,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
   ('index', 'PythonorgWebsite.tex', 'Python.org Website Documentation',
-   'Frank Wiles', 'manual'),
+   'Python Software Foundation', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -232,7 +239,7 @@ latex_documents = [
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'pythonorgwebsite', 'Python.org Website Documentation',
-     ['Frank Wiles'], 1)
+     ['Python Software Foundation'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -246,7 +253,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
   ('index', 'PythonorgWebsite', 'Python.org Website Documentation',
-   'Frank Wiles', 'PythonorgWebsite', 'One line description of project.',
+   'Python Software Foundation', 'PythonorgWebsite', '',
    'Miscellaneous'),
 ]
 

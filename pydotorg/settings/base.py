@@ -165,6 +165,12 @@ INSTALLED_APPS = [
 
 ]
 
+# Fixtures
+
+FIXTURE_DIRS = (
+    os.path.join(BASE, 'fixtures'),
+)
+
 ### Testing
 
 SKIP_NETWORK_TESTS = True
