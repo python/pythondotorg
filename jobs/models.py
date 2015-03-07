@@ -148,11 +148,9 @@ class Job(ContentManageable):
 
     @property
     def display_location(self):
-        location_parts = (self.city, self.region, self.country)
-        location_str = ''
-        for location_part in location_parts:
-            if location_part is not None:
-                location_str = ', '.join([location_str, location_part])
+        location_parts = [part for part in (self.city, self.region, self.country) 
+                            if part]
+        location_str = ', '.join(location_parts)
         return location_str
 
     @property

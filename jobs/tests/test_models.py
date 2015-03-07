@@ -130,3 +130,10 @@ class JobsModelsTests(TestCase):
         self.assertEqual(job.city, "Memphis")
         self.assertEqual(job.country, "USA")
         self.assertIsNone(job.region)
+
+    def test_display_location(self):
+        job1 = self.create_job()
+        self.assertEqual(job1.display_location, 'Memphis, TN, USA')
+
+        job2 = self.create_job(region=None)
+        self.assertEqual(job2.display_location, 'Memphis, USA')
