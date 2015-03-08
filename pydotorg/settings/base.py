@@ -236,3 +236,9 @@ from .pipeline import (
     PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
+
+# Fixtures
+
+FIXTURE_DIRS = (
+    os.path.join(BASE, 'fixtures'),
+)
