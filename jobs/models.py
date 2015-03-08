@@ -4,13 +4,14 @@ from django.conf import settings
 from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from .managers import JobManager, JobTypeManager, JobCategoryManager
 from .listeners import (on_comment_was_posted, on_job_was_approved,
-                        on_job_was_rejected)
+                        on_job_was_rejected, on_job_was_submitted)
 from .signals import job_was_approved, job_was_rejected
 from cms.models import ContentManageable, NameSlugModel
 
@@ -174,3 +175,5 @@ class Job(ContentManageable):
 comment_was_posted.connect(on_comment_was_posted)
 job_was_approved.connect(on_job_was_approved)
 job_was_rejected.connect(on_job_was_rejected)
+post_save.connect(on_job_was_submitted, sender=Job)
+

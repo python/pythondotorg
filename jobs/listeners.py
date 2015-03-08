@@ -79,3 +79,25 @@ def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
     send_job_review_message(job, rejecting_user,
                             'jobs/email/job_was_rejected_subject.txt',
                             'jobs/email/job_was_rejected.txt')
+
+
+def on_job_was_submitted(sender, instance, **kwargs):
+    """
+    Notify the jobs board when a new job has been submitted for approval
+
+    """
+    Job = models.get_model('jobs', 'Job')
+    if instance.status != Job.STATUS_REVIEW:
+        return
+
+    subject_template = loader.get_template('jobs/email/job_was_submitted_subject.txt')
+    message_template = loader.get_template('jobs/email/job_was_submitted.txt')
+
+    message_context = Context({'content_object': instance,
+                               'site': Site.objects.get_current()})
+    subject = subject_template.render(message_context)
+    message = message_template.render(message_context)
+
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ['jobs@python.org'])
+
+

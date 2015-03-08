@@ -1,0 +1,7 @@
+The following job was submitted for approval:
+
+{{ content_object.display_name }}
+
+To view and review:
+
+URL: https://{{ site.domain }}{{ content_object.get_absolute_url }}
