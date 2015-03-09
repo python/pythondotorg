@@ -5,21 +5,21 @@
 {% block content %}
 <div class="row">
     <h1>Job Listing Reviews</h1>
-
     <table>
         <thead>
             <tr>
-                <th>id</th>
-                <th>description</th>
-                <th>status</th>
-                <th>action</th>
+                <th>ID</th>
+                <th>Description</th>
+                <th>Status</th>
+                <th>Action</th>
             </tr>
         </thead>
         <tbody>
     {% for object in object_list %}
     <tr>
         <td><a href="{% url 'jobs:job_detail_review' pk=object.pk %}">{{ object.pk }}</a></td>
-        <td>
+        <td class="description">
+            <p><strong>Category:</strong> {{ object.category }}</p>
             <p><strong>Company:</strong> {{ object.display_name }}</p>
             {{ object.description|truncatewords:"50" }}
         </td>
@@ -29,6 +29,7 @@
             {% csrf_token %}
             <input type="hidden" name="job_id" value="{{ object.id }}">
             <div>
+              <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
               <button name="action" value="approve">Approve</button>
               <button name="action" value="reject">Reject</button>
               <button name="action" value="remove">Remove</button>
@@ -63,3 +64,6 @@
 
 </div>
 {% endblock content %}
+
+{% block right_sidebar %}
+{% endblock right_sidebar %}
