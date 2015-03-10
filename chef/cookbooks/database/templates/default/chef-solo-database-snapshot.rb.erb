@@ -1,6 +1,0 @@
-executable_path ENV['PATH'] ? ENV['PATH'].split(File::PATH_SEPARATOR) : []
-<% if @cookbook_path.is_a? Array %>
-  cookbook_path [ <%= @cookbook_path.collect { |cb| "\"#{cb}\""}.join(", ") -%> ]
-<% else %>
-  cookbook_path "<%= @cookbook_path -%>"
-<% end %>
