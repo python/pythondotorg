@@ -18,7 +18,11 @@
     <article class="text">
 
         <header class="article-header">
+            {% if form_action == 'update' %}
+            <h1 class="page-title">Update <a href="{{ object.get_absolute_url }}">{{ object.job_title }}</a></h1>
+            {% else %}
             <h1 class="page-title">Submit a Job Posting</h1>
+            {% endif %}
         </header>
 
         <form class="wide-form jobs-form" action="" method="post">
