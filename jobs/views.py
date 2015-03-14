@@ -1,5 +1,6 @@
 from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
@@ -223,7 +224,7 @@ class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
     form_class = JobForm
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return reverse('jobs:job_thanks')
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

@@ -1,0 +1,15 @@
+{% extends "jobs/base.html" %}
+{% load boxes %}
+
+{% block page_title %}Our Jobs | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h1>Job Posting Was Successful</h1>
+    <p class="user-feedback level-success">
+        Thank you for using Python Job Board.
+    <p>
+</div>
+{% endblock content %}
