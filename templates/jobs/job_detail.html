@@ -12,6 +12,13 @@
 {% load companies %}
 <article class="text">
 
+    {% if request.user.is_staff %}
+    <p class="user-feedback level-notice">
+        This job is in <strong>{{ object.status }}</strong> mode. You're able
+        to see this because you're in the staff or super user group.
+    </p>
+    {% endif %}
+
 	<h1 class="listing-company">
         <span class="listing-company-name">
             {% if object.is_new %}<span class="listing-new">New</span>
