@@ -934,37 +934,46 @@ $show-baseline-grid-backgrounds: false;
     }
 
     s, strike, del { color: $grey-light; }
+}
 
-    /* Prettier tables if authors use the correct elements */
-    table {
-
-        caption {
-            caption-side: top;
-            color: $default-color;
-            font-size: px2em( 18px );
-            text-align: left;
-            @include trailer(1);
-        }
-
-        thead, tfoot { border-bottom: 1px solid $grey-lighterer; }
-
-        tr {
-            background-color: #f6f6f6;
-
-            & th { background-color: #f0f0f0; }
-        }
-
-        tr:nth-of-type(even), tr.even { background-color: #f0f0f0; }
-
-        th, td {
-            padding: .25em .5em .2em;
-            border-left: 2px solid $white;
-
-            &:first-child { border-left: none; }
-        }
-
-        tfoot { border-top: 1px solid $grey-lighterer; }
+/* Prettier tables if authors use the correct elements */
+table {
+    caption {
+        caption-side: top;
+        color: $default-color;
+        font-size: px2em( 18px );
+        text-align: left;
+        @include trailer(1);
     }
+
+    thead, tfoot { border-bottom: 1px solid $grey-lighterer; }
+
+    tr {
+        background-color: #f6f6f6;
+
+        & th { background-color: #f0f0f0; }
+    }
+
+    tr:nth-of-type(even), tr.even { background-color: #f0f0f0; }
+
+    th, td {
+      padding: .25em .5em .2em;
+      border-left: 2px solid $white;
+
+      &:first-child { border-left: none; }
+    }
+
+    tfoot { border-top: 1px solid $grey-lighterer; }
+}
+
+.jobs {
+  table {
+      @extend table;
+
+      td.description {
+        width: px2em( 720px );
+      }
+  }
 }
 
 .documentation-help { }

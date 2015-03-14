@@ -348,7 +348,7 @@
     sup { top: -0.5em; }
     sub { bottom: -0.25em; }
     
-    pre, code, kbd, samp, var { font-family: Consolas, 'Lucida Console','Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, sans-serif; }
+    pre, code, kbd, samp, var { font-family: Consolas, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, sans-serif; }
     pre {  /* Get spaces to display for PRE tags but dont let long lines break out of containers */
     	white-space: pre-wrap; 
     	white-space: -moz-pre-wrap !important;	/* 1999+ Mozilla */
