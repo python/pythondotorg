@@ -2668,6 +2668,12 @@ p.quote-by-organization {
 .left-sidebar .twtr-doc {
   padding: .75em; }
 
+.jobs-form p {
+  padding: 0 0.3125em; }
+.jobs-form .required {
+  background-color: #f8f0f1;
+  padding-top: 0.625em; }
+
 .list-recent-jobs li {
   padding: 0.875em 0.5em; }
 

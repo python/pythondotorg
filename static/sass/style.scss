@@ -1849,6 +1849,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 }
 
+.jobs-form {
+    p {
+        padding: 0 px2em( 5px );
+    }
+    .required {
+        background-color: lighten( $red, 43% );
+        padding-top: px2em( 10px );
+    }
+}
+
 .list-recent-jobs {
 
     li { padding: rhythm( .5 ) .5em; }
