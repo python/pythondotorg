@@ -14,13 +14,18 @@
 
 {% block header_content %}
     <div class="featured-success-story">
-        
+
         <figure class="blockquote">
-            
+
             {#  Need a way to set a "Featured" Success Story for this spot up here #}
-            
+
+            {% comment %}
+            The PSF will have to get permission to use the logos on the website.
+            So don't display a broken image for now.
             <img src="{{ STATIC_URL }}img/google-trans.png" alt="Google">
-    
+            See https://github.com/python/pythondotorg/issues/106
+            {% endcomment %}
+
             <blockquote class="success-quote">
                 Python allows us to produce maintainable features in record times, with a minimum of developers.
             </blockquote>
@@ -29,7 +34,7 @@
                 <p class="quote-by-organization">YouTube.com</p>
             </figcaption>
         </figure>
-        
+
     </div>
 {% endblock header_content %}
 
@@ -40,7 +45,7 @@
             {% thumbnail '240x80' story.company.logo as th %}
             <div class="medium-widget success-story {% if forloop.last == True %}last{% endif %}">
                 <div class="shrubbery">
-                
+
                     {% if story.company.logo %}<img src="{{ th.url }}" alt="{{ story.name }}" width="{{ th.width }}" height="{{ th.height }}">{% endif %}
                     <h2 class="widget-title"><a href="{{ story.get_absolute_url }}">{{ story.name }}</a></h2>
                     <p class="success-quote">
