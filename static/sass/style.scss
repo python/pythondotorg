@@ -966,16 +966,6 @@ table {
     tfoot { border-top: 1px solid $grey-lighterer; }
 }
 
-.jobs {
-  table {
-      @extend table;
-
-      td.description {
-        width: px2em( 720px );
-      }
-  }
-}
-
 .documentation-help { }
 
 .row { }

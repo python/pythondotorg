@@ -419,8 +419,7 @@ h1, h2, h3, h4, h5, h6, p, blockquote, pre,
 abbr, address, cite, code, del, dfn, em, img, ins, kbd, q, samp,
 small, strong, sub, sup, var, b, i, dl, dt, dd, ol, ul, li,
 fieldset, form, label, legend,
-table,
-.jobs table, caption, tbody, tfoot, thead, tr, th, td,
+table, caption, tbody, tfoot, thead, tr, th, td,
 article, aside, canvas, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section, summary,
 time, mark, audio, video {
@@ -475,7 +474,7 @@ abbr[title], dfn[title] {
   /* border-bottom: 1px dotted; */
   cursor: help; }
 
-table, .jobs table {
+table {
   width: 100%;
   border-collapse: collapse;
   border-spacing: 0; }
@@ -1922,30 +1921,27 @@ input#s,
     color: #999999; }
 
 /* Prettier tables if authors use the correct elements */
-table caption, .jobs table caption {
+table caption {
   caption-side: top;
   color: #444444;
   font-size: 1.125em;
   text-align: left;
   margin-bottom: 1.75em; }
-table thead, .jobs table thead, table tfoot, .jobs table tfoot {
+table thead, table tfoot {
   border-bottom: 1px solid #dddddd; }
-table tr, .jobs table tr {
+table tr {
   background-color: #f6f6f6; }
-  table tr th, .jobs table tr th {
+  table tr th {
     background-color: #f0f0f0; }
 table tr:nth-of-type(even), table tr.even {
   background-color: #f0f0f0; }
-table th, .jobs table th, table td, .jobs table td {
+table th, table td {
   padding: .25em .5em .2em;
   border-left: 2px solid white; }
   table th:first-child, table td:first-child {
     border-left: none; }
-table tfoot, .jobs table tfoot {
+table tfoot {
   border-top: 1px solid #dddddd; }
-
-.jobs table td.description {
-  width: 45em; }
 
 .row-title {
   border-top: 5px solid #d4dbe1;

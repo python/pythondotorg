@@ -10,33 +10,33 @@
             <tr>
                 <th>ID</th>
                 <th>Description</th>
-                <th>Status</th>
-                <th>Action</th>
             </tr>
         </thead>
         <tbody>
     {% for object in object_list %}
     <tr>
         <td><a href="{% url 'jobs:job_detail_review' pk=object.pk %}">{{ object.pk }}</a></td>
-        <td class="description">
+        <td>
             <p><strong>Category:</strong> {{ object.category }}</p>
             <p><strong>Company:</strong> {{ object.display_name }}</p>
             {{ object.description|truncatewords:"50" }}
         </td>
-        <td>{{ object.status }}</td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
         <td>
-          <form action="." method="post">
-            {% csrf_token %}
-            <input type="hidden" name="job_id" value="{{ object.id }}">
-            <div>
-              <a class="button" href="{% url 'jobs:job_detail_review' pk=object.pk %}">Review</a>
-              <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
-              <button name="action" value="approve">Approve</button>
-              <button name="action" value="reject">Reject</button>
-              <button name="action" value="archive">Archive</button>
-              <button name="action" value="remove">Remove</button>
-            </div>
-          </form>
+            <form action="." method="post">
+                {% csrf_token %}
+                <input type="hidden" name="job_id" value="{{ object.id }}">
+                <div>
+                    <a class="button" href="{% url 'jobs:job_detail_review' pk=object.pk %}">Review</a>
+                    <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
+                    <button name="action" value="approve">Approve</button>
+                    <button name="action" value="reject">Reject</button>
+                    <button name="action" value="archive">Archive</button>
+                    <button name="action" value="remove">Remove</button>
+                </div>
+            </form>
         </td>
     </tr>
     {% endfor %}
