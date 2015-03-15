@@ -12,6 +12,8 @@ from cms.forms import ContentManageableModelForm
 
 
 class JobForm(ContentManageableModelForm):
+    required_css_class = 'required'
+
     class Meta:
         model = Job
         fields = (
