@@ -15,7 +15,10 @@
 
 {% block main_navigation %}
 <ul class="navigation menu" role="menubar" aria-label="Main Navigation">
-    <li class="tier-1 element-1 {% if view.job_type_view %}current_item selected{% endif %}" aria-haspopup="true">
+    <li class="tier-1 element-1 {% if view.job_list_view %}current_item selected{% endif %}">
+        <a href="{% url 'jobs:job_list' %}">Jobs</a>
+    </li>
+    <li class="tier-1 element-2 {% if view.job_type_view %}current_item selected{% endif %}" aria-haspopup="true">
         <a href="{% url 'jobs:job_types' %}">Types</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for t in active_types %}
@@ -25,7 +28,7 @@
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-2 {% if view.job_category_view %}current_item selected{% endif %}" aria-haspopup="true">
+    <li class="tier-1 element-3 {% if view.job_category_view %}current_item selected{% endif %}" aria-haspopup="true">
         <a href="{% url 'jobs:job_categories' %}">Categories</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for c in active_categories %}
@@ -35,7 +38,7 @@
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-3 {% if view.job_location_view %}current_item selected{% endif %}">
+    <li class="tier-1 element-4 {% if view.job_location_view %}current_item selected{% endif %}">
         <a href="{% url 'jobs:job_locations' %}">Locations</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for l in active_locations %}
@@ -51,7 +54,7 @@
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-4 last"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
+    <li class="tier-1 element-5 last"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
 </ul>
 {% endblock main_navigation %}
 

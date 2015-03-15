@@ -38,6 +38,8 @@ class JobList(JobMixin, ListView):
     model = Job
     paginate_by = 25
 
+    job_list_view = True
+
     def get_queryset(self):
         return super().get_queryset().visible().select_related()
 
