@@ -32,7 +32,7 @@ USE_I18N = True
 USE_L10N = True
 USE_TZ = True
 
-DATE_FORMAT = 'Y-m-j'
+DATE_FORMAT = 'Y-m-d'
 
 ### Files (media and static)
 
