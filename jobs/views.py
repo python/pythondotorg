@@ -26,8 +26,8 @@ class JobMixin(object):
 
         context.update({
             'jobs_count': Job.objects.visible().count(),
-            'active_types': JobType.objects.active_types(),
-            'active_categories': JobCategory.objects.active_categories(),
+            'active_types': JobType.objects.with_active_jobs(),
+            'active_categories': JobCategory.objects.with_active_jobs(),
             'active_locations': active_locations,
         })
 
@@ -106,14 +106,14 @@ class JobListLocation(JobLocationMenu, JobList):
 class JobTypes(JobTypeMenu, JobMixin, ListView):
     """ View to simply list JobType instances that have current jobs """
     template_name = "jobs/job_types.html"
-    queryset = JobType.objects.active_types().order_by('name')
+    queryset = JobType.objects.with_active_jobs().order_by('name')
     context_object_name = 'types'
 
 
 class JobCategories(JobCategoryMenu, JobMixin, ListView):
     """ View to simply list JobCategory instances that have current jobs """
     template_name = "jobs/job_categories.html"
-    queryset = JobCategory.objects.active_categories().order_by('name')
+    queryset = JobCategory.objects.with_active_jobs().order_by('name')
     context_object_name = 'categories'
 
 

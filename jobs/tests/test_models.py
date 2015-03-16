@@ -85,25 +85,25 @@ class JobsModelsTests(TestCase):
         self.assertFalse(j2 in visible)
         self.assertFalse(j3 in visible)
 
-    def test_job_type_active_types_manager(self):
+    def test_job_type_with_active_jobs_manager(self):
         t1 = factories.JobTypeFactory()
         t2 = factories.JobTypeFactory()
         j1 = factories.ApprovedJobFactory()
         j1.job_types.add(t1)
 
-        qs = JobType.objects.active_types()
+        qs = JobType.objects.with_active_jobs()
         self.assertEqual(len(qs), 1)
         self.assertTrue(t1 in qs)
         self.assertFalse(t2 in qs)
 
-    def test_job_type_active_categories_manager(self):
+    def test_job_category_with_active_jobs_manager(self):
         c1 = factories.JobCategoryFactory()
         c2 = factories.JobCategoryFactory()
         j1 = factories.ApprovedJobFactory()
         j1.category = c1
         j1.save()
 
-        qs = JobCategory.objects.active_categories()
+        qs = JobCategory.objects.with_active_jobs()
         self.assertEqual(len(qs), 1)
         self.assertTrue(c1 in qs)
         self.assertFalse(c2 in qs)
@@ -126,16 +126,16 @@ class JobsModelsTests(TestCase):
         self.assertEqual(job2.get_previous_listing(), job1)
 
     def test_region_optional(self):
-        job = self.create_job(region=None)
+        job = self.create_job(region='')
         self.assertEqual(job.city, "Memphis")
         self.assertEqual(job.country, "USA")
-        self.assertIsNone(job.region)
+        self.assertFalse(job.region)
 
     def test_display_location(self):
         job1 = self.create_job()
         self.assertEqual(job1.display_location, 'Memphis, TN, USA')
 
-        job2 = self.create_job(region=None)
+        job2 = self.create_job(region='')
         self.assertEqual(job2.display_location, 'Memphis, USA')
 
     def test_email_on_submit(self):

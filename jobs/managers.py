@@ -5,10 +5,15 @@ from django.utils import timezone
 
 
 class JobTypeQuerySet(QuerySet):
-    def active_types(self):
+
+    def active(self):
+        """ active Job Types """
+        return self.filter(active=True)
+
+    def with_active_jobs(self):
         """ JobTypes with active jobs """
         now = timezone.now()
-        return self.filter(
+        return self.active().filter(
             jobs__status='approved',
             jobs__expires__gte=now,
         ).distinct()
@@ -20,13 +25,20 @@ class JobTypeManager(Manager):
     def get_queryset(self):
         return JobTypeQuerySet(self.model, using=self._db)
 
-    def active_types(self):
+    def active(self):
+        return self.get_queryset().active()
+
+    def with_active_jobs(self):
         """ Return all JobTypes that have active Jobs """
-        return self.get_queryset().active_types()
+        return self.get_queryset().with_active_jobs()
 
 
 class JobCategoryQuerySet(QuerySet):
-    def active_categories(self):
+
+    def active(self):
+        return self.filter(active=True)
+
+    def with_active_jobs(self):
         """ JobCategory with active jobs """
         now = timezone.now()
         return self.filter(
@@ -41,9 +53,12 @@ class JobCategoryManager(Manager):
     def get_queryset(self):
         return JobCategoryQuerySet(self.model, using=self._db)
 
-    def active_categories(self):
+    def active(self):
+        return self.get_queryset().active()
+
+    def with_active_jobs(self):
         """ Return all JobCategories that have active Jobs """
-        return self.get_queryset().active_categories()
+        return self.get_queryset().with_active_jobs()
 
 
 class JobQuerySet(QuerySet):

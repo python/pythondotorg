@@ -12,6 +12,19 @@ class JobAdmin(ContentManageableModelAdmin):
     raw_id_fields = ['category']
 
 
-admin.site.register(JobType, NameSlugAdmin)
-admin.site.register(JobCategory, NameSlugAdmin)
+class JobTypeAdmin(NameSlugAdmin):
+    list_display = ['__str__', 'active']
+    list_filter = ['active']
+    ordering = ('-active', 'name')
+
+admin.site.register(JobType, JobTypeAdmin)
+
+
+class JobCategoryAdmin(NameSlugAdmin):
+    list_display = ['__str__', 'active']
+    list_filter = ['active']
+    ordering = ('-active', 'name')
+
+admin.site.register(JobCategory, JobCategoryAdmin)
+
 admin.site.register(Job, JobAdmin)

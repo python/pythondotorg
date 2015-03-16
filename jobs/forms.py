@@ -2,7 +2,6 @@ from django import forms
 from django.forms.widgets import CheckboxSelectMultiple
 from django.utils.translation import ugettext_lazy as _
 
-from django.conf import settings
 from django_comments_xtd.conf import settings as comments_settings
 from django_comments_xtd.forms import CommentForm
 from django_comments_xtd.models import TmpXtdComment

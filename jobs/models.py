@@ -20,6 +20,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 
 class JobType(NameSlugModel):
+    active = models.BooleanField(default=True)
 
     objects = JobTypeManager()
 
@@ -30,6 +31,7 @@ class JobType(NameSlugModel):
 
 
 class JobCategory(NameSlugModel):
+    active = models.BooleanField(default=True)
 
     objects = JobCategoryManager()
 
@@ -42,8 +44,18 @@ class JobCategory(NameSlugModel):
 class Job(ContentManageable):
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
-    category = models.ForeignKey(JobCategory, related_name='jobs')
-    job_types = models.ManyToManyField(JobType, related_name='jobs', blank=True, verbose_name='Job technologies')
+    category = models.ForeignKey(
+        JobCategory,
+        related_name='jobs',
+        limit_choices_to={'active': True},
+    )
+    job_types = models.ManyToManyField(
+        JobType,
+        related_name='jobs',
+        blank=True,
+        verbose_name='Job technologies',
+        limit_choices_to={'active': True},
+    )
     other_job_type = models.CharField(
         verbose_name='Other Job Technologies',
         max_length=100,
@@ -149,7 +161,7 @@ class Job(ContentManageable):
 
     @property
     def display_location(self):
-        location_parts = [part for part in (self.city, self.region, self.country) 
+        location_parts = [part for part in (self.city, self.region, self.country)
                             if part]
         location_str = ', '.join(location_parts)
         return location_str
