@@ -1,6 +1,5 @@
 from django.conf import settings
 from django import http
-from django.utils.http import urlquote
 from .models import Page
 from .views import PageView
 

@@ -1,4 +1,4 @@
-from ..models import OS, Release, ReleaseFile
+from ..models import Release
 from .base import BaseDownloadTests
 
 

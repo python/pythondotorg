@@ -3,7 +3,7 @@ from .base import BaseDownloadTests
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 
-from ..models import OS, Release, ReleaseFile
+from ..models import OS, Release
 from pages.models import Page
 
 import json

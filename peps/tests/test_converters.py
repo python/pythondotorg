@@ -2,7 +2,7 @@ from django.test import TestCase
 from django.core.exceptions import ImproperlyConfigured
 from django.test.utils import override_settings
 
-from peps.converters import check_paths, get_pep0_page, get_pep_page
+from peps.converters import check_paths, get_pep0_page
 
 
 class PEPConverterTests(TestCase):

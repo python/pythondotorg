@@ -1,7 +1,5 @@
 from django import template
 
-from ..models import Membership
-
 register = template.Library()
 
 

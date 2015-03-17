@@ -1,5 +1,3 @@
-from django.conf import settings
-from django.utils import timezone
 from django import forms
 
 

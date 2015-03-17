@@ -1,7 +1,6 @@
 from datetime import datetime
 
 from django.core.management.base import BaseCommand
-from django.conf import settings
 
 from ...models import BlogEntry, RelatedBlog, Feed
 from ...parser import get_all_entries, update_blog_supernav
