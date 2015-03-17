@@ -22,7 +22,7 @@
             <p><strong>Category:</strong> {{ object.category }}</p>
             <p><strong>Email:</strong> <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></p>
             {% if object.url %}
-            <li><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></li>
+            <p><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></p>
             {% endif %}
             <p><strong>Description:</strong> {{ object.description|truncatewords:"50" }}</p>
         </td>
