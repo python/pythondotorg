@@ -94,7 +94,7 @@
               {% csrf_token %}
               <input type="hidden" name="job_id" value="{{ job.id }}">
               <div>
-                <a class="review_button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
+                <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
                 <button class="review_button" name="action" value="approve">Approve</button>
                 <button class="review_button" name="action" value="reject">Reject</button>
               </div>
