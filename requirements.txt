@@ -50,3 +50,5 @@ git+https://github.com/revsys/django-markupfield.git@dac6bb508ff27b42687713e145e
 django-allauth==0.19.1
 
 uWSGI==2.0.9
+
+raven==5.2.0
