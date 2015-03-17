@@ -21,11 +21,12 @@
 
 	<h1 class="listing-company">
         <span class="listing-company-name">
-            {% if object.is_new %}
-	    <span class="listing-new">New</span>
-            {% endif %}
 	    <span class="company-name">
-	      {{ object.job_title }}<br/>
+	      {{ object.job_title }}
+              {% if object.is_new %}
+	      <span class="listing-new">New</span>
+              {% endif %}
+	      <br/>
               {{ object.company_name }}
 	    </span>
             {% if user_can_edit %}
