@@ -20,6 +20,7 @@
         <td>
             <p><strong>Title:</strong> {{ object.job_title }}</p>
             <p><strong>Company:</strong> {{ object.company_name }}</p>
+            <p><strong>Posted:</strong> <time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></p>
             <p><strong>Category:</strong> {{ object.category }}</p>
             <p><strong>Email:</strong> <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></p>
             <p><strong>Description:</strong> {{ object.description|truncatewords:50 }}</p>
