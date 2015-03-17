@@ -28,9 +28,6 @@ class UserChangeForm(BaseUserChangeForm):
 
 class UserProfileForm(ModelForm):
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-
     class Meta(object):
         model = User
         fields = [
