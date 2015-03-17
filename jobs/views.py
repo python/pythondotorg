@@ -200,7 +200,10 @@ class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
-            user_can_edit=(self.object.creator == self.request.user),
+            user_can_edit=(
+                self.object.creator == self.request.user
+                or self.request.user.is_staff
+            ),
             under_review=True,
         )
         ctx.update(kwargs)
