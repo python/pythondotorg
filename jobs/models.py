@@ -57,26 +57,53 @@ class Job(ContentManageable):
         limit_choices_to={'active': True},
     )
     other_job_type = models.CharField(
-        verbose_name='Other Job Technologies',
+        verbose_name='Other job technologies',
         max_length=100,
         blank=True,
     )
-    company_name = models.CharField(max_length=100, null=True)
-    company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
-    job_title = models.CharField(max_length=100)
+    company_name = models.CharField(
+        max_length=100,
+        null=True)
+    company_description = MarkupField(
+        blank=True,
+        default_markup_type=DEFAULT_MARKUP_TYPE)
+    job_title = models.CharField(
+        max_length=100)
 
-    city = models.CharField(max_length=100)
-    region = models.CharField('State, Province or Region', blank=True, max_length=100)
-    country = models.CharField(max_length=100, db_index=True)
-    location_slug = models.SlugField(max_length=350, editable=False)
-    country_slug = models.SlugField(max_length=100, editable=False)
+    city = models.CharField(
+        max_length=100)
+    region = models.CharField(
+        verbose_name='State, Province or Region',
+        blank=True,
+        max_length=100)
+    country = models.CharField(
+        max_length=100,
+        db_index=True)
+    location_slug = models.SlugField(
+        max_length=350,
+        editable=False)
+    country_slug = models.SlugField(
+        max_length=100,
+        editable=False)
 
-    description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
-    requirements = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+    description = MarkupField(
+        verbose_name='Job description',
+        default_markup_type=DEFAULT_MARKUP_TYPE)
+    requirements = MarkupField(
+        verbose_name='Job requirements',
+        default_markup_type=DEFAULT_MARKUP_TYPE)
 
-    contact = models.CharField(null=True, blank=True, max_length=100)
-    email = models.EmailField()
-    url = models.URLField('URL', null=True, blank=True)
+    contact = models.CharField(
+        verbose_name='Contact name',
+        null=True,
+        blank=True,
+        max_length=100)
+    email = models.EmailField(
+        verbose_name='Contact email')
+    url = models.URLField(
+        verbose_name='URL',
+        null=True,
+        blank=True)
 
     STATUS_DRAFT = 'draft'
     STATUS_REVIEW = 'review'
@@ -95,11 +122,22 @@ class Job(ContentManageable):
         (STATUS_REMOVED, 'removed'),
         (STATUS_EXPIRED, 'expired'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_REVIEW, db_index=True)
-    expires = models.DateTimeField('Job Listing Expiration Date', blank=True, null=True)
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=STATUS_REVIEW,
+        db_index=True)
+    expires = models.DateTimeField(
+        verbose_name='Job Listing Expiration Date',
+        blank=True,
+        null=True)
 
-    telecommuting = models.BooleanField(default=False)
-    agencies = models.BooleanField(default=True)
+    telecommuting = models.BooleanField(
+        verbose_name='Telecommuting allowed?',
+        default=False)
+    agencies = models.BooleanField(
+        verbose_name='Agencies are OK to contact?',
+        default=True)
 
     is_featured = models.BooleanField(default=False, db_index=True)
 

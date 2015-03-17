@@ -16,17 +16,17 @@ class JobForm(ContentManageableModelForm):
     class Meta:
         model = Job
         fields = (
+            'job_title',
+            'company_name',
             'category',
             'job_types',
             'other_job_type',
-            'job_title',
-            'company_name',
-            'company_description',
             'city',
             'region',
             'country',
             'description',
             'requirements',
+            'company_description',
             'contact',
             'email',
             'url',
@@ -40,8 +40,6 @@ class JobForm(ContentManageableModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['job_types'].help_text = None
-        self.fields['telecommuting'].label = 'Is telecommuting allowed?'
-        self.fields['agencies'].label = 'Agencies are OK to contact?'
 
 
 class JobCommentForm(CommentForm):
