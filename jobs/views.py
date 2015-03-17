@@ -211,8 +211,9 @@ class JobCreateEditMixin(object):
 
     def form_valid(self, form):
         self.object = form.save()
-        # Delete existing
-        self.object.job_types.all().delete()
+        
+        # Clear existing job types
+        self.object.job_types.clear()
 
         # Add all of the chosen ones
         for t in form.cleaned_data['job_types']:
