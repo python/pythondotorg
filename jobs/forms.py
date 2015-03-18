@@ -41,6 +41,15 @@ class JobForm(ContentManageableModelForm):
         super().__init__(*args, **kwargs)
         self.fields['job_types'].help_text = None
 
+    def save(self, commit=True):
+        obj = super().save()
+        obj.job_types.clear()
+        for t in self.cleaned_data['job_types']:
+            obj.job_types.add(t)
+        if commit:
+            obj.save()
+        return obj
+
 
 class JobCommentForm(CommentForm):
     reply_to = forms.IntegerField(required=True, initial=0, widget=forms.HiddenInput())
