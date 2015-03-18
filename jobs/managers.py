@@ -1,3 +1,5 @@
+import datetime
+
 from django.db.models import Manager
 from django.db.models import Q
 from django.db.models.query import QuerySet
@@ -85,9 +87,11 @@ class JobQuerySet(QuerySet):
         return self.filter(is_featured=True)
 
     def review(self):
-        return self.filter(status__in=[
-            self.model.STATUS_REVIEW,
-        ])
+        review_threshold = timezone.now() - datetime.timedelta(days=120)
+        return self.filter(
+            Q(status__exact=self.model.STATUS_REVIEW) &
+            Q(created__gte=review_threshold)
+        )
 
     def visible(self):
         """
