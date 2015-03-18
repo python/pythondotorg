@@ -6,6 +6,10 @@ ALLOWED_HOSTS = ['*']
 
 PYTHON_ORG_CONTENT_SVN_PATH='/Users/flavio/working_copies/beta.python.org/build/data'
 
+DATABASES = {
+    'default': dj_database_url.config(default='postgres:///pythondotorg')
+}
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch_backend.ElasticsearchSearchEngine',
