@@ -256,6 +256,8 @@ class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
     form_class = JobForm
 
     def get_queryset(self):
+        if not self.request.user.is_authenticated():
+            raise Http404
         if self.request.user.is_staff:
             return super().get_queryset()
         return self.request.user.jobs_job_creator.all()
