@@ -210,22 +210,7 @@ class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail)
         return ctx
 
 
-class JobCreateEditMixin(object):
-
-    def form_valid(self, form):
-        self.object = form.save()
-        
-        # Clear existing job types
-        self.object.job_types.clear()
-
-        # Add all of the chosen ones
-        for t in form.cleaned_data['job_types']:
-            self.object.job_types.add(t)
-
-        return super().form_valid(form)
-
-
-class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
+class JobCreate(JobMixin, CreateView):
     model = Job
     form_class = JobForm
 
@@ -241,17 +226,13 @@ class JobCreate(JobMixin, JobCreateEditMixin, CreateView):
 
     def form_valid(self, form):
         """ set the creator to the current user """
-        form = super().form_valid(form)
-
         # Associate Job to user if they are logged in
         if self.request.user.is_authenticated():
-            self.object.creator = self.request.user
-            self.object.save()
-
-        return form
+            form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
-class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
+class JobEdit(JobMixin, UpdateView):
     model = Job
     form_class = JobForm
 
@@ -264,11 +245,8 @@ class JobEdit(JobMixin, JobCreateEditMixin, UpdateView):
 
     def form_valid(self, form):
         """ set last_modified_by to the current user """
-        form = super().form_valid(form)
-        self.object.last_modified_by = self.request.user
-        self.object.save()
-
-        return form
+        form.instance.last_modified_by = self.request.user
+        return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
