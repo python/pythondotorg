@@ -1,10 +1,12 @@
 Dear {{ addressee }},
 
-Thank you for choosing to list your vacancy on python.org's Job Board.
+Thank you for choosing to list your vacancy on the PSF Python Job Board.
 
 Unfortunately, your listing does not comply to our Job Board listing
 guidelines (see https://www.python.org/community/jobs/howto/). If possible,
 please update your listing and resubmit the request.
+
+If you have questions, please contact the Job Board Team at jobs@python.org.
 
 Many thanks,
 {{ reviewer_name }}
