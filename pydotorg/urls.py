@@ -61,9 +61,6 @@ urlpatterns = [
 
     # api
     url(r'^api/', include(v1_api.urls)),
-
-    # it's a secret to everyone
-    url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
