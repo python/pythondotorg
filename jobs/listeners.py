@@ -96,7 +96,7 @@ def on_job_was_submitted(sender, instance, **kwargs):
 
     """
     Job = models.get_model('jobs', 'Job')
-    if instance.status != Job.STATUS_REVIEW:
+    if instance.status != Job.STATUS_REVIEW or not kwargs.get('created'):
         return
 
     subject_template = loader.get_template('jobs/email/job_was_submitted_subject.txt')
