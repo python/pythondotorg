@@ -95,14 +95,18 @@ def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
 
 
 @receiver(models.signals.post_save, sender=Job, dispatch_uid="job_was_submitted")
-def on_job_was_submitted(sender, instance, **kwargs):
+def on_job_was_submitted(sender, instance, created=False, **kwargs):
     """
     Notify the jobs board when a new job has been submitted for approval
 
     """
+    # Only send emails for newly created Jobs
+    if not created:
+        return
+
     # Only new Jobs in review status should trigger the email
     Job = models.get_model('jobs', 'Job')
-    if instance.status != Job.STATUS_REVIEW or not kwargs.get('created'):
+    if instance.status != Job.STATUS_REVIEW:
         return
 
     subject_template = loader.get_template('jobs/email/job_was_submitted_subject.txt')
