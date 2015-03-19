@@ -13,61 +13,6 @@ admin.autodiscover()
 
 handler404 = custom_404
 
-# Hack to fix admindocs bug. See https://code.djangoproject.com/ticket/6681.
-# Please remove this when we upgrade to Django 1.7.
-from django.contrib.admindocs import utils as ad_utils
-parse_rst = """
-def parse_rst(text, default_reference_context, thing_being_parsed=None):
-    \"\"\"
-    Convert the string from reST to an XHTML fragment.
-    \"\"\"
-    overrides = {
-        'doctitle_xform': True,
-        'inital_header_level': 3,
-        "default_reference_context": default_reference_context,
-        "link_base": reverse('django-admindocs-docroot').rstrip('/')
-    }
-    if thing_being_parsed:
-        thing_being_parsed = force_bytes("<%s>" % thing_being_parsed)
-    # Wrap ``text`` in some reST that sets the default role to ``cmsreference``,
-    # then restores it.
-    source = \"\"\"
-.. default-role:: cmsreference
-
-%s
-
-.. default-role::
-\"\"\"
-    parts = docutils.core.publish_parts(source % text,
-                source_path=thing_being_parsed, destination_path=None,
-                writer_name='html', settings_overrides=overrides)
-    return mark_safe(parts['fragment'])
-
-def create_reference_role(rolename, urlbase):
-    def _role(name, rawtext, text, lineno, inliner, options=None, content=None):
-        if options is None:
-            options = {}
-        if content is None:
-            content = []
-        node = docutils.nodes.reference(rawtext, text, refuri=(urlbase % (inliner.document.settings.link_base, text.lower())), **options)
-        return [node], []
-    docutils.parsers.rst.roles.register_canonical_role(rolename, _role)
-
-
-def default_reference_role(name, rawtext, text, lineno, inliner, options=None, content=None):
-    if options is None:
-        options = {}
-    if content is None:
-        content = []
-    context = inliner.document.settings.default_reference_context
-    node = docutils.nodes.reference(rawtext, text, refuri=(ROLES[context] % (inliner.document.settings.link_base, text.lower())), **options)
-    return [node], []
-"""
-exec(parse_rst, ad_utils.__dict__)
-import docutils.parsers.rst.roles
-docutils.parsers.rst.roles.DEFAULT_INTERPRETED_ROLE = 'title-reference'
-
-
 urlpatterns = patterns('',
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
