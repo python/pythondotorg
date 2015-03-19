@@ -46,8 +46,6 @@ class JobForm(ContentManageableModelForm):
         obj.job_types.clear()
         for t in self.cleaned_data['job_types']:
             obj.job_types.add(t)
-        if commit:
-            obj.save()
         return obj
 
 
