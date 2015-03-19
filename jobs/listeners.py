@@ -10,6 +10,12 @@ from django_comments_xtd.utils import send_mail
 from .models import Job
 from .signals import job_was_approved, job_was_rejected
 
+### Globals
+
+# Python job board team email address
+EMAIL_JOBS_BOARD = 'jobs@python.org'
+
+###
 
 @receiver(comment_was_posted)
 def on_comment_was_posted(sender, comment, request, **kwargs):
@@ -20,22 +26,19 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     `.forms.JobCommentForm` forces `follow_up` to `True` and Django-comments-xtd
     will already notify followers.
     """
-    Job = models.get_model('jobs', 'Job')
-
     # Skip if this is not a 'first comment'
     if comment.level > 0 or comment.order > 1:
         return False
 
-    # RSkip if we're not commenting on a Job
+    # Skip if we're not commenting on a Job
+    Job = models.get_model('jobs', 'Job')
     model = comment.content_type.model_class()
     if model != Job:
         return False
 
     job = model._default_manager.get(pk=comment.object_pk)
-
     email = job.email
     name = job.contact
-
 
     subject = _("new comment posted")
     text_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.txt")
@@ -47,7 +50,8 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
                                 'site': Site.objects.get_current() })
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)
-    send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL, [ email, ], html=html_message)
+    send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,
+              [email], html=html_message)
 
 
 def send_job_review_message(job, user, subject_template_path,
@@ -66,7 +70,8 @@ def send_job_review_message(job, user, subject_template_path,
     # subject can't contain newlines, thus strip() call
     subject = subject_template.render(message_context).strip()
     message = message_template.render(message_context)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [job.email])
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
+              [job.email])
 
 
 @receiver(job_was_approved)
@@ -95,6 +100,7 @@ def on_job_was_submitted(sender, instance, **kwargs):
     Notify the jobs board when a new job has been submitted for approval
 
     """
+    # Only new Jobs in review status should trigger the email
     Job = models.get_model('jobs', 'Job')
     if instance.status != Job.STATUS_REVIEW:
         return
@@ -107,4 +113,5 @@ def on_job_was_submitted(sender, instance, **kwargs):
     subject = subject_template.render(message_context)
     message = message_template.render(message_context)
 
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ['jobs@python.org'])
+    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
+              [EMAIL_JOBS_BOARD])
