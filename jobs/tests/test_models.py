@@ -9,12 +9,6 @@ from ..models import Job, JobType, JobCategory
 
 
 class JobsModelsTests(TestCase):
-    def setUp(self):
-        self.job = factories.JobFactory(
-            city='Memphis',
-            region='TN',
-            country='USA',
-        )
 
     def create_job(self, **kwargs):
         job_kwargs = {
@@ -28,15 +22,17 @@ class JobsModelsTests(TestCase):
         return job
 
     def test_is_new(self):
-        self.assertTrue(self.job.is_new)
+        job = self.create_job()
+        self.assertTrue(job.is_new)
 
         threshold = Job.NEW_THRESHOLD
 
-        self.job.created = timezone.now() - (threshold * 2)
-        self.assertFalse(self.job.is_new)
+        job.created = timezone.now() - (threshold * 2)
+        self.assertFalse(job.is_new)
 
     def test_location_slug(self):
-        self.assertEqual(self.job.location_slug, 'memphis-tn-usa')
+        job = self.create_job()
+        self.assertEqual(job.location_slug, 'memphis-tn-usa')
 
     def test_approved_manager(self):
         self.assertEqual(Job.objects.approved().count(), 0)
@@ -69,9 +65,9 @@ class JobsModelsTests(TestCase):
         self.assertEqual(Job.objects.removed().count(), 1)
 
     def test_review_manager(self):
-        self.assertEqual(Job.objects.review().count(), 1)
+        self.assertEqual(Job.objects.review().count(), 0)
         factories.ReviewJobFactory()
-        self.assertEqual(Job.objects.review().count(), 2)
+        self.assertEqual(Job.objects.review().count(), 1)
 
     def test_visible_manager(self):
         j1 = factories.ApprovedJobFactory()
@@ -137,16 +133,3 @@ class JobsModelsTests(TestCase):
 
         job2 = self.create_job(region='')
         self.assertEqual(job2.display_location, 'Memphis, USA')
-
-    def test_email_on_submit(self):
-        job = self.create_job()
-        mail.outbox = []
-        self.assertEqual(0, len(mail.outbox))
-        job.status = Job.STATUS_REVIEW
-        job.save()
-        self.assertEqual(1, len(mail.outbox))
-        job.status = Job.STATUS_DRAFT
-        job.save()
-        self.assertEqual(1, len(mail.outbox))
-        expected_subject = "Job Submitted for Approval: {}".format(job.display_name)
-        self.assertEqual(mail.outbox[0].subject, expected_subject)

@@ -168,6 +168,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_job_create(self):
+        mail.outbox = []
         url = reverse('jobs:job_create')
         response = self.client.get(url)
 
@@ -190,6 +191,7 @@ class JobsViewTests(TestCase):
         # First test job from anonymous non-logged in user
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
 
         jobs = Job.objects.filter(company_name='Some Company')
         self.assertEqual(len(jobs), 1)
@@ -197,8 +199,11 @@ class JobsViewTests(TestCase):
         job = jobs[0]
         self.assertNotEqual(job.created, None)
         self.assertNotEqual(job.updated, None)
-
         self.assertEqual(job.status, 'review')
+        self.assertEqual(
+            mail.outbox[0].subject,
+            "Job Submitted for Approval: {}".format(job.display_name)
+        )
 
         post_data['company_name'] = 'Other Studio'
 
@@ -211,6 +216,7 @@ class JobsViewTests(TestCase):
         self.client.login(username=creator.username, password='secret')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 2)
 
         jobs = Job.objects.filter(company_name='Other Studio')
         self.assertEqual(len(jobs), 1)
@@ -220,6 +226,10 @@ class JobsViewTests(TestCase):
         self.assertNotEqual(job.updated, None)
         self.assertEqual(job.creator, creator)
         self.assertEqual(job.status, 'review')
+        self.assertEqual(
+            mail.outbox[1].subject,
+            "Job Submitted for Approval: {}".format(job.display_name)
+        )
 
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
