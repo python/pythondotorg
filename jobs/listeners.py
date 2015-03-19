@@ -1,11 +1,17 @@
 from django.db import models
+from django.dispatch import receiver
+from django.contrib.comments.signals import comment_was_posted
 from django.contrib.sites.models import Site
 from django.template import loader, Context
 from django.utils.translation import ugettext_lazy as _
 from django_comments_xtd.conf import settings
 from django_comments_xtd.utils import send_mail
 
+from .models import Job
+from .signals import job_was_approved, job_was_rejected
 
+
+@receiver(comment_was_posted)
 def on_comment_was_posted(sender, comment, request, **kwargs):
     """
     Notify the author of the post when the first comment has been posted.
@@ -63,6 +69,7 @@ def send_job_review_message(job, user, subject_template_path,
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [job.email])
 
 
+@receiver(job_was_approved)
 def on_job_was_approved(sender, job, approving_user, **kwargs):
     """Handle approving job offer. Currently an email should be sent to the
     person that sent the offer.
@@ -72,6 +79,7 @@ def on_job_was_approved(sender, job, approving_user, **kwargs):
                             'jobs/email/job_was_approved.txt')
 
 
+@receiver(job_was_rejected)
 def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
     """Handle rejecting job offer. Currently an email should be sent to the
     person that sent the offer.
@@ -81,6 +89,7 @@ def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
                             'jobs/email/job_was_rejected.txt')
 
 
+@receiver(models.signals.post_save, sender=Job, dispatch_uid="job_was_submitted")
 def on_job_was_submitted(sender, instance, **kwargs):
     """
     Notify the jobs board when a new job has been submitted for approval
@@ -99,5 +108,3 @@ def on_job_was_submitted(sender, instance, **kwargs):
     message = message_template.render(message_context)
 
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, ['jobs@python.org'])
-
-

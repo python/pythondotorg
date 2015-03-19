@@ -1,19 +1,17 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.comments.signals import comment_was_posted
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import post_save
 from django.template.defaultfilters import slugify
 from django.utils import timezone
+
 from markupfield.fields import MarkupField
 
-from .managers import JobManager, JobTypeManager, JobCategoryManager
-from .listeners import (on_comment_was_posted, on_job_was_approved,
-                        on_job_was_rejected, on_job_was_submitted)
-from .signals import job_was_approved, job_was_rejected
 from cms.models import ContentManageable, NameSlugModel
+
+from .managers import JobManager, JobTypeManager, JobCategoryManager
+from .signals import job_was_approved, job_was_rejected
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -221,9 +219,3 @@ class Job(ContentManageable):
 
     def get_next_listing(self):
         return self.get_next_by_created(status=self.STATUS_APPROVED)
-
-comment_was_posted.connect(on_comment_was_posted)
-job_was_approved.connect(on_job_was_approved)
-job_was_rejected.connect(on_job_was_rejected)
-post_save.connect(on_job_was_submitted, sender=Job)
-
