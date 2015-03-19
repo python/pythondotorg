@@ -226,14 +226,10 @@ class JobCreate(JobMixin, CreateView):
 
     def form_valid(self, form):
         """ set the creator to the current user """
-        form = super().form_valid(form)
-
         # Associate Job to user if they are logged in
         if self.request.user.is_authenticated():
-            self.object.creator = self.request.user
-            self.object.save()
-
-        return form
+            form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class JobEdit(JobMixin, UpdateView):
