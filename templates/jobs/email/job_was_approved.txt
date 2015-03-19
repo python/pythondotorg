@@ -1,10 +1,10 @@
 Dear {{ addressee }},
 
-Thank you for choosing to list your vacancy on python.org's Job Board.
+Thank you for choosing to list your vacancy on the PSF Python Job Board.
 
 Your listing is now active and is available to view at {{ job_link }}. If
 you notice any errors in the listing, please notify the Job Board team as
-soon as possible.
+soon as possible at jobs@python.org.
 
 To keep the job board fresh and active for job seekers, we'd appreciate if
 you'd let us know as soon as possible when the position is filled so we can
