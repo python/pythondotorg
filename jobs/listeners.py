@@ -51,7 +51,7 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)
     send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,
-              [email], html=html_message)
+              [email, EMAIL_JOBS_BOARD], html=html_message)
 
 
 def send_job_review_message(job, user, subject_template_path,
@@ -71,7 +71,7 @@ def send_job_review_message(job, user, subject_template_path,
     subject = subject_template.render(message_context).strip()
     message = message_template.render(message_context)
     send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
-              [job.email])
+              [job.email, EMAIL_JOBS_BOARD])
 
 
 @receiver(job_was_approved)
