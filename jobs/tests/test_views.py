@@ -423,7 +423,7 @@ class JobsReviewTests(TestCase):
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(message.to, [self.creator.email])
+        self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
         self.assertTrue(self.contact in message.body)
         mail.outbox = []
 
@@ -437,7 +437,7 @@ class JobsReviewTests(TestCase):
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
-        self.assertEqual(message.to, [self.creator.email])
+        self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
         self.assertTrue(self.contact in message.body)
         mail.outbox = []
 
@@ -473,7 +473,7 @@ class JobsReviewTests(TestCase):
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
 
-        self.assertEqual(mail.outbox[0].to, [self.creator.email])
+        self.assertEqual(mail.outbox[0].to, [self.creator.email, 'jobs@python.org'])
 
         form = comments.get_form()(self.job1)
         form_data = {
@@ -491,5 +491,5 @@ class JobsReviewTests(TestCase):
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 3)
-        self.assertEqual(mail.outbox[1].to, [self.creator.email])
+        self.assertEqual(mail.outbox[1].to, [self.creator.email, 'jobs@python.org'])
         self.assertEqual(mail.outbox[2].to, [self.superuser.email])
