@@ -1,7 +1,8 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
+
 from . import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'calendars/$', views.CalendarList.as_view(), name='calendar_list'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/(?P<slug>[-_\w]+)/$', views.EventListByCategory.as_view(), name='eventlist_category'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/$', views.EventCategoryList.as_view(), name='eventcategory_list'),
@@ -12,4 +13,4 @@ urlpatterns = patterns('',
     url(r'(?P<calendar_slug>[-_\w]+)/past/$', views.PastEventList.as_view(), name='event_list_past'),
     url(r'(?P<calendar_slug>[-_\w]+)/$', views.EventList.as_view(), name='event_list'),
     url(r'$', views.EventHomepage.as_view(), name='events'),
-)
+]

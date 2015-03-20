@@ -1,10 +1,10 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
 from django.views.generic import TemplateView
 
 from . import views
 from . import feeds
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^$', views.JobList.as_view(), name='job_list'),
     url(r'^feed/rss/$', feeds.JobFeed(), name='job_rss'),
     url(r'^create/$', views.JobCreate.as_view(), name='job_create'),
@@ -22,4 +22,4 @@ urlpatterns = patterns('',
     url(r'^(?P<pk>\d+)/publish/$', views.JobPublish.as_view(), name='job_publish'),
     url(r'^(?P<pk>\d+)/review/$', views.JobDetailReview.as_view(), name='job_detail_review'),
     url(r'^(?P<pk>\d+)/$', views.JobDetail.as_view(), name='job_detail'),
-)
+]

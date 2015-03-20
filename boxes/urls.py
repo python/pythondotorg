@@ -1,6 +1,7 @@
-from django.conf.urls import url, patterns
+from django.conf.urls import url
+
 from .views import box
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'(?P<label>[\w-]+)/$', box, name='box'),
-)
+]

@@ -1,4 +1,4 @@
-from django.conf.urls import patterns, include, url, handler404
+from django.conf.urls import include, url, handler404
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
@@ -13,7 +13,7 @@ admin.autodiscover()
 
 handler404 = custom_404
 
-urlpatterns = patterns('',
+urlpatterns = [
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
     url(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
@@ -66,7 +66,7 @@ urlpatterns = patterns('',
 
     # it's a secret to everyone
     url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
-)
+]
 
 urlpatterns += staticfiles_urlpatterns()
 
