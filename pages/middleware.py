@@ -4,7 +4,7 @@ from .models import Page
 from .views import PageView
 
 
-class PageFallbackMiddleware(object):
+class PageFallbackMiddleware:
 
     def get_queryset(self, request):
         if request.user.is_staff:

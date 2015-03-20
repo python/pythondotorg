@@ -14,7 +14,7 @@ class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
 
 
-class JobMixin(object):
+class JobMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
@@ -57,17 +57,17 @@ class JobListMine(JobMixin, ListView):
         return queryset.filter(q)
 
 
-class JobTypeMenu(object):
+class JobTypeMenu:
     def job_type_view(self):
         return True
 
 
-class JobCategoryMenu(object):
+class JobCategoryMenu:
     def job_category_view(self):
         return True
 
 
-class JobLocationMenu(object):
+class JobLocationMenu:
     def job_location_view(self):
         return True
 

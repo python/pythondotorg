@@ -1,6 +1,4 @@
-
-
-class AdminNoCaching(object):
+class AdminNoCaching:
     """
     Middleware to ensure the admin is not cached by Fastly or other caches
     """

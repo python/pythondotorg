@@ -6,14 +6,14 @@ from cms.models import NameSlugModel
 
 class FeedbackCategory(NameSlugModel):
 
-    class Meta(object):
+    class Meta:
         verbose_name = 'feedback category'
         verbose_name_plural = 'feedback categories'
 
 
 class IssueType(NameSlugModel):
 
-    class Meta(object):
+    class Meta:
         verbose_name = 'issue type'
         verbose_name_plural = 'issue types'
 
@@ -29,7 +29,7 @@ class Feedback(models.Model):
     comment = models.TextField()
     created = models.DateTimeField(default=timezone.now, blank=True)
 
-    class Meta(object):
+    class Meta:
         ordering = ['created']
         verbose_name = 'feedback'
         verbose_name_plural = 'feedbacks'

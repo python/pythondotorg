@@ -2,7 +2,7 @@ from pydotorg import context_processors
 from django.test import TestCase
 
 
-class MockRequest(object):
+class MockRequest:
     def __init__(self, path):
         self.path = path
         super().__init__()

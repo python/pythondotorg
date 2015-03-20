@@ -58,7 +58,7 @@ class Page(ContentManageable):
 
     objects = PageManager()
 
-    class Meta(object):
+    class Meta:
         ordering = ['title', 'path']
 
     def clean(self):

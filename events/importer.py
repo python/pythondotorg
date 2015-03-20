@@ -10,7 +10,7 @@ DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
 
 
-class ICSImporter(object):
+class ICSImporter:
     def __init__(self, calendar):
         self.calendar = calendar
         super().__init__()

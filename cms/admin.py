@@ -1,7 +1,7 @@
 from django.contrib import admin
 
 
-class ContentManageableAdmin(object):
+class ContentManageableAdmin:
     """
     Base ModelAdmin class for any model that uses ContentManageable.
     """

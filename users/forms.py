@@ -28,7 +28,7 @@ class UserChangeForm(BaseUserChangeForm):
 
 class UserProfileForm(ModelForm):
 
-    class Meta(object):
+    class Meta:
         model = User
         fields = [
             'bio',
@@ -71,7 +71,7 @@ class MembershipForm(ModelForm):
         announcements.widget = forms.CheckboxInput()
         announcements.initial = False
 
-    class Meta(object):
+    class Meta:
         model = Membership
         fields = [
             'legal_name',

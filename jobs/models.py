@@ -22,7 +22,7 @@ class JobType(NameSlugModel):
 
     objects = JobTypeManager()
 
-    class Meta(object):
+    class Meta:
         verbose_name = 'job technologies'
         verbose_name_plural = 'job technologies'
         ordering = ('name', )
@@ -33,7 +33,7 @@ class JobCategory(NameSlugModel):
 
     objects = JobCategoryManager()
 
-    class Meta(object):
+    class Meta:
         verbose_name = 'job category'
         verbose_name_plural = 'job categories'
         ordering = ('name', )

@@ -197,7 +197,7 @@ class Event(ContentManageable):
         return self.next_time == None
 
 
-class RuleMixin(object):
+class RuleMixin:
     def valid_dt_end(self):
         return minutes_resolution(self.dt_end) > minutes_resolution(self.dt_start)
 

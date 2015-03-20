@@ -37,7 +37,7 @@ class DownloadLatestPython3(RedirectView):
             return reverse('download')
 
 
-class DownloadBase(object):
+class DownloadBase:
     """ Include latest releases in all views """
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
