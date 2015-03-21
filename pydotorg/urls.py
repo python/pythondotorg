@@ -9,8 +9,6 @@ from cms.views import custom_404
 from . import views
 from .urls_api import v1_api
 
-admin.autodiscover()
-
 handler404 = custom_404
 
 urlpatterns = [
