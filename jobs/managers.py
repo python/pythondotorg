@@ -1,6 +1,5 @@
 import datetime
 
-from django.db.models import Manager
 from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -21,20 +20,6 @@ class JobTypeQuerySet(QuerySet):
         ).distinct()
 
 
-class JobTypeManager(Manager):
-    """ Job Type Manager """
-
-    def get_queryset(self):
-        return JobTypeQuerySet(self.model, using=self._db)
-
-    def active(self):
-        return self.get_queryset().active()
-
-    def with_active_jobs(self):
-        """ Return all JobTypes that have active Jobs """
-        return self.get_queryset().with_active_jobs()
-
-
 class JobCategoryQuerySet(QuerySet):
 
     def active(self):
@@ -47,20 +32,6 @@ class JobCategoryQuerySet(QuerySet):
             jobs__status='approved',
             jobs__expires__gte=now,
         ).distinct()
-
-
-class JobCategoryManager(Manager):
-    """ JobCategory Manager """
-
-    def get_queryset(self):
-        return JobCategoryQuerySet(self.model, using=self._db)
-
-    def active(self):
-        return self.get_queryset().active()
-
-    def with_active_jobs(self):
-        """ Return all JobCategories that have active Jobs """
-        return self.get_queryset().with_active_jobs()
 
 
 class JobQuerySet(QuerySet):
@@ -103,35 +74,3 @@ class JobQuerySet(QuerySet):
             Q(status__exact=self.model.STATUS_APPROVED) &
             Q(expires__gte=now)
         )
-
-
-class JobManager(Manager):
-    def get_queryset(self):
-        return JobQuerySet(self.model, using=self._db)
-
-    def approved(self):
-        return self.get_queryset().approved()
-
-    def archived(self):
-        return self.get_queryset().archived()
-
-    def draft(self):
-        return self.get_queryset().draft()
-
-    def expired(self):
-        return self.get_queryset().expired()
-
-    def rejected(self):
-        return self.get_queryset().rejected()
-
-    def removed(self):
-        return self.get_queryset().removed()
-
-    def featured(self):
-        return self.get_queryset().featured()
-
-    def review(self):
-        return self.get_queryset().review()
-
-    def visible(self):
-        return self.get_queryset().visible()

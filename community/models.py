@@ -5,7 +5,8 @@ from jsonfield import JSONField
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-from .managers import PostManager
+
+from .managers import PostQuerySet
 
 
 DEFAULT_MARKUP_TYPE = 'html'  # getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -50,7 +51,7 @@ class Post(ContentManageable):
     )
     status = models.IntegerField(choices=STATUS_CHOICES, default=STATUS_PRIVATE, db_index=True)
 
-    objects = PostManager()
+    objects = PostQuerySet.as_manager()
 
     class Meta:
         verbose_name = _('post')

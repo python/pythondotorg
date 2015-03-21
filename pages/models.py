@@ -16,9 +16,11 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from markupfield.fields import MarkupField
+
 from cms.models import ContentManageable
 from fastly.utils import purge_url
-from .managers import PageManager
+
+from .managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -56,7 +58,7 @@ class Page(ContentManageable):
         help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'."
     )
 
-    objects = PageManager()
+    objects = PageQuerySet.as_manager()
 
     class Meta:
         ordering = ['title', 'path']
