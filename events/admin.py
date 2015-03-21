@@ -1,5 +1,5 @@
 from django.contrib import admin
-from cms.admin import ContentManageableModelAdmin
+from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
 
 from .models import Calendar, EventCategory, Event, OccurringRule, RecurringRule, Alarm, EventLocation
 
@@ -41,7 +41,7 @@ class EventLocationAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Calendar, CalendarAdmin)
-admin.site.register(EventCategory, ContentManageableModelAdmin)
+admin.site.register(EventCategory, NameSlugAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(OccurringRule)
 admin.site.register(RecurringRule)
