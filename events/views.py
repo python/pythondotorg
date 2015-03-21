@@ -33,19 +33,12 @@ class EventListBase(ListView):
         return context
 
 
-class EventHomepage(EventListBase):
+class EventHomepage(ListView):
     """ Main Event Landing Page """
     template_name = 'events/event_list.html'
 
-    def get_object(self, queryset=None):
-        return None
-
     def get_queryset(self):
         return Event.objects.for_datetime(timezone.now()).order_by('occurring_rule__dt_start')
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
 
 
 class EventDetail(DetailView):
