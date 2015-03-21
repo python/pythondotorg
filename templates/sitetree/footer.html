@@ -1,6 +1,6 @@
 {% load sitetree %}
 
-<ul class="sitemap navigation menu do-not-print" role="tree">
+<ul class="sitemap navigation menu do-not-print" role="tree" id="container">
     {% for item in sitetree_items %}
     <li class="tier-1 element-{{ forloop.counter }}">
         <a href="{% sitetree_url for item %}" {% if item.hint %}title="{{ item.hint }}"{% endif %}>{{ item.title_resolved }}</a>

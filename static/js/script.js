@@ -206,6 +206,19 @@ function on_resize_orientationchange() {
 /* Initiate some other functions as well. Fires on first page load or when called. */
 $().ready(function() {
 
+    var $container = $('#container');
+    $container.masonry({ itemSelector: '.tier-1' });
+    var mq = window.matchMedia('all and (max-width: 400px)');
+    var check_masonry = function (msnry) {
+        if(msnry.matches) {
+            $container.masonry('destroy');
+        } else {
+            $container.masonry();
+        }
+    };
+    check_masonry(mq);
+    mq.addListener(check_masonry);
+
     /*
      * Ensure PythonAnywhere is open for business and only fires on homepage
      */
