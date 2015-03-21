@@ -4,9 +4,9 @@ from django.db import models
 
 from markupfield.fields import MarkupField
 
-from .managers import MinutesManager
 from cms.models import ContentManageable
 
+from .managers import MinutesQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -16,7 +16,7 @@ class Minutes(ContentManageable):
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
 
-    objects = MinutesManager()
+    objects = MinutesQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'minutes'

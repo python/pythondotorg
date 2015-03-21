@@ -4,7 +4,8 @@ from django.template.defaultfilters import truncatechars, striptags
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-from .managers import CodeSampleManager
+
+from .managers import CodeSampleQuerySet
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'html')
@@ -15,7 +16,7 @@ class CodeSample(ContentManageable):
     copy = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, blank=True)
     is_published = models.BooleanField(default=False, db_index=True)
 
-    objects = CodeSampleManager()
+    objects = CodeSampleQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'sample'

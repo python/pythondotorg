@@ -2,10 +2,10 @@ from django.conf import settings
 from django.db import models
 from markupfield.fields import MarkupField
 
-from .managers import SponsorManager
 from cms.models import ContentManageable
 from companies.models import Company
 
+from .managers import SponsorQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -20,7 +20,7 @@ class Sponsor(ContentManageable):
         help_text="Check to include Sponsor in feature rotation",
     )
 
-    objects = SponsorManager()
+    objects = SponsorQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'sponsor'

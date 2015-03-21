@@ -10,7 +10,7 @@ from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
 
-from .managers import JobManager, JobTypeManager, JobCategoryManager
+from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
 from .signals import job_was_approved, job_was_rejected
 
 
@@ -20,7 +20,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 class JobType(NameSlugModel):
     active = models.BooleanField(default=True)
 
-    objects = JobTypeManager()
+    objects = JobTypeQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'job technologies'
@@ -31,7 +31,7 @@ class JobType(NameSlugModel):
 class JobCategory(NameSlugModel):
     active = models.BooleanField(default=True)
 
-    objects = JobCategoryManager()
+    objects = JobCategoryQuerySet.as_manager()
 
     class Meta:
         verbose_name = 'job category'
@@ -139,7 +139,7 @@ class Job(ContentManageable):
 
     is_featured = models.BooleanField(default=False, db_index=True)
 
-    objects = JobManager()
+    objects = JobQuerySet.as_manager()
 
     class Meta:
         ordering = ('-created',)
