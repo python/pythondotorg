@@ -4,7 +4,7 @@ django-discover-runner==1.0
 django-pipeline==1.4.5
 django-sitetree==1.2.1
 django-secure==1.0.1
-Django==1.7.4
+Django==1.7.7
 docutils==0.12
 factory-boy==2.4.1
 Markdown==2.5.2
@@ -31,7 +31,6 @@ python-dateutil==2.4.0
 django-timedeltafield==0.7.3
 
 requests==2.5.1
-South==1.0.2
 
 #git+https://github.com/bradjasper/django-jsonfield.git@b346fd7
 django-jsonfield==0.9.13
