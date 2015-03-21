@@ -29,19 +29,21 @@ class ICSImporter:
     def import_occurrence(self, event, event_data):
         dt_start = event_data['DTSTART'].dt
         dt_end = event_data['DTEND'].dt
+        all_day = False
 
         # Django will already convert to datetime by setting the time to 0:00,
         # but won't add any timezone information.
-        # Let's assume the timezone is the same as the calendar.
+        # Let's mark those occurrencies as 'all-day'.
 
         if dt_start.resolution == DATE_RESOLUTION:
-            dt_start = date_to_datetime(dt_start, tzinfo=self.calendar_timezone)
+            all_day = True
         if dt_end.resolution == DATE_RESOLUTION:
-            dt_end = date_to_datetime(dt_end, tzinfo=self.calendar_timezone)
+            all_day = True
 
         defaults = {
             'dt_start': dt_start,
-            'dt_end': dt_end
+            'dt_end': dt_end,
+            'all_day': all_day
         }
 
         self.create_or_update_model(OccurringRule, event=event, defaults=defaults)
