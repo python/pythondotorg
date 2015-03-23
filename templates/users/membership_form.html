@@ -26,9 +26,9 @@
     {% endcomment %}
 
     {% if request.user.has_membership %}
-    <h1 class="default-title">Register to become a PSF Member</h1>
-    {% else %}
     <h1 class="default-title">Edit your PSF Membership</h1>
+    {% else %}
+    <h1 class="default-title">Register to become a PSF Member</h1>
     {% endif %}
 
     {% if form.errors %}
