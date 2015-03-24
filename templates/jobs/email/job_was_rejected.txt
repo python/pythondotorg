@@ -1,4 +1,4 @@
-Dear {{ addressee }},
+Dear {{ content_object.contact }},
 
 Thank you for choosing to list your vacancy on the PSF Python Job Board.
 

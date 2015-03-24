@@ -63,9 +63,13 @@ def send_job_review_message(job, user, subject_template_path,
     """
     subject_template = loader.get_template(subject_template_path)
     message_template = loader.get_template(message_template_path)
-    reviewer_name = '{} {}'.format(user.first_name, user.last_name)
-    message_context = Context({'addressee': job.contact,
-                               'reviewer_name': reviewer_name,
+    if user.first_name or user.last_name:
+        reviewer_name = '{} {}'.format(user.first_name, user.last_name)
+    else:
+        reviewer_name = 'Community Reviewer'
+    message_context = Context({'reviewer_name': reviewer_name,
+                               'content_object': job,
+                               'site': Site.objects.get_current(),
                               })
     # subject can't contain newlines, thus strip() call
     subject = subject_template.render(message_context).strip()

@@ -1,6 +1,14 @@
 The following job was submitted for approval:
 
-{{ content_object.display_name }}
+Title:    {{ content_object.job_title }}
+Company:  {{ content_object.company_name }}
+
+Posted:   {{ content_object.created|date:"d F Y" }}
+Category: {{ content_object.category }}
+Contact:  {{ content_object.contact }} <{{ content_object.email }}>
+
+Description:
+{{ content_object.description|truncatewords:50 }}
 
 To view and review:
 
