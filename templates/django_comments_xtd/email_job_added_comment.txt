@@ -1,15 +1,16 @@
-{% load i18n %}
-{{ user_name }},
+Dear {{ user_name }},
 
-{% blocktrans %}There is a new comment on your job posting.{% endblocktrans %}
+there is a new review comment available for your job posting.
 
-Post: {{ content_object.title }}
-URL:  https://{{ site.domain }}{{ content_object.get_absolute_url }}
-Sent by: {{ comment.name }}, {{ comment.submit_date|date:"SHORT_DATE_FORMAT" }}
+Title:    {{ content_object.job_title }}
+Company:  {{ content_object.company_name }}
+URL:      https://{{ site.domain }}{{ content_object.get_absolute_url }}
+Posted:   {{ content_object.created|date:"d F Y" }}
 
 --- Comment: ---
-{{ comment.comment }}
 
+{{ comment.comment }}
 --
-{% trans "Kind regards" %},
-{{ site }}
+Kind regards,
+{{ reviewer_name }}
+Python Job Board
