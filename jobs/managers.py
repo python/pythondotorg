@@ -62,7 +62,7 @@ class JobQuerySet(QuerySet):
         return self.filter(
             Q(status__exact=self.model.STATUS_REVIEW) &
             Q(created__gte=review_threshold)
-        )
+        ).order_by('created')
 
     def visible(self):
         """
