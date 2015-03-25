@@ -42,7 +42,7 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
     reviewer_name = comment.name or 'Community Reviewer'
 
     subject = _("Python Job Board: Review comment for: {}").format(
-        job.display_name())
+        job.display_name)
     text_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.txt")
     html_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.html")
 
