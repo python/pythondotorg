@@ -38,13 +38,16 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
 
     job = model._default_manager.get(pk=comment.object_pk)
     email = job.email
-    name = job.contact
+    name = job.contact or 'Job Submitter'
+    reviewer_name = comment.name or 'Community Reviewer'
 
-    subject = _("new comment posted")
+    subject = _("Python Job Board: Review comment for: {}").format(
+        job.display_name)
     text_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.txt")
     html_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.html")
 
     message_context = Context({ 'user_name': name,
+                                'reviewer_name': reviewer_name,
                                 'comment': comment,
                                 'content_object': job,
                                 'site': Site.objects.get_current() })
