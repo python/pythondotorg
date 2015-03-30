@@ -43,7 +43,9 @@ class Command(NoArgsCommand):
         verbose("== Starting PEP page generation")
 
         verbose("Generating RSS Feed")
-        get_peps_rss()
+        peps_rss = get_peps_rss()
+        if not peps_rss:
+            verbose("Could not find generated RSS feed. Skipping.")
 
         verbose("Generating PEP0 index page")
         pep0_page, _ = get_pep0_page()

@@ -253,7 +253,6 @@ def add_pep_image(pep_number, path):
 def get_peps_rss():
     rss_feed = os.path.join(settings.PEP_REPO_PATH, 'peps.rss')
     if not os.path.exists(rss_feed):
-        print("Could not find generated RSS feed. Skipping.")
         return
 
     page, _ = Page.objects.get_or_create(
