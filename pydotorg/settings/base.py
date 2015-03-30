@@ -202,6 +202,9 @@ LOGGING = {
     }
 }
 
+### Development
+DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
+
 ### Comments
 
 COMMENTS_APP = 'django_comments_xtd'
