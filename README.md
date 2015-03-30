@@ -24,7 +24,7 @@ But you can also use your existing virtualenv/wrapper:
 And then it's the standard:
 
     $ pip install -r requirements.txt
-    $ ./manage.py syncdb
+    $ ./manage.py migrate
 
 You may need to specify the pip version, even with the virtualenv activated:
 
@@ -113,9 +113,15 @@ But not really enough to remember all these CLI commands by heart.
 2. `export PATH="/Applications/Postgres.app/Contents/MacOS/bin:$PATH"`
 3. `dropdb python.org`
 4. `createdb python.org`
-5. `./manage.py syncdb`
-6. `./manage.py migrate`
-7. Install data below if you like.
+5. `./manage.py migrate`
+6. Install data below if you like.
+
+### Download and load the development fixtures
+
+1. `./manage.py load_dev_fixtures`
+
+NOTE that this will download an approximately 11MB gzipped set of fixtures that
+are sanitized of sensitive User data and then loaded into your local database.
 
 ### Other Useful Commands
 
@@ -127,12 +133,6 @@ Import calendars:
 
 Want to save some data from your DB before nuking it, and then load it back in?
 `./manage.py dumpdata --format=json --indent=4 [app-name] > fixtures/[app-name].json`
-
-Load a specific fixture:
-`./manage.py loaddata fixtures/[name].json`
-
-Load all fixture files:
-`find ./fixtures -name "*.json" -exec ./manage.py loaddata {} \;`
 
 List All the active DBs:
 `psql -U postgres -c -l`
