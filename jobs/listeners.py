@@ -53,7 +53,7 @@ def on_comment_was_posted(sender, comment, request, **kwargs):
                                 'site': Site.objects.get_current() })
     text_message = text_message_template.render(message_context)
     html_message = html_message_template.render(message_context)
-    send_mail(subject, text_message, settings.DEFAULT_FROM_EMAIL,
+    send_mail(subject, text_message, settings.JOB_FROM_EMAIL,
               [email, EMAIL_JOBS_BOARD], html=html_message)
 
 
@@ -77,7 +77,7 @@ def send_job_review_message(job, user, subject_template_path,
     # subject can't contain newlines, thus strip() call
     subject = subject_template.render(message_context).strip()
     message = message_template.render(message_context)
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
+    send_mail(subject, message, settings.JOB_FROM_EMAIL,
               [job.email, EMAIL_JOBS_BOARD])
 
 
@@ -124,5 +124,5 @@ def on_job_was_submitted(sender, instance, created=False, **kwargs):
     subject = subject_template.render(message_context)
     message = message_template.render(message_context)
 
-    send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
+    send_mail(subject, message, settings.JOB_FROM_EMAIL,
               [EMAIL_JOBS_BOARD])
