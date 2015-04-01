@@ -63,7 +63,6 @@ class Command(BaseCommand):
                     continue
                 try:
                     model = app_config.get_model(model_label)
-                    print(model)
                 except LookupError:
                     raise CommandError("Unknown model: %s.%s" % (app_label, model_label))
 
@@ -114,6 +113,5 @@ class Command(BaseCommand):
         )
 
         data = bytes(data, 'utf-8')
-        out = open(outputfile, 'wb')
-        out.write(gzip.compress(data))
-        out.close()
+        with gzip.open(outputfile, 'wb') as out:
+            out.write(data)
