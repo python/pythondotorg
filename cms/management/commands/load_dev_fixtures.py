@@ -22,19 +22,17 @@ Are you sure you want to do this?
     Type 'y' or 'yes' to continue, 'n' or 'no' to cancel:  """)
 
         if confirm in ('y', 'yes'):
-        if confirm:
-            print()
-            print("Beginning download, note this can take a couple of minutes...")
+            self.stdout.write("\nBeginning download, note this can take a couple of minutes...")
             r = requests.get(settings.DEV_FIXTURE_URL, stream=True)
 
             if r.status_code != 200:
-                print("Unable to download file: Received status code {}".format(r.status_code))
+                self.stdout.write("Unable to download file: Received status code {}".format(r.status_code))
 
             with open('/tmp/dev-fixtures.json.gz', 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
                     f.write(chunk)
                     f.flush()
 
-            print("Download complete, loading fixtures")
+            self.stdout.write("Download complete, loading fixtures")
             call_command('loaddata', '/tmp/dev-fixtures.json')
-            print("END: Fixtures loaded")
+            self.stdout.write("END: Fixtures loaded")
