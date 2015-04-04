@@ -19,8 +19,9 @@ class Command(NoArgsCommand):
 This will IRREVERSIBLY DESTROY all data currently in your local database.
 Are you sure you want to do this?
 
-    Type 'yes' to continue, or 'no' to cancel:  """)
+    Type 'y' or 'yes' to continue, 'n' or 'no' to cancel:  """)
 
+        if confirm in ('y', 'yes'):
         if confirm:
             print()
             print("Beginning download, note this can take a couple of minutes...")
