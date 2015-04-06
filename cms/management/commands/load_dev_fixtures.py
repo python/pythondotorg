@@ -1,3 +1,5 @@
+import sys
+
 import requests
 
 from django.core.management import call_command
@@ -26,7 +28,8 @@ Are you sure you want to do this?
             r = requests.get(settings.DEV_FIXTURE_URL, stream=True)
 
             if r.status_code != 200:
-                self.stdout.write("Unable to download file: Received status code {}".format(r.status_code))
+                self.stderr.write("Unable to download file: Received status code {}".format(r.status_code))
+                sys.exit(1)
 
             with open('/tmp/dev-fixtures.json.gz', 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
