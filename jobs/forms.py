@@ -41,6 +41,18 @@ class JobForm(ContentManageableModelForm):
         super().__init__(*args, **kwargs)
         self.fields['job_types'].help_text = None
 
+    def clean_city(self):
+        city = self.cleaned_data['city'].strip()
+        return city
+
+    def clean_region(self):
+        region = self.cleaned_data['region'].strip()
+        return region
+
+    def clean_country(self):
+        country = self.cleaned_data['country'].strip()
+        return country
+
     def save(self, commit=True):
         obj = super().save()
         obj.job_types.clear()
