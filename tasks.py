@@ -39,9 +39,3 @@ def copy_data_from_staging(keep=False):
 def clear_pycs():
     """ Remove all .pyc files from project directory """
     run("""find {} -name "*.pyc" -delete""".format(BASE_DIR))
-
-
-@invoke.task
-def load_fixtures():
-    """Load all fixture files."""
-    run('./manage.py loaddata fixtures/*.json')
