@@ -1535,6 +1535,15 @@ input#s,
         top: -1.6em;
         border-color: transparent transparent #666666 transparent; }
 
+.account-signin {
+  display: none; }
+
+.account-signin-authenticated {
+  display: inline-block; }
+
+.psf .account-signin {
+  display: inline-block; }
+
 #site-map-link,
 .adjust-font-size .tier-1 > a,
 .winkwink-nudgenudge .tier-1 > a,

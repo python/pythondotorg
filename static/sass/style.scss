@@ -590,6 +590,20 @@ input#s,
     }*/
 }
 
+// Show sign in link only in PSF pages.
+.account-signin {
+    display: none;
+}
+
+// But show it in all pages if the user is signed in.
+.account-signin-authenticated {
+    display: inline-block;
+}
+
+.psf .account-signin {
+    display: inline-block;
+}
+
 #site-map-link,
 .adjust-font-size .tier-1 > a,
 .winkwink-nudgenudge .tier-1 > a,
