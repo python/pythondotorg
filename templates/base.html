@@ -222,7 +222,7 @@
                                 </ul>
                             </li>
                         </ul>
-                    </div><div class="account-signin">
+                    </div><div class="account-signin{% if request.user.is_authenticated %} account-signin-authenticated{% endif %}">
                         <ul class="navigation menu" aria-label="Social Media Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
                                 {% if request.user.is_authenticated %}
