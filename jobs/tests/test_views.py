@@ -475,7 +475,7 @@ class JobsReviewTests(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=1')
+        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
@@ -494,7 +494,7 @@ class JobsReviewTests(TestCase):
         form_data.update(form.initial)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=2')
+        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 3)
