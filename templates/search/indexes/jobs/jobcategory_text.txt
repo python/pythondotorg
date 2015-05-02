@@ -1,0 +1,3 @@
+job category
+{{ object.name }}
+{{ object.name }} category

@@ -1,0 +1,12 @@
+job
+{{ object.job_title }}
+{{ object.company_name }}
+{{ object.city }} {{ object.region }} {{ object.country }}
+{{ object.description }}
+{{ object.requirements }}
+{{ object.category.name }}
+{{ object.company_description }}
+{% if object.telecommuting %}telecommute remote work{% endif %}
+{% for t in object.job_types.all %}
+{{ t.name }}
+{% endfor %}
