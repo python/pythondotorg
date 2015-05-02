@@ -35,7 +35,8 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            is_featured=True
+            is_featured=True,
+            telecommuting=True,
         )
         self.job.job_types.add(self.job_type)
 
@@ -300,6 +301,12 @@ class JobsViewTests(TestCase):
         content = str(response.content)
         self.assertTrue('Memphis' in content)
         self.assertFalse('Lawrence' in content)
+
+    def test_job_telecommute(self):
+        url = reverse('jobs:job_telecommute')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.job in response.context['jobs'])
 
     def test_job_display_name(self):
         self.assertEqual(self.job.display_name,

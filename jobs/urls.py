@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^mine/$', views.JobListMine.as_view(), name='job_list_mine'),
     url(r'^review/$', views.JobReview.as_view(), name='job_review'),
     url(r'^thanks/$', TemplateView.as_view(template_name="jobs/job_thanks.html"), name='job_thanks'),
+    url(r'^location/telecommute/$', views.JobTelecommute.as_view(), name='job_telecommute'),
     url(r'^location/(?P<slug>[-_\w]+)/$', views.JobListLocation.as_view(), name='job_list_location'),
     url(r'^type/(?P<slug>[-_\w]+)/$', views.JobListType.as_view(), name='job_list_type'),
     url(r'^category/(?P<slug>[-_\w]+)/$', views.JobListCategory.as_view(), name='job_list_category'),
