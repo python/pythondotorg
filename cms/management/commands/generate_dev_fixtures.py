@@ -37,6 +37,7 @@ class Command(BaseCommand):
             'users',
             'sitetree',
             'boxes',
+            'pages',
             'companies',
             'jobs',
             'sponsors',
@@ -46,7 +47,6 @@ class Command(BaseCommand):
             'blogs',
             'downloads',
             'codesamples',
-            'pages',
             'comments',
         ]
 
