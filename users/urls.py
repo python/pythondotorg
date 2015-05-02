@@ -14,5 +14,5 @@ urlpatterns = [
     url(r'^membership/$', views.MembershipCreate.as_view(), name='user_membership_create'),
     url(r'^membership/edit/$', views.MembershipUpdate.as_view(), name='user_membership_edit'),
     url(r'^membership/thanks/$', views.MembershipThanks.as_view(), name='user_membership_thanks'),
-    url(r'^(?P<slug>[-_\w\@\.]+)/$', views.UserDetail.as_view(), name='user_detail'),
+    url(r'^(?P<slug>[-_\w\@\.+]+)/$', views.UserDetail.as_view(), name='user_detail'),
 ]
