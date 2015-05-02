@@ -260,6 +260,7 @@ class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
     """
     Abstract class to change a job's status; see the concrete implentations below.
     """
+
     def post(self, request, pk):
         job = get_object_or_404(self.request.user.jobs_job_creator, pk=pk)
         job.status = self.new_status
