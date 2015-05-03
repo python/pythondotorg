@@ -230,6 +230,9 @@
                                     <li class="tier-2 element-2" role="treeitem"><a href="{% url 'users:user_change_password' %}">Change your password</a></li>
                                     {% if request.user.has_membership %}
                                     <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
+                                        {% if request.user.membership.needs_vote_affirmation %}
+                                        <li class="tier-2 element-4" role="treeitem"><a href="{% url 'users:membership_affirm_vote' %}">Re-affirm your desire to be a PSF Voting member</a></li>
+                                        {% endif %}
                                     {% else %}
                                     <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
                                     {% endif %}
