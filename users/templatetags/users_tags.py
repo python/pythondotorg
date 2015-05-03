@@ -1,5 +1,7 @@
 from django import template
 
+from ..models import Membership
+
 register = template.Library()
 
 
@@ -14,16 +16,10 @@ def parse_location(user):
 
     path = ''
 
-    # FIXME: Change this when Membership.creator becomes a OneToOneField
-    if user.membership.exists():
-        membership = user.membership.all()[0]
-    else:
-        return path
-
-    #try:
-    #    membership = user.membership
-    #except Membership.DoesNotExist:
-    #    return ''
+    try:
+        membership = user.membership
+    except Membership.DoesNotExist:
+        return ''
 
     if membership.city:
         path += "%s" % (membership.city)

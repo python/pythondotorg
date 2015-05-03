@@ -45,9 +45,10 @@ class User(AbstractUser):
 
     @property
     def has_membership(self):
-        if self.membership:
+        try:
+            self.membership
             return True
-        else:
+        except Membership.DoesNotExist:
             return False
 
 models.signals.post_save.connect(create_api_key, sender=User)
