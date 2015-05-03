@@ -34,6 +34,7 @@ class Command(BaseCommand):
         outputfile = options.get('outputfile')
 
         app_labels = [
+            'auth',
             'users',
             'sitetree',
             'boxes',

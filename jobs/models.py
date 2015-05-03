@@ -230,6 +230,10 @@ def purge_fastly_cache(sender, instance, **kwargs):
     Purge fastly.com cache on new jobs
     Requires settings.FASTLY_API_KEY being set
     """
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
     if instance.status == Job.STATUS_APPROVED:
         purge_url(reverse('jobs:job_detail', kwargs={'pk': instance.pk}))
         purge_url(reverse('jobs:job_list'))

@@ -111,6 +111,10 @@ def on_job_was_submitted(sender, instance, created=False, **kwargs):
     if not created:
         return
 
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
     # Only new Jobs in review status should trigger the email
     Job = models.get_model('jobs', 'Job')
     if instance.status != Job.STATUS_REVIEW:
