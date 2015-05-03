@@ -74,6 +74,7 @@ class Command(NoArgsCommand):
             if pep_match:
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
+                verbose("====== Title: '{}'".format(p.title))
             else:
                 verbose("- Skipping invalid '{}'".format(f))
 
@@ -87,6 +88,5 @@ class Command(NoArgsCommand):
                 add_pep_image(pep_number, img)
             else:
                 verbose("- Skipping non-PEP related image '{}'".format(img))
-
 
         verbose("== Finished")

@@ -123,6 +123,12 @@ def convert_pep_page(pep_number, content):
         soup = BeautifulSoup(content)
         data['title'] = soup.title.text
 
+        if not re.search(r'PEP \d+', data['title']):
+            data['title'] = 'PEP {} -- {}'.format(
+                pep_number,
+                soup.title.text,
+            )
+
         header = soup.body.find('div', class_="header")
         header, data = fix_headers(header, data)
         data['header'] = header.prettify()
@@ -140,7 +146,13 @@ def convert_pep_page(pep_number, content):
 
         soup, data = fix_headers(soup, data)
         if not data['title']:
-            data['title'] = "PEP {}".format(pep_number)
+            data['title'] = "PEP {} -- ".format(pep_number)
+        else:
+            if not re.search(r'PEP \d+', data['title']):
+                data['title'] = "PEP {} -- {}".format(
+                    pep_number,
+                    data['title'],
+                )
 
         data['content'] = soup.prettify()
 
@@ -183,10 +195,7 @@ def get_pep_page(pep_number, commit=True):
     pep_number_string = str(pep_number)
     pep_number_string = re.sub(r'^0+', '', pep_number_string)
 
-    pep_page.title = 'PEP {0} - {1}'.format(
-        pep_number_string,
-        pep_content['title']
-    )
+    pep_page.title = pep_content['title']
 
     pep_page.content = pep_content['content']
     pep_page.content_markup_type = 'html'
