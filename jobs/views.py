@@ -2,7 +2,7 @@ from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
@@ -187,14 +187,37 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
 class JobDetail(JobMixin, DetailView):
     model = Job
 
-    def get_queryset(self):
+    def get_object(self, queryset=None):
         """ Show only approved jobs to the public, staff can see all jobs """
-        qs = Job.objects.select_related()
+        # 404 if job doesn't exist
+        try:
+            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
+        except Job.DoesNotExist:
+            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
 
+        # Staff can see all jobs
         if self.request.user.is_staff:
-            return qs
-        else:
-            return qs.visible()
+            return job
+
+        # Creator can see their own jobs no matter the status
+        if job.creator == self.request.user:
+            return job
+
+        # For everyone else the job needs to be visible
+        if job.visible:
+            return job
+
+        # Return None to signal 401 unauthorized
+        return None
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+
+        if self.object is None:
+            return HttpResponse(content='Unauthorized', status=401)
+
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(

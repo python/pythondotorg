@@ -1,6 +1,11 @@
+import datetime
 import factory
 
+from django.utils import timezone
+
 from .models import JobType, JobCategory, Job
+
+next_month = timezone.now() + datetime.timedelta(days=30)
 
 
 class JobCategoryFactory(factory.DjangoModelFactory):
@@ -32,6 +37,8 @@ class JobFactory(factory.DjangoModelFactory):
 
     description = 'Test Description'
     requirements = 'Test Requirements'
+
+    expires = next_month
 
     @factory.post_generation
     def job_types(self, create, extracted, **kwargs):

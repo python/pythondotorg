@@ -146,6 +146,11 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
+        # Test 401 unauthorized
+        url = self.job_draft.get_absolute_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
     def test_job_detail_security(self):
         """
         Ensure the public can only see approved jobs, but staff can view
@@ -158,7 +163,7 @@ class JobsViewTests(TestCase):
 
         # Normal users can't see non-approved Jobs
         response = self.client.get(self.job_draft.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertTrue(response.status_code in [401, 404])
 
         # Staff can see everything
         self.client.login(username=staff_user.username, password='password')
