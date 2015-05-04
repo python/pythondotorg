@@ -37,10 +37,11 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_downloads(self):
         downloads = Release.objects.downloads()
-        self.assertEqual(len(downloads), 3)
+        self.assertEqual(len(downloads), 2)
         self.assertTrue(self.release_275 in downloads)
         self.assertFalse(self.hidden_release in downloads)
         self.assertFalse(self.draft_release in downloads)
+        self.assertFalse(self.pre_release in downloads)
 
     def test_python2(self):
         versions = Release.objects.python2()
