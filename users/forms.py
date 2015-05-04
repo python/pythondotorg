@@ -31,9 +31,13 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = User
         fields = [
+            'first_name',
+            'last_name',
+            'email',
             'bio',
             'search_visibility',
             'email_privacy',
+            'public_profile',
         ]
         widgets = {
             'search_visibility': forms.RadioSelect,
