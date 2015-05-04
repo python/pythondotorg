@@ -1,0 +1,366 @@
+<!doctype html>
+<!--[if lt IE 7]>   <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
+<!--[if IE 7]>      <html class="no-js ie7 lt-ie8 lt-ie9">          <![endif]-->
+<!--[if IE 8]>      <html class="no-js ie8 lt-ie9">                 <![endif]-->
+<!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
+{% load pipeline sitetree %}
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+
+    <meta name="application-name" content="{{ SITE_INFO.site_name }}">
+    <meta name="msapplication-tooltip" content="{{ SITE_INFO.site_descript }}">
+    <meta name="apple-mobile-web-app-title" content="{{ SITE_INFO.site_name }}">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="format-detection" content="telephone=no">
+    <meta http-equiv="cleartype" content="on">
+    <meta http-equiv="imagetoolbar" content="false">{# Kills IE6's images toolbar. Still useful. #}
+
+    <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
+
+    {% stylesheet 'style' %}
+    {% stylesheet 'mq' %}
+    {% comment %}
+    {# equivalent to: #}
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
+    {% endcomment %}
+
+    <!--[if (lte IE 8)&(!IEMobile)]>
+    {% stylesheet 'no-mq' %}
+    {# equivalent to: #}
+    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
+    <![endif]-->
+
+    {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
+    <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="{{ STATIC_URL }}apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL }}apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ STATIC_URL }}apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL }}apple-touch-icon-precomposed.png">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}apple-touch-icon-precomposed.png">
+
+    {# Tile icon for Win8 (144x144 + tile color) #}
+    <meta name="msapplication-TileImage" content="{{ STATIC_URL }}metro-icon-144x144-precomposed.png"><!-- white shape -->
+    <meta name="msapplication-TileColor" content="#3673a5"><!-- python blue -->
+    <meta name="msapplication-navbutton-color" content="#3673a5">
+
+    <meta property="og:site_name" content="{{ SITE_INFO.site_name }}">
+    <meta property="og:type" content="website">
+
+    <title>{% block page_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}</title>
+    <meta property="og:title" content="{% block og_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}">
+
+    {# SEO and OpenGraph data - Needs to be fed dynamically according to the content of the page #}
+    <meta name="description" content="{% block page-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
+    <meta name="og:description" content="{% block og-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
+    <meta name="keywords" content="{% block page-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
+    <meta property="og:tag" content="{% block og-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
+    <meta property="og:published_time" content="{% block og-publishedtime %}{% endblock %}">
+    <meta property="og:modified_time" content="{% block og-modifiedtime %}{% endblock %}">
+    <meta property="og:author" content="{% block og-author %}{% endblock %}">
+    <meta property="og:section" content="{% block og-section %}{% endblock %}"> {# A high-level section name. E.g. Technology #}
+    <meta property="og:url" content="{% block og-url %}{{ get_absolute_url }}{% endblock %}">{# permalink to the curent page #}
+    <meta property="og:image" content="{% block og-image %}{% endblock %}">{# A path to an image used on the page. Helpful for telling crawlers what image to use for a page preview. Can be an array, meaning, there can be more than one of these tags (duplicate the WHOLE tag). #}
+    <meta property="og:video" content="{% block og-video %}{% endblock %}">
+
+    <link rel="author" href="{{ STATIC_URL }}humans.txt">
+
+    {% comment %} No support for these yet...
+
+    <link rel="sitemap" type="application/xml" title="{{ SITE_INFO.site_name }} Sitemap" href="/sitemap.xml">
+
+    <link rel="search" type="application/opensearchdescription+xml" title="Search under the www.python.org Domain" href="/search-pysite.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within the Python Wiki" href="/search-pywiki.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within Python Books at Google Book Search" href="/search-pybooks.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search within the Python Documentation" href="/search-pydocs.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search for a Module in the Standard Library" href="/search-pymodules.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search for Packages inside the Cheeseshop (PyPI)" href="/search-pycheese.xml">
+    <link rel="search" type="application/opensearchdescription+xml" title="Search Archives of the Main Python Mailing List" href="/search-pythonlist.xml">
+
+     * Need to support Twitter cards? Info about that here:
+     * https://github.com/h5bp/html5-boilerplate/blob/master/doc/extend.md#twitter-cards
+     *
+     * RSS/Atom feeds:
+     * <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml">
+     * <link rel="alternate" type="application/atom+xml" title="Atom" href="/atom.xml">
+     *
+     * Hey everybody, there is a shortlink version of this page!
+     * <link rel="shortlink" href="">
+     *
+     * Have a web app? Unobtrusively tell users where to get it:
+     * <meta name="apple-itunes-app" content="app-id=APP_ID,app-argument=SOME_TEXT">
+     *
+     * Support "page flipping" in modern browsers, where applicable (nt all pages would have a prev/next relationship)
+     * <link rel="next" href="/next"/>
+     * <link rel="prev" href="/prev"/>
+    {% endcomment %}
+
+    {# Site link search #}
+    <script type="application/ld+json">
+     {
+       "@context": "http://schema.org",
+       "@type": "WebSite",
+       "url": "https://www.python.org/",
+       "potentialAction": {
+         "@type": "SearchAction",
+         "target": "https://www.python.org/search/?q={search_term_string}",
+         "query-input": "required name=search_term_string"
+       }
+     }
+    </script>
+
+    {# Asynchronous Analytics snippet #}
+    <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-39055973-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+    </script>
+    {% block head %}{% endblock %}
+</head>
+
+<body {% block body_attributes %}{% endblock %}>
+
+    <div id="touchnav-wrapper">
+
+        <div id="nojs" class="do-not-print">
+            <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
+        </div>
+
+        <!--[if lt IE 8]>
+        <div id="oldie-warning" class="do-not-print">
+            <p><strong>Notice:</strong> Your browser is <em>ancient</em> and <a href="http://www.ie6countdown.com/">Microsoft agrees</a>. <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience a better web.</p>
+        </div>
+        <![endif]-->
+
+        <!-- Sister Site Links -->
+        <div id="top" class="top-bar do-not-print">
+
+            <nav class="meta-navigation container" role="navigation">
+
+                {# Allow Screen readers (hidden for all others) to skip the navigation and get to the main content #}
+                <div class="skip-link screen-reader-text">
+                    <a href="#content" title="Skip to content">Skip to content</a>
+                </div>
+
+                {# Fallback for browsers that do not display generated content... HTML entity will be the icon instead #}
+                <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
+                </a>
+
+                {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
+
+                <a id="python-network" class="jump-link" href="#top" aria-hidden="true">
+                    <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network
+                </a>
+
+            </nav>
+
+        </div>
+
+        <!-- Header elements -->
+        <header class="main-header" role="banner">
+            <div class="container">
+
+                <h1 class="site-headline">
+                    {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
+                </h1>
+
+                <div class="options-bar do-not-print">
+
+                    {# Its a little ugly, but no space between elements makes the inline-block style work better #}
+                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">
+                        <fieldset title="Search Python.org">
+
+                            <span aria-hidden="true" class="icon-search"></span>
+
+                            <label class="screen-reader-text" for="id-search-field">Search This Site</label>
+                            <input id="id-search-field" name="q" type="search" role="textbox" class="search-field" placeholder="Search" value="{{ request.GET.q }}" tabindex="1">
+
+                            <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
+                                GO
+                            </button>
+
+                            {# I heard IE needs this in order to have the form submit by pressing the enter key. True? #}
+                            <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
+
+                        </fieldset>
+                    </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">
+                        <ul class="navigation menu" aria-label="Adjust Text Size on Page">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>
+                                    <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><div class="winkwink-nudgenudge">
+                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                <a href="#" class="action-trigger">Socialize</a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
+                                    <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
+                                    <li class="tier-2 element-4" role="treeitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><div class="account-signin">
+                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                            <li class="tier-1 last" aria-haspopup="true">
+                                {% if request.user.is_authenticated %}
+                                <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'users:user_change_password' %}">Change your password</a></li>
+                                    {% if request.user.has_membership %}
+                                    <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
+                                    {% else %}
+                                    <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
+                                    {% endif %}
+                                    <li class="tier-2 element-4" role="treeitem"><a href="{% url 'users:user_detail' slug=request.user.username %}">View your public profile</a></li>
+                                    <li class="tier-2 element-5"" role=treeitem"><a href="{% url 'account_logout' %}" title="Sign out of Python.org">Sign out</a></li>
+                                </ul>
+                                {% else %}
+                                <a href="{% url 'account_login' %}" title="Sign Up or Sign In to Python.org">Sign In</a>
+                                <ul class="subnav menu">
+                                    <li class="tier-2 element-1" role="treeitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_login' %}">Sign In</a></li>
+                                </ul>
+                                {% endif %}
+                            </li>
+                        </ul>
+                    </div>
+
+                </div><!-- end options-bar -->
+
+                <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
+                    {% block main_navigation %}
+                        {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
+                    {% endblock main_navigation %}
+                </nav>
+
+                <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
+                    {% block header_content %}
+                    {% endblock %}
+                </div>
+
+                {% block intro_copy %}
+                {% endblock %}
+
+             </div><!-- end .container -->
+        </header>
+
+        <div id="content" class="content-wrapper">
+            <!-- Main Content Column -->
+            <div class="container">
+
+                <section class="main-content {% block content_attributes %}{% endblock %}" role="main">
+
+                    {% block breadcrumbs %}
+                    {% endblock breadcrumbs %}
+
+                    {% block content %}
+                    {% endblock content %}
+
+                </section>
+
+                {% block left_sidebar %}
+                {% endblock left_sidebar %}
+
+                {% block right_sidebar %}
+                {% endblock right_sidebar %}
+
+
+            </div><!-- end .container -->
+        </div><!-- end #content .content-wrapper -->
+
+        <!-- Footer and social media list -->
+        <footer id="site-map" class="main-footer" role="contentinfo">
+            <div class="main-footer-links">
+                <div class="container">
+
+                    {% block footer_sitemap %}
+                    <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+
+                    {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
+
+                    <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
+                    {% endblock footer_sitemap %}
+
+                </div><!-- end .container -->
+            </div> <!-- end .main-footer-links -->
+
+            <div class="site-base">
+                <div class="container">
+                    {# These need to be hooked up to a URL and page content at some point #}
+                    <ul class="footer-links navigation menu do-not-print" role="tree">
+                        <li class="tier-1 element-1"><a href="/about/help/">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
+                        <li class="tier-1 element-2"><a href="/community/diversity/">Diversity <span class="say-no-more">Initiatives</span></a></li>
+                        <li class="tier-1 element-3"><a href="https://github.com/python/pythondotorg/issues">Submit Website Bug</a></li>
+                        <!--<li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>-->
+                    </ul>
+
+                    <div class="copyright">
+                        <p><small>
+                            <span class="pre">Copyright &copy;2001-{% now 'Y' %}.</span>
+                            &nbsp;<span class="pre"><a href="/psf-landing/">Python Software Foundation</a></span>
+                            &nbsp;<span class="pre"><a href="/about/legal/">Legal Statements</a></span>
+                            &nbsp;<span class="pre"><a href="/privacy/">Privacy Policy</a></span>
+                        </small></p>
+                    </div>
+
+                </div><!-- end .container -->
+            </div><!-- end .site-base -->
+
+        </footer>
+
+    </div><!-- end #touchnav-wrapper -->
+
+    {% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
+
+    <script src="{{ STATIC_URL }}js/libs/masonry.pkgd.min.js"></script>
+
+    {% javascript 'main' %}
+    {% comment %}
+    {# equivalent to: #}
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/script.js"></script>
+    {% endcomment %}
+
+    <!--[if lte IE 7]>
+    {% javascript 'IE8' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
+    <![endif]-->
+
+    <!--[if lte IE 8]>
+    {% javascript 'getComputedStyle' %}
+    {# equivalent to: #}
+    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
+    <![endif]-->
+
+    {% endblock javascript %}
+
+    {% block extra_js %}
+    {% endblock extra_js %}
+
+</body>
+</html>

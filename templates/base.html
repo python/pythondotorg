@@ -1,8 +1,9 @@
 <!doctype html>
-<!--[if lt IE 7]>   <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
-<!--[if IE 7]>      <html class="no-js ie7 lt-ie8 lt-ie9">          <![endif]-->
-<!--[if IE 8]>      <html class="no-js ie8 lt-ie9">                 <![endif]-->
-<!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
+<!--[if lt IE 7]>      <html class="no-js lt-ie10 lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie10 lt-ie9 lt-ie8 ie7">    <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie10 lt-ie9 ie8">           <![endif]-->
+<!--[if IE 9]>         <html class="no-js lt-ie10 ie9">                  <![endif]-->
+<!--[if gt IE 9]><!--> <html class="no-js gte-ie10" lang="en">       <!--<![endif]-->
 {% load pipeline sitetree %}
 <head>
     <meta charset="utf-8">
@@ -24,18 +25,10 @@
 
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
 
-    {% stylesheet 'style' %}
-    {% stylesheet 'mq' %}
-    {% comment %}
-    {# equivalent to: #}
-    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
-    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
-    {% endcomment %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" title="default">
 
     <!--[if (lte IE 8)&(!IEMobile)]>
-    {% stylesheet 'no-mq' %}
-    {# equivalent to: #}
-    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">
     <![endif]-->
 
     {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
@@ -103,8 +96,7 @@
     {% endcomment %}
 
     {# Site link search #}
-    <script type="application/ld+json">
-     {
+    <script type="application/ld+json">{
        "@context": "http://schema.org",
        "@type": "WebSite",
        "url": "https://www.python.org/",
@@ -113,8 +105,7 @@
          "target": "https://www.python.org/search/?q={search_term_string}",
          "query-input": "required name=search_term_string"
        }
-     }
-    </script>
+    }</script>
 
     {# Asynchronous Analytics snippet #}
     <script type="text/javascript">
@@ -133,94 +124,205 @@
 
 <body {% block body_attributes %}{% endblock %}>
 
-    <div id="touchnav-wrapper">
 
-        <div id="nojs" class="do-not-print">
-            <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
-        </div>
+    {# Need a wrapper here for the off-canvas navigation #}
+    <div class="page-container fwf-col">
+        
+        {# For screenreaders #}
+        <div class="skip-link screen-reader-text"><a href="#content" title="Skip to content">Skip to content</a></div>
+        
+        {#-- Start navigation #}
+        <nav id="nav" class="mainnav fwf-fixed-left">
+            <ul class="mainnav--list parent sticky-navigation">
+                
+                <li id="python-parent" class="mainnav--item__with-toggle">
+                    {# If this is the current parent (default), we need an "open" class on BOTH anchors below #}
+                    <a class="mainnav--link open" href="#"><span class="icon icon-python-alt" aria-hidden="true"></span>Home</a> 
+                    <a class="mainnav--toggle open" href="#python"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    
+                    {# By default these have class "collapsed". When they need to be open, remove class #}
+                    <ul id="python" class="mainnav--list child">
+                        <li class="mainnav--item__with-toggle">
+                            
+                            {# If this child is selected, add a "disabled" class #}
+                            <a class="mainnav--link disabled" href="#">About</a>
+                            <a class="mainnav--toggle" href="#about"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            
+                            {# By default these have class "collapsed". When they need to be open, remove class #}
+                            <ul id="about" class="mainnav--list grandchild collapsed">
+                                
+                                {# If any of these grandchildren are selected, add a "disabled" class to the anchor #}
+                                <li><a class="mainnav--link" href="#">Applications</a></li>
+                                <li><a class="mainnav--link" href="#">Quotes</a></li>
+                                <li><a class="mainnav--link" href="#">Getting Started</a></li>
+                                <li><a class="mainnav--link" href="#">Help</a></li>
+                            </ul>
+                        </li>
+                        {# End examples #}
+                        
+                        <li class="mainnav--item__with-toggle">
+                            <a class="mainnav--link" href="#">Downloads</a>
+                            <a class="mainnav--toggle" href="#downloads"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            <ul id="downloads" class="mainnav--list grandchild collapsed">
+                                <li><a class="mainnav--link" href="#">All releases</a></li>
+                                <li><a class="mainnav--link" href="#">Source code</a></li>
+                                <li><a class="mainnav--link" href="#">Windows</a></li>
+                                <li><a class="mainnav--link" href="#">Mac OSX</a></li>
+                                <li><a class="mainnav--link" href="#">Other platforms</a></li>
+                                <li><a class="mainnav--link" href="#">License</a></li>
+                                <li><a class="mainnav--link" href="#">Alternative implementations</a></li>
+                            </ul>
+                        </li>
+                        <li class="mainnav--item__with-toggle">
+                            <a class="mainnav--link" href="#">Documentation</a>
+                            <a class="mainnav--toggle" href="#docs"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            <ul id="docs" class="mainnav--list grandchild collapsed">
+                                <li><a class="mainnav--link" href="#">Docs</a></li>
+                                <li><a class="mainnav--link" href="#">Audio/Visual talks</a></li>
+                                <li><a class="mainnav--link" href="#">Beginner&rsquo;s Guide</a></li>
+                                <li><a class="mainnav--link" href="#">Developer&rsquo;s Guide</a></li>
+                                <li><a class="mainnav--link" href="#">FAQ</a></li>
+                                <li><a class="mainnav--link" href="#">Non-English Docs</a></li>
+                                <li><a class="mainnav--link" href="#">PEP Index</a></li>
+                                <li><a class="mainnav--link" href="#">Python Books</a></li>
+                            </ul>
+                        </li>
+                        <li class="mainnav--item__with-toggle">
+                            <a class="mainnav--link" href="#">Success Stories</a>
+                            <a class="mainnav--toggle" href="#success"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            <ul id="success" class="mainnav--list grandchild collapsed">
+                                <li><a class="mainnav--link" href="#">Arts</a></li>
+                                <li><a class="mainnav--link" href="#">Business</a></li>
+                                <li><a class="mainnav--link" href="#">Education</a></li>
+                                <li><a class="mainnav--link" href="#">Engineering</a></li>
+                                <li><a class="mainnav--link" href="#">Government</a></li>
+                                <li><a class="mainnav--link" href="#">Scientific</a></li>
+                                <li><a class="mainnav--link" href="#">Software Development</a></li>
+                            </ul>
+                        </li>
+                        <li class="mainnav--item__with-toggle">
+                            <a class="mainnav--link" href="#">News</a>
+                            <a class="mainnav--toggle" href="#news"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            <ul id="news" class="mainnav--list grandchild collapsed">
+                                <li><a class="mainnav--link" href="#">Python News</a></li>
+                                <li><a class="mainnav--link" href="#">Community News</a></li>
+                                <li><a class="mainnav--link" href="#">PSF News</a></li>
+                                <li><a class="mainnav--link" href="#">Pycon News</a></li>
+                            </ul>
+                        </li>
+                        <li class="mainnav--item__with-toggle">
+                            <a class="mainnav--link" href="#">Events</a>
+                            <a class="mainnav--toggle" href="#events"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                            <ul id="events" class="mainnav--list grandchild collapsed">
+                                <li><a class="mainnav--link" href="#">Python Events</a></li>
+                                <li><a class="mainnav--link" href="#">Community Events</a></li>
+                                <li><a class="mainnav--link" href="#">Events Archive</a></li>
+                                <li><a class="mainnav--link" href="#">Submit an Event</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+                </li>
+                <li id="community-parent" class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#"><span class="icon icon-community" aria-hidden="true"></span>Community</a> 
+                    <a class="mainnav--toggle" href="#community"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    <ul id="community" class="mainnav--list child collapsed">
+                        <li><a class="mainnav--link" href="#">Developers</a></li>
+                        <li><a class="mainnav--link" href="#">Membership</a></li>
+                        <li><a class="mainnav--link" href="#">Education</a></li>
+                        <li><a class="mainnav--link" href="#">News</a></li>
+                        <li><a class="mainnav--link" href="#">Events</a></li>
+                        <li><a class="mainnav--link" href="#">Foundation</a></li>
+                        <li><a class="mainnav--link" href="#">Community Awards</a></li>
+                    </ul>
+                </li>
+                <li id="foundation-parent" class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#"><span class="icon icon-foundation" aria-hidden="true"></span>Foundation</a> 
+                    <a class="mainnav--toggle" href="#foundation"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    
+                    <ul id="foundation" class="mainnav--list child collapsed">
+                        <li><a class="mainnav--link" href="#">About</a></li>
+                        <li><a class="mainnav--link" href="#">Membership</a></li>
+                        <li><a class="mainnav--link" href="#">Donations</a></li>
+                        <li><a class="mainnav--link" href="#">Legal</a></li>
+                        <li><a class="mainnav--link" href="#">Media</a></li>
+                        <li><a class="mainnav--link" href="#">PSF Blog</a></li>
+                    </ul>
+                </li>
+                <li id="docs-parent" class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#"><span class="icon icon-documentation" aria-hidden="true"></span>Docs</a>
+                    <a class="mainnav--toggle" href="#docs-wrap"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    
+                    <ul id="docs-wrap" class="mainnav--list child collapsed">
+                        <li><a class="mainnav--link" href="#">Python 2.7 (stable)</a></li>
+                        <li><a class="mainnav--link" href="#">Python 3.3 (stable)</a></li>
+                        <li><a class="mainnav--link" href="#">Python 3.5 (in development)</a></li>
+                        <li><a class="mainnav--link" href="#">Old Versions</a></li>
+                        <li><a class="mainnav--link" href="#">Download Docs</a></li>
+                        <li><a class="mainnav--link" href="#">Docs RSS</a></li>
+                    </ul> 
+                </li>
+                <li id="pypi-parent" class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#"><span class="icon icon-pypi" aria-hidden="true"></span>PyPi</a> 
+                    <a class="mainnav--toggle" href="#pypi"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    
+                    <ul id="pypi" class="mainnav--list child collapsed">
+                        <li><a class="mainnav--link" href="#">Browse Packages</a></li>
+                        <li><a class="mainnav--link" href="#">Package Submission</a></li>
+                        <li><a class="mainnav--link" href="#">List trove classifers</a></li>
+                        <li><a class="mainnav--link" href="#">List packages</a></li>
+                        <li><a class="mainnav--link" href="#">Python 3 packages</a></li>
+                    </ul>
+                </li>
+                <li id="jobs-parent" class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#"><span class="icon icon-jobs" aria-hidden="true"></span>Jobs</a> 
+                    <a class="mainnav--toggle" href="#jobs"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                    
+                    <ul id="jobs" class="mainnav--list child collapsed">
+                        <li><a class="mainnav--link" href="#">Browse Jobs</a></li>
+                        <li><a class="mainnav--link" href="#">Jobs by Location</a></li>
+                        <li><a class="mainnav--link" href="#">Jobs by Category</a></li>
+                        <li><a class="mainnav--link" href="#">Post a Job (Log in)</a></li>
+                        <li><a class="mainnav--link" href="#">Manage my Jobs (Log in)</a></li>
+                        <li><a class="mainnav--link" href="#">Jobs RSS</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        {# End navigation #}
+        
+        
+        <div class="fwf-wrapper">
 
-        <!--[if lt IE 8]>
-        <div id="oldie-warning" class="do-not-print">
-            <p><strong>Notice:</strong> Your browser is <em>ancient</em> and <a href="http://www.ie6countdown.com/">Microsoft agrees</a>. <a href="http://browsehappy.com/">Upgrade to a different browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">install Google Chrome Frame</a> to experience a better web.</p>
-        </div>
-        <![endif]-->
+            <div id="sitetop" class="fwf-fluid-right">
+                <section class="content--wrapper">
+                    
+                    {# Left drawer open/close toggle #}
+                    <div class="navtoggle">
+                        <a href=":;javascript" class="navtoggle--button js-toggle-drawer">
+                            <span class="icon navtoggle--icon" aria-hidden="true"><span>&equiv;</span></span>
+                        </a>
+                    </div>
 
-        <!-- Sister Site Links -->
-        <div id="top" class="top-bar do-not-print">
+                    {# Header elements #}
+                    <header class="head">
+                        <div class="container">
 
-            <nav class="meta-navigation container" role="navigation">
-
-                {# Allow Screen readers (hidden for all others) to skip the navigation and get to the main content #}
-                <div class="skip-link screen-reader-text">
-                    <a href="#content" title="Skip to content">Skip to content</a>
-                </div>
-
-                {# Fallback for browsers that do not display generated content... HTML entity will be the icon instead #}
-                <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
-                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
-                </a>
-
-                {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
-
-                <a id="python-network" class="jump-link" href="#top" aria-hidden="true">
-                    <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network
-                </a>
-
-            </nav>
-
-        </div>
-
-        <!-- Header elements -->
-        <header class="main-header" role="banner">
-            <div class="container">
-
-                <h1 class="site-headline">
-                    {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
-                </h1>
-
-                <div class="options-bar do-not-print">
-
-                    {# Its a little ugly, but no space between elements makes the inline-block style work better #}
-                    <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">
-                        <fieldset title="Search Python.org">
-
-                            <span aria-hidden="true" class="icon-search"></span>
-
-                            <label class="screen-reader-text" for="id-search-field">Search This Site</label>
-                            <input id="id-search-field" name="q" type="search" role="textbox" class="search-field" placeholder="Search" value="{{ request.GET.q }}" tabindex="1">
-
-                            <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
-                                GO
-                            </button>
-
-                            {# I heard IE needs this in order to have the form submit by pressing the enter key. True? #}
-                            <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
-
-                        </fieldset>
-                    </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">
-                        <ul class="navigation menu" aria-label="Adjust Text Size on Page">
-                            <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>
-                                    <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div><div class="winkwink-nudgenudge">
-                        <ul class="navigation menu" aria-label="Social Media Navigation">
-                            <li class="tier-1 last" aria-haspopup="true">
-                                <a href="#" class="action-trigger">Socialize</a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
-                                    <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
-                                    <li class="tier-2 element-4" role="treeitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </div><div class="account-signin">
+                            <div class="head--nav--wrapper">
+                                <nav class="head--nav">
+                                    <ul class="head--nav--list">
+                                        <li>
+                                            <a class="head--nav--link" href="#">
+                                                <span class="icon icon-cog" aria-hidden="true"></span>
+                                                Log In / Sign Up
+                                            </a>
+                                            <ul class="head--nav--list--subnav">
+                                                <li><a href="#">Log In</a></li>
+                                                <li><a href="#">Sign Up</a></li>
+                                            </ul>
+                                        </li>
+                                    </ul>
+                                </nav>
+                    {% comment %}<div class="account-signin">
                         <ul class="navigation menu" aria-label="Social Media Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
                                 {% if request.user.is_authenticated %}
@@ -245,122 +347,228 @@
                                 {% endif %}
                             </li>
                         </ul>
-                    </div>
+                    </div>{% endcomment %}
+                    
+                                <div class="head--search">
+                                    <form class="head--search--form" action="/search/" method="get">
+                                        <fieldset title="Search Python.org">
+                                            <div class="search--wrapper">
+                                                <span class="icon icon-search-alt" aria-hidden="true"></span>
+                                                <label class="screen-reader-text" for="id-search-field">Search This Site</label>
+                                                <input id="id-search-field" name="q" class="form--input" type="search" role="textbox" value="{{ request.GET.q }}" placeholder="Search Python.org" tabindex="1">
+                                                <button type="submit" name="submit" id="submit" class="head--search--button" title="Submit this Search" tabindex="3">GO</button>
+                                            </div>
+                        				</fieldset>
+                        			</form>
+                    			</div>
+                            </div>
 
-                </div><!-- end options-bar -->
+                            <h1 class="site-title">
+                                {% block section-logo %}
+                                <a href="/" title="To the Homepage">
+                                    <img src="{{ STATIC_URL }}img/python-logo.png" alt="Python.org" />
+                                </a>
+                                {% endblock %}
+                            </h1>
 
-                <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
-                    {% block main_navigation %}
-                        {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
-                    {% endblock main_navigation %}
-                </nav>
+                		</div><!-- end .container -->
+                    </header>
 
-                <div class="header-banner {% block header-banner_attributes %}{% endblock %}"> <!-- for optional "do-not-print" class -->
-                    {% block header_content %}
-                    {% endblock %}
-                </div>
 
-                {% block intro_copy %}
-                {% endblock %}
+                    {# If present, insert the banner #}
+                    <section class="banner banner__home do-not-print" role="banner">
 
-             </div><!-- end .container -->
-        </header>
+{% block header_content %}
+{% endblock %}
 
-        <div id="content" class="content-wrapper">
-            <!-- Main Content Column -->
-            <div class="container">
+{% block intro_copy %}
+{% endblock %}
+                
+                    </section>
+                    
+                    
+                    {# Insert the main content #}
+                    <section class="main-section">
+                        <div class="container">
 
-                <section class="main-content {% block content_attributes %}{% endblock %}" role="main">
 
-                    {% block breadcrumbs %}
-                    {% endblock breadcrumbs %}
+<section class="main-content {% block content_attributes %}{% endblock %}" role="main">
 
-                    {% block content %}
-                    {% endblock content %}
+    {% block breadcrumbs %}
+    {% endblock breadcrumbs %}
 
+    {% block content %}
+    {% endblock content %}
+
+</section>
+
+{% block left_sidebar %}
+{% endblock left_sidebar %}
+
+{% block right_sidebar %}
+{% endblock right_sidebar %}
+
+
+                        </div>
+                    </section>
+                
+                {# End .content--wrapper #}
                 </section>
+                
+                
+                {# Start Footer #}
+                <footer class="foot" role="navigation">
+                    <div class="container">
+                        
+                        <div class="jumper">
+                            <a href="#sitetop" class="jumper--link js-back-to-top" title="Go to the top of the page and open the Navigation drawer"><span class="icon icon-navicon" aria-hidden="true"></span>Navigate</a>
+                        </div>
+                        
+                        <div class="network col-group__footer">
+                            {# One box and description for each top-level navigation destination #}
+                            <div class="column">
+                                <a class="network--box network--box__python">
+                                    <h3 class="network--title">Python</h3>
+                                    <p class="network--descript">A programming language that lets you work quickly and integrate systems more effectively</p>
+                                </a>
+                            </div>
+                            <div class="column">
+                                <a class="network--box network--box__community">
+                                    <h3 class="network--title">Community</h3>
+                                    <p class="network--descript">Connect with Pythonistas, attend an event, support Python or volunteer</p>
+                                </a>
+                            </div>
+                            <div class="column">
+                                <a class="network--box network--box__foundation">
+                                    <h3 class="network--title">Foundation</h3>
+                                    <p class="network--descript">The organization behind Python, dedicated to protecting and advancing Python </p>
+                                </a>
+                            </div>
+                            <div class="column">
+                                <a class="network--box network--box__docs">
+                                    <h3 class="network--title">Docs</h3>
+                                    <p class="network--descript">Documentation, user guides, proposals for future enhancements</p>
+                                </a>
+                            </div>
+                            <div class="column">
+                                <a class="network--box network--box__pypi">
+                                    <h3 class="network--title">PyPi</h3>
+                                    <p class="network--descript">A repository of software for the Python programming language</p>
+                                </a>
+                            </div>
+                            <div class="column">
+                                <a class="network--box network--box__jobs">
+                                    <h3 class="network--title">Jobs</h3>
+                                    <p class="network--descript">Explore Python-related job postings from companies all over the globe</p>
+                                </a>
+                            </div>
+                        </div>
+                        
+                        
+                        <div class="jumper">
+                            <a href="#sitetop" class="jumper--link js-smoovmove" title="Go to the top of the page"><span class="icon icon-arrow-up" aria-hidden="true"></span>Back to Top</a>
+                        </div>
+                        
+                        
+                        <nav class="foot--nav">
+                            <a href="/about/help/">Help &amp; General Contact</a>
+                            <a href="/community/diversity/">Diversity Initiatives</a>
+                            <a href="//github.com/python/pythondotorg/issues">Submit Website Issue</a>
+                        </nav>
+                        
+                        <ul class="foot--social menu">
+                            <li>Socialize with Python: </li>
+                            <li><a href="//plus.google.com/+Python" title="+1 on Google Plus"><span class="icon icon-google-plus" aria-hidden="true"></span></a></li>
+                            <li><a href="//www.facebook.com/pythonlang?fref=ts" title="Like on Facebook"><span class="icon icon-facebook" aria-hidden="true"></span></a></li>
+                            <li><a href="//twitter.com/ThePSF" title="Follow on Twitter"><span class="icon icon-twitter" aria-hidden="true"></span></a></li>
+                            <li><a href="//github.com/python/pythondotorg" title="Contribute on GitHub"><span class="icon icon-github" aria-hidden="true"></span></a></li>
+                            <li><a href="/community/irc/" title="Chat on IRC"><span class="icon icon-freenode" aria-hidden="true"></span></a></li>
+                        </ul>
+                        
+                        <p class="foot--copyright">
+                            <span class="pre">Copyright &copy;2001-{% now 'Y' %}.</span> 
+                            <a href="/psf-landing/">Python Software Foundation</a> 
+                            <a href="/about/legal/">Legal Statements</a> 
+                            <a href="/privacy/">Privacy Policy</a>
+                        </p>
+                        
+                    </div><!-- end .container -->
+                </footer>
+                
+                
+                <!--[if lt IE 8]>
+                <div id="oldie" class="typography do-not-print">
+                <![endif]-->
+                    <!--[if IE 6]>
+                    <p>Your browser is <em>ancient</em> and <a href="//www.modern.ie/en-us/ie6countdown">Microsoft agrees</a>. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+                    <![endif]-->
+                    <!--[if IE 7]>
+                    <p>Internet Explorer version 7 is not supported by this site, and your experience with the content may be hindered by poor performance and/or lack of design support. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+                    <![endif]-->
+                <!--[if lt IE 8]>
+                    <p>Not sure what a browser is? <a href="//whatbrowser.org">This site explains it all very nicely</a>.</p>
+                </div>
+                <![endif]-->
+                
+                <div id="nojs" class="typography do-not-print">
+                    <h1>Whoops! <em>No Javascript&#x203d;</em></h1>
+                    <p>Javascript is essential for a complete experience with this laboratory toolkit. Please enable Javascript on this device or visit with a more capable device for the full experience. </p>
+                    <p>If you think that javascript <em>should</em> be available, check your browser settings or force a fresh reload of this page. <kbd>&#8984; F5</kbd> in most Windows applications, or <kbd>&#8679;&#8984; R</kbd> or <kbd>&#8984; R</kbd> in most browsers. For more information on cache, visit <a href="//www.refreshyourcache.com/en/cache/">refreshyourcache.com/en/cache/</a></p>
+                </div>
+                
 
-                {% block left_sidebar %}
-                {% endblock left_sidebar %}
+            </div>{# close .fwf-fluid-right #}
+        </div>{# close .fwf-wrapper #}
 
-                {% block right_sidebar %}
-                {% endblock right_sidebar %}
+    </div>{# close .page-container #}
 
-
-            </div><!-- end .container -->
-        </div><!-- end #content .content-wrapper -->
-
-        <!-- Footer and social media list -->
-        <footer id="site-map" class="main-footer" role="contentinfo">
-            <div class="main-footer-links">
-                <div class="container">
-
-                    {% block footer_sitemap %}
-                    <a id="back-to-top-1" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
-
-                    {% sitetree_menu from "main" include "python-meta" template "sitetree/footer.html" %}
-
-                    <a id="back-to-top-2" class="jump-link" href="#python-network"><span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> Back to Top</a>
-                    {% endblock footer_sitemap %}
-
-                </div><!-- end .container -->
-            </div> <!-- end .main-footer-links -->
-
-            <div class="site-base">
-                <div class="container">
-                    {# These need to be hooked up to a URL and page content at some point #}
-                    <ul class="footer-links navigation menu do-not-print" role="tree">
-                        <li class="tier-1 element-1"><a href="/about/help/">Help &amp; <span class="say-no-more">General</span> Contact</a></li>
-                        <li class="tier-1 element-2"><a href="/community/diversity/">Diversity <span class="say-no-more">Initiatives</span></a></li>
-                        <li class="tier-1 element-3"><a href="https://github.com/python/pythondotorg/issues">Submit Website Bug</a></li>
-                        <!--<li class="tier-1 element-3"><a href="#"><span class="say-no-more">Website</span> Colophon</a></li>-->
-                    </ul>
-
-                    <div class="copyright">
-                        <p><small>
-                            <span class="pre">Copyright &copy;2001-{% now 'Y' %}.</span>
-                            &nbsp;<span class="pre"><a href="/psf-landing/">Python Software Foundation</a></span>
-                            &nbsp;<span class="pre"><a href="/about/legal/">Legal Statements</a></span>
-                            &nbsp;<span class="pre"><a href="/privacy/">Privacy Policy</a></span>
-                        </small></p>
-                    </div>
-
-                </div><!-- end .container -->
-            </div><!-- end .site-base -->
-
-        </footer>
-
-    </div><!-- end #touchnav-wrapper -->
-
-    {% block javascript %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
-
-    <script src="{{ STATIC_URL }}js/libs/masonry.pkgd.min.js"></script>
-
-    {% javascript 'main' %}
+    <a id="exit-menu" class="js-close-drawer"></a>
+    
+    
+    
     {% comment %}
-    {# equivalent to: #}
-    <script src="{{ STATIC_URL }}js/plugins.js"></script>
-    <script src="{{ STATIC_URL }}js/script.js"></script>
+    Find a place for the font increase/decrease actions
+    <div class="adjust-font-size" aria-hidden="true">
+        <ul class="navigation menu" aria-label="Adjust Text Size on Page">
+            <li class="tier-1 last" aria-haspopup="true">
+                <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
+                <ul class="subnav menu">
+                    <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
+                    <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>
+                    <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    Remove: block header-banner_attributes
+    Remove: block footer_sitemap
     {% endcomment %}
 
+
+
+{% block javascript %}
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.10.2.min.js"><\/script>')</script>
+    <script src="{{ STATIC_URL }}js/libs/masonry.pkgd.min.js"></script>
+
+    {# javascript 'main' #}
+    <script src="{{ STATIC_URL }}js/plugins.js"></script>
+    <script src="{{ STATIC_URL }}js/script.js"></script>
+
     <!--[if lte IE 7]>
-    {% javascript 'IE8' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
+    {# javascript 'IE8' #}
+    <script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>
     <![endif]-->
 
     <!--[if lte IE 8]>
-    {% javascript 'getComputedStyle' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
+    {# javascript 'getComputedStyle' #}
+    <script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>
     <![endif]-->
+{% endblock javascript %}
 
-    {% endblock javascript %}
-
-    {% block extra_js %}
-    {% endblock extra_js %}
+{% block extra_js %}
+{% endblock extra_js %}
 
 </body>
 </html>

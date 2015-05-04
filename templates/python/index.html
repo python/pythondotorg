@@ -36,54 +36,65 @@
 
 {% block content %}
 
-                <div class="row">
+{# Getting Started row #}
+<div class="col-group__four">
+    <div class="column">
+        <div class="widget widget__column widget__get-started">
+            {% box 'homepage-get-started' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__downloads">
+            {% box 'homepage-downloads' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__documentation">
+            {% box 'homepage-documentation' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__jobs">
+            {% box 'homepage-jobs' %}
+        </div>
+    </div>
+</div>
 
-                    <div class="small-widget get-started-widget">
-                        {% box 'homepage-get-started' %}
-                    </div>
+{# From the Blog and Events row #}
+<div class="col-group__two">
+    <div class="column">
+        <div class="widget widget__column widget__blog">
+            {% include 'components/blog-posts.html' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__events">
+            {% include 'components/event-posts.html' %}
+        </div>
+    </div>
+</div>
 
-                    <div class="small-widget download-widget">
-                        {% box 'homepage-downloads' %}
-                    </div>
-
-                    <div class="small-widget documentation-widget">
-                        {% box 'homepage-documentation' %}
-                    </div>
-
-                    <div class="small-widget jobs-widget last">
-                        {% box 'homepage-jobs' %}
-                    </div>
-
-                </div>
-
-                <div class="list-widgets row">
-
-                    <div class="medium-widget blog-widget">
-                        {% include 'components/blog-posts.html' %}
-                    </div>
-
-                    <div class="medium-widget event-widget last">
-                        {% include 'components/event-posts.html' %}
-                    </div>
-
-                </div>
-
-                <div class="row">
-
-                    <div class="medium-widget success-stories-widget">
-                        {% include 'components/success-story.html' %}
-                    </div>
-
-                    <div class="medium-widget applications-widget last">
-                        <div class="shrubbery">
-                            {% box 'widget-use-python-for' %}
-                        </div><!-- end .shrubbery -->
-                    </div>
-
-                </div>
+{# Success Stories and Applications row #}
+<div class="col-group__two">
+    <div class="column">
+        <div class="widget widget__column widget__success">
+            {% include 'components/success-story.html' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__use-python-for">
+            {% box 'widget-use-python-for' %}
+        </div>
+    </div>
+</div>
 
                 {% include 'components/pep-widget.html' %}
 
                 {% include 'components/psf-widget.html' %}
 
 {% endblock content %}
+
+{% block extra_js %}
+    {# Only the homepage needs this, so why noit break it out #}
+    <script src="{{ STATIC_URL }}js/plugins/flexslider.js"></script>
+{% endblock extra_js %}
