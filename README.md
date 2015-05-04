@@ -13,13 +13,15 @@ Requires :sparkles:Python 3.3!:sparkles: (`brew install python3`)
 You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in,
 so you can do:
 
-    $ pyvenv-3.3 <env>
+    $ pyvenv-3.3 <env> (give your env a name, doesn't matter what it is)
     $ source <env>/bin/activate
     (etc)
 
 But you can also use your existing virtualenv/wrapper:
 
     $ mkvirtualenv --python=python3.3 <env>
+
+For anyone having trouble (most of you will not) this article was very helpful: http://www.marinamele.com/2014/07/install-python3-on-mac-os-x-and-use-virtualenv-and-virtualenvwrapper.html
 
 And then it's the standard:
 
@@ -48,14 +50,6 @@ Homebrew's recipe for python3.3 has some difficulty installing distribute
 and pip in a virtualenv. The [python.org installer for OSX](http://www.python.org/download/)
 may work better, if you're having trouble.
 
-### Using Vagrant
-
-You can ignore the above instructions by using [Vagrant](http://www.vagrantup.com/). After installing:
-
-    $ vagrant up
-    $ vagrant ssh
-
-The box will be provisioned by Chef with Python 3.3, a virtualenv set up with requirements installed, and a database ready to use. The virtualenv is activated upon login. You will need to run `./manage.py createsuperuser` to use the admin.
 
 Running tests
 -------------
