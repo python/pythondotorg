@@ -1,0 +1,184 @@
+/* ! ===== Content Styles ===== */
+
+
+/* Want to test/debug vertical rhythm? 
+ * http://compass-style.org/reference/compass/layout/grid_background/ 
+ * Set $show-baseline-grid-backgrounds to true; 
+ *
+ * To tweak the base font size and line height according to the width of the reading container, try this calculator:
+ * http://www.pearsonified.com/typography/
+ */
+$grid-background-baseline-height: 26px; 
+$grid-background-baseline-color: rgba( $code, .4 ); 
+$grid-background-offset: 0px; 
+$show-baseline-grid-backgrounds: false; 
+
+
+.typography {
+    color: palette(mono,mid-dark); 
+    //@include baseline-grid-background(); 
+    //background-position: left $grid-background-offset; 
+    
+    @include content-styles(); 
+    
+    // In addition to the typography styles
+    & > h1:first-child { padding-top: 0; }
+    
+    label.active {
+        // Selected radio/checkboxes will add this class to the parent label 
+        color: $default-color; 
+    }
+} 
+
+
+.default-typography {
+    @include pe-fontsize( $base-font-size, $base-line-height ); 
+}
+
+
+.content {
+    
+    &--wrapper {}
+    
+    &--main {
+        
+        p, 
+        ul, 
+        ol, 
+        dl, 
+        address, 
+        form, 
+        table, 
+        figure {
+            @include perem( margin-bottom, $base-line-height/2 ); 
+        }
+    }
+    
+    &__landing { padding-top: $vert-grid-spacing; }
+}
+
+
+/*<section class="main-section">
+    <div class="container">
+        <div class="main-content typography">
+        
+        </div>
+    </div>
+</section>*/
+.banner,
+.main-section {
+    
+    .container { 
+        padding-top: $vert-grid-spacing/2; 
+        padding-bottom: $vert-grid-spacing/2; 
+        margin: 0; // don't center the container at max-width
+    }
+    
+    
+    // Media
+    @include pe-media( $breakpoint-medium ) {
+    	padding-left: $grid-spacing; 
+    	padding-right: $grid-spacing; 
+    	
+    	.container { 
+            padding-top: $vert-grid-spacing; 
+            padding-bottom: $vert-grid-spacing/2; 
+        }
+    }
+    
+    @include pe-media( $breakpoint-large ) {
+    	padding-left: $grid-spacing*2; 
+    }
+}
+
+.home .banner { padding: 0; }
+
+
+.main-section {
+    background-color: $mainsection-bg-color; 
+    @include box-shadow( -.125em .125em 1em rgba(#000,.33) );
+}
+
+
+/* ! ===== Navigate button ===== */
+/*<div class="jumper">
+    <a href="#sitetop" class="jumper--link js-back-to-top">Navigate</a>
+</div>*/
+.jumper {
+    
+    &--link {
+        display: block; 
+        text-align: center; 
+        padding: .5em 1em .375em; 
+        max-width: px2em( 320px ); 
+        color: palette(mono,light); 
+        background-color: palette(brand); 
+        border: 1px solid palette(brand,light); 
+        @include border-radius( 4px ); 
+        
+        &:hover, 
+        &:focus {
+            background-color: palette(brand,yellow); 
+        }
+    }
+    
+    @include pe-media( $breakpoint-small ) { @include hide(); }
+}
+
+
+/* ! ===== Breadcrumbs ===== */
+/*<ul class="breadcrumbs menu">
+	<li><a class="breadcrumbs--link" href="index.php" title="The Python Programming Language">Python</a><span class="prompt">&gt;&gt;&gt;</span></li>
+	<li><a class="breadcrumbs--link" href="about.php?here=about">About</a><span class="prompt">&gt;&gt;&gt;</span></li>
+	<li><span class="breadcrumbs--current">Getting Started</span></li>
+</ul>*/
+.breadcrumbs {
+    @extend %horizontal-list; 
+    padding-bottom: $vert-grid-spacing; 
+    border-bottom: 1px solid $border-color; 
+    
+    &--link {
+        color: palette(mono,mid-dark); 
+        
+        &:hover, &:focus { color: palette(brand); }
+    }
+    
+    .prompt { padding: 0 .75em; }
+    
+    &--current { color: palette(mono); }
+}
+
+
+/* ! ===== Pagination ===== */
+/*<footer class="pagination">
+    <ul class="pagination--list menu">
+        <li class="pagination--listitem"><a class="pagination--link pagination--link__prev" href="/www/news/page/1" title="View Newer Posts">◀</a></li>
+        <li class="pagination--listitem"><a class="pagination--link pagination--link__disabled" href="/www/news/page/1">1</a></li>
+        <li class="pagination--listitem"><a class="pagination--link" href="/www/news/page/2">2</a></li>
+        <li class="pagination--listitem"><a class="pagination--link pagination--link__next" href="/www/news/page/2" title="View Older Posts">▶</a></li>                                        
+    </ul>
+</footer>*/
+.pagination {
+    
+    &--list {}
+    
+    &--listitem { margin: 0 .5em; }
+    
+    &--link {
+        
+        &:hover, 
+        &:focus {}
+        
+        // Overrides
+        &__prev, 
+        &__next {
+            
+            &:hover, 
+            &:focus {}
+        }
+        
+        &__disabled:hover, 
+        &__disabled:focus, 
+        &__disabled {}
+    }
+}

@@ -1,0 +1,233 @@
+/* ! ===== Mostly borrowed from HTML5 Boilerplate with tweaks ===== */
+
+@mixin reset() {
+    
+    html, body, div, span, object, iframe,
+    h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+    abbr, address, b, cite, code, dd, del, dfn, dl, dt, em, i, img, ins, 
+    kbd, li, ol, q, samp, small, strong, sub, sup, ul, var, 
+    fieldset, form, label, legend,
+    table, caption, tbody, tfoot, thead, tr, th, td,
+    article, aside, canvas, details, figcaption, figure,
+    footer, header, hgroup, menu, nav, section, summary,
+    time, mark, audio, video {
+    	margin: 0;
+    	padding: 0;
+    	border: 0;
+    	font-size: 100%;
+    	font: inherit;
+    	vertical-align: baseline;
+    }
+    article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, form { display: block; }
+    
+    // Minimal base styles 
+    html {
+        font-size: 100%; 
+        overflow-y: scroll; 
+        -webkit-font-smoothing: antialiased; 
+        -webkit-text-size-adjust: 100%; 
+        -ms-text-size-adjust: 100%; 
+    }
+    
+    body { text-rendering: optimizeSpeed; }
+    
+    img, embed, object, video, iframe { max-width: 100% }
+    
+    a:hover, a:active { outline: none; }
+    
+    ul, ol { margin-left: 1em; }
+    	ul { list-style: square; }
+    	ol { list-style: decimal; }
+    	ol ol { list-style: upper-alpha; }
+    	ol ol ol { list-style: lower-roman; }
+    	ol ol ol ol { list-style: lower-alpha; }
+    
+    pre {  // Control word wrap without breaking the container
+    	white-space: pre-wrap; 
+    	white-space: -moz-pre-wrap !important;	// 1999+ Mozilla 
+    	white-space: -pre-wrap;					// Opera 4 thru 6 
+    	white-space: -o-pre-wrap;				// Opera 7 and up 
+    	word-wrap: break-word;					// IE 5.5+ and up 
+    }
+    // Remember, pre tags need a <code> tag inside of them 
+    code, kbd, samp { font-family: $font-monospace; }
+    
+    
+    blockquote { quotes: none; }
+    blockquote:before, blockquote:after { content: ""; content: none; }
+    
+    q { display: inline; }
+        q:before { content: "“"; }
+        q:after { content: "”"; white-space: nowrap; }
+        q q:before { content: "‘"; }
+        q q:after { content: "’"; }
+    
+    small { font-size: 75%; }
+    b, strong, th { font-weight: bold; font-family: $font-custom-bold; }
+    i, em, cite { font-style: italic; font-family: $font-custom-italic; }
+    s, strike, del { text-decoration: line-through; }
+    abbr[title], dfn[title] { cursor: help; }
+    var { font-family: $font-serif; }
+    code, kbd, samp, del, ins, mark { display: inline-block; vertical-align: baseline; line-height: 1; }
+    
+    sub, sup { font-size: 75%; line-height: 1; position: relative; }
+    sup { top: -0.5em; }
+    sub { bottom: -0.25em; }
+    
+    table { /*width: 100%;*/ border-collapse: collapse; border-spacing: 0; }
+    
+    th, td { text-align: left; vertical-align: top; }
+    
+    hr { display: block; height: 1px; border: 0; border-top: 1px solid $border-color; margin: $vert-grid-spacing 0; padding: 0; }
+    
+    input, button, select { cursor: pointer; }
+    input, textarea, button, select { font-size: 99%; margin: 0; }
+    textarea { overflow: auto; resize: vertical; }
+    legend { border: 0; padding: 0; white-space: normal; } // Used to have a star hack for IE7 *margin-left: -7px; 
+    input[type="checkbox"], input[type="radio"] { display: inline-block; padding: 0; } // Used to have a star hack for IE7 *width: 13px; *height: 13px; 
+    input[type="radio"] { vertical-align: text-bottom; }
+    input[type="checkbox"] { vertical-align: baseline; }
+    
+    #{$form-input-buttons} { -webkit-appearance: button; } // Used to have a star hack for IE7 *overflow: visible; 
+    button[disabled], input[disabled] { cursor: default; }
+    input[type="search"] { -webkit-appearance: textfield; }
+    input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
+    //input:valid, textarea:valid {  }
+    //input:invalid, textarea:invalid { background-color: #f0dddd; /*light pink*/ }
+    
+    //.ie7 input[type="checkbox"] { vertical-align: bottom; } Turn back on if you need IE7 support
+    //.ie7 img { -ms-interpolation-mode: bicubic; }
+    
+    // Important! Declare one box-model to rule them all! Needed for the grid. 
+    * { @include box-sizing( border-box ); }
+}
+
+
+/* Reset stuff with classes declarations */
+@mixin reset_additional() {
+    
+    nav ul, menu ul, .menu, .tabs { margin-left: 0; list-style: none; }
+    
+    // Hide the template element in IE, Safari, and Firefox < 22. 
+    [hidden], template { display: none; visibility: hidden; }
+    
+    // Aural rulesets 
+    abbr.initialism { speak: spell-out; }
+    abbr.truncation { speak: normal; }
+    
+    // Stupid IE: http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/ 
+    canvas { -ms-touch-action: double-tap-zoom; }
+    svg:not(:root) { overflow: hidden; } // fixes an issue in IE9 
+}
+
+
+/* HTML5 Boilerplate Non-semantic helper classes */
+@mixin html5boilerplate_helpers() {
+    
+    // For image replacement 
+    .ir { 
+        display: block; 
+        text-indent: -999em; 
+        overflow: hidden; 
+        background-repeat: no-repeat; 
+        text-align: left; 
+        direction: ltr; 
+    }
+    
+    // Hide for both screenreaders and browsers. 
+    .hidden { 
+        display: none; 
+        visibility: hidden; 
+    }
+    
+    // Hide only visually, but have it available for screenreaders: by Jon Neal. 
+    .screen-reader-text { 
+        position: absolute; 
+        width: 1px; 
+        height: 1px; 
+        border: 0; 
+        clip: rect(0 0 0 0); 
+        margin: -1px; 
+        padding: 0; 
+        overflow: hidden; 
+    }
+    
+    // Extends the .screen-reader-text class to allow the element to be focusable when navigated to via the keyboard: drupal.org/node/897638
+    .screen-reader-text.focusable:active,
+    .screen-reader-text.focusable:focus { 
+        clip: auto; 
+        height: auto; 
+        margin: 0; 
+        overflow: visible; 
+        position: static; 
+        width: auto; 
+    }
+    
+    // Hide from all, but maintain layout
+    .invisible { visibility: hidden; }
+}
+
+
+/* Add in the HTML5 Boilerplate rules for print (generic). Modify as needed. */
+@mixin html5boilerplate_print() {
+    
+    // IE 7 & 8 will see these rules as it will skip over the @media declaration
+    @media print {
+        
+        *, *:before, *:after {
+            background: transparent !important;
+            color: #000 !important; // Black prints faster: h5bp.com/s
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+        
+        body {
+            font-size: 10pt; 
+            line-height: 1.67; 
+        }
+        
+        a, a:visited { text-decoration: underline !important; }
+        
+        *[role="main"] a[href]:after {
+            content: " (" attr(href) ")";
+            font-size: 75%; 
+        }
+        
+        *[role="main"] abbr[title]:after {
+            content: " (" attr(title) ")";
+            font-size: 75%; 
+        }
+        
+       .ir a:after, 
+        a[href^="javascript:"]:after, 
+        a[href^="#"]:after, 
+        .ie7 *[role="main"] a[href]:after, 
+        .ie7 *[role="main"] abbr[title]:after { content: ""; }
+        
+        pre, 
+        blockquote {
+            border: 1px solid #999;
+            page-break-inside: avoid;
+        }
+        
+        thead { display: table-header-group; }
+        
+        tr, img { page-break-inside: avoid; }
+        
+        img { max-width: 100% !important; }
+        
+        @page { margin: 0.5cm; }
+        
+        p, h1, h2, h3 { orphans: 3; widows: 3; }
+        
+        h1, h2, h3 { page-break-after: avoid; }
+        
+        // Hide parts of the layout that overcomplicate paged output
+        .do-not-print, 
+        .screen-reader-text, 
+        .hidden, 
+        .invisible, 
+        .jump-to-menu, 
+        .jump-link { display: none; }
+    }
+}

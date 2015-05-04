@@ -1,0 +1,49 @@
+/* Define constants for the application and to configure the blueprint framework. */
+
+
+/* ===== Compass Imports ===== */
+@import "compass";
+@import "compass/css3/columns"; 
+@import "compass/css3/font-face";
+@import "compass/css3/background-size";
+@import "compass/css3/images";
+@import "compass/css3/border-radius";
+@import "compass/css3/box-shadow";
+@import "compass/css3/box-sizing";
+@import "compass/css3/hyphenation";
+@import "compass/css3/inline-block";
+@import "compass/css3/transform";
+@import "compass/css3/transition";
+@import "compass/typography"; 
+@import "compass/typography/links/link-colors"; /* Needed for the link-colors() function */
+@import "compass/typography/lists/horizontal-list"; /* Needed for the horizontal-list() function */
+@import "compass/typography/text/nowrap"; /* When remembering whether or not there's a hyphen in white-space is too hard */
+@import "compass/support";
+@import "compass/utilities/general/hacks"; 
+@import "compass/utilities/color/contrast"; /* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
+
+
+/* Defaults */
+$relative-assets: false; 
+
+$legacy-support-for-ie      : false;
+$legacy-support-for-ie6     : false;
+$legacy-support-for-ie7     : false;
+$legacy-support-for-ie8     : true;
+$legacy-support-for-mozilla : false;
+
+$inline-block-alignment     : baseline; 
+
+$default-border-radius      : 3px;
+
+$default-box-shadow-color   : rgba( #000, .25 ); 
+$default-box-shadow-h-offset: .125em;
+$default-box-shadow-v-offset: .125em; /* Positive is down */
+$default-box-shadow-blur    : .25em;
+$default-box-shadow-spread  : false;
+$default-box-shadow-inset   : false; 
+
+$default-transition-property: all;
+$default-transition-duration: 250ms;
+$default-transition-function: ease;
+$default-transition-delay   : false;

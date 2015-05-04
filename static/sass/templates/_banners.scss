@@ -1,0 +1,166 @@
+// A banner across the top of the page... sample. Move and change later. 
+/*<section class="banner banner__about do-not-print" role="banner">
+    <div class="banner--image"></div>
+    <div class="banner--content">
+        <h1 class="call-to-action">
+            Python is powerful&hellip; and fast; <br>
+            plays well with others; <br>
+            runs everywhere; <br>
+            is friendly &amp; easy to learn; <br>
+            is Open.
+        </h1>
+        <p>These are some of the reasons people who use Python would rather not use anything else.</p>
+        
+
+<section class="banner banner__about do-not-print" role="banner">
+    <div class="container">
+        <div class="col-group__two banner--content">
+            <div class="column">
+                <h1 class="call-to-action">Python is powerful&hellip; and fast; plays well with others; runs everywhere; is friendly &amp; easy to learn; is Open.</h1>
+            </div>
+            <div class="column">
+                <p>These are some of the reasons people who use Python would rather not use anything else.</p>
+            </div>
+        </div>
+    </div>
+</section>*/
+.banner {
+    //@include relative-container( $zindex: 1, $overflow: visible ); 
+    @include vertical-gradient( palette(mono,mid-light), palette(mono,light), 5%, 50% ); 
+    
+    &--image {}
+    
+    .column { padding-bottom: 0; }
+    
+    &--content { 
+        
+        p { 
+            color: #444; 
+            line-height: 1.5; 
+            padding-bottom: $vert-grid-spacing/2; 
+        }
+    }
+    
+    .call-to-action {
+        color: palette(brand); 
+        line-height: 1.25; 
+        @include pe-rem-helper( font-size, $headertwo );
+        @include pe-rem-helper( margin-bottom, $base-line-height/2 );
+    }
+    
+    /*a:not(.button), 
+    a:not(.readmore) {
+        color: palette(brand,yellow);
+
+        &:hover, &:focus { color: $white; }
+    }
+
+    .button, 
+    a.button { @extend %button-style-yellow; }*/
+    
+    
+    // Overrides
+    &__slideshow {}
+    
+    &__about {}
+    
+    
+    // Media
+    @include pe-media( $breakpoint-small ) {
+    	   	    
+	    //&--content { padding-right: columns(4); }
+	    
+	    /*&--image {
+    	    position: absolute; 
+    	        top: 0; right: -5em; 
+    	    width: 563px*.66; 
+    	    height: 345px*.66;  
+    	    background: top center no-repeat url() transparent;
+            background-size: 100% auto; 
+            @include transition( all 250ms ease-in-out ); 
+            
+            &__about { background-image: url("../img/landing-about.png"); }
+	    
+    	    &__download { background-image: url("../img/landing-downloads.png"); }
+    	    
+    	    &__docs { background-image: url("../img/landing-docs.png"); }
+	    }*/
+    }
+    
+    @include pe-media( $breakpoint-medium ) {
+    	
+	    //&--content { padding: $grid-spacing columns(5) $grid-spacing $grid-spacing*2; }
+	    
+	    //&--image {}
+    	
+    	.call-to-action { @include pe-rem-helper( font-size, $headerone ); }
+    }
+    
+    @include pe-media( px2em(900px) ) {
+	
+    	/*&--image {
+    	    right: -2%; 
+    	    width: 563px*.75; 
+    	    height: 345px*.75;  
+    	}*/
+    }
+    
+    @include pe-media( $breakpoint-large ) {
+    	
+    	//&--content { padding: $grid-spacing columns(6) $grid-spacing $grid-spacing*3; }
+	    
+	    &--content p { @include pe-rem-helper( font-size, $headerthree ); }
+    	
+	    /*&--image { 
+    	    right: 3%; 
+    	    width: 563px*.85; 
+    	    height: 345px*.85; 
+        }*/
+    }
+}
+
+
+/*<div class="col-group__two banner--content community">
+    <div class="column">
+        <a class="community--link" href="#">
+            <h2 class="widget--title">For Python Professionals:</h2> 
+            <p>Contribute to the future of Python, search for Jobs, help others learn Python and manage your membership. </p>
+        </a>
+    </div>
+    <div class="column">
+        <a class="community--link" href="#">
+            <h2 class="widget--title">For Members &amp; Supporters:</h2> 
+            <p>Learn more about supporting Python, read Foundation news and manage a corporate membership. </p>
+        </a>
+    </div>
+    <div class="community--followup">
+        <p><strong>New to Python?</strong> Start with news and events below, then get involved! </p>
+    </div>
+</div>*/
+.community {
+    
+    &--link {
+        display: block; 
+        padding: $grid-spacing/2 $grid-spacing; 
+        border: 1px solid palette(mono,x-light); 
+        @include border-radius(); 
+        @include vertical-gradient( palette(mono,light), palette(mono,x-light) ); 
+        
+        &:hover, 
+        &:focus {
+            border-top-color: darken( palette(mono,mid-light), 4% ); 
+            border-left-color: palette(mono,mid-light); 
+            border-right-color: palette(mono,mid-light); 
+            border-bottom-color: $white; 
+            @include box-shadow( 0 0 .75em rgba(#000,.15) inset ); 
+            
+            .banner--content & p { color: palette(mono,x-dark); }
+        }
+    }
+    
+    &--followup { 
+        clear: both; 
+        text-align: center; 
+        padding-top: $vert-grid-spacing; 
+    }
+}

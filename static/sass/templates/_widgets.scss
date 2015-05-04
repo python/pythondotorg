@@ -1,0 +1,146 @@
+/*<div class="column widget">
+    <h2 class="widget--title"><span aria-hidden="true" class="icon-get-started"></span>Getting Started</h2>
+    <p>Python can be easy to pick up whether you&rsquo;re a first time programmer or you're experienced with other languages. The following pages are a useful first step to get on your way writing programs with Python!</p>
+    <ul class="widget--list">
+        <li><a href="#">Beginner&rsquo;s Guide, Programmers</a></li>
+        <li><a href="#">Beginner&rsquo;s Guide, Non-Programmers</a></li>
+        <li><a href="#">Beginner&rsquo;s Guide, Download &amp; Installation</a></li>
+        <li><a href="#">Code sample and snippets for Beginners</a></li>
+    </ul>
+</div>*/
+
+.col-group--title {
+    color: palette(mono,dark); 
+    line-height: 1.25em;
+    margin: 0 0 .5em; 
+    font-family: $font-custom-headline-bold; 
+    @include fontface-adjust( $headerone ); 
+}
+
+.widget {
+    padding: $grid-spacing;
+    margin-bottom: $vert-grid-spacing; 
+    border-top: 4px solid palette(brand,light); 
+    
+    p,
+    li { @include perem(font-size, 15px); }
+    
+    &--group {
+        border-top: 4px solid palette(brand,light); 
+        padding: $grid-spacing 0; 
+        border-top: 4px solid palette(brand,light); 
+    }
+    
+    &--group & { 
+        padding-top: 0; 
+        padding-bottom: 0; 
+        border-top: 0; 
+    }
+    
+    &--title {
+        color: $default-color;
+        line-height: 1.25em;
+        margin: 0 0 .5em; 
+        font-family: $font-custom-headline; 
+        
+        .icon { color: palette(brand); }
+    }
+    
+    @at-root{ h2#{&}--title { @include fontface-adjust( $headertwo ); } }
+    
+    @at-root{ h3#{&}--title { 
+        color: $primary-dark !important; // GAH! Can I get rid of this please? 
+        @include fontface-adjust( $headerthree ); 
+    } }
+    
+    &--list {
+        
+        &__bordered li {
+            overflow: hidden; // simple clearfix
+            border-top: 1px solid $border-color;
+            padding-top: .375em;
+            padding-bottom: .375em;
+        }
+        
+        time,
+        time + a { float: left; }
+        
+        time { width: 23%; }
+        
+        time + a { 
+            width: 75%; 
+            display: block; 
+            white-space: nowrap; 
+            overflow: hidden; 
+            text-overflow: ellipsis; 
+        }
+        
+        @include pe-media( $max: px2em( 400px ), $serve-to-nomq: false ) {
+            
+            time .say-no-more { @include hide(); }
+        }
+        
+        @include pe-media( $min: $breakpoint-small, $max: px2em(680px), $serve-to-nomq: false ) {
+            
+            time .say-no-more { @include hide(); }
+        }
+        
+        @include pe-media( $min: $breakpoint-medium, $max: $breakpoint-large, $serve-to-nomq: false ) {
+        	
+        	time .say-no-more { @include hide(); }
+        }
+    }
+    
+    // Overrides
+    &__column { padding: $grid-spacing 0 0; }
+}
+
+
+// Old styles... temporary. I hate looking at my old SASS
+.psf-widget, 
+.python-needs-you-widget {
+    clear: both; 
+    padding: $vert-grid-spacing $grid-spacing; 
+    margin-bottom: $vert-grid-spacing; 
+    @include vertical-gradient( palette(brand,dark), palette(brand) );
+    @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) );
+    
+    .button {
+        @extend %button-style-yellow;
+    }
+    
+    .main-content & a:not(.button) {
+        color: palette(brand,yellow);
+
+        &:hover, 
+        &:focus { color: lighten(palette(brand,yellow), 25%); }
+    }
+
+    .widget--title a, 
+    .readmore, 
+    .readmore:before {
+        color: palette(brand,yellow);
+
+        &:hover, &:focus { color: $white; }
+    }
+
+    p { color: palette(mono,mid-light); }
+
+    /*p*/ .click-these { margin-bottom: 0; }
+    
+    @include pe-media( $breakpoint-medium ) {
+        min-height: 14em; 
+        position: relative; 
+        
+        .python-logo {
+            position: absolute; 
+                top: 0.5em; right: 1em;
+            width: 210px; 
+            height: 210px; 
+            background: top left no-repeat url("../img/python-logo-large.png") transparent;
+        }
+        
+        .widget--title, 
+        p { margin-right: columns(4); }
+    }
+}

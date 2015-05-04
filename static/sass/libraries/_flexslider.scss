@@ -1,0 +1,364 @@
+/*
+ * jQuery FlexSlider v2.2.0
+ * http://www.woothemes.com/flexslider/
+ *
+ * Copyright 2012 WooThemes
+ * Free to use under the GPLv2 license.
+ * http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * Contributing author: Tyler Smith (@mbmufffin)
+ */
+
+/*
+    Preferred markup... 
+    
+    .slideshow and the related .slideshow--list, .slideshow--item, etc are for us to style
+    .flexslider and .slides are required by this CSS and not worth messing with
+    We decouple the JS trigger from the CSS with .js-slideshow
+    
+    <div class="slideshow slideshow__home" role="banner">
+        <div class="slideshow--wrapper flexslider js-slideshow">
+            
+            <div class="flex-viewport"> [ ! Dynamically inserted ]
+            
+            <ul class="slides slideshow--list">
+                <li class="slideshow--item">
+                    <figure class="slideshow--slide">
+                        <img src="http://www.woothemes.com/wp-content/themes/woo/images/flex/flexslider_a.jpg" alt="">
+                        <figcaption class="slideshow--caption">Flexslider by WooThemes.</figcaption>
+                    </figure>
+                </li>
+                <li class="slideshow--item">
+                    <figure class="slideshow--slide">
+                        <img src="http://www.woothemes.com/wp-content/themes/woo/images/flex/flexslider_b.jpg" alt="">
+                        <figcaption class="slideshow--caption">Flexslider by WooThemes.</figcaption>
+                    </figure>
+                </li>
+            </ul>
+            
+            </div> [ ! Dynamically inserted ]
+            
+            [ ! Dynamically inserted ]
+            <ul class="flex-direction-nav">
+                <li><a class="flex-prev" href="#">Previous</a></li>
+                <li><a class="flex-next" href="#">Next</a></li>
+            </ul>
+            
+            [ ! Dynamically inserted ]
+            <ol class="flex-control-nav flex-control-paging">
+                <li><a class="flex-active">1</a></li>
+                <li><a>2</a></li>
+                <li><a>3</a></li>
+            </ol>
+            
+        </div>
+    </div>
+    
+    Use this SCSS structure to style the elements
+    
+    .slideshow {
+    
+        &--wrapper {}
+        
+        &--list {}
+        
+        &--item {}
+        
+        &--slide {
+            
+            img {}
+        }
+        
+        &--caption {}
+        
+        
+        // Overrides
+        &__home {}
+    }
+*/
+
+
+// Options
+$flexslider-fonts: false; // Boolean. Use (and install) the fonts or disable them
+// USe default themes?
+$flexslider-direction-nav: false; 
+$flexslider-control-nav: false; 
+$flexslider-pauseplay: false; 
+
+
+/* Browser Resets
+*********************************/
+.flex-container a:active,
+.flexslider a:active,
+.flex-container a:focus,
+.flexslider a:focus { outline: none; }
+
+.slides, 
+//.flex-control-nav,
+.flex-direction-nav { 
+    margin: 0; 
+    padding: 0; 
+    list-style: none; 
+}
+
+
+/* FlexSlider Necessary Styles
+*********************************/
+.flexslider { 
+    position: relative; 
+    z-index: 1; 
+    overflow: hidden;   
+    margin: 0; 
+    padding: 0; 
+}
+
+.flexslider .slides { zoom: 1; }
+
+.carousel li { margin-right: 5px; }
+
+.flex-viewport { 
+    max-height: 2000px; 
+    @include transition( all 1s ease ); 
+}
+
+/*body*/ .loading {
+
+    .slides > li { 
+        display: none; 
+        -webkit-backface-visibility: hidden; // Hide the slides before the JS is loaded. Avoids image jumping
+    } 
+    
+    .flex-viewport { max-height: 300px; }
+}
+
+/*.flexslider ul img { 
+    width: 100%; // should be already part of the rest of our CSS
+    display: block; 
+}*/
+
+
+/* Clearfix for the .slides element */
+.slides:after { 
+    content: "\0020"; 
+    display: block; 
+    clear: both; 
+    visibility: hidden; 
+    line-height: 0; 
+    height: 0;
+}
+
+html[xmlns] .slides { display: block; }
+
+* html .slides { height: 1%; }
+
+
+/* No JavaScript Fallback */
+// Show only the first slide
+/*html*/.no-js /*body*/.loading .slides > li:first-child { display: block; }
+
+
+/* FlexSlider Default Theme
+*********************************/
+
+// Direction Nav - Default theme- - - - - - - - - - - -
+@if $flexslider-direction-nav == true {
+    
+    .flexslider:hover .flex-direction-nav {
+        
+        .flex-prev { 
+            opacity: 0.7; 
+            left: 0; 
+        }
+        
+        .flex-next { 
+            opacity: 0.7; 
+            right: 0; 
+        }
+        
+        .flex-next:hover, 
+        .flex-prev:hover { opacity: 1; }
+    }
+    
+    .flex-direction-nav {
+        *height: 0;
+        
+        .flex-prev,
+        .flex-next  { 
+            // These animate in when the slide is hovered
+            display: block; 
+            margin: -1.5em 0 0; 
+            position: absolute; 
+                top: 50%; 
+            z-index: 10; 
+            overflow: hidden; 
+            opacity: 0; 
+            cursor: pointer; 
+            
+            // Actual styles
+            color: rgba(#000,.8); 
+            background: $white; 
+            background: rgba($white,.8); 
+            padding: .25em .75em; 
+            font-size: .875em; 
+            font-weight: $bold-weight; 
+            text-transform: uppercase; 
+            text-decoration: none !important; 
+            text-shadow: -1px 0 0 rgba($white,0.5); 
+            @include transition( all 250ms ease ); 
+            @include transition-delay( 250ms ); 
+        }
+        
+        .flex-prev { left: -100px; }
+        
+        .flex-next { right: -100px; }
+        
+        .flex-disabled { 
+            opacity: 0 !important; 
+            filter:alpha(opacity=0); 
+            cursor: default; 
+        }
+        
+        @include pe-media( $max: $breakpoint-small ) {
+      
+            //.flex-direction-nav .flex-prev { opacity: 1; left: 0;}
+            
+            //.flex-direction-nav .flex-next { opacity: 1; right: 0;}
+        }
+    }
+}
+
+
+// Control Nav - Default theme - - - - - - - - - - - -
+@if $flexslider-control-nav == true {
+    
+    .flex-control-nav {
+        width: 100%; 
+        text-align: center;
+    }
+    
+    .flex-control-nav li {
+        margin: 0 .375em; 
+        display: inline-block; 
+        zoom: 1; 
+        *display: inline;
+    }
+    
+    .flex-control-paging li a {
+        display: block; 
+        width: 1em; 
+        height: 1em; 
+        background: #666; 
+        background: rgba(0,0,0,0.5); 
+        cursor: pointer; 
+        text-indent: -9999px; 
+        @include border-radius( 50% ); 
+        @include box-shadow( 0 0 .25em rgba(#000,0.3) inset ); 
+    }
+    
+    .flex-control-paging li a:hover { 
+        background: $primary; 
+        background: rgba($primary,0.8); 
+    }
+    
+    .flex-control-paging li a.flex-active { 
+        background: #000; 
+        background: rgba(#000,0.9); 
+        cursor: default; 
+    }
+    
+    .flex-control-thumbs { 
+        margin: 5px 0 0; 
+        position: static; 
+        overflow: hidden;
+    }
+    
+    .flex-control-thumbs li {
+        width: 25%; 
+        float: left; 
+        margin: 0;
+    }
+    
+    .flex-control-thumbs img {
+        width: 100%; 
+        display: block; 
+        opacity: .7; 
+        cursor: pointer;
+    }
+    
+    .flex-control-thumbs img:hover { opacity: 1; }
+    
+    .flex-control-thumbs .flex-active { opacity: 1; cursor: default; }
+}
+
+
+// Pause/Play  - - - - - - - - - - - -
+@if $flexslider-pauseplay == true {
+    
+    .flex-pauseplay span { text-transform: capitalize; }
+    
+    .flex-pauseplay a { 
+        display: block; 
+        width: 20px; 
+        height: 20px; 
+        position: absolute; 
+            bottom: 5px; left: 10px; 
+        opacity: 0.8; 
+        z-index: 10; 
+        overflow: hidden; 
+        cursor: pointer; 
+        color: #000; 
+    }
+}
+
+
+/* Icon Fonts
+*********************************/
+/* Font-face Icons — Make sure to use the font from GitHub */
+@if $flexslider-fonts == true {
+
+    @font-face {
+    	font-family: 'flexslider-icon';
+    	src:url('../fonts/flexslider-icon.eot');
+    	src:url('../fonts/flexslider-icon.eot?#iefix') format('embedded-opentype'),
+    		url('../fonts/flexslider-icon.woff') format('woff'),
+    		url('../fonts/flexslider-icon.ttf') format('truetype'),
+    		url('../fonts/flexslider-icon.svg#flexslider-icon') format('svg');
+    	font-weight: normal;
+    	font-style: normal;
+    } 
+    
+    // Redefine icons to be squares
+    .flex-direction-nav a  { 
+        width: 40px; 
+        height: 40px; 
+        background: transparent; 
+    }
+    
+    .flex-direction-nav a:before,
+    .flex-pauseplay a:before {
+        font-family: "flexslider-icon"; 
+        display: inline-block; 
+        speak: none;
+    	font-variant: normal;
+    	text-transform: none;
+    	line-height: 1;
+    	-webkit-font-smoothing: antialiased;
+    	-moz-osx-font-smoothing: grayscale;
+    }
+    
+    .flex-direction-nav a:before  { 
+        font-size: 40px; 
+        content: '\f001'; 
+    }
+    
+    .flex-direction-nav a.flex-next:before { content: '\f002'; }
+    
+    .flex-pauseplay a:before  { 
+        font-size: 20px; 
+        content: '\f004'; 
+    }
+    
+    .flex-pauseplay a:hover  { opacity: 1; }
+    
+    .flex-pauseplay a.flex-play:before { content: '\f003'; } 
+}

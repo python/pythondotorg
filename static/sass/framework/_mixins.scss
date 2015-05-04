@@ -1,0 +1,530 @@
+/* ! ===== Framework Mixins ===== */
+
+/*
+ * Mixins that we'd like to keep consistent from project to project
+ *
+ * Functions and mixins are very similar in nature. 
+ * Because they can both accept variables, you might end up creating a mixin when what you really need is a function. 
+ * Instead of outputting lines of Sass/CSS the way mixins do, functions return a value. 
+ * http://thesassway.com/advanced/pure-sass-functions
+ */
+
+
+/* 
+ * Output contents wrapped in a @media rule; output contents without the rule; or skip output
+ * @accepts: min width, max width (optional), $height (boolean), $serve-to-nomq (boolean), any @content
+ * @requires: $mq-support (boolean)
+ * @returns: @content
+ *      If $mq-support is set to false AND $serve-to-nomq is left alone (true), the CSS gets output without a media query block.
+ *      If $serve-to-nomq is also set to false, nothing will be output at all. 
+ */
+$mq-support: true !default; 
+
+@mixin pe-media( $min: null, $max: null, $min-h: null, $max-h: null, $serve-to-nomq: true ) {
+    
+    @if $min == null and $max == null and $min-h == null and $max-h == null {
+        @warn "Mixin PE-Media requires at least a MIN or MAX width/height";
+    }
+    
+    @if $mq-support {
+        $query: ''; 
+        
+        // Build the query
+        @if $min != null { $query: $query + '(min-width: ' + $min + ') and '; }
+        @if $max != null { $query: $query + '(max-width: ' + $max + ') and '; }
+        @if $min-h != null { $query: $query + '(min-height: ' + $min-h + ') and '; }
+        @if $max-h != null { $query: $query + '(max-height: ' + $max-h + ') and '; }
+        
+        @if $query != '' {
+            $final-query: str-slice($query, 0, -5); // chop off the last " and "
+            
+            @media #{$final-query} { @content; }
+        }
+        
+    } @else {
+        @if $serve-to-nomq { @content; }
+    }
+}
+
+
+/* 
+ * Output contents wrapped in a @media rule; output contents without the rule; or skip output
+ * @accepts: nothing
+ * @requires: $old-ie (boolean)
+ * @returns: @content
+ */
+$old-ie: false !default; 
+@mixin oldIE() {
+    
+    // Simple, if this variable is set to false (like in no-mq.scss) the rules get output. If not, ignored. 
+    @if $old-ie == true { @content; }
+}
+
+@mixin not-oldIE() {
+    
+    @if $old-ie == false { @content; }
+}
+
+
+/*
+ * Provide a hover effect for non-touch devices, turn it into an Active state for mobile, and maintain a fallback. 
+ * @requires Modernizr as a JS dependency to get .no-touch classes
+ * Adds styles via @content
+ */
+@mixin touch-hover( $disabled: false ) {
+    
+    @if $disabled == true {
+        .no-js &, 
+        .no-js &:hover, // the fallback
+        .no-js &:focus, 
+        .js.no-touch &, 
+        .js.no-touch &:hover, // enhanced for no-touch
+        .js.no-touch &:focus,
+        .js.touch &, 
+        .js.touch &:active { // relay same styles to active for touch devices
+            @content; 
+        }
+        
+    } @else {
+        .no-js &:hover, // the fallback
+        .no-js &:focus, 
+        .js.no-touch &:hover, // enhanced for no-touch
+        .js.no-touch &:focus,
+        .js.touch &:active { // relay same styles to active for touch devices
+            @content; 
+        }
+    }
+}
+
+/* 
+ * Output a little 'tag' on the body:after content
+ * @accepts: string
+ * @requires: nothing
+ * @returns: entire body pseudo-class declaration
+ * Usage: @include javascript_tag( 'actionhook' );
+ */
+@mixin javascript_tag( $content ) {
+    
+    body:after {
+        content: $content; 
+        display: none; 
+        speak: none; 
+    }
+}
+
+
+/* 
+ * Maintain ratio mixin. Great for responsive grids, or videos.
+ * "Crops" the element to the size of the container with overflow: hidden
+ * https://gist.github.com/brianmcallister/2932463
+ * 
+ * $ratio - Ratio the element needs to maintain.
+ * 
+ * Example: A 16:9 ratio would look like this: .element { @include maintain-ratio(16 9); }
+ */
+@mixin maintain-ratio($ratio: 1 1) {
+    @if length($ratio) < 2 or length($ratio) > 2 {
+        @warn "$ratio must be a list with two values.";
+    }
+    $width: 100%;
+    $height: percentage(nth($ratio, 2) / nth($ratio, 1));
+    
+    width: $width;
+    height: 0;
+    padding-bottom: $height;
+}
+
+// Apply as a typical container mixin
+@mixin proportional-container( $ratio: 1 1 ) {
+    position: relative; 
+    overflow: hidden; 
+    z-index: 1; 
+    @include maintain-ratio( $ratio ); 
+}
+
+@mixin proportional-element() {
+    position: absolute; 
+        top: 0; left:0; 
+    z-index: 2; 
+    width: 100% !important; 
+    height: 100% !important; 
+}
+
+
+/* ! ===== Typography Manipulation ===== */
+
+/* 
+ * REM output with pixel fallbacks for any passed declaration
+ * @accepts: valid CSS property, and a (pixel) value
+ * @requires: $base-font-size
+ * @returns: valid CSS declarations
+ * Usage: @include pe-rem-helper( 'font-size', 12px );
+ */
+@mixin pe-rem-helper( $property, $value, $base: $base-font-size ) {
+    
+    $this-value: clear-units($value);
+    $this-base: clear-units($base);
+    
+    #{$property}: 0px + $this-value; 
+    #{$property}: 0rem + $this-value / $this-base;
+}
+// Shortcut
+@mixin perem( $property, $value, $base: $base-font-size ) { @include pe-rem-helper( $property, $value, $base ); } 
+
+
+/* 
+ * Stuart Robson's vertical rhythm mixin with REM, pixel fallback and line-height set as whole numbers
+ * http://codepen.io/sturobson/pen/fhige 
+ *
+ * Overrides for values need to be pixel values, like so: @include pe-fontsize( $headerfour, $line-height: 24px, $margin: 14px ); 
+ */
+@mixin pe-fontsize( $size:$base-font-size, $line-height: $base-line-height, $margin: yes ) {
+    
+    $this-font: clear-units($size);
+    $base-size: clear-units($base-font-size);
+    $base-lines: clear-units($base-line-height); 
+    
+    // makes the font-size in REMs with a PX fallback
+    font-size: 0px + $this-font;
+    font-size: 0rem + $this-font / $base-size;
+    
+    @if $line-height != no {
+        $this-lines: clear-units($line-height); 
+        
+        // if you pass a line-height different from the default setting
+        @if $this-lines != $base-lines {
+            line-height: ceil($base-lines / $this-lines) * ($this-lines / $base-lines);
+        }
+        
+        // because, typing 1 is quicker than 16
+        @else if $this-lines == 1 {
+            line-height: 1;
+        }
+      
+        // normal $line-height
+        @else {
+            line-height: ceil($this-font / $base-lines) * ($base-lines / $this-font);
+        }
+    }
+  
+    // if no is bottom margin is required
+    @if $margin == no and $margin != none {
+        margin-bottom: 0;  
+    }  
+    
+    // if a specific bottom margin is required
+    @else if $margin != yes and $margin != no and $margin != none {
+        margin-bottom: 0px + clear-units($margin);
+        margin-bottom: 0rem + (clear-units($margin) / $base-size);  
+    }
+  
+    // if you're keeping the vertical rhythm with the margin
+    @else if $margin != none {
+        margin-bottom: 0px + $base-lines;
+        margin-bottom: 0rem + ($base-lines / $base-size);  
+    }
+}
+
+
+/* 
+ * Font-size-adjust: the problem and a solution
+ * Not widely supported, can't use this yet 
+$font-size-adjust: 0.465; 
+@mixin font-size-adjust() {
+    -webkit-font-size-adjust: $font-size-adjust; // No support yet 
+    font-size-adjust: $font-size-adjust; // Firefox only 
+}*/
+
+/* Since we can't use the above, let's create our own way to do it. */
+$font-size-adjust-value: 1.125 !default; 
+@mixin fontface-adjust( $pixel, $base-size:$base-font-size, $adjust-value: $font-size-adjust-value ) {
+    @if $adjust-value == none {
+        $adjust-value: 1; 
+    }
+    $pixel: clear-units($pixel); 
+    $base-size: clear-units($base-size); 
+    
+    font-size: #{$pixel / $base-size}em;
+    
+    .fontface & {
+        font-size: #{$pixel * $adjust-value / $base-size}em;
+        
+        /* For icons */
+        span:before { font-size: .875em; }
+    }
+}
+
+
+
+
+/* ! ===== Our own Cross Browser mixins ===== */
+
+/*
+ * Cross browser min-height/max-height without using an IE-specific expression
+ * http://css-tricks.com/snippets/css/cross-browser-min-height/
+ */
+@mixin pe-minheight( $value ) {
+    min-height: $value; 
+    @if $legacy-support-for-ie6 or $legacy-support-for-ie7 or $legacy-support-for-ie8 {
+        @include oldIE() {
+            // This works because (thankfully?) IE treats "height" how "min-height" is supposed to be treated.
+            height: auto !important; 
+            height: $value; 
+        }
+    }
+}
+
+/* http://minhd.net/cross-browser-min-height-max-height/ */
+@mixin pe-maxheight( $value ) {
+    max-height: $value; 
+    @if $legacy-support-for-ie6 or $legacy-support-for-ie7 or $legacy-support-for-ie8 {
+        @include oldIE() {
+            height: auto !important; 
+            height: $value; 
+            overflow: hidden; 
+        }
+    }
+}
+
+/* Use IE-specific expressions for min-width in older IE */
+// IE8 and greater support min-width
+@mixin pe-minwidth( $value ) {
+    min-width: $value; 
+    @if $legacy-support-for-ie6 or $legacy-support-for-ie7 {
+        @include oldIE() {
+            width: expression(this.width < $value ? $value: true); 
+        }
+    }
+}
+
+
+/* 
+ * Cross browser method to apply word-breaking and hyphenation (where supported) 
+ */
+@mixin pe-hyphenate() {
+/*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE6-8 */
+/*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
+/*   word-break: break-word; Non standard for older webkit. Hyphenation tables weren't great, so don't use. */
+    -webkit-hyphens: auto;
+       -moz-hyphens: auto;
+        -ms-hyphens: auto;
+         -o-hyphens: auto;
+            hyphens: auto;
+
+// CSS4 attributes (coming soon) 
+    -webkit-hyphenate-limit-lines: 2; 
+        -ms-hyphenate-limit-lines: 2; 
+            hyphenate-limit-lines: 2; 
+// First: minimum characters for the word; Second: minimum characters before hyphenation; Third: minimum characters after hyphenation
+    -ms-hyphenate-limit-chars: 6 3 3;
+        hyphenate-limit-chars: 6 3 3;
+    
+// No support anywhere yet, but coming soon. Values are column, page, or spread
+//    hyphenate-limit-last: column; 
+    
+// Don't allow hyphenation for certain elements 
+    & var, 
+    & code, 
+    & kbd, 
+    & abbr {
+    -webkit-hyphens: none;
+       -moz-hyphens: none;
+        -ms-hyphens: none;
+         -o-hyphens: none;
+            hyphens: none;
+    }
+}
+
+
+/* ! ===== Complete Gradient mixins with solid color fallbacks ===== */
+
+/* Vertical gradient mixin to make things easier. */
+@mixin vertical-gradient( $top-color, $bottom-color, $top-percent:10%, $bottom-percent:90% ) {
+    background-color: $bottom-color; 
+    @include filter-gradient( $top-color, $bottom-color, vertical ); 
+    @include background-image( linear-gradient( $top-color $top-percent, $bottom-color $bottom-percent ) );
+}
+
+@mixin reset-gradient ( $flat-color ) {
+    background-color: $flat-color; 
+    filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+    background-image: none; 
+}
+
+/* Horizontal gradient */
+@mixin horizontal-gradient( $left-color, $right-color, $left-percent:5%, $right-percent:95% ) {
+    background-color: $left-color; // Old browsers
+    @include filter-gradient( $left-color, $right-color, horizontal); // IE6-9
+    @include background-image( linear-gradient(left,  $left-color $left-percent, $right-color $right-percent) );
+}
+
+
+/* 
+ * Cross browser RGBA
+ * Accepts a color in rgba() format. Outputs an IE filter version of the color with transparency.  
+ */
+@mixin pe-rgbabg( $color ) {
+    
+    @if $legacy-support-for-ie6 or $legacy-support-for-ie7 or $legacy-support-for-ie8 {
+        @include oldIE() {
+            // http://compass-style.org/reference/compass/css3/images/#mixin-filter-gradient
+            // http://sass-lang.com/documentation/Sass/Script/Functions.html#ie_hex_str-instance_method
+            @include filter-gradient( $color, $color );
+        }
+    }
+    // All other browsers, including IE9, which have rgba() support. 
+    background: $color; 
+}
+
+
+/*
+ * Cross-browser Box Shadows, IE 6-8 and modern browsers
+ * Old IE gets a blurry shadow applied to all sides equally. To do more, pull this code out and use as directed. 
+ * http://www.useragentman.com/blog/2011/08/24/how-to-simulate-css3-box-shadow-in-ie7-8-without-javascript/
+ */
+@mixin pe-boxshadow( $x-offset: .25em, $y-offset: .25em, $blur: .5em, $color: #000, $opacity: .4 ) {
+    
+    @include box-shadow( $x-offset $y-offset $blur rgba( $color, $opacity ) ); 
+    
+    $ie-color: rgba2hex( $color, $opacity ); 
+    
+    /* Improvements could be made: calculate what IE expects for "strength" based on the $blur value.
+                                   calculate the strength in each direction based on the $x-offset and $y-offset
+    */
+    @include oldIE() {
+        zoom: 1;
+        filter: progid:DXImageTransform.Microsoft.Shadow(Color=#{$ie-color}, Strength=5, Direction=0),
+             progid:DXImageTransform.Microsoft.Shadow(Color=#{$ie-color}, Strength=5, Direction=90),
+             progid:DXImageTransform.Microsoft.Shadow(Color=#{$ie-color}, Strength=5, Direction=180),
+             progid:DXImageTransform.Microsoft.Shadow(Color=#{$ie-color}, Strength=5, Direction=270);
+    }
+}
+
+
+/* ! ===== Other Namespaced Mixins ===== */
+
+/* Add to a pseudo-element to make a triangle shape. Author will need to position the element where they want it. */
+@mixin pe-triangle( $direction: bottom, $color: $border-color, $width: 1em ) {
+    $opposite: opposite-position( $direction ); 
+    
+    width: 0; 
+	height: 0; 
+	content: ''; 
+	border-style: solid; 
+	border-width: $width; 
+	border-color: transparent; 
+	border-#{$opposite}-color: $color;
+}
+
+@mixin pe-outline-triangle( $direction: bottom, $color: $border-color, $border-size: 1px, $element-size: 1em ) {
+    @extend %block; 
+    width: $element-size; 
+	height: $element-size; 
+	content: ''; 
+	border-style: solid; 
+	border-color: $color;
+	
+	@if $direction  == top 
+	    { border-width: $border-size 0 0 $border-size; }
+    @if $direction  == left 
+	    { border-width: 0 0 $border-size $border-size; }
+    @if $direction  == right 
+	    { border-width: $border-size $border-size 0 0; }
+    @if $direction  == bottom 
+	    { border-width: 0 $border-size $border-size 0; }
+	
+	@include transform( rotate(45deg) );
+}
+
+
+/* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
+@mixin pe-inline-block( $alignment: $inline-block-alignment ) {
+    @if $legacy-support-for-mozilla
+        { display: -moz-inline-stack; }
+    display: inline-block;
+    @if $alignment and $alignment != none
+        { vertical-align: $alignment; }
+    @if $legacy-support-for-ie {
+        .lt-ie8 & {
+            vertical-align: auto; 
+            zoom: 1; 
+            display: inline; 
+        }
+    }
+}
+
+
+
+/* ! ===== Animation helpers ===== */
+
+/* 
+ * Cross browser @keyframe definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ */
+@mixin pe-keyframes( $animation-name ) {
+    
+    @-webkit-keyframes $animation-name {
+        @content;
+    }
+    @-moz-keyframes $animation-name {
+        @content;
+    }
+    @-ms-keyframes $animation-name {
+        @content;
+    }
+    @-o-keyframes $animation-name {
+        @content;
+    }
+    @keyframes $animation-name {
+        @content;
+    }   
+}
+
+
+/* 
+ * Cross browser animation definition set 
+ * Compass doesn't have one yet, so we namespace this so as not to conflict with a future release
+ * 
+ * $timing: linear | ease | ease-in | ease-out | ease-in-out
+ * $delay: seconds before animation starts
+ * $count: how many times the animation will loop. 'infinite' is acceptable
+ * $direction: normal | alternate (Play even-numbered iterations of the animation in the forward direction and odd-numbered iterations in the reverse direction.)
+ * $fill-mode: none | forwards | backwards | both
+ *      forwards (The animation’s final keyframe continues to apply after the final iteration of the animation completes)
+ *      backwards (The animation’s initial keyframe is applied as soon as the animation style is applied to an element. 
+ *      This only affects animations that have a nonzero value for -webkit-animation-delay)
+ *      both (The animation’s initial keyframe is applied as soon as the animation style is applied to an element, 
+ *      and the animation’s final keyframe continues to apply after the final iteration of the animation completes. 
+ *      The initial keyframe only affects animations that have a nonzero value for -webkit-animation-delay)
+ */
+@mixin pe-animation( $name, $duration:1s, $timing:ease, $delay:0, $count:1, $direction:normal, $fill-mode:forwards ) {
+    
+    -webkit-animation-name: $name;
+    -webkit-animation-duration: $duration;
+    -webkit-animation-timing-function: $timing; 
+    -webkit-animation-delay: $delay;
+    -webkit-animation-iteration-count: $count;
+    -webkit-animation-direction: $direction;
+    -webkit-animation-fill-mode: $fill-mode;
+    -moz-animation-name: $name;
+    -moz-animation-duration: $duration;
+    -moz-animation-timing-function: $timing; 
+    -moz-animation-delay: $delay;
+    -moz-animation-iteration-count: $count;
+    -moz-animation-direction: $direction;
+    -moz-animation-fill-mode: $fill-mode;
+    -o-animation-name: $name;
+    -o-animation-duration: $duration;
+    -o-animation-timing-function: $timing; 
+    -o-animation-delay: $delay;
+    -o-animation-iteration-count: $count;
+    -o-animation-direction: $direction;
+    -o-animation-fill-mode: $fill-mode;
+    animation-name: $name;
+    animation-duration: $duration;
+    animation-timing-function: $timing; 
+    animation-delay: $delay;
+    animation-iteration-count: $count;
+    animation-direction: $direction;
+    animation-fill-mode: $fill-mode;
+}

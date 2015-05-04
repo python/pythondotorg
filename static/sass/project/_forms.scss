@@ -1,0 +1,151 @@
+/* ! ==== Forms ==== */
+
+form { @extend %pie-clearfix; }
+
+fieldset { border: 0; }
+
+legend {
+    display: inline-block;
+    //color: palette(mono);
+    //background-color: $white;
+    padding: 0 .5em 0 0;
+}
+
+label,
+.label {
+    display: inline-block;
+    color: palette(mono,dark);
+    font-family: $font-custom-bold; 
+    @include perem( font-size, 14px );
+}
+
+label.checkbox,
+label.radio {
+    cursor: pointer; // make labels look clickable when they are. Be sure to use matching IDs
+    font-family: $font-custom-reg;
+}
+
+input,
+textarea,
+select,
+button,
+.button { @include form-element(); }
+
+input,
+textarea,
+select {
+    width: 100%;
+
+    &:focus {
+        outline-width: 0;
+        border-style: solid;
+        border-color: palette(brand);
+    }
+
+    &[required]:focus,
+    &[required=true]:focus,
+    &[required="required"]:focus {
+        outline-width: 0;
+        border-style: solid;
+        border-color: palette(brand,orange);
+        //@include box-shadow( 0 0 .125em palette(brand,orange) inset );
+    }
+}
+
+#{$form-input-buttons},
+.button,
+select,
+input[type=checkbox],
+input[type=radio],
+input[type=image] { width: auto; }
+
+input[type=checkbox],
+input[type=radio] { 
+    border: 0; 
+    @include border-radius( none ); 
+}
+
+textarea {
+    overflow: auto;
+    resize: vertical;
+}
+
+.disabled,
+button[disabled],
+.button__disabled,
+input[disabled],
+select[disabled],
+select[disabled] option,
+select[disabled] optgroup,
+textarea[disabled] {
+    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    user-select: none;
+    cursor: default;
+}
+
+::-webkit-input-placeholder  { color: palette(mono,mid-light); font-style: italic; }
+::-moz-placeholder { color: palette(mono,mid-light); font-style: italic; }
+:-ms-input-placeholder { color: palette(mono,mid-light); font-style: italic; }
+
+
+/* ! ===== Special rules for older Safari and iOS ===== */
+input[type="search"],
+input[type="email"],
+input[type="url"],
+input[type="tel"],
+input[type="number"] { -webkit-appearance: textfield; }
+
+
+/* ! ===== General forms ===== */
+
+.form {
+    
+    &--legend {}
+    
+    &--input {}
+}
+
+
+// Search field with icon
+/*<div class="search--wrapper">
+    <span class="icon icon-search-alt" aria-hidden="true"></span>
+    <input class="form--input" type="search" name="q" id="search" value="" placeholder="Search Python.org">
+</div>*/
+.search--wrapper {
+    @include relative-container(); 
+    
+    .icon {
+        position: absolute; 
+            top: .5em; left: .5em; 
+        z-index: 3; 
+    }
+    
+    .form--input {
+        position: relative; 
+        z-index: 2; 
+        padding-left: 2.25em; 
+    }
+}
+
+
+/* ! ===== Buttons ===== */
+.button {
+    text-align: center; 
+    white-space: nowrap; 
+    margin-bottom: rhythm(.25); 
+    padding: .4em .75em .35em; 
+    
+    // Default theme is yellow
+    color: palette(mono,dark); 
+    border: 1px solid darken( palette(brand,yellow), 6% ); 
+    @include border-radius();
+    @include vertical-gradient( lighten( palette(brand,yellow), 6% ), darken(palette(brand,yellow), 12%) );
+    //text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    
+    @include touch-hover() {
+        color: palette(mono,x-dark);
+        @include vertical-gradient( darken(palette(brand,yellow), 12%), lighten( palette(brand,yellow), 6% ) ); 
+    }
+}

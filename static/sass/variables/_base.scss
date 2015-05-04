@@ -1,0 +1,129 @@
+/* ! ===== Project Variables ===== */
+
+        $base-font-size: 16px; // Set this here, but don't echo it anywhere. Used in calculations 
+      $base-line-height: 28px; // Set this here, but don't echo it anywhere. Used in calculations 
+$base-line-height-ratio: ($base-line-height/$base-font-size); 
+
+/* Grid */
+     $total-max-width: 980px; // Needed for calculations and .container max-width
+     $project-columns: 12; 
+        $grid-spacing: 1em; // Needed for _grid.scss
+     $grid-spacing-px: $base-font-size; 
+     $vert-grid-ratio: 1.5; 
+   $vert-grid-spacing: $vert-grid-ratio * 1em; 
+$vert-grid-spacing-px: $base-font-size * 1.5; 
+
+
+/* Colors */
+$palettes: (
+    
+    mono: (
+        x-dark: #222,
+        dark: #333,
+        mid-dark: #666, 
+        base: #999,
+        mid-light: #caccce,
+        light: #e6e8ea,
+        x-light: #f2f4f6
+    ),
+    
+    brand: (
+        base: #3776ab, // Python blue
+        light: #499bde,
+        dark: #1c3b56,
+        darkest: #222b33,
+        grey: #78797a, 
+        yellow: #ffd343, 
+        green: #82b043, 
+        purple: #a06ba7,
+        red: #b55863,
+        orange: #cc9547
+    )
+);
+
+/*
+$grey-lighterest: #f2f4f6; 
+$grey-lightest: #e6e8ea;
+$grey-lighterer: #ddd;
+$grey-lighter: #caccce;
+$grey-light: #999;
+$grey: #666;
+$grey-dark: #333;
+$grey-darker: #222;
+*/
+
+$white: #fff; 
+$black: #101010; 
+
+$primary: palette(brand); 
+$primary-dark: palette(brand,dark); // #1f3b47; 
+$primary-darker: palette(brand,darkest); // #1e2933; 
+
+$alert-high: palette(brand,red); 
+$alert-normal: palette(brand,yellow); 
+$code: #11a611; 
+
+$default-color: #444;
+$link-color: $primary;
+$link-hover: $primary-darker; 
+$border-color: #dfdfdf; 
+
+
+/* Background colors */
+$bg-color: palette(brand,dark); // The color of the body or HTML when the height of the content is not tall enough
+$mainsection-bg-color: $white; // The bg color of the content area
+
+
+/* Typography */
+$relative-font-sizing       : true; /* True here means that all computed values will be in EMs */
+$round-to-nearest-half-line : true; /* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
+
+             $font-default: 'Helvetica Neue', HelveticaNeue, sans-serif;
+                $font-sans: $font-default; 
+               $font-serif: Georgia, serif; 
+
+/*$default-font: SourceSansProRegular, Arial, sans-serif;
+$default-font-italic: SourceSansProItalic, Arial, sans-serif;
+$default-font-bold: SourceSansProBold, Arial, sans-serif;
+$alt-font: Flux-Regular, $default-font;
+$alt-font-bold: Flux-Bold, $default-font-bold;*/
+
+$font-size-adjust-value: 1.15; // For Flux
+
+     $font-custom-headline: 'Flux-Regular', $font-default; 
+$font-custom-headline-bold: 'Flux-Bold', $font-default; 
+          $font-custom-reg: 'SourceSansProRegular', $font-default; 
+         $font-custom-bold: 'SourceSansProBold', $font-default;
+       $font-custom-italic: 'SourceSansProItalic', $font-default; 
+
+
+           $font-monospace: 'Source Code Pro', 'Anonymous Pro', Consolas, 'Envy Code R', 'Ubuntu Mono', Inconsolata-g, Inconsolata, monospace; 
+
+/* If using Google fonts, set the weights here */
+$normal-weight: 400; 
+  $bold-weight: 700; 
+
+
+/* Sizes */
+       $giga: 36px; 
+       $mega: 32px; 
+       $kilo: 28px; 
+  $headerone: 24px;
+  $headertwo: 21px;
+$headerthree: 18px;
+ $headerfour: 16px;
+
+
+/* ! ===== Input Types ===== */
+/* 
+ * Set all the up-and-coming input text types here for easier reference 
+ * Does not include types that are not meant to be displayed full width, such as: 
+        type=number, type=range, type=date, type=color
+ * Usage: \#{$form-text-input}
+ *
+ * http://www.w3.org/html/wg/drafts/html/master/forms.html#states-of-the-type-attribute
+ */
+$form-text-input: unquote('input[type="text"], input[type="password"], input[type="search"], input[type="email"], input[type="tel"], input[type="url"], input[type="number"]');
+$form-input-buttons: unquote('input[type="submit"], input[type="reset"], input[type="button"], button');
+$form-input-dates: unquote('input[type^="date"], input[type="month"], input[type="week"], input[type="time"]');
+$form-input-not-radio: unquote('input:not([type="radio"]):not([type="checkbox"])');

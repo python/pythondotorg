@@ -1,0 +1,299 @@
+/* ! ===== Elements inside .typography — Anywhere we want very pretty, readable type styles ===== */
+
+@mixin content-styles() {
+    
+    h1 { 
+        @include headerone();
+        @include pe-rem-helper( padding-top, 28px ); 
+    }
+
+    h2 { @include headertwo(); }
+    
+    h3 { 
+        @include headerthree(); 
+        @include pe-rem-helper( padding-top, 2px ); 
+    }
+    
+    h4 { 
+        @include headerfour();
+        @include pe-rem-helper( padding-top, 6px ); 
+    }
+    
+    h5 { 
+        @include headerfive(); 
+        @include pe-rem-helper( padding-top, 6px ); 
+    }
+    
+    h6 { 
+        @include headersix();
+        @include pe-rem-helper( padding-top, 4px ); 
+    }
+    
+    p + h2 { @include pe-rem-helper( padding-top, 4px ); }
+    
+    @include pe-media( $max: $breakpoint-small ) {
+    	
+    	h1 { @include pe-rem-helper( font-size, $headertwo ); }
+    	
+    	h2 { @include pe-rem-helper( font-size, $headerthree ); }
+    	
+    	h3 { @include pe-rem-helper( font-size, $headerfour ); }
+    }
+    
+    
+    p:empty { display: none; }
+    
+    dl, form, table { clear: both; }
+    
+    /* Remove when lists are nested */
+    li ul, 
+    li ol { margin-bottom: 0; }
+    
+    p, dd, blockquote, address { @include pe-hyphenate(); }
+    
+    /* Because authors are able to float images inside bulleted lists, and that can get wonky */
+    //li { clear: both; }
+    
+    a {
+        text-decoration: underline; 
+        
+        &:hover, &:focus { 
+            color: palette(mono,dark); 
+            text-decoration: none;
+        }
+        
+        &[href^="tel:"] {
+            color: $default-color; 
+            border-bottom: 2px dotted $link-color; 
+            
+            &:hover, &:focus { color: $link-color; }
+        }
+    }
+    
+    dl {
+        border-left: 1px solid palette(mono,light);  
+        border-right: 1px solid palette(mono,light); 
+        border-bottom: 1px solid palette(mono,light); 
+        @include pe-rem-helper( margin-top, -10px ); 
+        
+        dt, dd { 
+            margin-bottom: 0; 
+            padding-left: $grid-spacing; 
+            padding-right: $grid-spacing; 
+            @include pe-rem-helper( padding-top, 8px ); 
+            @include pe-rem-helper( padding-bottom, 6px ); 
+        }
+        
+        dt {
+            font-weight: $bold-weight; 
+            border-top: 1px solid palette(mono,light); 
+            border-bottom: 1px solid palette(mono,light); 
+        }
+        
+        dd {
+            @include pe-rem-helper( padding-top, 7px ); 
+            @include pe-rem-helper( padding-bottom, 4px ); 
+        }
+        
+        dt + dt { border-top: 0; }
+    }
+    
+    // Even though we prefer blockquote within a figure, TinyMCE won't do that, so don't plan on it 
+    blockquote {
+        position: relative; 
+        
+        p {
+            color: palette(mono,dark); 
+            font-family: $font-serif; 
+            font-style: italic; 
+            @include pe-rem-helper( font-size, 18px ); 
+            @include pe-rem-helper( line-height, 28px ); 
+            @include pe-rem-helper( padding-left, 32px ); 
+        }
+        
+        > * { margin-top: 0; }
+        
+        cite, em, i { font-style: normal; }
+        
+        p:before, 
+        p:last-child:after {
+            color: palette(mono,light);
+            font-style: normal; 
+            font-weight: $bold-weight; 
+            line-height: 1; 
+            @include pe-rem-helper( font-size, 48px ); 
+        }
+        
+        p:before {
+            content: "“";
+            position: absolute;
+                top: 0; left: .0625em; 
+        }
+        
+        p:last-child:after {
+            display: inline; 
+            content: "”";
+            line-height: 0;
+            vertical-align: text-bottom;
+            margin-left: .125em;
+            
+            .ie9 &,
+            .gte-ie10 & { line-height: .25; vertical-align: bottom; }
+        }
+    }
+    
+    figure {
+        
+        img { @include pe-rem-helper( margin-bottom, 13px ); }
+        
+        figcaption {
+            text-align: center; 
+            font-style: italic; 
+            line-height: 1.5; 
+            @include pe-rem-helper( font-size, 14px ); 
+        }
+    }
+    
+    cite, 
+    abbr[title], 
+    dfn[title] { border-bottom: 1px dotted palette(mono,light); }
+    
+    cite a { text-decoration: none; }
+    
+    abbr[title] {
+        text-transform: uppercase;
+        letter-spacing: 0.125em; 
+        @include pe-rem-helper( font-size, 13px ); 
+    }
+    
+    var { 
+        color: palette(mono,dark);
+        font-style: italic; 
+    }
+    
+    /* Proper code blocks need to be surrounded by a <pre> */
+    pre {
+        margin-bottom: 1em; 
+    	
+    	code {
+        	display: block; 
+            padding: 1em; 
+            margin: 0; 
+            border-left: 5px solid $code; 
+            border-bottom: 1px solid #f0f0f0; 
+            @include border-radius( 0 ); 
+            @include border-right-radius(); 
+    	}
+    }
+    
+    code, 
+    kbd, 
+    samp,
+    mark { 
+        display: inline-block; 
+        line-height: 1.25; 
+        padding: .25em .25em .125em; 
+        margin: 0 -.0625em; 
+    }
+    
+    code, kbd {
+        background: palette(mono,x-light); 
+        background: rgba( #000, .05 ); 
+        @include box-shadow( 0 0 .25em rgba( #000, .1 ) inset ); 
+        @include border-radius(); 
+    }
+    
+    code { color: $code; }
+    
+    samp { background-color: palette(mono,x-light); }
+    
+    mark { background-color: $alert-normal; }
+    
+    strike, s { color: palette(mono,light); }
+    
+    del { color: $alert-high; }
+    
+    u { text-decoration: underline; }
+    
+    ins { 
+        color: palette(mono,dark); 
+        background-color: palette(mono,x-light); 
+        text-decoration: none; 
+    }
+    
+    /* images from TinyMCE
+    .alignleft { float: left; }
+    
+    .alignright { float: right; }
+    
+    .alignleft, 
+    img[style='float: left;'] {
+        max-width: 35%; 
+        margin-right: 1em; 
+        margin-bottom: .5em; 
+    }
+    .alignright, 
+    img[style='float: right;'] {
+        max-width: 35%; 
+        margin-left: 1em; 
+        margin-bottom: .5em; 
+    } */
+    
+    /* Prettier tables if authors use the correct elements */
+    table {
+        
+        caption {
+            caption-side: top;
+            color: $default-color;
+            font-size: px2em( 18px ); 
+            text-align: left;
+            @include pe-rem-helper( margin-bottom, 26px ); 
+        }
+        thead, tfoot {
+            border-bottom: 2px solid #ccc; 
+        }
+        tr {
+            background-color: #f6f6f6; 
+            
+            & th {
+                background-color: #f0f0f0; 
+            }
+        }
+        tr:nth-child(even) {
+            background-color: #f0f0f0; 
+        }
+        th, td {
+            padding: .25em .5em .2em; 
+            border-left: 2px solid $white; 
+            
+            &:first-child {
+                border-left: none; 
+            }
+        }
+        tfoot {
+            border-top: 1px solid $border-color; 
+        }
+    } 
+    
+    /* Pretty forms */
+    form {
+        
+        .horizontal-list {
+            
+            li { margin-right: 1em; }
+        }
+        
+        .element-caption { color: palette(mono,light); }
+    }
+    
+    fieldset { 
+        border-top: 1px solid $border-color; 
+        
+        legend {
+            color: palette(mono,dark); 
+            font-size: px2em( 18px ); 
+            background-color: #e6e6e6; 
+            padding: .5em .5em .75em 0; 
+        }
+    }
+}

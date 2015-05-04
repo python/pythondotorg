@@ -1,0 +1,131 @@
+/* ! ==== Global General Typographic / Element Styles ==== */
+
+html {
+    font-size: 100%; 
+    min-height: 100%; 
+    margin-bottom: 1px; 
+    
+    &.no-touch { overflow-x: hidden; }
+}
+
+body {
+    color: $default-color;
+    
+    @include pe-media( $breakpoint-medium ) { text-rendering: optimizeLegibility; }
+}
+
+html, 
+body { background-color: $mainsection-bg-color; }
+
+html.js, 
+.js body { background-color: $bg-color; }
+
+body, 
+input, 
+textarea, 
+select, 
+button {
+    font: $normal-weight 100%/#{$base-line-height-ratio} $font-custom-reg; 
+    
+    //@include oldIE() { font-family: $font-default; }
+}
+
+
+/* ! ===== Generic declarations ===== */
+a { 
+	// Anchors should have an underline when inside the main content area. See _typography.scss 
+	color: $link-color; 
+	text-decoration: none; 
+	@include transition();
+	
+	@include touch-hover() {
+    	color: $link-hover; 
+    	text-decoration: none; 
+	}
+}
+
+a:link { -webkit-tap-highlight-color: $link-hover; }
+
+nav a, 
+menu a { display: block; }
+
+
+// Set the highlight colors. These selection declarations have to be separate 
+::-moz-selection { background: $link-color; color: $white; text-shadow: none; }
+::selection { background: $link-color; color: $white; text-shadow: none; }
+
+img { 
+    display: block; 
+    margin: 0 auto; 
+}
+
+
+/* ! ===== Headers & Type Sizes ===== */
+
+.giga { @include pe-rem-helper( font-size, $giga ); }
+
+.mega { @include pe-rem-helper( font-size, $mega ); }
+
+.kilo { @include pe-rem-helper( font-size, $kilo ); }
+
+.alpha { @include headerone(); }
+
+.bravo { @include headertwo(); }
+
+.charlie { @include headerthree(); }
+
+.delta { @include headerfour(); }
+
+.echo { @include headerfive(); }
+
+.foxtrot { @include headersix(); }
+
+hr { border-top: 1px solid $border-color; }  
+        
+
+/* ! ===== Accesibility and Language Support ===== */
+
+html[dir=rtl] { direction: rtl; }
+
+abbr[title], dfn[title] { border-bottom: 1px dotted palette(mono,mid-dark); }
+
+
+/* ! ===== Global elements ===== */
+
+.pre {
+    // A useful class that helps control how lines might break. Use carefully. 
+    white-space: nowrap; 
+}
+
+.prompt {
+    display: inline-block; 
+    font-family: $font-monospace; 
+    font-weight: bold; 
+    color: #a9a9a9; 
+    letter-spacing: -.125em; 
+    
+    a:hover &, 
+    a:focus & { color: palette(brand,orange); }
+}
+
+/*<h2 class="widget--title">
+    <a href="#" class="shrubbery" title="More News">
+        <span aria-hidden="true" class="icon icon-news"></span>Latest News
+        <span class="give-me-more"><span class="prompt">&gt;&gt;&gt;</span> More</span>
+    </a>
+</h2>*/
+.shrubbery {
+    @include relative-container(); 
+    display: block; 
+    padding-right: 3em; 
+    
+    &:hover .give-me-more, 
+    &:focus .give-me-more { color: palette(brand); }
+    
+    .give-me-more {
+        position: absolute;
+            top: .175em; right: 0;
+        color: palette(mono);
+        @include perem( font-size, $base-font-size ); 
+    }
+}

@@ -1,5 +1,5 @@
-require 'susy'
 # Require any additional compass plugins here.
+require "compass/import-once/activate"
 
 
 # Set this to the root of your project when deployed:
@@ -9,6 +9,15 @@ images_dir = "img"
 javascripts_dir = "js"
 fonts_dir = "fonts"
 css_dir = "stylesheets"
+sourcemap = true
+
+
+add_import_path "sass/framework"
+add_import_path "sass/libraries"
+add_import_path "sass/project"
+add_import_path "sass/templates"
+add_import_path "sass/variables"
+
 
 # You can select your preferred output style here (can be overridden via the command line):
 # Compass needs to RESTART before a new style will take effect

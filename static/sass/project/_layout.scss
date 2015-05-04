@@ -1,0 +1,409 @@
+/* ! ===== Layout ===== */
+
+/*
+    Intent: set up re-usable patterns for major column configurations. 
+    While the pe-media() mixin allows us to insert media query rules inline with any element, 
+    we collect the major structures here. 
+    
+    Not all layout needs to be here, but if the pattern is used more than once
+    or involves a major set of elements, like the footer, keep it here. 
+    
+    Keep styles out of here as much as it makes sense. 
+*/
+    
+
+/* ! ===== Roll your own Grid ===== */
+
+/*
+    The concept here should be simple. 
+    With the box-model set to border-box in the reset, padding renders on the inside of an element. 
+    Therefore, column widths can be simple math AND we do not need to float the last element in a row right, 
+    nor remove a margin. 
+    More nesting is needed in soime cases, but the grid is dead simple: 
+    
+    Example: 
+    <div class="container">
+        <h1 class="not-column">Title</h1>
+        <div class="col-group__two">
+            <div class="column"> Content </div>
+            <div class="column"> Content </div>
+        </div>
+    </div>
+    
+    <div class="container__tight">
+        <h1 class="not-column">Widgets</h1>
+        <div class="col-group__three">
+            <div class="column"> Content </div>
+            <div class="column"> Content </div>
+            <div class="column"> Content </div>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="col-group__default">
+            <article class="column" role="main"> Content </div>
+            <aside class="column" role="complementary"> Content </aside>
+        </div>
+    </div>
+    
+    To make calculations, use the columns() function.
+    The total number of columns is set in _variables, but can be overridden at any time: 
+    
+    width: columns(2) <-- This would be 2 out of 12, if 12 was our default for a value of 16.6666%
+    width: columns(2,4) <-- This would be 2 out of 4, ignoring our default for a value of 50%
+*/
+
+// More settings in base/_grid.scss
+
+.col-group__two,
+.col-group__four {
+    @extend %col-row; 
+    
+    .container__tight & { @extend %col-row-tight; }
+    
+    // At small sizes, make the two and four col pattern the same 
+    @include pe-media( $breakpoint-small ) {
+        
+        .column { 
+            float: left; 
+            width: 50%; 
+            
+            &.pull-right { float: right; }
+        }
+        
+        // every other, starting at the third element 
+        .column:nth-of-type(2n+3) { clear: both; }
+    }
+}
+
+
+.col-group__four {
+    
+    // Redefine the four col structure to be four across 
+    @include pe-media( $breakpoint-large ) {
+        
+        .column { width: 25%; }
+        
+        .column:nth-of-type(2n+3) { clear: none; } // reset the clear pattern from the two col structure 
+        
+        .column:nth-of-type(4n+5) { clear: both; }
+    }
+}
+
+
+.col-group__three, 
+.col-group__six {
+    @extend %col-row; 
+    
+    .container__tight & { @extend %col-row-tight; }
+    
+    // At small sizes, make the two and four col pattern the same 
+    @include pe-media( $breakpoint-medium ) {
+        
+        .column, 
+        .column-group { 
+            float: left; 
+            width: 33.3333%; // do not round up to 33.3334%
+            
+            &.pull-right { float: right; }
+        }
+        
+        .column-group { 
+            width: 66.6666%; 
+            
+            .column { 
+                width: 50%; 
+            
+                &--first { padding-left: 0; }
+            
+                &--last { padding-right: 0; }
+            }
+        }
+        
+        // every third, starting with the fourth element 
+        .column:nth-of-type(3n+4) { clear: both; }
+    }
+}
+
+
+.col-group__six {
+    
+    // Redefine the three col structure to be six across 
+    @include pe-media( $breakpoint-large ) {
+        
+        .column { width: 16.6666%; } // do not round up to 16.6667%
+        
+        .column:nth-of-type(3n+4) { clear: none; } // reset the clear pattern from the three col structure 
+        
+        // every sixth, starting with the seventh element 
+        .column:nth-of-type(6n+7) { clear: left; }
+    }
+}
+
+
+// Any asymetrical pattern that you would like to support a main column and a sidebar
+.col-group__default {
+    @extend %col-row; 
+    
+    // Our default grid is 12 col, but here we use 16
+    @include pe-media( $breakpoint-medium ) {
+        
+        .column { float: left; }
+        
+        & > [role="main"] { width: columns(10,16); }
+        
+        & > [role="complementary"] { 
+            width: columns(6,16); 
+            padding-top: px2em(118px); // account for the height of an average breadcrumbs element
+        }
+    }
+    
+    @include pe-media( $breakpoint-large ) {
+        
+        & > [role="main"] { 
+            width: columns(11,16); 
+            padding-right: $grid-spacing*2;
+        }
+        
+        & > [role="complementary"] { width: columns(5,16); }
+    }
+}
+
+
+// Footer columns... go from 2 col, to three col, with six elements
+.col-group__footer {
+    @extend %col-row; 
+    
+    // At small sizes, make the two and four col pattern the same 
+    @include pe-media( $breakpoint-tiny ) {
+        
+        .column { 
+            float: left; 
+            width: 50%; // do not round up to 33.3334%
+        }
+        
+        // every second, starting with the fourth element 
+        .column:nth-of-type(2n+3) { clear: both; }
+    }
+    
+    // Redefine the two col structure to be three across 
+    @include pe-media( $breakpoint-medium ) {
+        
+        .column { width: 33.3333%; } // do not round up
+        
+        .column:nth-of-type(2n+3) { clear: none; } // reset the clear pattern
+        
+        // every third, starting with the fourth element 
+        .column:nth-of-type(3n+4) { clear: left; }
+    }
+}
+
+
+/*
+ * Fixed Single column with a fluid neighbor
+ * Can be applied as a mixin to any element. Basic pattern remains the same. 
+ * Based on http://stugreenham.com/demos/fluid-width-with-a-fixed-sidebar/
+ */
+
+/*  <div class="page-container fwf-col">
+        
+        <nav class="mainnav fwf-fixed-left">
+        </nav>
+        
+        <div class="fwf-wrapper">
+
+            <div id="sitetop" class="fwf-fluid-right">
+                <div class="content-wrapper">
+                    <header class="main-header"></header>
+                    <section class="main-section"></section>
+                </div><!-- end .content-wrapper -->
+                <footer class="main-footer" role="navigation"></footer>
+            </div><!-- end .fwf-fluid-right -->
+            
+        </div><!-- end .fwf-wrapper -->
+    </div>
+    <a id="exit-menu" class="close-drawer"></a>
+*/
+
+.fwf-col, 
+.fwf-wrapper { @extend %pie-clearfix; }
+
+
+@include pe-media( $breakpoint-small ) {
+    $fwf-width: 300px; 
+    
+    .fwf-fixed-left, .fwf-fixed-right {
+        position: relative;
+        float: left;
+        //width: $fwf-width;
+    }
+    
+    .fwf-fixed-left {
+        //left: $fwf-width;
+    	//margin-left: - $fwf-width;
+    }
+    
+    .fwf-fixed-right {
+        //right: $fwf-width;
+    	//margin-right: - $fwf-width;
+    }
+    
+    .fwf-wrapper {
+        float: left;
+    	width: 100%;
+    }
+    
+    //$fwf-width-plus-gutter: $fwf-width + ($grid-spacing-px * 2); 
+    
+    .fwf-fluid-left {}
+    
+    .fwf-fluid-right { @include relative-container( $overflow: visible ); }
+}
+
+
+
+/* ! ===== Off canvas menu flyout pattern. STRUCTURE and animation ONLY.  ===== */
+
+$mainnav-width-small: 260px; 
+$mainnav-width-large: 220px; 
+
+/* <body class="active-nav">
+    <div class="page-container fwf-col">
+        
+        <nav class="main-navigation fwf-fixed-left"> [ content ] </nav>
+        
+        <div class="fwf-wrapper">
+            <div class="content-wrapper fwf-fluid-right">
+                
+                <div class="navtoggle">
+                    <button type="button" class="navtoggle--button">
+                        <span class="icon navtoggle--icon" aria-hidden="true"><span>&equiv;</span></span>
+                        <span class="icon-label">Menu</span>
+                    </button>
+                </div>
+                <div class="container">
+                    
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <a id="exit-menu" class="close-drawer"></a>
+</body>*/
+
+.active-nav {
+    
+    .navtoggle { 
+        position: fixed; 
+        z-index: 10501; 
+        width: $mainnav-width-small;
+        @include translate3d( - $mainnav-width-small, 0, 0 ); 
+        
+        &--button { 
+            width: 100%; 
+            padding-left: 1.25em; 
+        }
+    
+        // Animate the hamburger into a close button "X"
+        &--button .navtoggle--icon { background-color: transparent; }
+        
+        &--button .navtoggle--icon:before { top: 0; @include transform( rotate(45deg), true ); }
+        
+        &--button .navtoggle--icon:after { bottom: 0; @include transform( rotate(-45deg), true ); }
+    }
+}
+
+.page-container {
+    @include relative-container(); 
+}
+
+
+#exit-menu { 
+    @include hide(); 
+
+    /*body*/ .active-nav & {
+        @include show( block ); 
+        position: fixed; // relative to the body, so, it will never cover the entire page
+          top: 0; right: 0; bottom: 0; left: $mainnav-width-small; 
+        background: transparent;
+        z-index: 10500; 
+        cursor: pointer; 
+    }
+}
+
+
+/* ! ===== Media Query changes ===== */
+
+// We don't define a min width, so these styles are present all the way up
+@include pe-media( $max: ($breakpoint-medium - .0625em), $serve-to-nomq: false ) {
+    
+    .mainnav {
+        position: absolute;
+            top: 0;
+        width: $mainnav-width-small; 
+        height: 100%; 
+        overflow-y: scroll; 
+        -webkit-overflow-scrolling: touch; 
+        @include transition( all $animation-duration ease-in-out ); 
+        @include translate3d( - $mainnav-width-small*1.25, 0, 0 ); // Adds a wider slide effect from the left
+        
+        .csstransforms3d .active-nav & {  @include translate3d( 0, 0, 0 ); }
+        
+        // For IE9 and other non-3d browsers
+    	/*modernizr*/ .no-csstransforms3d & {  @include transform( translate( - $mainnav-width-small*1.25, 0 ) ); }
+        /*modernizr*/ .no-csstransforms3d .active-nav & {  @include transform( translate( 0, 0 ) ); }
+    }
+    
+    .fwf-wrapper {
+    	@include transition( all $animation-duration ease-in-out ); 
+    	
+    	/*modernizr*/ .csstransforms3d .active-nav & {  @include translate3d( $mainnav-width-small, 0, 0 ); }
+    	
+    	// For IE9 and other non-3d browsers
+    	.no-csstransforms3d .active-nav & {  @include transform( translate( $mainnav-width-small, 0 ) ); }
+    }
+}
+
+// Large screens... drawer effect inactive. 
+@include pe-media( $breakpoint-medium ) {
+    
+   .mainnav {
+        position: relative; 
+        width: $mainnav-width-large;
+        left: $mainnav-width-large;
+    	margin-left: - $mainnav-width-large; 
+    	
+    	ul { width: $mainnav-width-large; }
+    }
+    
+    .fwf-fluid-right{ margin-left: $mainnav-width-large; }
+    
+    // Drawer open and exposed, menu button hidden
+    .navtoggle--button {
+        @include hide(); 
+    }
+}
+
+// Even larger screens... Icon and label side by each
+/*@include pe-media( $breakpoint-largest, $serve-to-nomq: false ) {
+    
+   .mainnav {
+        width: $mainnav-width-large;
+        left: $mainnav-width-large;
+    	margin-left: - $mainnav-width-large; 
+    	
+    	ul { width: $mainnav-width-large; }
+    }
+    
+    .fwf-fluid-right{ margin-left: $mainnav-width-large; }
+}*/
+
+
+@media (min-height: $breakpoint-height) {
+    
+    // Look in project.scss for the body:after label that javascript listens to. 
+    .stuck {
+        position: fixed; 
+        top: 0; left: 0; 
+    }
+}

@@ -1,0 +1,138 @@
+/* ! ===== Functions – Keep these consistent from project to project ===== */
+
+/*
+ * Functions and mixins are very similar in nature. 
+ * Because they can both accept variables, you might end up creating a mixin when what you really need is a function. 
+ * Instead of outputting lines of Sass/CSS the way mixins do, functions return a value. 
+ * http://thesassway.com/advanced/pure-sass-functions
+ */
+
+
+/* 
+ * Getter function for color palettes using SASS maps
+ * http://erskinedesign.com/blog/friendlier-colour-names-sass-maps/ 
+ */
+@function palette($palette, $tone: 'base') {
+    @return map-get( map-get($palettes, $palette), $tone );
+}
+
+
+/* 
+ * Turn numbers with units into unitless numbers: https://github.com/nex3/sass/issues/533 
+ * Two ways to do it, but neither are foolproof. 
+ * Both will fail when decimal points are passed to them
+ */
+@function clear-units($value){
+    
+    @if type-of($value) == "number" {
+        @if (unitless($value)) {
+            @return $value;
+        } @else if unit($value) == "em"{
+            @return $value / 1em;
+        } @else if unit($value) == "px" {
+            @return $value / 1px;
+        } @else if unit($value) == "pt" {
+            @return $value / 1pt;
+        }
+    } @else {
+        @warn "Not a number value: #{$value}";
+        @return $value;
+    }
+}
+
+@function strip-units($value) {
+    @return $value / ($value * 0 + 1);
+}
+
+
+/* 
+ * Do the math of pixel to EM conversion. 
+ * @requires $base-font-size
+ */
+@function px2em( $pixel, $base-size:$base-font-size ) {
+    $base-size: 16px !default;
+    
+    /* Remove units for easier math. We are converting to EMs anyway */
+    $pixel: clear-units($pixel); 
+    $base-size: clear-units($base-size); 
+    @return #{$pixel / $base-size}em;
+}
+
+
+/* 
+ * Calculate a percentage from two pixel values... 
+ * @requires: $total-max-width
+ * @accepts: two pixel (assumed) values
+ * @returns: percent value
+ */
+@function calc-percent( $target, $container:$total-max-width ) {
+    $target: clear-units($target); 
+    $container: clear-units($container); 
+    
+    @return ($target / $container) * 100%;
+}
+
+
+/*
+ * Calculate the width of a column based on any number of columns grid
+ * @accepts a number from 1 - infinity
+ * @returns: percent value
+ */
+$project-columns: 12 !default; 
+@function columns( $colnumber: 1, $totalcols: $project-columns ) {
+    // 100 divided by the total number of cols divided by the number of columns that we want. 
+    // Example, 12/3 = 4... 100/4 * 1% = 25%
+    @return ( 100/( $totalcols/$colnumber ) ) * 1%; 
+}
+
+
+/* 
+ * Convert an rgba color value to the closet approximation in a hex value 
+ * http://alwaystwisted.com/post.php?s=2013-05-06-smarter-rgba-fallbacks-with-sass
+ * @accepts: rgba() color value and a percentage
+ * @returns: hexidecimal color value
+ */
+@function rgba2hex( $color, $percentage ) {
+    @return lighten( $color, (1-$percentage)*25 );
+}
+
+
+/* 
+ * Emulate the way Adobe Illustrator allows percentages of defined global colors 
+ * @accepts: color as Hex, RGB or HSL. Percent as numeric
+ * Optional: Background color for mixing function
+ * @returns: hexidecimal color
+ * Inspiration from http://thesassway.com/intermediate/mixins-for-semi-transparent-colors
+ */
+@function percent-color( $color, $percent, $background: white ) {
+  $percent: strip-units($percent); 
+  $opaque: opacify($color, 1);
+  $solid-color: mix($opaque, $background, $percent);
+  @return $solid-color; 
+}
+
+
+/* 
+ * Emulate Adobe Photoshop color blend modes 
+ * @accepts: two colors as Hex or RGB
+ * @returns: Color in RGB format
+ * Inspiration from https://github.com/heygrady/scss-blend-modes/blob/master/stylesheets/_blend-modes.scss
+ */
+@function blend-normal($foreground, $background) {
+  $opacity: opacity($foreground);
+  $background-opacity: opacity($background);
+
+  // calculate opacity
+  $bm-red: red($foreground) * $opacity + red($background) * $background-opacity * (1 - $opacity);
+  $bm-green: green($foreground) * $opacity + green($background) * $background-opacity * (1 - $opacity);
+  $bm-blue: blue($foreground) * $opacity + blue($background) * $background-opacity * (1 - $opacity);
+  @return rgb($bm-red, $bm-green, $bm-blue);
+}
+
+@function multiply-color($foreground, $background) {
+  $bm-red: red($background) * red($foreground) / 255;
+  $bm-green: green($background) * green($foreground) / 255;
+  $bm-blue: blue($background) * blue($foreground) / 255;
+
+  @return blend-normal( rgba($bm-red, $bm-green, $bm-blue, opacity($foreground)), $background );
+}

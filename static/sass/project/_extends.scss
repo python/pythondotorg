@@ -1,0 +1,129 @@
+/* ! ===== Placeholder definitions to use with @extend ===== */
+
+/* Consider carefully when creating an @extend. 
+ * "Should this be a mixin that I can pass variables to?"
+ * A mixin will create repeated groups of markup throughout the stylesheet, and while 
+ * it might be more advantageous to group elements that share rules together with @extend, 
+ * @extend puts rules in one place which may make it harder to override when needed. 
+ * 
+ * Performance-wise, when things get g-zipped on the server, one is not better than the other
+ * 
+ * Consider: http://csswizardry.com/2014/11/when-to-use-extend-when-to-use-a-mixin/
+ */
+
+%horizontal-list {
+    
+    li { display: inline-block; }
+    
+    .lt-ie8 & { display: inline; }
+}
+
+// This mixin creates a lot of CSS, so I like to group them. I also rarely need to override it. 
+%pie-clearfix { 
+    @include pie-clearfix; 
+}
+
+
+
+// Phase all of these out and use mixins instead
+%blue-colorspace {
+    @include vertical-gradient( darken($primary, 20%), darken($primary, 10%) );
+    @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) );
+}
+
+%blue-colorbox {
+    @extend %blue-colorspace;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+    
+    .button {
+        @extend %button-style-yellow;
+    }
+}
+
+%grey-colorspace {
+    @include vertical-gradient( palette(mono,x-light), darken(palette(mono,x-light), 5%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.01) );
+}
+
+%grey-colorbox {
+    @extend %grey-colorspace;
+    border: 1px solid $border-color;
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
+%yellow-colorspace {
+    @include vertical-gradient( lighten( palette(brand,yellow), 18%), lighten( palette(brand,yellow), 8%) );
+    @include box-shadow( inset 0 0 10px rgba(#000, 0.05) );
+}
+
+%yellow-colorbox {
+    @extend %yellow-colorspace;
+    border: 1px solid darken( palette(brand,yellow), 6% );
+    margin-bottom: 0.5em;
+    padding: 1.25em;
+    @include pie-clearfix();
+}
+
+
+/* Buttons */
+%button-style {
+    cursor: pointer; 
+    color: palette(mono,mid-dark) !important; 
+    font-weight: normal; 
+    margin-bottom: rhythm(.25); 
+    padding: .4em .75em .35em; 
+    text-align: left; 
+    white-space: nowrap; 
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
+    border-style: solid; 
+    border-width: 1px; 
+    border-top-color: $border-color; 
+    border-left-color: $border-color; 
+    border-right-color: $border-color; 
+    border-bottom-color: palette(mono,mid-light); 
+    @include border-radius();
+    @include vertical-gradient( lighten( palette(mono,mid-light), 25% ), lighten(palette(mono,mid-light), 20%) );
+    @include box-shadow( 1px 1px 1px rgba(#000, 0.05) , inset 0 0 5px rgba(#fff, 0.5) );
+    
+    &:hover, 
+    &:focus, 
+    &:active {
+        color: palette(mono,dark) !important;
+        @include vertical-gradient( lighten( palette(mono,mid-light), 30% ), lighten(palette(mono,mid-light), 25%) );
+    }
+}
+
+%button-style-yellow {
+    @extend %button-style;
+    border-color: darken(palette(brand,yellow), 20%); 
+    @include vertical-gradient( lighten( palette(brand,yellow), 10%), palette(brand,yellow) );
+    
+    &:hover, 
+    &:active {
+        background-color: inherit;
+        @include vertical-gradient( lighten(palette(brand,yellow), 20%), palette(brand,yellow) );
+    }
+}
+
+%button-style-blue {
+    @extend %button-style;
+    color: palette(mono,light) !important;
+    text-shadow: none;
+    border-top-color: lighten($primary, 5%); 
+    border-left-color: lighten($primary, 5%); 
+    border-right-color: $primary; 
+    border-bottom-color: $primary; 
+    @include vertical-gradient( $primary, darken($primary, 10%) );
+    @include box-shadow( inset 0 0 5px rgba($primary, 0.2) );
+    
+    &:hover, 
+    &:active {
+        background: inherit; 
+        color: palette(mono,x-light);
+        @include vertical-gradient(darken($primary, 5%), darken($primary, 15%) );
+    }
+}

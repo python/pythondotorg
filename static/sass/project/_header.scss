@@ -1,0 +1,237 @@
+/* ! ===== Header Styles ===== */
+
+/*<div class="navtoggle">
+    <a href=":;javascript" class="navtoggle--button">
+        <span class="icon navtoggle--icon" aria-hidden="true"><span>&equiv;</span></span>
+        <span class="icon-label">Menu</span>
+    </a>
+</div>*/
+
+$animation-duration: 400ms; // Also used in _layout.scss
+
+.navtoggle {
+    position: absolute; 
+        top: 0; left: 0; 
+    @include transition( all $animation-duration ease-in-out ); 
+    
+    &--button {
+        display: block; 
+        width: 3em; 
+        padding: 2.25em .75em; 
+        background: $primary; 
+        background: rgba(#000, .2); 
+        
+        // @include touch-hover()
+        .active-nav &, 
+        &:hover, 
+        &:focus { 
+            background: rgba(#000, .28); 
+        }
+        
+        // Draw the Hamburger icon with pseudo elements
+        // http://www.elijahmanor.com/css-animated-hamburger-icon/
+        & .navtoggle--icon, 
+        & .navtoggle--icon:before, 
+        & .navtoggle--icon:after {
+            cursor: pointer;
+            height: .25em;
+            width: 1.25em; 
+            display: inline-block;
+            content: ''; 
+            position: absolute;
+            background-color: $white; 
+            @include border-radius( 1px ); 
+            @include transition( all $animation-duration ease-in-out );
+        }
+        
+        & .navtoggle--icon:before { top: -.5em; left: 0; }
+        
+        & .navtoggle--icon:after { bottom: -.5em; left: 0; }
+
+        .breaker,
+        .icon-label {
+            display: none; 
+            visibility: hidden; 
+        }
+    } // end &--button
+}
+
+
+/*<header class="head">
+    <div class="container">
+        <div class="head--nav--wrapper">[...]</div>
+        <h1 class="site-title">[...]/h1>
+	</div>
+</header>*/
+.head {
+    @extend %pie-clearfix; 
+    background-color: palette(brand,dark); 
+    padding-top: .5em;
+    //min-height: 72px; 
+    
+    /*<div class="head--nav--wrapper">
+        <nav class="head--nav">
+            <ul class="head--nav--list">
+                <li>
+                    <a class="head--nav--link" href="#">
+                        <span class="icon icon-cog" aria-hidden="true"></span>
+                        Log In / Sign Up
+                    </a>
+                    <ul class="head--nav--list--subnav">
+                        <li><a href="#">Log In</a></li>
+                        <li><a href="#">Sign Up</a></li>
+                    </ul>
+                </li>
+            </ul>
+        </nav>
+        <div class="head--search">
+            <form class="head--search--form" action="#" method="get">
+                <fieldset title="Search Python.org">
+                    <div class="search--wrapper">
+                        <span class="icon icon-search-alt" aria-hidden="true"></span>
+                        <input class="form--input" type="search" name="q" id="search" value="" placeholder="Search Python.org">
+                    </div>
+				</fieldset>
+			</form>
+		</div>
+    </div>*/
+    &--nav {
+        float: left; 
+        padding-right: .5em; 
+        
+        &--wrapper { 
+            float: right; 
+            text-align: right; 
+            padding: .875em 0 1em; 
+        }
+        
+        &--list {
+            
+            li { @include relative-container( $zindex: 100, $overflow: visible ); }
+            
+            &--subnav {
+                position: absolute; 
+                    top: -99em; right: 0; 
+                z-index: 1; 
+                width: 100%; 
+                opacity: 0; 
+                @include box-shadow( 2px 2px .5em rgba(#000,.25) ); 
+                @include transition( opacity 250ms ease ); 
+                
+                a {
+                    color: palette(brand,dark);
+                    background-color: palette(brand,light); 
+                    padding: .375em 1em .25em;
+                    
+                    @include touch-hover() {
+                        color: palette(brand,darkest);
+                        background-color: palette(brand); 
+                    }
+                }
+                
+                li:last-child a { @include border-bottom-radius(); }
+            }
+            
+            li:hover &--subnav, 
+            li:focus &--subnav { 
+                top: 100%; 
+                opacity: 1; 
+            }
+        }
+        
+        &--link {
+            padding: .25em 1em;
+            margin-top: -.125em; 
+            @include border-top-radius(); 
+            
+            @include touch-hover() { 
+                color: palette(brand,darkest); 
+                background-color: palette(brand);
+            }
+            
+            .icon { vertical-align: middle; }
+        }
+        
+        li:hover &--link,
+        li:focus &--link {
+            color: palette(brand,darkest); 
+            background-color: palette(brand);
+        }
+    }
+    
+    &--search {
+        float: left; 
+        width: columns(4); 
+        
+        .icon { color: palette(brand,darkest); }
+        
+        .form--input {
+            color: palette(brand,darkest); 
+            border: none; 
+            width: 11em; 
+            @include perem( font-size, 14px ); 
+            @include vertical-gradient( palette(brand), palette(brand,light) ); 
+            @include border-radius( 1.5em ); 
+            
+            &:focus { @include vertical-gradient( palette(brand,light), lighten(palette(brand,light),8%) ); }
+            
+            @include pe-media( $breakpoint-medium ) {
+            	width: 13em; 
+            }
+            
+            @include pe-media( $breakpoint-large ) {
+            	width: 16em; 
+            }
+        }
+        
+        $search-placeholder: darken(palette(brand),10%); 
+        ::-webkit-input-placeholder  { color: $search-placeholder; font-style: normal; }
+        ::-moz-placeholder { color: $search-placeholder; font-style: normal; }
+        :-ms-input-placeholder { color: $search-placeholder; font-style: normal; }
+    }
+}
+
+
+/*<h1 class="site-title">
+    <a href="#" title="To the Homepage">
+        <img src="img/python-logo.png" alt="Python.org">
+    </a>
+</h1>*/
+.site-title {
+    float: left; 
+    margin-left: 3em; 
+    
+    a { display: block; }
+    
+    // Fix later with a properly sized image
+    img { width: px2em(225px); }
+    
+    
+    // Small screens: Header bar is nav toggle and search... logo on its own below that
+    @include pe-media( $max: ($breakpoint-small - 0.0625em) ) {
+    	float: none; 
+    	clear: both; 
+    	margin: 0 -#{$grid-spacing}; 
+    	border-top: 1px solid lighten($nav-bg, 5%); 
+    	
+    	a { padding: .5em 0 .5em .75em; } // doesn't look centered without a nudge
+    	
+    	img { width: px2em(290px); } // natural size
+    }
+    
+    
+    @include pe-media( $breakpoint-small, $max: ($breakpoint-medium - 0.0625em) ) {
+    	@include transition( margin $animation-duration ease-in-out ); 
+    	
+    	.active-nav & { margin-left: 0; }
+    }
+    
+    
+    // Larger screens: Drawer is open, position logo above columns
+    @include pe-media( $breakpoint-medium ) {
+    	//@include translateX( - px2em(245px) ); 
+    	position: absolute;
+            top: auto; left: -13em; 
+        margin-left: 0; 
+    }
+}

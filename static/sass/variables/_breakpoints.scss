@@ -1,0 +1,33 @@
+/* Common Breakpoints. Feel free to make others as needed. */
+
+/*  20em = 320px
+    25em = 400px
+    27.5 = 440px
+    30em = 480px
+    32.5 = 520px
+    35em = 560px
+    37.5 = 600px
+    40em = 640px
+    42.5 = 680px
+    45em = 720px
+    47.5 = 760px
+    50em = 800px
+    52.5 = 840px
+    55em = 880px
+    57.5 = 920px
+    60em = 960px
+    61.25= 980px
+    62.5 = 1000px
+    65em = 1040px
+    70em - 1120px
+    80em = 1280px
+    90em = 1440px
+*/
+
+   $breakpoint-tiny: 30em; 
+  $breakpoint-small: 37.5em; 
+ $breakpoint-medium: 50em; 
+  $breakpoint-large: 61.25em; 
+$breakpoint-largest: 75em; 
+
+ $breakpoint-height: 40em; 

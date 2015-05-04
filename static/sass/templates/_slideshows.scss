@@ -1,0 +1,221 @@
+/* Slideshow – Defined generally, but used only on homepage right now - - - - - */
+
+/*<section class="banner banner__slideshow do-not-print" role="banner">
+    <div id="dive-into-python" class="slideshow flexslider js-homeslides">
+        <ul class="shell menu" id="launch-shell"> [...] </ul>
+        <ul class="slides menu">
+            <li>
+                <div class="slides--code">
+                    <pre><code>
+                        <span class="comment"># Python 3: Fibonacci series up to n</span>
+                        &gt;&gt;&gt; def fib(n):
+                        &gt;&gt;&gt;     a, b = 0, 1
+                        &gt;&gt;&gt;     while a &lt; n:
+                        &gt;&gt;&gt;         print(a, end=' ')
+                        &gt;&gt;&gt;         a, b = b, a+b
+                        &gt;&gt;&gt;     print()
+                        &gt;&gt;&gt; fib(1000)
+                        <span class="output">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610 987</span>
+                    </code></pre>
+                </div>
+                <div class="slides--copy">
+                    <h1>Functions Defined</h1>
+                    <p>The core of extensible programming is defining functions. Python allows mandatory and optional arguments, keyword arguments, and even arbitrary argument lists. <a href="//docs.python.org/3/tutorial/controlflow.html#defining-functions">More about defining functions in Python&nbsp;3</a></p>
+                </div>
+            </li>
+        </ul>
+    </div>    
+</section>
+*/
+$bp-slideshow-large: 57.5em; 
+
+.slideshow {
+    
+    @include pe-media( $max: $breakpoint-tiny, $serve-to-nomq: false ) { @include hide(); }
+}
+
+.slides {
+    background-color: lighten(palette(brand,darkest),2%); 
+    
+    &--code, 
+    &--copy {
+        padding: 1.5em;
+        background-color: lighten(palette(brand,darkest),2%); 
+    }
+    
+    &--code {
+        overflow: auto;
+        color: $code;
+        background-color: palette(brand,darkest); 
+        @include box-shadow( 0 0 1em rgba(#000,.15) inset ); 
+        
+        code {
+            display: inline-block;
+    
+            .comment { color: palette(mono,mid-dark); }
+    
+            .output { color: palette(mono,light); }
+        }
+    }
+    
+    &--copy {
+        color: palette(mono);
+        padding-bottom: 4.5em; // make room for the slideshow nav
+        
+        h1 {
+            color: palette(brand,yellow);
+            font-size: px2em( $headerthree );
+            font-family: $font-custom-bold;
+        }
+        
+        a {
+            color: palette(brand,light); 
+            
+            @include touch-hover() { color: palette(brand,yellow); }
+        }
+    }
+    
+    
+    // Media
+    @include pe-media( $bp-slideshow-large ) {
+	
+    	li { @include clearfix(); }
+        
+        &--code, 
+        &--copy {
+            float: left;
+            width: 50%;
+            min-height: 270px;
+        }
+        
+        &--code pre { padding-top: 2.125em; }
+    }
+}
+
+
+/* <ol class="flex-control-nav flex-control-paging">
+        <li><a class="">1</a></li>
+        <li><a class="flex-active">2</a></li>
+        <li><a>3</a></li>
+    </ol> */
+.flex-control-nav {
+    @extend %horizontal-list; 
+    position: absolute;
+        bottom: 0; left: 0;
+    z-index: 10; 
+    padding: 0 0 1em;
+    margin: 0;
+    text-align: center; 
+    width: 100%; 
+    
+    li { margin: 0 .25em; }
+    
+    a {
+        cursor: pointer; 
+        display: block; 
+        padding: .25em .75em .1875em;  
+        color: palette(mono,mid-light); 
+        background-color: palette(brand); 
+        border-top: 1px solid palette(brand,light); 
+        border-bottom: 1px solid palette(brand,dark); 
+        
+        @include touch-hover() { 
+            color: palette(brand,yellow); 
+            background-color: darken(palette(brand),6%); 
+            border-top: 1px solid darken(palette(brand,light),6%); 
+            border-bottom: 1px solid darken(palette(brand,dark),6%);
+        }
+    }
+
+    .flex-active {
+        color: palette(brand,dark); 
+        background-color: palette(brand,yellow); 
+        border-top-color: lighten(palette(brand,yellow),10%); 
+        border-bottom-color: darken(palette(brand,yellow),10%); 
+    }
+    
+    
+    // Media
+    @include pe-media( $bp-slideshow-large ) {
+    	left: 50%; 
+    	width: 50%; 
+    }
+}
+
+
+/*<ul class="shell menu" id="launch-shell">
+    <li>
+        <a class="button button__shell prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_
+            <span class="shell--message">Launch Interactive Shell</span>
+        </a>
+    </li>
+</ul>*/
+.shell {
+    position: absolute; 
+        top: 1.25em; right: 52%; 
+    z-index: 50; 
+    
+    span, a { display: inline-block; }
+    
+    //button { padding-bottom: .2em; }
+    
+    &--message { 
+        opacity: 0; 
+        position: absolute;
+            top: -9999px; right: 2.6em;
+        white-space: nowrap; 
+        padding: .4em .75em .35em;
+        color: palette(mono); 
+        border: 1px solid #444; 
+        @include border-radius();
+        @include vertical-gradient( palette(mono,x-dark), palette(mono,dark) );
+        @include box-shadow( 1px 1px 1px rgba(#000, 0.25) );
+        @include transition( opacity .25s ease-in ); 
+    }
+
+    &:hover &--message,
+    &:focus &--message {
+        opacity: 1;
+        top: 0;
+        @include transition( opacity .25s ease-out ); 
+    }
+    
+    // Overrides
+    .no-js & { @include hide(); }
+    
+    
+    // Media
+    @include pe-media( $max: $breakpoint-medium, $serve-to-nomq: false ) { @include hide(); }
+}
+
+
+
+
+
+    
+/* ! ===== Media ===== */
+
+@include pe-media( $breakpoint-small ) {
+	
+	.slide-copy {
+        
+        p { font-size: 1em; }
+    }
+}
+
+@include pe-media( $breakpoint-medium ) {
+	
+	.slideshow .slides li { @include clearfix(); }
+    
+    .slide-code, 
+    .slide-copy {
+        float: left;
+        width: 50%;
+        min-height: 280px;
+    }
+    
+    .slide-code {
+        position: relative; 
+        line-height: 1.5; 
+    }
+}

@@ -1,0 +1,17 @@
+/*<div class="feedback fedback__general">
+    <p>Can&rsquo;t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
+</div>*/
+.feedback {
+    padding: .75em $grid-spacing .65em;
+    margin-bottom: $vert-grid-spacing;
+    @include border-radius( 4px );
+    
+    p { margin-bottom: 0; }
+    
+    
+    // Themes
+    &__general {
+        background-color: #e9f1f8; 
+        border: 1px solid #c2d9ec; 
+    }
+}

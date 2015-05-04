@@ -1,0 +1,259 @@
+/* ! ===== Footer styles ===== */
+
+/*<footer class="foot" role="navigation">
+    <div class="container">
+        <div class="network three-col">
+            <div class="column">
+                <a class="network--box network--box__python">
+                    <h3 class="network--title">Python</h3>
+                    <p class="network--descript">A programming language that lets you work quickly and integrate systems more effectively</p>
+                </a>
+            </div>
+        </div>
+        
+        <nav class="foot--nav">
+            <a href="#">Help &amp; General Contact</a>
+            <a href="#">Diversity Initiatives</a>
+            <a href="#">Submit Website Issue</a>
+        </nav>
+        
+        <ul class="foot--social menu">
+            <li>Socialize with Python:</li>
+            <li><a href="#"><span class="icon icon-google-plus" aria-hidden="true"></span></a></li>
+            <li><a href="#"><span class="icon icon-facebook" aria-hidden="true"></span></a></li>
+        </ul>
+        
+        <p class="foot--copyright">
+            <span class="pre">Copyright &copy;2001&ndash;2015.</span>  
+            <a href="#">Python Software Foundation</a> 
+            <a href="#">Legal Statements</a> 
+            <a href="#">Privacy Policy</a>
+        </p>*/
+.foot {
+    clear: both; 
+    padding: $vert-grid-spacing 0; 
+    
+    .container { 
+        margin: 0; // don't center the container at max-width
+    }
+    
+    &--nav, 
+    &--social, 
+    &--copyright { text-align: center; }
+    
+    &--nav {
+        padding-bottom: $vert-grid-spacing; 
+        
+        a { 
+            color: palette(mono,mid-light); 
+            padding-right: $grid-spacing; 
+            
+            &:hover, 
+            &:focus { color: palette(brand,light); }
+        }
+        
+        // Media
+        @include pe-media( $max: $breakpoint-small ) {
+        	
+        	a { padding-right: 0; }
+        }
+    }
+    
+    .jumper { padding-bottom: $vert-grid-spacing; }
+    
+    &--social {
+        @extend %horizontal-list; 
+        color: palette(mono,light);
+        padding-bottom: $vert-grid-spacing; 
+        
+        .icon { 
+            font-size: 1.5em; 
+            padding-left: .125em; 
+        }
+        
+        a { 
+            
+            .icon { 
+                color: palette(brand); 
+                vertical-align: middle; 
+            }
+        
+            &:hover .icon,
+            &:focus .icon { color: palette(brand,light); }
+        }
+        
+        
+        // Media
+        @include pe-media( $max: $breakpoint-small ) {
+        	
+        	li:first-child { width: 100%; }
+        }
+    }
+    
+    &--copyright { 
+        clear: both; 
+        color: palette(brand); 
+        padding: $grid-spacing 0; 
+        @include perem( font-size, 14px ); 
+        
+        a { 
+            display: inline-block; 
+            color: palette(brand); 
+            text-decoration: underline; 
+            padding-left: .5em; 
+            
+            &:hover, &:focus { 
+                color: palette(mono,mid-light); 
+                text-decoration: none; 
+            }
+        }
+    }
+    
+    
+    // Media
+    @include pe-media( $breakpoint-small ) {
+        
+        &--nav,
+        &--social {
+            display: inline-block; 
+            vertical-align: baseline; 
+            padding-bottom: 0; 
+        }
+        
+        &--nav, 
+        &--social, 
+        &--copyright { text-align: left; }
+        
+        &--nav a { display: inline-block; }
+    }
+    
+    @include pe-media( $breakpoint-large ) { 
+        
+        .container { padding-left: 0; }
+    }
+    
+    @include pe-media( $breakpoint-largest ) {
+    	
+    	&--nav { float: left; }
+    	
+    	&--social { float: right; }
+    }
+}
+
+
+/*<div class="network three-col">
+    <div class="column">
+        <a class="network--box network--box__python">
+            <h3 class="network--title">Python</h3>
+            <p class="network--descript">A programming language that lets you work quickly and integrate systems more effectively</p>
+        </a>
+    </div>*/
+.network {
+    
+    &--box {
+        display: block; 
+        border-top-width: 5px; 
+        border-top-style: solid; 
+        padding: .75em; 
+        background-color: $child-bg; 
+        
+        &:hover, 
+        &:focus {
+            cursor: pointer; 
+            background-color: $nav-bg; 
+            @include box-shadow( 0 0 1em rgba(#000,.33) inset ); 
+        }
+        
+        &__python { border-top-color: palette(brand,light); }
+        
+        &__community { border-top-color: palette(brand,red); }
+        
+        &__foundation { border-top-color: palette(brand,grey); }
+        
+        &__docs { border-top-color: palette(brand,yellow); }
+        
+        &__pypi { border-top-color: palette(brand,green); }
+        
+        &__jobs { border-top-color: palette(brand,purple); }
+    }
+    
+    &--title {
+        color: palette(mono,mid-light);
+        font-family: $font-custom-bold; 
+        @include perem( font-size, $headertwo ); 
+    }
+    
+    &--descript { 
+        color: palette(mono); 
+        @include perem( font-size, 14px ); 
+    }
+    
+    &--box:hover &--title, 
+    &--box:focus &--title,
+    &--box:hover &--descript, 
+    &--box:focus &--descript { color: palette(mono,light); }
+}
+
+
+/*
+ * Warnings for browsers. Keep these for all projects. 
+ 
+<div id="nojs" class="typography do-not-print">
+    <h1>Whoops! <em>No Javascript&#x203d;</em></h1>
+    <p>Javascript is essential for a complete experience with this laboratory toolkit. Please enable Javascript on this device or visit with a more capable device for the full experience. </p>
+    <p>If you think that javascript <em>should</em> be available, check your browser settings or force a fresh reload of this page. <kbd>&#8984; F5</kbd> in most Windows applications, or <kbd>&#8679;&#8984; R</kbd> or <kbd>&#8984; R</kbd> in most browsers. For more information on cache, visit <a href="//www.refreshyourcache.com/en/cache/">refreshyourcache.com/en/cache/</a></p>
+</div>
+ 
+ */
+#nojs, #oldie-warning {
+	text-align: center; 
+	
+	p {
+	   //color: $grey-lighterer;
+	   font-weight: $bold-weight; 
+	   margin: 0;
+	}
+	
+	a {
+    	//color: $grey-lighterer; 
+    	text-decoration: underline; 
+    	
+    	&:hover, &:focus {
+        	color: $white; 
+        	text-decoration: none; 
+    	}
+	}
+}
+
+
+.js #nojs { display: none; visibility: hidden; }
+
+
+#nojs {
+    background-color: $alert-high; 
+    background: linear-gradient(
+        to bottom,
+        $alert-high,
+        $alert-high 50%,
+        lighten($alert-high, 4%) 50%,
+        lighten($alert-high, 4%) 
+    );
+    background-size: 100% 16px;
+}
+
+
+/*<div id="oldie" class="typography do-not-print">
+    <p>Your browser is <em>ancient</em> and <a href="//www.ie6countdown.com/">Microsoft agrees</a>. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+    <p>Not sure what a browser is? <a href="//whatbrowser.org">This site explains it all very nicely</a>.</p>
+</div>*/
+#oldie {
+    background-color: $alert-normal; 
+    
+    //p { color: $grey-dark; }
+    
+    a {
+        //color: $grey-dark;
+        
+        &:hover, &:focus { color: $black; }
+    }
+}

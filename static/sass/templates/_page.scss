@@ -1,0 +1,79 @@
+/*<div class="page column" role="main">
+    <ul class="breadcrumbs menu">
+    	[...]
+	</ul>
+    <header class="page--header">
+        <h1 class="page--title">Python For Beginners</h1>
+    </header>
+    <article class="page--content typography">
+        [...]
+    </article>
+</div>*/
+
+.page {
+    
+    &--header {}
+    
+    &--title {
+        // Compassify this later
+        font-size: 2em; 
+        line-height: 1.25; 
+        color: palette(mono,mid-dark);
+        word-spacing: .15em;
+        margin-top: .75em;
+        margin-bottom: .75em;
+    }
+    
+    &--content {
+        
+        & > p:first-of-type {
+            // Compassify this later
+            color: palette(brand);
+            font-size: 1.125em;
+            line-height: 1.6875;
+            margin-bottom: 1.25em;
+        }
+    }
+}
+
+
+// Homepage 
+.introduction {
+    color: palette(brand,light);
+    background-color: palette(brand,dark); 
+    font-size: px2em( 20px );
+    text-align: center;
+    padding: $grid-spacing $vert-grid-spacing;
+    border-top: 1px solid lighten(palette(brand,dark),3%); 
+    border-left: 1px solid lighten(palette(brand,dark),3%); 
+    border-bottom: 1px solid darken(palette(brand,dark),3%); 
+
+    p {
+        line-height: 1.4em;
+        margin-bottom: 0;
+    }
+
+    a {
+        color: palette(brand,yellow);
+        text-decoration: underline;
+
+        @include touch-hover() { color: palette(mono,light); }
+    }
+
+    .breaker { @include breaker_bar(); }
+    
+    
+    // Media
+    @include pe-media( $breakpoint-tiny ) {
+    	font-size: px2em( $headerthree ); 
+    }
+    
+    @include pe-media( $breakpoint-small ) {
+    	font-size: px2em( $headertwo ); 
+    }
+    
+    @include pe-media( $max: $breakpoint-medium, $serve-to-nomq: false ) {
+    	
+    	.breaker { @include hide(); }
+    }
+}

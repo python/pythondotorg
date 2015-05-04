@@ -1,0 +1,132 @@
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // Framework
+    // No CSS will be output
+    
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@import 
+    "framework/config",     // Compass settings and Compass default variables
+    "framework/functions",  // Functions consistent from project to project
+    "framework/mixins",     // Mixins consistent from project to project
+    "framework/reset";      // A modified HTML5-Boilerplate reset
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // External Libraries that are mixins
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//@import "libraries/super-gradient"; 
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // Project base
+    // No CSS will be output
+    
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@import
+    "variables/base",       // Project variables, colors, etc...
+    "variables/breakpoints"; 
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Now output the CSS reset first
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@include reset(); 
+@include reset_additional(); 
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // General project design. One file for each major set of elements on the page
+    // Each file will output CSS
+    
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@import 
+    "framework/grid",       // Framework grid. Structural only. 
+    "project/mixins",        // Project mixins
+    "project/extends",       // Project silent %extends
+    "project/typography",    // All styles needed to support good typography
+    "project/general",       // Top-level declarations
+    "project/forms",         // Duh, forms
+    "project/navigation",    // The sidebar drawer navigation styles
+    "project/header",        // Simple header styles, not much there
+    "project/content",       // Main content area general styles. Apply typography.
+    "project/feedback",      // General user feedback modules
+    "project/footer",        // General footer
+    "project/layout";        // Apply the grid. Again, structure only. Try to keep styles out of this. 
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+    // Project Templates. These might override more global styles called previously. 
+    // Each file will output CSS
+    
+    // The intent here is to break out major components that are more specific in nature than the general styles above
+    
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@import
+    "templates/banners", 
+    "templates/page",       // Default template
+    "templates/sidebar",    // General sidebar styles for pages that need one
+    "templates/slideshows",
+    "templates/widgets"; 
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // External Libraries/Plugins that output CSS
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@import
+    "libraries/flexslider"; 
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // Communicating to Javascript
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@include pe-media( $max: $breakpoint-medium ) {
+	@include javascript_tag( 'navigation-drawer' ); 
+}
+
+@media (min-height: $breakpoint-height) and (max-width: $breakpoint-medium) {
+    @include javascript_tag( 'navigation-drawer' ); 
+}
+
+@media (min-height: $breakpoint-height) and (min-width: $breakpoint-small) and (max-width: $breakpoint-large) {
+    @include javascript_tag( 'navigation-drawer sticky-button' ); 
+}
+
+@media (min-height: $breakpoint-height) and (min-width: $breakpoint-medium) {
+    @include javascript_tag( 'loadpopups sticky-nav' ); 
+}
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+    // The bottom of the rendered CSS
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+@include html5boilerplate_helpers(); 
+@include not-oldIE() { @include html5boilerplate_print(); }
+
+
+// Keep this at the end because it can create a lot of CSS
+@import "project/fonts"; 
+
+
+/* 
+ * Remove for Production
+ *
+ * When we want to review the markup for W3 and similar errors, turn some of these on 
+ * Uses :not selectors a bunch, so only modern browsers will support them
+ */
+//@import "framework/debug"; 
+    //@include heydon_rules; 
+    //@include debug_links;
+    //@include debug_images;
+    //@include debug_misc;
+    //@include debug_deprecated;
+    //@include debug_empty;

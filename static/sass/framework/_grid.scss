@@ -1,0 +1,102 @@
+/* ! ==== A Grid – Can be modified per client ==== */
+
+/* 
+    Why a roll-your-own grid system? 
+    Simplicity. 
+    This set of declarations is simple to understand, use and modify. 
+    We rarely need to push and pull and pad or margin equal to the width of a single column. 
+    Plus, I prefer static gutters and flexible columns. 
+    
+    HTML Usage Sample: 
+    .container          Sets the max-width of the layout. Flexible under that width. 
+    .container__tight   Optional "tight" style – half the padding of the normal
+    .[number]-col       Declares what the maximum number of columns that a group will layout to
+    .column             Declares an element that will float
+    .not-column         Declares an element that will not float, but needs the same padding for layout purposes inside .container. 
+    
+    Example: 
+    <div class="container">
+        <h1 class="not-column">Title</h1>
+        <div class="two-col">
+            <div class="column"> Content </div>
+            <div class="column"> Content </div>
+        </div>
+    </div>
+    
+    @requires these variables: 
+    $total-max-width
+    $grid-spacing
+    $vert-grid-spacing
+*/
+
+
+/* ! ===== Spacing ===== */        
+%column-padding {
+    padding-left: $grid-spacing; 
+    padding-right: $grid-spacing; 
+}
+
+%tight-column-padding {
+    padding-left: $grid-spacing/2; 
+    padding-right: $grid-spacing/2; 
+}
+
+%row-margin {
+    margin-left: - $grid-spacing; 
+    margin-right: - $grid-spacing; 
+}
+
+%tight-row-margin {
+    margin-left: - $grid-spacing/2; 
+    margin-right: - $grid-spacing/2; 
+}
+
+
+/* ! ===== Containers ===== */        
+.container, 
+.container__tight {
+    margin: 0 auto; 
+    min-width: 320px; 
+    max-width: $total-max-width; 
+    
+    .lt-ie8 & { width: $total-max-width; }
+}
+
+.container { @extend %column-padding; }
+
+.container__tight { @extend %tight-column-padding; }
+
+
+/* ! ===== Rows and Columns ===== */
+%col-row {
+    @extend %pie-clearfix; 
+    @extend %row-margin; 
+    
+    .lt-ie8 & { position: relative; zoom: 1; }
+}
+
+%col-row-tight {
+    @extend %tight-row-margin;  
+}
+
+
+.column,
+.column-group {
+    @extend %column-padding; 
+    padding-bottom: $vert-grid-spacing; 
+    
+    .container__tight & { @extend %tight-column-padding; }
+}
+
+.column-group { padding-bottom: 0; }
+
+
+// When an element needs the padding of a column, because it is inside a .container, but it does not need to float 
+.not-column { 
+    @extend %column-padding; 
+    
+    .container__tight & { @extend %tight-column-padding; }
+}
+
+
+// Layout may vary per project. basic columns can be found in design/_layout.scss

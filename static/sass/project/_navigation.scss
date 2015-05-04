@@ -1,0 +1,276 @@
+/* ! ===== Navigation styles ===== */
+
+/*<nav class="mainnav fwf-fixed-left">
+    <div class="main-header--placeholder"></div>
+    <ul class="mainnav--list parent sticky-navigation">
+        <li class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-home" aria-hidden="true"></span>Python</a> 
+            <a class="mainnav--toggle" href="#"><span class="icon icon-arrow-up" aria-hidden="true"><span>&uarr;</span></span></a>
+            
+            <ul class="mainnav--list child">
+                <li>
+                    <a class="mainnav--link" href="#">About</a>
+                    <a class="mainnav--toggle" href="#"><span class="icon icon-plus-2" aria-hidden="true"><span>+</span></span></a>
+                    
+                    <ul class="mainnav--list grandchild">
+                        <li><a class="mainnav--link" href="#">Applications</a></li>
+                    </ul>
+                </li>*/
+
+$nav-bg: $bg-color; // same color as the HTML right now
+
+$parent-bg: $nav-bg; 
+$parent-border: lighten( $parent-bg, 3% ); 
+$parent-hov-bg: lighten( $parent-bg, 5% ); 
+
+$child-bg: lighten( $parent-bg, 5% ); 
+$child-border: lighten( $child-bg, 3% ); 
+$child-hov-bg: lighten( $child-bg, 5% ); 
+
+$grandchild-bg: lighten( $child-bg, 5% ); 
+$grandchild-border: lighten( $grandchild-bg, 3% ); 
+$grandchild-hov-bg: lighten( $grandchild-bg, 5% ); 
+
+
+.mainnav {
+    padding-top: px2em(72px); // make way for the toggle button and/or Python logo
+    
+    &--list {
+        clear: left; 
+        max-height: 99em; 
+        overflow: hidden; 
+        border-top: 1px solid $parent-border;
+        @include transition( max-height 250ms ease-out ); 
+        
+        li { 
+            @extend %pie-clearfix; 
+            clear: left; 
+        }
+        
+        .js &.collapsed { 
+            max-height: 0em; 
+            @include transition( max-height 250ms ease-in ); 
+        }
+    }
+    
+    &--link,
+    &--toggle {
+        display: block; 
+        line-height: 1.25; 
+        @include transition( all 250ms ease-in-out ); 
+    }
+    
+    &--link { padding: .75em 1em; }
+    
+    &--item__with-toggle > &--link,
+    &--item__with-toggle > &--toggle { float: left; }
+    
+    &--item__with-toggle > &--link { width: 81%; }
+    
+    &--item__with-toggle > &--toggle { width: 19%; }
+    
+    &--toggle {
+        text-align: center; 
+        color: lighten($nav-bg, 12%);  
+        background-color: transparent; 
+        border-left: 1px solid $parent-border; 
+        //border-left-color: rgba(#fff,.1);
+        
+        .icon { 
+            display: inline-block; 
+            padding: .875em 1em;
+        }
+        
+        @include touch-hover() {
+            color: lighten($nav-bg, 18%); 
+            background-color: $parent-hov-bg; 
+        }
+        
+        &.open .icon:before { content: '\f139'; } // chevron-up
+    }
+    
+    @include pe-media( $breakpoint-medium ) {
+    	
+    	&--item__with-toggle > &--link { width: 77%; }
+    
+        &--item__with-toggle > &--toggle { width: 23%; }
+    }
+    
+    
+    // Parents
+    .parent &--list{}
+    
+    .parent &--link,
+    .parent &--toggle {
+        color: #bbb;  
+        border-bottom: 1px solid $parent-border; /*#275278*/
+        font-weight: $bold-weight; 
+        background-color: $parent-bg; // Don't use the IE gradient filter, it won't look as intended. 
+        
+        @include touch-hover() {
+            color: palette(mono,mid-light);
+            background-color: $parent-hov-bg; 
+        }
+        
+        &.open { 
+            
+            @include touch-hover() {
+                color: #bbb; 
+                @include vertical-gradient( palette(brand,darkest), palette(brand,dark) ); 
+            }
+        }
+    }
+    
+    .parent &--link { 
+        border-left: 5px solid transparent; 
+        @include relative-container(); 
+        @include background-image( linear-gradient(left, darken($parent-bg,4%) 0%, $parent-bg 6%) ); 
+        
+        @include touch-hover() { @include background-image( linear-gradient(left, darken($parent-hov-bg,4%) 0%, $parent-hov-bg 6%) ); }
+        
+        &.open { 
+            cursor: default; 
+
+            &:before {
+                content: ''; 
+                position: absolute; 
+                    top: 50%; left: 0; 
+                width: 0; 
+                height: 0; 
+                border-style: solid; 
+                border-width: .5em; 
+                border-color: transparent; 
+                margin-top: -.375em; 
+            }
+        }
+    }
+    
+    .parent &--toggle .icon { color: palette(brand); }
+    
+    
+    // Children
+    .child &--list {}
+    
+    .child &--link,
+    .child &--toggle {
+        color: #aaa;
+        background-color: $child-bg; /*#23496b*/ 
+        border-bottom: 1px solid $child-border; 
+        font-weight: $normal-weight; 
+        
+        @include touch-hover() { 
+            color: palette(mono,x-light); 
+            background-color: $child-hov-bg; 
+        }
+        
+        &.open { 
+            font-weight: $bold-weight; 
+            @include reset-gradient( $child-bg ); 
+        }
+    }
+    
+    .child &--link { 
+        @include background-image( linear-gradient(left, $parent-bg 0%, $child-bg 6%) ); 
+        
+        @include touch-hover() { @include background-image( linear-gradient(left, darken($child-hov-bg,4%) 0%, $child-hov-bg 6%) ); }
+        
+        &.disabled {
+            
+            @include touch-hover( true ) {
+                cursor: default; 
+                color: palette(mono,x-light); 
+                font-weight: $bold-weight; 
+                background-image: none; 
+                //background-color: palette(brand,light); 
+            }
+        }
+    }
+    
+    .child &--toggle { border-left-color: $child-border; }
+    
+    .child &--toggle .icon { color: darken( palette(brand,dark),3% ); }
+    
+    .child &--toggle.open .icon { 
+        color: darken( palette(brand,dark),3% ); 
+        background-color: $grandchild-bg;
+    }
+    
+    
+    // Grandchildren
+    .grandchild &--list {}
+    
+    .grandchild &--link,
+    .grandchild &--toggle {
+        color: #bbb;
+        background-color: $grandchild-bg; //#2b5b85 
+        border-bottom: 1px solid $grandchild-border; 
+        
+        @include touch-hover() { background-color: $grandchild-hov-bg; }
+    }
+    
+    .grandchild &--link {
+        @include background-image( linear-gradient(left, $child-bg 0%, $grandchild-bg 6%) ); 
+        
+        @include touch-hover() { @include background-image( linear-gradient(left, darken($grandchild-hov-bg,4%) 0%, $grandchild-hov-bg 6%) ); }
+        
+        &.disabled {
+            
+            @include touch-hover( true ) {
+                cursor: default; 
+                color: palette(mono,x-light); 
+                font-weight: $bold-weight; 
+                background-image: none; 
+                //background-color: palette(brand,light); 
+                @include relative-container(); 
+            }
+            
+            &:before {
+                position: absolute; 
+                    top: .875em; right: .75em;
+                content: '\e604'; // arrow right
+                color: palette(mono,x-light); 
+                @include icon-font( $margin: false ); 
+            }
+        }
+    }
+    
+    .grandchild &--toggle .icon { color: palette(brand,light); }
+    
+    
+    // Borders
+    #python-parent &--link, 
+    #python-parent > &--link.open:before { border-left-color: palette(brand,light); }
+    
+    #python-parent .child &--link.disabled,
+    #python-parent .grandchild &--link.disabled { @include background-image( linear-gradient(left, darken(palette(brand,light),8%) 0%, palette(brand,light) 6%) ); }
+    
+    #community-parent &--link, 
+    #community-parent > &--link.open:before { border-left-color: palette(brand,red); }
+    
+    #community-parent .child &--link.disabled,
+    #community-parent .grandchild &--link.disabled { @include background-image( linear-gradient(left, darken(palette(brand,red),8%) 0%, palette(brand,red) 6%) ); }
+    
+    #foundation-parent &--link, 
+    #foundation-parent > &--link.open:before { border-left-color: palette(mono,mid-dark); }
+    
+    #foundation-parent .child &--link.disabled,
+    #foundation-parent .grandchild &--link.disabled { background-color: palette(mono,mid-dark); }
+    
+    #docs-parent &--link, 
+    #docs-parent > &--link.open:before { border-left-color: palette(brand,yellow); }
+    
+    #docs-parent .child &--link.disabled,
+    #docs-parent .grandchild &--link.disabled { background-color: palette(brand,yellow); }
+    
+    #pypi-parent &--link, 
+    #pypi-parent > &--link.open:before { border-left-color: palette(brand,green); }
+    
+    #pypi-parent .child &--link.disabled,
+    #pypi-parent .grandchild &--link.disabled { background-color: palette(brand,green); }
+    
+    #jobs-parent &--link, 
+    #jobs-parent > &--link.open:before { border-left-color: palette(brand,purple); }
+    
+    #jobs-parent .child &--link.disabled,
+    #jobs-parent .grandchild &--link.disabled { background-color: palette(brand,purple); }
+}
