@@ -5,6 +5,8 @@ import requests
 from django.core.management import call_command
 from django.core.management.base import NoArgsCommand
 from django.conf import settings
+from django.contrib.auth.models import Permission
+from django.contrib.contenttypes.models import ContentType
 from django.utils.six.moves import input
 
 
@@ -30,6 +32,10 @@ Are you sure you want to do this?
             if r.status_code != 200:
                 self.stderr.write("Unable to download file: Received status code {}".format(r.status_code))
                 sys.exit(1)
+
+            # Remove pesky objects that get in the way
+            Permission.objects.all().delete()
+            ContentType.objects.all().delete()
 
             with open('/tmp/dev-fixtures.json.gz', 'wb') as f:
                 for chunk in r.iter_content(chunk_size=1024):
