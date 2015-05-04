@@ -9,7 +9,7 @@ Posted:   {{ content_object.created|date:"d F Y" }}
 
 --- Comment: ---
 
-{{ comment.comment }}
+{{ comment.comment|safe }}
 --
 Kind regards,
 {{ reviewer_name }}
