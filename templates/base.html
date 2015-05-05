@@ -145,7 +145,7 @@
                         <li class="mainnav--item__with-toggle">
                             
                             {# If this child is selected, add a "disabled" class #}
-                            <a class="mainnav--link disabled" href="#">About</a>
+                            <a class="mainnav--link" href="#">About</a>
                             <a class="mainnav--toggle" href="#about"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
                             
                             {# By default these have class "collapsed". When they need to be open, remove class #}
@@ -377,11 +377,10 @@
 
                     {# If present, insert the banner #}
                     <section class="banner banner__home do-not-print" role="banner">
-
-{% block header_content %}
+{% block intro_copy %}
 {% endblock %}
 
-{% block intro_copy %}
+{% block header_content %}
 {% endblock %}
                 
                     </section>
@@ -392,7 +391,7 @@
                         <div class="container">
 
 
-<section class="main-content {% block content_attributes %}{% endblock %}" role="main">
+<section class="content--main {% block content_attributes %}{% endblock %}" role="main">
 
     {% block breadcrumbs %}
     {% endblock breadcrumbs %}

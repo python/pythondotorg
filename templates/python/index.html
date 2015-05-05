@@ -3,28 +3,6 @@
 
 {% block body_attributes %}class="python home" id="homepage"{% endblock %}
 
-{% block header_content %}
-        <div id="dive-into-python" class="flex-slideshow slideshow">
-
-            <ul class="launch-shell menu" id="launch-shell">
-                <li>
-                    <a class="button prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_
-                        <span class="message">Launch Interactive Shell</span>
-                    </a>
-                </li>
-            </ul>
-
-            <ul class="slides menu">
-                {% for sample in code_samples %}
-                <li>
-                    <div class="slide-code">{{ sample.code }}</div>
-                    <div class="slide-copy">{{ sample.copy }}</div>
-                </li>
-                {% endfor %}
-            </ul>
-        </div>
-
-{% endblock header_content %}
 
 {% block intro_copy %}
         <div class="introduction">
@@ -32,6 +10,29 @@
         </div>
 {% endblock %}
 
+
+{% block header_content %}
+        <div id="dive-into-python" class="slideshow flexslider js-homeslides">
+            
+            <ul class="shell menu" id="launch-shell">
+                <li>
+                    <a class="button button__shell prompt" id="start-shell" data-shell-container="#dive-into-python" href="/shell/">&gt;_
+                        <span class="shell--message">Launch Interactive Shell</span>
+                    </a>
+                </li>
+            </ul>
+            
+            <ul class="slides menu">
+                {% for sample in code_samples %}
+                <li>
+                    <div class="slides--code">{{ sample.code }}</div>
+                    <div class="slides--copy">{{ sample.copy }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+
+{% endblock header_content %}
 
 
 {% block content %}
