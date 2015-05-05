@@ -1,0 +1,6 @@
+/* ! ===== Support some legacy styles by extending the new ones ===== */
+
+// Markup in Django boxes
+.widget-title {
+    @extend .widget--title; 
+}

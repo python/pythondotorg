@@ -31,11 +31,7 @@
         </p>*/
 .foot {
     clear: both; 
-    padding: $vert-grid-spacing 0; 
-    
-    .container { 
-        margin: 0; // don't center the container at max-width
-    }
+    //padding: $vert-grid-spacing 0; 
     
     &--nav, 
     &--social, 
@@ -129,7 +125,7 @@
     
     @include pe-media( $breakpoint-large ) { 
         
-        .container { padding-left: 0; }
+        //.container { padding-left: 0; }
     }
     
     @include pe-media( $breakpoint-largest ) {

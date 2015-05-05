@@ -18,7 +18,7 @@
 }
 
 .widget {
-    padding: $grid-spacing;
+    padding: $grid-spacing $grid-spacing 0;
     margin-bottom: $vert-grid-spacing; 
     border-top: 4px solid palette(brand,light); 
     
@@ -91,19 +91,56 @@
         }
     }
     
+    
+    // Themes
+    &__background {
+        @include vertical-gradient( palette(brand,dark), palette(brand) );
+        @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) ); 
+        
+        p { color: palette(mono,mid-light); }
+        
+        .widget--title a, 
+        .readmore, 
+        .readmore:before {
+            color: palette(brand,yellow);
+    
+            @include touch-hover() { color: $white; }
+        }
+    }
+    
+    
     // Overrides
+    &__psf, 
+    &__python-needs-you {
+        clear: both; 
+        padding-bottom: 0; 
+        
+        @include pe-media( $breakpoint-medium ) {
+            min-height: 14em; 
+            position: relative; 
+            
+            .python-logo {
+                position: absolute; 
+                    top: 0; right: 1em;
+                width: 210px; 
+                height: 210px; 
+                background: top left no-repeat url("../img/python-logo-large.png") transparent;
+            }
+            
+            .widget--title, 
+            p { margin-right: columns(4); }
+        }
+    }
+    
     &__column { padding: $grid-spacing 0 0; }
 }
 
 
-// Old styles... temporary. I hate looking at my old SASS
+/* Old styles... temporary. I hate looking at my old SASS
 .psf-widget, 
 .python-needs-you-widget {
-    clear: both; 
     padding: $vert-grid-spacing $grid-spacing; 
     margin-bottom: $vert-grid-spacing; 
-    @include vertical-gradient( palette(brand,dark), palette(brand) );
-    @include box-shadow( inset 0 0 50px rgba(#000, 0.03), inset 0 0 20px rgba(#000, 0.03) );
     
     .button {
         @extend %button-style-yellow;
@@ -115,32 +152,4 @@
         &:hover, 
         &:focus { color: lighten(palette(brand,yellow), 25%); }
     }
-
-    .widget--title a, 
-    .readmore, 
-    .readmore:before {
-        color: palette(brand,yellow);
-
-        &:hover, &:focus { color: $white; }
-    }
-
-    p { color: palette(mono,mid-light); }
-
-    /*p*/ .click-these { margin-bottom: 0; }
-    
-    @include pe-media( $breakpoint-medium ) {
-        min-height: 14em; 
-        position: relative; 
-        
-        .python-logo {
-            position: absolute; 
-                top: 0.5em; right: 1em;
-            width: 210px; 
-            height: 210px; 
-            background: top left no-repeat url("../img/python-logo-large.png") transparent;
-        }
-        
-        .widget--title, 
-        p { margin-right: columns(4); }
-    }
-}
+}*/

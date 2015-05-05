@@ -36,6 +36,7 @@ $show-baseline-grid-backgrounds: false;
 }
 
 
+// Default margins for markup
 .content {
     
     &--wrapper {}
@@ -66,11 +67,12 @@ $show-baseline-grid-backgrounds: false;
     </div>
 </section>*/
 .banner,
-.main-section {
+.main-section,
+.foot {
     
     .container { 
         padding-top: $vert-grid-spacing/2; 
-        padding-bottom: $vert-grid-spacing/2; 
+        padding-bottom: $vert-grid-spacing; 
         margin: 0; // don't center the container at max-width
     }
     
@@ -82,7 +84,7 @@ $show-baseline-grid-backgrounds: false;
     	
     	.container { 
             padding-top: $vert-grid-spacing; 
-            padding-bottom: $vert-grid-spacing/2; 
+            padding-bottom: $vert-grid-spacing*1.5; 
         }
     }
     

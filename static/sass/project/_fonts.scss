@@ -301,20 +301,38 @@
 
 /* ! ===== Our modifications ===== */
 
-.icon { @include icon-font(); }
+// The attribute selectors are to support legacy applications of the icons (without .icon class applied) 
+.icon,
+[class^="icon-"], 
+[class*=" icon-"] { @include icon-font(); }
 
 
 // Hide a backup Unicode character (if present) by default
 // <span class="icon icon-arrow-left" aria-hidden="true"><span>&larr;</span></span>
-.icon span { display: none; visibility: hidden; }
+.icon span,
+[class^="icon-"] span, 
+[class*=" icon-"] span { @include hide(); }
 
 // Hide from anything that does not support FontFace (Opera Mini, Blackberry) or SVG (Android 2.1 - 2.3) 
 /*modernizr*/ .no-fontface .icon:before, 
-.no-svg .icon:before { display: none; visibility: hidden; }
+.no-fontface [class^="icon-"]:before, 
+.no-fontface [class*=" icon-"]:before,
+.no-svg .icon:before,
+.no-svg [class^="icon-"]:before, 
+.no-svg [class*=" icon-"]:before { @include hide(); }
 
 .no-fontface .icon span, 
-.no-svg .icon span { display: inline; visibility: visible; }
+.no-svg .icon span,
+.no-fontface [class^="icon-"] span, 
+.no-svg [class^="icon-"] span,
+.no-fontface [class*=" icon-"] span, 
+.no-svg [class*=" icon-"] span { @include show(); }
 
 // Show again in IE8: supports FontFace (eot) but not SVG. 
-.lt-ie9 .icon:before { display: inline; visibility: visible; }
-.lt-ie9 .icon span { display: none; visibility: hidden; }
+.lt-ie9 .icon:before,
+.lt-ie9 [class^="icon-"]:before, 
+.lt-ie9 [class*=" icon-"]:before { @include show(); }
+
+.lt-ie9 .icon span,
+.lt-ie9 [class^="icon-"] span, 
+.lt-ie9 [class*=" icon-"] span { @include hide(); }
