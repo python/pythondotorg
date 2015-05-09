@@ -28,6 +28,7 @@ class MembershipAdmin(admin.ModelAdmin):
         'updated'
     )
     date_hierarchy = 'created'
+    search_fields = ['creator__username']
 
 
 class ApiKeyAdmin(admin.ModelAdmin):
