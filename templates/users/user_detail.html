@@ -1,5 +1,6 @@
 {% extends "users/base.html" %}
 {% load users_tags %}
+{% load firstof from future %}
 
 {% block page_title %}{% firstof object.get_full_name object %} | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -22,7 +23,7 @@
         <div class="user-profile-display">
 
             <div class="user-profile-name">
-                <p><span class="profile-label">Name:</span> {% filter force_escape %}{% firstof object.get_full_name object %}{% endfilter %}</p>
+                <p><span class="profile-label">Name:</span> {% firstof object.get_full_name object %}</p>
             </div>
             <div class="user-profile-membership">
                 <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span> PSF Member?</span> Yes</p>
