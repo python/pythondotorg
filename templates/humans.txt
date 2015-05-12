@@ -46,14 +46,14 @@
 	You, for reading this.
 
 
-/* SECURITY THANKS */
+/* PEOPLE WHO FOUND SECURITY BUGS IN THE WEBSITE */
 	Osama Mahmood
 
 
 /* SITE */
 	Standards: HTML5, CSS3, W3C (as much as possible)
-	Core: Python 3 and Django 1.5
+	Core: Python 3 and Django 1.7
 	Components: Modernizr, jQuery, Susy (susy.oddbird.net)
 	Software: SASS and Compass, Coda, Sublime Text, Terminal, Adobe CS, Made on Macs
-	Hardware Stack: Ubuntu 12.04, Postgresql 9.x, Nginx, Gunicorn
+	Hardware Stack: Ubuntu 14.04, Postgresql 9.x, Nginx, Gunicorn
     Helpers: South, Haystack, Pipeline
