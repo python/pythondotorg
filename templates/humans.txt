@@ -46,6 +46,10 @@
 	You, for reading this.
 
 
+/* SECURITY THANKS */
+	Osama Mahmood
+
+
 /* SITE */
 	Standards: HTML5, CSS3, W3C (as much as possible)
 	Core: Python 3 and Django 1.5
