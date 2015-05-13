@@ -9,21 +9,27 @@ next_month = timezone.now() + datetime.timedelta(days=30)
 
 
 class JobCategoryFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = JobCategory
-    FACTORY_DJANGO_GET_OR_CREATE = ('name',)
+
+    class Meta:
+        model = JobCategory
+        django_get_or_create = ('name',)
 
     name = factory.Sequence(lambda n: 'Job Category {}'.format(n))
 
 
 class JobTypeFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = JobType
-    FACTORY_DJANGO_GET_OR_CREATE = ('name',)
+
+    class Meta:
+        model = JobType
+        django_get_or_create = ('name',)
 
     name = factory.Sequence(lambda n: 'Job Type {}'.format(n))
 
 
 class JobFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Job
+
+    class Meta:
+        model = Job
 
     category = factory.SubFactory(JobCategoryFactory)
     job_title = factory.Sequence(lambda n: 'Job Title #{}'.format(n))

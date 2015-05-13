@@ -8,8 +8,10 @@ __all__ = (
 
 
 class CompanyFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Company
-    FACTORY_DJANGO_GET_OR_CREATE = ('name',)
+
+    class Meta:
+        model = Company
+        django_get_or_create = ('name',)
 
     name = factory.Sequence(lambda n: 'Company {}'.format(n))
     email = factory.Sequence(lambda n: 'zombie_{}@python.org'.format(n))
