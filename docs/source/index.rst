@@ -8,6 +8,8 @@ General information
 
 :Source code: https://github.com/python/pythondotorg
 :Issue tracker: https://github.com/python/pythondotorg/issues
+:Mailing list: pydotorg-www_
+:IRC: ``#pydotorg`` on Freenode
 :Staging site: https://staging.python.org/ (``master`` branch)
 :Production configuration: https://github.com/python/psf-salt
 :Travis:
@@ -34,3 +36,4 @@ Indices and tables
 * :ref:`search`
 
 .. _python.org: https://www.python.org
+.. _pydotorg-www: https://mail.python.org/mailman/listinfo/pydotorg-www

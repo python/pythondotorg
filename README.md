@@ -6,6 +6,8 @@
 
 * Source code: https://github.com/python/pythondotorg
 * Issue tracker: https://github.com/python/pythondotorg/issues
-* Staging site: https://staging.python.org/ (``master`` branch)
-* Documentation: In ``docs/`` directory
+* Documentation: In `docs/` directory
+* Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
+* IRC: `#pydotorg` on Freenode
+* Staging site: https://staging.python.org/ (`master` branch)
 * License: Apache License
