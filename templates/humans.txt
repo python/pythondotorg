@@ -35,8 +35,8 @@
 
 	Front End Development: Barry Menard, Jamie Re
 	Back End Development: Ray Schamp, Ben Spaulding, Matt Mikula
-    Client management: Jarrett McPhee
-    Project Manager: Chelsea Flynn
+	Client management: Jarrett McPhee
+	Project Manager: Chelsea Flynn
 
 
 /* THANKS */
@@ -55,5 +55,5 @@
 	Core: Python 3 and Django 1.7
 	Components: Modernizr, jQuery, Susy (susy.oddbird.net)
 	Software: SASS and Compass, Coda, Sublime Text, Terminal, Adobe CS, Made on Macs
-	Hardware Stack: Ubuntu 14.04, Postgresql 9.x, Nginx, Gunicorn
-    Helpers: South, Haystack, Pipeline
+	Hardware Stack: Ubuntu 14.04, Postgresql 9.x, Nginx, uwsgi
+	Helpers: Haystack, Pipeline
