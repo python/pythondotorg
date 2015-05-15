@@ -5,6 +5,7 @@ from django.template import Template, Context
 from django.test import TestCase
 
 from .admin import ContentManageableModelAdmin
+from .views import legacy_path
 import datetime
 
 
@@ -74,6 +75,9 @@ class TemplateTagsTest(unittest.TestCase):
 
 
 class Test404(TestCase):
+    def test_legacy_path(self):
+        self.assertEqual(legacy_path('/any/thing'), 'http://legacy.python.org/any/thing')
+
     def test_custom_404(self):
         """ Ensure custom 404 is set to 5 minutes """
         response = self.client.get('/foo-bar/baz/9876')
