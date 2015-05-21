@@ -16,4 +16,4 @@ class SponsorTemplatetagTests(TestCase):
             featured=True,
         )
         sponsors_context = featured_sponsor_rotation()
-        self.assertTrue(sponsor in sponsors_context['sponsors'])
+        self.assertIn(sponsor, sponsors_context['sponsors'])

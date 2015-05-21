@@ -11,47 +11,47 @@ class DownloadModelTests(BaseDownloadTests):
     def test_published(self):
         published_releases = Release.objects.published()
         self.assertEqual(len(published_releases), 4)
-        self.assertTrue(self.release_275 in published_releases)
-        self.assertTrue(self.hidden_release in published_releases)
-        self.assertFalse(self.draft_release in published_releases)
+        self.assertIn(self.release_275, published_releases)
+        self.assertIn(self.hidden_release, published_releases)
+        self.assertNotIn(self.draft_release, published_releases)
 
     def test_release(self):
         released_versions = Release.objects.released()
         self.assertEqual(len(released_versions), 3)
-        self.assertTrue(self.release_275 in released_versions)
-        self.assertTrue(self.hidden_release in released_versions)
-        self.assertFalse(self.draft_release in released_versions)
-        self.assertFalse(self.pre_release in released_versions)
+        self.assertIn(self.release_275, released_versions)
+        self.assertIn(self.hidden_release, released_versions)
+        self.assertNotIn(self.draft_release, released_versions)
+        self.assertNotIn(self.pre_release, released_versions)
 
     def test_pre_release(self):
         pre_release_versions = Release.objects.pre_release()
         self.assertEqual(len(pre_release_versions), 1)
-        self.assertTrue(self.pre_release in pre_release_versions)
+        self.assertIn(self.pre_release, pre_release_versions)
 
     def test_draft(self):
         draft_releases = Release.objects.draft()
         self.assertEqual(len(draft_releases), 1)
-        self.assertFalse(self.release_275 in draft_releases)
-        self.assertFalse(self.hidden_release in draft_releases)
-        self.assertTrue(self.draft_release in draft_releases)
+        self.assertNotIn(self.release_275, draft_releases)
+        self.assertNotIn(self.hidden_release, draft_releases)
+        self.assertIn(self.draft_release, draft_releases)
 
     def test_downloads(self):
         downloads = Release.objects.downloads()
         self.assertEqual(len(downloads), 2)
-        self.assertTrue(self.release_275 in downloads)
-        self.assertFalse(self.hidden_release in downloads)
-        self.assertFalse(self.draft_release in downloads)
-        self.assertFalse(self.pre_release in downloads)
+        self.assertIn(self.release_275, downloads)
+        self.assertNotIn(self.hidden_release, downloads)
+        self.assertNotIn(self.draft_release, downloads)
+        self.assertNotIn(self.pre_release, downloads)
 
     def test_python2(self):
         versions = Release.objects.python2()
         self.assertEqual(len(versions), 1)
-        self.assertTrue(self.release_275 in versions)
+        self.assertIn(self.release_275, versions)
 
     def test_python3(self):
         versions = Release.objects.python3()
         self.assertEqual(len(versions), 3)
-        self.assertFalse(self.release_275 in versions)
-        self.assertFalse(self.draft_release in versions)
-        self.assertTrue(self.hidden_release in versions)
-        self.assertTrue(self.pre_release in versions)
+        self.assertNotIn(self.release_275, versions)
+        self.assertNotIn(self.draft_release, versions)
+        self.assertIn(self.hidden_release, versions)
+        self.assertIn(self.pre_release, versions)
