@@ -47,7 +47,7 @@
 
 
 /* PEOPLE WHO FOUND SECURITY BUGS IN THE WEBSITE */
-	Osama Mahmood
+	Osama Mahmood (http://osamamahmood.blogspot.com)
 
 
 /* SITE */
