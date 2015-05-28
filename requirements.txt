@@ -11,7 +11,7 @@ Markdown==2.5.2
 Pillow==2.7.0
 psycopg2==2.6
 python3-openid==3.0.5
-lxml==3.4.2
+lxml==3.4.4
 cssselect==0.9.1
 git+https://code.google.com/p/feedparser/@dc3bd29bfc1b#egg=feedparser
 beautifulsoup4==4.3.2
