@@ -3,8 +3,13 @@ Installing
 
 Here are two ways to hack on python.org:
 
-a. Easy setup using Vagrant
----------------------------
+1. :ref:`vagrant-setup`
+2. :ref:`manual-setup`
+
+.. _vagrant-setup:
+
+Easy setup using Vagrant
+------------------------
 
 You can ignore the below instructions by using Vagrant::
 
@@ -17,9 +22,10 @@ activated upon login.
 
 .. note:: You will need to run ``./manage.py createsuperuser`` to use the admin.
 
+.. _manual-setup:
 
-b. Manual setup
----------------
+Manual setup
+------------
 
 First, clone the repository::
 
