@@ -6,7 +6,7 @@
 
 * Source code: https://github.com/python/pythondotorg
 * Issue tracker: https://github.com/python/pythondotorg/issues
-* Documentation: In `docs/` directory
+* Documentation: https://pythondotorg.readthedocs.org/
 * Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
 * IRC: `#pydotorg` on Freenode
 * Staging site: https://staging.python.org/ (`master` branch)
