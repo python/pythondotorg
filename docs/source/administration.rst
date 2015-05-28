@@ -46,7 +46,7 @@ Pages are individual entire pages of markup content.  They are require ``Title``
 :Is Published: Controls whether or not the page is visible on the site.
 :Template Name: By default Pages use the template ``templates/pages/default.html`` to use a different template enter the template path here.
 
-**NOTE** Pages are automatically purge from Fastly.com upon save
+.. note:: Pages are automatically purge from Fastly.com upon save.
 
 .. _boxes:
 
@@ -55,7 +55,7 @@ Boxes
 
 Boxes are re-usable bits of HTML markup that are used throughout the site.  Things like sidebar info and specific areas of areas of pages with a richer design (i.e. landing pages) that would be cumbersome to edit as one large content textarea.
 
-**NOTE:** There are *special boxes* that are automatically rebuilt using templates, see :ref:`supernav`.
+.. note:: There are *special boxes* that are automatically rebuilt using templates, see :ref:`supernav`.
 
 .. _downloads:
 
@@ -69,12 +69,13 @@ If the version you are creating should be considered the "latest" release for th
 then check the 'Is this the latest release' checkbox.  When the ``Release`` is saved, the previous version will be automatically
 demoted for you and the new version will be used prominently on the site.  For example the download buttons and supernav links.
 
-**NOTE:** If you make a mistake here, no worries you can just check the box and save on **ANY** version and promote it to being
-the latest release.
+.. note::
+   If you make a mistake here, no worries you can just check the box and save
+   on **ANY** version and promote it to being the latest release.
 
 To create a release you simply need to fill in the appropriate information.  Currently if a ``Release`` has an associated ``Release Page`` the system redirects to that to accommodate legacy content, but if the ``Content`` field is filled they are taken to the Release Detail page which shows the content and lists all of the associated downloadable files.
 
-Release Files have a checkbox named 'Download button' that determines which binary/source package download link to display for a given OS.  This information is used by the OS detection JS on the site so pick the package in most widespread use. On Source distributions be sure to check the 'Download button' for the .tgz version for widest compatibiity.
+Release Files have a checkbox named 'Download button' that determines which binary/source package download link to display for a given OS.  This information is used by the OS detection JS on the site so pick the package in most widespread use. On Source distributions be sure to check the 'Download button' for the .tgz version for widest compatibility.
 
 .. _jobs:
 

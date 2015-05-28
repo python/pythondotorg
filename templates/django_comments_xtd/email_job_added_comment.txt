@@ -1,6 +1,6 @@
 Dear {{ user_name }},
 
-there is a new review comment available for your job posting.
+There is a new review comment available for your job posting.
 
 Title:    {{ content_object.job_title }}
 Company:  {{ content_object.company_name }}
@@ -9,7 +9,7 @@ Posted:   {{ content_object.created|date:"d F Y" }}
 
 --- Comment: ---
 
-{{ comment.comment }}
+{{ comment.comment|safe }}
 --
 Kind regards,
 {{ reviewer_name }}

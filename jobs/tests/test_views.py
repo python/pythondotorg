@@ -35,7 +35,8 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            is_featured=True
+            is_featured=True,
+            telecommuting=True,
         )
         self.job.job_types.add(self.job_type)
 
@@ -145,6 +146,11 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
+        # Test 401 unauthorized
+        url = self.job_draft.get_absolute_url()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 401)
+
     def test_job_detail_security(self):
         """
         Ensure the public can only see approved jobs, but staff can view
@@ -157,7 +163,7 @@ class JobsViewTests(TestCase):
 
         # Normal users can't see non-approved Jobs
         response = self.client.get(self.job_draft.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
+        self.assertTrue(response.status_code in [401, 404])
 
         # Staff can see everything
         self.client.login(username=staff_user.username, password='password')
@@ -300,6 +306,12 @@ class JobsViewTests(TestCase):
         content = str(response.content)
         self.assertTrue('Memphis' in content)
         self.assertFalse('Lawrence' in content)
+
+    def test_job_telecommute(self):
+        url = reverse('jobs:job_telecommute')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(self.job in response.context['jobs'])
 
     def test_job_display_name(self):
         self.assertEqual(self.job.display_name,
@@ -468,7 +480,7 @@ class JobsReviewTests(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=1')
+        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
@@ -487,7 +499,7 @@ class JobsReviewTests(TestCase):
         form_data.update(form.initial)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(response['Location'], 'http://testserver/comments/posted/?c=2')
+        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 3)

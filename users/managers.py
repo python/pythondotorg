@@ -8,7 +8,13 @@ class UserQuerySet(QuerySet):
         return self.filter(email_privacy__exact=self.model.SEARCH_PUBLIC)
 
     def searchable(self):
-        return self.filter(search_visibility__exact=self.model.SEARCH_PUBLIC)
+        return self.filter(
+            public_profile=True,
+            search_visibility__exact=self.model.SEARCH_PUBLIC,
+        )
+
+    def public_profile(self):
+        return self.filter(public_profile=True)
 
 
 class UserManager(BaseUserManager):
@@ -21,3 +27,6 @@ class UserManager(BaseUserManager):
 
     def searchable(self):
         return self.get_queryset().searchable()
+
+    def public_profile(self):
+        return self.get_queryset().public_profile()

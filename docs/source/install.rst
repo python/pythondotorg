@@ -1,10 +1,17 @@
 Installing
 ==========
 
-Using Vagrant
--------------
+Here are two ways to hack on python.org:
 
-You can ignore the below instructions by using Vagrant. After installing::
+1. :ref:`vagrant-setup`
+2. :ref:`manual-setup`
+
+.. _vagrant-setup:
+
+Easy setup using Vagrant
+------------------------
+
+You can ignore the below instructions by using Vagrant::
 
     $ vagrant up
     $ vagrant ssh
@@ -15,9 +22,14 @@ activated upon login.
 
 .. note:: You will need to run ``./manage.py createsuperuser`` to use the admin.
 
+.. _manual-setup:
 
-Getting started
----------------
+Manual setup
+------------
+
+First, clone the repository::
+
+    $ git clone git@github.com:python/pythondotorg.git
 
 You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in, so
 you can do::
@@ -34,18 +46,11 @@ And then you'll need to install dependencies::
 
     $ pip install -r dev-requirements.txt
 
-If you want to install the default Read the Docs theme, you can do::
-
-    $ pip install -r docs-requirements.txt
-
 .. note:: For deployment, you can just use ``requirements.txt``.
 
-In your development environment, you won't need a production ready database, so
-you can use Sqlite3::
-
-    $ export DATABASE_URL=sqlite:///pydotorg.db
-
-You can also add the following setting to ``pydotorg/settings/local.py``::
+To change database configuration, you can add the following setting to
+``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
+variable)::
 
     DATABASES = {
         'default': dj_database_url.parse('sqlite:///pydotorg.db')
@@ -68,15 +73,12 @@ To compile and compress static media, you will need *compass* and
 
 To load all fixture files::
 
-    $ invoke load_fixtures
+    $ ./manage.py load_dev_fixtures
 
-or::
+.. note::
 
-    $ ./manage.py loaddata fixtures/*.json
-
-If you want to load a specific fixture, use its application name::
-
-    $ ./manage.py loaddata downloads boxes
+   This will download an approximately 11 MB gzipped set of fixtures that are
+   sanitized of sensitive user data and then loaded into your local database.
 
 Finally, start the development server::
 
@@ -109,18 +111,6 @@ To generate coverage report::
     $ coverage report
 
 Generate an HTML report with ``coverage html`` if you like.
-
-
-Building documentation
-----------------------
-
-To build this documentation locally::
-
-    $ make -C docs/ htmlview
-
-If you don't want to open the browser automatically, you can do::
-
-    $ make -C docs/ html
 
 
 Useful commands
@@ -168,3 +158,19 @@ question <http://stackoverflow.com/questions/20325473/error-installing-python-im
 Freetype 2.5.3 is known to work with this repository::
 
     $ ln -s /usr/local/include/freetype2 /usr/local/include/freetype
+
+
+Building documentation
+----------------------
+
+If you want to install the default Read the Docs theme, you can do::
+
+    $ pip install -r docs-requirements.txt
+
+To build this documentation locally::
+
+    $ make -C docs/ htmlview
+
+If you don't want to open the browser automatically, you can do::
+
+    $ make -C docs/ html

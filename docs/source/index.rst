@@ -1,12 +1,21 @@
-.. Python.org Website documentation master file, created by
-   sphinx-quickstart on Fri Feb 21 10:03:44 2014.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Python.org Website's documentation!
 ==============================================
 
-Documentation for the code behind `www.python.org <http://www.python.org>`_. This is a work in progress.
+Documentation for the code behind python.org_.
+
+General information
+-------------------
+
+:Source code: https://github.com/python/pythondotorg
+:Issue tracker: https://github.com/python/pythondotorg/issues
+:Mailing list: pydotorg-www_
+:IRC: ``#pydotorg`` on Freenode
+:Staging site: https://staging.python.org/ (``master`` branch)
+:Production configuration: https://github.com/python/psf-salt
+:Travis:
+  .. image:: https://travis-ci.org/python/pythondotorg.svg?branch=master
+       :target: https://travis-ci.org/python/pythondotorg
+:License: Apache License
 
 Contents:
 
@@ -17,7 +26,6 @@ Contents:
    install
    contributing
    administration
-   architecture
    pep_generation
 
 Indices and tables
@@ -27,3 +35,5 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. _python.org: https://www.python.org
+.. _pydotorg-www: https://mail.python.org/mailman/listinfo/pydotorg-www

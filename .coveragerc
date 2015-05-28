@@ -1,4 +1,4 @@
 [run]
 branch = True
 source = .
-omit = manage.py,tasks.py,*/migrations/*,*/tests/*,pydotorg/wsgi.py,minutes/management/commands/import_psf_meeting_notes.py
+omit = manage.py,*/migrations/*,*/tests/*,*/tests.py,pydotorg/wsgi.py,*venv*,pydotorg/settings/*,pydotorg/compilers.py,*/factories.py

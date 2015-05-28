@@ -27,6 +27,8 @@
 
         <h1>PSF Meeting Minutes for {{ minutes.date|date }}</h1>
 
+        <p><a href="{% url 'minutes_feed' %}"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
+
         {{ minutes.content.rendered|safe }}
 
     </article>

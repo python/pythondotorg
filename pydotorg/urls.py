@@ -14,6 +14,7 @@ handler404 = custom_404
 urlpatterns = [
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
+    url(r'^humans.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
     url(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     url(r'^shell/$', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
@@ -61,9 +62,6 @@ urlpatterns = [
 
     # api
     url(r'^api/', include(v1_api.urls)),
-
-    # it's a secret to everyone
-    url(r'^__secret/devfixture/$', 'pydotorg.views.get_dev_fixture', name='pydotorg-devfixture'),
 ]
 
 urlpatterns += staticfiles_urlpatterns()

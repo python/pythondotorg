@@ -192,6 +192,10 @@ def update_homepage_download_box():
 @receiver(post_save, sender=Release)
 def promote_latest_release(sender, instance, **kwargs):
     """ Promote this release to be the latest if this flag is set """
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
     if instance.is_latest:
         # Demote all previous instances
         Release.objects.filter(
@@ -206,6 +210,10 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
     """
     Purge Fastly caches so new Downloads show up more quickly
     """
+    # Don't purge on fixture loads
+    if kwargs.get('raw', False):
+        return
+
     # Only purge on published instances
     if instance.is_published:
         # Purge our common pages
@@ -223,6 +231,10 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 @receiver(post_save, sender=Release)
 def update_download_supernav(sender, instance, **kwargs):
     """ Update download supernav """
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
     if instance.is_published:
         update_supernav()
         update_homepage_download_box()

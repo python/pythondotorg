@@ -121,7 +121,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(venue in response.context['object_list'])
+        self.assertIn(venue, response.context['object_list'])
 
     def test_eventcategory_list(self):
         category = EventCategory.objects.create(
@@ -134,7 +134,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(category in response.context['object_list'])
+        self.assertIn(category, response.context['object_list'])
 
     def test_event_detail(self):
         url = reverse('events:event_detail', kwargs={'calendar_slug': self.calendar.slug, 'pk': self.event.pk})

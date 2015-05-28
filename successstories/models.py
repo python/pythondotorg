@@ -92,6 +92,10 @@ class Story(NameSlugModel, ContentManageable):
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, signal, created, **kwargs):
     """ Update download supernav """
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
     if instance.is_published and instance.featured:
         content = render_to_string('successstories/supernav.html', {
             'story': instance,

@@ -12,19 +12,10 @@
 {% block user_content %}
 
 <div class="return-link">
-    <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
+    <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to User List</a>
 </div>
 
 <article class="text">
-    {% comment %}
-        I'd like some feedback to appear at the top of the page if the form reloads and there is info missing.
-        If the error is at the bottom of the page, no one will see it and realize there is something wrong.
-
-        If the form is submitted successfully, we should let the user know as well.
-
-        Samples below:
-    {% endcomment %}
-
     {% if request.user.has_membership %}
     <h1 class="default-title">Edit your PSF Membership</h1>
     {% else %}
@@ -36,12 +27,6 @@
         <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888; </span></span>Please correct the errors <b>noted in red</b> below:</p>
     </div>
     {% endif %}
-
-    {% comment %}
-    <div class="user-feedback level-success">
-        <p role="alert"><span aria-hidden="true">&#10004;</span> Your membership information has been saved successfully.</p>
-    </div>
-    {% endcomment %}
 
     <form action="" method="post" class="wide-form">
         {% csrf_token %}

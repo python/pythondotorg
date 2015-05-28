@@ -6,7 +6,7 @@
 <a href="https://{{ site.domain }}{{ content_object.get_absolute_url }}">https://{{ site.domain }}{{ content_object.get_absolute_url }}</a></p>
 
 <p>The comment:<br/>
-<i>{{ comment.comment }}</i>
+<i>{{ comment.comment|safe }}</i>
 </p>
 
 <p>--<br/>

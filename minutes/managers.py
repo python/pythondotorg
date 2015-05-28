@@ -7,3 +7,6 @@ class MinutesQuerySet(QuerySet):
 
     def published(self):
         return self.filter(is_published=True)
+
+    def latest(self):
+        return self.published().order_by('-date')

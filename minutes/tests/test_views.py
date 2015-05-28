@@ -42,9 +42,9 @@ class MinutesViewsTests(TestCase):
         response = self.client.get(reverse('minutes_list'))
         self.assertEqual(response.status_code, 200)
 
-        self.assertFalse(self.m1 in response.context['minutes_list'])
-        self.assertTrue(self.m2 in response.context['minutes_list'])
-        self.assertTrue(self.m3 in response.context['minutes_list'])
+        self.assertNotIn(self.m1, response.context['minutes_list'])
+        self.assertIn(self.m2, response.context['minutes_list'])
+        self.assertIn(self.m3, response.context['minutes_list'])
 
         # Test that staff can see drafts
         self.client.login(username='admin', password='adminpass')
@@ -52,9 +52,9 @@ class MinutesViewsTests(TestCase):
         response = self.client.get(reverse('minutes_list'))
         self.assertEqual(response.status_code, 200)
 
-        self.assertTrue(self.m1 in response.context['minutes_list'])
-        self.assertTrue(self.m2 in response.context['minutes_list'])
-        self.assertTrue(self.m3 in response.context['minutes_list'])
+        self.assertIn(self.m1, response.context['minutes_list'])
+        self.assertIn(self.m2, response.context['minutes_list'])
+        self.assertIn(self.m3, response.context['minutes_list'])
 
     def test_detail_view(self):
         response = self.client.get(reverse('minutes_detail', kwargs={

@@ -64,7 +64,6 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
-ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
@@ -202,6 +201,9 @@ LOGGING = {
     }
 }
 
+### Development
+DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
+
 ### Comments
 
 COMMENTS_APP = 'django_comments_xtd'
@@ -228,6 +230,7 @@ FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90
+JOB_FROM_EMAIL = 'jobs@python.org'
 
 ### Pipeline
 

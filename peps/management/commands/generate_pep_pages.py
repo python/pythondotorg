@@ -43,7 +43,9 @@ class Command(NoArgsCommand):
         verbose("== Starting PEP page generation")
 
         verbose("Generating RSS Feed")
-        get_peps_rss()
+        peps_rss = get_peps_rss()
+        if not peps_rss:
+            verbose("Could not find generated RSS feed. Skipping.")
 
         verbose("Generating PEP0 index page")
         pep0_page, _ = get_pep0_page()
@@ -72,6 +74,7 @@ class Command(NoArgsCommand):
             if pep_match:
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
+                verbose("====== Title: '{}'".format(p.title))
             else:
                 verbose("- Skipping invalid '{}'".format(f))
 
@@ -85,6 +88,5 @@ class Command(NoArgsCommand):
                 add_pep_image(pep_number, img)
             else:
                 verbose("- Skipping non-PEP related image '{}'".format(img))
-
 
         verbose("== Finished")

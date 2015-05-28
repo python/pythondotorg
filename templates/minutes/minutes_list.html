@@ -28,6 +28,8 @@
             <header class="text not-column">
                 <h1>PSF Board Meeting Minutes Archive</h1>
             </header>
+
+            <p><a href="{% url 'minutes_feed' %}"><span aria-hidden="true" class="icon-feed"></span>Subscribe via RSS</a></p>
             
         {% for m in minutes_list %}
             {% ifchanged m.date|date:"Y" %}

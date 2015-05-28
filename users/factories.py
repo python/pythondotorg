@@ -4,8 +4,10 @@ from .models import User, Membership
 
 
 class UserFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = User
-    FACTORY_DJANGO_GET_OR_CREATE = ('username',)
+
+    class Meta:
+        model = User
+        django_get_or_create = ('username',)
 
     username = factory.Sequence(lambda n: 'zombie{}'.format(n))
     email = factory.Sequence(lambda n: "zombie%s@example.com" % n)
@@ -19,8 +21,10 @@ class StaffUserFactory(UserFactory):
 
 
 class MembershipFactory(factory.DjangoModelFactory):
-    FACTORY_FOR = Membership
-    FACTORY_DJANGO_GET_OR_CREATE = ('creator',)
+
+    class Meta:
+        model = Membership
+        django_get_or_create = ('creator',)
 
     psf_code_of_conduct = True
     psf_announcements = True

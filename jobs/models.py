@@ -3,12 +3,15 @@ import datetime
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
+from fastly.utils import purge_url
 
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
 from .signals import job_was_approved, job_was_rejected
@@ -207,6 +210,15 @@ class Job(ContentManageable):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
     @property
+    def visible(self):
+        if self.status != self.STATUS_APPROVED:
+            return False
+        if self.expires <= timezone.now():
+            return False
+
+        return True
+
+    @property
     def editable(self):
         return self.status in (
             self.STATUS_DRAFT,
@@ -219,3 +231,19 @@ class Job(ContentManageable):
 
     def get_next_listing(self):
         return self.get_next_by_created(status=self.STATUS_APPROVED)
+
+
+@receiver(post_save, sender=Job)
+def purge_fastly_cache(sender, instance, **kwargs):
+    """
+    Purge fastly.com cache on new jobs
+    Requires settings.FASTLY_API_KEY being set
+    """
+    # Skip in fixtures
+    if kwargs.get('raw', False):
+        return
+
+    if instance.status == Job.STATUS_APPROVED:
+        purge_url(reverse('jobs:job_detail', kwargs={'pk': instance.pk}))
+        purge_url(reverse('jobs:job_list'))
+        purge_url(reverse('jobs:job_rss'))

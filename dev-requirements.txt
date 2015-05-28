@@ -4,6 +4,3 @@
 
 coverage
 ddt
-
-# Invoke from py3 branch, remove once it gets a release.
-invoke==0.9.0

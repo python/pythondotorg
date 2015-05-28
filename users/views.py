@@ -5,16 +5,20 @@ from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
 from django.http import Http404
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView
+from django.views.generic import (
+    CreateView, DetailView, ListView, TemplateView, UpdateView
+)
 
 from honeypot.decorators import check_honeypot
 
-from .forms import UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm
+from .forms import (
+    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm
+)
 from .models import User, Membership
 
 
-#TODO: dont show the form if the user is already auth'd.
 class SignupView(CreateView):
     form_class = UserCreationForm
     model = User
@@ -89,9 +93,9 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
         return super().dispatch(*args, **kwargs)
 
     def get_object(self):
-        try:
-            return self.request.user.membership.all()[0]
-        except IndexError:
+        if self.request.user.has_membership:
+            return self.request.user.membership
+        else:
             raise Http404()
 
     def form_valid(self, form):
@@ -107,6 +111,21 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
 
 class MembershipThanks(TemplateView):
     template_name = 'users/membership_thanks.html'
+
+
+class MembershipVoteAffirm(TemplateView):
+    template_name = 'users/membership_vote_affirm.html'
+
+    def post(self, request, *args, **kwargs):
+        """ Store the vote affirmation """
+        self.request.user.membership.votes = True
+        self.request.user.membership.last_vote_affirmation = timezone.now()
+        self.request.user.membership.save()
+        return redirect('users:membership_affirm_vote_done')
+
+
+class MembershipVoteAffirmDone(TemplateView):
+    template_name = 'users/membership_vote_affirm_done.html'
 
 
 class UserUpdate(LoginRequiredMixin, UpdateView):
@@ -137,3 +156,4 @@ class UserList(ListView):
 
     def get_queryset(self):
         return super().get_queryset().searchable()
+
