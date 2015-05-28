@@ -201,21 +201,24 @@
 </div>
  
  */
-#nojs, #oldie-warning {
-	text-align: center; 
+#nojs, 
+#oldie {
+	color: palette(mono,dark);
+	padding: $grid-spacing $grid-spacing 0; 
 	
-	p {
-	   //color: $grey-lighterer;
-	   font-weight: $bold-weight; 
-	   margin: 0;
-	}
+	p { 
+    	text-align: center; 
+    	padding-bottom: 1em; 
+    	margin: 0; 
+    }
 	
 	a {
-    	//color: $grey-lighterer; 
+    	color: palette(mono,dark);
     	text-decoration: underline; 
     	
-    	&:hover, &:focus {
-        	color: $white; 
+    	&:hover, 
+    	&:focus {
+        	color: palette(mono,x-dark);  
         	text-decoration: none; 
     	}
 	}
@@ -227,29 +230,48 @@
 
 #nojs {
     background-color: $alert-high; 
-    background: linear-gradient(
-        to bottom,
-        $alert-high,
-        $alert-high 50%,
-        lighten($alert-high, 4%) 50%,
-        lighten($alert-high, 4%) 
+    background: repeating-linear-gradient(
+        45deg,
+        lighten($alert-high,2),
+        lighten($alert-high,2) 6px,
+        lighten($alert-high,6) 6px,
+        lighten($alert-high,6) 12px
     );
-    background-size: 100% 16px;
+    
+    &,
+    a,
+    a:hover,
+    a:focus { color: $white; }
 }
 
 
-/*<div id="oldie" class="typography do-not-print">
-    <p>Your browser is <em>ancient</em> and <a href="//www.ie6countdown.com/">Microsoft agrees</a>. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+/*<!--[if lt IE 8]>
+<div id="oldie" class="typography do-not-print">
+<![endif]-->
+    <!--[if IE 6]>
+    <p>Your browser is <em>ancient</em> and <a href="//www.modern.ie/en-us/ie6countdown">Microsoft agrees</a>. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+    <![endif]-->
+    <!--[if IE 7]>
+    <p>Internet Explorer version 7 is not supported by this site, and your experience with the content may be hindered by poor performance and/or lack of design support. <a href="//browsehappy.com/">Upgrade or download a new browser</a> to experience a better web. </p>
+    <![endif]-->
+<!--[if lt IE 8]>
     <p>Not sure what a browser is? <a href="//whatbrowser.org">This site explains it all very nicely</a>.</p>
-</div>*/
+</div>
+<![endif]-->*/
+
 #oldie {
+    color: palette(mono,dark);
     background-color: $alert-normal; 
+    background: repeating-linear-gradient(
+        45deg,
+        $alert-normal,
+        $alert-normal 6px,
+        adjust_hue(darken($alert-normal, 12), 354) 6px,
+        adjust_hue(darken($alert-normal, 12), 354) 12px
+    );
     
-    //p { color: $grey-dark; }
-    
-    a {
-        //color: $grey-dark;
-        
-        &:hover, &:focus { color: $black; }
-    }
+    &,
+    a,
+    a:hover,
+    a:focus { color: palette(mono,dark); }
 }

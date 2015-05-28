@@ -84,16 +84,7 @@ $animation-duration: 400ms; // Also used in _layout.scss
                 </li>
             </ul>
         </nav>
-        <div class="head--search">
-            <form class="head--search--form" action="#" method="get">
-                <fieldset title="Search Python.org">
-                    <div class="search--wrapper">
-                        <span class="icon icon-search-alt" aria-hidden="true"></span>
-                        <input class="form--input" type="search" name="q" id="search" value="" placeholder="Search Python.org">
-                    </div>
-				</fieldset>
-			</form>
-		</div>
+        <div class="head--search"> [...] </div>
     </div>*/
     &--nav {
         float: left; 
@@ -159,21 +150,34 @@ $animation-duration: 400ms; // Also used in _layout.scss
         }
     }
     
+    /*<div class="search--wrapper">
+        <span class="icon icon-search-alt" aria-hidden="true"></span>
+        <label class="screen-reader-text" for="id-search-field">Search This Site</label>
+        <input id="id-search-field" name="q" class="form--input placeholder" type="search" role="textbox" value="" placeholder="Search Python.org" tabindex="1">
+        <button type="submit" name="submit" id="submit" class="head--search--button" title="Submit this Search" tabindex="3">GO</button>
+    </div>*/
     &--search {
         float: left; 
-        width: columns(4); 
+        //width: columns(4); 
         
         .icon { color: palette(brand,darkest); }
+        
+        .form--input,
+        &--button {
+            display: inline-block; 
+            vertical-align: middle; 
+            @include perem( font-size, 14px ); 
+            @include vertical-gradient( palette(brand), palette(brand,light) ); 
+        }
         
         .form--input {
             color: palette(brand,darkest); 
             border: none; 
             width: 11em; 
-            @include perem( font-size, 14px ); 
-            @include vertical-gradient( palette(brand), palette(brand,light) ); 
-            @include border-radius( 1.5em ); 
+            padding: .3em .5em .125em 2.25em; 
+            @include border-left-radius( 1.5em ); 
             
-            &:focus { @include vertical-gradient( palette(brand,light), lighten(palette(brand,light),8%) ); }
+            @include touch-hover() { @include vertical-gradient( palette(brand,light), lighten(palette(brand,light),8%) ); }
             
             @include pe-media( $breakpoint-medium ) {
             	width: 13em; 
@@ -188,6 +192,17 @@ $animation-duration: 400ms; // Also used in _layout.scss
         ::-webkit-input-placeholder  { color: $search-placeholder; font-style: normal; }
         ::-moz-placeholder { color: $search-placeholder; font-style: normal; }
         :-ms-input-placeholder { color: $search-placeholder; font-style: normal; }
+        
+        &--button {
+            color: palette(brand,darkest); 
+            padding: .3em .75em .125em .5em;
+            @include border-right-radius( 1.5em ); 
+            
+            @include touch-hover() { 
+                color: palette(brand,dark); 
+                @include vertical-gradient( palette(brand,light), lighten(palette(brand,light),8%) ); 
+            }
+        }
     }
 }
 
