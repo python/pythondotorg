@@ -11,7 +11,7 @@ Here are two ways to hack on python.org:
 Easy setup using Vagrant
 ------------------------
 
-You can ignore the below instructions by using Vagrant::
+::
 
     $ vagrant up
     $ vagrant ssh
@@ -40,6 +40,7 @@ you can do::
 But you can also use your existing virtualenv and virtualenvwrapper::
 
     $ virtualenv --python=python3.3 <env>
+    # or
     $ mkvirtualenv --python=python3.3 <env>
 
 And then you'll need to install dependencies::
@@ -48,12 +49,13 @@ And then you'll need to install dependencies::
 
 .. note:: For deployment, you can just use ``requirements.txt``.
 
-To change database configuration, you can add the following setting to
+pythondotorg will look for a PostgreSQL database named ``python.org`` by
+default. To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::
 
     DATABASES = {
-        'default': dj_database_url.parse('sqlite:///pydotorg.db')
+        'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
 Not it's time to run migrations::
