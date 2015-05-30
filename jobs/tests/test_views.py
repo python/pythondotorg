@@ -6,16 +6,20 @@ from django.test import TestCase
 from ..models import Job
 from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
-    ReviewJobFactory
+    ReviewJobFactory, JobsBoardAdminGroupFactory,
 )
-from users.factories import StaffUserFactory, UserFactory
+from users.factories import UserFactory
 
 
 class JobsViewTests(TestCase):
     def setUp(self):
         self.user = UserFactory(password='password')
 
-        self.staff = StaffUserFactory(password='password')
+        self.staff = UserFactory(
+            password='password',
+            is_staff=True,
+            groups=[JobsBoardAdminGroupFactory()],
+        )
 
         self.job_category = JobCategoryFactory(
             name='Game Production',
@@ -187,8 +191,6 @@ class JobsViewTests(TestCase):
         Ensure the public can only see approved jobs, but staff can view
         all jobs
         """
-        staff_user = StaffUserFactory()
-
         response = self.client.get(self.job.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -197,7 +199,7 @@ class JobsViewTests(TestCase):
         self.assertIn(response.status_code, [401, 404])
 
         # Staff can see everything
-        self.client.login(username=staff_user.username, password='password')
+        self.client.login(username=self.staff.username, password='password')
         response = self.client.get(self.job.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -476,7 +478,7 @@ class JobsReviewTests(TestCase):
         url = reverse('jobs:job_review')
 
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
 
         self.client.login(username=self.super_username, password=self.super_password)
 
