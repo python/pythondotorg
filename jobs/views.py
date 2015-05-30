@@ -1,10 +1,11 @@
-from braces.views import GroupRequiredMixin
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
+
+from braces.views import GroupRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
 from .mixins import LoginRequiredMixin
@@ -33,6 +34,13 @@ class JobLocationMenu:
 
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
+
+    def check_membership(self, group):
+        # Add is_staff and is_superuser checks to stay compatible
+        # with current staff members.
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return True
+        return super().check_membership(group)
 
 
 class JobMixin:

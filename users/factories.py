@@ -15,9 +15,13 @@ class UserFactory(factory.DjangoModelFactory):
     search_visibility = User.SEARCH_PUBLIC
     email_privacy = User.EMAIL_PUBLIC
 
-
-class StaffUserFactory(UserFactory):
-    is_staff = True
+    @factory.post_generation
+    def groups(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if extracted:
+            for group in extracted:
+                self.groups.add(group)
 
 
 class MembershipFactory(factory.DjangoModelFactory):

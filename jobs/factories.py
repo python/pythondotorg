@@ -1,6 +1,7 @@
 import datetime
 import factory
 
+from django.contrib.auth.models import Group
 from django.utils import timezone
 
 from users.factories import UserFactory
@@ -88,3 +89,11 @@ class RemovedJobFactory(JobFactory):
 
 class ReviewJobFactory(JobFactory):
     status = Job.STATUS_REVIEW
+
+
+class JobsBoardAdminGroupFactory(factory.DjangoModelFactory):
+    class Meta:
+        model = Group
+        django_get_or_create = ('name',)
+
+    name = 'Job Board Admin'
