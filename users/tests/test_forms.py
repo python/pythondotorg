@@ -28,7 +28,7 @@ class UsersFormsTestCase(TestCase):
             'password2': 'password'
         })
         self.assertFalse(form.is_valid())
-        self.assertTrue('username' in form.errors)
+        self.assertIn('username', form.errors)
 
         # password mismatch
         form = UserCreationForm({
@@ -37,21 +37,4 @@ class UsersFormsTestCase(TestCase):
             'password2': 'passwordmismatch'
         })
         self.assertFalse(form.is_valid())
-        self.assertTrue('password2' in form.errors)
-
-    '''
-    def test_user_change_form(self):
-        user = User.objects.create_user(
-            username='username',
-            password='password'
-        )
-        form = UserChangeForm({
-            'username': 'username2',
-            'last_login': user.last_login,
-            'date_joined': user.date_joined
-        }, instance=user)
-        self.assertTrue(form.is_valid())
-        user = form.save()
-        user = User.objects.get(pk=user.pk)
-        self.assertEqual(user.username, 'username2')
-    '''
+        self.assertIn('password2', form.errors)

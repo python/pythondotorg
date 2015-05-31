@@ -163,7 +163,7 @@ class JobsViewTests(TestCase):
 
         # Normal users can't see non-approved Jobs
         response = self.client.get(self.job_draft.get_absolute_url())
-        self.assertTrue(response.status_code in [401, 404])
+        self.assertIn(response.status_code, [401, 404])
 
         # Staff can see everything
         self.client.login(username=staff_user.username, password='password')
@@ -271,8 +271,8 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_types')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.job_type in response.context['types'])
-        self.assertFalse(job_type2 in response.context['types'])
+        self.assertIn(self.job_type, response.context['types'])
+        self.assertNotIn(job_type2, response.context['types'])
 
     def test_job_categories(self):
         job_category2 = JobCategoryFactory(
@@ -283,8 +283,8 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_categories')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.job_category in response.context['categories'])
-        self.assertFalse(job_category2 in response.context['categories'])
+        self.assertIn(self.job_category, response.context['categories'])
+        self.assertNotIn(job_category2, response.context['categories'])
 
     def test_job_locations(self):
         job2 = ReviewJobFactory(
@@ -300,18 +300,18 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_locations')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.job in response.context['jobs'])
-        self.assertFalse(job2 in response.context['jobs'])
+        self.assertIn(self.job, response.context['jobs'])
+        self.assertNotIn(job2, response.context['jobs'])
 
         content = str(response.content)
-        self.assertTrue('Memphis' in content)
-        self.assertFalse('Lawrence' in content)
+        self.assertIn('Memphis', content)
+        self.assertNotIn('Lawrence', content)
 
     def test_job_telecommute(self):
         url = reverse('jobs:job_telecommute')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertTrue(self.job in response.context['jobs'])
+        self.assertIn(self.job, response.context['jobs'])
 
     def test_job_display_name(self):
         self.assertEqual(self.job.display_name,
@@ -421,9 +421,9 @@ class JobsReviewTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 3)
-        self.assertTrue(self.job1 in response.context['object_list'])
-        self.assertTrue(self.job2 in response.context['object_list'])
-        self.assertTrue(self.job3 in response.context['object_list'])
+        self.assertIn(self.job1, response.context['object_list'])
+        self.assertIn(self.job2, response.context['object_list'])
+        self.assertIn(self.job3, response.context['object_list'])
 
         # no email notifications sent before offer is approved
         self.assertEqual(len(mail.outbox), 0)
@@ -436,7 +436,7 @@ class JobsReviewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
-        self.assertTrue(self.contact in message.body)
+        self.assertIn(self.contact, message.body)
         mail.outbox = []
 
         # no email notifications sent before offer is rejected
@@ -450,7 +450,7 @@ class JobsReviewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
-        self.assertTrue(self.contact in message.body)
+        self.assertIn(self.contact, message.body)
         mail.outbox = []
 
         self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
@@ -480,7 +480,7 @@ class JobsReviewTests(TestCase):
         self.assertEqual(len(mail.outbox), 0)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
+        self.assertIn('http://testserver/comments/posted/?c=', response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
@@ -499,7 +499,7 @@ class JobsReviewTests(TestCase):
         form_data.update(form.initial)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue('http://testserver/comments/posted/?c=' in response['Location'])
+        self.assertIn('http://testserver/comments/posted/?c=', response['Location'])
 
         mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 3)
