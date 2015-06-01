@@ -31,7 +31,6 @@ class UserCreationForm(BaseUserCreationForm):
     def clean_email(self):
         """ Ensure email is unique """
         email = self.cleaned_data["email"]
-        print(email)
         try:
             User._default_manager.get(email=email)
         except User.DoesNotExist:
