@@ -77,9 +77,9 @@ class JobsModelsTests(TestCase):
 
         visible = Job.objects.visible()
         self.assertTrue(len(visible), 1)
-        self.assertTrue(j1 in visible)
-        self.assertFalse(j2 in visible)
-        self.assertFalse(j3 in visible)
+        self.assertIn(j1, visible)
+        self.assertNotIn(j2, visible)
+        self.assertNotIn(j3, visible)
 
     def test_job_type_with_active_jobs_manager(self):
         t1 = factories.JobTypeFactory()
@@ -89,8 +89,8 @@ class JobsModelsTests(TestCase):
 
         qs = JobType.objects.with_active_jobs()
         self.assertEqual(len(qs), 1)
-        self.assertTrue(t1 in qs)
-        self.assertFalse(t2 in qs)
+        self.assertIn(t1, qs)
+        self.assertNotIn(t2, qs)
 
     def test_job_category_with_active_jobs_manager(self):
         c1 = factories.JobCategoryFactory()
@@ -101,8 +101,8 @@ class JobsModelsTests(TestCase):
 
         qs = JobCategory.objects.with_active_jobs()
         self.assertEqual(len(qs), 1)
-        self.assertTrue(c1 in qs)
-        self.assertFalse(c2 in qs)
+        self.assertIn(c1, qs)
+        self.assertNotIn(c2, qs)
 
     def test_get_previous_approved(self):
         job1 = self.create_job(status=Job.STATUS_APPROVED)
