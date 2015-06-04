@@ -1,3 +1,5 @@
+import waffle
+
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.conf import settings
@@ -14,7 +16,7 @@ from django.views.generic import (
 from honeypot.decorators import check_honeypot
 
 from .forms import (
-    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm
+    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
 
@@ -42,8 +44,8 @@ class SignupView(CreateView):
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
-    form_class = MembershipForm
     model = Membership
+    form_class = MembershipForm
     template_name = 'users/membership_form.html'
 
     @method_decorator(check_honeypot)

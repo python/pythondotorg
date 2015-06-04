@@ -104,6 +104,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'waffle.middleware.WaffleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
@@ -152,6 +153,7 @@ INSTALLED_APPS = [
     'blogs',
     'downloads',
     'codesamples',
+    'waffle',
 
     'allauth',
     'allauth.account',
@@ -163,7 +165,7 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
-
+    'debug_toolbar',
 ]
 
 # Fixtures
@@ -241,3 +243,6 @@ from .pipeline import (
     PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
+
+### django-waffle settings
+WAFFLE_OVERRIDE = True
