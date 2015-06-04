@@ -136,6 +136,7 @@ INSTALLED_APPS = [
     'imagekit',
     'haystack',
     'honeypot',
+    'waffle',
 
     'users',
     'boxes',
@@ -153,7 +154,7 @@ INSTALLED_APPS = [
     'blogs',
     'downloads',
     'codesamples',
-    'waffle',
+    'work_groups',
 
     'allauth',
     'allauth.account',
