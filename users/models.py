@@ -100,6 +100,13 @@ class Membership(models.Model):
             return "Membership '%s'" % self.legal_name
 
     @property
+    def higher_level_member(self):
+        if self.membership_type != Membership.BASIC:
+            return True
+        else:
+            return False
+
+    @property
     def needs_vote_affirmation(self):
         if not self.votes:
             return False

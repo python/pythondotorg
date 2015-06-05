@@ -1,5 +1,3 @@
-import waffle
-
 from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.conf import settings
@@ -14,6 +12,7 @@ from django.views.generic import (
 )
 
 from honeypot.decorators import check_honeypot
+
 
 from .forms import (
     UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm,
@@ -158,4 +157,3 @@ class UserList(ListView):
 
     def get_queryset(self):
         return super().get_queryset().searchable()
-

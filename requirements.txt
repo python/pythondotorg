@@ -47,3 +47,4 @@ uWSGI==2.0.10
 
 raven==5.2.0
 django-waffle==0.10.1
+django-test-plus==1.0.4

@@ -5,6 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..factories import UserFactory, MembershipFactory
+from ..models import Membership
 
 User = get_user_model()
 
@@ -33,6 +34,13 @@ class UsersModelsTestCase(TestCase):
 
         member = MembershipFactory()
         self.assertTrue(member.creator.has_membership)
+
+    def test_higher_level_member(self):
+        member1 = MembershipFactory()
+        member2 = MembershipFactory(membership_type=Membership.SPONSOR)
+
+        self.assertFalse(member1.higher_level_member)
+        self.assertTrue(member2.higher_level_member)
 
     def test_needs_vote_affirmation(self):
         member1 = MembershipFactory()
