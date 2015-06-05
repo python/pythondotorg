@@ -86,8 +86,10 @@
             <strong>Insert Canned response:</strong>
             <select id="canned_response">
                 <option value="empty">---</option>
-                <option value="voluntary">Voluntary</option>
-                <option value="not_python">Not python</option>
+                <option value="not_python">No or not enough emphasis on Python</option>
+                <option value="formatting">Formatting broken</option>
+                <option value="duplicate">Duplicate posting</option>
+                <option value="voluntary">Voluntary, non paid job</option>
             </select>
             <h3>Review action</h3>
             <form action="{% url "jobs:job_review" %}" method="post">
@@ -198,7 +200,9 @@
 <script type="text/javascript">
     // TODO: allow configuring canned responses in admin
     var voluntary_response = "The Python Job Board is for paid positions only. The Python Community has a separate Wiki for listing voluntary positions available at http://wiki.python.org/moin/VolunteerOpportunities.";
-    var not_python_response = "The Python Job Board is for positions in which the primary role involves the Python programming language or development frameworks based on Python."
+    var not_python_response = "The Python Job Board is for positions in which the primary role involves the Python programming language or development frameworks based on Python.\n\nPlease rephrase and resubmit.\n\nThanks.";
+    var formatting_response = "Please resubmit your posting and check that the job description and/or requirements text renders fine in an online ReST editor such as http://rst.ninjs.org/.\n\nThanks.";
+    var duplicate_response = "This seems to be a duplicate of your earlier posting.\n\nIf not, please rephrase to make the difference clear.\n\nThanks.";
     $(document).ready(function() {
         var commment_field = $('#id_comment');
         $('#canned_response').change(function(){
@@ -208,6 +212,12 @@
                     break;
                 case 'not_python':
                     commment_field.val(not_python_response);
+                    break;
+                case 'formatting':
+                    commment_field.val(formatting_response);
+                    break;
+                case 'duplicate':
+                    commment_field.val(duplicate_response);
                     break;
             }
         });
