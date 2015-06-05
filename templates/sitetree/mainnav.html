@@ -1,0 +1,15 @@
+{% load sitetree %}
+{% with sitetree_items|length as total_length %}
+    {% for item in sitetree_items %}
+        <li id="{{ item.title|slugify }}-parent" class="mainnav--item{% if item.has_children %}__with-toggle{% endif %}" aria-haspopup="true">
+            <a class="mainnav--link{{ item.is_current|yesno:' open,' }}{{ item.in_current_branch|yesno:' open,' }}" href="{% sitetree_url for item %}" title="{{ item.hint|default:'' }}"><span class="icon icon-python-alt" aria-hidden="true"></span>{{ item.title_resolved }}</a> 
+        
+        {% if item.has_children %}
+            <a class="mainnav--toggle{{ item.is_current|yesno:' open,' }}{{ item.in_current_branch|yesno:' open,' }}" href="#{{ item.title|slugify }}"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            <ul id="{{ item.title|slugify }}" class="mainnav--list child">
+            {% sitetree_children of item for menu template "sitetree/submenu_children.html" %}
+            </ul>
+        {% endif %}
+        </li>
+    {% endfor %}
+{% endwith %}

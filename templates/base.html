@@ -108,7 +108,7 @@
     }</script>
 
     {# Asynchronous Analytics snippet #}
-    <script type="text/javascript">
+    <!--<script type="text/javascript">
     var _gaq = _gaq || [];
     _gaq.push(['_setAccount', 'UA-39055973-1']);
     _gaq.push(['_trackPageview']);
@@ -118,7 +118,7 @@
         ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
         var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
     })();
-    </script>
+    </script>-->
     {% block head %}{% endblock %}
 </head>
 
@@ -134,161 +134,167 @@
         {#-- Start navigation #}
         <nav id="nav" class="mainnav fwf-fixed-left">
             <ul class="mainnav--list parent sticky-navigation">
-                
-                <li id="python-parent" class="mainnav--item__with-toggle">
-                    {# If this is the current parent (default), we need an "open" class on BOTH anchors below #}
-                    <a class="mainnav--link open" href="#"><span class="icon icon-python-alt" aria-hidden="true"></span>Home</a> 
-                    <a class="mainnav--toggle open" href="#python"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+                {% sitetree_menu from "navtree" include "trunk" template "sitetree/mainnav.html" %}
+            </ul>
+        </nav>
+        
+        
+<!--<nav id="nav" class="mainnav fwf-fixed-left">
+    <ul class="mainnav--list parent sticky-navigation">
+        
+        <li id="python-parent" class="mainnav--item__with-toggle">
+            {# If this is the current parent (default), we need an "open" class on BOTH anchors below #}
+            <a class="mainnav--link open" href="#"><span class="icon icon-python-alt" aria-hidden="true"></span>Home</a> 
+            <a class="mainnav--toggle open" href="#python"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            
+            {# By default these have class "collapsed". When they need to be open, remove class #}
+            <ul id="python" class="mainnav--list child">
+                <li class="mainnav--item__with-toggle">
+                    
+                    {# If this child is selected, add a "disabled" class #}
+                    <a class="mainnav--link" href="#">About</a>
+                    <a class="mainnav--toggle" href="#about"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
                     
                     {# By default these have class "collapsed". When they need to be open, remove class #}
-                    <ul id="python" class="mainnav--list child">
-                        <li class="mainnav--item__with-toggle">
-                            
-                            {# If this child is selected, add a "disabled" class #}
-                            <a class="mainnav--link" href="#">About</a>
-                            <a class="mainnav--toggle" href="#about"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            
-                            {# By default these have class "collapsed". When they need to be open, remove class #}
-                            <ul id="about" class="mainnav--list grandchild collapsed">
-                                
-                                {# If any of these grandchildren are selected, add a "disabled" class to the anchor #}
-                                <li><a class="mainnav--link" href="#">Applications</a></li>
-                                <li><a class="mainnav--link" href="#">Quotes</a></li>
-                                <li><a class="mainnav--link" href="#">Getting Started</a></li>
-                                <li><a class="mainnav--link" href="#">Help</a></li>
-                            </ul>
-                        </li>
-                        {# End examples #}
+                    <ul id="about" class="mainnav--list grandchild collapsed">
                         
-                        <li class="mainnav--item__with-toggle">
-                            <a class="mainnav--link" href="#">Downloads</a>
-                            <a class="mainnav--toggle" href="#downloads"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            <ul id="downloads" class="mainnav--list grandchild collapsed">
-                                <li><a class="mainnav--link" href="#">All releases</a></li>
-                                <li><a class="mainnav--link" href="#">Source code</a></li>
-                                <li><a class="mainnav--link" href="#">Windows</a></li>
-                                <li><a class="mainnav--link" href="#">Mac OSX</a></li>
-                                <li><a class="mainnav--link" href="#">Other platforms</a></li>
-                                <li><a class="mainnav--link" href="#">License</a></li>
-                                <li><a class="mainnav--link" href="#">Alternative implementations</a></li>
-                            </ul>
-                        </li>
-                        <li class="mainnav--item__with-toggle">
-                            <a class="mainnav--link" href="#">Documentation</a>
-                            <a class="mainnav--toggle" href="#docs"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            <ul id="docs" class="mainnav--list grandchild collapsed">
-                                <li><a class="mainnav--link" href="#">Docs</a></li>
-                                <li><a class="mainnav--link" href="#">Audio/Visual talks</a></li>
-                                <li><a class="mainnav--link" href="#">Beginner&rsquo;s Guide</a></li>
-                                <li><a class="mainnav--link" href="#">Developer&rsquo;s Guide</a></li>
-                                <li><a class="mainnav--link" href="#">FAQ</a></li>
-                                <li><a class="mainnav--link" href="#">Non-English Docs</a></li>
-                                <li><a class="mainnav--link" href="#">PEP Index</a></li>
-                                <li><a class="mainnav--link" href="#">Python Books</a></li>
-                            </ul>
-                        </li>
-                        <li class="mainnav--item__with-toggle">
-                            <a class="mainnav--link" href="#">Success Stories</a>
-                            <a class="mainnav--toggle" href="#success"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            <ul id="success" class="mainnav--list grandchild collapsed">
-                                <li><a class="mainnav--link" href="#">Arts</a></li>
-                                <li><a class="mainnav--link" href="#">Business</a></li>
-                                <li><a class="mainnav--link" href="#">Education</a></li>
-                                <li><a class="mainnav--link" href="#">Engineering</a></li>
-                                <li><a class="mainnav--link" href="#">Government</a></li>
-                                <li><a class="mainnav--link" href="#">Scientific</a></li>
-                                <li><a class="mainnav--link" href="#">Software Development</a></li>
-                            </ul>
-                        </li>
-                        <li class="mainnav--item__with-toggle">
-                            <a class="mainnav--link" href="#">News</a>
-                            <a class="mainnav--toggle" href="#news"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            <ul id="news" class="mainnav--list grandchild collapsed">
-                                <li><a class="mainnav--link" href="#">Python News</a></li>
-                                <li><a class="mainnav--link" href="#">Community News</a></li>
-                                <li><a class="mainnav--link" href="#">PSF News</a></li>
-                                <li><a class="mainnav--link" href="#">Pycon News</a></li>
-                            </ul>
-                        </li>
-                        <li class="mainnav--item__with-toggle">
-                            <a class="mainnav--link" href="#">Events</a>
-                            <a class="mainnav--toggle" href="#events"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
-                            <ul id="events" class="mainnav--list grandchild collapsed">
-                                <li><a class="mainnav--link" href="#">Python Events</a></li>
-                                <li><a class="mainnav--link" href="#">Community Events</a></li>
-                                <li><a class="mainnav--link" href="#">Events Archive</a></li>
-                                <li><a class="mainnav--link" href="#">Submit an Event</a></li>
-                            </ul>
-                        </li>
+                        {# If any of these grandchildren are selected, add a "disabled" class to the anchor #}
+                        <li><a class="mainnav--link" href="#">Applications</a></li>
+                        <li><a class="mainnav--link" href="#">Quotes</a></li>
+                        <li><a class="mainnav--link" href="#">Getting Started</a></li>
+                        <li><a class="mainnav--link" href="#">Help</a></li>
                     </ul>
                 </li>
-                <li id="community-parent" class="mainnav--item__with-toggle">
-                    <a class="mainnav--link" href="#"><span class="icon icon-community" aria-hidden="true"></span>Community</a> 
-                    <a class="mainnav--toggle" href="#community"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-                    <ul id="community" class="mainnav--list child collapsed">
-                        <li><a class="mainnav--link" href="#">Developers</a></li>
-                        <li><a class="mainnav--link" href="#">Membership</a></li>
+                {# End examples #}
+                
+                <li class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#">Downloads</a>
+                    <a class="mainnav--toggle" href="#downloads"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                    <ul id="downloads" class="mainnav--list grandchild collapsed">
+                        <li><a class="mainnav--link" href="#">All releases</a></li>
+                        <li><a class="mainnav--link" href="#">Source code</a></li>
+                        <li><a class="mainnav--link" href="#">Windows</a></li>
+                        <li><a class="mainnav--link" href="#">Mac OSX</a></li>
+                        <li><a class="mainnav--link" href="#">Other platforms</a></li>
+                        <li><a class="mainnav--link" href="#">License</a></li>
+                        <li><a class="mainnav--link" href="#">Alternative implementations</a></li>
+                    </ul>
+                </li>
+                <li class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#">Documentation</a>
+                    <a class="mainnav--toggle" href="#docs"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                    <ul id="docs" class="mainnav--list grandchild collapsed">
+                        <li><a class="mainnav--link" href="#">Docs</a></li>
+                        <li><a class="mainnav--link" href="#">Audio/Visual talks</a></li>
+                        <li><a class="mainnav--link" href="#">Beginner&rsquo;s Guide</a></li>
+                        <li><a class="mainnav--link" href="#">Developer&rsquo;s Guide</a></li>
+                        <li><a class="mainnav--link" href="#">FAQ</a></li>
+                        <li><a class="mainnav--link" href="#">Non-English Docs</a></li>
+                        <li><a class="mainnav--link" href="#">PEP Index</a></li>
+                        <li><a class="mainnav--link" href="#">Python Books</a></li>
+                    </ul>
+                </li>
+                <li class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#">Success Stories</a>
+                    <a class="mainnav--toggle" href="#success"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                    <ul id="success" class="mainnav--list grandchild collapsed">
+                        <li><a class="mainnav--link" href="#">Arts</a></li>
+                        <li><a class="mainnav--link" href="#">Business</a></li>
                         <li><a class="mainnav--link" href="#">Education</a></li>
-                        <li><a class="mainnav--link" href="#">News</a></li>
-                        <li><a class="mainnav--link" href="#">Events</a></li>
-                        <li><a class="mainnav--link" href="#">Foundation</a></li>
-                        <li><a class="mainnav--link" href="#">Community Awards</a></li>
+                        <li><a class="mainnav--link" href="#">Engineering</a></li>
+                        <li><a class="mainnav--link" href="#">Government</a></li>
+                        <li><a class="mainnav--link" href="#">Scientific</a></li>
+                        <li><a class="mainnav--link" href="#">Software Development</a></li>
                     </ul>
                 </li>
-                <li id="foundation-parent" class="mainnav--item__with-toggle">
-                    <a class="mainnav--link" href="#"><span class="icon icon-foundation" aria-hidden="true"></span>Foundation</a> 
-                    <a class="mainnav--toggle" href="#foundation"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-                    
-                    <ul id="foundation" class="mainnav--list child collapsed">
-                        <li><a class="mainnav--link" href="#">About</a></li>
-                        <li><a class="mainnav--link" href="#">Membership</a></li>
-                        <li><a class="mainnav--link" href="#">Donations</a></li>
-                        <li><a class="mainnav--link" href="#">Legal</a></li>
-                        <li><a class="mainnav--link" href="#">Media</a></li>
-                        <li><a class="mainnav--link" href="#">PSF Blog</a></li>
+                <li class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#">News</a>
+                    <a class="mainnav--toggle" href="#news"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                    <ul id="news" class="mainnav--list grandchild collapsed">
+                        <li><a class="mainnav--link" href="#">Python News</a></li>
+                        <li><a class="mainnav--link" href="#">Community News</a></li>
+                        <li><a class="mainnav--link" href="#">PSF News</a></li>
+                        <li><a class="mainnav--link" href="#">Pycon News</a></li>
                     </ul>
                 </li>
-                <li id="docs-parent" class="mainnav--item__with-toggle">
-                    <a class="mainnav--link" href="#"><span class="icon icon-documentation" aria-hidden="true"></span>Docs</a>
-                    <a class="mainnav--toggle" href="#docs-wrap"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-                    
-                    <ul id="docs-wrap" class="mainnav--list child collapsed">
-                        <li><a class="mainnav--link" href="#">Python 2.7 (stable)</a></li>
-                        <li><a class="mainnav--link" href="#">Python 3.3 (stable)</a></li>
-                        <li><a class="mainnav--link" href="#">Python 3.5 (in development)</a></li>
-                        <li><a class="mainnav--link" href="#">Old Versions</a></li>
-                        <li><a class="mainnav--link" href="#">Download Docs</a></li>
-                        <li><a class="mainnav--link" href="#">Docs RSS</a></li>
-                    </ul> 
-                </li>
-                <li id="pypi-parent" class="mainnav--item__with-toggle">
-                    <a class="mainnav--link" href="#"><span class="icon icon-pypi" aria-hidden="true"></span>PyPi</a> 
-                    <a class="mainnav--toggle" href="#pypi"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-                    
-                    <ul id="pypi" class="mainnav--list child collapsed">
-                        <li><a class="mainnav--link" href="#">Browse Packages</a></li>
-                        <li><a class="mainnav--link" href="#">Package Submission</a></li>
-                        <li><a class="mainnav--link" href="#">List trove classifers</a></li>
-                        <li><a class="mainnav--link" href="#">List packages</a></li>
-                        <li><a class="mainnav--link" href="#">Python 3 packages</a></li>
-                    </ul>
-                </li>
-                <li id="jobs-parent" class="mainnav--item__with-toggle">
-                    <a class="mainnav--link" href="#"><span class="icon icon-jobs" aria-hidden="true"></span>Jobs</a> 
-                    <a class="mainnav--toggle" href="#jobs"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-                    
-                    <ul id="jobs" class="mainnav--list child collapsed">
-                        <li><a class="mainnav--link" href="#">Browse Jobs</a></li>
-                        <li><a class="mainnav--link" href="#">Jobs by Location</a></li>
-                        <li><a class="mainnav--link" href="#">Jobs by Category</a></li>
-                        <li><a class="mainnav--link" href="#">Post a Job (Log in)</a></li>
-                        <li><a class="mainnav--link" href="#">Manage my Jobs (Log in)</a></li>
-                        <li><a class="mainnav--link" href="#">Jobs RSS</a></li>
+                <li class="mainnav--item__with-toggle">
+                    <a class="mainnav--link" href="#">Events</a>
+                    <a class="mainnav--toggle" href="#events"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+                    <ul id="events" class="mainnav--list grandchild collapsed">
+                        <li><a class="mainnav--link" href="#">Python Events</a></li>
+                        <li><a class="mainnav--link" href="#">Community Events</a></li>
+                        <li><a class="mainnav--link" href="#">Events Archive</a></li>
+                        <li><a class="mainnav--link" href="#">Submit an Event</a></li>
                     </ul>
                 </li>
             </ul>
-        </nav>
-        {# End navigation #}
+        </li>
+        <li id="community-parent" class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-community" aria-hidden="true"></span>Community</a> 
+            <a class="mainnav--toggle" href="#community"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            <ul id="community" class="mainnav--list child collapsed">
+                <li><a class="mainnav--link" href="#">Developers</a></li>
+                <li><a class="mainnav--link" href="#">Membership</a></li>
+                <li><a class="mainnav--link" href="#">Education</a></li>
+                <li><a class="mainnav--link" href="#">News</a></li>
+                <li><a class="mainnav--link" href="#">Events</a></li>
+                <li><a class="mainnav--link" href="#">Foundation</a></li>
+                <li><a class="mainnav--link" href="#">Community Awards</a></li>
+            </ul>
+        </li>
+        <li id="foundation-parent" class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-foundation" aria-hidden="true"></span>Foundation</a> 
+            <a class="mainnav--toggle" href="#foundation"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            
+            <ul id="foundation" class="mainnav--list child collapsed">
+                <li><a class="mainnav--link" href="#">About</a></li>
+                <li><a class="mainnav--link" href="#">Membership</a></li>
+                <li><a class="mainnav--link" href="#">Donations</a></li>
+                <li><a class="mainnav--link" href="#">Legal</a></li>
+                <li><a class="mainnav--link" href="#">Media</a></li>
+                <li><a class="mainnav--link" href="#">PSF Blog</a></li>
+            </ul>
+        </li>
+        <li id="docs-parent" class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-documentation" aria-hidden="true"></span>Docs</a>
+            <a class="mainnav--toggle" href="#docs-wrap"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            
+            <ul id="docs-wrap" class="mainnav--list child collapsed">
+                <li><a class="mainnav--link" href="#">Python 2.7 (stable)</a></li>
+                <li><a class="mainnav--link" href="#">Python 3.3 (stable)</a></li>
+                <li><a class="mainnav--link" href="#">Python 3.5 (in development)</a></li>
+                <li><a class="mainnav--link" href="#">Old Versions</a></li>
+                <li><a class="mainnav--link" href="#">Download Docs</a></li>
+                <li><a class="mainnav--link" href="#">Docs RSS</a></li>
+            </ul> 
+        </li>
+        <li id="pypi-parent" class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-pypi" aria-hidden="true"></span>PyPi</a> 
+            <a class="mainnav--toggle" href="#pypi"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            
+            <ul id="pypi" class="mainnav--list child collapsed">
+                <li><a class="mainnav--link" href="#">Browse Packages</a></li>
+                <li><a class="mainnav--link" href="#">Package Submission</a></li>
+                <li><a class="mainnav--link" href="#">List trove classifers</a></li>
+                <li><a class="mainnav--link" href="#">List packages</a></li>
+                <li><a class="mainnav--link" href="#">Python 3 packages</a></li>
+            </ul>
+        </li>
+        <li id="jobs-parent" class="mainnav--item__with-toggle">
+            <a class="mainnav--link" href="#"><span class="icon icon-jobs" aria-hidden="true"></span>Jobs</a> 
+            <a class="mainnav--toggle" href="#jobs"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            
+            <ul id="jobs" class="mainnav--list child collapsed">
+                <li><a class="mainnav--link" href="#">Browse Jobs</a></li>
+                <li><a class="mainnav--link" href="#">Jobs by Location</a></li>
+                <li><a class="mainnav--link" href="#">Jobs by Category</a></li>
+                <li><a class="mainnav--link" href="#">Post a Job (Log in)</a></li>
+                <li><a class="mainnav--link" href="#">Manage my Jobs (Log in)</a></li>
+                <li><a class="mainnav--link" href="#">Jobs RSS</a></li>
+            </ul>
+        </li>
+    </ul>
+</nav>-->
         
         
         <div class="fwf-wrapper">

@@ -1,7 +1,16 @@
 {% load sitetree %}
-
-<ul class="subnav menu" role="menu" aria-hidden="true">
-    {% for item in sitetree_items %}
-        <li class="tier-2 element-{{ forloop.counter }}" role="treeitem"><a href="{% sitetree_url for item %}" title="{{ item.hint|default:"" }}">{{ item.title_resolved }}</a></li>
-    {% endfor %}
-</ul>
+{% for child in sitetree_items %}
+    <li class="mainnav--item{% if child.has_children %}__with-toggle{% endif %}">
+                    
+        <a class="mainnav--link{{ child.is_current|yesno:' disabled,' }}" href="{% sitetree_url for child %}" title="{{ child.hint|default:"" }}">{{ child.title_resolved }}</a>
+        
+    {% if child.has_children %}
+        <a class="mainnav--toggle{{ child.in_current_branch|yesno:' open,' }}" href="#{{ child.title|slugify }}"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+        
+        {# By default these have class "collapsed". When they need to be open, remove class #}
+        <ul id="{{ child.title|slugify }}" class="mainnav--list grandchild{# child.in_current_branch|yesno:' collapsed,' #}">
+        {% sitetree_children of child for menu template "sitetree/submenu_grandchildren.html" %}
+        </ul>
+    {% endif %}
+    </li>
+{% endfor %}

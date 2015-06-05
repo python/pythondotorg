@@ -1,0 +1,4 @@
+{% load sitetree %}
+{% for grandchild in sitetree_items %}
+    <li><a class="mainnav--link{{ grandchild.is_current|yesno:' disabled,' }}" href="{% sitetree_url for grandchild %}">{{ grandchild.title_resolved }}</a></li>
+{% endfor %}
