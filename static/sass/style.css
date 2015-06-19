@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
@@ -428,7 +429,7 @@ time, mark, audio, video {
   font: inherit;
   vertical-align: baseline; }
 
-article, aside, details, figcaption, figure, footer, header, hgroup, nav, section, form {
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section, form {
   display: block; }
 
 blockquote {
@@ -537,8 +538,7 @@ nav ul, menu ul, .menu, form ul, .errorlist, .text form label + ul,
 .sidebar-widget form label + ul, .tabs {
   margin-left: 0;
   list-style: none;
-  list-style-image: none;
-  display: none; }
+  list-style-image: none; }
 
 small {
   font-size: 85%; }
@@ -1038,13 +1038,8 @@ h2.not-column {
   .meta-navigation .say-no-more {
     display: inline;
     visibility: visible; }
-    /*
-  .meta-navigation .jump-link {
-    background-color: #11171d; }
-*/
-  .meta-navigation #close-python-network {
-    display: none;
-  }
+  .meta-navigation #close-python-network, .meta-navigation .menu {
+    display: none; }
 
 /* Used in both the main-header and the header-banner */
 .main-header {
@@ -3148,7 +3143,7 @@ p.quote-by-organization {
   .jump-to-menu,
   .jump-link,
   #site-map-link {
-    display: none;}
+    display: none; }
 
   .say-no-more {
     display: inline;

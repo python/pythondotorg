@@ -233,13 +233,13 @@ $().ready(function() {
 
     /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
-        $('#close-python-network').toggle();
-        $('.menu').toggle();
+        $("#close-python-network").toggle();
+        $("ul[role='tree']").toggle();
     });
 
     $("#python-network").click(function() {
-        $('#close-python-network').toggle();
-        $('.menu').toggle();
+        $("#close-python-network").toggle();
+        $("ul[role='tree']").toggle();
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
