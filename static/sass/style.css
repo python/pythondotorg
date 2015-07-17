@@ -1,3 +1,4 @@
+
 @charset "UTF-8";
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
@@ -10,11 +11,11 @@
 /* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
 /* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
 /* Other interesting functions: 
-	@import "compass/utilities/color/contrast";
-		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
-		Used to pass two colors into a get out the most readable color. 
-		Good for situations where we dont want to create a new color, 
-		but be sure that colors from variables are always going to be readable
+  @import "compass/utilities/color/contrast";
+    detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
+    Used to pass two colors into a get out the most readable color. 
+    Good for situations where we dont want to create a new color, 
+    but be sure that colors from variables are always going to be readable
 */
 /* ! ===== Grid ===== */
 /*
@@ -46,12 +47,12 @@
  * We then adjusted it further visually, as Flux is more condensed and therefore line-length changes pretty dramatically. 
  */
 /* 
-	Compass will convert the font sizes from px to em and fit it into the vertical rhythm automatically with the necessary margin 
-	A neat trick, for sure. More on using the vertical rhythm properties and mixins: http://compass-style.org/reference/compass/typography/vertical_rhythm/
-	
-	Note: The line height is relative to the constant $base-line-height. 
-	The number you specify for the leader, trailer and leading will be multiplied by the constant, then converted to its relative value in ems. 
-	Don’t worry about nested elements etc, Compass will do the maths for you :)
+  Compass will convert the font sizes from px to em and fit it into the vertical rhythm automatically with the necessary margin 
+  A neat trick, for sure. More on using the vertical rhythm properties and mixins: http://compass-style.org/reference/compass/typography/vertical_rhythm/
+  
+  Note: The line height is relative to the constant $base-line-height. 
+  The number you specify for the leader, trailer and leading will be multiplied by the constant, then converted to its relative value in ems. 
+  Don’t worry about nested elements etc, Compass will do the maths for you :)
 */
 /* Defaults */
 /* Positive is down */
@@ -403,13 +404,11 @@ html[xmlns] .slides { display: block; }
 .flex-control-paging li a {width: 11px; height: 11px; display: block; background: #666; background: rgba(0,0,0,0.5); cursor: pointer; text-indent: -9999px; -webkit-border-radius: 20px; -moz-border-radius: 20px; -o-border-radius: 20px; border-radius: 20px; box-shadow: inset 0 0 3px rgba(0,0,0,0.3);}
 .flex-control-paging li a:hover { background: #333; background: rgba(0,0,0,0.7); }
 .flex-control-paging li a.flex-active { background: #000; background: rgba(0,0,0,0.9); cursor: default; }
-
 .flex-control-thumbs {margin: 5px 0 0; position: static; overflow: hidden;}
 .flex-control-thumbs li {width: 25%; float: left; margin: 0;}
 .flex-control-thumbs img {width: 100%; display: block; opacity: .7; cursor: pointer;}
 .flex-control-thumbs img:hover {opacity: 1;}
 .flex-control-thumbs .flex-active {opacity: 1; cursor: default;}
-
 @media screen and (max-width: 860px) {
   .flex-direction-nav .flex-prev {opacity: 1; left: 0;}
   .flex-direction-nav .flex-next {opacity: 1; right: 0;}
@@ -800,7 +799,6 @@ blockquote {
         font-size: 4em;
         position: absolute;
     }
-
     &:before {
         content: "“";
         top: -.25em;
@@ -1040,8 +1038,8 @@ h2.not-column {
   .meta-navigation .say-no-more {
     display: inline;
     visibility: visible; }
-  .meta-navigation .jump-link {
-    background-color: #11171d; }
+  .meta-navigation #close-python-network, .meta-navigation .menu {
+    display: none; }
 
 /* Used in both the main-header and the header-banner */
 .main-header {
@@ -1198,7 +1196,6 @@ input#s,
   /*ul*/
     /*.close-subnav {
         @include pe-border( $color-bottom: $grey-light );
-
         .close-text { padding: .9em 3.25em .8em 1em; }
     }*/ }
   .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
@@ -2114,7 +2111,6 @@ table tfoot {
 
 /*.statistics-widget {
     padding-left: .75em;
-
     .stat {
         background: lighten($blue, 50%);
         padding: 0.7em 1em 0.875em;
@@ -2122,7 +2118,6 @@ table tfoot {
         @include border-radius;
         @include vertical-gradient( lighten($blue, 50%) , lighten($blue, 45%) );
     }
-
     .number {
         color: $grey;
         font-size: px2em( 42px );

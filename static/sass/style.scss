@@ -391,7 +391,9 @@ h2.not-column {
         visibility: visible;
     }
 
-    .jump-link { background-color: darken( $darkerblue, 7% ); }
+    #close-python-network { display: none; }
+
+    .menu { display: none; }
 }
 
 

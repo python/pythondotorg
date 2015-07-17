@@ -69,7 +69,7 @@ function on_resize_orientationchange() {
     if ( mq_tag.indexOf("animatebody") !=-1 && ! scroll_fired ) {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         scroll_fired = true;
-    } else { scroll_fired = false; }
+    }
 
 
     /* Click the menu button and add a class to the body for a "drawer" */
@@ -164,35 +164,33 @@ function on_resize_orientationchange() {
 
     /* Load a Google Map into the Community landing page
     if ( mq_tag.indexOf("local_meetup_map") !=-1 && ! local_meetups_loaded ) {
-
         $.getScript('//maps.google.com/maps/api/js?sensor="+hastouch+"');
-
         if (navigator.geolocation) {
-            
+            
             navigator.geolocation.getCurrentPosition(function(position){
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
-                var coords = new google.maps.LatLng(latitude, longitude);
-                
+                var latitude = position.coords.latitude;
+                var longitude = position.coords.longitude;
+                var coords = new google.maps.LatLng(latitude, longitude);
+                
                 var mapOptions = {
-                    zoom: 15,
-                    center: coords,
-                    mapTypeControl: true,
-                    navigationControlOptions: {
-                        style: google.maps.NavigationControlStyle.SMALL
-                    },
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-                map = new google.maps.Map(
-                    document.getElementById("#local_meetups"), mapOptions
-                );
-                var marker = new google.maps.Marker({
-                    position: coords,
-                    map: map,
-                    title: "Your current location!"
-                });
- 
-            });
+                    zoom: 15,
+                    center: coords,
+                    mapTypeControl: true,
+                    navigationControlOptions: {
+                        style: google.maps.NavigationControlStyle.SMALL
+                    },
+                    mapTypeId: google.maps.MapTypeId.ROADMAP
+                };
+                map = new google.maps.Map(
+                    document.getElementById("#local_meetups"), mapOptions
+                );
+                var marker = new google.maps.Marker({
+                    position: coords,
+                    map: map,
+                    title: "Your current location!"
+                });
+ 
+            });
         } else {
             alert("Geolocation API is not supported in your browser.");
         }
@@ -233,15 +231,16 @@ $().ready(function() {
     }
     /* Animate some scrolling for smoother transitions */
 
-    /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
-        return false;
+        $("#close-python-network").slideToggle();
+        $("ul[role='tree']").slideToggle();
     });
 
     $("#python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#top').offset().top }, 300);
-        return false;
+        $("#close-python-network").slideToggle({start: function(){
+        	$("#close-python-network").css("display", "list-item");
+        }});
+        $("ul[role='tree']").slideToggle();
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
@@ -446,10 +445,10 @@ $().ready(function() {
 
     /* Trigger accordions where applicable */
     $("a.accordion-trigger").click(function() {
-		var iden = jQuery(this).attr('href');
-		//$(this).toggleClass("opened");
-		$(iden).slideToggle();
-	});
+        var iden = jQuery(this).attr('href');
+        //$(this).toggleClass("opened");
+        $(iden).slideToggle();
+    });
 
 
     /*
