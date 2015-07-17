@@ -231,15 +231,16 @@ $().ready(function() {
     }
     /* Animate some scrolling for smoother transitions */
 
-    /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
-        $("#close-python-network").toggle();
-        $("ul[role='tree']").toggle();
+        $("#close-python-network").slideToggle();
+        $("ul[role='tree']").slideToggle();
     });
 
     $("#python-network").click(function() {
-        $("#close-python-network").toggle();
-        $("ul[role='tree']").toggle();
+        $("#close-python-network").slideToggle({start: function(){
+        	$("#close-python-network").css("display", "list-item");
+        }});
+        $("ul[role='tree']").slideToggle();
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
