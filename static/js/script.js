@@ -38,37 +38,19 @@ if( !window.Retina ) {
  * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 */
 
 //initial load
-$(window).load( function() {
-    move_top_navigation_bar();
-    on_resize_orientationchange();
-});
+$(window).load(on_resize_orientationchange);
 
 //bind to resize
-$(window).resize( function() { on_resize_orientationchange(); });
+$(window).resize(on_resize_orientationchange);
 
 //check for the orientation event and bind accordingly
 if (window.DeviceOrientationEvent) {
-    window.addEventListener('orientationchange', move_top_navigation_bar, false);
     window.addEventListener('orientationchange', on_resize_orientationchange, false);
 }
 
 
 /* Variables to set to true later and check */
-scroll_fired = false;
 supernavs_loaded = false;
-
-function move_top_navigation_bar() {
-    mq_tag = window.getComputedStyle(document.body,':after').getPropertyValue('content');
-
-    /* Move the top nav (sister sites) out of the way for small screens */
-    if ( mq_tag.indexOf("animatebody") !=-1 && ! scroll_fired ) {
-        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
-        scroll_fired = true;
-    } else {
-        scroll_fired = false;
-    }
-}
-
 
 /* Load progressive content. Must remember to also load them for IE 7 and 8 if needed */
 function on_resize_orientationchange() {
