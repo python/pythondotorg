@@ -1,0 +1,57 @@
+{% extends "users/base.html" %}
+
+{% block page_title %}Membership Landing Page{% endblock %}
+
+{% block body_attributes %}class="psf default-page"{% endblock body_attributes %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock main-nav_attributes %}
+
+{% block content %}
+<h1>Membership</h1>
+
+<article class="text">
+{% if not request.user.is_authenticated or not request.user.has_membership %}
+  <h2>About Membership</h2>
+
+  <p>
+  Are you a Pythonista? Do you love clean code, efficient algorithms, and having one obvious way to do things? Do you build systems, write docs, run tests, organize meetups, or teach others about Python?
+  </p>
+
+  <p>
+  You should be a member of the Python Software Foundation. We want to recognize the things you are already doing to help the Python community and connect you with other Pythonistas in your area or with your interests.
+  </p>
+
+  <p>{% if not request.user.is_authenticated %}<a href="{% url 'account_signup' %}">{% else %}<a href="{% url 'users:user_membership_create' %}">{% endif %}Signup Now</a></p>
+
+  <h2>About Sponsorship</h2>
+  <p>
+    Do you want to support Python and the Python Software Foundation? The PSF is a 501(c)(3) charity run by volunteers so that all of our contributions go toward supporting the Python Community. Higher level packages are available for those that would like to make larger or targeted donations.
+  </p>
+
+  <p>
+  <a href="">I want to support the PSF</a>
+  or
+  <a href="">My organization wants to support the PSF</a>
+  </p>
+{% else %}
+
+  {# Switches depending on higher level member or not #}
+  {% if request.user.has_membership and not request.user.membership.higher_level_member %}
+    <h2>Raise your membership level</h2>
+    <p>
+    How do you contribute to the community? Higher levels of membership are available for those that actively contribute to the community - by creating, by organizing, or by supporting and funding others. Active contributors are also eligible to vote in the affairs of the Foundation.
+    </p>
+    <p><a href="">I create (docs, tests, code, etc)</a></p>
+    <p><a href="">I organize (conferences, meetups, working groups, etc)</a></p>
+    <p><a href="">I support (by donating the the PSF)</a></p>
+  {% else %}
+    <h2>About my membership</h2>
+
+    <h3>My Public Projects</h3>
+    <h3>My Working Groups</h3>
+    <h3>I have been a supporting member for XXX years</h3>
+  {% endif %}
+
+{% endif %}
+</article>
+{% endblock content %}

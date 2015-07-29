@@ -66,6 +66,7 @@ LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_SIGNUP_FORM_CLASS = 'users.forms.UserCreationForm'
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
@@ -103,6 +104,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'waffle.middleware.WaffleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
@@ -134,6 +136,7 @@ INSTALLED_APPS = [
     'imagekit',
     'haystack',
     'honeypot',
+    'waffle',
 
     'users',
     'boxes',
@@ -151,6 +154,7 @@ INSTALLED_APPS = [
     'blogs',
     'downloads',
     'codesamples',
+    'work_groups',
 
     'allauth',
     'allauth.account',
@@ -162,7 +166,7 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
-
+    'debug_toolbar',
 ]
 
 # Fixtures
@@ -240,3 +244,6 @@ from .pipeline import (
     PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
+
+### django-waffle settings
+WAFFLE_OVERRIDE = True

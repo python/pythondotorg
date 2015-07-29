@@ -11,6 +11,7 @@ class UsersFormsTestCase(TestCase):
     def test_user_creation_form(self):
         form = UserCreationForm({
             'username': 'username',
+            'email': 'test@example.com',
             'password1': 'password',
             'password2': 'password'
         })
@@ -38,3 +39,16 @@ class UsersFormsTestCase(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertIn('password2', form.errors)
+
+    def test_duplicate_email(self):
+        User.objects.create_user('test1', 'test@example.com', 'testpass')
+
+        # dupe email
+        form = UserCreationForm({
+            'username': 'username2',
+            'email': 'test@example.com',
+            'password1': 'password',
+            'password2': 'password'
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)

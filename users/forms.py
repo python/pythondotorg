@@ -7,8 +7,16 @@ from .models import User, Membership
 
 
 class UserCreationForm(BaseUserCreationForm):
+    email = forms.EmailField()
+
     class Meta(BaseUserCreationForm.Meta):
         model = User
+        fields = (
+            'username',
+            'email',
+            'password1',
+            'password2',
+        )
 
     def clean_username(self):
         # Since User.username is unique, this check is redundant,
@@ -19,6 +27,16 @@ class UserCreationForm(BaseUserCreationForm):
         except User.DoesNotExist:
             return username
         raise forms.ValidationError(self.error_messages['duplicate_username'])
+
+    def clean_email(self):
+        """ Ensure email is unique """
+        email = self.cleaned_data["email"]
+        try:
+            User._default_manager.get(email=email)
+        except User.DoesNotExist:
+            return email
+
+        raise forms.ValidationError("A user with this email address has already been registered")
 
 
 class UserChangeForm(BaseUserChangeForm):

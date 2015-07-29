@@ -13,8 +13,9 @@ from django.views.generic import (
 
 from honeypot.decorators import check_honeypot
 
+
 from .forms import (
-    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm
+    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
 
@@ -42,8 +43,8 @@ class SignupView(CreateView):
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
-    form_class = MembershipForm
     model = Membership
+    form_class = MembershipForm
     template_name = 'users/membership_form.html'
 
     @method_decorator(check_honeypot)
@@ -156,4 +157,3 @@ class UserList(ListView):
 
     def get_queryset(self):
         return super().get_queryset().searchable()
-
