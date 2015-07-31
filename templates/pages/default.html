@@ -2,16 +2,6 @@
 {% load boxes %}
 {% load sitetree %}
 
-{% block body_attributes %}class="python pages default-page"{% endblock %}
-
-
-{% block breadcrumbs %}
-{% sitetree_breadcrumbs from "main" %}
-{% endblock breadcrumbs %}
-
-
-{% block content_attributes %}with-left-sidebar{% endblock %}
-
 
 {% comment %}
 Possible to insert the title of the parent page if available? 
@@ -20,23 +10,35 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 {% block page_title %}{{ page.title }} | {{ SITE_INFO.site_name }}{% endblock %}
 
 
+{% block body_attributes %}class="python pages default-page"{% endblock %}
+
+
+{% block breadcrumbs %}
+{% sitetree_breadcrumbs from "main" %}
+{% endblock breadcrumbs %}
+
+
+{% block content_attributes %}col-group__default{% endblock %}
+
+
 {% block content %}
+    {% if request.user.is_staff %}
+    <p class="admin--edit"><a role="button" class="button admin--button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a></p>
+    {% endif %}
+    
     {% if not page.is_published %}
     <div class="user-feedback level-notice">
         <p role="alert">This page is a draft and it hasn't been published yet. Only staff users can see it.</p>
     </div>
     {% endif %}
-    <article class="text">
-        {% if request.user.is_staff %}
-        <a role="button" class="button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a>
-        {% endif %}
-
-        <header class="article-header">
-            <h1 class="page-title">{{ page.title }}</h1>
-        </header>
+    
+    <header class="page--header">
+        <h1 class="page--title">{{ page.title }}</h1>
+    </header>
         
+    <article class="page--content typography column" role="main">
         {{ page.content }}
-
+    
     </article>
 {% endblock content %}
 
@@ -45,18 +47,15 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 {% comment %}
 TODO: should this partially come from sitetree?
 {% endcomment %}
-
-<aside class="left-sidebar" role="secondary">
-
-    {% include "components/navigation-widget.html" %}
+    <aside class="main-sidebar column" role="complementary">
     
-    {% include "components/tweets-from-psf.html" %}
-
-    <div class="psf-sidebar-widget sidebar-widget">
-        {% box 'widget-sidebar-aboutpsf' %}
+        {% include "components/navigation-widget.html" %}
         
-    </div>
+        {% include "components/tweets-from-psf.html" %}
     
-</aside>
-
+        <div class="widget widget__psf">
+            {% box 'widget-sidebar-aboutpsf' %}
+        </div>
+        
+    </aside>
 {% endblock left_sidebar %}
