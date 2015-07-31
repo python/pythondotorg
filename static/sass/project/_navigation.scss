@@ -35,21 +35,25 @@ $grandchild-hov-bg: lighten( $grandchild-bg, 5% );
 .mainnav {
     padding-top: px2em(72px); // make way for the toggle button and/or Python logo
     
+    /* We considered a CSS-only approach to animating the max-height of an element
+     * For these reasons, we abandoned the effect https://jdsteinbach.com/css/holy-grail-css-animation/
+     */
     &--list {
         clear: left; 
-        max-height: 99em; 
+        //max-height: 50em; 
         overflow: hidden; 
         border-top: 1px solid $parent-border;
-        @include transition( max-height 250ms ease-out ); 
+        //@include transition( max-height 500ms ease-out ); 
         
         li { 
             @extend %pie-clearfix; 
             clear: left; 
         }
         
-        .js &.collapsed { 
-            max-height: 0em; 
-            @include transition( max-height 250ms ease-in ); 
+        .js &.closed { 
+            display: none; 
+            //max-height: 0em; 
+            //@include transition( max-height 500ms ease-in ); 
         }
     }
     
@@ -105,20 +109,14 @@ $grandchild-hov-bg: lighten( $grandchild-bg, 5% );
         color: #bbb;  
         border-bottom: 1px solid $parent-border; /*#275278*/
         font-weight: $bold-weight; 
-        background-color: $parent-bg; // Don't use the IE gradient filter, it won't look as intended. 
+        background-color: $parent-bg; 
         
         @include touch-hover() {
             color: palette(mono,mid-light);
             background-color: $parent-hov-bg; 
         }
         
-        &.open { 
-            
-            @include touch-hover() {
-                color: #bbb; 
-                @include vertical-gradient( palette(brand,darkest), palette(brand,dark) ); 
-            }
-        }
+        &.open { color: palette(mono,mid-light); }
     }
     
     .parent &--link { 
@@ -128,8 +126,7 @@ $grandchild-hov-bg: lighten( $grandchild-bg, 5% );
         
         @include touch-hover() { @include background-image( linear-gradient(left, darken($parent-hov-bg,4%) 0%, $parent-hov-bg 6%) ); }
         
-        &.open { 
-            cursor: default; 
+        &.current { 
 
             &:before {
                 content: ''; 
@@ -164,6 +161,7 @@ $grandchild-hov-bg: lighten( $grandchild-bg, 5% );
         }
         
         &.open { 
+            color: palette(mono,x-light); 
             font-weight: $bold-weight; 
             @include reset-gradient( $child-bg ); 
         }
@@ -238,38 +236,39 @@ $grandchild-hov-bg: lighten( $grandchild-bg, 5% );
     
     
     // Borders
+    // I don't like using IDs in CSS, but these do have to be very unique
     #python-parent &--link, 
-    #python-parent > &--link.open:before { border-left-color: palette(brand,light); }
+    #python-parent > &--link.current:before { border-left-color: palette(brand,light); }
     
     #python-parent .child &--link.disabled,
     #python-parent .grandchild &--link.disabled { @include background-image( linear-gradient(left, darken(palette(brand,light),8%) 0%, palette(brand,light) 6%) ); }
     
     #community-parent &--link, 
-    #community-parent > &--link.open:before { border-left-color: palette(brand,red); }
+    #community-parent > &--link.current:before { border-left-color: palette(brand,red); }
     
     #community-parent .child &--link.disabled,
     #community-parent .grandchild &--link.disabled { @include background-image( linear-gradient(left, darken(palette(brand,red),8%) 0%, palette(brand,red) 6%) ); }
     
     #foundation-parent &--link, 
-    #foundation-parent > &--link.open:before { border-left-color: palette(mono,mid-dark); }
+    #foundation-parent > &--link.current:before { border-left-color: palette(mono,mid-dark); }
     
     #foundation-parent .child &--link.disabled,
     #foundation-parent .grandchild &--link.disabled { background-color: palette(mono,mid-dark); }
     
     #docs-parent &--link, 
-    #docs-parent > &--link.open:before { border-left-color: palette(brand,yellow); }
+    #docs-parent > &--link.current:before { border-left-color: palette(brand,yellow); }
     
     #docs-parent .child &--link.disabled,
     #docs-parent .grandchild &--link.disabled { background-color: palette(brand,yellow); }
     
     #pypi-parent &--link, 
-    #pypi-parent > &--link.open:before { border-left-color: palette(brand,green); }
+    #pypi-parent > &--link.current:before { border-left-color: palette(brand,green); }
     
     #pypi-parent .child &--link.disabled,
     #pypi-parent .grandchild &--link.disabled { background-color: palette(brand,green); }
     
     #jobs-parent &--link, 
-    #jobs-parent > &--link.open:before { border-left-color: palette(brand,purple); }
+    #jobs-parent > &--link.current:before { border-left-color: palette(brand,purple); }
     
     #jobs-parent .child &--link.disabled,
     #jobs-parent .grandchild &--link.disabled { background-color: palette(brand,purple); }

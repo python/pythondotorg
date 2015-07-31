@@ -1,7 +1,7 @@
 /*
  * Scripts for this specific project
  */
-
+ 
 /*
  * Set variables that any script can use
  */
@@ -16,7 +16,7 @@ if( !window.Modernizr ) {
         hasgeneratedcontent = false,
         is_ltie9 = false;
 }
-
+ 
 if( !window.Retina ) {
     var is_retina = false;
     $("html").addClass( "no-retina" );
@@ -28,188 +28,77 @@ if( !window.Retina ) {
         $("html").addClass( "no-retina" );
     }
 }
-
-
-/* For mobile, hide the iOS toolbar on initial page load */
-/* /mobile/i.test(navigator.userAgent) && !window.location.hash && setTimeout(function () { window.scrollTo(0, 0); }, 1000); */
-
-
-/* Load, Resize and Orientation change methods
- * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 */
-
+ 
+ 
+/* "Watch" the body:after { content } to listen for functional tags at CSS breakpoints
+ * Thanks to http://adactio.com/journal/5429/ for details about this method
+ */
+function mqtag( is_ltie9 ) {
+    if ( is_ltie9 ) {
+        return false;
+    } else {
+        return window.getComputedStyle(document.body,':after').getPropertyValue('content');
+    }
+}
+var mq_tag = mqtag( is_ltie9 );
+ 
+ 
+/*
+ * Load, Resize and Orientation change methods
+ * http://css-tricks.com/forums/discussion/16123/reload-jquery-functions-on-ipad-orientation-change/p1 
+ */
 //initial load
 $(window).load(on_resize_orientationchange);
-
 //bind to resize
 $(window).resize(on_resize_orientationchange);
-
 //check for the orientation event and bind accordingly
 if (window.DeviceOrientationEvent) {
     window.addEventListener('orientationchange', on_resize_orientationchange, false);
 }
-
-
+ 
+ 
 /* Variables to set to true later and check */
 supernavs_loaded = false;
-
+ 
 /* Load progressive content. Must remember to also load them for IE 7 and 8 if needed */
 function on_resize_orientationchange() {
-
-    // Check if a container is empty !$.trim( $('#mainnav').html() ).length
-
-    /*
-     * "Watch" the body:after { content } to find out how wide the viewport is.
-     * Thanks to http://adactio.com/journal/5429/ for details about this method
+ 
+    // Check again on resize/orientation change
+    var mq_tag = mqtag( is_ltie9 );
+    //console.log( "mq_tag=" + mq_tag );
+    
+ 
+    /* 
+     * Set up the open/close navigation drawer effects for small screens. Adds classes. 
+     * http://codepen.io/sturobson/pen/rAoBh 
      */
-    mq_tag = window.getComputedStyle(document.body,':after').getPropertyValue('content');
-
-    /* Click the menu button and add a class to the body for a "drawer" */
-    if ( mq_tag.indexOf("drawer_navigation") !=-1 ) {
-
-        /* TO DO: Look for a left-right swipe action (on the #touchnav-wrapper?) and also trigger the menu to open/close */
-        $( "#site-map-link" ).click( function() {
-            $("body").toggleClass("show-sidemenu");
-            //console.log( "! #site-map-link has been tapped" );
-            return false;
-        });
-
+    if ( is_ltie9 === false && mq_tag.indexOf("navigation-drawer") !=-1  ) {
+         
+        $('.js-toggle-drawer').click(function(a) {
+            a.preventDefault();
+             
+            $('body').toggleClass("active-nav"); 
+            $(this).toggleClass("active-button"); 
+        }); 
+        // Reset all classes if click is present off the navigation area
+        $(".js-close-drawer").on('click', function(a){
+            a.preventDefault();
+             
+            $("body").removeClass('active-nav');
+            $(".menu-button").removeClass("active-button");
+        }); 
     } else {
-
-        /* If "drawer_navigation" is not present, treat the Menu button as a scroller down to the footer */
-        $("#site-map-link").click(function() {
-            $('body, html').animate({ scrollTop: $('#site-map').offset().top }, 500);
-            return false;
+        $('.js-toggle-drawer').click(function(a) {
+            a.preventDefault();                 
         });
     }
-
-
-    /* Load a supernav into the About dropdown */
-    if ( ! hastouch ) {
-
-        if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
-
-            $.get("/box/supernav-python-about/",
-                function(data){
-                 $('li#about .subnav').append( data );
-                }, "html");
-            $('li#about').addClass("with-supernav");
-
-            $.get("/box/supernav-python-downloads/",
-                function(data){
-                 $('li#downloads .subnav').append( data );
-                    /* Toggle Download buttons by OS detection */
-                    if (navigator.appVersion.indexOf("Win")!=-1) {
-                        $('.download-unknown').hide();
-                        $('.download-os-windows').show();
-                    }
-                    if (navigator.appVersion.indexOf("Mac")!=-1) {
-                        $('.download-unknown').hide();
-                        $('.download-os-mac-osx').show();
-                    }
-                    if (navigator.appVersion.indexOf("X11")!=-1) {
-                        $('.download-unknown').hide();
-                        $('.download-os-source').show();
-                    }
-                    if (navigator.appVersion.indexOf("Linux")!=-1) {
-                        $('.download-unknown').hide();
-                        $('.download-os-source').show();
-                    }
-                }, "html");
-            $('li#downloads').addClass("with-supernav");
-
-            $.get("/box/supernav-python-documentation/",
-                function(data){
-                 $('li#documentation .subnav').append( data );
-                }, "html");
-            $('li#documentation').addClass("with-supernav");
-
-            $.get("/box/supernav-python-community/",
-                function(data){
-                 $('li#community .subnav').append( data );
-                }, "html");
-            $('li#community').addClass("with-supernav");
-
-            $.get("/box/supernav-python-success-stories/",
-                function(data){
-                 $('li#success-stories .subnav').append( data );
-                }, "html");
-            $('li#success-stories').addClass("with-supernav");
-
-            $.get("/box/supernav-python-blog/",
-                function(data){
-                 $('li#blog .subnav').append( data );
-                }, "html");
-            $('li#blog').addClass("with-supernav");
-
-            $.get("/box/supernav-python-events/",
-                function(data){
-                 $('li#events .subnav').append( data );
-                }, "html");
-            $('li#events').addClass("with-supernav");
-
-            supernavs_loaded = true;
-            //console.log( "! supernavs_loaded has fired" );
-        }
-    }
-
-
-    /* Load a Google Map into the Community landing page
-    if ( mq_tag.indexOf("local_meetup_map") !=-1 && ! local_meetups_loaded ) {
-
-        $.getScript('//maps.google.com/maps/api/js?sensor="+hastouch+"');
-
-        if (navigator.geolocation) {
-            
-            navigator.geolocation.getCurrentPosition(function(position){
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
-                var coords = new google.maps.LatLng(latitude, longitude);
-                
-                var mapOptions = {
-                    zoom: 15,
-                    center: coords,
-                    mapTypeControl: true,
-                    navigationControlOptions: {
-                        style: google.maps.NavigationControlStyle.SMALL
-                    },
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-                map = new google.maps.Map(
-                    document.getElementById("#local_meetups"), mapOptions
-                );
-                var marker = new google.maps.Marker({
-                    position: coords,
-                    map: map,
-                    title: "Your current location!"
-                });
- 
-            });
-        } else {
-            alert("Geolocation API is not supported in your browser.");
-        }
-        local_meetups_loaded = true;
-        console.log( "! local_meetups_map has fired" );
-    } */
-
+ 
 };
-
-
+ 
+ 
 /* Initiate some other functions as well. Fires on first page load or when called. */
 $().ready(function() {
-
-    var $container = $('#container');
-    $container.masonry({ itemSelector: '.tier-1' });
-    var mq = window.matchMedia('all and (max-width: 400px)');
-    var check_masonry = function (msnry) {
-        if(msnry.matches) {
-            $container.masonry('destroy');
-        } else {
-            $container.masonry();
-        }
-    };
-    check_masonry(mq);
-    mq.addListener(check_masonry);
-
+ 
     /*
      * Ensure PythonAnywhere is open for business and only fires on homepage
      */
@@ -222,32 +111,16 @@ $().ready(function() {
             }
          });
     }
-    /* Animate some scrolling for smoother transitions */
 
-    /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
-    $("#close-python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
-        return false;
-    });
-
-    $("#python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#top').offset().top }, 300);
-        return false;
-    });
-
-    $("#back-to-top-1, #back-to-top-2").click(function() {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
-        return false;
-    });
 
     /*
      * Load interactive shell on the homepage.
-    */
+     */
     function loadShell(e) {
         var CONSOLE_URL = 'https://console.python.org/python-dot-org-console/';
         e.preventDefault();
         shellDiv = $($(e.target).data('shell-container'));
-
+ 
         // The iframe's DIV containing the shell has a min-height: 300px
         var shellHeight = 300;
         shellDiv.animate({height: shellHeight});
@@ -256,7 +129,37 @@ $().ready(function() {
         shellDiv.html(iframe);
     }
     $('#start-shell').click(loadShell);
-
+    
+    
+    /*
+     * Navigation pattern for open/close of children and grandchildren
+     */
+    $('a.mainnav--toggle').click(function(nav) {
+        nav.preventDefault();
+        
+        var togglethis = $(this).attr('href'); 
+        $(togglethis).slideToggle("fast").toggleClass('closed'); 
+        //$(togglethis).toggleClass('closed'); 
+        $(this).toggleClass('open'); 
+        $(this).prev('.mainnav--link').toggleClass('open'); 
+    }); 
+    
+    
+    // Make a nice "back to top" button that also opens the nav drawer for mobile
+    if ($('.js-back-to-top').length > 0) {
+        $('.js-back-to-top').click(function(btt) {
+    		
+    		var target = $(this.hash);
+    		$('html,body').animate({ scrollTop: target.offset().top }, 500);
+    		
+    		$('body').toggleClass("active-nav"); 
+    		$('.js-toggle-drawer').toggleClass("active-button"); 
+    		
+    		btt.preventDefault();
+    	});
+    }
+    
+ 
     /*
      * Load a slideshow on the homepage. Set the animationtype and detect for the library first.
      */
@@ -266,15 +169,15 @@ $().ready(function() {
         var animationtype = "fade";
     }
     if ( !window.flexslider ) {
-
+ 
         /* Grab body and html tags only once */
-        var body = $('body');
-        var html = $('html');
-
+        var body = $('body'),
+            html = $('html');
+ 
         if ( body.hasClass( 'home' ) ) {
-
+ 
             html.addClass( "flexslide" );
-
+ 
             $('#dive-into-python').flexslider({
                 animation: animationtype,
                 direction: 'horizontal',
@@ -297,9 +200,9 @@ $().ready(function() {
                     $('body').removeClass('loading');
                 }
             });
-
+ 
         }
-
+ 
         if( body.hasClass('psf') ) {
             html.addClass( "flexslide" );
             // PSF Sponsor rotation
@@ -320,12 +223,12 @@ $().ready(function() {
                 touch: hastouch,
             });
         }
-
+ 
     } else {
         $("html").addClass( "no-flexslide" );
     }
-
-
+ 
+ 
     /*
      * Change or store the body font-size and save it into a cookie
      * Scales the font-size up or down by about 2 pixels.
@@ -334,13 +237,13 @@ $().ready(function() {
     if ( !window.cookie ) {
         //console.log( "cookie.js has not loaded" );
     } else {
-
+ 
         if ( hastouch ) {
-
+ 
             var $cookie_name = "Python-FontSize";
             var elem = "body";
             var originalFontSize = $(elem).css("font-size");
-
+ 
             // if exists load saved value, otherwise store it
             if($.cookie($cookie_name)) {
                 var $getSize = $.cookie($cookie_name);
@@ -348,14 +251,14 @@ $().ready(function() {
             } else {
                 $.cookie($cookie_name, originalFontSize, { expires: 365 }); // 365 days
             }
-
+ 
             // reset link
             $(".text-reset").bind("click", function() {
                 $(elem).css("font-size", originalFontSize);
                 $.cookie($cookie_name, originalFontSize);
                 return false;
             });
-
+ 
             // text "A+" link
             $(".text-grow").bind("click", function() {
                 var currentFontSize = $(elem).css("font-size");
@@ -367,7 +270,7 @@ $().ready(function() {
                 }
                 return false;
             });
-
+ 
             // text "A-" link
             $(".text-shrink").bind("click", function() {
                 var currentFontSize = $(elem).css("font-size");
@@ -381,17 +284,17 @@ $().ready(function() {
             });
         } // end hastouch
     }
-
+ 
     /* Randomly show a success story based on weight */
     var success_divs = $("div.success-story-item");
     var weight_sum = 0;
     success_divs.each( function() {
         weight_sum += parseInt($(this).data('weight'), 10);
     });
-
+ 
     /* Random int between zero and weight_sum */
     var random_int = Math.floor(Math.random() * (weight_sum - 0 + 1)) + 0;
-
+ 
     /* Determine which to show based on weight */
     success_divs.each( function() {
         var current_weight = parseInt($(this).data('weight'), 10);
@@ -402,15 +305,15 @@ $().ready(function() {
         }
         random_int -= current_weight;
     });
-
+ 
     /* Handle case of only a single success story */
     if(success_divs.length == 1) {
         $("div.success-story-item").show();
     }
-
+ 
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
     if ( hasplaceholder === false ) {
-
+ 
         /* polyfill from hagenburger: https://gist.github.com/379601 */
         $('[placeholder]').focus(function() {
             var input = $(this);
@@ -433,16 +336,16 @@ $().ready(function() {
             })
         });
     }
-
-
+ 
+ 
     /* Trigger accordions where applicable */
     $("a.accordion-trigger").click(function() {
-		var iden = jQuery(this).attr('href');
-		//$(this).toggleClass("opened");
-		$(iden).slideToggle();
-	});
-
-
+        var iden = jQuery(this).attr('href');
+        //$(this).toggleClass("opened");
+        $(iden).slideToggle();
+    });
+ 
+ 
     /*
      * Add a class to the selected radio/checkbox parent label
      * Requires inputs to be nested in labels:
@@ -464,16 +367,16 @@ $().ready(function() {
     $('input:checkbox').each(function() {
         $('label:has(input:checkbox:checked)').addClass('active');
     });
-
-
+ 
+ 
     /* Non-media query enabled browsers need any critical content on page load. */
     if ( is_ltie9 ) {
         //console.log( "! something has fired because this is a non-media-query browser" );
     }
-
+ 
 });
-
-
+ 
+ 
 /*
  * Function to help with feature detection.
  * Used in tandem with Modernizr for the best effect. Pass this function values of a Modernizr class name.

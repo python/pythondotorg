@@ -1,12 +1,51 @@
 {% load sitetree %}
+
+{% comment %}
+
+Navigation pattern for open/closed nested lists. 
+
+[* *] are used to highlight the classes that change. 
+
+The "open" class is added to the parent link and parent toggle
+The "collapsed" class on the child UL is removed
+
+<li id="python-parent" class="mainnav--item__with-toggle">
+    <a class="mainnav--link [*open*]" href="#"><span class="icon icon-python-alt" aria-hidden="true"></span>Home</a> 
+    <a class="mainnav--toggle [*open*]" href="#python"><span class="icon icon-chevron-down" aria-hidden="true"><span>↓</span></span></a>
+    <ul id="python" class="mainnav--list child [*open*]">
+        
+        Same pattern for children with grandchildren
+        <li class="mainnav--item__with-toggle">
+            <a class="mainnav--link [*open*]" href="#">About</a>
+            <a class="mainnav--toggle [*open*]" href="#about"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+            <ul id="about" class="mainnav--list grandchild [*open*]">
+                <li><a class="mainnav--link" href="#">Applications</a></li>
+            </ul>
+        </li>
+        
+        Here is the non-open pattern
+        <li class="mainnav--item__with-toggle">
+            <a class="mainnav--link [**]" href="#">Downloads</a>
+            <a class="mainnav--toggle [**]" href="#downloads"><span class="icon icon-chevron-down" aria-hidden="true"><span>+</span></span></a>
+            <ul id="downloads" class="mainnav--list grandchild [*closed*]">
+                <li><a class="mainnav--link" href="#">All releases</a></li>
+            </ul>
+        </li>
+        
+    </ul>
+</li>
+
+{% endcomment %}
+
+
 {% with sitetree_items|length as total_length %}
     {% for item in sitetree_items %}
         <li id="{{ item.title|slugify }}-parent" class="mainnav--item{% if item.has_children %}__with-toggle{% endif %}" aria-haspopup="true">
-            <a class="mainnav--link{{ item.is_current|yesno:' open,' }}{{ item.in_current_branch|yesno:' open,' }}" href="{% sitetree_url for item %}" title="{{ item.hint|default:'' }}"><span class="icon icon-python-alt" aria-hidden="true"></span>{{ item.title_resolved }}</a> 
-        
+            <a class="mainnav--link{% if item.is_current or item.in_current_branch %} open current{% endif %}" href="{% sitetree_url for item %}" title="{{ item.hint|default:'' }}"><span class="icon icon-python-alt" aria-hidden="true"></span>{{ item.title_resolved }}</a>
+            
         {% if item.has_children %}
-            <a class="mainnav--toggle{{ item.is_current|yesno:' open,' }}{{ item.in_current_branch|yesno:' open,' }}" href="#{{ item.title|slugify }}"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
-            <ul id="{{ item.title|slugify }}" class="mainnav--list child">
+            <a class="mainnav--toggle{% if item.is_current or item.in_current_branch %} open{% endif %}" href="#{{ item.title|slugify }}"><span class="icon icon-chevron-down" aria-hidden="true"><span>&darr;</span></span></a>
+            <ul id="{{ item.title|slugify }}" class="mainnav--list child{% if item.is_current or item.in_current_branch %} open{% else %} closed{% endif %}"{% if item.is_current or item.in_current_branch %} aria-expanded="true"{% endif %}>
             {% sitetree_children of item for menu template "sitetree/submenu_children.html" %}
             </ul>
         {% endif %}
