@@ -71,11 +71,11 @@
     
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 @import
+    "templates/widgets",
     "templates/banners", 
     "templates/page",       // Default template
-    "templates/sidebar",    // General sidebar styles for pages that need one
-    "templates/slideshows",
-    "templates/widgets"; 
+    //"templates/sidebar",    // General sidebar styles for pages that need one
+    "templates/slideshows"; 
 
 
 

@@ -171,7 +171,7 @@
         font-style: italic; 
     }
     
-    /* Proper code blocks need to be surrounded by a <pre> */
+    // Proper code blocks need to be surrounded by a <pre> 
     pre {
         margin-bottom: 1em; 
     	
@@ -185,6 +185,17 @@
             @include border-right-radius(); 
     	}
     }
+    
+    // BUT I have seen it the other way around in this site as well
+    code + pre {
+    	display: block; 
+        padding: 1em; 
+        margin: 0; 
+        border-left: 5px solid $code; 
+        border-bottom: 1px solid #f0f0f0; 
+        @include border-radius( 0 ); 
+        @include border-right-radius(); 
+	}
     
     code, 
     kbd, 
