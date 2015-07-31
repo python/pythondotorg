@@ -28,10 +28,10 @@
         
         & > p:first-of-type {
             // Compassify this later
-            color: palette(brand);
-            font-size: 1.125em;
+            color: palette(brand,dark);
             line-height: 1.6875;
-            margin-bottom: 1.25em;
+            @include perem( 'font-size', 18px ); 
+            @include perem( 'margin-bottom', 24px ); 
         }
     }
 }

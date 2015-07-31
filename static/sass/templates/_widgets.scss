@@ -18,7 +18,7 @@
 }
 
 .widget {
-    padding: $grid-spacing $grid-spacing 0;
+    padding: $grid-spacing $grid-spacing .125em;
     margin-bottom: $vert-grid-spacing; 
     border-top: 4px solid palette(brand,light); 
     
@@ -110,7 +110,10 @@
     
     
     // Overrides
-    &__psf, 
+    &__twitter { padding: 0; }
+    
+    &__column { padding: $grid-spacing 0 0; }
+    
     &__python-needs-you {
         clear: both; 
         padding-bottom: 0; 
@@ -132,24 +135,19 @@
         }
     }
     
-    &__column { padding: $grid-spacing 0 0; }
+    /*<div class="widget widget__psf">
+        <h3 class="widget--title">The PSF</h3>
+        <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
+    </div>*/
+    &__psf {
+        border-top: 4px solid palette(brand,yellow); 
+        color: palette(mono,x-light);
+        background-color: palette(brand,yellow);
+        @include vertical-gradient( palette(brand,darkest), palette(brand,dark) ); 
+    }
+    
+    &__psf &--title {
+        color: palette(mono,x-light); 
+        margin-top: .4375em;
+    }
 }
-
-
-/* Old styles... temporary. I hate looking at my old SASS
-.psf-widget, 
-.python-needs-you-widget {
-    padding: $vert-grid-spacing $grid-spacing; 
-    margin-bottom: $vert-grid-spacing; 
-    
-    .button {
-        @extend %button-style-yellow;
-    }
-    
-    .main-content & a:not(.button) {
-        color: palette(brand,yellow);
-
-        &:hover, 
-        &:focus { color: lighten(palette(brand,yellow), 25%); }
-    }
-}*/
