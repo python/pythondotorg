@@ -83,5 +83,6 @@ class PageAdmin(ContentManageableModelAdmin):
         (None, {'fields': ('title', 'keywords', 'description', 'path', 'content', 'content_markup_type', 'is_published')}),
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
     ]
+    save_as = True
 
 admin.site.register(Page, PageAdmin)
