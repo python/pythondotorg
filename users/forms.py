@@ -1,13 +1,7 @@
 from django import forms
-from django.contrib.auth.forms import UserChangeForm as BaseUserChangeForm
 from django.forms import ModelForm
 
 from .models import User, Membership
-
-
-class UserChangeForm(BaseUserChangeForm):
-    class Meta(BaseUserChangeForm.Meta):
-        model = User
 
 
 class UserProfileForm(ModelForm):
