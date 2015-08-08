@@ -1,6 +1,5 @@
-from datetime import datetime
-
 from django.core.management.base import BaseCommand
+from django.utils.timezone import now
 
 from ...models import BlogEntry, RelatedBlog, Feed
 from ...parser import get_all_entries, update_blog_supernav
@@ -33,7 +32,7 @@ class Command(BaseCommand):
                         feed=feed,
                     )
 
-            feed.last_import = datetime.now()
+            feed.last_import = now()
             feed.save()
 
         # Update the supernav box with the latest entry's info

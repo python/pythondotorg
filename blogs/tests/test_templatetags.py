@@ -1,8 +1,7 @@
-from datetime import datetime
-
 from django.core.management import call_command
 from django.test import TestCase
 from django.template import Template, Context
+from django.utils.timezone import now
 
 from boxes.models import Box
 
@@ -33,6 +32,10 @@ class BlogTemplateTagTest(TestCase):
         entries = get_latest_blog_entries()
 
         self.assertEqual(len(entries), 5)
+        self.assertEqual(
+            entries[0].pub_date.isoformat(),
+            '2013-03-04T15:00:00+00:00'
+        )
         b = Box.objects.get(label='supernav-python-blog')
         rendered_box = _render_blog_supernav(BlogEntry.objects.latest())
         self.assertEqual(b.content.raw, rendered_box)
@@ -46,7 +49,7 @@ class BlogTemplateTagTest(TestCase):
         BlogEntry.objects.create(
             title='test1',
             summary='',
-            pub_date=datetime.now(),
+            pub_date=now(),
             url='path/to/foo',
             feed=f1
         )
@@ -59,7 +62,7 @@ class BlogTemplateTagTest(TestCase):
         BlogEntry.objects.create(
             title='test2',
             summary='',
-            pub_date=datetime.now(),
+            pub_date=now(),
             url='path/to/foo',
             feed=f1
         )
@@ -80,4 +83,4 @@ class BlogTemplateTagTest(TestCase):
         """)
 
         rendered = t.render(Context())
-        self.assertEquals(rendered.strip().replace(' ', ''), 'test2\n\ntest1');
+        self.assertEqual(rendered.strip().replace(' ', ''), 'test2\n\ntest1')
