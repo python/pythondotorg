@@ -85,8 +85,6 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.core.context_processors.static",
     "django.core.context_processors.tz",
     "django.core.context_processors.request",
-    "allauth.account.context_processors.account",
-    "allauth.socialaccount.context_processors.socialaccount",
     "django.contrib.messages.context_processors.messages",
     "pydotorg.context_processors.site_info",
     "pydotorg.context_processors.url_name",
