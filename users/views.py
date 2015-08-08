@@ -15,7 +15,7 @@ from honeypot.decorators import check_honeypot
 
 
 from .forms import (
-    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm,
+    UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
 

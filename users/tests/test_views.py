@@ -3,7 +3,6 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from .. import admin
 from ..factories import MembershipFactory
 
 User = get_user_model()
@@ -15,6 +14,25 @@ class UsersViewsTestCase(TestCase):
             username='username',
             password='password',
         )
+
+    def assertUserCreated(self, data=None, template_name='account/verification_sent.html'):
+        post_data = {
+            'username': 'guido',
+            'email': 'montyopython@python.org',
+            'password1': 'password',
+            'password2': 'password',
+        }
+        post_data.update(data or {})
+        url = reverse('account_signup')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        response = self.client.post(url, post_data, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, template_name)
+        user = User.objects.get(username=post_data['username'])
+        self.assertEqual(user.username, post_data['username'])
+        self.assertEqual(user.email, post_data['email'])
+        return response
 
     def test_membership_create(self):
         url = reverse('users:user_membership_create')
@@ -125,3 +143,28 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(edit_url)
         self.assertEqual(response.status_code, 200)
 
+    def test_user_new_account(self):
+        self.assertUserCreated(data={
+            'username': 'thisusernamedoesntexist',
+            'email': 'thereisnoemail@likesthis.com',
+            'password1': 'password',
+            'password2': 'password',
+        })
+
+    def test_user_duplicate_username_email(self):
+        post_data = {
+            'username': 'thisusernamedoesntexist',
+            'email': 'thereisnoemail@likesthis.com',
+            'password1': 'password',
+            'password2': 'password',
+        }
+        self.assertUserCreated(data=post_data)
+        response = self.assertUserCreated(
+            data=post_data, template_name='account/signup.html'
+        )
+        self.assertContains(
+            response, 'This username is already taken. Please choose another.'
+        )
+        self.assertContains(
+            response, 'A user is already registered with this e-mail address.'
+        )
