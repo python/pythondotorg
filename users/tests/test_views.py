@@ -168,3 +168,24 @@ class UsersViewsTestCase(TestCase):
         self.assertContains(
             response, 'A user is already registered with this e-mail address.'
         )
+
+    def test_usernames(self):
+        url = reverse('account_signup')
+        usernames = [
+            'foaso+bar', 'fööpython', 'foo.barahgs', 'foo@barbazbaz',
+            'foo.baarBAZ',
+        ]
+        post_data = {
+            'username': 'thisusernamedoesntexist',
+            'email': 'thereisnoemail@likesthis.com',
+            'password1': 'password',
+            'password2': 'password',
+        }
+        for i, username in enumerate(usernames):
+            post_data.update({
+                'username': username,
+                'email': 'foo{}@example.com'.format(i)
+            })
+            response = self.client.post(url, post_data, follow=True)
+            self.assertEqual(response.status_code, 200)
+            self.assertTemplateUsed(response, 'account/verification_sent.html')
