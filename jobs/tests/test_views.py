@@ -5,7 +5,6 @@ from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-from .. import admin  # coverage FTW
 from ..models import Job
 from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
@@ -331,6 +330,16 @@ class JobsViewTests(TestCase):
 
         self.job.company_description = '     '
         self.assertEqual(self.job.display_description.raw, self.job.company_description.raw)
+
+    def test_job_list_type_404(self):
+        url = reverse('jobs:job_list_type', kwargs={'slug': 'invalid-type'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_job_list_category_404(self):
+        url = reverse('jobs:job_list_category', kwargs={'slug': 'invalid-type'})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
 
 class JobsReviewTests(TestCase):
