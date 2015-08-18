@@ -1,11 +1,9 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.contrib.auth.forms import AdminPasswordChangeForm
 
 from tastypie.admin import ApiKeyInline
 from tastypie.models import ApiKey
 
-from .forms import UserCreationForm, UserChangeForm
 from .models import User, Membership
 
 
@@ -45,10 +43,23 @@ class MembershipInline(admin.StackedInline):
 
 
 class UserAdmin(BaseUserAdmin):
-    form = UserChangeForm
-    add_form = UserCreationForm
-    change_password_form = AdminPasswordChangeForm
-    inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
+    fieldsets = [
+        (None, {'fields': ['username', 'email', 'date_joined', 'last_login']}),
+        ('User profile', {'fields': [
+            'public_profile', 'first_name', 'last_name', 'bio_markup_type',
+            'bio', 'search_visibility', 'email_privacy',
+        ]}),
+        ('Permissions', {'fields': [
+            'is_staff', 'is_superuser', 'groups', 'user_permissions',
+        ]}),
+    ]
+    add_fieldsets = (
+        (None, {
+            'classes': ('wide',),
+            'fields': ('username', 'email', 'password1', 'password2')}
+        ),
+    )
+    inlines = [ApiKeyInline, MembershipInline]
 
 
 class MembershipAdmin(admin.ModelAdmin):

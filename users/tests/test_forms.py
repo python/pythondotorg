@@ -1,50 +1,52 @@
-from ..forms import UserChangeForm, UserCreationForm
-
 from django.contrib.auth import get_user_model
 from django.test import TestCase
+
+from allauth.account.forms import SignupForm
 
 User = get_user_model()
 
 
 class UsersFormsTestCase(TestCase):
 
-    def test_user_creation_form(self):
-        form = UserCreationForm({
+    def test_signup_form(self):
+        form = SignupForm({
             'username': 'username',
             'email': 'test@example.com',
             'password1': 'password',
             'password2': 'password'
         })
         self.assertTrue(form.is_valid())
-        user = form.save()
-        user = User.objects.get(pk=user.pk)
-        self.assertEqual(user.username, 'username')
-        logged_in = self.client.login(username=user.username, password='password')
-        self.assertTrue(logged_in)
 
-        # dupe username
-        form = UserCreationForm({
-            'username': 'username',
+    def test_password_mismatch(self):
+        form = SignupForm({
+            'username': 'username2',
+            'email': 'test@example.com',
+            'password1': 'password',
+            'password2': 'passwordmismatch'
+        })
+        self.assertFalse(form.is_valid())
+        self.assertIn('__all__', form.errors)
+        self.assertIn(
+            'You must type the same password each time.',
+            form.errors['__all__']
+        )
+
+    def test_duplicate_username(self):
+        User.objects.create_user('username2', 'test@example.com', 'testpass')
+
+        form = SignupForm({
+            'username': 'username2',
+            'email': 'test2@example.com',
             'password1': 'password',
             'password2': 'password'
         })
         self.assertFalse(form.is_valid())
         self.assertIn('username', form.errors)
 
-        # password mismatch
-        form = UserCreationForm({
-            'username': 'username2',
-            'password1': 'password',
-            'password2': 'passwordmismatch'
-        })
-        self.assertFalse(form.is_valid())
-        self.assertIn('password2', form.errors)
-
     def test_duplicate_email(self):
         User.objects.create_user('test1', 'test@example.com', 'testpass')
 
-        # dupe email
-        form = UserCreationForm({
+        form = SignupForm({
             'username': 'username2',
             'email': 'test@example.com',
             'password1': 'password',
