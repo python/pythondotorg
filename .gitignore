@@ -10,9 +10,9 @@ htmlcov
 
 static-root
 .sass-cache
-/static/stylesheets/mq.css
-/static/stylesheets/no-mq.css
-/static/stylesheets/style.css
+#/static/stylesheets/mq.css
+#/static/stylesheets/no-mq.css
+#/static/stylesheets/style.css
 tmp/*
 media/*
 pydotorg/settings/mylocal.py
