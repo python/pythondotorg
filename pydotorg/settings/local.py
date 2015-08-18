@@ -1,7 +1,9 @@
 from .base import *
 
-DEBUG = True
-TEMPLATE_DEBUG = True
+DEBUG = TEMPLATE_DEBUG = True
+
+ALLOWED_HOSTS = ['*']
+
 PYTHON_ORG_CONTENT_SVN_PATH='/Users/flavio/working_copies/beta.python.org/build/data'
 
 HAYSTACK_CONNECTIONS = {
