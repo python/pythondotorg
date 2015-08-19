@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 
 from tastypie.admin import ApiKeyInline
 from tastypie.models import ApiKey
@@ -41,19 +42,8 @@ class MembershipInline(admin.StackedInline):
     readonly_fields = ('created', 'updated')
 
 
-class UserAdmin(admin.ModelAdmin):
-    fieldsets = [
-        (None, {'fields': ['username', 'email', 'date_joined', 'last_login']}),
-        ('User profile', {'fields': [
-            'public_profile', 'first_name', 'last_name', 'bio_markup_type',
-            'bio', 'search_visibility', 'email_privacy',
-        ]}),
-        ('Permissions', {'fields': [
-            'is_staff', 'is_superuser', 'groups', 'user_permissions',
-        ]}),
-    ]
-    readonly_fields = ['date_joined', 'last_login']
-    inlines = [ApiKeyInline, MembershipInline]
+class UserAdmin(BaseUserAdmin):
+    inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
 
     def has_add_permission(self, request):
         return False
