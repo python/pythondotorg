@@ -47,7 +47,7 @@ class Release(ContentManageable, NameSlugModel):
         (PYTHON2, 'Python 2.x.x'),
         (PYTHON1, 'Python 1.x.x'),
     )
-    version = models.IntegerField(default=PYTHON2, choices=PYTHON_VERSION_CHOICES)
+    version = models.IntegerField(default=PYTHON3, choices=PYTHON_VERSION_CHOICES)
     is_latest = models.BooleanField(
         verbose_name='Is this the latest release?',
         default=False,
