@@ -1,70 +1,66 @@
 {% extends "base.html" %}
 {% load boxes %}
 
-{% block page_title %}About Python&trade; | {{ SITE_INFO.site_name }}{% endblock %}
 
+{% block page_title %}About Python&trade; | {{ SITE_INFO.site_name }}{% endblock %}
 {% block body_attributes %}class="python about"{% endblock %}
 
-{% block header_content %}
-                <div class="about-banner">
-                    {% box 'aboutpython-banner' %}
 
-                </div>
+{% block header_content %}
+<div class="container">                  
+    <div class="col-group__two banner--content banner__about">
+        {% box 'aboutpython-banner' %}
+
+    </div>
+</div>
 {% endblock header_content %}
 
 
 {% block content %}
-                <div class="row">
-        		    
-        		    <div class="medium-widget success-story-category">
-                        {% box 'aboutpython-getstarted' %}
+<div class="col-group__two">
+    <div class="column">
+	    <div class="widget widget__column widget__get-started">
+            {% box 'aboutpython-getstarted' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__easy-to-learn">
+            {% box 'aboutpython-easytolearn' %}
+        </div>
+    </div>
+</div>
 
-                    </div>
-                    
-                    <div class="medium-widget success-story-category last">
-                        {% box 'aboutpython-easytolearn' %}
+<div class="col-group__two">
+    <div class="column">
+        <div class="widget widget__column widget__applications">
+            {% box 'aboutpython-applications' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__opensource">
+            {% box 'aboutpython-opensource' %}
+        </div>
+    </div>
+</div>         
+                                
+<div class="feedback feedback__general">
+    {% box 'usermessage-helplink' %}
+</div>
 
-                    </div>
+<div class="col-group__two">
+    <div class="column">
+        <div class="widget widget__column widget__blog">
+            {% include 'components/blog-posts.html' %}
+        </div>
+    </div>
+    <div class="column">
+        <div class="widget widget__column widget__events">
+            {% include 'components/event-posts.html' %}
+        </div>
+    </div>
+</div>
                 
-                </div>
-                
-                
-                <div class="row">
-                
-                    <div class="medium-widget success-story-category">
-                        {% box 'aboutpython-applications' %}
+{% include 'components/psf-widget.html' %}
 
-                    </div>
-                    
-                    <div class="medium-widget success-story-category last">
-                        {% box 'aboutpython-opensource' %}
-
-                    </div>
-                
-                </div>
-                
-                
-                <div class="user-feedback level-general">
-                    {% box 'usermessage-helplink' %}
-                    
-                </div>
-                
-                
-                <div class="list-widgets row">
-
-                    <div class="medium-widget blog-widget">
-                        {% include 'components/blog-posts.html' %}
-                    
-                    </div>
-
-                    <div class="medium-widget event-widget last">
-                        {% include 'components/event-posts.html' %}
-                    
-                    </div>
-
-                </div>
-                
-                
-                {% include 'components/psf-widget.html' %}
-                
+    
 {% endblock content %}

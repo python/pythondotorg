@@ -66,13 +66,15 @@ $show-baseline-grid-backgrounds: false;
         </div>
     </div>
 </section>*/
+
+// Grouping all the main things here because they share so much styling
 .banner,
 .main-section,
 .foot {
     
     .container { 
         padding-top: $vert-grid-spacing/2; 
-        padding-bottom: $vert-grid-spacing; 
+        padding-bottom: $vert-grid-spacing/2; 
         margin: 0; // don't center the container at max-width
     }
     
@@ -82,14 +84,42 @@ $show-baseline-grid-backgrounds: false;
     	padding-left: $grid-spacing; 
     	padding-right: $grid-spacing; 
     	
-    	.container { 
-            padding-top: $vert-grid-spacing; 
-            padding-bottom: $vert-grid-spacing*1.5; 
-        }
+    	.container { padding-top: $vert-grid-spacing; }
     }
     
     @include pe-media( $breakpoint-large ) {
     	padding-left: $grid-spacing*2; 
+    }
+}
+
+
+.banner {
+    
+    .container { 
+        padding-top: 1.5em;
+        padding-bottom: .75em;
+    }
+    
+    // Media
+    @include pe-media( $breakpoint-medium ) {
+    	
+    	.container { 
+        	padding-top: 2.5em; 
+        	padding-bottom: 1.5em; 
+        }
+    }
+}
+
+
+.main-section,
+.foot {
+    
+    .container { padding-bottom: $vert-grid-spacing; }
+    
+    // Media
+    @include pe-media( $breakpoint-medium ) {
+    	
+    	.container { padding-bottom: $vert-grid-spacing*1.5; }
     }
 }
 
@@ -150,6 +180,19 @@ $show-baseline-grid-backgrounds: false;
     &--current { color: palette(mono); }
 }
 
+
+/*<p class="admin--edit"><a role="button" class="button admin--button" href="/admin/pages/page/4/">Edit this page</a></p>*/
+.admin {
+    
+    &--edit {
+        
+        @include pe-media( $breakpoint-medium ) {
+        	float: right; 
+        }
+    }
+    
+    &--button {}
+}
 
 /* ! ===== Pagination ===== */
 /*<footer class="pagination">

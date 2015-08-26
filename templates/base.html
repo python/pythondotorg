@@ -135,7 +135,9 @@
         {#-- Start navigation #}
         <nav id="nav" class="mainnav fwf-fixed-left">
             <ul class="mainnav--list parent sticky-navigation">
+                {% spaceless %}
                 {% sitetree_menu from "navtree" include "trunk" template "sitetree/mainnav.html" %}
+                {% endspaceless %}
             </ul>
         </nav>        
         
@@ -227,13 +229,12 @@
 
 
                     {# If present, insert the banner #}
-                    <section class="banner banner__home do-not-print" role="banner">
-{% block intro_copy %}
-{% endblock %}
+                    <section class="banner do-not-print" role="banner">
 
-{% block header_content %}
-{% endblock %}
-                
+{% block intro_copy %}{% endblock %}
+
+{% block header_content %}{% endblock %}
+
                     </section>
                     
                     
@@ -242,24 +243,19 @@
                         <div class="container">
                             <div class="content--main {% block content_attributes %}{% endblock %}">
 
-{% block breadcrumbs %}
-{% endblock breadcrumbs %}
+{% block breadcrumbs %}{% endblock breadcrumbs %}
 
-{% block content %}
-{% endblock content %}
+{% block content %}{% endblock content %}
 
-{% block left_sidebar %}
-{% endblock left_sidebar %}
+{% block left_sidebar %}{% endblock left_sidebar %}
 
-{% block right_sidebar %}
-{% endblock right_sidebar %}
+{% block right_sidebar %}{% endblock right_sidebar %}
 
                             </div>
                         </div>
                     </section>
                 
-                {# End .content--wrapper #}
-                </section>
+                </section>{# End .content--wrapper #}
                 
                 
                 {# Start Footer #}
