@@ -57,8 +57,7 @@
     "project/content",       // Main content area general styles. Apply typography.
     "project/feedback",      // General user feedback modules
     "project/footer",        // General footer
-    "project/layout",        // Apply the grid. Again, structure only. Try to keep styles out of this. 
-    "project/legacy";        // Support old markup, just in case
+    "project/layout";        // Apply the grid. Again, structure only. Try to keep styles out of this. 
 
 
 
@@ -75,7 +74,8 @@
     "templates/banners", 
     "templates/page",       // Default template
     //"templates/sidebar",    // General sidebar styles for pages that need one
-    "templates/slideshows"; 
+    "templates/slideshows",
+    "templates/legacy";     // Support old markup, just in case 
 
 
 
