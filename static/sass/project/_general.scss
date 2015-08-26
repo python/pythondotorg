@@ -105,6 +105,7 @@ abbr[title], dfn[title] { border-bottom: 1px dotted palette(mono,mid-dark); }
     a:focus & { color: palette(brand,orange); }
 }
 
+
 /*<h2 class="widget--title">
     <a href="#" class="shrubbery" title="More News">
         <span aria-hidden="true" class="icon icon-news"></span>Latest News
@@ -115,6 +116,7 @@ abbr[title], dfn[title] { border-bottom: 1px dotted palette(mono,mid-dark); }
     @include relative-container(); 
     display: block; 
     padding-right: 3em; 
+    @include transition(); 
     
     &:hover .give-me-more, 
     &:focus .give-me-more { color: palette(brand); }

@@ -46,10 +46,13 @@
         .icon { color: palette(brand); }
     }
     
-    @at-root{ h2#{&}--title { @include fontface-adjust( $headertwo ); } }
+    @at-root{ h2#{&}--title { 
+        @include fontface-adjust( $headertwo ); 
+        @include transition(); 
+    } }
     
     @at-root{ h3#{&}--title { 
-        color: $primary-dark !important; // GAH! Can I get rid of this please? 
+        color: $primary-dark !important; // GAH! Can I get rid of this important declaration please? 
         @include fontface-adjust( $headerthree ); 
     } }
     

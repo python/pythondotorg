@@ -1,15 +1,16 @@
 {% load events cms %}
-                        <div class="shrubbery">
-                        
-                            <h2 class="widget-title"><span aria-hidden="true" class="icon-calendar"></span>Upcoming Events</h2>
-                            <p class="give-me-more"><a href="{% url 'events:calendar_list' %}" title="More Events">More</a></p>
-                            
-                            <ul class="menu">
-                                {% get_events_upcoming limit=5 as events %}
-                                {% for event in events %}
-                                {% with event.next_time as next_time %}
-                                <li>{% iso_time_tag next_time.dt_start %} <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
-                                {% endwith %}
-                                {% endfor %}
-                            </ul>
-                        </div>
+
+<h2 class="widget--title">
+    <a href="{% url 'events:calendar_list' %}" class="shrubbery" title="More Events">
+        <span aria-hidden="true" class="icon-calendar"></span>Upcoming Events 
+        <span class="give-me-more"><span class="prompt">&gt;&gt;&gt;</span> More</span>
+    </a>
+</h2>
+<ul class="widget--list widget--list__bordered menu">
+    {% get_events_upcoming limit=5 as events %}
+    {% for event in events %}
+        {% with event.next_time as next_time %}
+    <li>{% iso_time_tag next_time.dt_start %} <a href="{{ event.get_absolute_url }}">{{ event.title|striptags }}</a></li>
+        {% endwith %}
+    {% endfor %}
+</ul>
