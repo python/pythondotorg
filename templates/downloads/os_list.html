@@ -15,6 +15,8 @@
 {% if os.slug == 'source' %}Python Source Releases{% else %}Python Releases for {{ os.name }}{% endif %} | {{ SITE_INFO.site_name }}
 {% endblock %}
 
+{% block og_title %}Python{% if os.slug == 'source' %} Source{% endif %} Releases for {{ os.name }}{% endblock %}
+
 
 {% block content %}
     <article class="text">
