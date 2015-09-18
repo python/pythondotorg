@@ -62,13 +62,10 @@
     <meta name="og:description" content="{% block og-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
     <meta name="keywords" content="{% block page-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
     <meta property="og:tag" content="{% block og-keywords %}Python programming language object oriented web free open source software license documentation download community{% endblock %}">
-    <meta property="og:published_time" content="{% block og-publishedtime %}{% endblock %}">
-    <meta property="og:modified_time" content="{% block og-modifiedtime %}{% endblock %}">
-    <meta property="og:author" content="{% block og-author %}{% endblock %}">
-    <meta property="og:section" content="{% block og-section %}{% endblock %}"> {# A high-level section name. E.g. Technology #}
-    <meta property="og:url" content="{% block og-url %}{{ get_absolute_url }}{% endblock %}">{# permalink to the curent page #}
-    <meta property="og:image" content="{% block og-image %}{% endblock %}">{# A path to an image used on the page. Helpful for telling crawlers what image to use for a page preview. Can be an array, meaning, there can be more than one of these tags (duplicate the WHOLE tag). #}
-    <meta property="og:video" content="{% block og-video %}{% endblock %}">
+    {# permalink to the current page #}
+    <meta property="og:url" content="{% block og-url %}{{ request.build_absolute_uri }}{% endblock %}">
+    {# a path to an image used on the page. helpful for telling crawlers what image to use for a page preview. #}
+    <meta property="og:image" content="{% block og-image %}{{ STATIC_URL }}img/python-logo-large.png{% endblock %}">
 
     <link rel="author" href="{{ STATIC_URL }}humans.txt">
 
