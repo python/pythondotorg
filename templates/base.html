@@ -62,7 +62,7 @@
     <meta property="og:title" content="{% block og_title %}Welcome to {{ SITE_INFO.site_name }}{% endblock %}">
     <meta property="og:description" content="{% block og-descript %}{{ SITE_INFO.site_descript }}{% endblock %}">
     {# a path to an image used on the page. helpful for telling crawlers what image to use for a page preview. #}
-    <meta property="og:image" content="{% block og-image %}{{ GET_HOST_WITH_SCHEME }}{{ STATIC_URL }}img/python-logo-large.png{% endblock %}">
+    <meta property="og:image" content="{% block og-image %}{{ GET_HOST_WITH_SCHEME }}{{ STATIC_URL }}opengraph-icon-200x200.png{% endblock %}">
     {# permalink to the current page #}
     <meta property="og:url" content="{% block og-url %}{{ request.build_absolute_uri }}{% endblock %}">
 
