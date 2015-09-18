@@ -5,6 +5,7 @@ from django.core.urlresolvers import resolve, Resolver404
 def site_info(request):
     return {'SITE_INFO': settings.SITE_VARIABLES}
 
+
 def url_name(request):
     try:
         match = resolve(request.path)
@@ -15,3 +16,9 @@ def url_name(request):
         if namespace:
             url_name = "%s:%s" % (namespace, url_name)
         return {'URL_NAMESPACE': namespace, 'URL_NAME': url_name}
+
+
+def get_host_with_scheme(request):
+    return {
+        'GET_HOST_WITH_SCHEME': request.build_absolute_uri('/').rstrip('/'),
+    }

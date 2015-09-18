@@ -88,6 +88,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "django.contrib.messages.context_processors.messages",
     "pydotorg.context_processors.site_info",
     "pydotorg.context_processors.url_name",
+    "pydotorg.context_processors.get_host_with_scheme",
 ]
 
 ### URLs, WSGI, middleware, etc.
