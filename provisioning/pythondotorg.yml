@@ -68,13 +68,14 @@
     - name: Restart postgresql
       service: name=postgresql state=restarted enabled=yes
 
-    - name: Setup git repo
+    - name: Ensure python/pythondotorg is cloned
       sudo: no
       git: repo={{ project.repo }}
            dest={{ project.path }}
            version=master
            accept_hostkey=yes
-           clone=yes
+           clone=no
+           update=no
 
     # the venv module doesn't work with Debian version of Python 3.4
     - name: Create virtualenv
