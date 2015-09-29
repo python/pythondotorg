@@ -25,15 +25,18 @@
         - python-setuptools
         - python-pip
         - ruby
+      register: result
+      changed_when:
+        "'0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.' not in result.stdout"
 
     - name: Install base Python packages
-      pip: name={{ item }}
-      with_items:
-        - virtualenv
+      pip: name=virtualenv
 
     - name: Install python-lxml deps
       # TODO: for some reason apt: pkg=python-lxml state=build-dep doesn't work
       command: apt-get -y build-dep python-lxml
+      register: result
+      changed_when: "result.rc != 0"
 
     - name: Install base Ruby packages
       sudo: yes
@@ -64,9 +67,7 @@
                        name={{ database.user }}
                        priv=ALL
                        state=present
-
-    - name: Restart postgresql
-      service: name=postgresql state=restarted enabled=yes
+      notify: Restart PostgreSQL
 
     - name: Ensure python/pythondotorg is cloned
       sudo: no
@@ -94,6 +95,8 @@
       command: "bundler install"
       args:
         chdir: "{{ project.path }}"
+      register: result
+      changed_when: "result.rc != 0 or result.stderr != ''"
 
     - name: Install database migrations
       sudo: no
@@ -101,3 +104,9 @@
                      app_path={{ project.path }}
                      virtualenv={{ project.virtualenv }}
                      settings={{ django.settings }}
+      register: result
+      changed_when: "'No migrations to apply.' not in result.out"
+
+  handlers:
+    - name: Restart PostgreSQL
+      service: name=postgresql state=restarted enabled=yes
