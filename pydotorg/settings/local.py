@@ -4,7 +4,10 @@ DEBUG = TEMPLATE_DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
-PYTHON_ORG_CONTENT_SVN_PATH='/Users/flavio/working_copies/beta.python.org/build/data'
+# Set the path to the location of the content files for python.org
+# For example,
+# PYTHON_ORG_CONTENT_SVN_PATH = '/Users/flavio/working_copies/beta.python.org/build/data'
+PYTHON_ORG_CONTENT_SVN_PATH = ''
 
 DATABASES = {
     'default': dj_database_url.config(default='postgres:///pythondotorg')
@@ -20,7 +23,9 @@ HAYSTACK_CONNECTIONS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-PEP_REPO_PATH = '/Users/frank/work/src/pythondotorg/tmp/peps'
+# Set the path to where the PEP repo's HTML source files are located
+# For example, PEP_REPO_PATH = '/Users/frank/work/src/pythondotorg/tmp/peps'
+PEP_REPO_PATH = ''
 
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
 # have a sass compiler installed at all during local development if you aren't
