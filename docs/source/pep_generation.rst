@@ -6,18 +6,20 @@ PEP Page Generation
 Process Overview
 ----------------
 
-We are generating the PEP pages by lightly parsing and cleaning up the HTML output from the `PEP Mercurial Repository <http://hg.python.org/peps/>`_.
+We are generating the PEP pages by lightly parsing the HTML output from the
+`PEP Repository`_ and then cleaning up some post-parsing formatting.
 
-The process is as follows:
+The PEP Page Generation process is as follows:
 
-1. Clone and/or update the PEP repo located in `settings.PEP_REPO_PATH` to the latest revision.
-2. Run `pep2html.py`
-3. Run `genpepindex.py`
-4. Once all PEP HTML pages are generated, run `./manage.py generate_pep_pages`
+1. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
+   of the `PEP Repository`_.
+2. Run ``pep2html.py``
+3. Run ``genpepindex.py``
+4. After all PEP pages are generated into HTML, run::
 
-.. note:: Steps 2 and 3 currently must be run using Python 2 and **NOT** Python 3 like the rest of Python.org
+   $ ./manage.py generate_pep_pages
 
-This process will be run periodically via cron to keep the PEP pages up to date.
+This process runs periodically via cron to keep the PEP pages up to date.
 
 Management Commands
 -------------------
@@ -25,20 +27,22 @@ Management Commands
 generate_pep_pages
 ^^^^^^^^^^^^^^^^^^
 
-This Django management command generates `pages.Page` objects based on the output of the existing PEP repository
-generation process. You run it like::
+This Django management command generates ``pages.Page`` objects from the output
+of the existing PEP repository generation process. You run it like::
 
-    ./manage.py generate_pep_pages
+    $ ./manage.py generate_pep_pages
 
 To get verbose output run it like::
 
-    ./manage.py generate_pep_pages --verbosity=2
+    $ ./manage.py generate_pep_pages --verbosity=2
 
-It uses the conversion code in the `peps.converters` module in an attempt to normalize the formatting for display
-purposes.
+It uses the conversion code in the ``peps.converters`` module in an attempt to
+normalize the formatting for display purposes.
 
 dump_pep_pages
 ^^^^^^^^^^^^^^
 
-This simply dumps our PEP related pages as JSON like dumpdata would do with a --pks options if the site was using
-Django 1.6 or newer. The dumpdata content is written to stdout just like a normal dumpdata command.
+This simply dumps our PEP related pages as JSON. The ``dumpdata`` content is
+written to ``stdout`` just like a normal ``dumpdata`` command.
+
+.. _PEP Repository: https://hg.python.org/peps/
