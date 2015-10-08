@@ -20,8 +20,8 @@ Easy setup using Vagrant
     # on your local shell
     $ google-chrome http://localhost:8001/
 
-The box will be provisioned by Ansible_ with Python 3.4, a virtualenv set up
-with requirements installed, and a database ready to use.
+The box will be provisioned by Ansible_ 1.9.3 with Python 3.4, a virtualenv
+set up with requirements installed, and a database ready to use.
 
 .. note:: You will need to run ``./manage.py createsuperuser`` to use the admin.
 

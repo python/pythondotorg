@@ -27,16 +27,16 @@
         - ruby
       register: result
       changed_when:
-        "'0 upgraded, 0 newly installed, 0 to remove and 0 not upgraded.' not in result.stdout"
+        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
 
     - name: Install base Python packages
       pip: name=virtualenv
 
     - name: Install python-lxml deps
-      # TODO: for some reason apt: pkg=python-lxml state=build-dep doesn't work
-      command: apt-get -y build-dep python-lxml
+      apt: pkg=python-lxml state=build-dep
       register: result
-      changed_when: "result.rc != 0"
+      changed_when:
+        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
 
     - name: Install base Ruby packages
       sudo: yes
