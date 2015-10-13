@@ -14,7 +14,10 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 
 
 {% block breadcrumbs %}
-{% sitetree_breadcrumbs from "main" %}
+    {% if request.user.is_staff %}
+    <p class="admin--edit"><a role="button" class="button admin--button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a></p>
+    {% endif %}
+    {% sitetree_breadcrumbs from "main" %}
 {% endblock breadcrumbs %}
 
 
@@ -22,10 +25,6 @@ Example: "Getting Started | About | Python.org" where "About" is the parent page
 
 
 {% block content %}
-    {% if request.user.is_staff %}
-    <p class="admin--edit"><a role="button" class="button admin--button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a></p>
-    {% endif %}
-    
     {% if not page.is_published %}
     <div class="user-feedback level-notice">
         <p role="alert">This page is a draft and it hasn't been published yet. Only staff users can see it.</p>
