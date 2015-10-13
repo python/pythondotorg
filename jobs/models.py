@@ -213,9 +213,8 @@ class Job(ContentManageable):
     def visible(self):
         if self.status != self.STATUS_APPROVED:
             return False
-        if self.expires <= timezone.now():
+        if self.expires and self.expires <= timezone.now():
             return False
-
         return True
 
     @property

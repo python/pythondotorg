@@ -1,0 +1,112 @@
+---
+
+- name: Create a {{ project.name }} VM via Vagrant
+  hosts: all
+  sudo: yes
+  sudo_user: root
+  remote_user: vagrant
+  vars_files:
+    - env_vars.yml
+  tasks:
+    - name: Run apt-get update
+      apt: update_cache=yes
+
+    - name: Install base packages
+      apt: name={{ item }} state=latest
+      with_items:
+        - build-essential
+        - libpq-dev
+        - libxml2-dev
+        - libxslt-dev
+        - lib32z1-dev
+        - git
+        - python3
+        - python3-dev
+        - python-setuptools
+        - python-pip
+        - ruby
+      register: result
+      changed_when:
+        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
+
+    - name: Install base Python packages
+      pip: name=virtualenv
+
+    - name: Install python-lxml deps
+      apt: pkg=python-lxml state=build-dep
+      register: result
+      changed_when:
+        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
+
+    - name: Install base Ruby packages
+      sudo: yes
+      gem: name=bundler user_install=no
+
+    - name: Install PostgreSQL
+      apt: name={{ item }} state=installed
+      with_items:
+        - postgresql
+        - postgresql-contrib
+        - libpq-dev
+        - python-psycopg2
+
+    - name: Ensure the PostgreSQL service is running
+      service: name=postgresql state=started enabled=yes
+
+    - name: Ensure database is created
+      sudo_user: postgres
+      postgresql_db: name={{ database.name }}
+                     encoding='UTF-8'
+                     lc_collate='en_US.UTF-8'
+                     lc_ctype='en_US.UTF-8'
+                     state=present
+
+    - name: Ensure user has access to the database
+      sudo_user: postgres
+      postgresql_user: db={{ database.name }}
+                       name={{ database.user }}
+                       priv=ALL
+                       state=present
+      notify: Restart PostgreSQL
+
+    - name: Ensure python/pythondotorg is cloned
+      sudo: no
+      git: repo={{ project.repo }}
+           dest={{ project.path }}
+           version=master
+           accept_hostkey=yes
+           clone=no
+           update=no
+
+    # the venv module doesn't work with Debian version of Python 3.4
+    - name: Create virtualenv
+      sudo: no
+      command: virtualenv -p python3.4 {{ project.virtualenv }}
+               creates={{ project.virtualenv }}/bin/activate
+
+    - name: Install packages required by the Django app inside virtualenv
+      sudo: no
+      pip: virtualenv={{ project.virtualenv }}
+           requirements={{ project.requirements }}
+
+    - name: Install packages required by Gemfile
+      sudo: no
+      # TODO: use ``bundler: state=present`` when Ansible 2.0 released
+      command: "bundler install"
+      args:
+        chdir: "{{ project.path }}"
+      register: result
+      changed_when: "result.rc != 0 or result.stderr != ''"
+
+    - name: Install database migrations
+      sudo: no
+      django_manage: command=migrate
+                     app_path={{ project.path }}
+                     virtualenv={{ project.virtualenv }}
+                     settings={{ django.settings }}
+      register: result
+      changed_when: "'No migrations to apply.' not in result.out"
+
+  handlers:
+    - name: Restart PostgreSQL
+      service: name=postgresql state=restarted enabled=yes

@@ -10,6 +10,26 @@ from .forms import JobForm
 from .models import Job, JobType, JobCategory
 
 
+class JobListMenu:
+    def job_list_view(self):
+        return True
+
+
+class JobTypeMenu:
+    def job_type_view(self):
+        return True
+
+
+class JobCategoryMenu:
+    def job_category_view(self):
+        return True
+
+
+class JobLocationMenu:
+    def job_location_view(self):
+        return True
+
+
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
 
@@ -34,11 +54,9 @@ class JobMixin:
         return context
 
 
-class JobList(JobMixin, ListView):
+class JobList(JobListMenu, JobMixin, ListView):
     model = Job
     paginate_by = 25
-
-    job_list_view = True
 
     def get_queryset(self):
         return super().get_queryset().visible().select_related()
@@ -57,50 +75,45 @@ class JobListMine(JobMixin, ListView):
         return queryset.filter(q)
 
 
-class JobTypeMenu:
-    def job_type_view(self):
-        return True
-
-
-class JobCategoryMenu:
-    def job_category_view(self):
-        return True
-
-
-class JobLocationMenu:
-    def job_location_view(self):
-        return True
-
-
-class JobListType(JobTypeMenu, JobList):
+class JobListType(JobTypeMenu, ListView):
+    paginate_by = 25
     template_name = 'jobs/job_type_list.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter(job_types__slug=self.kwargs['slug'])
+        self.current_type = get_object_or_404(JobType,
+                                              slug=self.kwargs['slug'])
+        return Job.objects.visible().select_related().filter(
+            job_types__slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_type'] = JobType.objects.get(slug=self.kwargs['slug'])
+        context['current_type'] = self.current_type
         return context
 
 
-class JobListCategory(JobCategoryMenu, JobList):
+class JobListCategory(JobCategoryMenu, ListView):
+    paginate_by = 25
     template_name = 'jobs/job_category_list.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter(category__slug=self.kwargs['slug'])
+        self.current_category = get_object_or_404(JobCategory,
+                                                  slug=self.kwargs['slug'])
+        return Job.objects.visible().select_related().filter(
+            category__slug=self.kwargs['slug'])
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['current_category'] = JobCategory.objects.get(slug=self.kwargs['slug'])
+        context['current_category'] = self.current_category
         return context
 
 
-class JobListLocation(JobLocationMenu, JobList):
+class JobListLocation(JobLocationMenu, ListView):
+    paginate_by = 25
     template_name = 'jobs/job_location_list.html'
 
     def get_queryset(self):
-        return super().get_queryset().filter(location_slug=self.kwargs['slug'])
+        return Job.objects.visible().select_related().filter(
+            location_slug=self.kwargs['slug'])
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):

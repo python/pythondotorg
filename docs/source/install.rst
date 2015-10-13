@@ -15,12 +15,24 @@ Easy setup using Vagrant
 
     $ vagrant up
     $ vagrant ssh
+    # go to pythondotorg/ directory and activate virtualenv, then run
+    $ ./manage.py runserver 0.0.0.0:8000
+    # on your local shell
+    $ google-chrome http://localhost:8001/
 
-The box will be provisioned by Chef with Python 3.3, a virtualenv set up with
-requirements installed, and a database ready to use. The virtualenv is
-activated upon login.
+The box will be provisioned by Ansible_ 1.9.3 with Python 3.4, a virtualenv
+set up with requirements installed, and a database ready to use.
 
 .. note:: You will need to run ``./manage.py createsuperuser`` to use the admin.
+
+.. note::
+
+   You will also need to run ``./manage.py load_dev_fixtures`` to load all fixture
+   files.  This will download an approximately 11 MB gzipped set of fixtures
+   that are sanitized of sensitive user data and then loaded into your local
+   database.
+
+.. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
 
 .. _manual-setup:
 
@@ -29,7 +41,7 @@ Manual setup
 
 First, clone the repository::
 
-    $ git clone git@github.com:python/pythondotorg.git
+    $ git clone git://github.com/python/pythondotorg.git
 
 You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in, so
 you can do::
@@ -47,9 +59,7 @@ And then you'll need to install dependencies::
 
     $ pip install -r dev-requirements.txt
 
-.. note:: For deployment, you can just use ``requirements.txt``.
-
-pythondotorg will look for a PostgreSQL database named ``python.org`` by
+*pythondotorg* will look for a PostgreSQL database named ``python.org`` by
 default. To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::

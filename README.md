@@ -1,6 +1,7 @@
 # python.org
 
 [![Build Status](https://travis-ci.org/python/pythondotorg.png?branch=master)](https://travis-ci.org/python/pythondotorg)
+[![Documentation Status](https://readthedocs.org/projects/pythondotorg/badge/?version=latest)](http://pythondotorg.readthedocs.org/?badge=latest)
 
 ### General information
 

@@ -15,31 +15,9 @@ from honeypot.decorators import check_honeypot
 
 
 from .forms import (
-    UserCreationForm, UserProfileForm, MembershipForm, MembershipUpdateForm,
+    UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
-
-
-class SignupView(CreateView):
-    form_class = UserCreationForm
-    model = User
-
-    def get_success_url(self):
-        return '/'
-
-    @method_decorator(check_honeypot)
-    def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
-            return render(request, 'users/already_a_user.html')
-        return super().dispatch(request, *args, **kwargs)
-
-    def form_valid(self, form):
-        form.save()
-        username = form.cleaned_data['username']
-        password = form.cleaned_data['password1']
-        user = authenticate(username=username, password=password)
-        login(self.request, user)
-        return super().form_valid(form)
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
