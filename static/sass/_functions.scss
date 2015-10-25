@@ -265,11 +265,7 @@
         	}
     	}
     }
-    #python-status {
-        @extend #oldie-warning;
-        padding: .30em 0;
-    }
-    #oldie-warning, #python-status {
+    #oldie-warning {
         background-color: #ff7; 
         
         p {
