@@ -82,16 +82,11 @@ Release Files have a checkbox named 'Download button' that determines which bina
 Jobs
 ----
 
-The Jobs application is used to display Python jobs on the site. The data items should be fairly self explanatory. There are a couple of things to keep in mind. Logged in users of the site can submit jobs for review.
+The jobs application is using to display Python jobs on the site. The data items should be fairly self explanatory. There are a couple of things to keep in mind. Logged in users of the site can submit jobs for review.
 
 :Status: Jobs enter the system in 'review' status after the submitter has entered them. Only jobs in the 'approved' state are displayed on the site.
-
 :Featured: Featured jobs are displayed more prominently on the landing page.
-
 :Comments: Users who have submitted a job and admin reviewers can make comments on a job. Emails will be sent to the other party in order to foster communication about job description and data.
-
-Currently the jobs functionality it masked and the URLs are redirected to the legacy site until the content can be updated.
-
 
 Sponsors
 --------
