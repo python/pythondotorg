@@ -226,7 +226,8 @@ class JobsViewTests(TestCase):
         self.client.login(username=creator.username, password='secret')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(len(mail.outbox), 2)
+        #self.assertEqual(len(mail.outbox), 2) # see above
+        self.assertEqual(len(mail.outbox), 1)
 
         jobs = Job.objects.filter(company_name='Other Studio')
         self.assertEqual(len(jobs), 1)
