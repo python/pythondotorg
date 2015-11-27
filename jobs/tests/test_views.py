@@ -193,23 +193,30 @@ class JobsViewTests(TestCase):
             'email': 'hr@company.com'
         }
 
-        # First test job from anonymous non-logged in user
-        response = self.client.post(url, post_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(len(mail.outbox), 1)
+        if 0:
+            # Disabled for now, until we have found a better solution
+            # to fight spammers. See #852.
 
-        jobs = Job.objects.filter(company_name='Some Company')
-        self.assertEqual(len(jobs), 1)
+            # First test job from anonymous non-logged in user
+            response = self.client.post(url, post_data)
+            self.assertEqual(response.status_code, 302)
+            self.assertEqual(len(mail.outbox), 1)
 
-        job = jobs[0]
-        self.assertNotEqual(job.created, None)
-        self.assertNotEqual(job.updated, None)
-        self.assertEqual(job.status, 'review')
-        self.assertEqual(
-            mail.outbox[0].subject,
-            "Job Submitted for Approval: {}".format(job.display_name)
-        )
+            jobs = Job.objects.filter(company_name='Some Company')
+            self.assertEqual(len(jobs), 1)
 
+            job = jobs[0]
+            self.assertNotEqual(job.created, None)
+            self.assertNotEqual(job.updated, None)
+            self.assertEqual(job.status, 'review')
+            self.assertEqual(
+                mail.outbox[0].subject,
+                "Job Submitted for Approval: {}".format(job.display_name)
+            )
+
+            del mail.outbox[:]
+
+        # Now test job submitted by logged in user
         post_data['company_name'] = 'Other Studio'
 
         username = 'kevinarnold'
@@ -221,7 +228,7 @@ class JobsViewTests(TestCase):
         self.client.login(username=creator.username, password='secret')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
-        self.assertEqual(len(mail.outbox), 2)
+        self.assertEqual(len(mail.outbox), 1)
 
         jobs = Job.objects.filter(company_name='Other Studio')
         self.assertEqual(len(jobs), 1)
@@ -232,10 +239,12 @@ class JobsViewTests(TestCase):
         self.assertEqual(job.creator, creator)
         self.assertEqual(job.status, 'review')
         self.assertEqual(
-            mail.outbox[1].subject,
+            mail.outbox[0].subject,
             "Job Submitted for Approval: {}".format(job.display_name)
         )
 
+        del mail.outbox[:]
+        
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
 
