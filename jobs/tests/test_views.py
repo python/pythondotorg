@@ -193,6 +193,10 @@ class JobsViewTests(TestCase):
             'email': 'hr@company.com'
         }
 
+        # Check that anonymous posting is not allowed. See #852.
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 404)
+
         if 0:
             # Disabled for now, until we have found a better solution
             # to fight spammers. See #852.
