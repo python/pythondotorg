@@ -278,14 +278,14 @@ class JobCreate(JobMixin, CreateView):
 
     def form_valid(self, form):
         """ set the creator to the current user """
-        # Associate Job to user if they are logged in
-        if self.request.user.is_authenticated():
-            form.instance.creator = self.request.user
-        else:
-            # Temporary measure against spammers. See #852.
-            return super().form_invalid(form)
-        return super().form_valid(form)    
-        
+
+        # Don't allow anonymous postings; see #852.
+        if not self.request.user.is_authenticated():
+            raise Http404
+
+        # Associate Job to user
+        form.instance.creator = self.request.user
+        return super().form_valid(form)      
 
 
 class JobEdit(JobMixin, UpdateView):
