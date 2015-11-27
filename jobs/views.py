@@ -281,7 +281,11 @@ class JobCreate(JobMixin, CreateView):
         # Associate Job to user if they are logged in
         if self.request.user.is_authenticated():
             form.instance.creator = self.request.user
-        return super().form_valid(form)
+        else:
+            # Temporary measure against spammers
+            return super().form_invalid(form)
+        return super().form_valid(form)    
+        
 
 
 class JobEdit(JobMixin, UpdateView):
