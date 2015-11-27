@@ -214,6 +214,8 @@ class JobsViewTests(TestCase):
                 "Job Submitted for Approval: {}".format(job.display_name)
             )
 
+            del mail.outbox[:]
+
         # Now test job submitted by logged in user
         post_data['company_name'] = 'Other Studio'
 
@@ -226,7 +228,6 @@ class JobsViewTests(TestCase):
         self.client.login(username=creator.username, password='secret')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
-        #self.assertEqual(len(mail.outbox), 2) # see above
         self.assertEqual(len(mail.outbox), 1)
 
         jobs = Job.objects.filter(company_name='Other Studio')
@@ -238,10 +239,12 @@ class JobsViewTests(TestCase):
         self.assertEqual(job.creator, creator)
         self.assertEqual(job.status, 'review')
         self.assertEqual(
-            mail.outbox[1].subject,
+            mail.outbox[0].subject,
             "Job Submitted for Approval: {}".format(job.display_name)
         )
 
+        del mail.outbox[:]
+        
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
 
