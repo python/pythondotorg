@@ -282,7 +282,7 @@ class JobCreate(JobMixin, CreateView):
         if self.request.user.is_authenticated():
             form.instance.creator = self.request.user
         else:
-            # Temporary measure against spammers
+            # Temporary measure against spammers. See #852.
             return super().form_invalid(form)
         return super().form_valid(form)    
         
