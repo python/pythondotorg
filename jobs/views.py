@@ -2,7 +2,7 @@ from braces.views import LoginRequiredMixin, GroupRequiredMixin
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
@@ -241,6 +241,56 @@ class JobDetail(JobMixin, DetailView):
         return ctx
 
 
+class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
+    template_name = 'jobs/job_detail.html'
+    form_class = JobForm
+
+    def get_success_url(self):
+        return reverse('jobs:job_thanks')
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        self.object = self.get_object()
+        if self.request.POST.get('action') == 'review':
+            self.object.status = 'review'
+            self.object.save()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.get(request)
+
+    def get_object(self, queryset=None):
+        """ Show only approved jobs to the public, staff can see all jobs """
+        # 404 if job doesn't exist
+        try:
+            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
+        except Job.DoesNotExist:
+            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
+
+        # Only allow creator to preview and only while in draft status
+        if job.creator == self.request.user and job.editable:
+            return job
+
+        if self.request.user.is_staff:
+            return job
+
+        return None
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(
+            user_can_edit=(
+                self.object.creator == self.request.user
+                or self.request.user.is_staff
+            ),
+            under_preview=True,
+            form=self.get_form(self.form_class),
+        )
+        ctx.update(kwargs)
+        return ctx
+
+
 class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
 
     def get_queryset(self):
@@ -267,13 +317,14 @@ class JobCreate(JobMixin, CreateView):
     form_class = JobForm
 
     def get_success_url(self):
-        return reverse('jobs:job_thanks')
+        return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         if self.request.user.is_authenticated():
             kwargs['initial'] = {'email': self.request.user.email}
+        kwargs['needs_preview'] = not self.request.user.is_staff
         return kwargs
 
     def form_valid(self, form):
@@ -285,7 +336,8 @@ class JobCreate(JobMixin, CreateView):
 
         # Associate Job to user
         form.instance.creator = self.request.user
-        return super().form_valid(form)      
+        form.instance.status = 'draft'
+        return super().form_valid(form)
 
 
 class JobEdit(JobMixin, UpdateView):
@@ -310,6 +362,7 @@ class JobEdit(JobMixin, UpdateView):
         )
         ctx.update(kwargs)
         ctx['next'] = self.request.GET.get('next') or self.request.POST.get('next')
+        ctx['needs_preview'] = not self.request.user.is_staff
         return ctx
 
     def get_success_url(self):
