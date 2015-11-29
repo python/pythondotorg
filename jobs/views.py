@@ -1,9 +1,12 @@
 from braces.views import LoginRequiredMixin, GroupRequiredMixin
-from django.contrib import messages
+from django.contrib import comments, messages
+from django.contrib.comments import signals
+from django.contrib.comments.views.comments import CommentPostBadRequest
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.html import escape
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
 from .forms import JobForm
@@ -176,6 +179,11 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         except (KeyError, Job.DoesNotExist):
             return redirect('jobs:job_review')
 
+        if request.POST.get('comment', '').strip():
+            ret = self._save_comment(job)
+            if ret is not True:
+                return ret
+
         if action == 'approve':
             job.approve(request.user)
             messages.add_message(self.request, messages.SUCCESS, "'%s' approved." % job)
@@ -195,6 +203,49 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             messages.add_message(self.request, messages.SUCCESS, "'%s' removed." % job)
 
         return redirect('jobs:job_review')
+
+    def _save_comment(self, job):
+        data = self.request.POST.copy()
+        if self.request.user.is_authenticated():
+            if not data.get('name', ''):
+                data['name'] = self.request.user.get_full_name() or self.request.user.get_username()
+            if not data.get('email', ''):
+                data['email'] = self.request.user.email
+
+        form = comments.get_form()(job, data=data)
+        if form.security_errors():
+            return CommentPostBadRequest(
+                "The comment form failed security verification: %s" % \
+                    escape(str(form.security_errors())))
+        if form.errors:
+            return CommentPostBadRequest(
+                "Validation error in comment: %s" % \
+                    escape(str(form.errors)))
+
+        comment = form.get_comment_object()
+        comment.ip_address = self.request.META.get("REMOTE_ADDR", None)
+        comment.user = self.request.user
+
+        # Signal that the comment is about to be saved
+        responses = signals.comment_will_be_posted.send(
+            sender=comment.__class__,
+            comment=comment,
+            request=self.request
+        )
+
+        for (receiver, response) in responses:
+            if response == False:
+                return CommentPostBadRequest(
+                    "comment_will_be_posted receiver %r killed the comment" % receiver.__name__)
+
+        # Save the comment and signal that it was saved
+        comment.save()
+        signals.comment_was_posted.send(
+            sender=comment.__class__,
+            comment=comment,
+            request=self.request
+        )
+        return True
 
 
 class JobDetail(JobMixin, DetailView):
