@@ -309,7 +309,15 @@ class JobEdit(JobMixin, UpdateView):
             form_action='update',
         )
         ctx.update(kwargs)
+        ctx['next'] = self.request.GET.get('next') or self.request.POST.get('next')
         return ctx
+
+    def get_success_url(self):
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
+        else:
+            return super().get_success_url()
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):

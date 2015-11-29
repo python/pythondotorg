@@ -27,6 +27,8 @@
 
         <form class="wide-form jobs-form" action="" method="post">
             {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+
             {{ form.as_p }}
             <p>
                 <button class="secondaryAction" type="submit" name="Submit">Save Draft</button>
