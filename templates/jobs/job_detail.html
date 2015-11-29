@@ -72,12 +72,31 @@
         {{ object.display_description }}
         {% endif %}
 
+        <h2>Contact Info</h2>
+        <ul>
+            {% if object.contact %}
+            <li><strong>Contact</strong>: {{ object.contact }}</li>
+            {% endif %}
+
+            <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></li>
+
+            {% if object.url %}
+            <li><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></li>
+            {% endif %}
+        </ul>
+
+        <form action="{% url "jobs:job_preview" pk=object.pk %}" method="post">
+            {% csrf_token %}
+            <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
+            <button name="action" value="review">Submit for Approval</button>
+        </form>
+
         {% if under_review or request.user == object.creator %}
         <hr>
         <h1>Comments are only viewable between the submitter and job reviewers.</h1>
         {% load comments %}
         {% get_comment_count for object as comment_count %}
-        <h2>Job Review Discussion<small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+        <h2>Job Review Discussion <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
         {% render_comment_list for object %}
         <hr>
         {% render_comment_form for object %}
@@ -104,24 +123,6 @@
         {% endif %}
         {% endif %}
 
-        <h2>Contact Info</h2>
-        <ul>
-            {% if object.contact %}
-            <li><strong>Contact</strong>: {{ object.contact }}</li>
-            {% endif %}
-
-            <li><strong>E-mail contact</strong>: <a class="reference external" href="mailto:{{ object.email|urlencode }}">{{ object.email|render_email }}</a></li>
-
-            {% if object.url %}
-            <li><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></li>
-            {% endif %}
-        </ul>
-
-        <form action="{% url "jobs:job_preview" pk=object.pk %}" method="post">
-            {% csrf_token %}
-            <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
-            <button name="action" value="review">Submit for Approval</button>
-        </form>
 
     </div><!-- end .job-post-content -->
 
