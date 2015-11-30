@@ -306,8 +306,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         """
         self.object = self.get_object()
         if self.request.POST.get('action') == 'review':
-            self.object.status = 'review'
-            self.object.save()
+            self.object.review()
             return HttpResponseRedirect(self.get_success_url())
         else:
             return self.get(request)
@@ -375,8 +374,13 @@ class JobCreate(JobMixin, CreateView):
         kwargs['request'] = self.request
         if self.request.user.is_authenticated():
             kwargs['initial'] = {'email': self.request.user.email}
-        kwargs['needs_preview'] = not self.request.user.is_staff
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data()
+        ctx.update(kwargs)
+        ctx['needs_preview'] = not self.request.user.is_staff
+        return ctx
 
     def form_valid(self, form):
         """ set the creator to the current user """
@@ -420,6 +424,8 @@ class JobEdit(JobMixin, UpdateView):
         next_url = self.request.POST.get('next')
         if next_url:
             return next_url
+        elif self.object.pk:
+            return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
         else:
             return super().get_success_url()
 

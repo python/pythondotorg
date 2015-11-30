@@ -14,7 +14,7 @@ from cms.models import ContentManageable, NameSlugModel
 from fastly.utils import purge_url
 
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
-from .signals import job_was_approved, job_was_rejected
+from .signals import job_was_submitted, job_was_approved, job_was_rejected
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -168,6 +168,16 @@ class Job(ContentManageable):
             self.expires = timezone.now() + delta
 
         return super().save(**kwargs)
+
+    def review(self):
+        """Updates job status to Job.STATUS_REVIEW after preview was done by
+        user.
+        """
+        old_status = self.status
+        self.status = Job.STATUS_REVIEW
+        self.save()
+        if old_status != self.status:
+            job_was_submitted.send(sender=self.__class__, job=self)
 
     def approve(self, approving_user):
         """Updates job status to Job.STATUS_APPROVED after approval was issued
