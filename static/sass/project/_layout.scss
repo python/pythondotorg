@@ -55,6 +55,8 @@
 
 // More settings in base/_grid.scss
 
+.col-group { @extend %pie-clearfix; }
+
 .col-group__two,
 .col-group__four {
     @extend %col-row; 
