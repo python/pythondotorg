@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block body_attributes %}class="python default-page"{% endblock %}
+{% block body_attributes %}class="python default-page sample-html"{% endblock %}
 
 
 
@@ -16,7 +16,7 @@
 {% block content_attributes %}with-left-sidebar{% endblock %}
 
 {% block content %}
-            <article class="text">
+            <article class="typography">
    
 <style>
 /* For the style guide */
@@ -66,38 +66,38 @@
 <h1 id="user-feedback">User Feedback Modules</h1>
 <p>A few feedback styles have been created and should be used as "announcements" and as system-generated feedback styles. Here are some examples:</p>
 <div class="example">
-    <div class="user-feedback level-general">
+    <div class="feedback feedback__general">
         <p role="alert">Can&rsquo;t find what you&rsquo;re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>
 </div>
-<pre class="examplecode"><code>&lt;div class="user-feedback level-general"&gt;
+<pre class="examplecode"><code>&lt;div class="feedback feedback__general"&gt;
     &lt;p role="alert"&gt;Content&lt;/p&gt;
 &lt;/div&gt;</code></pre>
 
 <div class="example">
-    <div class="user-feedback level-notice">
+    <div class="feedback feedback__notice">
         <p role="alert">Please fill out all fields before submitting.</p>
     </div>
 </div>
-<pre class="examplecode"><code>&lt;div class="user-feedback level-notice"&gt;
+<pre class="examplecode"><code>&lt;div class="feedback feedback__notice"&gt;
     &lt;p role="alert"&gt;Content&lt;/p&gt;
 &lt;/div&gt;</code></pre>
 
 <div class="example">
-    <div class="user-feedback level-error">
+    <div class="feedback feedback__error">
         <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888;</span></span> Please correct the errors <b>noted in red</b> below:</p>
     </div>
 </div>
-<pre class="examplecode"><code>&lt;div class="user-feedback level-error"&gt;
+<pre class="examplecode"><code>&lt;div class="feedback feedback__error"&gt;
     &lt;p role="alert"&gt;&lt;span class="icon-alert" aria-hidden="true">&lt;span class="larger">&amp;#9888;&lt;/span>&lt;/span> Content&lt;/p&gt;
 &lt;/div&gt;</code></pre>
 
 <div class="example">
-    <div class="user-feedback level-success">
+    <div class="feedback feedback__success">
         <p role="alert"><span aria-hidden="true">&#10004;</span> Your information has been saved successfully.</p>
     </div>
 </div>
-<pre class="examplecode"><code>&lt;div class="user-feedback level-success"&gt;
+<pre class="examplecode"><code>&lt;div class="feedback feedback__success"&gt;
     &lt;p role="alert"&gt;&lt;span aria-hidden="true">&amp;#10004;&lt;/span> Content&lt;/p&gt;
 &lt;/div&gt;</code></pre>
 

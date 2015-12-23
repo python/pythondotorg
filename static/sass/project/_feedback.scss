@@ -2,16 +2,43 @@
     <p>Can&rsquo;t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
 </div>*/
 .feedback {
-    padding: .75em $grid-spacing .65em;
-    margin-bottom: $vert-grid-spacing;
-    @include border-radius( 4px );
-    
-    p { margin-bottom: 0; }
-    
-    
-    // Themes
-    &__general {
-        background-color: #e9f1f8; 
-        border: 1px solid #c2d9ec; 
-    }
+	padding: .75em $grid-spacing .65em;
+	margin-bottom: $vert-grid-spacing;
+	@include border-radius( 4px );
+
+	p { margin-bottom: 0; }
+
+
+	// Themes
+	
+	// A helpful tip
+	&__general {
+		background-color: lighten(palette(brand), 50%);
+		border: 1px solid lighten(palette(brand), 40%);
+	}
+
+	// A slight warning before completing a task
+	&__notice {
+		background-color: lighten( palette(brand,yellow), 30% );
+		border: 2px solid palette(brand,yellow);
+	}
+
+	// Something went wrong
+	&__error {
+		background-color: lighten( palette(brand,red), 35% );
+		border: 2px solid palette(brand,red);
+
+		span { color: palette(brand,red); }
+	}
+
+	// Yeah! It worked correctly
+	&__success {
+		background-color: lighten( palette(brand,green), 35% );
+		border: 2px solid palette(brand,green);
+
+		span {
+			color: palette(brand,green);
+			margin-right: .5em;
+		}
+	}
 }
