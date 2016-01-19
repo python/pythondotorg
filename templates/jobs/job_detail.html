@@ -30,7 +30,7 @@
               {{ object.company_name }}
 	    </span>
             {% if user_can_edit %}
-	    <br/><a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>
+	     <br/><a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>
 	    {% endif %}
         </span>
         <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.location_slug %}" title="More jobs in {{ object.display_location }}">{{object.display_location}}</a></span>
@@ -72,38 +72,6 @@
         {{ object.display_description }}
         {% endif %}
 
-        {% if under_review or request.user == object.creator %}
-        <hr>
-        <h1>Comments are only viewable between the submitter and job reviewers.</h1>
-        {% load comments %}
-        {% get_comment_count for object as comment_count %}
-        <h2>Job Review Discussion<small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
-        {% render_comment_list for object %}
-        <hr>
-        {% render_comment_form for object %}
-        {% if request.user != object.creator %}
-            {% comment %}Display only for reviewer{% endcomment %}
-            <strong>Insert Canned response:</strong>
-            <select id="canned_response">
-                <option value="empty">---</option>
-                <option value="not_python">No or not enough emphasis on Python</option>
-                <option value="formatting">Formatting broken</option>
-                <option value="duplicate">Duplicate posting</option>
-                <option value="voluntary">Voluntary, non paid job</option>
-            </select>
-            <h3>Review action</h3>
-            <form action="{% url "jobs:job_review" %}" method="post">
-              {% csrf_token %}
-              <input type="hidden" name="job_id" value="{{ job.id }}">
-              <div>
-                <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
-                <button class="review_button" name="action" value="approve">Approve</button>
-                <button class="review_button" name="action" value="reject">Reject</button>
-              </div>
-            </form>
-        {% endif %}
-        {% endif %}
-
         <h2>Contact Info</h2>
         <ul>
             {% if object.contact %}
@@ -116,6 +84,26 @@
             <li><strong>Web</strong>: <a class="reference external" href="{{ object.url }}">{{ object.url }}</a></li>
             {% endif %}
         </ul>
+
+        {% if under_preview %}
+            <form action="{% url "jobs:job_preview" pk=object.pk %}" method="post">
+                {% csrf_token %}
+                <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
+                <button name="action" value="review">Submit for Approval</button>
+            </form>
+        {% endif %}
+
+        {% if under_review or request.user == object.creator %}
+            <hr>
+            <h1>Comments are only viewable between the submitter and job reviewers.</h1>
+            {% load comments %}
+            {% get_comment_count for object as comment_count %}
+            <h2>Job Review Discussion <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+            {% render_comment_list for object %}
+            <hr>
+            {% render_comment_form for object %}
+        {% endif %}
+
 
     </div><!-- end .job-post-content -->
 
@@ -201,7 +189,7 @@
     // TODO: allow configuring canned responses in admin
     var voluntary_response = "The Python Job Board is for paid positions only. The Python Community has a separate Wiki for listing voluntary positions available at http://wiki.python.org/moin/VolunteerOpportunities.";
     var not_python_response = "The Python Job Board is for positions in which the primary role involves the Python programming language or development frameworks based on Python.\n\nPlease rephrase and resubmit.\n\nThanks.";
-    var formatting_response = "Please resubmit your posting and check that the job description and/or requirements text renders fine in an online ReST editor such as http://rst.ninjs.org/.\n\nThanks.";
+    var formatting_response = "Please resubmit your posting and check that the job description and/or requirements text renders fine in the job preview.\n\nThanks.";
     var duplicate_response = "This seems to be a duplicate of your earlier posting.\n\nIf not, please rephrase to make the difference clear.\n\nThanks.";
     $(document).ready(function() {
         var commment_field = $('#id_comment');
@@ -219,18 +207,6 @@
                 case 'duplicate':
                     commment_field.val(duplicate_response);
                     break;
-            }
-        });
-        $('.review_button').click(function(){
-            if (commment_field.val() != commment_field.attr('placeholder')) {
-                {% comment %}
-                   Currently the comment field uses a placeholder text set in
-                   attr when no text is entered, so we need to check it instead
-                   of checking for empty value.
-                {% endcomment %}
-                return confirm('The comment you entered will be lost. Make sure to submit your comment before accepting/rejecting current job listing. Proceed?');
-            } else {
-                return true;
             }
         });
     });

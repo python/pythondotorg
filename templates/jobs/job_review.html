@@ -34,7 +34,7 @@
                 <input type="hidden" name="job_id" value="{{ object.id }}">
                 <div>
                     <a class="button" href="{% url 'jobs:job_detail_review' pk=object.pk %}">Review</a>
-                    <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}">Edit</a>
+                    <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
                     <button name="action" value="approve">Approve</button>
                     <button name="action" value="reject">Reject</button>
                     <button name="action" value="archive">Archive</button>

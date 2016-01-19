@@ -8,7 +8,7 @@ from django_comments_xtd.conf import settings
 from django_comments_xtd.utils import send_mail
 
 from .models import Job
-from .signals import job_was_approved, job_was_rejected
+from .signals import job_was_submitted, job_was_approved, job_was_rejected
 
 ### Globals
 
@@ -101,29 +101,16 @@ def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
                             'jobs/email/job_was_rejected.txt')
 
 
-@receiver(models.signals.post_save, sender=Job, dispatch_uid="job_was_submitted")
-def on_job_was_submitted(sender, instance, created=False, **kwargs):
+@receiver(job_was_submitted)
+def on_job_was_submitted(sender, job, **kwargs):
     """
     Notify the jobs board when a new job has been submitted for approval
 
     """
-    # Only send emails for newly created Jobs
-    if not created:
-        return
-
-    # Skip in fixtures
-    if kwargs.get('raw', False):
-        return
-
-    # Only new Jobs in review status should trigger the email
-    Job = models.get_model('jobs', 'Job')
-    if instance.status != Job.STATUS_REVIEW:
-        return
-
     subject_template = loader.get_template('jobs/email/job_was_submitted_subject.txt')
     message_template = loader.get_template('jobs/email/job_was_submitted.txt')
 
-    message_context = Context({'content_object': instance,
+    message_context = Context({'content_object': job,
                                'site': Site.objects.get_current()})
     subject = subject_template.render(message_context)
     message = message_template.render(message_context)
