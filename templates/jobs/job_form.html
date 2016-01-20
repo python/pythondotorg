@@ -27,10 +27,15 @@
 
         <form class="wide-form jobs-form" action="" method="post">
             {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+
             {{ form.as_p }}
             <p>
-                <button class="secondaryAction" type="submit" name="Submit">Save Draft</button>
-                <button type="submit" name="Submit">Submit for Approval</button>
+                {% if form_action == 'update' and not needs_preview %}
+                    <button type="submit" name="Submit">Save</button>
+                {% else %}
+                    <button type="submit" name="Submit">Preview</button>
+                {% endif %}
             </p>
         </form>
     </article>

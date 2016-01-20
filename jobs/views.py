@@ -1,9 +1,12 @@
 from braces.views import LoginRequiredMixin, GroupRequiredMixin
-from django.contrib import messages
+from django.contrib import comments, messages
+from django.contrib.comments import signals
+from django.contrib.comments.views.comments import CommentPostBadRequest
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404, HttpResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
+from django.utils.html import escape
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
 from .forms import JobForm
@@ -176,6 +179,11 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         except (KeyError, Job.DoesNotExist):
             return redirect('jobs:job_review')
 
+        if request.POST.get('comment', '').strip():
+            ret = self._save_comment(job)
+            if ret is not True:
+                return ret
+
         if action == 'approve':
             job.approve(request.user)
             messages.add_message(self.request, messages.SUCCESS, "'%s' approved." % job)
@@ -195,6 +203,49 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             messages.add_message(self.request, messages.SUCCESS, "'%s' removed." % job)
 
         return redirect('jobs:job_review')
+
+    def _save_comment(self, job):
+        data = self.request.POST.copy()
+        if self.request.user.is_authenticated():
+            if not data.get('name', ''):
+                data['name'] = self.request.user.get_full_name() or self.request.user.get_username()
+            if not data.get('email', ''):
+                data['email'] = self.request.user.email
+
+        form = comments.get_form()(job, data=data)
+        if form.security_errors():
+            return CommentPostBadRequest(
+                "The comment form failed security verification: %s" % \
+                    escape(str(form.security_errors())))
+        if form.errors:
+            return CommentPostBadRequest(
+                "Validation error in comment: %s" % \
+                    escape(str(form.errors)))
+
+        comment = form.get_comment_object()
+        comment.ip_address = self.request.META.get("REMOTE_ADDR", None)
+        comment.user = self.request.user
+
+        # Signal that the comment is about to be saved
+        responses = signals.comment_will_be_posted.send(
+            sender=comment.__class__,
+            comment=comment,
+            request=self.request
+        )
+
+        for (receiver, response) in responses:
+            if response == False:
+                return CommentPostBadRequest(
+                    "comment_will_be_posted receiver %r killed the comment" % receiver.__name__)
+
+        # Save the comment and signal that it was saved
+        comment.save()
+        signals.comment_was_posted.send(
+            sender=comment.__class__,
+            comment=comment,
+            request=self.request
+        )
+        return True
 
 
 class JobDetail(JobMixin, DetailView):
@@ -241,6 +292,55 @@ class JobDetail(JobMixin, DetailView):
         return ctx
 
 
+class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
+    template_name = 'jobs/job_detail.html'
+    form_class = JobForm
+
+    def get_success_url(self):
+        return reverse('jobs:job_thanks')
+
+    def post(self, request, *args, **kwargs):
+        """
+        Handles POST requests, instantiating a form instance with the passed
+        POST variables and then checked for validity.
+        """
+        self.object = self.get_object()
+        if self.request.POST.get('action') == 'review':
+            self.object.review()
+            return HttpResponseRedirect(self.get_success_url())
+        else:
+            return self.get(request)
+
+    def get_object(self, queryset=None):
+        """ Show only approved jobs to the public, staff can see all jobs """
+        # 404 if job doesn't exist
+        try:
+            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
+        except Job.DoesNotExist:
+            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
+
+        # Only allow creator to preview and only while in draft status
+        if job.creator == self.request.user and job.editable:
+            return job
+
+        if self.request.user.is_staff:
+            return job
+
+        return None
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(
+            user_can_edit=(
+                self.object.creator == self.request.user
+                or self.request.user.is_staff
+            ),
+            under_preview=True,
+            form=self.get_form(self.form_class),
+        )
+        ctx.update(kwargs)
+        return ctx
+
+
 class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
 
     def get_queryset(self):
@@ -267,7 +367,7 @@ class JobCreate(JobMixin, CreateView):
     form_class = JobForm
 
     def get_success_url(self):
-        return reverse('jobs:job_thanks')
+        return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -275,6 +375,12 @@ class JobCreate(JobMixin, CreateView):
         if self.request.user.is_authenticated():
             kwargs['initial'] = {'email': self.request.user.email}
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data()
+        ctx.update(kwargs)
+        ctx['needs_preview'] = not self.request.user.is_staff
+        return ctx
 
     def form_valid(self, form):
         """ set the creator to the current user """
@@ -285,7 +391,8 @@ class JobCreate(JobMixin, CreateView):
 
         # Associate Job to user
         form.instance.creator = self.request.user
-        return super().form_valid(form)      
+        form.instance.status = 'draft'
+        return super().form_valid(form)
 
 
 class JobEdit(JobMixin, UpdateView):
@@ -309,7 +416,18 @@ class JobEdit(JobMixin, UpdateView):
             form_action='update',
         )
         ctx.update(kwargs)
+        ctx['next'] = self.request.GET.get('next') or self.request.POST.get('next')
+        ctx['needs_preview'] = not self.request.user.is_staff
         return ctx
+
+    def get_success_url(self):
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
+        elif self.object.pk:
+            return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
+        else:
+            return super().get_success_url()
 
 
 class JobChangeStatus(LoginRequiredMixin, JobMixin, View):

@@ -230,25 +230,39 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
         self.client.login(username=creator.username, password='secret')
-        response = self.client.post(url, post_data)
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(len(mail.outbox), 1)
+        response = self.client.post(url, post_data, follow=True)
 
+        # Job was saved in draft mode
         jobs = Job.objects.filter(company_name='Other Studio')
         self.assertEqual(len(jobs), 1)
-
         job = jobs[0]
+
+        preview_url = reverse('jobs:job_preview', kwargs={'pk': job.pk})
+        self.assertRedirects(response, preview_url)
+
         self.assertNotEqual(job.created, None)
         self.assertNotEqual(job.updated, None)
         self.assertEqual(job.creator, creator)
+        self.assertEqual(job.status, 'draft')
+
+        self.assertEqual(len(mail.outbox), 0)
+
+        # Submit again to save
+        response = self.client.post(preview_url, {'action': 'review'})
+
+        # Job was now moved to review status
+        job = Job.objects.get(pk=job.pk)
         self.assertEqual(job.status, 'review')
+
+        # One email was sent
+        self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
             "Job Submitted for Approval: {}".format(job.display_name)
         )
 
         del mail.outbox[:]
-        
+
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
 
