@@ -59,7 +59,7 @@ And then you'll need to install dependencies::
 
     $ pip install -r dev-requirements.txt
 
-*pythondotorg* will look for a PostgreSQL database named ``python.org`` by
+*pythondotorg* will look for a PostgreSQL database named ``pythondotorg`` by
 default. To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::
