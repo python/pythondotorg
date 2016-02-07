@@ -47,6 +47,7 @@ urlpatterns = [
     url(r'^box/', include('boxes.urls')),
     url(r'^comments/', include('django_comments_xtd.urls')),
     url(r'^community/', include('community.urls', namespace='community')),
+    url(r'^community/microbit/$', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
     url(r'^newjobs/', include('jobs.urls', namespace='jobs')),
