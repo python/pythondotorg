@@ -107,6 +107,17 @@
       register: result
       changed_when: "'No migrations to apply.' not in result.out"
 
+    - name: Create a superuser for Django admin
+      sudo: no
+      django_manage:
+          command="createsuperuser --noinput --username={{ django.superuser.name  }} --email={{ django.superuser.email }}"
+          app_path={{ project.path }}
+          virtualenv={{ project.virtualenv }}
+          settings={{ django.settings }}
+      register: result
+      changed_when: "result.out is defined and 'Superuser created successfully' in result.out"
+      failed_when: "result.msg is defined and 'already exists' not in result.msg"
+
   handlers:
     - name: Restart PostgreSQL
       service: name=postgresql state=restarted enabled=yes

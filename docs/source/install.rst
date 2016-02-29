@@ -23,7 +23,13 @@ Easy setup using Vagrant
 The box will be provisioned by Ansible_ 1.9.3 with Python 3.4, a virtualenv
 set up with requirements installed, and a database ready to use.
 
-.. note:: You will need to run ``./manage.py createsuperuser`` to use the admin.
+The box also creates a superuser with username ``cbiggles`` for you. However, you
+will need to set a password before using it::
+
+    $ vagrant ssh
+    $ cd pythondotorg
+    $ . venv/bin/activate
+    $ ./manage.py changepassword cbiggles
 
 .. note::
 
