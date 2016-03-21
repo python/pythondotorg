@@ -31,6 +31,11 @@ VDIR = '.virtenv/'
 
 # --- helpers ---
 
+def quit(msg):
+    print(msg)
+    input('Press Enter to quit..')
+    sys.exit(-1)  
+
 # --[inline shellrun 2.0 import run]
 import subprocess
 
@@ -51,22 +56,21 @@ def run(command):
 
 if PY3K:
     interpreter = sys.executable
+    if sys.version_info >= (3, 5):
+       print('Project not compatible with Python 3.5')
+       quit('See https://github.com/python/pythondotorg/issues/906')
 else:
     # [ ] try to detect Python 3
-    sys.exit('This project only works with Python 3.')
+    quit('This project only works with Python 3.')
 
 print('--- creating virtualenv in .virtenv/ subdir ---')
 if not run(interpreter + " -m virtualenv .virtenv").success:
     print('Error running virtualenv..')
     input('Press Enter to install virtualenv, Ctrl-C to quit..')
     if not run(interpreter + " -m pip install virtualenv").success:
-        print('Error instlling virtualenv..')
-        input('Press Enter to quit..')
-        sys.exit(-1)
+        quit('Error installing virtualenv..')
     if not run(interpreter + " -m virtualenv .virtenv").success:
-        print('Error running virtualenv..')
-        input('Press Enter to quit..')
-        sys.exit(-1)
+        quit('Error running virtualenv..')
 
 
 if ISWIN:
