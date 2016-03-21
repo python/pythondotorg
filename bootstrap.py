@@ -1,13 +1,16 @@
 #!/usr/bin/env python3
 """
-Bootstrap script for locating all dependencies on Windows.
+Bootstrap script to get development environment on Windows.
 
-check/locate Python 3
-install/download virtualenv wheel if it is not installed
-
-python -m virtualenv .locally
-write description > .locally/README.md
-.locally\Scripts\pip install -r dev-requirements.txt 
+ * [x] check Python 3
+   * [ ] locate Python 3
+ * [x] check virtualenv is installed
+   * [ ] install if it is not installed
+   * [ ] download and run locally
+ * [x] create virtualenv in .virtenv
+   * [ ] write description to .virtenv/README.md
+ * [x] install requirements
+ * [x] create manage.bat
 
 """
 
@@ -50,7 +53,17 @@ else:
 
 print('--- creating virtualenv in .virtenv/ subdir ---')
 if not run(interpreter + " -m virtualenv .virtenv").success:
-    sys.exit('Error running virtualenv')
+    print('Error running virtualenv..')
+    input('Press Enter to install virtualenv, Ctrl-C to quit..')
+    if not run(interpreter + " -m pip install virtualenv").success:
+        print('Error instlling virtualenv..')
+        input('Press Enter to quit..')
+        sys.exit(-1)
+    if not run(interpreter + " -m virtualenv .virtenv").success:
+        print('Error running virtualenv..')
+        input('Press Enter to quit..')
+        sys.exit(-1)
+
 
 if ISWIN:
     interpreter = '.virtenv\\Scripts\\python.exe'
@@ -74,3 +87,4 @@ batfile = """\
   python=interpreter,
 )
 open('manage.bat', 'w').write(batfile)
+input('Done. Press Enter..')
