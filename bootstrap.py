@@ -12,6 +12,10 @@ Bootstrap script to get development environment on Windows.
  * [x] install requirements
  * [x] create manage.bat
 
+
+The code is placed into public domain by
+   anatoly techtonik <techtonik@gmail.com>
+
 """
 
 # --- imports ---
