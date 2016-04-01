@@ -140,7 +140,6 @@ INSTALLED_APPS = [
     'boxes',
     'cms',
     'companies',
-    'feedbacks',
     'community',
     'jobs',
     'pages',

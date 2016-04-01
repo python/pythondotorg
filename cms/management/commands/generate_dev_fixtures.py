@@ -39,7 +39,6 @@ class Command(BaseCommand):
             exclude=[
                 "tastypie",
                 "sessions",
-                "feedbacks",
                 "account.emailconfirmation",
             ],
             stdout=content,
