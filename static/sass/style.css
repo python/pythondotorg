@@ -2900,6 +2900,27 @@ p.quote-by-organization {
       color: white;
       text-decoration: none; }
 
+#python-status-indicator {
+  border-radius: 99px;
+  display: inline-block;
+  height: 12px;
+  width: 12px; }
+
+.python-status-indicator-none {
+  background-color: #008000; }
+
+.python-status-indicator-minor {
+  background-color: #ffff00; }
+
+.python-status-indicator-major {
+  background-color: #ffa500; }
+
+.python-status-indicator-critical {
+  background-color: #ff0000; }
+
+.python-status-indicator-default {
+  background-color: #808080; }
+
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
   /* Resets for when slideshows are inside the .text */ }
