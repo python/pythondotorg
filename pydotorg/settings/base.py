@@ -140,7 +140,6 @@ INSTALLED_APPS = [
     'boxes',
     'cms',
     'companies',
-    'feedbacks',
     'community',
     'jobs',
     'pages',
@@ -164,7 +163,6 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
-    'debug_toolbar',
 ]
 
 # Fixtures

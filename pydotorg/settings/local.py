@@ -34,3 +34,7 @@ PEP_REPO_PATH = ''
 PIPELINE_COMPILERS = (
    'pydotorg.compilers.DummySASSCompiler',
 )
+
+INSTALLED_APPS += [
+    'debug_toolbar',
+]

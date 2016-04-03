@@ -194,6 +194,19 @@ function on_resize_orientationchange() {
 };
 
 
+function getPythonStatus() {
+    $.ajax({
+        url: "https://2p66nmmycsj3.statuspage.io/api/v2/status.json"
+    }).done(function(data) {
+        var className = 'python-status-indicator-' + data.status.indicator;
+        $('#python-status-indicator')
+            .removeClass('python-status-indicator-default')
+            .addClass(className)
+            .parent()
+            .attr('title', data.status.description);
+    });
+};
+
 /* Initiate some other functions as well. Fires on first page load or when called. */
 $().ready(function() {
 
@@ -471,6 +484,7 @@ $().ready(function() {
         //console.log( "! something has fired because this is a non-media-query browser" );
     }
 
+    getPythonStatus();
 });
 
 
