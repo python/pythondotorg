@@ -163,7 +163,6 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
-    'debug_toolbar',
 ]
 
 # Fixtures
