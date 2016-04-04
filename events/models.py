@@ -18,7 +18,7 @@ from timedelta.fields import TimedeltaField
 from timedelta.helpers import nice_repr as timedelta_nice_repr
 from timedelta.helpers import parse as timedelta_parse
 
-from .utils import minutes_resolution
+from .utils import minutes_resolution, convert_dt_to_aware
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -78,11 +78,15 @@ class EventManager(models.Manager):
     def for_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
+        else:
+            dt = convert_dt_to_aware(dt)
         return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
 
     def until_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
+        else:
+            dt = convert_dt_to_aware(dt)
         return self.filter(Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
 
 
