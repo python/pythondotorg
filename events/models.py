@@ -194,7 +194,7 @@ class Event(ContentManageable):
 
     @property
     def is_past(self):
-        return self.next_time == None
+        return self.next_time is None
 
 
 class RuleMixin:
