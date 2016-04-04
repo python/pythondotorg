@@ -22,7 +22,8 @@ class ICSImporter:
             # update the instance if necessary
             for k, v in defaults.items():
                 if getattr(instance, k) != v:
-                    [setattr(instance, k, v) for k, v in defaults.items()]
+                    for k, v in defaults.items():
+                        setattr(instance, k, v)
                     break
             instance.save()
         return instance, created
