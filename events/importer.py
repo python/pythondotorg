@@ -4,7 +4,6 @@ import pytz
 import requests
 
 from .models import EventLocation, Event, OccurringRule
-from .utils import date_to_datetime
 
 DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
@@ -13,7 +12,6 @@ TIME_RESOLUTION = timedelta(0, 0, 1)
 class ICSImporter:
     def __init__(self, calendar):
         self.calendar = calendar
-        super().__init__()
 
     def create_or_update_model(self, model_class, **kwargs):
         defaults = kwargs.get('defaults', {})
@@ -50,12 +48,12 @@ class ICSImporter:
 
         self.create_or_update_model(OccurringRule, event=event, defaults=defaults)
 
-    def import_event(self, calendar, event_data):
+    def import_event(self, event_data):
         uid = event_data['UID']
         title = event_data['SUMMARY']
         description = event_data['DESCRIPTION']
         location, _ = EventLocation.objects.get_or_create(
-            calendar=calendar,
+            calendar=self.calendar,
             name=event_data['LOCATION']
         )
         defaults = {
@@ -63,7 +61,7 @@ class ICSImporter:
             'description': description,
             'description_markup_type': 'html',
             'venue': location,
-            'calendar': calendar
+            'calendar': self.calendar,
         }
         event, _ = self.create_or_update_model(Event, uid=uid, defaults=defaults)
         self.import_occurrence(event, event_data)
@@ -78,10 +76,11 @@ class ICSImporter:
         ical = self.fetch(url)
         return self.parse(ical)
 
-    def parse(self, ical):
-        parsed_calendar = ICalendar.from_ical(ical)
-        self.calendar_timezone = pytz.timezone(parsed_calendar['X-WR-TIMEZONE'])
+    def get_events(self, ical):
+        ical = ICalendar.from_ical(ical)
+        return ical.walk('VEVENT')
 
-        for subcomponent in parsed_calendar.subcomponents:
-            if subcomponent.name == 'VEVENT':
-                self.import_event(self.calendar, subcomponent)
+    def parse(self, ical):
+        events = self.get_events(ical)
+        for event in events:
+            self.import_event(event)
