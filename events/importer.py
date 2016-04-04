@@ -24,6 +24,7 @@ class ICSImporter:
                 if getattr(instance, k) != v:
                     [setattr(instance, k, v) for k, v in defaults.items()]
                     break
+            instance.save()
         return instance, created
 
     def import_occurrence(self, event, event_data):
