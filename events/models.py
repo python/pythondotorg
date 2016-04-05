@@ -23,7 +23,6 @@ from .utils import minutes_resolution
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
-# Create your models here.
 class Calendar(ContentManageable):
     url = models.URLField('URL iCal', blank=True, null=True)
     rss = models.URLField('RSS Feed', blank=True, null=True)
@@ -39,14 +38,12 @@ class Calendar(ContentManageable):
     def get_absolute_url(self):
         return reverse('events:event_list', kwargs={'calendar_slug': self.slug})
 
-    def from_url(self, url=None):
-        if url is None and self.url is None:
-            raise RuntimeError("Calendar must have a url field set, or you must pass a URL to `.import_ics()`.")
-        if url is None:
-            url = self.url
+    def import_events(self):
+        if self.url is None:
+            raise ValueError("calendar must have a url field set")
         from .importer import ICSImporter
         importer = ICSImporter(calendar=self)
-        importer.from_url(url)
+        importer.import_events()
 
 
 class EventCategory(NameSlugModel):
