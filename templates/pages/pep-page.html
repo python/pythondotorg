@@ -6,12 +6,8 @@
 
 {% block content_attributes %}with-left-sidebar{% endblock %}
 
-
-{% comment %}
-Possible to insert the title of the parent page if available?
-Example: "Getting Started | About | Python.org" where "About" is the parent page/section of "Getting Started"
-{% endcomment %}
 {% block page_title %}{{ page.title }} | {{ SITE_INFO.site_name }}{% endblock %}
+{% block og_title %}{{ page.title }}{% endblock %}
 
 {% block breadcrumbs %}
 <ul class="breadcrumbs menu">
