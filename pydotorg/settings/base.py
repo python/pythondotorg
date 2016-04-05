@@ -171,10 +171,6 @@ FIXTURE_DIRS = (
     os.path.join(BASE, 'fixtures'),
 )
 
-### Testing
-
-SKIP_NETWORK_TESTS = True
-
 ### Logging
 
 LOGGING = {

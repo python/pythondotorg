@@ -68,17 +68,17 @@ class ICSImporter:
         response = requests.get(url)
         return response.content
 
-    def from_url(self, url=None):
+    def import_events(self, url=None):
         if url is None:
             url = self.calendar.url
         ical = self.fetch(url)
-        return self.parse(ical)
+        return self.import_events_from_text(ical)
 
     def get_events(self, ical):
         ical = ICalendar.from_ical(ical)
         return ical.walk('VEVENT')
 
-    def parse(self, ical):
+    def import_events_from_text(self, ical):
         events = self.get_events(ical)
         for event in events:
             self.import_event(event)

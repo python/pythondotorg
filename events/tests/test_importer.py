@@ -20,12 +20,7 @@ class EventsImporterTestCase(TestCase):
         importer = ICSImporter(self.calendar)
         with open(EVENTS_CALENDAR) as fh:
             ical = fh.read()
-        importer.parse(ical)
-
-    @unittest.skipIf(settings.SKIP_NETWORK_TESTS, 'Network tests are disabled.')
-    def test_url(self):
-        importer = ICSImporter(self.calendar)
-        importer.from_url()
+        importer.import_events_from_text(ical)
 
     def test_modified_event(self):
         importer = ICSImporter(self.calendar)
@@ -56,7 +51,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 END:VCALENDAR
 """
-        importer.parse(ical)
+        importer.import_events_from_text(ical)
 
         e = Event.objects.get(uid='8ceqself979pphq4eu7l5e2db8@google.com')
         self.assertEqual(e.calendar.url, EVENTS_CALENDAR_URL)
@@ -91,7 +86,7 @@ TRANSP:TRANSPARENT
 END:VEVENT
 END:VCALENDAR
 """
-        importer.parse(ical)
+        importer.import_events_from_text(ical)
 
         e2 = Event.objects.get(uid='8ceqself979pphq4eu7l5e2db8@google.com')
         self.assertEqual(e.pk, e2.pk)

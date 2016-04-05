@@ -15,4 +15,4 @@ class Command(NoArgsCommand):
     def handle_noargs(self, *args, **kwargs):
         calendars = Calendar.objects.filter(url__isnull=False)
         for calendar in calendars:
-            calendar.from_url()
+            calendar.import_events()
