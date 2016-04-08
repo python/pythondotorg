@@ -137,6 +137,11 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
+        self.client.logout()
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/jobs/45/edit/')
+
     def test_job_detail(self):
         url = self.job.get_absolute_url()
         response = self.client.get(url)
@@ -177,7 +182,8 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_create')
         response = self.client.get(url)
 
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/jobs/create/')
 
         post_data = {
             'category': self.job_category.pk,
@@ -195,30 +201,8 @@ class JobsViewTests(TestCase):
 
         # Check that anonymous posting is not allowed. See #852.
         response = self.client.post(url, post_data)
-        self.assertEqual(response.status_code, 404)
-
-        if 0:
-            # Disabled for now, until we have found a better solution
-            # to fight spammers. See #852.
-
-            # First test job from anonymous non-logged in user
-            response = self.client.post(url, post_data)
-            self.assertEqual(response.status_code, 302)
-            self.assertEqual(len(mail.outbox), 1)
-
-            jobs = Job.objects.filter(company_name='Some Company')
-            self.assertEqual(len(jobs), 1)
-
-            job = jobs[0]
-            self.assertNotEqual(job.created, None)
-            self.assertNotEqual(job.updated, None)
-            self.assertEqual(job.status, 'review')
-            self.assertEqual(
-                mail.outbox[0].subject,
-                "Job Submitted for Approval: {}".format(job.display_name)
-            )
-
-            del mail.outbox[:]
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/jobs/create/')
 
         # Now test job submitted by logged in user
         post_data['company_name'] = 'Other Studio'
@@ -265,12 +249,6 @@ class JobsViewTests(TestCase):
 
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
-
-        # Not logged in, no email prepopulation in the form.
-        response = self.client.get(create_url)
-        self.assertEqual(response.context['form'].initial,
-                         {})
-
         user_data = {
             'username': 'phrasebook',
             'email': 'hungarian@example.com',

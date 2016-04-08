@@ -275,6 +275,14 @@
                     {% block breadcrumbs %}
                     {% endblock breadcrumbs %}
 
+                    {% if messages %}
+                        {% for message in messages %}
+                        <div class="user-feedback{% if message.tags %} level-{{ message.tags }}{% endif %}">
+                            <p{% if message.tags %} role="{{ message.tags }}"{% endif %}>{{ message }}</p>
+                        </div>
+                        {% endfor %}
+                    {% endif %}
+
                     {% block content %}
                     {% endblock content %}
 
