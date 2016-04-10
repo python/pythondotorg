@@ -14,6 +14,13 @@ class UsersViewsTestCase(TestCase):
             username='username',
             password='password',
         )
+        self.user2 = User.objects.create_user(
+            username='spameggs',
+            password='password',
+            search_visibility=0,
+            email_privacy=1,
+            public_profile=False,
+        )
 
     def assertUserCreated(self, data=None, template_name='account/verification_sent.html'):
         post_data = {
@@ -94,6 +101,34 @@ class UsersViewsTestCase(TestCase):
         }
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
+
+    def test_user_update_redirect(self):
+        # see issue #925
+        self.client.login(username='username', password='password')
+        url = reverse('users:user_profile_edit')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # should return 200 if the user does want to see their user profile
+        post_data = {
+            'search_visibility': 0,
+            'email_privacy': 1,
+            'public_profile': False,
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+        response = self.client.post(url, post_data)
+        profile_url = reverse('users:user_detail', kwargs={'slug': 'username'})
+        self.assertRedirects(response, profile_url)
+
+        # should return 404 for another user
+        another_user_url = reverse('users:user_detail', kwargs={'slug': 'spameggs'})
+        response = self.client.get(another_user_url)
+        self.assertEqual(response.status_code, 404)
+
+        # should return 404 if the user is not logged-in
+        self.client.logout()
+        response = self.client.get(profile_url)
+        self.assertEqual(response.status_code, 404)
 
     def test_user_detail(self):
         # Ensure detail page is viewable without login, but that edit URLs

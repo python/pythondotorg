@@ -126,7 +126,10 @@ class UserDetail(DetailView):
     slug_field = 'username'
 
     def get_queryset(self):
-        return super().get_queryset().searchable()
+        queryset = super().get_queryset()
+        if self.request.user.username == self.kwargs['slug']:
+            return queryset.select_related()
+        return queryset.searchable()
 
 
 class UserList(ListView):
