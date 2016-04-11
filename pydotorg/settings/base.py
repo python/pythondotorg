@@ -1,6 +1,8 @@
 import os
 import dj_database_url
 
+from django.contrib.messages import constants
+
 ### Basic config
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
@@ -239,3 +241,9 @@ from .pipeline import (
 
 ### django-waffle settings
 WAFFLE_OVERRIDE = True
+
+### contrib.messages
+
+MESSAGE_TAGS = {
+    constants.INFO: 'general',
+}

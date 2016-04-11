@@ -9,7 +9,7 @@ class UsersTagsTest(TemplateTestCase):
         This is just to make sure the `{% firstof %}` templatetag's behaviour
         stays the say as our deprecated `ifempty` filter
         """
-        template = "{% firstof variable 'default' %}"
+        template = "{% load firstof from future %}{% firstof variable 'default' %}"
         ctx = {
             'variable': ''
         }

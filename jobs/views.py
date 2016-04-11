@@ -1,4 +1,4 @@
-from braces.views import LoginRequiredMixin, GroupRequiredMixin
+from braces.views import GroupRequiredMixin
 from django.contrib import comments, messages
 from django.contrib.comments import signals
 from django.contrib.comments.views.comments import CommentPostBadRequest
@@ -10,6 +10,7 @@ from django.utils.html import escape
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
 from .forms import JobForm
+from .mixins import LoginRequiredMixin
 from .models import Job, JobType, JobCategory
 
 
@@ -362,9 +363,11 @@ class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail)
         return ctx
 
 
-class JobCreate(JobMixin, CreateView):
+class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
     model = Job
     form_class = JobForm
+
+    login_message = 'Please login to create a job posting.'
 
     def get_success_url(self):
         return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
@@ -383,25 +386,16 @@ class JobCreate(JobMixin, CreateView):
         return ctx
 
     def form_valid(self, form):
-        """ set the creator to the current user """
-
-        # Don't allow anonymous postings; see #852.
-        if not self.request.user.is_authenticated():
-            raise Http404
-
-        # Associate Job to user
         form.instance.creator = self.request.user
         form.instance.status = 'draft'
         return super().form_valid(form)
 
 
-class JobEdit(JobMixin, UpdateView):
+class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
     model = Job
     form_class = JobForm
 
     def get_queryset(self):
-        if not self.request.user.is_authenticated():
-            raise Http404
         if self.request.user.is_staff:
             return super().get_queryset()
         return self.request.user.jobs_job_creator.all()

@@ -117,6 +117,8 @@ def convert_pep_page(pep_number, content):
     data = {
         'title': None,
     }
+    # Remove leading zeros from PEP number for display purposes
+    pep_number_humanize = re.sub(r'^0+', '', str(pep_number))
 
     if '<html>' in content:
         soup = BeautifulSoup(content)
@@ -124,7 +126,7 @@ def convert_pep_page(pep_number, content):
 
         if not re.search(r'PEP \d+', data['title']):
             data['title'] = 'PEP {} -- {}'.format(
-                pep_number,
+                pep_number_humanize,
                 soup.title.text,
             )
 
@@ -145,11 +147,11 @@ def convert_pep_page(pep_number, content):
 
         soup, data = fix_headers(soup, data)
         if not data['title']:
-            data['title'] = "PEP {} -- ".format(pep_number)
+            data['title'] = "PEP {} -- ".format(pep_number_humanize)
         else:
             if not re.search(r'PEP \d+', data['title']):
                 data['title'] = "PEP {} -- {}".format(
-                    pep_number,
+                    pep_number_humanize,
                     data['title'],
                 )
 
@@ -189,10 +191,6 @@ def get_pep_page(pep_number, commit=True):
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
 
     pep_page, _ = Page.objects.get_or_create(path=pep_url(pep_number))
-
-    # Remove leading zeros from PEP number for display purposes
-    pep_number_string = str(pep_number)
-    pep_number_string = re.sub(r'^0+', '', pep_number_string)
 
     pep_page.title = pep_content['title']
 
