@@ -3,6 +3,8 @@ from django.test import TestCase
 
 from allauth.account.forms import SignupForm
 
+from users.forms import UserProfileForm
+
 User = get_user_model()
 
 
@@ -54,3 +56,21 @@ class UsersFormsTestCase(TestCase):
         })
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
+
+
+class UserProfileFormTestCase(TestCase):
+
+    def test_unique_email(self):
+        User.objects.create_user('stanne', 'mikael@darktranquillity.com', 'testpass')
+        User.objects.create_user('test42', 'test42@example.com', 'testpass')
+
+        form = UserProfileForm({
+            'email': 'test42@example.com',
+            'search_visibility': 0,
+            'email_privacy': 0,
+        }, instance=User.objects.get(username='stanne'))
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {'email': ['Please use a unique email address.']}
+        )
