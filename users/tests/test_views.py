@@ -13,6 +13,7 @@ class UsersViewsTestCase(TestCase):
         self.user = User.objects.create_user(
             username='username',
             password='password',
+            email='niklas@sundin.se',
         )
         self.user2 = User.objects.create_user(
             username='spameggs',
@@ -114,6 +115,7 @@ class UsersViewsTestCase(TestCase):
             'search_visibility': 0,
             'email_privacy': 1,
             'public_profile': False,
+            'email': 'niklas@sundin.se',
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
         response = self.client.post(url, post_data)
