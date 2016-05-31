@@ -13,7 +13,7 @@ psycopg2==2.6
 python3-openid==3.0.5
 lxml==3.4.4
 cssselect==0.9.1
-git+https://code.google.com/p/feedparser/@dc3bd29bfc1b#egg=feedparser
+git+https://github.com/kurtmckee/feedparser.git@dc3bd29bfc1b#egg=feedparser
 beautifulsoup4==4.3.2
 icalendar==3.8.4
 chardet2==2.0.3
