@@ -22,6 +22,13 @@ class UserProfileForm(ModelForm):
             'email_privacy': forms.RadioSelect,
         }
 
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        user = User.objects.filter(email=email).exclude(pk=self.instance.pk)
+        if email is not None and user.exists():
+            raise forms.ValidationError('Please use a unique email address.')
+        return email
+
 
 class MembershipForm(ModelForm):
     """ PSF Membership creation form """

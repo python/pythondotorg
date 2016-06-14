@@ -20,6 +20,6 @@ script:
 notifications:
   irc:
     channels:
-      - "irc.freenode.net#python-dev"
+      - "irc.freenode.net#pydotorg"
     on_success: change
     on_failure: always
