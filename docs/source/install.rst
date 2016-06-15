@@ -49,17 +49,9 @@ First, clone the repository::
 
     $ git clone git://github.com/python/pythondotorg.git
 
-You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in, so
-you can do::
+Then create a virtual environment::
 
-    $ pyvenv-3.3 <env>
-    $ source <env>/bin/activate
-
-But you can also use your existing virtualenv and virtualenvwrapper::
-
-    $ virtualenv --python=python3.3 <env>
-    # or
-    $ mkvirtualenv --python=python3.3 <env>
+    $ python3.4 -m venv venv
 
 And then you'll need to install dependencies::
 
