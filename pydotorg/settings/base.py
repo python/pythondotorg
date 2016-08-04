@@ -239,9 +239,6 @@ from .pipeline import (
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
 
-### django-waffle settings
-WAFFLE_OVERRIDE = True
-
 ### contrib.messages
 
 MESSAGE_TAGS = {
