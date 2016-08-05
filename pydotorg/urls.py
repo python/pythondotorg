@@ -48,7 +48,6 @@ urlpatterns = [
     url(r'^accounts/signup/', HoneypotSignupView.as_view()),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
-    url(r'^comments/', include('django_comments_xtd.urls')),
     url(r'^community/', include('community.urls', namespace='community')),
     url(r'^community/microbit/$', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     url(r'^events/', include('events.urls', namespace='events')),
