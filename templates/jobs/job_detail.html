@@ -111,6 +111,11 @@
             <form class="wide-form jobs-form" action="{% url 'jobs:job_review_comment_create' %}" method="post">
                 {% csrf_token %}
                 {{ job_review_form.as_p }}
+                {% if request.user == object.creator %}
+                <div>
+                    <button type="submit" name="Submit">Submit</button>
+                </div>
+                {% elif jobs_board_admin %}
                 <p>
                     <label for="canned_response">Insert canned response:</label>
                     <select id="canned_response">
@@ -122,14 +127,11 @@
                     </select>
                 </p>
                 <div>
-                {% if request.user == object.creator %}
-                    <button type="submit" name="Submit">Submit</button>
-                {% else %}
                     <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
                     <button class="review_button" name="action" value="approve">Approve</button>
                     <button class="review_button" name="action" value="reject">Reject</button>
-                {% endif %}
                 </div>
+                {% endif %}
             </form>
             <hr>
         {% endif %}
