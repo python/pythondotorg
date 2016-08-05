@@ -67,7 +67,7 @@ class PagePathReTests(unittest.TestCase):
 
     @ddt.data(*good_paths)
     def test_good_path(self, p):
-        self.assertTrue(PAGE_PATH_RE.match(p), "'%s' didn't match (it shoulld)" % p)
+        self.assertTrue(PAGE_PATH_RE.match(p), "'%s' didn't match (it should)" % p)
 
     @ddt.data(*bad_paths)
     def test_bad_path(self, p):
