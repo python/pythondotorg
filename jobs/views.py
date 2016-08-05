@@ -341,7 +341,9 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
             return HttpResponse('Unauthorized', status=401)
         action = self.request.POST.get('action')
         valid_actions = {'approve': Job.STATUS_APPROVED, 'reject': Job.STATUS_REJECTED}
-        if action is not None and action in valid_actions and self.has_jobs_board_admin_access():
+        if action is not None and action in valid_actions:
+            if not self.has_jobs_board_admin_access():
+                return HttpResponse('Unauthorized', status=401)
             action_status = valid_actions.get(action)
             getattr(form.instance.job, action)(self.request.user)
             messages.add_message(
