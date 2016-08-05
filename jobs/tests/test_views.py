@@ -504,3 +504,16 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 401)
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_job_comment_401_approve(self):
+        mail.outbox = []
+        self.client.login(username=self.creator_username, password=self.creator_password)
+        url = reverse('jobs:job_review_comment_create')
+        form_data = {
+            'job': self.job1.pk,
+            'action': 'approve',
+        }
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(len(mail.outbox), 0)
