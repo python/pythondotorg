@@ -201,7 +201,7 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         elif action == 'archive':
             job.status = Job.STATUS_ARCHIVED
             job.save()
-            messages.add_message(self.request, messages.SUCCESS, "'%s' removed." % job)
+            messages.add_message(self.request, messages.SUCCESS, "'%s' archived." % job)
 
         return redirect('jobs:job_review')
 
