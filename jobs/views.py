@@ -50,6 +50,7 @@ class JobMixin:
             'active_types': JobType.objects.with_active_jobs(),
             'active_categories': JobCategory.objects.with_active_jobs(),
             'active_locations': active_locations,
+            'jobs_board_admin': self.has_jobs_board_admin_access(),
         })
 
         return context
@@ -327,13 +328,6 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
 
     def get_success_url(self):
         return reverse('jobs:job_detail_review', kwargs={'pk': self.request.POST.get('job')})
-
-    def has_jobs_board_admin_access(self):
-        # add the is_staff check to stay compatible with current staff members
-        if self.request.user.is_staff or self.request.user.is_superuser:
-            return True
-        user_groups = self.request.user.groups.values_list('name', flat=True)
-        return JobBoardAdminRequiredMixin.group_required in user_groups
 
     def form_valid(self, form):
         if (self.request.user.username != form.instance.job.creator.username and not
