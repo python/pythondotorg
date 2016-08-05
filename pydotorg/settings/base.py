@@ -210,7 +210,6 @@ DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
 
 COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
-COMMENTS_XTD_FORM_CLASS = "jobs.forms.JobCommentForm"
 
 ### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'

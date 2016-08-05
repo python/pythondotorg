@@ -1,60 +1,44 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import models
 from django.dispatch import receiver
-from django.contrib.comments.signals import comment_was_posted
 from django.contrib.sites.models import Site
 from django.template import loader, Context
 from django.utils.translation import ugettext_lazy as _
-from django_comments_xtd.conf import settings
-from django_comments_xtd.utils import send_mail
 
 from .models import Job
-from .signals import job_was_submitted, job_was_approved, job_was_rejected
-
-### Globals
+from .signals import (
+    job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted,
+)
 
 # Python job board team email address
 EMAIL_JOBS_BOARD = 'jobs@python.org'
 
-###
 
 @receiver(comment_was_posted)
-def on_comment_was_posted(sender, comment, request, **kwargs):
+def on_comment_was_posted(sender, comment, **kwargs):
     """
     Notify the author of the post when the first comment has been posted.
-
-    Further comments subscribe automatically because our custom forms at
-    `.forms.JobCommentForm` forces `follow_up` to `True` and Django-comments-xtd
-    will already notify followers.
     """
-    # Skip if this is not a 'first comment'
-    if comment.level > 0 or comment.order > 1:
+    if not comment.comment:
         return False
-
-    # Skip if we're not commenting on a Job
-    Job = models.get_model('jobs', 'Job')
-    model = comment.content_type.model_class()
-    if model != Job:
-        return False
-
-    job = model._default_manager.get(pk=comment.object_pk)
+    job = comment.job
     email = job.email
     name = job.contact or 'Job Submitter'
-    reviewer_name = comment.name or 'Community Reviewer'
+    reviewer_name = comment.creator.get_full_name() or comment.creator.username or 'Community Reviewer'
 
     subject = _("Python Job Board: Review comment for: {}").format(
         job.display_name)
-    text_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.txt")
-    html_message_template = loader.get_template("django_comments_xtd/email_job_added_comment.html")
+    text_message_template = loader.get_template("jobs/email/comment_was_posted.txt")
 
     message_context = Context({ 'user_name': name,
                                 'reviewer_name': reviewer_name,
-                                'comment': comment,
+                                'comment': comment.comment.raw,
                                 'content_object': job,
                                 'site': Site.objects.get_current() })
     text_message = text_message_template.render(message_context)
-    html_message = html_message_template.render(message_context)
     send_mail(subject, text_message, settings.JOB_FROM_EMAIL,
-              [email, EMAIL_JOBS_BOARD], html=html_message)
+              [email, EMAIL_JOBS_BOARD])
 
 
 def send_job_review_message(job, user, subject_template_path,
@@ -66,14 +50,13 @@ def send_job_review_message(job, user, subject_template_path,
     """
     subject_template = loader.get_template(subject_template_path)
     message_template = loader.get_template(message_template_path)
-    if user.first_name or user.last_name:
-        reviewer_name = '{} {}'.format(user.first_name, user.last_name)
-    else:
-        reviewer_name = 'Community Reviewer'
-    message_context = Context({'reviewer_name': reviewer_name,
-                               'content_object': job,
-                               'site': Site.objects.get_current(),
-                              })
+    reviewer_name = user.get_full_name() or user.username or 'Community Reviewer'
+    message_context = Context({
+        'user_name': job.contact or 'Job Submitter',
+        'reviewer_name': reviewer_name,
+        'content_object': job,
+        'site': Site.objects.get_current(),
+    })
     # subject can't contain newlines, thus strip() call
     subject = subject_template.render(message_context).strip()
     message = message_template.render(message_context)
