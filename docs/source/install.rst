@@ -146,13 +146,6 @@ Troubleshooting
 If you hit an error getting this repo setup, file a pull request with helpful
 information so others don't have similar problems.
 
-Python 3.3 and OSX 10.8.2
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Homebrew's recipe for Python 3.3 has some difficulty installing distribute
-and pip in a virtualenv. The `python.org installer for OSX <https://www.python.org/download/>`_
-may work better, if you're having trouble.
-
 Freetype not found on OSX
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
