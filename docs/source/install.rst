@@ -70,7 +70,7 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Not it's time to run migrations::
+Now it's time to run migrations::
 
     $ ./manage.py migrate
 
