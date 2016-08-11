@@ -1,1 +1,2 @@
 static/sass/*.css linguist-vendored
+peps/tests/fake_pep_repo/*.html linguist-vendored
