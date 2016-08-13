@@ -43,3 +43,4 @@ uWSGI==2.0.10
 
 raven==5.2.0
 django-waffle==0.11.1
+sqlparse <0.2
