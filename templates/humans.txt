@@ -49,6 +49,7 @@
 /* PEOPLE WHO FOUND SECURITY BUGS IN THE WEBSITE */
 	Osama Mahmood (http://osamamahmood.blogspot.com)
 	Rafael Pablos (http://silverneox.blogspot.com)
+	Yadnyawalkya Tale (http://yadnyawalkya.blogspot.in)
 
 
 /* SITE */
