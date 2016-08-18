@@ -2,6 +2,6 @@
 
 <ul class="subnav menu" role="menu" aria-hidden="true">
     {% for item in sitetree_items %}
-        <li class="tier-2 element-{{ forloop.counter }}" role="treeitem"><a href="{% sitetree_url for item %}" title="{{ item.hint|default:"" }}">{{ item.title_resolved }}</a></li>
+        <li class="tier-2 element-{{ forloop.counter }}" role="menuitem"><a href="{% sitetree_url for item %}" title="{{ item.hint|default:"" }}">{{ item.title_resolved }}</a></li>
     {% endfor %}
 </ul>

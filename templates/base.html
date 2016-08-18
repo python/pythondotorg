@@ -29,7 +29,7 @@
     {% comment %}
     {# equivalent to: #}
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
-    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
+    <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, speech">
     {% endcomment %}
 
     <!--[if (lte IE 8)&(!IEMobile)]>
@@ -145,7 +145,7 @@
         <!-- Sister Site Links -->
         <div id="top" class="top-bar do-not-print">
 
-            <nav class="meta-navigation container" role="navigation">
+            <nav class="meta-navigation container">
 
                 {# Allow Screen readers (hidden for all others) to skip the navigation and get to the main content #}
                 <div class="skip-link screen-reader-text">
@@ -168,7 +168,7 @@
         </div>
 
         <!-- Header elements -->
-        <header class="main-header" role="banner">
+        <header class="main-header">
             <div class="container">
 
                 <h1 class="site-headline">
@@ -184,7 +184,7 @@
                             <span aria-hidden="true" class="icon-search"></span>
 
                             <label class="screen-reader-text" for="id-search-field">Search This Site</label>
-                            <input id="id-search-field" name="q" type="search" role="textbox" class="search-field" placeholder="Search" value="{{ request.GET.q }}" tabindex="1">
+                            <input id="id-search-field" name="q" type="search" class="search-field" placeholder="Search" value="{{ request.GET.q }}" tabindex="1">
 
                             <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
                                 GO
@@ -198,10 +198,10 @@
                         <ul class="navigation menu" aria-label="Adjust Text Size on Page">
                             <li class="tier-1 last" aria-haspopup="true">
                                 <a href="#" class="action-trigger"><strong><small>A</small> A</strong></a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>
-                                    <li class="tier-2 element-3" role="treeitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
+                                <ul class="subnav menu" role="menu">
+                                    <li class="tier-2 element-1" role="menuitem"><a class="text-shrink" title="Make Text Smaller" href="javascript:;">Smaller</a></li>
+                                    <li class="tier-2 element-2" role="menuitem"><a class="text-grow" title="Make Text Larger" href="javascript:;">Larger</a></li>
+                                    <li class="tier-2 element-3" role="menuitem"><a class="text-reset" title="Reset any font size changes I have made" href="javascript:;">Reset</a></li>
                                 </ul>
                             </li>
                         </ul>
@@ -209,38 +209,38 @@
                         <ul class="navigation menu" aria-label="Social Media Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
                                 <a href="#" class="action-trigger">Socialize</a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
-                                    <li class="tier-2 element-3" role="treeitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
-                                    <li class="tier-2 element-4" role="treeitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>
+                                <ul class="subnav menu" role="menu">
+                                    <li class="tier-2 element-1" role="menuitem"><a href="http://plus.google.com/+Python"><span aria-hidden="true" class="icon-google-plus"></span>Google+</a></li>
+                                    <li class="tier-2 element-2" role="menuitem"><a href="http://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
+                                    <li class="tier-2 element-3" role="menuitem"><a href="http://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
+                                    <li class="tier-2 element-4" role="menuitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>
                                 </ul>
                             </li>
                         </ul>
                     </div><div class="account-signin">
-                        <ul class="navigation menu" aria-label="Social Media Navigation">
+                        <ul class="navigation menu" aria-label="Account Navigation">
                             <li class="tier-1 last" aria-haspopup="true">
                                 {% if request.user.is_authenticated %}
                                 <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'users:user_change_password' %}">Change your password</a></li>
+                                <ul class="subnav menu" role="menu">
+                                    <li class="tier-2 element-1" role="menuitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
+                                    <li class="tier-2 element-2" role="menuitem"><a href="{% url 'users:user_change_password' %}">Change your password</a></li>
                                     {% if request.user.has_membership %}
-                                    <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
+                                    <li class="tier-2 element-3" role="menuitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
                                         {% if request.user.membership.needs_vote_affirmation %}
-                                        <li class="tier-2 element-4" role="treeitem"><a href="{% url 'users:membership_affirm_vote' %}">Re-affirm your desire to be a PSF Voting member</a></li>
+                                        <li class="tier-2 element-4" role="menuitem"><a href="{% url 'users:membership_affirm_vote' %}">Re-affirm your desire to be a PSF Voting member</a></li>
                                         {% endif %}
                                     {% else %}
-                                    <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
+                                    <li class="tier-2 element-3" role="menuitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
                                     {% endif %}
-                                    <li class="tier-2 element-4" role="treeitem"><a href="{% url 'users:user_detail' slug=request.user.username %}">View your public profile</a></li>
-                                    <li class="tier-2 element-5"" role=treeitem"><a href="{% url 'account_logout' %}" title="Sign out of Python.org">Sign out</a></li>
+                                    <li class="tier-2 element-4" role="menuitem"><a href="{% url 'users:user_detail' slug=request.user.username %}">View your public profile</a></li>
+                                    <li class="tier-2 element-5" role="menuitem"><a href="{% url 'account_logout' %}" title="Sign out of Python.org">Sign out</a></li>
                                 </ul>
                                 {% else %}
                                 <a href="{% url 'account_login' %}" title="Sign Up or Sign In to Python.org">Sign In</a>
-                                <ul class="subnav menu">
-                                    <li class="tier-2 element-1" role="treeitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_login' %}">Sign In</a></li>
+                                <ul class="subnav menu" role="menu">
+                                    <li class="tier-2 element-1" role="menuitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
+                                    <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_login' %}">Sign In</a></li>
                                 </ul>
                                 {% endif %}
                             </li>
@@ -249,7 +249,7 @@
 
                 </div><!-- end options-bar -->
 
-                <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print" role="navigation">
+                <nav id="mainnav" class="{% block main-nav_attributes %}python-navigation{% endblock %} main-navigation do-not-print">
                     {% block main_navigation %}
                         {% sitetree_menu from "main" include "python-meta" template "sitetree/submenu.html" %}
                     {% endblock main_navigation %}
@@ -299,7 +299,7 @@
         </div><!-- end #content .content-wrapper -->
 
         <!-- Footer and social media list -->
-        <footer id="site-map" class="main-footer" role="contentinfo">
+        <footer id="site-map" class="main-footer">
             <div class="main-footer-links">
                 <div class="container">
 
