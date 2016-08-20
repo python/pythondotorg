@@ -21,7 +21,7 @@
                                         Currently this path is for a static logo sample, which no longer exists
                                         <td><a href="{{ story.get_absolute_url }}"><img src="{{ STATIC_URL }}img/ILM_logo.png"></a></td>
                                         {% endcomment %}
-                                        <td><p><a href="{{ story.get_absolute_url }}">aaa{{ story.name }}</a> <em>by {{ story.author }}</em></p></td>
+                                        <td><p><a href="{{ story.get_absolute_url }}">{{ story.name }}</a> <em>by {{ story.author }}</em></p></td>
                                     </tr>
                                 </tbody>
                             </table>
