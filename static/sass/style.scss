@@ -1114,6 +1114,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         img { max-height: 5em; }
 
         p { font-size: px2em( 14px ); }
+        border-width: 0;
+        width: 0;
+        border-spacing: 0;
+
     }
 }
 

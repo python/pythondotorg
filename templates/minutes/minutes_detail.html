@@ -46,7 +46,7 @@
         <h2>{{ minutes.date.year }}</h2>
         <ul class="section-nav menu" role="menu" aria-hidden="false">
             {% for item in same_year_minutes %}
-            <li class="tier-1 element-1" role="treeitem"><a href="{{ item.get_absolute_url }}">{{ item.date|date }}</a></li>
+            <li class="tier-1 element-1" role="menuitem"><a href="{{ item.get_absolute_url }}">{{ item.date|date }}</a></li>
             {% endfor %}
         </ul>
 
