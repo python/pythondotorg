@@ -15,7 +15,12 @@ class PEPManagementCommandTests(TestCase):
 
     @override_settings(PEP_REPO_PATH='/path/that/does/not/exist')
     def test_generate_pep_pages(self):
+        with self.assertRaises(ImproperlyConfigured):
+            call_command('generate_pep_pages')
 
+    @override_settings()
+    def test_generate_pep_pages_without_setting(self):
+        del settings.PEP_REPO_PATH
         with self.assertRaises(ImproperlyConfigured):
             call_command('generate_pep_pages')
 
