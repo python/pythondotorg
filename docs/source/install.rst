@@ -49,17 +49,9 @@ First, clone the repository::
 
     $ git clone git://github.com/python/pythondotorg.git
 
-You'll want a virtualenv. Python 3.3 actually includes virtualenv built-in, so
-you can do::
+Then create a virtual environment::
 
-    $ pyvenv-3.3 <env>
-    $ source <env>/bin/activate
-
-But you can also use your existing virtualenv and virtualenvwrapper::
-
-    $ virtualenv --python=python3.3 <env>
-    # or
-    $ mkvirtualenv --python=python3.3 <env>
+    $ python3.4 -m venv venv
 
 And then you'll need to install dependencies::
 
@@ -78,7 +70,7 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Not it's time to run migrations::
+Now it's time to run migrations::
 
     $ ./manage.py migrate
 
@@ -153,13 +145,6 @@ Troubleshooting
 
 If you hit an error getting this repo setup, file a pull request with helpful
 information so others don't have similar problems.
-
-Python 3.3 and OSX 10.8.2
-^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Homebrew's recipe for Python 3.3 has some difficulty installing distribute
-and pip in a virtualenv. The `python.org installer for OSX <https://www.python.org/download/>`_
-may work better, if you're having trouble.
 
 Freetype not found on OSX
 ^^^^^^^^^^^^^^^^^^^^^^^^^

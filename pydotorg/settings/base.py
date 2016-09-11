@@ -103,6 +103,7 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'waffle.middleware.WaffleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -238,9 +239,6 @@ from .pipeline import (
     PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
     PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
 )
-
-### django-waffle settings
-WAFFLE_OVERRIDE = True
 
 ### contrib.messages
 

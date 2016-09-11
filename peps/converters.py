@@ -174,8 +174,8 @@ def convert_pep_page(pep_number, content):
 
     data['content'] = pep_content.prettify()
 
-    hg_link = "https://hg.python.org/peps/file/tip/pep-{0}.txt".format(pep_number)
-    data['content'] += """Source: <a href="{0}">{0}</a>""".format(hg_link)
+    source_link = "https://github.com/python/peps/blob/master/pep-{0}.txt".format(pep_number)
+    data['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
     return data
 
 

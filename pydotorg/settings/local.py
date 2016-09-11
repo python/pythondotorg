@@ -38,3 +38,9 @@ PIPELINE_COMPILERS = (
 INSTALLED_APPS += [
     'debug_toolbar',
 ]
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+    }
+}

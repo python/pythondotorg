@@ -13,7 +13,7 @@ psycopg2==2.6
 python3-openid==3.0.5
 lxml==3.4.4
 cssselect==0.9.1
-git+https://github.com/kurtmckee/feedparser.git@dc3bd29bfc1b#egg=feedparser
+feedparser==5.2.1
 beautifulsoup4==4.3.2
 icalendar==3.8.4
 chardet2==2.0.3
@@ -24,27 +24,23 @@ pyelasticsearch==0.6.1
 django-tastypie==0.12.1
 django-debug-toolbar==1.2.2
 
-pytz==2014.10
+pytz==2016.6.1
 python-dateutil==2.4.0
 
-#https://bitbucket.org/fcurella/django-timedelta-field/get/py3k.zip
 django-timedeltafield==0.7.3
 
 requests==2.5.1
 
-#git+https://github.com/bradjasper/django-jsonfield.git@b346fd7
 django-jsonfield==0.9.13
 git+https://github.com/danirus/django-comments-xtd.git@182b54afc62e5d3967be75ac6ed8b19071764a6d
 
 django-honeypot==0.4.0
 django-markupfield==1.3.2
 
-# django-allauth
-#git+git://github.com/jefftriplett/django-allauth.git@3b10d6
 django-allauth==0.22.0
 
 uWSGI==2.0.10
 
 raven==5.2.0
-django-waffle==0.10.1
-django-test-plus==1.0.4
+django-waffle==0.11.1
+sqlparse<0.2  #TODO: delete this when we switch to Django 1.8 and DDT 1.5

@@ -1,5 +1,3 @@
-import os
-
 from bs4 import BeautifulSoup
 
 from django.test import TestCase
@@ -10,7 +8,7 @@ from django.test.utils import override_settings
 
 from pages.models import Image
 
-FAKE_PEP_REPO = os.path.join(settings.BASE, 'peps/tests/fake_pep_repo/')
+from . import FAKE_PEP_REPO
 
 
 class PEPManagementCommandTests(TestCase):

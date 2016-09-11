@@ -1,25 +1,17 @@
-from test_plus.test import TestCase
+from django.test import TestCase
 
-from users.factories import UserFactory, MembershipFactory
-from users.models import Membership
+from waffle.testutils import override_flag
 
 
 class MembershipViewTests(TestCase):
-    user_factory = UserFactory
 
-    def flag_url(self, name, flag):
-        url = self.reverse(name)
-        if url.endswith('/'):
-            return "{}?{}=1".format(url, flag)
-        else:
-            return "{}/?{}=1".format(url, flag)
+    @override_flag('psf_membership', active=False)
+    def test_membership_landing_ensure_404(self):
+        response = self.client.get('/membership/')
+        self.assertEqual(response.status_code, 404)
 
+    @override_flag('psf_membership', active=True)
     def test_membership_landing(self):
-        flag = 'psf_membership'
-        # Ensure 404s without flag
-        response = self.get('membership')
-        self.response_404(response)
-
         # Ensure FlagMixin is working
-        response = self.client.get(self.flag_url('membership', flag))
-        self.response_200(response)
+        response = self.client.get('/membership/')
+        self.assertEqual(response.status_code, 200)
