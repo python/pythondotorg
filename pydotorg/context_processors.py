@@ -22,3 +22,12 @@ def get_host_with_scheme(request):
     return {
         'GET_HOST_WITH_SCHEME': request.build_absolute_uri('/').rstrip('/'),
     }
+
+
+def blog_url(request):
+    """
+    Return the url for python blog
+    """
+    return {
+        'BLOG_URL': settings.PYTHON_BLOG_URL
+    }

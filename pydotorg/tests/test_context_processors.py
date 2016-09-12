@@ -1,3 +1,4 @@
+from django.conf import settings
 from pydotorg import context_processors
 from django.test import TestCase
 
@@ -24,3 +25,9 @@ class TemplateProcessorsTestCase(TestCase):
 
         mock_request = MockRequest(path='/nothing/here/')
         self.assertEqual({}, context_processors.url_name(mock_request))
+
+        mock_request = MockRequest(path='/about/')
+        self.assertEqual({'BLOG_URL': settings.PYTHON_BLOG_URL}, context_processors.blog_url(mock_request))
+
+        mock_request = MockRequest(path='/')
+        self.assertEqual({'BLOG_URL': settings.PYTHON_BLOG_URL}, context_processors.blog_url(mock_request))
