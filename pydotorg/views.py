@@ -15,3 +15,15 @@ class IndexView(TemplateView):
             'blog_url': settings.PYTHON_BLOG_URL,
         })
         return context
+
+
+class AboutView(TemplateView):
+    template_name = "python/about.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context.update({
+            'blog_url': settings.PYTHON_BLOG_URL,
+        })
+        return context
