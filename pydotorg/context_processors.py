@@ -25,9 +25,6 @@ def get_host_with_scheme(request):
 
 
 def blog_url(request):
-    """
-    Return the url for python blog
-    """
     return {
-        'BLOG_URL': settings.PYTHON_BLOG_URL
+        'BLOG_URL': settings.PYTHON_BLOG_URL,
     }

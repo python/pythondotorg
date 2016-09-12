@@ -27,10 +27,6 @@ class TemplateProcessorsTestCase(TestCase):
         self.assertEqual({}, context_processors.url_name(mock_request))
 
     def test_blog_url(self):
-        """
-        test the blog_url context processor
-        :return:
-        """
         mock_request = MockRequest(path='/about/')
         self.assertEqual({'BLOG_URL': settings.PYTHON_BLOG_URL}, context_processors.blog_url(mock_request))
 
