@@ -33,7 +33,7 @@ urlpatterns = [
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
     #url(r'^community/$', TemplateView.as_view(template_name="python/community.html"), name='community'),
-    url(r'^blog/$', RedirectView.as_view(url=settings.PYTHON_BLOG_URL)),
+    url(r'^blog/$', RedirectView.as_view(url='/blogs/', permanent=True)),
     url(r'^blogs/$', include('blogs.urls')),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 

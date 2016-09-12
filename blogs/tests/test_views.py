@@ -1,7 +1,6 @@
 from django.core.management import call_command
 from django.core.urlresolvers import reverse
 from django.test import TestCase
-from django.conf import settings
 
 from boxes.models import Box
 
@@ -36,9 +35,9 @@ class BlogViewTest(TestCase):
 
     def test_blog_redirects(self):
         """
-        Test that when '/blog/' is hit, it redirects to blog.python.org
+        Test that when '/blog/' is hit, it redirects '/blogs/'
         """
-        response = self.client.get('/blog/', follow=True)
+        response = self.client.get('/blog/')
         self.assertRedirects(response,
-                             settings.PYTHON_BLOG_URL,
+                             '/blogs/',
                              status_code=301)
