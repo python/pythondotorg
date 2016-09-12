@@ -91,6 +91,7 @@ TEMPLATE_CONTEXT_PROCESSORS = [
     "pydotorg.context_processors.site_info",
     "pydotorg.context_processors.url_name",
     "pydotorg.context_processors.get_host_with_scheme",
+    "pydotorg.context_processors.blog_url",
 ]
 
 ### URLs, WSGI, middleware, etc.
