@@ -1,4 +1,3 @@
-from django.conf import settings
 from django.views.generic import TemplateView
 
 from .models import BlogEntry, Translation, Contributor
@@ -24,7 +23,6 @@ class BlogHome(TemplateView):
             'entries': other_entries,
             'translations': Translation.objects.all(),
             'contributors': Contributor.objects.all(),
-            'blog_url': settings.PYTHON_BLOG_URL,
         })
 
         return context
