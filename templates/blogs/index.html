@@ -42,74 +42,11 @@
 
                     <div class="small-widget subscribe-widget last">
                         {% box 'blogs-subscriptions' %}
-
                     </div>
 
-                </div>
-
-        		<div class="row">
-
-        		    <div class="triple-widget translations-widget">
-        		        <h2 class="widget-title">Translations</h2>
-        		        <ul class="menu">
-                            {% for t in translations %}
-                            <li><a href="{{ t.url }}">{{ t.name }}</a></li>
-                            {% endfor %}
-        		        </ul>
-        		    </div>
-
-        		    <div class="triple-widget authors-widget">
-        		        <h2 class="widget-title">Contributors</h2>
-        		        <ul class="menu">
-                            {% for c in contributors %}
-                            <li><a href="{% url 'users:user_detail' slug=c.user.username %}">{{ c.get_display_name }}</a></li>
-                            {% endfor %}
-        		        </ul>
-        		    </div>
-
-        		    <div class="triple-widget archive-widget last">
-
-        		        {# Still needs to be hooked in. Hide this for now? #}
-
-        		        <h2 class="widget-title">Blog Archives</h2>
-        		        <ul class="menu">
-        		            <li><a href="#year-archive">2012 (8)</a>
-        		                <ul class="months menu">
-        		                    <li><a href="#month-archive">November (1)</a></li>
-        		                    <li><a href="#month-archive">October (2)</a></li>
-        		                    <li><a href="#month-archive">August (1)</a></li>
-        		                    <li><a href="#month-archive">June (2)</a></li>
-        		                    <li><a href="#month-archive">May (1)</a></li>
-        		                    <li><a href="#month-archive">March (1)</a></li>
-        		                </ul>
-        		            </li>
-        		            <li><a href="#year-archive">2011 (25)</a></li>
-        		        </ul>
-        		    </div>
-
-                </div>
-
-
-                <div class="row">
-
-{% comment %}
-        		    <div class="medium-widget author-blogs-widget">
-
-        		        {# Still needs to be hooked in. Hide this for now? #}
-
-        		        <h2 class="widget-title">Python-Dev Blogs</h2>
-        		        <p class="give-me-more"><a href="#" title="More News">More</a></p>
-        		        <ul class="menu">
-        		            <li><a class="developer-name" href="#">Jesse Noller</a>: <a class="developer-post-name" href="#">The Code Of Conduct</a> <span class="time-posted">1 hour ago</span></li>
-        		            <li><a class="developer-name" href="#">PyPy Status Blog</a>: <a class="developer-post-name" href="#">PyPy related internship at NCAR</a> <span class="time-posted">5 hours ago</span></li>
-        		            <li><a class="developer-name" href="#">Tarek Ziad&eacute;</a>: <a class="developer-post-name" href="#">What The Feuille?</a> <span class="time-posted">4 days ago</span></li>
-        		        </ul>
-        		    </div>
-{% endcomment %}
-        		    <div class="medium-widget copyright-widget last">
-        		        {% box 'blogs-copyright' %}
-
-        		    </div>
+                    <div class="small-widget copyright-widget last">
+                        {% box 'blogs-copyright' %}
+                    </div>
 
                 </div>
 
