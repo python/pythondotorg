@@ -62,18 +62,16 @@
         </div>
     
     </div><!-- end .row -->
-    
+
+    {% if object_list %}
     <div class="row">
-    
         <h2>Community List</h2>
-        {% if object_list %}
         <ul>
         {% for post in object_list %}
             <li>{% render_template_for post as html %}{{ html }}</li>
         {% endfor %}
         </ul>
-        {% endif %}
-    
     </div>
+    {% endif %}
     
 {% endblock content %}
