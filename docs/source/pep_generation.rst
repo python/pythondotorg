@@ -11,11 +11,20 @@ We are generating the PEP pages by lightly parsing the HTML output from the
 
 The PEP Page Generation process is as follows:
 
-1. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
-   of the `PEP Repository`_.
-2. Run ``pep2html.py``
-3. Run ``genpepindex.py``
-4. After all PEP pages are generated into HTML, run::
+1. Check out PEP Repository, if you have not done so::
+
+      $ hg clone https://hg.python.org/peps/
+
+2. From cloned PEP Repository, run::
+
+
+      $ pep2html.py
+      $ genpepindex.py
+
+3. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
+   of the cloned PEP Repository
+
+5. After all PEP pages are generated into HTML, run in pythondotorg repository::
 
    $ ./manage.py generate_pep_pages
 
