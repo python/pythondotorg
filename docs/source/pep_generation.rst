@@ -24,7 +24,7 @@ The PEP Page Generation process is as follows:
 3. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
    of the cloned PEP Repository
 
-5. After all PEP pages are generated into HTML, run in pythondotorg repository::
+4. After all PEP pages are generated into HTML, run in pythondotorg repository::
 
    $ ./manage.py generate_pep_pages
 
