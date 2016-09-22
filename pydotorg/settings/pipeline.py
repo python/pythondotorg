@@ -19,7 +19,7 @@ PIPELINE_CSS = {
         ),
         'output_filename': 'stylesheets/mq.css',
         'extra_context': {
-            'media': 'not print, braille, embossed, speech, tty',
+            'media': 'not print, speech',
         },
     },
     'no-mq': {
