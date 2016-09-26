@@ -1,7 +1,8 @@
-from .base import BaseDownloadTests
+from .base import BaseDownloadTests, DownloadMixin
 
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
+from django.test import TestCase
 
 from ..models import OS, Release
 from pages.models import Page
@@ -36,7 +37,6 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
-
     def test_latest_redirects(self):
         latest_python2 = Release.objects.released().python2().latest()
         url = reverse('download:download_latest_python2')
@@ -47,6 +47,18 @@ class DownloadViewsTests(BaseDownloadTests):
         url = reverse('download:download_latest_python3')
         response = self.client.get(url)
         self.assertRedirects(response, latest_python3.get_absolute_url())
+
+
+class RegressionTests(DownloadMixin, TestCase):
+    """These tests are for bugs found by Sentry."""
+
+    def test_without_latest_python3_release(self):
+        url = reverse('download:download')
+        response = self.client.get(url)
+        self.assertIsNone(response.context['latest_python2'])
+        self.assertIsNone(response.context['latest_python3'])
+        self.assertIsInstance(response.context['python_files'], list)
+        self.assertEqual(len(response.context['python_files']), 3)
 
 
 class DownloadApiViewsTest(BaseDownloadTests):

@@ -67,9 +67,11 @@ class DownloadHome(DownloadBase, TemplateView):
         for o in OS.objects.all():
             data = {
                 'os': o,
-                'python2': latest_python2.download_file_for_os(o.slug),
-                'python3': latest_python3.download_file_for_os(o.slug),
             }
+            if latest_python2 is not None:
+                data['python2'] = latest_python2.download_file_for_os(o.slug)
+            if latest_python3 is not None:
+                data['python3'] = latest_python3.download_file_for_os(o.slug)
             python_files.append(data)
 
         context.update({
