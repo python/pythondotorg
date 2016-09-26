@@ -99,6 +99,10 @@ class StoryViewTests(StoryTestCase):
         self.assertNotEqual(story.updated, None)
         self.assertEqual(story.creator, None)
 
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please use a unique name.')
+
 
 class StoryTemplateTagTests(StoryTestCase):
 
