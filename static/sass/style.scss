@@ -2164,11 +2164,11 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 div.note {
     background-color: #eee;
     border: 1px solid #ccc;
-    padding: 5px 10px;
+    padding: px2em( 5px ) px2em( 10px );
 }
 
 p.admonition-title {
-    margin: 0px 10px 5px 0px;
+    margin-bottom: px2em( 5px );
     font-weight: bold;
 }
 

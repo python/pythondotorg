@@ -2949,10 +2949,10 @@ p.quote-by-organization {
 div.note {
   background-color: #eee;
   border: 1px solid #cccccc;
-  padding: 5px 10px; }
+  padding: 0.3125em 0.625em; }
 
 p.admonition-title {
-  margin: 0px 10px 5px 0px;
+  margin-bottom: 0.3125em;
   font-weight: bold; }
 
 /* ! ===== Slideshow requirements ===== */
