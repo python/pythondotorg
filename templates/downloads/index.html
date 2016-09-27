@@ -16,16 +16,24 @@
                     <h1 class="call-to-action">Download the latest version for {{ data.os.name }}</h1>
                     {% endif %}
                     <p class="download-buttons">
+                        {% if data.python3 %}
                         <a class="button" href="{{ data.python3.url }}">Download {{ data.python3.release.name }}</a>
+                        {% endif %}
+                        {% if data.python2 %}
                         <a class="button" href="{{ data.python2.url }}">Download {{ data.python2.release.name }}</a>
+                        {% endif %}
                     </p>
                 </div>
             {% endfor %}
             <div class="download-unknown">
                 <h1 class="call-to-action">Download the latest versions of Python</h1>
                 <p class="download-buttons">
+                    {% if latest_python3 %}
                     <a class="button" href="{{ latest_python3.get_absolute_url }}">Download {{ latest_python3.name }}</a>
+                    {% endif %}
+                    {% if latest_python2 %}
                     <a class="button" href="{{ latest_python2.get_absolute_url }}">Download {{ latest_python2.name }}</a>
+                    {% endif %}
                 </p>
             </div>
             {% box 'download-banner' %}

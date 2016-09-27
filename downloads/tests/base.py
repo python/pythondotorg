@@ -8,23 +8,26 @@ from boxes.models import Box
 from ..models import OS, Release, ReleaseFile
 
 
-class BaseDownloadTests(TestCase):
+class DownloadMixin:
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.download_supernav_box, _ = Box.objects.get_or_create(label='supernav-python-downloads')
+        cls.download_supernav_box.content.markup_type = 'html'
+        cls.download_supernav_box.save()
+        cls.download_homepage_box, _ = Box.objects.get_or_create(label='homepage-downloads')
+        cls.download_homepage_box.content.markup_type = 'html'
+        cls.download_homepage_box.save()
+        cls.download_sources_box, _ = Box.objects.get_or_create(label='download-sources')
+        cls.windows, _ = OS.objects.get_or_create(name='Windows')
+        cls.osx, _ = OS.objects.get_or_create(name='Mac OSX')
+        cls.linux, _ = OS.objects.get_or_create(name='Linux')
+
+
+class BaseDownloadTests(DownloadMixin, TestCase):
 
     def setUp(self):
-        self.download_supernav_box = Box.objects.create(label='supernav-python-downloads')
-        self.download_supernav_box.content.markup_type = 'html'
-        self.download_supernav_box.save()
-
-        self.download_homepage_box = Box.objects.create(label='homepage-downloads')
-        self.download_homepage_box.content.markup_type = 'html'
-        self.download_homepage_box.save()
-
-        self.download_sources_box = Box.objects.create(label='download-sources')
-
-        self.windows = OS.objects.create(name='Windows')
-        self.osx = OS.objects.create(name='Mac OSX')
-        self.linux = OS.objects.create(name='Linux')
-
         self.release_275_page = Page.objects.create(
             title='Python 2.7.5',
             path='download/releases/2.7.5',

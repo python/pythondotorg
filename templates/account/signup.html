@@ -8,6 +8,19 @@
     <script type="text/javascript">
         jQuery(window).load(function() {
             $('#id_username').focus();
+
+            jQuery.fn.preventDoubleSubmission = function() {
+                 var last_clicked, time_since_clicked;
+                 $(this).bind('submit', function(event) {
+                     if (last_clicked) {
+                         time_since_clicked = event.timeStamp - last_clicked;
+                     }
+                     last_clicked = event.timeStamp;
+                     return !(time_since_clicked < 2000);
+                 });
+             };
+
+            $('#signup_form').preventDoubleSubmission();
         });
     </script>
 {% endblock extra_js %}
