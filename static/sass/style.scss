@@ -2161,6 +2161,15 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: #808080;
 }
 
+div.note {
+    background-color: #eee;
+    border: 1px solid #ccc;
+}
+
+p.admonition-title {
+    margin: 0px 10px 5px 0px;
+    font-weight: bold;
+}
 
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
