@@ -2165,10 +2165,12 @@ div.note {
     background-color: #eee;
     border: 1px solid #ccc;
     padding: px2em( 5px ) px2em( 10px );
+    > p {
+      margin-bottom: 0;
+    }
 }
 
 p.admonition-title {
-    margin-bottom: px2em( 5px );
     font-weight: bold;
 }
 
