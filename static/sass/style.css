@@ -749,13 +749,14 @@ img, embed, object, video {
 
 h1, .alpha {
   color: #3776ab;
+  font-family: SourceSansProBold, Arial, sans-serif;
   line-height: 1em;
   font-size: 1.75em;
   margin-bottom: 0.4375em; }
 
 h2, .beta {
   color: #999999;
-  font-family: SourceSansProBold, Arial, sans-serif;
+  font-family: SourceSansProRegular, Arial, sans-serif;
   font-size: 1.5em;
   margin-top: 1.3125em;
   margin-bottom: 0.32813em; }
