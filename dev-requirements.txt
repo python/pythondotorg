@@ -1,6 +1,7 @@
--r requirements.txt
+-r base-requirements.txt
 
 # Extra stuff required for local dev
 
+django-debug-toolbar==1.2.2
 coverage
 ddt
