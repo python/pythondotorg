@@ -1,6 +1,6 @@
 sudo: false
 language: python
-python: "3.3"
+python: 3.4
 cache:
   directories:
     - ~/.cache/pip/wheels
