@@ -1,3 +1,5 @@
+import re
+
 from django.core.urlresolvers import reverse
 from django.conf import settings
 from django.db import models
@@ -109,6 +111,12 @@ class Release(ContentManageable, NameSlugModel):
         """ Return all files for this release for a given OS """
         files = self.files.filter(os__slug=os_slug).order_by('-name')
         return files
+
+    def get_version(self):
+        version = re.match(r'Python\s([\d.]+)', self.name)
+        if version is not None:
+            return version.group(1)
+        return None
 
 
 def update_supernav():
@@ -223,7 +231,8 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/mac-osx/')
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
-
+        if instance.get_version() is not None:
+            purge_url('/ftp/python/{}/'.format(instance.get_version()))
         # Purge the release page itself
         purge_url(instance.get_absolute_url())
 

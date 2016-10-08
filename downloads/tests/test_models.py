@@ -55,3 +55,23 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertNotIn(self.draft_release, versions)
         self.assertIn(self.hidden_release, versions)
         self.assertIn(self.pre_release, versions)
+
+    def test_get_version(self):
+        self.assertEqual(self.release_275.name, 'Python 2.7.5')
+        self.assertEqual(self.release_275.get_version(), '2.7.5')
+
+    def test_get_version_27(self):
+        release = Release.objects.create(name='Python 2.7.12')
+        self.assertEqual(release.name, 'Python 2.7.12')
+        self.assertEqual(release.get_version(), '2.7.12')
+
+    def test_get_version_invalid(self):
+        names = [
+            'spam', 'Python2.7.5', 'Python   2.7.7', r'Python\t2.7.9',
+            r'\tPython 2.8.0',
+        ]
+        for name in names:
+            with self.subTest(name=name):
+                release = Release.objects.create(name=name)
+                self.assertEqual(release.name, name)
+                self.assertIsNone(release.get_version())
