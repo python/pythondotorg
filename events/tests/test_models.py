@@ -1,13 +1,13 @@
-from django.test import TestCase
-
-from .. import admin     # coverage FTW
-from ..models import Calendar, Event, OccurringRule, RecurringRule
-from ..utils import seconds_resolution
+import datetime
 
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.utils import timezone
-import datetime
+
 from dateutil.rrule import rrule, WEEKLY
+
+from ..models import Calendar, Event, OccurringRule, RecurringRule
+from ..utils import seconds_resolution, convert_dt_to_aware
 
 
 class EventsModelsTests(TestCase):
