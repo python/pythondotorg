@@ -14,8 +14,8 @@
 
 <!-- Different start and end dates -->
 <p class="single-event-date">
-    <time class="date-start" datetime="{{ next_time.dt_start|date:'c' }}">From {{ next_time.dt_start|date:"d N" }} at {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}</time>
-    <time class="date-end" datetime="{{ next_time.dt_end|date:'c' }}">through {{ next_time.dt_end|date:"d N" }} at {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}</time>,
+    <time class="date-start" datetime="{{ next_time.dt_start|date:'c' }}">From {{ next_time.dt_start|date:"d N" }}{% if not next_time.all_day %} at {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}{% endif %}</time> 
+    <time class="date-end" datetime="{{ next_time.dt_end|date:'c' }}">through {{ next_time.dt_end|date:"d N" }}{% if not next_time.all_day %} at {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}{% endif %}</time>, 
     <time class="year" datetime="{{ next_time.dt_end|date:"Y" }}">{{ next_time.dt_end|date:"Y" }}</time>
 </p>
 {% endif %}
