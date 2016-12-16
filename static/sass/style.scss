@@ -1476,6 +1476,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         position: relative;
         border-bottom: 1px solid $grey-lighterer;
         padding: 0 0 0.75em;
+
+        .date-start,
+        .date-end,
+        .single-date,
+        .time-start,
+        .time-end,
+        .year  {
+            position: relative;
+            top: 0;
+        }
     }
 
     .event-title {
