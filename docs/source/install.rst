@@ -181,3 +181,15 @@ To build this documentation locally::
 If you don't want to open the browser automatically, you can do::
 
     $ make -C docs/ html
+
+
+Optional: Install ElasticSearch
+-------------------------------
+
+The search feature in Python.org uses ElasticSearch engine.  If you want to
+test out this feature, you will need to install ElasticSearch_.
+
+Once you have it installed, update the URL value of ``HAYSTACK_CONNECTIONS``
+settings in ``pydotorg/settings/local.py`` to your local ElasticSearch server.
+
+.. _ElasticSearch: https://www.elastic.co/downloads/elasticsearch
