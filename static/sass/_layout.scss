@@ -900,7 +900,10 @@
     </li>*/
     .with-supernav {
 
-        .subnav { border-right: 1px solid rgba( #666, .3 ); }
+        .subnav { 
+            display: none;
+            border-right: 1px solid rgba( #666, .3 );
+        }
         .super-navigation { display: block; }
     }
 
