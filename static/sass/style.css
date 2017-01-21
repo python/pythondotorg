@@ -749,13 +749,14 @@ img, embed, object, video {
 
 h1, .alpha {
   color: #3776ab;
+  font-family: SourceSansProBold, Arial, sans-serif;
   line-height: 1em;
   font-size: 1.75em;
   margin-bottom: 0.4375em; }
 
 h2, .beta {
   color: #999999;
-  font-family: SourceSansProBold, Arial, sans-serif;
+  font-family: SourceSansProRegular, Arial, sans-serif;
   font-size: 1.5em;
   margin-top: 1.3125em;
   margin-bottom: 0.32813em; }
@@ -1306,7 +1307,7 @@ input#s,
     .winkwink-nudgenudge .subnav, .no-touch
     .account-signin .subnav {
       min-width: 100%;
-      top: -9999px;
+      display: none;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1354,7 +1355,7 @@ input#s,
   .account-signin .element-4:hover .subnav, .no-touch
   .account-signin .element-4:focus .subnav {
     left: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
@@ -1381,7 +1382,7 @@ input#s,
   .account-signin .last:hover .subnav, .no-touch
   .account-signin .last:focus .subnav {
     right: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
@@ -2320,7 +2321,7 @@ table tfoot {
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1471664877') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1479805292') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -2419,6 +2420,19 @@ p.quote-by-organization {
     position: relative;
     border-bottom: 1px solid #dddddd;
     padding: 0 0 0.75em; }
+    .list-recent-events li .date-start,
+    .list-recent-events li .date-end,
+    .list-recent-events li .single-date,
+    .list-recent-events li .time-start,
+    .list-recent-events li .time-end,
+    .list-recent-events li .year, .list-recent-posts li .date-start,
+    .list-recent-posts li .date-end,
+    .list-recent-posts li .single-date,
+    .list-recent-posts li .time-start,
+    .list-recent-posts li .time-end,
+    .list-recent-posts li .year {
+      position: relative;
+      top: 0; }
   .list-recent-events .event-title, .list-recent-posts .event-title {
     font-size: 1.25em;
     line-height: 1.3em;
@@ -3222,11 +3236,11 @@ p.admonition-title {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1471664877'); }
+      content: url('../img/python-logo_print.png?1479805292'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1471664877'); } }
+      content: url('../img/psf-logo_print.png?1479805292'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them

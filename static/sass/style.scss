@@ -88,7 +88,7 @@ img, embed, object, video { max-width: 100% }
 
 h1, .alpha {
     color: $blue;
-    //font-family: $default-font;
+    font-family: $default-font-bold;
     line-height: 1em;
     font-size: px2em( $headerone );
     @include trailer(.25);
@@ -97,7 +97,7 @@ h1, .alpha {
 
 h2, .beta {
     color: $grey-light;
-    font-family: $default-font-bold;
+    font-family: $default-font;
     font-size: px2em( $headertwo );
     @include leader(.75);
     @include trailer(.1875);
@@ -1476,6 +1476,16 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         position: relative;
         border-bottom: 1px solid $grey-lighterer;
         padding: 0 0 0.75em;
+
+        .date-start,
+        .date-end,
+        .single-date,
+        .time-start,
+        .time-end,
+        .year {
+            position: relative;
+            top: 0;
+        }
     }
 
     .event-title {

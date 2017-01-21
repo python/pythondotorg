@@ -1,13 +1,13 @@
-from django.test import TestCase
-
-from .. import admin     # coverage FTW
-from ..models import Calendar, Event, OccurringRule, RecurringRule
-from ..utils import seconds_resolution
+import datetime
 
 from django.contrib.auth import get_user_model
+from django.test import TestCase
 from django.utils import timezone
-import datetime
+
 from dateutil.rrule import rrule, WEEKLY
+
+from ..models import Calendar, Event, OccurringRule, RecurringRule
+from ..utils import seconds_resolution, convert_dt_to_aware
 
 
 class EventsModelsTests(TestCase):
@@ -124,7 +124,7 @@ class EventsModelsTests(TestCase):
         self.assertEqual(event.next_time.dt_start, ot.dt_start)
         self.assertEqual(Event.objects.for_datetime().count(), 1)
 
-    def test_event_pagination_next(self):
+    def test_event_pagination(self):
         now = seconds_resolution(timezone.now())
 
         occurring_time_ev1_dtstart = now + datetime.timedelta(days=3)
@@ -150,22 +150,24 @@ class EventsModelsTests(TestCase):
         )
 
         self.assertEqual(self.event.next_event, event2)
+        self.assertEqual(event2.previous_event, self.event)
 
         datetime_rule_ev2.delete()
         date_rule_ev2 = OccurringRule.objects.create(
             event=event2,
-            dt_start=occurring_time_ev2_dtstart.date(),
-            dt_end=occurring_time_ev2_dtend.date(),
+            dt_start=convert_dt_to_aware(occurring_time_ev2_dtstart.date()),
+            dt_end=convert_dt_to_aware(occurring_time_ev2_dtend.date()),
         )
         self.assertEqual(self.event.next_event, event2)
+        self.assertEqual(event2.previous_event, self.event)
 
         datetime_rule_ev1.delete()
         date_rule_ev2.delete()
 
         OccurringRule.objects.create(
             event=self.event,
-            dt_start=occurring_time_ev1_dtstart.date(),
-            dt_end=occurring_time_ev1_dtend.date(),
+            dt_start=convert_dt_to_aware(occurring_time_ev1_dtstart.date()),
+            dt_end=convert_dt_to_aware(occurring_time_ev1_dtend.date()),
         )
         OccurringRule.objects.create(
             event=event2,
@@ -173,55 +175,4 @@ class EventsModelsTests(TestCase):
             dt_end=occurring_time_ev2_dtend,
         )
         self.assertEqual(self.event.next_event, event2)
-
-    def test_event_pagination_previous(self):
-        now = seconds_resolution(timezone.now())
-
-        occurring_time_ev1_dtstart = now + datetime.timedelta(days=3)
-        occurring_time_ev1_dtend = occurring_time_ev1_dtstart + datetime.timedelta(days=5)
-
-        datetime_rule_ev1 = OccurringRule.objects.create(
-            event=self.event,
-            dt_start=occurring_time_ev1_dtstart,
-            dt_end=occurring_time_ev1_dtend,
-        )
-
-        event2 = Event.objects.create(title='event2', creator=self.user, calendar=self.calendar)
-
-        now = seconds_resolution(timezone.now())
-
-        occurring_time_ev2_dtstart = now + datetime.timedelta(days=2)
-        occurring_time_ev2_dtend = occurring_time_ev2_dtstart + datetime.timedelta(days=1)
-
-        datetime_rule_ev2 = OccurringRule.objects.create(
-            event=event2,
-            dt_start=occurring_time_ev2_dtstart,
-            dt_end=occurring_time_ev2_dtend,
-        )
-
-        self.assertEqual(self.event.previous_event, event2)
-
-        datetime_rule_ev2.delete()
-
-        date_rule_ev2 = OccurringRule.objects.create(
-            event=event2,
-            dt_start=occurring_time_ev2_dtstart.date(),
-            dt_end=occurring_time_ev2_dtend.date(),
-        )
-
-        self.assertEqual(self.event.previous_event, event2)
-
-        datetime_rule_ev1.delete()
-        date_rule_ev2.delete()
-
-        OccurringRule.objects.create(
-            event=self.event,
-            dt_start=occurring_time_ev1_dtstart.date(),
-            dt_end=occurring_time_ev1_dtend.date(),
-        )
-        OccurringRule.objects.create(
-            event=event2,
-            dt_start=occurring_time_ev2_dtstart,
-            dt_end=occurring_time_ev2_dtend,
-        )
-        self.assertEqual(self.event.previous_event, event2)
+        self.assertEqual(event2.previous_event, self.event)

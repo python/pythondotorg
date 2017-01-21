@@ -1399,7 +1399,8 @@ a.button {
 .featured-event,
 .jobs-intro {
   position: relative;
-  text-align: left; }
+  text-align: left;
+  min-height: 130px; }
   .latest-blog-post .call-to-action,
   .featured-event .call-to-action,
   .jobs-intro .call-to-action {
@@ -1645,7 +1646,7 @@ a.button {
     /*modernizr*/ }
     .no-touch .main-navigation .subnav {
       min-width: 100%;
-      top: -9999px;
+      display: none;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1673,14 +1674,14 @@ a.button {
         display: block; }
   .no-touch .main-navigation .element-1:hover .subnav, .no-touch .main-navigation .element-1:focus .subnav, .no-touch .main-navigation .element-2:hover .subnav, .no-touch .main-navigation .element-2:focus .subnav, .no-touch .main-navigation .element-3:hover .subnav, .no-touch .main-navigation .element-3:focus .subnav, .no-touch .main-navigation .element-4:hover .subnav, .no-touch .main-navigation .element-4:focus .subnav {
     left: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
     transition-delay: 0.25s; }
   .no-touch .main-navigation .element-5:hover .subnav, .no-touch .main-navigation .element-5:focus .subnav, .no-touch .main-navigation .element-6:hover .subnav, .no-touch .main-navigation .element-6:focus .subnav, .no-touch .main-navigation .element-7:hover .subnav, .no-touch .main-navigation .element-7:focus .subnav, .no-touch .main-navigation .element-8:hover .subnav, .no-touch .main-navigation .element-8:focus .subnav, .no-touch .main-navigation .last:hover .subnav, .no-touch .main-navigation .last:focus .subnav {
     right: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
@@ -1796,6 +1797,7 @@ a.button {
         </li></ul>
 </li>*/
 .with-supernav .subnav {
+  display: none;
   border-right: 1px solid rgba(102, 102, 102, 0.3); }
 .with-supernav .super-navigation {
   display: block; }

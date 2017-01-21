@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load strip_minor_version from download_tags %}
 
 {% block page_title %}Our Documentation | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -43,13 +44,23 @@
 
                     <div id="docs-by-version" class="medium-widget">
 
-                        {# These need to be dynamically driven somehow, or are they going to edit these manually? #}
-
                         <h2 class="widget-title"><span aria-hidden="true" class="icon-versions"></span>Python 3.x Resources</h2>
                         <ul>
-                            <li><a href="https://docs.python.org/3/">Browse Current Python 3 Documentation</a> - <a href="http://docs.python.org/3/py-modindex.html">(Module Index)</a>
+                            <li>
+                                {% if latest_python3 %}
+                                <a href="https://docs.python.org/3/">Browse Python {{ latest_python3.get_version }} Documentation</a>
+                                {% else %}
+                                <a href="https://docs.python.org/3/">Browse Current Documentation</a>
+                                {% endif %}
+                                - <a href="http://docs.python.org/3/py-modindex.html">(Module Index)</a>
                                 <ul>
-                                    <li><a href="https://docs.python.org/3/whatsnew/index.html">What's new in Python 3</a></li>
+                                    <li>
+                                        {% if latest_python3 %}
+                                        <a href="https://docs.python.org/3/whatsnew/{{ latest_python3.get_version|strip_minor_version }}.html">What's new in Python {{ latest_python3.get_version|strip_minor_version }}</a>
+                                        {% else %}
+                                        <a href="https://docs.python.org/3/whatsnew/index.html">What's new in Python 3</a>
+                                        {% endif %}
+                                    </li>
                                     <li><a href="https://docs.python.org/3/tutorial/index.html">Tutorial</a></li>
                                     <li><a href="https://docs.python.org/3/library/index.html">Library Reference</a></li>
                                     <li><a href="https://docs.python.org/3/reference/index.html">Language Reference</a></li>
@@ -67,7 +78,13 @@
                     <div class="medium-widget last">
                         <h2 class="widget-title"><span aria-hidden="true" class="icon-versions"></span>Python 2.x Resources</h2>
                         <ul>
-                            <li><a href="https://docs.python.org/2/">Browse Current Documentation</a> - <a href="http://docs.python.org/2/py-modindex.html">(Module Index)</a>
+                            <li>
+                                {% if latest_python2 %}
+                                <a href="https://docs.python.org/2/">Browse Python {{ latest_python2.get_version }} Documentation</a>
+                                {% else %}
+                                <a href="https://docs.python.org/2/">Browse Current Documentation</a>
+                                {% endif %}
+                                - <a href="http://docs.python.org/2/py-modindex.html">(Module Index)</a>
                                 <ul>
                                     <li><a href="https://docs.python.org/2/whatsnew/2.7.html">What's new in Python 2.7</a></li>
                                     <li><a href="https://docs.python.org/2/tutorial/index.html">Tutorial</a></li>

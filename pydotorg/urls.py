@@ -31,7 +31,7 @@ urlpatterns = [
     # https://github.com/python/pythondotorg/issues/427 for more info.
     url(r'^getit/', include('downloads.urls', namespace='getit')),
     url(r'^downloads/', include('downloads.urls', namespace='download')),
-    url(r'^doc/$', TemplateView.as_view(template_name="python/documentation.html"), name='documentation'),
+    url(r'^doc/$', views.DocumentationIndexView.as_view(), name='documentation'),
     url(r'^blog/$', RedirectView.as_view(url='/blogs/', permanent=True)),
     url(r'^blogs/$', include('blogs.urls')),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),

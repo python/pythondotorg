@@ -253,7 +253,7 @@
         
         /*modernizr*/ .no-touch & {
             min-width: 100%; 
-            top: -9999px; 
+            display: none;
             @include transition( all 0s ease ); 
         }
         
@@ -278,7 +278,7 @@
             
             &:hover .subnav, &:focus .subnav {
                 left: 0; 
-                top: 100%; 
+                display: initial;
                 @include transition-delay( .25s ); 
             }
         }
@@ -287,7 +287,7 @@
             
             &:hover .subnav, &:focus .subnav {
                 right: 0; 
-                top: 100%; 
+                display: initial;
                 @include transition-delay( .25s ); 
             }
         }

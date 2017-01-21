@@ -4,6 +4,7 @@ import pytz
 import requests
 
 from .models import EventLocation, Event, OccurringRule
+from .utils import convert_dt_to_aware
 
 DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
@@ -25,18 +26,17 @@ class ICSImporter:
         return instance, created
 
     def import_occurrence(self, event, event_data):
-        dt_start = event_data['DTSTART'].dt
-        dt_end = event_data['DTEND'].dt
-        all_day = False
-
         # Django will already convert to datetime by setting the time to 0:00,
-        # but won't add any timezone information.
-        # Let's mark those occurrencies as 'all-day'.
+        # but won't add any timezone information. We will convert them to
+        # aware datetime objects manually.
+        dt_start = convert_dt_to_aware(event_data['DTSTART'].dt)
+        dt_end = convert_dt_to_aware(event_data['DTEND'].dt)
 
-        if dt_start.resolution == DATE_RESOLUTION:
-            all_day = True
-        if dt_end.resolution == DATE_RESOLUTION:
-            all_day = True
+        # Let's mark those occurrences as 'all-day'.
+        all_day = (
+            dt_start.resolution == DATE_RESOLUTION or
+            dt_end.resolution == DATE_RESOLUTION
+        )
 
         defaults = {
             'dt_start': dt_start,

@@ -99,6 +99,18 @@ Finally, start the development server::
     $ ./manage.py runserver
 
 
+Optional: Install Elasticsearch
+-------------------------------
+
+The search feature in Python.org uses Elasticsearch engine.  If you want to
+test out this feature, you will need to install Elasticsearch_.
+
+Once you have it installed, update the URL value of ``HAYSTACK_CONNECTIONS``
+settings in ``pydotorg/settings/local.py`` to your local ElasticSearch server.
+
+.. _Elasticsearch: https://www.elastic.co/downloads/elasticsearch
+
+
 Generating CSS files automatically
 ----------------------------------
 
