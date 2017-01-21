@@ -1307,7 +1307,7 @@ input#s,
     .winkwink-nudgenudge .subnav, .no-touch
     .account-signin .subnav {
       min-width: 100%;
-      top: -9999px;
+      display: none;
       -webkit-transition: all 0s ease;
       -moz-transition: all 0s ease;
       -o-transition: all 0s ease;
@@ -1355,7 +1355,7 @@ input#s,
   .account-signin .element-4:hover .subnav, .no-touch
   .account-signin .element-4:focus .subnav {
     left: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
@@ -1382,7 +1382,7 @@ input#s,
   .account-signin .last:hover .subnav, .no-touch
   .account-signin .last:focus .subnav {
     right: 0;
-    top: 100%;
+    display: initial;
     -webkit-transition-delay: 0.25s;
     -moz-transition-delay: 0.25s;
     -o-transition-delay: 0.25s;
