@@ -3,7 +3,7 @@ from django.shortcuts import render
 try:
     from urllib.parse import urljoin
 except ImportError:
-     from urlparse import urljoin
+    from urlparse import urljoin
 
 LEGACY_PYTHON_DOMAIN = 'http://legacy.python.org'
 PYPI_URL = 'https://pypi.python.org/'
