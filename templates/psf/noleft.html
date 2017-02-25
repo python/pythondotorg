@@ -1,0 +1,48 @@
+{# ===== PSF Default Content PAGE ===== #}
+
+{% extends "base.html" %}
+{% load boxes %}
+
+{% block page_title %}{{ page.title }} | Python Software Foundation{% endblock %}
+
+{% block body_attributes %}class="psf pages default-page"{% endblock %}
+
+{% block section-logo %}<a href="/psf-landing/"><img class="psf-logo" src="{{ STATIC_URL }}img/psf-logo.png" alt="Python Software Foundation"></a>{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block main_navigation %}
+{% load sitetree %}
+{% sitetree_menu from "main" include "psf-meta" template "sitetree/submenu.html" %}
+{% endblock %}
+
+
+
+{% block breadcrumbs %}
+    {% load sitetree %}
+
+    {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
+{% endblock breadcrumbs %}
+
+
+
+{% block content %}
+    {% if not page.is_published %}
+    <div class="user-feedback level-notice">
+        <p role="alert">This page is a draft and it hasn't been published yet. Only staff users can see it.</p>
+    </div>
+    {% endif %}
+
+    <article class="text">
+        {% if request.user.is_staff %}
+        <a role="button" class="button" href="{% url 'admin:pages_page_change' page.pk %}">Edit this page</a>
+        {% endif %}
+
+        <header class="article-header">
+            <h1 class="page-title">{{ page.title }}</h1>
+        </header>
+
+        {{ page.content }}
+
+    </article>
+{% endblock content %}
