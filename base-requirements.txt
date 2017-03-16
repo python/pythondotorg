@@ -39,3 +39,5 @@ django-filter==1.1.0
 django-ordered-model==3.4.1
 django-widget-tweaks==1.4.8
 django-countries==6.1.3
+
+pygments==2.7.3  # This will be not needed when PEPs are moved to RtD.
