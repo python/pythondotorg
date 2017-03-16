@@ -7,11 +7,16 @@ from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files import File
 
+from pygments import highlight
+from pygments.lexers import PythonLexer
+from pygments.formatters import HtmlFormatter
+
 from pages.models import Page, Image
 
 PEP_TEMPLATE = 'pages/pep-page.html'
 pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
+PURE_PYTHON_PEPS = [483, 484, 526]
 
 def check_paths():
     """ Checks to ensure our PEP_REPO_PATH is setup correctly """
@@ -160,6 +165,21 @@ def convert_pep_page(pep_number, content):
     # Fix PEP links
     pep_content = BeautifulSoup(data['content'])
     body_links = pep_content.find_all("a")
+    # Fix hihglighting code
+    code_blocks = pep_content.find_all("pre", class_="code")
+    for cb in code_blocks:
+        del cb['class']
+        div = pep_content.new_tag('div')
+        div['class'] = ['highlight']
+        cb.wrap(div)
+    # Highlight existing pure-Python PEPs
+    if int(pep_number) in PURE_PYTHON_PEPS:
+        literal_blocks = pep_content.find_all("pre", class_="literal-block")
+        for lb in literal_blocks:
+            block = lb.string
+            if block:
+                highlighted = highlight(block, PythonLexer(), HtmlFormatter())
+                lb.replace_with(BeautifulSoup(highlighted).html.body.div)
 
     pep_href_re = re.compile(r'pep-(\d+)\.html')
 
