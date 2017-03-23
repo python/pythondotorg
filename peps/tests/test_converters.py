@@ -62,3 +62,9 @@ class PEPConverterTests(TestCase):
         self.assertNotIn('</html>', pep.content.rendered)
         self.assertNotIn('<body>', pep.content.rendered)
         self.assertNotIn('</body>', pep.content.rendered)
+
+    def test_highlighted_code(self):
+        pep = get_pep_page(FAKE_PEP_REPO, '0526')
+        self.assertIn('<div class="highlight">', pep.content.rendered)
+        self.assertIn('<span class="c1"># type:', pep.content.rendered)
+        self.assertIn('<span class="k">class</span>', pep.content.rendered)
