@@ -1,6 +1,6 @@
 from django import template
 
-from ..models import BlogEntry
+from .models import BlogEntry
 
 register = template.Library()
 
