@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
+from django.utils.translation import ugettext_lazy as _
 
 from tastypie.admin import ApiKeyInline
 from tastypie.models import ApiKey
@@ -16,6 +17,15 @@ class MembershipInline(admin.StackedInline):
 
 class UserAdmin(BaseUserAdmin):
     inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
+    fieldsets = (
+        (None, {'fields': ('username', 'password')}),
+        (_('Personal info'), {'fields': (
+            'first_name', 'last_name', 'email', 'bio',
+        )}),
+        (_('Permissions'), {'fields': ('is_active', 'is_staff', 'is_superuser',
+                                       'groups', 'user_permissions')}),
+        (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
+    )
 
     def has_add_permission(self, request):
         return False
