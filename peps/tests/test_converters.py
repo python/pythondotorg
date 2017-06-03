@@ -27,3 +27,10 @@ class PEPConverterTests(TestCase):
             'pep-0525.txt">https://github.com/python/peps/blob/master/pep-0525.txt</a>',
             pep.content.rendered
         )
+
+    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
+    def test_highlighted_code(self):
+        pep_h = get_pep_page('0526')
+        self.assertIn('<div class="highlight">', pep_h.content.rendered)
+        self.assertIn('<span class="c1"># type:', pep_h.content.rendered)
+        self.assertIn('<span class="k">class</span>', pep_h.content.rendered)
