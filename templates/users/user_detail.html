@@ -31,9 +31,11 @@
             <div class="user-profile-location">
                 <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
             </div>
+            {% if object.bio %}
             <div class="user-profile-bio">
                 <p><span class="profile-label">Bio:</span></p> {{ object.bio|escape }}
             </div>
+            {% endif %}
 
             {% comment %}
                 All possible supported networks with icons.
