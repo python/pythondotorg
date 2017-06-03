@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from tastypie.admin import ApiKeyInline
+from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
 from tastypie.models import ApiKey
 
 from .actions import export_csv
@@ -13,6 +13,10 @@ class MembershipInline(admin.StackedInline):
     model = Membership
     extra = 0
     readonly_fields = ('created', 'updated')
+
+
+class ApiKeyInline(TastypieApiKeyInline):
+    readonly_fields = ('key', 'created')
 
 
 class UserAdmin(BaseUserAdmin):
