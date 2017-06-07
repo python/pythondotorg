@@ -50,6 +50,7 @@
 	Osama Mahmood (http://osamamahmood.blogspot.com)
 	Rafael Pablos (http://silverneox.blogspot.com)
 	Yadnyawalkya Tale (http://yadnyawalkya.blogspot.in)
+	Jose Carlos Exposito
 
 
 /* SITE */
