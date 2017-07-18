@@ -64,4 +64,5 @@ class ReleaseFileResource(GenericResource):
             'slug': ('exact',),
             'os': ALL_WITH_RELATIONS,
             'release': ALL_WITH_RELATIONS,
+            'description': ('contains',),
         }
