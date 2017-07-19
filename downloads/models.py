@@ -233,6 +233,10 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/windows/')
         if instance.get_version() is not None:
             purge_url('/ftp/python/{}/'.format(instance.get_version()))
+        # See issue #584 for details
+        purge_url('/box/supernav-python-downloads/')
+        purge_url('/box/homepage-downloads/')
+        purge_url('/box/download-sources/')
         # Purge the release page itself
         purge_url(instance.get_absolute_url())
 
