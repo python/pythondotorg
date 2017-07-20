@@ -9,7 +9,15 @@ from .forms import StoryForm
 from .models import Story, StoryCategory
 
 
-class StoryCreate(CreateView):
+class ContextMixin:
+
+    def get_context_data(self, **kwargs):
+        ctx = super().get_context_data(**kwargs)
+        ctx['category_list'] = StoryCategory.objects.all()
+        return ctx
+
+
+class StoryCreate(ContextMixin, CreateView):
     model = Story
     form_class = StoryForm
     template_name = 'successstories/story_form.html'
@@ -29,8 +37,8 @@ class StoryCreate(CreateView):
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super().form_valid(form)
 
-class StoryDetail(DetailView):
     model = Story
+class StoryDetail(ContextMixin, DetailView):
     template_name = 'successstories/story_detail.html'
     context_object_name = 'story'
 
@@ -49,5 +57,5 @@ class StoryList(ListView):
         return Story.objects.select_related().published()
 
 
-class StoryListCategory(DetailView):
+class StoryListCategory(ContextMixin, DetailView):
     model = StoryCategory
