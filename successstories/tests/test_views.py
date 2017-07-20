@@ -40,6 +40,11 @@ class StoryViewTests(StoryTestCase):
         self.assertEqual(r.context['story'].pk, self.story1.pk)
         self.assertEqual(len(r.context['category_list']), 1)
 
+    def test_story_view_404(self):
+        url = reverse('success_story_detail', kwargs={'slug': self.story2.slug})
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 404)
+
     def test_story_list(self):
         url = reverse('success_story_list')
         r = self.client.get(url)

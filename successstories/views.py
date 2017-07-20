@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
 
@@ -22,7 +23,7 @@ class StoryCreate(CreateView):
         return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return reverse('success_story_create')
 
     def form_valid(self, form):
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
@@ -33,10 +34,10 @@ class StoryDetail(DetailView):
     template_name = 'successstories/story_detail.html'
     context_object_name = 'story'
 
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['category_list'] = StoryCategory.objects.all()
-        return ctx
+    def get_queryset(self):
+        if self.request.user.is_staff:
+            return Story.objects.select_related()
+        return Story.objects.select_related().published()
 
 
 class StoryList(ListView):
