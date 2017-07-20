@@ -1,4 +1,6 @@
 from django import template
+from django.conf import settings
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -63,14 +65,10 @@ class StoryViewTests(StoryTestCase):
         self.assertEqual(r.context['object'].success_stories.all()[0].pk, self.story2.pk)
 
     def test_story_create(self):
-        username = 'kevinarnold'
-        email = 'kevinarnold@example.com'
-        password = 'secret'
-        User.objects.create_user(username, email, password)
+        mail.outbox = []
 
         url = reverse('success_story_create')
         response = self.client.get(url)
-
         self.assertEqual(response.status_code, 200)
 
         post_data = {
@@ -79,29 +77,35 @@ class StoryViewTests(StoryTestCase):
             'company_url': 'http://djangopony.com/',
             'category': self.category.pk,
             'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
             'pull_quote': 'Liver!',
-            'content': "Growing up is never easy. You hold onto things that were; you wonder what's to come."
+            'content': 'Growing up is never easy.',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
-
-        self.client.login(username=username, password=password)
 
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
 
-        new_story = Story.objects.get(**post_data)
-        self.assertRedirects(response, new_story.get_absolute_url())
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'New success story submission: {}'.format(post_data['name'])
+        )
 
         stories = Story.objects.draft().filter(slug__exact='three')
         self.assertEqual(len(stories), 1)
 
         story = stories[0]
-        self.assertNotEqual(story.created, None)
-        self.assertNotEqual(story.updated, None)
-        self.assertEqual(story.creator, None)
+        self.assertIsNotNone(story.created)
+        self.assertIsNotNone(story.updated)
+        self.assertIsNone(story.creator)
 
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Please use a unique name.')
+
+        del mail.outbox[:]
 
 
 class StoryTemplateTagTests(StoryTestCase):

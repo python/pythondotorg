@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
@@ -15,6 +16,7 @@ from companies.models import Company
 from fastly.utils import purge_url
 
 
+PSF_TO_EMAILS = ['ewa@python.org', 'berker.peksag@gmail.com']
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
@@ -113,3 +115,45 @@ def update_successstories_supernav(sender, instance, signal, created, **kwargs):
     if instance.is_published:
         # Purge the page itself
         purge_url(instance.get_absolute_url())
+
+
+@receiver(post_save, sender=Story)
+def send_email_to_psf(sender, instance, signal, created, **kwargs):
+    if kwargs.get('raw', False):
+        return
+
+    if not instance.is_published:
+        body = """\
+Name: {name}
+Company name: {company_name}
+Company URL: {company_url}
+Category: {category}
+Author: {author}
+Author email: {author_email}
+Pull quote:
+
+{pull_quote}
+
+Content:
+
+{content}
+        """
+        email = EmailMessage(
+            'New success story submission: {}'.format(instance.name),
+            body.format(
+                name=instance.name,
+                company_name=instance.company_name,
+                company_url=instance.company_url,
+                category=instance.category.name,
+                author=instance.author,
+                author_email=instance.author_email,
+                pull_quote=instance.pull_quote,
+                content=instance.content,
+            ),
+            settings.DEFAULT_FROM_EMAIL,
+            PSF_TO_EMAILS,
+            headers={'Reply-To': instance.author_email},
+            # TODO: Pass 'reply_to=[instance.author_email]' when we upgrade Django.
+        )
+        email.content_subtype = 'html'
+        email.send()
