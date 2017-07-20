@@ -37,7 +37,6 @@ class StoryCreate(ContextMixin, CreateView):
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super().form_valid(form)
 
-    model = Story
 class StoryDetail(ContextMixin, DetailView):
     template_name = 'successstories/story_detail.html'
     context_object_name = 'story'
@@ -49,7 +48,6 @@ class StoryDetail(ContextMixin, DetailView):
 
 
 class StoryList(ListView):
-    model = Story
     template_name = 'successstories/story_list.html'
     context_object_name = 'stories'
 
