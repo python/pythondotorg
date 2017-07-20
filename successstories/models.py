@@ -12,6 +12,7 @@ from .managers import StoryManager
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from companies.models import Company
+from fastly.utils import purge_url
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -105,3 +106,10 @@ def update_successstories_supernav(sender, instance, signal, created, **kwargs):
         box, _ = Box.objects.get_or_create(label='supernav-python-success-stories')
         box.content = content
         box.save()
+
+        # Purge Fastly cache
+        purge_url('/box/supernav-python-success-stories/')
+
+    if instance.is_published:
+        # Purge the page itself
+        purge_url(instance.get_absolute_url())
