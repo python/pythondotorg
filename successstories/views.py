@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
 
@@ -11,6 +12,10 @@ class StoryCreate(CreateView):
     model = Story
     form_class = StoryForm
     template_name = 'successstories/story_form.html'
+    success_message = (
+        'Your success story submission has been recorded. '
+        'It will be reviewed by the PSF staff and published.'
+    )
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
@@ -19,6 +24,9 @@ class StoryCreate(CreateView):
     def get_success_url(self):
         return self.object.get_absolute_url()
 
+    def form_valid(self, form):
+        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        return super().form_valid(form)
 
 class StoryDetail(DetailView):
     model = Story
