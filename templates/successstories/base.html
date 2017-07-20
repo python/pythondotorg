@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% load sitetree %}
+
+{% block breadcrumbs %}
+{% sitetree_breadcrumbs from "main" %}
+{% endblock breadcrumbs %}
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+{% block content %}
+{% endblock content %}
+
+
+{% block left_sidebar %}
+<aside class="left-sidebar" role="secondary">
+
+    <div class="section-navigation sidebar-widget">
+
+        <ul class="section-nav menu" role="menu" aria-hidden="false">
+            <li class="tier-1" role="treeitem"><a href="{% url 'success_story_list' %}" title="">Success stories home</a></li>
+            {% for category in category_list %}
+            <li class="tier-1" role="treeitem"><a href="{{ category.get_absolute_url }}" title="">{{ category.name }}</a></li>
+            {% endfor %}
+            <li class="tier-1" role="treeitem"><a href="{% url 'success_story_create' %}" title=""><strong>Submit Yours!</strong></a></li>
+        </ul>
+
+    </div>
+
+    {% include "components/tweets-from-psf.html" %}
+
+</aside>
+{% endblock left_sidebar %}
