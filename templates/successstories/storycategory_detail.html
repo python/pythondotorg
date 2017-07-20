@@ -1,18 +1,9 @@
-{% extends "base.html" %}
+{% extends "successstories/story_detail.html" %}
 {% load sitetree %}
 
 {% block page_title %}{{ object.name }} | Our Success Stories | {{ SITE_INFO.site_name }}{% endblock %}
 
-{% block body_attributes %}class="python default-page success-story"{% endblock %}
-
-
-{% block breadcrumbs %}
-{% sitetree_breadcrumbs from "main" %}
-{% endblock breadcrumbs %}
-
-
-{% block content_attributes %}with-left-sidebar{% endblock %}
-
+{% block body_attributes %}class="python success-stories"{% endblock %}
 
 {% block content %}
     
@@ -29,29 +20,3 @@
     </article>
     
 {% endblock content %}
-
-
-{% block left_sidebar %}
-<aside class="left-sidebar" role="secondary">
-  
-    <div class="section-navigation sidebar-widget">
-        
-        {# Navigation for this section... All Categories for existing Success Stories #}
-        
-        <ul class="section-nav menu" role="menu" aria-hidden="false">
-            <li class="tier-1 element-1" role="treeitem"><a href="/success-stories/category/arts/" title="">Arts</a></li>
-            <li class="tier-1 element-2" role="treeitem"><a href="/success-stories/category/business/" title="">Business</a></li>
-            <li class="tier-1 element-3" role="treeitem"><a href="/success-stories/category/education/" title="">Education</a></li>
-            <li class="tier-1 element-4" role="treeitem"><a href="/success-stories/category/engineering/" title="">Engineering</a></li>
-            <li class="tier-1 element-5" role="treeitem"><a href="/success-stories/category/government/" title="">Government</a></li>
-            <li class="tier-1 element-6" role="treeitem"><a href="/success-stories/category/scientific/" title="">Scientific</a></li>
-            <li class="tier-1 element-7" role="treeitem"><a href="/success-stories/category/software-development/" title="">Software Development</a></li>
-            <li class="tier-1 element-8" role="treeitem"><a href="#fixme" title="">Activity Feed</a></li>
-            <li class="tier-1 element-9" role="treeitem"><a href="{% url 'success_story_create' %}" title="">Submit Yours!</a></li>
-        </ul>
-        
-    </div>
-
-</aside>
-
-{% endblock left_sidebar %}
