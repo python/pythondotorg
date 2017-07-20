@@ -1,4 +1,7 @@
+from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
+
+from honeypot.decorators import check_honeypot
 
 from .forms import StoryForm
 from .models import Story, StoryCategory
@@ -8,6 +11,10 @@ class StoryCreate(CreateView):
     model = Story
     form_class = StoryForm
     template_name = 'successstories/story_form.html'
+
+    @method_decorator(check_honeypot)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
         return self.object.get_absolute_url()

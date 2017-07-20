@@ -1,4 +1,5 @@
 {% extends "successstories/base.html" %}
+{% load honeypot %}
 
 {% block page_title %}Submit Your Success Story | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -13,6 +14,7 @@
         <form class="wide-form" action="" method="post">
             {% csrf_token %}
             {{ form.as_p }}
+            {% render_honeypot_field %}
             <p><button type="submit" name="Submit">Submit</button></p>
         </form>
     
