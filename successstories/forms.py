@@ -13,6 +13,7 @@ class StoryForm(ContentManageableModelForm):
             'company_url',
             'category',
             'author',
+            'author_email',
             'pull_quote',
             'content'
         )
