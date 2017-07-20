@@ -5,4 +5,7 @@ from cms.admin import NameSlugAdmin
 from .models import Company
 
 
-admin.site.register(Company, NameSlugAdmin)
+class CompanyAdmin(NameSlugAdmin):
+    search_fields = ['name']
+
+admin.site.register(Company, CompanyAdmin)
