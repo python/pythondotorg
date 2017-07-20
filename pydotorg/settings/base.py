@@ -232,6 +232,9 @@ FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
 JOB_THRESHOLD_DAYS = 90
 JOB_FROM_EMAIL = 'jobs@python.org'
 
+# Mail
+DEFAULT_FROM_EMAIL = 'noreply@python.org'
+
 ### Pipeline
 
 from .pipeline import (
