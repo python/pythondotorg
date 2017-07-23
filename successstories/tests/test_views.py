@@ -84,7 +84,7 @@ class StoryViewTests(StoryTestCase):
             'author': 'Kevin Arnold',
             'author_email': 'kevin@arnold.com',
             'pull_quote': 'Liver!',
-            'content': 'Growing up is never easy.',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
@@ -98,6 +98,9 @@ class StoryViewTests(StoryTestCase):
             'New success story submission: {}'.format(post_data['name'])
         )
 
+        # 'content' field should be in reST format so just check that
+        # body of the email doesn't contain any HTML tags.
+        self.assertNotIn('<p>', mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].content_subtype, 'plain')
         stories = Story.objects.draft().filter(slug__exact='three')
         self.assertEqual(len(stories), 1)

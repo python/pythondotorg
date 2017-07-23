@@ -148,7 +148,7 @@ Content:
                 author=instance.author,
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
-                content=instance.content,
+                content=instance.content.raw,
             ),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,
