@@ -98,6 +98,7 @@ class StoryViewTests(StoryTestCase):
             'New success story submission: {}'.format(post_data['name'])
         )
 
+        self.assertEqual(mail.outbox[0].content_subtype, 'plain')
         stories = Story.objects.draft().filter(slug__exact='three')
         self.assertEqual(len(stories), 1)
 
