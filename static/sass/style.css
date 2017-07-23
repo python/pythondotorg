@@ -2970,6 +2970,22 @@ div.note {
 p.admonition-title {
   font-weight: bold; }
 
+div.sidebar {
+  margin: 0 0 0.5em 1em;
+  border: 1px solid #ddddbb;
+  padding: 0.4375em 0.4375em 0 0.4375em;
+  background-color: #ffe;
+  width: 40%;
+  float: right; }
+  div.sidebar > p.sidebar-title {
+    font-size: 1em;
+    font-weight: bold;
+    margin-top: 0; }
+  div.sidebar > p {
+    font-size: 0.9375em;
+    margin-top: 0.625em;
+    margin-bottom: 0; }
+
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
   /* Resets for when slideshows are inside the .text */ }
