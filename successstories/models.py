@@ -149,7 +149,7 @@ Content:
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
-            ),
+            ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,
             headers={'Reply-To': instance.author_email},

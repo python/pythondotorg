@@ -97,7 +97,22 @@ class StoryViewTests(StoryTestCase):
             mail.outbox[0].subject,
             'New success story submission: {}'.format(post_data['name'])
         )
-
+        expected_output = (
+            r'Name: (.*)\n'
+            r'Company name: (.*)\n'
+            r'Company URL: (.*)\n'
+            r'Category: (.*)\n'
+            r'Author: (.*)\n'
+            r'Author email: (.*)\n'
+            r'Pull quote:\n'
+            r'\n'
+            r'(.*)\n'
+            r'\n'
+            r'Content:\n'
+            r'\n'
+            r'(.*)'
+        )
+        self.assertRegex(mail.outbox[0].body, expected_output)
         # 'content' field should be in reST format so just check that
         # body of the email doesn't contain any HTML tags.
         self.assertNotIn('<p>', mail.outbox[0].body)
