@@ -155,5 +155,4 @@ Content:
             headers={'Reply-To': instance.author_email},
             # TODO: Pass 'reply_to=[instance.author_email]' when we upgrade Django.
         )
-        email.content_subtype = 'html'
         email.send()
