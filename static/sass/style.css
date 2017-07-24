@@ -2963,12 +2963,24 @@ p.quote-by-organization {
 div.note {
   background-color: #eee;
   border: 1px solid #cccccc;
-  padding: 0.3125em 0.625em; }
+  padding: 0.3125em 0.625em;
+  margin-bottom: 1.5625em; }
   div.note > p {
     margin-bottom: 0; }
 
 p.admonition-title {
   font-weight: bold; }
+
+p.admonition-title:after {
+  content: ":"; }
+
+div.warning {
+  background-color: #ffe4e4;
+  border: 1px solid #ff6666;
+  padding: 0.3125em 0.625em;
+  margin-bottom: 1.5625em; }
+  div.warning > p {
+    margin-bottom: 0; }
 
 div.sidebar {
   margin: 0 0 0.5em 1em;

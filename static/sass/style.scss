@@ -2175,6 +2175,7 @@ div.note {
     background-color: #eee;
     border: 1px solid #ccc;
     padding: px2em( 5px ) px2em( 10px );
+    margin-bottom: px2em( 25px );
     > p {
       margin-bottom: 0;
     }
@@ -2182,6 +2183,20 @@ div.note {
 
 p.admonition-title {
     font-weight: bold;
+}
+
+p.admonition-title:after {
+    content: ":";
+}
+
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+    padding: px2em( 5px ) px2em( 10px );
+    margin-bottom: px2em( 25px );
+    > p {
+        margin-bottom: 0;
+    }
 }
 
 div.sidebar {
