@@ -1,3 +1,5 @@
+import re
+
 from django import template
 from django.conf import settings
 from django.core import mail
@@ -97,7 +99,7 @@ class StoryViewTests(StoryTestCase):
             mail.outbox[0].subject,
             'New success story submission: {}'.format(post_data['name'])
         )
-        expected_output = (
+        expected_output = re.compile(
             r'Name: (.*)\n'
             r'Company name: (.*)\n'
             r'Company URL: (.*)\n'
@@ -110,7 +112,10 @@ class StoryViewTests(StoryTestCase):
             r'\n'
             r'Content:\n'
             r'\n'
-            r'(.*)'
+            r'(.*)\n'
+            r'\n'
+            r'Review URL: (.*)',
+            flags=re.DOTALL
         )
         self.assertRegex(mail.outbox[0].body, expected_output)
         # 'content' field should be in reST format so just check that

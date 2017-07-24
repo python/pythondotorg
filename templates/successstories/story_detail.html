@@ -8,6 +8,12 @@
 
     <article class="text">
 
+        {% if request.user.is_staff %}
+            <p>
+                <a role="button" class="button" href="{{ story.get_admin_url }}">Edit this story</a>
+            </p>
+        {% endif %}
+
         {% if request.user.is_staff and not story.is_published %}
         <div class="user-feedback level-notice">
             <p>This story is <strong>unpublished</strong>. You can see it because you're a staff member.</p>

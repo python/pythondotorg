@@ -66,6 +66,9 @@ class Story(NameSlugModel, ContentManageable):
     def get_absolute_url(self):
         return reverse('success_story_detail', kwargs={'slug': self.slug})
 
+    def get_admin_url(self):
+        return reverse('admin:successstories_story_change', args=(self.id,))
+
     def get_weight_display(self):
         """ Display more useful weight with percent sign in admin """
         return "{} %".format(self.weight)
@@ -139,6 +142,8 @@ Pull quote:
 Content:
 
 {content}
+
+Review URL: https://www.python.org{admin_url}
         """
         email = EmailMessage(
             'New success story submission: {}'.format(instance.name),
@@ -151,6 +156,7 @@ Content:
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
+                admin_url=instance.get_admin_url(),
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,

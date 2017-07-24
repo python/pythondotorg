@@ -56,3 +56,6 @@ class StoryModelTests(TestCase):
             weight=22,
         )
         self.assertEqual(Story.objects.featured_weight_total(), 32)
+
+    def test_get_admin_url(self):
+        self.assertEqual(self.story1.get_admin_url(), '/admin/successstories/story/%d/' % self.story1.pk)
