@@ -38,7 +38,7 @@ class StoryCategory(NameSlugModel):
 
 class Story(NameSlugModel, ContentManageable):
     company_name = models.CharField(max_length=500)
-    company_url = models.URLField()
+    company_url = models.URLField(verbose_name='Company URL')
     company = models.ForeignKey(Company, blank=True, null=True, related_name='success_stories')
     category = models.ForeignKey(StoryCategory, related_name='success_stories')
     author = models.CharField(max_length=500, help_text='Author of the content')
