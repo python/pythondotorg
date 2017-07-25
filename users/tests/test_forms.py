@@ -57,6 +57,29 @@ class UsersFormsTestCase(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
 
+    def test_newline_in_username(self):
+        # django-allauth's default regex doesn't match '\n' at the
+        # end of a string so as a result of this, users can signup
+        # with a user name like 'username\n'.
+        #
+        # This is a problem when a user can fill the form via curl
+        # and Content-Type header set to
+        # 'application/x-www-form-urlencoded'.
+        #
+        # See #1045 and test_newline_in_username in
+        # users/tests/test_views.py for details.
+        form = SignupForm({
+            'username': 'username\n',
+            'email': 'test@example.com',
+            'password1': 'password',
+            'password2': 'password',
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['username'],
+            ['Please don\'t use whitespace characters in username.']
+        )
+
 
 class UserProfileFormTestCase(TestCase):
 
