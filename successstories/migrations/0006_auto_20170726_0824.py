@@ -39,6 +39,10 @@ normalized_company_names = {
     'wordstream': 'WordStream',
     'xist': 'XIST',
 }
+fix_category_names = {
+    'Software Devleopment': 'Software Development',
+    'Science': 'Scientific',
+}
 
 
 def migrate_old_content(apps, schema_editor):
@@ -60,7 +64,14 @@ def migrate_old_content(apps, schema_editor):
         company_url = field_list.get('website',
                                      field_list.get('web site', DEFAULT_URL))
         category_cleaned = field_list['category'].strip().split(',')[0].strip()
-        category, _ = StoryCategory.objects.get_or_create(name=category_cleaned)
+        category_cleaned = fix_category_names.get(category_cleaned,
+                                                  category_cleaned)
+        category, _ = StoryCategory.objects.get_or_create(
+            name=category_cleaned,
+            defaults={
+                'slug': slugify(category_cleaned),
+            }
+        )
         story = Story(
             name=field_list['title'],
             slug=slugify(company_name),
