@@ -131,8 +131,9 @@ def update_successstories_supernav(sender, instance, signal, created, **kwargs):
 
 
 @receiver(post_save, sender=Story)
-def send_email_to_psf(sender, instance, signal, created, **kwargs):
-    if kwargs.get('raw', False):
+def send_email_to_psf(sender, instance, created, **kwargs):
+    # Skip in fixtures
+    if kwargs.get('raw', False) or not created:
         return
 
     if not instance.is_published:
