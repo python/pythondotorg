@@ -70,7 +70,7 @@ def migrate_old_content(apps, schema_editor):
             category=category,
             author=field_list['author'],
             pull_quote=field_list['summary'],
-            content=MARKER + o.content.raw,
+            content=MARKER + page.content.raw,
             is_published=True,
             updated=now(),
         )
