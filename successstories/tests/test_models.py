@@ -31,7 +31,6 @@ class StoryModelTests(TestCase):
             content='Whatever',
             is_published=True,
             featured=True,
-            weight=10,
         )
 
     def test_published(self):
@@ -42,20 +41,6 @@ class StoryModelTests(TestCase):
 
     def test_featured(self):
         self.assertQuerysetEqual(Story.objects.featured(), ['<Story: Three>'])
-
-    def test_featured_weight_total(self):
-        self.assertEqual(Story.objects.featured_weight_total(), 10)
-        Story.objects.create(
-            name='Four',
-            company_name='Company Four',
-            company_url='http://www.python.org/psf/',
-            category=self.category,
-            content='Whatever',
-            is_published=True,
-            featured=True,
-            weight=22,
-        )
-        self.assertEqual(Story.objects.featured_weight_total(), 32)
 
     def test_get_admin_url(self):
         self.assertEqual(self.story1.get_admin_url(), '/admin/successstories/story/%d/' % self.story1.pk)

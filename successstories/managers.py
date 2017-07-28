@@ -1,7 +1,6 @@
 import random
 
 from django.db.models import Manager
-from django.db.models import Sum
 from django.db.models.query import QuerySet
 from django.db.models.aggregates import Count
 
@@ -33,12 +32,6 @@ class StoryManager(Manager):
 
     def featured(self):
         return self.get_queryset().featured()
-
-    def featured_weight_total(self):
-        amount = self.featured().aggregate(total=Sum('weight'))
-        if amount:
-            return amount['total']
-        return 0
 
     def latest(self):
         return self.get_queryset().latest()
