@@ -38,7 +38,7 @@
     <div class="row">
         {% for story in object_list %}
             {% thumbnail '240x80' story.company.logo as th %}
-            <div class="medium-widget success-story {% if forloop.last == True %}last{% endif %}">
+            <div class="medium-widget success-story{% if forloop.counter|divisibleby:'2' %} last{% endif %}">
                 <div class="shrubbery">
 
                     {% if story.company.logo %}<img src="{{ th.url }}" alt="{{ story.name }}" width="{{ th.width }}" height="{{ th.height }}">{% endif %}
