@@ -36,6 +36,11 @@
 
 {% block content %}
     <div class="row">
+        <div class="row-title">
+            <h2 class="widget-title">
+                <span aria-hidden="true" class="icon-success-stories"></span>Newest success stories
+            </h2>
+        </div>
         {% for story in object_list %}
             {% thumbnail '240x80' story.company.logo as th %}
             <div class="medium-widget success-story{% if forloop.counter|divisibleby:'2' %} last{% endif %}">
@@ -56,17 +61,14 @@
 
     <div class="row newest-success-stories">
 
-        {% comment %}
-        
-        Not ready for prime time yet. Needs a view. 
-        
         <div class="row-title">
             <h2 class="widget-title">
                 <span aria-hidden="true" class="icon-success-stories"></span>Newest success stories by category
+                {% comment %}
                 <a class="activity-feed" href="#"><span class="icon-list"></span>View as Activity Feed</a>
+                {% endcomment %}
             </h2>
         </div>
-        {% endcomment %}
 
         {% for story_category in story_categories %}
             <div class="small-widget success-story-category {% if forloop.counter|divisibleby:"4" %}last{% endif %}">
@@ -78,10 +80,9 @@
                 <p><a class="readmore" href="{{ story_category.get_absolute_url }}">See All</a></p>
             </div>
 
-            {% if forloop.last == True %}
+            {% if forloop.last %}
             <div class="small-widget submit-your-success-story last">
                 {% box 'successstory-submityours' %}
-
             </div>
             {% endif %}
         {% endfor %}
