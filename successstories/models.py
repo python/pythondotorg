@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
@@ -150,7 +151,7 @@ Content:
 
 {content}
 
-Review URL: https://www.python.org{admin_url}
+Review URL: {admin_url}
         """
         email = EmailMessage(
             'New success story submission: {}'.format(instance.name),
@@ -163,7 +164,9 @@ Review URL: https://www.python.org{admin_url}
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
-                admin_url=instance.get_admin_url(),
+                admin_url='https://www.{}{}'.format(
+                    Site.objects.get_current(), instance.get_admin_url()
+                ),
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,
