@@ -12,8 +12,8 @@ def get_story_categories():
 
 
 @register.assignment_tag
-def get_stories_featured():
-    return Story.objects.featured()
+def get_featured_story():
+    return Story.objects.random_featured()
 
 
 @register.assignment_tag
