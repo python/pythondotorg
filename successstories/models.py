@@ -46,10 +46,6 @@ class Story(NameSlugModel, ContentManageable):
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
     featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
-    weight = models.IntegerField(
-        default=0,
-        help_text="Percentage weight given to display, enter 11 for 11% of views. Warnings will be given in flash messages if total of featured Stories is not equal to 100%",
-    )
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
     objects = StoryManager()
@@ -68,11 +64,6 @@ class Story(NameSlugModel, ContentManageable):
     def get_admin_url(self):
         return reverse('admin:successstories_story_change', args=(self.id,))
 
-    def get_weight_display(self):
-        """ Display more useful weight with percent sign in admin """
-        return "{} %".format(self.weight)
-    get_weight_display.short_description = 'Weight'
-
     def get_company_name(self):
         """ Return company name depending on ForeignKey """
         if self.company:
@@ -85,16 +76,6 @@ class Story(NameSlugModel, ContentManageable):
             return self.company.url
         else:
             return self.company_url
-
-    def clean(self):
-        """ Ensure featured and weight together behave as expected """
-        # Doesn't make sense to be featured and never show it
-        if self.featured and self.weight == 0:
-            raise ValidationError("Cannot be a featured story with weight==0")
-
-        # Can't have a single featured story shown more than 100% of the time
-        if self.weight > 100:
-            raise ValidationError("weight cannot exceed 100")
 
 
 # Set 'help_text' since the 'name' field is a confusion for many people.
