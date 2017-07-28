@@ -13,7 +13,11 @@ class StoryQuerySet(QuerySet):
     def featured(self):
         return self.published().filter(featured=True)
 
+    def latest(self):
+        return self.published()[:4]
 
+
+# TODO: Use StoryQuerySet.as_manager()
 class StoryManager(Manager):
     def get_queryset(self):
         return StoryQuerySet(self.model, using=self._db)
@@ -33,3 +37,5 @@ class StoryManager(Manager):
             return amount['total']
         return 0
 
+    def latest(self):
+        return self.get_queryset().latest()

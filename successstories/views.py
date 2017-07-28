@@ -52,7 +52,7 @@ class StoryList(ListView):
     context_object_name = 'stories'
 
     def get_queryset(self):
-        return Story.objects.select_related().published()
+        return Story.objects.select_related().latest()
 
 
 class StoryListCategory(ContextMixin, DetailView):
