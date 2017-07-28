@@ -105,7 +105,7 @@ Story._meta.get_field('name').help_text = 'Title of your success story'
 
 
 @receiver(post_save, sender=Story)
-def update_successstories_supernav(sender, instance, signal, created, **kwargs):
+def update_successstories_supernav(sender, instance, created, **kwargs):
     """ Update download supernav """
     # Skip in fixtures
     if kwargs.get('raw', False):
