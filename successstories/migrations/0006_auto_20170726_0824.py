@@ -61,6 +61,11 @@ def migrate_old_content(apps, schema_editor):
         company_name = normalized_company_names.get(
             extract_company_name.lower(), extract_company_name.title()
         )
+        company_slug = slugify(company_name)
+        check_story = Story.objects.filter(slug=company_slug).exists()
+        if check_story:
+            # Move to the next one if story is already in the table.
+            continue
         company_url = field_list.get('website',
                                      field_list.get('web site', DEFAULT_URL))
         category_cleaned = field_list['category'].strip().split(',')[0].strip()
@@ -74,7 +79,7 @@ def migrate_old_content(apps, schema_editor):
         )
         story = Story(
             name=field_list['title'],
-            slug=slugify(company_name),
+            slug=company_slug,
             created=convert_to_datetime(field_list['date']),
             company_name=company_name,
             company_url=company_url,
