@@ -2998,6 +2998,10 @@ div.sidebar {
     margin-top: 0.625em;
     margin-bottom: 0; }
 
+img.align-right {
+  float: right;
+  margin-left: 1.25em; }
+
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
   /* Resets for when slideshows are inside the .text */ }

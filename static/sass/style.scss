@@ -2171,6 +2171,8 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: #808080;
 }
 
+// Style docutils directives
+
 div.note {
     background-color: #eee;
     border: 1px solid #ccc;
@@ -2216,6 +2218,11 @@ div.sidebar {
         margin-top: px2em( 10px );
         margin-bottom: 0;
     }
+}
+
+img.align-right {
+    float: right;
+    margin-left: px2em( 20px );
 }
 
 /* ! ===== Slideshow requirements ===== */
