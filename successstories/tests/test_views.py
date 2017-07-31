@@ -22,7 +22,9 @@ class StoryTestCase(TestCase):
             company_url='http://python.org',
             category=self.category,
             content='Whatever',
-            is_published=True)
+            is_published=True,
+            featured=True,
+        )
 
         self.story2 = Story.objects.create(
             name='Two',
@@ -42,10 +44,21 @@ class StoryViewTests(StoryTestCase):
         self.assertEqual(r.context['story'].pk, self.story1.pk)
         self.assertEqual(len(r.context['category_list']), 1)
 
-    def test_story_view_404(self):
+    def test_unpublished_story_view(self):
         url = reverse('success_story_detail', kwargs={'slug': self.story2.slug})
         r = self.client.get(url)
         self.assertEqual(r.status_code, 404)
+        # Staffs can see an unpublished story.
+        staff = User.objects.create_superuser(
+            username='spameggs',
+            password='password',
+            email='superuser@example.com',
+        )
+        self.assertTrue(staff.is_staff)
+        self.client.login(username=staff.username, password='password')
+        r = self.client.get(url)
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(r.context['story'].is_published)
 
     def test_story_list(self):
         url = reverse('success_story_list')
@@ -158,3 +171,7 @@ class StoryTemplateTagTests(StoryTestCase):
     def test_get_stories_by_category_invalid(self):
         r = self.render('{% load successstories %}{% get_stories_by_category category_slug="poop" as category_stories %}{% for story in category_stories %}{{ story }}{% endfor %}')
         self.assertEqual(r, '')
+
+    def test_get_featured_story(self):
+        r = self.render('{% load successstories %}{% get_featured_story as story %}{{ story }}')
+        self.assertEqual(r, self.story1.name)
