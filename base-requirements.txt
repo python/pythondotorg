@@ -1,6 +1,5 @@
 dj-database-url==0.3.0
 django-braces==1.8.1
-django-discover-runner==1.0
 django-pipeline==1.4.5
 django-sitetree==1.8.0
 django-secure==1.0.1
