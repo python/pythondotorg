@@ -3002,6 +3002,9 @@ img.align-right {
   float: right;
   margin-left: 1.25em; }
 
+span.highlighted {
+  background-color: yellow; }
+
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
   /* Resets for when slideshows are inside the .text */ }

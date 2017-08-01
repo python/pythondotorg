@@ -2225,6 +2225,13 @@ img.align-right {
     margin-left: px2em( 20px );
 }
 
+
+// For django-haystack's highlighter
+
+span.highlighted {
+    background-color: yellow;
+}
+
 /* ! ===== Slideshow requirements ===== */
 .flex-slideshow {
 
