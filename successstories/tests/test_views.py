@@ -7,35 +7,17 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from ..models import Story, StoryCategory
+from ..factories import StoryFactory, StoryCategoryFactory
+from ..models import Story
 
 User = get_user_model()
 
 
-class StoryTestCase(TestCase):
+class StoryViewTests(TestCase):
     def setUp(self):
-        self.category = StoryCategory.objects.create(name='Arts')
-
-        self.story1 = Story.objects.create(
-            name='One',
-            company_name='Company One',
-            company_url='http://python.org',
-            category=self.category,
-            content='Whatever',
-            is_published=True,
-            featured=True,
-        )
-
-        self.story2 = Story.objects.create(
-            name='Two',
-            company_name='Company Two',
-            company_url='http://www.python.org/psf/',
-            category=self.category,
-            content='Whatever',
-            is_published=False)
-
-
-class StoryViewTests(StoryTestCase):
+        self.category = StoryCategoryFactory(name='Arts')
+        self.story1 = StoryFactory(category=self.category, featured=True)
+        self.story2 = StoryFactory(category=self.category, is_published=False)
 
     def test_story_view(self):
         url = reverse('success_story_detail', kwargs={'slug': self.story1.slug})
@@ -67,16 +49,6 @@ class StoryViewTests(StoryTestCase):
         self.assertEqual(len(r.context['stories']), 1)
 
     def test_story_category_list(self):
-        self.category2 = StoryCategory.objects.create(name='Entertainment')
-        self.story3 = Story.objects.create(
-            name='Three',
-            company_name='Company Three',
-            company_url='http://www.python.org/psf/',
-            category=self.category2,
-            content='Whatever',
-            is_published=True
-        )
-
         url = reverse('success_story_list_category', kwargs={'slug': self.category.slug})
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)

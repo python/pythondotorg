@@ -1,46 +1,27 @@
 from django.test import TestCase
 
-from ..models import Story, StoryCategory
+from ..factories import StoryFactory, StoryCategoryFactory
+from ..models import Story
 
 
 class StoryModelTests(TestCase):
     def setUp(self):
-        self.category = StoryCategory.objects.create(name='Arts')
-
-        self.story1 = Story.objects.create(
-            name='One',
-            company_name='Company One',
-            company_url='http://python.org',
-            category=self.category,
-            content='Whatever',
-            is_published=True)
-
-        self.story2 = Story.objects.create(
-            name='Two',
-            company_name='Company Two',
-            company_url='http://www.python.org/psf/',
-            category=self.category,
-            content='Whatever',
-            is_published=False)
-
-        self.story3 = Story.objects.create(
-            name='Three',
-            company_name='Company Three',
-            company_url='http://www.python.org/psf/',
-            category=self.category,
-            content='Whatever',
-            is_published=True,
-            featured=True,
-        )
+        self.category = StoryCategoryFactory()
+        self.story1 = StoryFactory(category=self.category)
+        self.story2 = StoryFactory(name='Fraft Story', category=self.category, is_published=False)
+        self.story3 = StoryFactory(name='Featured Story', category=self.category, featured=True)
 
     def test_published(self):
-        self.assertQuerysetEqual(Story.objects.published(), ['<Story: Three>', '<Story: One>'])
+        self.assertEqual(len(Story.objects.published()), 2)
 
     def test_draft(self):
-        self.assertQuerysetEqual(Story.objects.draft(), ['<Story: Two>'])
+        self.assertQuerysetEqual(Story.objects.draft(),
+                                 ['<Story: {}>'.format(self.story2.name)])
 
     def test_featured(self):
-        self.assertQuerysetEqual(Story.objects.featured(), ['<Story: Three>'])
+        self.assertQuerysetEqual(Story.objects.featured(),
+                                 ['<Story: {}>'.format(self.story3.name)])
 
     def test_get_admin_url(self):
-        self.assertEqual(self.story1.get_admin_url(), '/admin/successstories/story/%d/' % self.story1.pk)
+        self.assertEqual(self.story1.get_admin_url(),
+                         '/admin/successstories/story/%d/' % self.story1.pk)

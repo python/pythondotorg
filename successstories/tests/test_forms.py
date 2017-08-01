@@ -1,13 +1,13 @@
 from django.test import TestCase
 
+from ..factories import StoryFactory, StoryCategoryFactory
 from ..forms import StoryForm
-from ..models import Story, StoryCategory
 
 
 class StoryFormTests(TestCase):
 
     def test_duplicate_name(self):
-        category = StoryCategory.objects.create(name='Arts')
+        category = StoryCategoryFactory()
         data = {
             'name': 'Swedish Death Metal',
             'company_name': 'Dark Tranquillity',
@@ -31,7 +31,7 @@ class StoryFormTests(TestCase):
         )
 
     def test_author_email(self):
-        category = StoryCategory.objects.create(name='Arts')
+        category = StoryCategoryFactory()
         data = {
             'name': 'Swedish Death Metal',
             'company_name': 'Dark Tranquillity',
