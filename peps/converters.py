@@ -175,6 +175,10 @@ def convert_pep_page(pep_number, content):
 
         b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
 
+    # Strip <html> and <body> tags.
+    pep_content.html.unwrap()
+    pep_content.body.unwrap()
+
     data['content'] = str(pep_content)
 
     source_link = "https://github.com/python/peps/blob/master/pep-{0}.txt".format(pep_number)

@@ -56,3 +56,11 @@ class PEPConverterTests(TestCase):
             'standard library modules</td>\n</tr>',
             pep.content.rendered
         )
+
+    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
+    def test_strip_html_and_body_tags(self):
+        pep = get_pep_page('0525')
+        self.assertNotIn('<html>', pep.content.rendered)
+        self.assertNotIn('</html>', pep.content.rendered)
+        self.assertNotIn('<body>', pep.content.rendered)
+        self.assertNotIn('</body>', pep.content.rendered)
