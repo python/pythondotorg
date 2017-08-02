@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -29,6 +31,7 @@ class UsersViewsTestCase(TestCase):
             'email': 'montyopython@python.org',
             'password1': 'password',
             'password2': 'password',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
         post_data.update(data or {})
         url = reverse('account_signup')
@@ -46,12 +49,13 @@ class UsersViewsTestCase(TestCase):
         # django-allauth's user name validator can be escaped when
         # the signup form sent with application/x-www-form-urlencoded
         # encoded. See #1045 for details.
-        data = (
-            'username=username%0A&'  # %0A is \n
-            'email=test@example.com&'
-            'password1=password&'
-            'password2=password'
-        )
+        data =  urlencode({
+            'username': 'username\n',
+            'email': 'test@example.com',
+            'password1': 'password',
+            'password2': 'password',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        })
         url = reverse('account_signup')
         response = self.client.post(
             url, data, content_type='application/x-www-form-urlencoded'
@@ -238,6 +242,7 @@ class UsersViewsTestCase(TestCase):
             'email': 'thereisnoemail@likesthis.com',
             'password1': 'password',
             'password2': 'password',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
         for i, username in enumerate(usernames):
             post_data.update({
