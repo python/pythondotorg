@@ -3,6 +3,8 @@ import factory
 
 from django.utils import timezone
 
+from users.factories import UserFactory
+
 from .models import JobType, JobCategory, Job
 
 next_month = timezone.now() + datetime.timedelta(days=30)
@@ -31,6 +33,7 @@ class JobFactory(factory.DjangoModelFactory):
     class Meta:
         model = Job
 
+    creator = factory.SubFactory(UserFactory)
     category = factory.SubFactory(JobCategoryFactory)
     job_title = factory.Sequence(lambda n: 'Job Title #{}'.format(n))
     city = 'Lawrence'
@@ -40,6 +43,7 @@ class JobFactory(factory.DjangoModelFactory):
     company_description = factory.Sequence(lambda n: 'Company {} Description'.format(n))
     contact = 'John Recruiter'
     email = factory.Sequence(lambda n: 'recruiter{}@example.com'.format(n))
+    url = 'https://www.example.com/'
 
     description = 'Test Description'
     requirements = 'Test Requirements'
