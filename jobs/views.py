@@ -300,34 +300,12 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         return ctx
 
 
-class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
-
-    def get_queryset(self):
-        """ Only staff and creator can review """
-        if self.request.user.is_staff:
-            return Job.objects.select_related()
-        else:
-            raise Http404()
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            user_can_edit=(
-                self.object.creator == self.request.user
-                or self.request.user.is_staff
-            ),
-            under_review=True,
-            job_review_form=JobReviewCommentForm(initial={'job': self.object}),
-        )
-        ctx.update(kwargs)
-        return ctx
-
-
 class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
     model = JobReviewComment
     form_class = JobReviewCommentForm
 
     def get_success_url(self):
-        return reverse('jobs:job_detail_review', kwargs={'pk': self.request.POST.get('job')})
+        return reverse('jobs:job_detail', kwargs={'pk': self.request.POST.get('job')})
 
     def form_valid(self, form):
         if (self.request.user.username != form.instance.job.creator.username and not

@@ -16,7 +16,7 @@
         <tbody>
     {% for object in object_list %}
     <tr>
-        <td><a href="{% url 'jobs:job_detail_review' pk=object.pk %}">{{ object.pk }}</a></td>
+        <td><a href="{% url 'jobs:job_detail' pk=object.pk %}">{{ object.pk }}</a></td>
         <td>
             <p><strong>Title:</strong> {{ object.job_title }}</p>
             <p><strong>Company:</strong> {{ object.company_name }}</p>
@@ -33,7 +33,7 @@
                 {% csrf_token %}
                 <input type="hidden" name="job_id" value="{{ object.id }}">
                 <div>
-                    <a class="button" href="{% url 'jobs:job_detail_review' pk=object.pk %}">Review</a>
+                    <a class="button" href="{% url 'jobs:job_detail' pk=object.pk %}">Review</a>
                     <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
                     <button name="action" value="approve">Approve</button>
                     <button name="action" value="reject">Reject</button>
