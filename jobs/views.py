@@ -72,17 +72,11 @@ class JobList(JobListMenu, JobMixin, ListView):
         return super().get_queryset().visible().select_related()
 
 
-class JobListMine(JobMixin, ListView):
-    model = Job
+class JobListMine(LoginRequiredMixin, JobMixin, ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        if self.request.user.is_authenticated():
-            q = Q(creator=self.request.user)
-        else:
-            raise Http404
-        return queryset.filter(q)
+        return Job.objects.by(self.request.user).select_related()
 
 
 class JobListType(JobTypeMenu, ListView):
@@ -208,39 +202,14 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
 
 
 class JobDetail(JobMixin, DetailView):
-    model = Job
 
-    def get_object(self, queryset=None):
-        """ Show only approved jobs to the public, staff can see all jobs """
-        # 404 if job doesn't exist
-        try:
-            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
-        except Job.DoesNotExist:
-            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
-
-        # Staff can see all jobs
-        if self.request.user.is_staff:
-            return job
-
-        # Creator can see their own jobs no matter the status
-        if job.creator == self.request.user:
-            return job
-
-        # For everyone else the job needs to be visible
-        if job.visible:
-            return job
-
-        # Return None to signal 401 unauthorized
-        return None
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if self.object is None:
-            return HttpResponse(content='Unauthorized', status=401)
-
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+    def get_queryset(self):
+        queryset = Job.objects.select_related()
+        if self.has_jobs_board_admin_access():
+            return queryset
+        if self.request.user.is_authenticated():
+            return queryset.by(self.request.user)
+        return queryset.visible()
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
