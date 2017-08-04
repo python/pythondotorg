@@ -8,11 +8,15 @@ from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
     ReviewJobFactory
 )
-from users.factories import StaffUserFactory
+from users.factories import StaffUserFactory, UserFactory
 
 
 class JobsViewTests(TestCase):
     def setUp(self):
+        self.user = UserFactory(password='password')
+
+        self.staff = StaffUserFactory(password='password')
+
         self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
@@ -42,7 +46,8 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            is_featured=True
+            is_featured=True,
+            creator=self.user,
         )
         self.job_draft.job_types.add(self.job_type)
 
@@ -78,7 +83,7 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_list_mine')
 
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
 
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
@@ -115,7 +120,7 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
 
-        job = ApprovedJobFactory(
+        job = DraftJobFactory(
             description='My job listing',
             category=self.job_category,
             city='Memphis',
@@ -125,6 +130,7 @@ class JobsViewTests(TestCase):
             creator=creator,
             is_featured=True
         )
+        job.job_types.add(self.job_type)
 
         self.client.login(username=username, password=password)
         url = reverse('jobs:job_edit', kwargs={'pk': job.pk})
@@ -133,10 +139,25 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
+        # Edit the job. Job.editable should return True to be
+        # able to edit a job.
+        form = response.context['form']
+        data = form.initial
+        data['description'] = 'Lorem ipsum dolor sit amet'
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/jobs/%d/preview/' % job.pk)
+        edited_job = Job.objects.get(pk=job.pk)
+        self.assertEqual(edited_job.description.raw, 'Lorem ipsum dolor sit amet')
+
         self.client.logout()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, '/accounts/login/?next=/jobs/%d/edit/' % job.pk)
+
+        # Staffs can see the edit form.
+        self.client.login(username=self.staff.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_job_detail(self):
         url = self.job.get_absolute_url()
@@ -146,10 +167,20 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
-        # Test 401 unauthorized
+        # Logout users cannot see the job details.
         url = self.job_draft.get_absolute_url()
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
+
+        # Creator can see their own jobs no matter the status.
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Try to reach a job that doesn't exist.
+        url = reverse('jobs:job_detail', kwargs={'pk': 999999})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_job_detail_security(self):
         """
@@ -210,6 +241,11 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
         self.client.login(username=creator.username, password='secret')
+
+        # Check that the email is already there.
+        response = self.client.get(url)
+        self.assertEqual(response.context['form'].initial['email'], email)
+
         response = self.client.post(url, post_data, follow=True)
 
         # Job was saved in draft mode
@@ -242,6 +278,13 @@ class JobsViewTests(TestCase):
         )
 
         del mail.outbox[:]
+
+    def test_job_preview_404(self):
+        url = reverse('jobs:job_preview', kwargs={'pk': 9999999})
+        # /jobs/<pk>/preview/ requires to be logged in.
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
@@ -471,12 +514,21 @@ class JobsReviewTests(TestCase):
         self.assertIn(self.contact, message.body)
         mail.outbox = []
 
+        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'archive'})
+        self.assertRedirects(response, reverse('jobs:job_review'))
+        j2 = Job.objects.get(pk=self.job2.pk)
+        self.assertEqual(j2.status, Job.STATUS_ARCHIVED)
+
         self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
         j3 = Job.objects.get(pk=self.job3.pk)
         self.assertEqual(j3.status, Job.STATUS_REMOVED)
 
         response = self.client.post(url, data={'job_id': 999999, 'action': 'approve'})
         self.assertEqual(response.status_code, 302)
+
+        # Invalid action should raise a 404 error.
+        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'invalid'})
+        self.assertEqual(response.status_code, 404)
 
     def test_job_comment(self):
         mail.outbox = []
@@ -517,3 +569,17 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 401)
         self.assertEqual(len(mail.outbox), 0)
+
+    def test_job_comment_approve(self):
+        mail.outbox = []
+        self.client.login(username=self.super_username, password=self.super_password)
+        url = reverse('jobs:job_review_comment_create')
+        form_data = {
+            'job': self.job1.pk,
+            'action': 'approve',
+        }
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.creator.email, 'jobs@python.org'])
