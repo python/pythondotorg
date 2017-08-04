@@ -197,6 +197,8 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             job.status = Job.STATUS_ARCHIVED
             job.save()
             messages.add_message(self.request, messages.SUCCESS, "'%s' archived." % job)
+        else:
+            raise Http404
 
         return redirect('jobs:job_review')
 
@@ -214,7 +216,8 @@ class JobDetail(JobMixin, DetailView):
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
             category_jobs=self.object.category.jobs.select_related('company__name')[:5],
-            user_can_edit=(self.object.creator == self.request.user)
+            user_can_edit=(self.object.creator == self.request.user),
+            job_review_form=JobReviewCommentForm(initial={'job': self.object}),
         )
         ctx.update(kwargs)
         return ctx
@@ -292,7 +295,8 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
                 "'{}' {}.".format(form.instance.job, action_status)
             )
         else:
-            messages.add_message(self.request, messages.SUCCESS, 'Your comment has been posted.')
+            messages.add_message(self.request, messages.SUCCESS,
+                                 'Your comment has been posted.')
         form.instance.creator = self.request.user
         return super().form_valid(form)
 
@@ -330,8 +334,8 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
     form_class = JobForm
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return super().get_queryset()
+        if self.has_jobs_board_admin_access():
+            return Job.objects.select_related()
         return self.request.user.jobs_job_creator.all()
 
     def form_valid(self, form):

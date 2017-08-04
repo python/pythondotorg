@@ -92,7 +92,7 @@
             </form>
         {% endif %}
 
-        {% if jobs_board_admin or request.user == object.creator %}
+        {% if jobs_board_admin or user_can_edit %}
             <hr>
             <h1>Comments are only viewable between the submitter and job reviewers.</h1>
             {% load comments %}
@@ -111,7 +111,7 @@
             <form class="wide-form jobs-form" action="{% url 'jobs:job_review_comment_create' %}" method="post">
                 {% csrf_token %}
                 {{ job_review_form.as_p }}
-                {% if request.user == object.creator %}
+                {% if user_can_edit %}
                 <div>
                     <button type="submit" name="Submit">Submit</button>
                 </div>
@@ -128,8 +128,13 @@
                 </p>
                 <div>
                     <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
+                    <button type="submit" name="Submit">Comment</button>
+                    {% if object.status != 'approved' %}
                     <button class="review_button" name="action" value="approve">Approve</button>
+                    {% endif %}
+                    {% if object.status != 'rejected' %}
                     <button class="review_button" name="action" value="reject">Reject</button>
+                    {% endif %}
                 </div>
                 {% endif %}
             </form>
