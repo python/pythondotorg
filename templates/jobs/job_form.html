@@ -1,7 +1,14 @@
 {% extends "jobs/base.html" %}
 {% load boxes %}
 
-{% block page_title %}Submit a Job | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}
+{% if form_action == 'update' %}
+Update {{ object.job_title }}
+{% else %}
+Submit a Job
+{% endif %}
+| {{ SITE_INFO.site_name }}
+{% endblock %}
 
 {% block body_attributes %}class="jobs job_form"{% endblock %}
 
