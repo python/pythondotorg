@@ -23,22 +23,44 @@ def on_comment_was_posted(sender, comment, **kwargs):
     if not comment.comment:
         return False
     job = comment.job
-    email = job.email
-    name = job.contact or 'Job Submitter'
-    reviewer_name = comment.creator.get_full_name() or comment.creator.username or 'Community Reviewer'
+    if job.creator is None:
+        name = job.contact or 'Job Submitter'
+    else:
+        name = (
+            job.creator.get_full_name() or job.creator.get_username() or
+            job.contact or 'Job Submitter'
+        )
+    send_to = [EMAIL_JOBS_BOARD]
+    reviewer_name = (
+        comment.creator.get_full_name() or comment.creator.get_username() or
+        'Community Reviewer'
+    )
+    is_job_board_admin = job.creator.email != comment.creator.email
+    context = {
+        'comment': comment.comment.raw,
+        'content_object': job,
+        'site': Site.objects.get_current(),
+    }
+
+    if is_job_board_admin:
+        # Send email to both jobs@p.o and creator's email when
+        # job board admins left a comment.
+        send_to.append(job.email)
+
+        context['user_name'] = name
+        context['reviewer_name'] = reviewer_name
+        template_name = 'comment_was_posted'
+    else:
+        context['submitter_name'] = name
+        template_name = 'comment_was_posted_admin'
 
     subject = _("Python Job Board: Review comment for: {}").format(
         job.display_name)
-    text_message_template = loader.get_template("jobs/email/comment_was_posted.txt")
+    text_message_template = loader.get_template('jobs/email/{}.txt'.format(template_name))
 
-    message_context = Context({ 'user_name': name,
-                                'reviewer_name': reviewer_name,
-                                'comment': comment.comment.raw,
-                                'content_object': job,
-                                'site': Site.objects.get_current() })
+    message_context = Context(context)
     text_message = text_message_template.render(message_context)
-    send_mail(subject, text_message, settings.JOB_FROM_EMAIL,
-              [email, EMAIL_JOBS_BOARD])
+    send_mail(subject, text_message, settings.JOB_FROM_EMAIL, send_to)
 
 
 def send_job_review_message(job, user, subject_template_path,
