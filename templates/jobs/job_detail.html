@@ -92,6 +92,7 @@
             </form>
         {% endif %}
 
+        {% if not under_preview %}
         {% if jobs_board_admin or user_can_edit %}
             <hr>
             <h1>Comments are only viewable between the submitter and job reviewers.</h1>
@@ -139,6 +140,7 @@
                 {% endif %}
             </form>
             <hr>
+        {% endif %}
         {% endif %}
 
 
