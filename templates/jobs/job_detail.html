@@ -101,7 +101,7 @@
             <dl id="comments">
             {% for comment in object.review_comments.all %}
                 <dt>
-                    <strong>{{ comment.created }} - {{ comment.creator.get_full_name }}</strong>
+                    <strong>{{ comment.created }} - {{ comment.creator.get_full_name|default:comment.creator.get_username }}</strong>
                 </dt>
                 <dd>
                     {{ comment.comment.rendered|safe }}
