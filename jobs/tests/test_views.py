@@ -542,7 +542,24 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(len(mail.outbox), 1)
-        self.assertEqual(mail.outbox[0].to, [self.creator.email, 'jobs@python.org'])
+        # We should only send an email to jobs@p.o.
+        self.assertEqual(mail.outbox[0].to, ['jobs@python.org'])
+        self.assertIn('Dear Python Job Board Admin,', mail.outbox[0].body)
+        self.client.logout()
+
+        # Send a comment as a jobs board admin.
+        mail.outbox = []
+        self.client.login(username=self.super_username, password=self.super_password)
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        # We should send an email to both jobs@p.o and job submitter.
+        self.assertEqual(mail.outbox[0].to, ['jobs@python.org', self.creator_email])
+        self.assertIn(
+            'There is a new review comment available for your job posting.',
+            mail.outbox[0].body
+        )
 
     def test_job_comment_401(self):
         mail.outbox = []
