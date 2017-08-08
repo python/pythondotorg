@@ -196,7 +196,7 @@ class JobsViewTests(TestCase):
 
         # Normal users can't see non-approved Jobs
         response = self.client.get(self.job_draft.get_absolute_url())
-        self.assertIn(response.status_code, [401, 404])
+        self.assertEqual(response.status_code, 404)
 
         # Staff can see everything
         self.client.login(username=self.staff.username, password='password')
@@ -479,6 +479,12 @@ class JobsReviewTests(TestCase):
 
         response = self.client.get(url)
         self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+
+        self.client.login(username=self.another_username, password=self.another_password)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, '403.html')
+        self.client.logout()
 
         self.client.login(username=self.super_username, password=self.super_password)
 

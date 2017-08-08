@@ -34,6 +34,7 @@ class JobLocationMenu:
 
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
+    raise_exception = True
 
     def check_membership(self, group):
         # Add is_staff and is_superuser checks to stay compatible
