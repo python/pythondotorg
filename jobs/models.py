@@ -252,6 +252,9 @@ class JobReviewComment(ContentManageable):
         comment_was_posted.send(sender=self.__class__, comment=self)
         return super().save(**kwargs)
 
+    def __str__(self):
+        return '<Job #{}: {}>'.format(self.job.pk, self.comment.raw[:50])
+
 
 @receiver(post_save, sender=Job)
 def purge_fastly_cache(sender, instance, **kwargs):
