@@ -128,10 +128,10 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.comments',
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'django_comments',
     'django_comments_xtd',
     'jsonfield',
     'pipeline',
