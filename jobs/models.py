@@ -248,6 +248,9 @@ class JobReviewComment(ContentManageable):
     job = models.ForeignKey(Job, related_name='review_comments')
     comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
+    class Meta:
+        ordering = ('created',)
+
     def save(self, **kwargs):
         comment_was_posted.send(sender=self.__class__, comment=self)
         return super().save(**kwargs)
