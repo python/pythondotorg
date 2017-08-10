@@ -29,9 +29,6 @@ django-timedeltafield==0.7.3
 requests==2.5.1
 
 django-jsonfield==0.9.13
-git+https://github.com/berkerpeksag/django-contrib-comments.git@pydotorg
-django-comments-xtd==1.5.1
-
 django-honeypot==0.4.0
 django-markupfield==1.3.2
 

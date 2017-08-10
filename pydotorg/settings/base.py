@@ -131,8 +131,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'django_comments',
-    'django_comments_xtd',
     'jsonfield',
     'pipeline',
     'sitetree',
@@ -205,11 +203,6 @@ LOGGING = {
 
 ### Development
 DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
-
-### Comments
-
-COMMENTS_APP = 'django_comments_xtd'
-COMMENTS_XTD_MAX_THREAD_LEVEL = 0
 
 ### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'
