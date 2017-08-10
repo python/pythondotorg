@@ -92,15 +92,55 @@
             </form>
         {% endif %}
 
-        {% if under_review or request.user == object.creator %}
+        {% if not under_preview %}
+        {% if jobs_board_admin or user_can_edit %}
             <hr>
             <h1>Comments are only viewable between the submitter and job reviewers.</h1>
             {% load comments %}
-            {% get_comment_count for object as comment_count %}
-            <h2>Job Review Discussion <small>({{ comment_count }} Comment{{ comment_count|pluralize }})</small></h2>
+            <h2>Job Review Discussion</h2>
             {% render_comment_list for object %}
+            <dl id="comments">
+            {% for comment in object.review_comments.all %}
+                <dt>
+                    <strong>{{ comment.created }} - {{ comment.creator.get_full_name|default:comment.creator.get_username }}</strong>
+                </dt>
+                <dd>
+                    {{ comment.comment.rendered|safe }}
+                </dd>
+            {% endfor %}
+            </dl>
+            <form class="wide-form jobs-form" action="{% url 'jobs:job_review_comment_create' %}" method="post">
+                {% csrf_token %}
+                {{ job_review_form.as_p }}
+                {% if user_can_edit %}
+                <div>
+                    <button type="submit" name="Submit">Submit</button>
+                </div>
+                {% elif jobs_board_admin %}
+                <p>
+                    <label for="canned_response">Insert canned response:</label>
+                    <select id="canned_response">
+                        <option value="empty">---</option>
+                        <option value="not_python">No or not enough emphasis on Python</option>
+                        <option value="formatting">Formatting broken</option>
+                        <option value="duplicate">Duplicate posting</option>
+                        <option value="voluntary">Voluntary, non paid job</option>
+                    </select>
+                </p>
+                <div>
+                    <a class="review_button button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
+                    <button type="submit" name="Submit">Comment</button>
+                    {% if object.status != 'approved' %}
+                    <button class="review_button" name="action" value="approve">Approve</button>
+                    {% endif %}
+                    {% if object.status != 'rejected' %}
+                    <button class="review_button" name="action" value="reject">Reject</button>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </form>
             <hr>
-            {% render_comment_form for object %}
+        {% endif %}
         {% endif %}
 
 
@@ -183,7 +223,7 @@
 {% endblock right_sidebar_header %}
 
 {% block extra_js %}
-{% if under_review %}
+{% if jobs_board_admin %}
 <script type="text/javascript">
     // TODO: allow configuring canned responses in admin
     var responses = {

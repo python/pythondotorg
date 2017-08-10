@@ -1,23 +1,21 @@
-{% extends "base.html" %}
-{% load i18n %}
+{% extends "successstories/base.html" %}
+{% load honeypot %}
 
 {% block page_title %}Submit Your Success Story | {{ SITE_INFO.site_name }}{% endblock %}
 
-{% block body_attributes %}class="python default-page success-stories"{% endblock %}
-
-
-{% block content_attributes %}with-right-sidebar{% endblock %}
-
+{% block body_attributes %}class="python default-page success-story"{% endblock %}
 
 {% block content %}
     
     <div class="text">
-    
-        <h1 class="page-title">{% trans "Submit your Success Story" %}</h1>
+
+        <h1 class="page-title">Submit your Success Story</h1>
         
-        <form class="wide-form" action="" method="post">{% csrf_token %}
+        <form class="wide-form" action="" method="post">
+            {% csrf_token %}
             {{ form.as_p }}
-            <p><button type="submit" name="Submit">{% trans "Submit" %}</button></p>
+            {% render_honeypot_field %}
+            <p><button type="submit" name="Submit">Submit</button></p>
         </form>
     
     </div>

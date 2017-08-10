@@ -1,17 +1,15 @@
-from braces.views import GroupRequiredMixin
-from django.contrib import comments, messages
-from django.contrib.comments import signals
-from django.contrib.comments.views.comments import CommentPostBadRequest
+from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
-from django.utils.html import escape
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
-from .forms import JobForm
+from braces.views import GroupRequiredMixin
+
+from .forms import JobForm, JobReviewCommentForm
 from .mixins import LoginRequiredMixin
-from .models import Job, JobType, JobCategory
+from .models import Job, JobType, JobCategory, JobReviewComment
 
 
 class JobListMenu:
@@ -36,6 +34,14 @@ class JobLocationMenu:
 
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
+    raise_exception = True
+
+    def check_membership(self, group):
+        # Add is_staff and is_superuser checks to stay compatible
+        # with current staff members.
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return True
+        return super().check_membership(group)
 
 
 class JobMixin:
@@ -53,9 +59,18 @@ class JobMixin:
             'active_types': JobType.objects.with_active_jobs(),
             'active_categories': JobCategory.objects.with_active_jobs(),
             'active_locations': active_locations,
+            'jobs_board_admin': self.has_jobs_board_admin_access(),
         })
 
         return context
+
+    def has_jobs_board_admin_access(self):
+        # Add is_staff and is_superuser checks to stay compatible
+        # with current staff members.
+        if self.request.user.is_staff or self.request.user.is_superuser:
+            return True
+        user_groups = self.request.user.groups.values_list('name', flat=True)
+        return JobBoardAdminRequiredMixin.group_required in user_groups
 
 
 class JobList(JobListMenu, JobMixin, ListView):
@@ -66,17 +81,11 @@ class JobList(JobListMenu, JobMixin, ListView):
         return super().get_queryset().visible().select_related()
 
 
-class JobListMine(JobMixin, ListView):
-    model = Job
+class JobListMine(LoginRequiredMixin, JobMixin, ListView):
     paginate_by = 25
 
     def get_queryset(self):
-        queryset = super().get_queryset()
-        if self.request.user.is_authenticated():
-            q = Q(creator=self.request.user)
-        else:
-            raise Http404
-        return queryset.filter(q)
+        return Job.objects.by(self.request.user).select_related()
 
 
 class JobListType(JobTypeMenu, ListView):
@@ -180,11 +189,6 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         except (KeyError, Job.DoesNotExist):
             return redirect('jobs:job_review')
 
-        if request.POST.get('comment', '').strip():
-            ret = self._save_comment(job)
-            if ret is not True:
-                return ret
-
         if action == 'approve':
             job.approve(request.user)
             messages.add_message(self.request, messages.SUCCESS, "'%s' approved." % job)
@@ -202,92 +206,27 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
             job.status = Job.STATUS_ARCHIVED
             job.save()
             messages.add_message(self.request, messages.SUCCESS, "'%s' archived." % job)
+        else:
+            raise Http404
 
         return redirect('jobs:job_review')
 
-    def _save_comment(self, job):
-        data = self.request.POST.copy()
-        if self.request.user.is_authenticated():
-            if not data.get('name', ''):
-                data['name'] = self.request.user.get_full_name() or self.request.user.get_username()
-            if not data.get('email', ''):
-                data['email'] = self.request.user.email
-
-        form = comments.get_form()(job, data=data)
-        if form.security_errors():
-            return CommentPostBadRequest(
-                "The comment form failed security verification: %s" % \
-                    escape(str(form.security_errors())))
-        if form.errors:
-            return CommentPostBadRequest(
-                "Validation error in comment: %s" % \
-                    escape(str(form.errors)))
-
-        comment = form.get_comment_object()
-        comment.ip_address = self.request.META.get("REMOTE_ADDR", None)
-        comment.user = self.request.user
-
-        # Signal that the comment is about to be saved
-        responses = signals.comment_will_be_posted.send(
-            sender=comment.__class__,
-            comment=comment,
-            request=self.request
-        )
-
-        for (receiver, response) in responses:
-            if response == False:
-                return CommentPostBadRequest(
-                    "comment_will_be_posted receiver %r killed the comment" % receiver.__name__)
-
-        # Save the comment and signal that it was saved
-        comment.save()
-        signals.comment_was_posted.send(
-            sender=comment.__class__,
-            comment=comment,
-            request=self.request
-        )
-        return True
-
 
 class JobDetail(JobMixin, DetailView):
-    model = Job
 
-    def get_object(self, queryset=None):
-        """ Show only approved jobs to the public, staff can see all jobs """
-        # 404 if job doesn't exist
-        try:
-            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
-        except Job.DoesNotExist:
-            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
-
-        # Staff can see all jobs
-        if self.request.user.is_staff:
-            return job
-
-        # Creator can see their own jobs no matter the status
-        if job.creator == self.request.user:
-            return job
-
-        # For everyone else the job needs to be visible
-        if job.visible:
-            return job
-
-        # Return None to signal 401 unauthorized
-        return None
-
-    def get(self, request, *args, **kwargs):
-        self.object = self.get_object()
-
-        if self.object is None:
-            return HttpResponse(content='Unauthorized', status=401)
-
-        context = self.get_context_data(object=self.object)
-        return self.render_to_response(context)
+    def get_queryset(self):
+        queryset = Job.objects.select_related()
+        if self.has_jobs_board_admin_access():
+            return queryset
+        if self.request.user.is_authenticated():
+            return queryset.by(self.request.user)
+        return queryset.visible()
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(
             category_jobs=self.object.category.jobs.select_related('company__name')[:5],
-            user_can_edit=(self.object.creator == self.request.user)
+            user_can_edit=(self.object.creator == self.request.user),
+            job_review_form=JobReviewCommentForm(initial={'job': self.object}),
         )
         ctx.update(kwargs)
         return ctx
@@ -342,25 +281,33 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         return ctx
 
 
-class JobDetailReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobDetail):
+class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
+    model = JobReviewComment
+    form_class = JobReviewCommentForm
 
-    def get_queryset(self):
-        """ Only staff and creator can review """
-        if self.request.user.is_staff:
-            return Job.objects.select_related()
+    def get_success_url(self):
+        return reverse('jobs:job_detail', kwargs={'pk': self.request.POST.get('job')})
+
+    def form_valid(self, form):
+        if (self.request.user.username != form.instance.job.creator.username and not
+                self.has_jobs_board_admin_access()):
+            return HttpResponse('Unauthorized', status=401)
+        action = self.request.POST.get('action')
+        valid_actions = {'approve': Job.STATUS_APPROVED, 'reject': Job.STATUS_REJECTED}
+        if action is not None and action in valid_actions:
+            if not self.has_jobs_board_admin_access():
+                return HttpResponse('Unauthorized', status=401)
+            action_status = valid_actions.get(action)
+            getattr(form.instance.job, action)(self.request.user)
+            messages.add_message(
+                self.request, messages.SUCCESS,
+                "'{}' {}.".format(form.instance.job, action_status)
+            )
         else:
-            raise Http404()
-
-    def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            user_can_edit=(
-                self.object.creator == self.request.user
-                or self.request.user.is_staff
-            ),
-            under_review=True,
-        )
-        ctx.update(kwargs)
-        return ctx
+            messages.add_message(self.request, messages.SUCCESS,
+                                 'Your comment has been posted.')
+        form.instance.creator = self.request.user
+        return super().form_valid(form)
 
 
 class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
@@ -375,8 +322,8 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
-        if self.request.user.is_authenticated():
-            kwargs['initial'] = {'email': self.request.user.email}
+        # We don't allow posting a job without logging in to the site.
+        kwargs['initial'] = {'email': self.request.user.email}
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -396,8 +343,8 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
     form_class = JobForm
 
     def get_queryset(self):
-        if self.request.user.is_staff:
-            return super().get_queryset()
+        if self.has_jobs_board_admin_access():
+            return Job.objects.select_related()
         return self.request.user.jobs_job_creator.all()
 
     def form_valid(self, form):
@@ -422,26 +369,3 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
             return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
         else:
             return super().get_success_url()
-
-
-class JobChangeStatus(LoginRequiredMixin, JobMixin, View):
-    """
-    Abstract class to change a job's status; see the concrete implentations below.
-    """
-
-    def post(self, request, pk):
-        job = get_object_or_404(self.request.user.jobs_job_creator, pk=pk)
-        job.status = self.new_status
-        job.save()
-        messages.add_message(self.request, messages.SUCCESS, self.success_message)
-        return redirect('job_detail', job.id)
-
-
-class JobPublish(JobChangeStatus):
-    new_status = Job.STATUS_APPROVED
-    success_message = 'Your job listing has been published.'
-
-
-class JobArchive(JobChangeStatus):
-    new_status = Job.STATUS_ARCHIVED
-    success_message = 'Your job listing has been archived and is no longer public.'

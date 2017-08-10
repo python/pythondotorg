@@ -6,6 +6,8 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
 from cms.views import custom_404
+from users.views import HoneypotSignupView
+
 from . import views
 from .urls_api import v1_api
 
@@ -42,9 +44,10 @@ urlpatterns = [
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
 
+    # Override /accounts/signup/ to add Honeypot.
+    url(r'^accounts/signup/', HoneypotSignupView.as_view()),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
-    url(r'^comments/', include('django_comments_xtd.urls')),
     url(r'^community/', include('community.urls', namespace='community')),
     url(r'^community/microbit/$', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     url(r'^events/', include('events.urls', namespace='events')),

@@ -5,6 +5,8 @@ from cms.forms import ContentManageableModelForm
 
 
 class StoryForm(ContentManageableModelForm):
+    pull_quote = forms.CharField(widget=forms.Textarea(attrs={'rows': 5}))
+
     class Meta:
         model = Story
         fields = (
@@ -13,6 +15,7 @@ class StoryForm(ContentManageableModelForm):
             'company_url',
             'category',
             'author',
+            'author_email',
             'pull_quote',
             'content'
         )

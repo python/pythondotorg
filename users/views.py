@@ -11,6 +11,7 @@ from django.views.generic import (
     CreateView, DetailView, ListView, TemplateView, UpdateView
 )
 
+from allauth.account.views import SignupView
 from honeypot.decorators import check_honeypot
 
 
@@ -138,3 +139,10 @@ class UserList(ListView):
 
     def get_queryset(self):
         return super().get_queryset().searchable()
+
+
+class HoneypotSignupView(SignupView):
+
+    @method_decorator(check_honeypot)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)

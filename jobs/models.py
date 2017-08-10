@@ -14,7 +14,9 @@ from cms.models import ContentManageable, NameSlugModel
 from fastly.utils import purge_url
 
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
-from .signals import job_was_submitted, job_was_approved, job_was_rejected
+from .signals import (
+    job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted
+)
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -240,6 +242,21 @@ class Job(ContentManageable):
 
     def get_next_listing(self):
         return self.get_next_by_created(status=self.STATUS_APPROVED)
+
+
+class JobReviewComment(ContentManageable):
+    job = models.ForeignKey(Job, related_name='review_comments')
+    comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+
+    class Meta:
+        ordering = ('created',)
+
+    def save(self, **kwargs):
+        comment_was_posted.send(sender=self.__class__, comment=self)
+        return super().save(**kwargs)
+
+    def __str__(self):
+        return '<Job #{}: {}>'.format(self.job.pk, self.comment.raw[:50])
 
 
 @receiver(post_save, sender=Job)

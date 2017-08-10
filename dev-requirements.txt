@@ -1,6 +1,12 @@
--r requirements.txt
+-r base-requirements.txt
+
+# Required for running tests
+
+factory-boy==2.9.0
+Faker==0.7.18
 
 # Extra stuff required for local dev
 
+django-debug-toolbar
 coverage
 ddt

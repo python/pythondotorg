@@ -1,22 +1,26 @@
-from django.contrib import comments
 from django.contrib.auth import get_user_model
 from django.core import mail
-
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from ..models import Job
 from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
-    ReviewJobFactory
+    ReviewJobFactory, JobsBoardAdminGroupFactory,
 )
-from users.factories import StaffUserFactory
-
-from django_comments_xtd.utils import mail_sent_queue
+from users.factories import UserFactory
 
 
 class JobsViewTests(TestCase):
     def setUp(self):
+        self.user = UserFactory(password='password')
+
+        self.staff = UserFactory(
+            password='password',
+            is_staff=True,
+            groups=[JobsBoardAdminGroupFactory()],
+        )
+
         self.job_category = JobCategoryFactory(
             name='Game Production',
             slug='game-production'
@@ -46,7 +50,8 @@ class JobsViewTests(TestCase):
             region='TN',
             country='USA',
             email='hr@company.com',
-            is_featured=True
+            is_featured=True,
+            creator=self.user,
         )
         self.job_draft.job_types.add(self.job_type)
 
@@ -82,7 +87,7 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_list_mine')
 
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 404)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
 
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
@@ -119,7 +124,7 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
 
-        job = ApprovedJobFactory(
+        job = DraftJobFactory(
             description='My job listing',
             category=self.job_category,
             city='Memphis',
@@ -129,6 +134,7 @@ class JobsViewTests(TestCase):
             creator=creator,
             is_featured=True
         )
+        job.job_types.add(self.job_type)
 
         self.client.login(username=username, password=password)
         url = reverse('jobs:job_edit', kwargs={'pk': job.pk})
@@ -137,10 +143,25 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
+        # Edit the job. Job.editable should return True to be
+        # able to edit a job.
+        form = response.context['form']
+        data = form.initial
+        data['description'] = 'Lorem ipsum dolor sit amet'
+        response = self.client.post(url, data)
+        self.assertRedirects(response, '/jobs/%d/preview/' % job.pk)
+        edited_job = Job.objects.get(pk=job.pk)
+        self.assertEqual(edited_job.description.raw, 'Lorem ipsum dolor sit amet')
+
         self.client.logout()
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)
-        self.assertRedirects(response, '/accounts/login/?next=/jobs/45/edit/')
+        self.assertRedirects(response, '/accounts/login/?next=/jobs/%d/edit/' % job.pk)
+
+        # Staffs can see the edit form.
+        self.client.login(username=self.staff.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
 
     def test_job_detail(self):
         url = self.job.get_absolute_url()
@@ -150,27 +171,35 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.context['jobs_count'], 1)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
-        # Test 401 unauthorized
+        # Logout users cannot see the job details.
         url = self.job_draft.get_absolute_url()
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 401)
+        self.assertEqual(response.status_code, 404)
+
+        # Creator can see their own jobs no matter the status.
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # Try to reach a job that doesn't exist.
+        url = reverse('jobs:job_detail', kwargs={'pk': 999999})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_job_detail_security(self):
         """
         Ensure the public can only see approved jobs, but staff can view
         all jobs
         """
-        staff_user = StaffUserFactory()
-
         response = self.client.get(self.job.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         # Normal users can't see non-approved Jobs
         response = self.client.get(self.job_draft.get_absolute_url())
-        self.assertIn(response.status_code, [401, 404])
+        self.assertEqual(response.status_code, 404)
 
         # Staff can see everything
-        self.client.login(username=staff_user.username, password='password')
+        self.client.login(username=self.staff.username, password='password')
         response = self.client.get(self.job.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -214,6 +243,11 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
         self.client.login(username=creator.username, password='secret')
+
+        # Check that the email is already there.
+        response = self.client.get(url)
+        self.assertEqual(response.context['form'].initial['email'], email)
+
         response = self.client.post(url, post_data, follow=True)
 
         # Job was saved in draft mode
@@ -246,6 +280,13 @@ class JobsViewTests(TestCase):
         )
 
         del mail.outbox[:]
+
+    def test_job_preview_404(self):
+        url = reverse('jobs:job_preview', kwargs={'pk': 9999999})
+        # /jobs/<pk>/preview/ requires to be logged in.
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
 
     def test_job_create_prepopulate_email(self):
         create_url = reverse('jobs:job_create')
@@ -359,6 +400,10 @@ class JobsReviewTests(TestCase):
         self.creator_password = 'secret'
         self.contact = 'John Doe'
 
+        self.another_username = 'another'
+        self.another_email = 'another@example.com'
+        self.another_password = 'secret'
+
         User = get_user_model()
         self.creator = User.objects.create_user(
             self.creator_username,
@@ -370,6 +415,12 @@ class JobsReviewTests(TestCase):
             self.super_username,
             self.super_email,
             self.super_password
+        )
+
+        self.another = User.objects.create_user(
+            self.another_username,
+            self.another_email,
+            self.another_password
         )
 
         self.job_category = JobCategoryFactory(
@@ -427,7 +478,13 @@ class JobsReviewTests(TestCase):
         url = reverse('jobs:job_review')
 
         response = self.client.get(url)
-        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+
+        self.client.login(username=self.another_username, password=self.another_password)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, '403.html')
+        self.client.logout()
 
         self.client.login(username=self.super_username, password=self.super_password)
 
@@ -446,7 +503,6 @@ class JobsReviewTests(TestCase):
         self.assertEqual(j1.status, Job.STATUS_APPROVED)
         # exactly one approval notification email should sent
         # to the offer creator
-        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
@@ -460,12 +516,16 @@ class JobsReviewTests(TestCase):
         self.assertEqual(j2.status, Job.STATUS_REJECTED)
         # exactly one rejection notification email should sent
         # to the offer creator
-        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
         message = mail.outbox[0]
         self.assertEqual(message.to, [self.creator.email, 'jobs@python.org'])
         self.assertIn(self.contact, message.body)
         mail.outbox = []
+
+        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'archive'})
+        self.assertRedirects(response, reverse('jobs:job_review'))
+        j2 = Job.objects.get(pk=self.job2.pk)
+        self.assertEqual(j2.status, Job.STATUS_ARCHIVED)
 
         self.client.post(url, data={'job_id': self.job3.pk, 'action': 'remove'})
         j3 = Job.objects.get(pk=self.job3.pk)
@@ -474,48 +534,77 @@ class JobsReviewTests(TestCase):
         response = self.client.post(url, data={'job_id': 999999, 'action': 'approve'})
         self.assertEqual(response.status_code, 302)
 
+        # Invalid action should raise a 404 error.
+        response = self.client.post(url, data={'job_id': self.job2.pk, 'action': 'invalid'})
+        self.assertEqual(response.status_code, 404)
+
     def test_job_comment(self):
         mail.outbox = []
-        self.client.login(username=self.super_username, password=self.super_password)
-
-        form = comments.get_form()(self.job1)
-        url = reverse('comments-post-comment')
-
+        self.client.login(username=self.creator_username, password=self.creator_password)
+        url = reverse('jobs:job_review_comment_create')
         form_data = {
-            'name': 'Reviewer',
-            'email': self.superuser.email,
-            'url': 'http://example.com',
+            'job': self.job1.pk,
             'comment': 'Lorem ispum',
-            'reply_to': 0,
-            'post': 'Post'
         }
-        form_data.update(form.initial)
-
         self.assertEqual(len(mail.outbox), 0)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertIn('http://testserver/comments/posted/?c=', response['Location'])
-
-        mail_sent_queue.get(block=True)
         self.assertEqual(len(mail.outbox), 1)
+        # We should only send an email to jobs@p.o.
+        self.assertEqual(mail.outbox[0].to, ['jobs@python.org'])
+        self.assertIn('Dear Python Job Board Admin,', mail.outbox[0].body)
+        self.client.logout()
 
-        self.assertEqual(mail.outbox[0].to, [self.creator.email, 'jobs@python.org'])
-
-        form = comments.get_form()(self.job1)
-        form_data = {
-            'name': 'creator',
-            'email': self.creator.email,
-            'url': 'http://example.com',
-            'comment': 'Lorem ispum',
-            'reply_to': 0,
-            'post': 'Post'
-        }
-        form_data.update(form.initial)
+        # Send a comment as a jobs board admin.
+        mail.outbox = []
+        self.client.login(username=self.super_username, password=self.super_password)
+        self.assertEqual(len(mail.outbox), 0)
         response = self.client.post(url, form_data)
         self.assertEqual(response.status_code, 302)
-        self.assertIn('http://testserver/comments/posted/?c=', response['Location'])
+        self.assertEqual(len(mail.outbox), 1)
+        # We should send an email to both jobs@p.o and job submitter.
+        self.assertEqual(mail.outbox[0].to, ['jobs@python.org', self.creator_email])
+        self.assertIn(
+            'There is a new review comment available for your job posting.',
+            mail.outbox[0].body
+        )
 
-        mail_sent_queue.get(block=True)
-        self.assertEqual(len(mail.outbox), 3)
-        self.assertEqual(mail.outbox[1].to, [self.creator.email, 'jobs@python.org'])
-        self.assertEqual(mail.outbox[2].to, [self.superuser.email])
+    def test_job_comment_401(self):
+        mail.outbox = []
+        self.client.login(username=self.another_username, password=self.another_password)
+        url = reverse('jobs:job_review_comment_create')
+        form_data = {
+            'job': self.job1.pk,
+            'comment': 'Foooo',
+        }
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_job_comment_401_approve(self):
+        mail.outbox = []
+        self.client.login(username=self.creator_username, password=self.creator_password)
+        url = reverse('jobs:job_review_comment_create')
+        form_data = {
+            'job': self.job1.pk,
+            'action': 'approve',
+        }
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 401)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_job_comment_approve(self):
+        mail.outbox = []
+        self.client.login(username=self.super_username, password=self.super_password)
+        url = reverse('jobs:job_review_comment_create')
+        form_data = {
+            'job': self.job1.pk,
+            'action': 'approve',
+        }
+        self.assertEqual(len(mail.outbox), 0)
+        response = self.client.post(url, form_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(mail.outbox[0].to, [self.creator.email, 'jobs@python.org'])

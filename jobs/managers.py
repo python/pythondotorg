@@ -74,3 +74,6 @@ class JobQuerySet(QuerySet):
             Q(status__exact=self.model.STATUS_APPROVED) &
             Q(expires__gte=now)
         )
+
+    def by(self, user):
+        return self.filter(Q(creator=user))

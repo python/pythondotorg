@@ -1,12 +1,9 @@
 from django import forms
-from django.forms.widgets import CheckboxSelectMultiple
-from django.utils.translation import ugettext_lazy as _
+from django.forms.widgets import CheckboxSelectMultiple, HiddenInput
 
-from django_comments_xtd.conf import settings as comments_settings
-from django_comments_xtd.forms import CommentForm
-from django_comments_xtd.models import TmpXtdComment
+from markupfield.widgets import MarkupTextarea
 
-from .models import Job
+from .models import Job, JobReviewComment
 from cms.forms import ContentManageableModelForm
 
 
@@ -61,38 +58,19 @@ class JobForm(ContentManageableModelForm):
         return obj
 
 
-class JobCommentForm(CommentForm):
-    reply_to = forms.IntegerField(required=True, initial=0, widget=forms.HiddenInput())
+class JobReviewCommentForm(ContentManageableModelForm):
+    # We set 'required' to False because we can also set Job's status.
+    # See JobReviewCommentCreate.form_valid() for details.
+    comment = forms.CharField(required=False, widget=MarkupTextarea())
 
-    def __init__(self, *args, **kwargs):
-        comment = kwargs.pop("comment", None)
-        if comment:
-            initial = kwargs.pop("initial", {})
-            initial.update({"reply_to": comment.pk})
-            kwargs["initial"] = initial
-        super(JobCommentForm, self).__init__(*args, **kwargs)
-        self.fields['name'] = forms.CharField(
-            widget=forms.TextInput(attrs={'placeholder': _('name')}))
-        self.fields['email'] = forms.EmailField(
-            label=_("Email"), help_text=_("Required for comment verification"),
-            widget=forms.TextInput(attrs={'placeholder': _('email')})
-        )
-        self.fields['url'] = forms.URLField(
-            required=False,
-            widget=forms.TextInput(attrs={'placeholder': _('website')}))
-        self.fields['comment'] = forms.CharField(
-            widget=forms.Textarea(attrs={'placeholder': _('comment')}),
-            max_length=comments_settings.COMMENT_MAX_LENGTH)
+    class Meta:
+        model = JobReviewComment
+        fields = ['job', 'comment']
+        widgets = {
+            'job': HiddenInput(),
+        }
 
-    def get_comment_model(self):
-        return TmpXtdComment
-
-    def get_comment_create_data(self):
-        data = super(JobCommentForm, self).get_comment_create_data()
-        data.update({'thread_id': 0, 'level': 0, 'order': 1,
-                     'parent_id': self.cleaned_data['reply_to'],
-                     'followup': True})
-        if comments_settings.COMMENTS_XTD_CONFIRM_EMAIL:
-            # comment must be verified before getting approved
-            data['is_public'] = False
-        return data
+    def save(self, commit=True):
+        # Don't try to add a new comment if the 'comment' field is empty.
+        if self.cleaned_data['comment']:
+            return super().save(commit=commit)

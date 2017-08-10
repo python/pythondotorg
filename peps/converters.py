@@ -1,3 +1,4 @@
+import functools
 import re
 import os
 
@@ -13,22 +14,24 @@ PEP_TEMPLATE = 'pages/pep-page.html'
 pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
 
-def check_paths():
-    """ Checks to ensure our PEP_REPO_PATH is setup correctly """
-    if not hasattr(settings, 'PEP_REPO_PATH'):
-        raise ImproperlyConfigured("No PEP_REPO_PATH in settings")
+def check_paths(func):
+    """Ensure that our PEP_REPO_PATH is setup correctly."""
+    @functools.wraps(func)
+    def wrapped(*args, **kwargs):
+        if not hasattr(settings, 'PEP_REPO_PATH'):
+            raise ImproperlyConfigured('No PEP_REPO_PATH in settings')
+        if not os.path.exists(settings.PEP_REPO_PATH):
+            raise ImproperlyConfigured('Path set as PEP_REPO_PATH does not exist')
+        return func(*args, **kwargs)
+    return wrapped
 
-    if not os.path.exists(settings.PEP_REPO_PATH):
-        raise ImproperlyConfigured("PEP_REPO_PATH in settings does not exist")
 
-
+@check_paths
 def convert_pep0():
     """
     Take existing generated pep-0000.html and convert to something suitable
     for a Python.org Page returns the core body HTML necessary only
     """
-    check_paths()
-
     pep0_path = os.path.join(settings.PEP_REPO_PATH, 'pep-0000.html')
     pep0_content = open(pep0_path).read()
 
@@ -60,7 +63,7 @@ def convert_pep0():
         if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
             t.parent.extract()
 
-    return ''.join([header.prettify(), pep_content.prettify()])
+    return ''.join([str(header), str(pep_content)])
 
 
 def get_pep0_page(commit=True):
@@ -109,11 +112,11 @@ def fix_headers(soup, data):
     return soup, data
 
 
+@check_paths
 def convert_pep_page(pep_number, content):
     """
     Handle different formats that pep2html.py outputs
     """
-    check_paths()
     data = {
         'title': None,
     }
@@ -132,11 +135,11 @@ def convert_pep_page(pep_number, content):
 
         header = soup.body.find('div', class_="header")
         header, data = fix_headers(header, data)
-        data['header'] = header.prettify()
+        data['header'] = str(header)
 
         main_content = soup.body.find('div', class_="content")
 
-        data['main_content'] = main_content.prettify()
+        data['main_content'] = str(main_content)
         data['content'] = ''.join([
             data['header'],
             data['main_content']
@@ -155,7 +158,7 @@ def convert_pep_page(pep_number, content):
                     data['title'],
                 )
 
-        data['content'] = soup.prettify()
+        data['content'] = str(soup)
 
     # Fix PEP links
     pep_content = BeautifulSoup(data['content'])
@@ -172,7 +175,11 @@ def convert_pep_page(pep_number, content):
 
         b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
 
-    data['content'] = pep_content.prettify()
+    # Strip <html> and <body> tags.
+    pep_content.html.unwrap()
+    pep_content.body.unwrap()
+
+    data['content'] = str(pep_content)
 
     source_link = "https://github.com/python/peps/blob/master/pep-{0}.txt".format(pep_number)
     data['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
@@ -187,6 +194,7 @@ def get_pep_page(pep_number, commit=True):
     pep_path = os.path.join(settings.PEP_REPO_PATH, 'pep-{}.html'.format(pep_number))
     if not os.path.exists(pep_path):
         print("PEP Path '{}' does not exist, skipping".format(pep_path))
+        return
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
 
@@ -208,6 +216,7 @@ def add_pep_image(pep_number, path):
     image_path = os.path.join(settings.PEP_REPO_PATH, path)
     if not os.path.exists(image_path):
         print("Image Path '{}' does not exist, skipping".format(image_path))
+        return
 
     try:
         page = Page.objects.get(path=pep_url(pep_number))
@@ -250,12 +259,13 @@ def add_pep_image(pep_number, path):
         if img_tag['src'] == path:
             img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
 
-    page.content.raw = soup.prettify()
+    page.content.raw = str(soup)
     page.save()
 
     return image
 
 
+@check_paths
 def get_peps_rss():
     rss_feed = os.path.join(settings.PEP_REPO_PATH, 'peps.rss')
     if not os.path.exists(rss_feed):

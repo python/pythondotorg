@@ -64,6 +64,7 @@ AUTHENTICATION_BACKENDS = (
     "allauth.account.auth_backends.AuthenticationBackend",
 )
 
+### Allauth
 LOGIN_REDIRECT_URL = 'home'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'home'
 ACCOUNT_EMAIL_REQUIRED = True
@@ -72,6 +73,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_ADAPTER = 'users.adapters.PythonDotOrgAdapter'
 
 ### Templates
 
@@ -126,10 +128,10 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.comments',
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'django_comments',
     'django_comments_xtd',
     'jsonfield',
     'pipeline',
@@ -208,7 +210,6 @@ DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
 
 COMMENTS_APP = 'django_comments_xtd'
 COMMENTS_XTD_MAX_THREAD_LEVEL = 0
-COMMENTS_XTD_FORM_CLASS = "jobs.forms.JobCommentForm"
 
 ### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'
@@ -231,6 +232,9 @@ FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
 # Jobs
 JOB_THRESHOLD_DAYS = 90
 JOB_FROM_EMAIL = 'jobs@python.org'
+
+# Mail
+DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 

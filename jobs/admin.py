@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import JobType, JobCategory, Job
+from .models import JobType, JobCategory, Job, JobReviewComment
 from cms.admin import NameSlugAdmin, ContentManageableModelAdmin
 
 
@@ -10,6 +10,7 @@ class JobAdmin(ContentManageableModelAdmin):
     list_display = ['__str__', 'job_title', 'status', 'company_name']
     list_filter = ['status', 'telecommuting']
     raw_id_fields = ['category']
+    search_fields = ['id', 'job_title']
 
 
 class JobTypeAdmin(NameSlugAdmin):
@@ -25,6 +26,13 @@ class JobCategoryAdmin(NameSlugAdmin):
     list_filter = ['active']
     ordering = ('-active', 'name')
 
+
+class JobReviewCommentAdmin(ContentManageableModelAdmin):
+    list_display = ['__str__', 'job']
+    ordering = ('-created',)
+
 admin.site.register(JobCategory, JobCategoryAdmin)
 
 admin.site.register(Job, JobAdmin)
+
+admin.site.register(JobReviewComment, JobReviewCommentAdmin)

@@ -1,13 +1,15 @@
+{# This is used to show success stories on frontpage. #}
+
 {% load successstories %}
 
                         <div class="shrubbery">
-                            {% get_stories_featured as success_stories %}
+                            {% get_featured_story as story %}
 
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-success-stories"></span>Success Stories</h2>
                             <p class="give-me-more"><a href="{% url 'success_story_list' %}" title="More Success Stories">More</a></p>
 
-                            {% for story in success_stories %}
-                            <div class="success-story-item" data-weight="{{ story.weight }}" id="success-story-{{ story.pk }}" style="display: none;">
+                            {% if story %}
+                            <div class="success-story-item" id="success-story-{{ story.pk }}">
 
                             <blockquote>
                                 <a href="{{ story.get_absolute_url }}">{{ story.pull_quote }}</a>
@@ -26,6 +28,6 @@
                                 </tbody>
                             </table>
                             </div>
-                            {% endfor %}
+                            {% endif %}
 
                         </div><!-- end .shrubbery -->

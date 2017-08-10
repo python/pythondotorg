@@ -395,32 +395,6 @@ $().ready(function() {
         } // end hastouch
     }
 
-    /* Randomly show a success story based on weight */
-    var success_divs = $("div.success-story-item");
-    var weight_sum = 0;
-    success_divs.each( function() {
-        weight_sum += parseInt($(this).data('weight'), 10);
-    });
-
-    /* Random int between zero and weight_sum */
-    var random_int = Math.floor(Math.random() * (weight_sum - 0 + 1)) + 0;
-
-    /* Determine which to show based on weight */
-    success_divs.each( function() {
-        var current_weight = parseInt($(this).data('weight'), 10);
-        if( random_int < current_weight ) {
-            // Show
-            $(this).show();
-            return false;
-        }
-        random_int -= current_weight;
-    });
-
-    /* Handle case of only a single success story */
-    if(success_divs.length == 1) {
-        $("div.success-story-item").show();
-    }
-
     /* If there is no HTML5 placeholder present, run a javascript equivalent */
     if ( hasplaceholder === false ) {
 

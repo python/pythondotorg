@@ -2171,10 +2171,13 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: #808080;
 }
 
+// Style docutils directives
+
 div.note {
     background-color: #eee;
     border: 1px solid #ccc;
     padding: px2em( 5px ) px2em( 10px );
+    margin-bottom: px2em( 25px );
     > p {
       margin-bottom: 0;
     }
@@ -2182,6 +2185,51 @@ div.note {
 
 p.admonition-title {
     font-weight: bold;
+}
+
+p.admonition-title:after {
+    content: ":";
+}
+
+div.warning {
+    background-color: #ffe4e4;
+    border: 1px solid #f66;
+    padding: px2em( 5px ) px2em( 10px );
+    margin-bottom: px2em( 25px );
+    > p {
+        margin-bottom: 0;
+    }
+}
+
+div.sidebar {
+    margin: 0 0 0.5em 1em;
+    border: 1px solid #ddb;
+    padding: px2em( 7px ) px2em( 7px ) 0 px2em( 7px );
+    background-color: #ffe;
+    width: 40%;
+    float: right;
+    > p.sidebar-title {
+        font-size: px2em( 16px );
+        font-weight: bold;
+        margin-top: 0;
+    }
+    > p {
+        font-size: px2em( 15px );
+        margin-top: px2em( 10px );
+        margin-bottom: 0;
+    }
+}
+
+img.align-right {
+    float: right;
+    margin-left: px2em( 20px );
+}
+
+
+// For django-haystack's highlighter
+
+span.highlighted {
+    background-color: yellow;
 }
 
 /* ! ===== Slideshow requirements ===== */
