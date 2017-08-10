@@ -96,9 +96,7 @@
         {% if jobs_board_admin or user_can_edit %}
             <hr>
             <h1>Comments are only viewable between the submitter and job reviewers.</h1>
-            {% load comments %}
             <h2>Job Review Discussion</h2>
-            {% render_comment_list for object %}
             <dl id="comments">
             {% for comment in object.review_comments.all %}
                 <dt>
