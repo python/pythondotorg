@@ -25,7 +25,7 @@ class ContentManageable(models.Model):
     # where there isn't a request.user sitting around). However, we still leave
     # it blank=False so that any time we try to *validate* a ContentManageable
     # object we'll get an error. This is a reasonable compromise that lets us
-    # track creators fairly well without neccisarily over-enforcing it in places
+    # track creators fairly well without necessarily over-enforcing it in places
     # where it'd be invasive.
     creator = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_creator")
     last_modified_by = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, related_name="%(app_label)s_%(class)s_modified")
