@@ -14,13 +14,15 @@ class OSResource(GenericResource):
         resource_name = 'downloads/os'
         fields = [
             'name', 'slug',
+            # The following fields won't show up in the response
+            # because there is no 'User' relation defined in the API.
+            # See 'ReleaseResource.release_page' for an example.
             'creator', 'last_modified_by'
         ]
         filtering = {
             'name': ('exact',),
             'slug': ('exact',),
         }
-
 
 
 class ReleaseResource(GenericResource):
