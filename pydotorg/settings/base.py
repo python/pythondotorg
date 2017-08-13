@@ -179,6 +179,10 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
 ]
 
 # Fixtures
@@ -256,7 +260,29 @@ MESSAGE_TAGS = {
     constants.INFO: 'general',
 }
 
-
 ### SecurityMiddleware
 
 X_FRAME_OPTIONS = 'DENY'
+
+### django-rest-framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'URL_FIELD_NAME': 'resource_uri',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+    },
+}

@@ -2,11 +2,16 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from django.utils.translation import ugettext_lazy as _
 
+from rest_framework.authtoken.admin import TokenAdmin
+
 from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
 from tastypie.models import ApiKey
 
 from .actions import export_csv
 from .models import User, Membership
+
+TokenAdmin.search_fields = ('user__username',)
+TokenAdmin.raw_id_fields = ('user',)
 
 
 class MembershipInline(admin.StackedInline):

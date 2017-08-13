@@ -36,3 +36,6 @@ django-markupfield==1.4.2
 django-allauth==0.32.0
 
 django-waffle==0.12
+
+djangorestframework==3.6.4
+django-filter==1.0.4

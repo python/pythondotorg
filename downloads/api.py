@@ -1,11 +1,15 @@
+from rest_framework import viewsets
+from rest_framework.authentication import TokenAuthentication
+
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
+from pages.api import PageResource
 from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
+from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
 
 from .models import OS, Release, ReleaseFile
-
-from pages.api import PageResource
+from .serializers import OSSerializer, ReleaseSerializer, ReleaseFileSerializer
 
 
 class OSResource(GenericResource):
@@ -68,3 +72,49 @@ class ReleaseFileResource(GenericResource):
             'release': ALL_WITH_RELATIONS,
             'description': ('contains',),
         }
+
+
+# Django Rest Framework
+
+class OSViewSet(viewsets.ModelViewSet):
+    queryset = OS.objects.all()
+    serializer_class = OSSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsStaffOrReadOnly,)
+    filter_fields = ('name', 'slug')
+
+
+class ReleaseViewSet(BaseAPIViewSet):
+    model = Release
+    serializer_class = ReleaseSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsStaffOrReadOnly,)
+    filter_fields = (
+        'name',
+        'slug',
+        'is_published',
+        'pre_release',
+        'version',
+        'release_date',
+    )
+
+
+class ReleaseFileFilter(BaseFilterSet):
+
+    class Meta:
+        model = ReleaseFile
+        fields = {
+            'name': ['exact'],
+            'slug': ['exact'],
+            'description': ['contains'],
+            'os': ['exact'],
+            'release': ['exact'],
+        }
+
+
+class ReleaseFileViewSet(viewsets.ModelViewSet):
+    queryset = ReleaseFile.objects.all()
+    serializer_class = ReleaseFileSerializer
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsStaffOrReadOnly,)
+    filter_class = ReleaseFileFilter

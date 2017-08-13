@@ -9,7 +9,7 @@ from cms.views import custom_404
 from users.views import HoneypotSignupView
 
 from . import views
-from .urls_api import v1_api
+from .urls_api import v1_api, router
 
 handler404 = custom_404
 
@@ -66,6 +66,7 @@ urlpatterns = [
 
     # api
     url(r'^api/', include(v1_api.urls)),
+    url(r'^api/v2/', include(router.urls)),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
