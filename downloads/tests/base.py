@@ -25,7 +25,7 @@ class DownloadMixin:
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 
-class BaseDownloadTests(DownloadMixin, TestCase):
+class BaseDownloadTests(DownloadMixin):
 
     def setUp(self):
         self.release_275_page = Page.objects.create(
@@ -66,6 +66,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
         )
 
         self.release_275_linux = ReleaseFile.objects.create(
+            name='Source tarball',
             os=self.linux,
             release=self.release_275,
             is_source=True,
@@ -79,6 +80,16 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_published=False,
             release_page=self.release_275_page,
         )
+
+        self.draft_release_linux = ReleaseFile.objects.create(
+            name='Source tarball for a draft release',
+            os=self.linux,
+            release=self.draft_release,
+            is_source=True,
+            description='Gzipped source',
+            url='ftp/python/9.7.2/Python-9.7.2.tgz',
+        )
+
         self.hidden_release = Release.objects.create(
             version=Release.PYTHON3,
             name='Python 0.0.0',
