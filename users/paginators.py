@@ -15,7 +15,7 @@ class UserPaginator(Paginator):
 
     @property
     def page_range(self):
-        if self.count <= self._page_range_size:
+        if self.num_pages <= self._page_range_size:
             return super().page_range
         return list(range(
             self._current_page,
