@@ -16,6 +16,6 @@ class UserPaginator(Paginator):
     @property
     def page_range(self):
         return list(range(
-            max(self._current_page, 1),
+            self._current_page,
             min(self._current_page + self._page_range_size + 1, self.num_pages + 1)
         ))
