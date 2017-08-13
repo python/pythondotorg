@@ -19,6 +19,7 @@ from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
+from .paginators import UserPaginator
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
@@ -136,6 +137,7 @@ class UserDetail(DetailView):
 class UserList(ListView):
     model = User
     paginate_by = 25
+    paginator_class = UserPaginator
 
     def get_queryset(self):
         return super().get_queryset().searchable()
