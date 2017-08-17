@@ -19,6 +19,7 @@ from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import User, Membership
+from .paginators import UserPaginator
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
@@ -65,7 +66,6 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
 class MembershipUpdate(LoginRequiredMixin, UpdateView):
     form_class = MembershipUpdateForm
-    model = Membership
     template_name = 'users/membership_form.html'
 
     @method_decorator(check_honeypot)
@@ -110,7 +110,6 @@ class MembershipVoteAffirmDone(TemplateView):
 
 class UserUpdate(LoginRequiredMixin, UpdateView):
     form_class = UserProfileForm
-    model = User
     slug_field = 'username'
     template_name = 'users/user_form.html'
 
@@ -123,22 +122,21 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 
 
 class UserDetail(DetailView):
-    model = User
     slug_field = 'username'
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = User.objects.select_related()
         if self.request.user.username == self.kwargs['slug']:
-            return queryset.select_related()
+            return queryset
         return queryset.searchable()
 
 
 class UserList(ListView):
-    model = User
     paginate_by = 25
+    paginator_class = UserPaginator
 
     def get_queryset(self):
-        return super().get_queryset().searchable()
+        return User.objects.searchable()
 
 
 class HoneypotSignupView(SignupView):

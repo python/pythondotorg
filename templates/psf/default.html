@@ -3,7 +3,12 @@
 {% extends "base.html" %}
 {% load boxes %}
 
+{# TODO: Try to deduplicate this and templates/pages/default.html. #}
 {% block page_title %}{{ page.title }} | Python Software Foundation{% endblock %}
+{% block og_title %}{{ page.title }}{% endblock %}
+{% block page-descript %}{% if page.description and page.description.strip %}{{ page.description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block og-descript %}{% if page.description and page.description.strip %}{{ page.description }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block page-keywords %}{% if page.keywords and page.keywords.strip %}{{ page.keywords }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 
 {% block body_attributes %}class="psf pages default-page"{% endblock %}
 
