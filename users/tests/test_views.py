@@ -163,12 +163,26 @@ class UsersViewsTestCase(TestCase):
         detail_url = reverse('users:user_detail', kwargs={'slug': self.user.username})
         edit_url = reverse('users:user_profile_edit')
         response = self.client.get(detail_url)
+        self.assertTrue(self.user.is_active)
         self.assertNotContains(response, edit_url)
 
         # Ensure edit url is available to logged in users
         self.client.login(username='username', password='password')
         response = self.client.get(detail_url)
         self.assertContains(response, edit_url)
+
+        # Ensure inactive accounts shouldn't be shown to users.
+        user = User.objects.create_user(
+            username='foobar',
+            password='baz',
+            email='paradiselost@example.com',
+        )
+        user.is_active = False
+        user.save()
+        self.assertFalse(user.is_active)
+        detail_url = reverse('users:user_detail', kwargs={'slug': user.username})
+        response = self.client.get(detail_url)
+        self.assertEqual(response.status_code, 404)
 
     def test_special_usernames(self):
         # Ensure usernames in the forms of:
