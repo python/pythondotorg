@@ -30,15 +30,17 @@ class UserAdmin(BaseUserAdmin):
                                        'groups', 'user_permissions')}),
         (_('Important dates'), {'fields': ('last_login', 'date_joined')}),
     )
-    list_display = BaseUserAdmin.list_display + ('is_active',)
-    actions = ['make_inactive']
+    list_display = ('username', 'email', 'full_name', 'is_staff', 'is_active')
+    list_editable = ('is_active',)
+    search_fields = BaseUserAdmin.search_fields + ('bio',)
+    show_full_result_count = False
 
     def has_add_permission(self, request):
         return False
 
-    def make_inactive(self, request, queryset):
-        queryset.update(is_active=False)
-    make_inactive.short_description = 'Mark selected users as inactive'
+    def full_name(self, obj):
+        return obj.get_full_name()
+    full_name.short_description = 'Name'
 
 
 class MembershipAdmin(admin.ModelAdmin):
