@@ -7,8 +7,8 @@ class BlogHome(TemplateView):
     """ Main blog view """
     template_name = 'blogs/index.html'
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         entries = BlogEntry.objects.order_by('-pub_date')[:6]
         latest_entry = None
