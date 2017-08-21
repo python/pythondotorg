@@ -219,7 +219,9 @@ class JobDetail(JobMixin, DetailView):
         if self.has_jobs_board_admin_access():
             return queryset
         if self.request.user.is_authenticated():
-            return queryset.by(self.request.user)
+            # Combine visible jobs and user's non-visible jobs.
+            # TODO: Add this to JobQuerySet and use where applicable.
+            return queryset.visible() | queryset.by(self.request.user)
         return queryset.visible()
 
     def get_context_data(self, **kwargs):

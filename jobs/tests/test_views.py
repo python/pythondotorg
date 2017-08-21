@@ -15,6 +15,8 @@ class JobsViewTests(TestCase):
     def setUp(self):
         self.user = UserFactory(password='password')
 
+        self.user2 = UserFactory(password='password')
+
         self.staff = UserFactory(
             password='password',
             is_staff=True,
@@ -40,6 +42,7 @@ class JobsViewTests(TestCase):
             email='hr@company.com',
             is_featured=True,
             telecommuting=True,
+            creator=self.user,
         )
         self.job.job_types.add(self.job_type)
 
@@ -179,6 +182,12 @@ class JobsViewTests(TestCase):
         # Creator can see their own jobs no matter the status.
         self.client.login(username=self.user.username, password='password')
         response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        # And other users can see other users approved jobs.
+        self.client.logout()
+        self.client.login(username=self.user2.username, password='password')
+        response = self.client.get(self.job.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
         # Try to reach a job that doesn't exist.
