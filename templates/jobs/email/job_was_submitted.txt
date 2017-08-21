@@ -8,7 +8,7 @@ Category: {{ content_object.category }}
 Contact:  {{ content_object.contact }} <{{ content_object.email }}>
 
 Description:
-{{ content_object.description|truncatewords:50 }}
+{{ content_object.description.raw|truncatewords:50 }}
 
 To view and review:
 

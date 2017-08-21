@@ -590,7 +590,7 @@ input#s,
     }*/
 }
 
-// Show sign in link only in PSF pages.
+// Show sign in link only in PSF and Jobs pages.
 .account-signin {
     display: none;
 }
@@ -600,7 +600,7 @@ input#s,
     display: inline-block;
 }
 
-.psf .account-signin {
+.psf .account-signin, .jobs .account-signin {
     display: inline-block;
 }
 
