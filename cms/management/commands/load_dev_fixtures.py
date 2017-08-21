@@ -2,21 +2,20 @@ import sys
 
 import requests
 
-from django.core.management import call_command
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand, call_command
 from django.conf import settings
 from django.contrib.auth.models import Permission
 from django.contrib.contenttypes.models import ContentType
 from django.utils.six.moves import input
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Download and load dev fixtures from www.python.org
     """
     help = "Download and load dev fixtures from python.org"
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
 
         # Confirm the user wants to do this
         confirm = input("""You have requested to load the python.org development fixtures.

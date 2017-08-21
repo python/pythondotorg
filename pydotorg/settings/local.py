@@ -1,6 +1,6 @@
 from .base import *
 
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -34,10 +34,17 @@ PEP_REPO_PATH = ''
 PIPELINE_COMPILERS = (
    'pydotorg.compilers.DummySASSCompiler',
 )
+# Pass '-XssNNNNNk' to 'java' if you get 'java.lang.StackOverflowError' with
+# yui-compressor.
+# PIPELINE_YUI_BINARY = '/usr/bin/java -Xss200048k -jar /usr/share/yui-compressor/yui-compressor.jar'
 
 INSTALLED_APPS += [
     'debug_toolbar',
 ]
+
+MIDDLEWARE_CLASSES += (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
 
 CACHES = {
     'default': {

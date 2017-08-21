@@ -1,7 +1,7 @@
 import re
 import os
 
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from django.conf import settings
 
 from peps.converters import (
@@ -11,7 +11,7 @@ from peps.converters import (
 pep_number_re = re.compile(r'pep-(\d+)')
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Generate CMS Pages from flat file PEP data.
 
@@ -32,7 +32,7 @@ class Command(NoArgsCommand):
         # All images are pngs
         return path.endswith('.png')
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         verbosity = int(options['verbosity'])
 
         def verbose(msg):

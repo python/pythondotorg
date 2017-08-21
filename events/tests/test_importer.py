@@ -14,6 +14,8 @@ EVENTS_CALENDAR_URL = 'https://www.google.com/calendar/ical/j7gov1cmnqr9tvg14k62
 class EventsImporterTestCase(TestCase):
     @classmethod
     def setUpClass(cls):
+        # TODO: Use TestCase.setUpTestData() instead in Django 1.8+.
+        super().setUpClass()
         cls.calendar = Calendar.objects.create(url=EVENTS_CALENDAR_URL, slug='python-events')
 
     def test_injest(self):

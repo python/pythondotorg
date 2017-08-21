@@ -223,13 +223,14 @@ class JobDetail(JobMixin, DetailView):
         return queryset.visible()
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            category_jobs=self.object.category.jobs.select_related('company__name')[:5],
-            user_can_edit=(self.object.creator == self.request.user),
-            job_review_form=JobReviewCommentForm(initial={'job': self.object}),
+        context = super().get_context_data(**kwargs)
+        context['category_jobs'] = self.object.category.jobs.select_related('category')[:5]
+        context['user_can_edit'] = (
+            self.object.creator == self.request.user or
+            self.has_jobs_board_admin_access()
         )
-        ctx.update(kwargs)
-        return ctx
+        context['job_review_form'] = JobReviewCommentForm(initial={'job': self.object})
+        return context
 
 
 class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):

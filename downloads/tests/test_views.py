@@ -6,9 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
-# TODO: Use this when we upgrade to Django 1.8.
-# from django.utils.timezone import make_naive
-from tastypie.utils import make_naive
+from django.utils.timezone import make_naive
 
 from .base import BaseDownloadTests, DownloadMixin
 from ..models import OS, Release

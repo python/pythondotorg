@@ -5,7 +5,6 @@ from django.db import models, migrations
 import events.models
 import markupfield.fields
 import django.utils.timezone
-import timedelta.fields
 from django.conf import settings
 
 
@@ -116,7 +115,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('begin', models.DateTimeField(default=django.utils.timezone.now)),
                 ('finish', models.DateTimeField(default=django.utils.timezone.now)),
-                ('duration', timedelta.fields.TimedeltaField(max_value=None, min_value=None)),
+                ('duration', models.CharField(max_length=50, default='15 min')),
                 ('interval', models.PositiveSmallIntegerField(default=1)),
                 ('frequency', models.PositiveSmallIntegerField(verbose_name=((0, 'year(s)'), (1, 'month(s)'), (2, 'week(s)'), (3, 'day(s)')), default=2)),
                 ('event', models.ForeignKey(to='events.Event', related_name='recurring_rules')),

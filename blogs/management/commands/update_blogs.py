@@ -8,7 +8,7 @@ from ...parser import get_all_entries, update_blog_supernav
 class Command(BaseCommand):
     """ Update blog entries and related blog feed data """
 
-    def handle(self, *args, **kwargs):
+    def handle(self, **options):
         for feed in Feed.objects.all():
             entries = get_all_entries(feed.feed_url)
 

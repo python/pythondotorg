@@ -27,10 +27,14 @@ class UsersFormsTestCase(TestCase):
             'password2': 'passwordmismatch'
         })
         self.assertFalse(form.is_valid())
-        self.assertIn('__all__', form.errors)
-        self.assertIn(
-            'You must type the same password each time.',
-            form.errors['__all__']
+        # Since django-allauth 0.27.0, the "You must type the same password
+        # each time" form validation error that can be triggered during
+        # signup is added to the 'password2' field instead of being added to
+        # the non field errors.
+        self.assertIn('password2', form.errors)
+        self.assertEqual(
+            form.errors['password2'],
+            ['You must type the same password each time.']
         )
 
     def test_duplicate_username(self):
