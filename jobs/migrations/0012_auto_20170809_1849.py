@@ -24,7 +24,9 @@ def migrate_old_content(apps, schema_editor):
     ContentType = apps.get_model('contenttypes', 'ContentType')
     db_alias = schema_editor.connection.alias
     try:
-        job_contenttype = ContentType.objects.using(db_alias).get(name=content_type)
+        # 'ContentType.name' is now a property in Django 1.8 so we
+        # can't use it to query a ContentType anymore.
+        job_contenttype = ContentType.objects.using(db_alias).get(model=content_type)
     except ContentType.DoesNotExist:
         return
     old_comments = Comment.objects.using(db_alias).filter(

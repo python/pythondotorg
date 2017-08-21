@@ -2,8 +2,6 @@ import gzip
 import json
 import io
 
-from optparse import make_option
-
 from django.core.management import BaseCommand, call_command
 
 from django.contrib.auth.hashers import make_password
@@ -17,16 +15,16 @@ class Command(BaseCommand):
     infrastructure, it is not useful to run this in a local environment except
     for testing/debugging purposes of this command itself.
     """
-    option_list = BaseCommand.option_list + (
-        make_option(
+
+    help = 'Generate development fixtures for local development'
+
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--file',
             default='/tmp/dev-fixtures.json.gz',
             dest='outputfile',
             help='Specifies the output file location of the fixtures.',
-        ),
-    )
-
-    help = "Generate development fixtures for local development"
+        )
 
     def handle(self, **options):
         outputfile = options.get('outputfile')

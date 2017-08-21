@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
+from django.contrib.auth.models import AbstractUser
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils import timezone
@@ -9,7 +9,7 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
 
-from .managers import UserQuerySet
+from .managers import UserManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
@@ -37,7 +37,7 @@ class User(AbstractUser):
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
-    objects = UserManager.from_queryset(UserQuerySet)()
+    objects = UserManager()
 
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})

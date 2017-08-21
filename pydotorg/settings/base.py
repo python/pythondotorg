@@ -6,7 +6,7 @@ from django.contrib.messages import constants
 ### Basic config
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 SITE_ID = 1
 SECRET_KEY = 'its-a-secret-to-everybody'
 
@@ -52,7 +52,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE, 'static'),
 ]
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
 
 ### Authentication
 
@@ -77,29 +81,38 @@ ACCOUNT_ADAPTER = 'users.adapters.PythonDotOrgAdapter'
 
 ### Templates
 
-TEMPLATE_DIRS = [
-    os.path.join(BASE, 'templates')
-]
-
-TEMPLATE_CONTEXT_PROCESSORS = [
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
-    "pydotorg.context_processors.site_info",
-    "pydotorg.context_processors.url_name",
-    "pydotorg.context_processors.get_host_with_scheme",
-    "pydotorg.context_processors.blog_url",
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'django.contrib.messages.context_processors.messages',
+                'pydotorg.context_processors.site_info',
+                'pydotorg.context_processors.url_name',
+                'pydotorg.context_processors.get_host_with_scheme',
+                'pydotorg.context_processors.blog_url',
+            ],
+        },
+    },
 ]
 
 ### URLs, WSGI, middleware, etc.
 
 ROOT_URLCONF = 'pydotorg.urls'
 
+# Note that we don't need to activate 'XFrameOptionsMiddleware' and
+# 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE_CLASSES = (
     'pydotorg.middleware.AdminNoCaching',
     'django.middleware.common.CommonMiddleware',
@@ -134,7 +147,6 @@ INSTALLED_APPS = [
     'jsonfield',
     'pipeline',
     'sitetree',
-    'timedelta',
     'imagekit',
     'haystack',
     'honeypot',
@@ -243,3 +255,8 @@ from .pipeline import (
 MESSAGE_TAGS = {
     constants.INFO: 'general',
 }
+
+
+### SecurityMiddleware
+
+X_FRAME_OPTIONS = 'DENY'

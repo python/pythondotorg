@@ -3,7 +3,7 @@ from django.core.mail import send_mail
 from django.db import models
 from django.dispatch import receiver
 from django.contrib.sites.models import Site
-from django.template import loader, Context
+from django.template import loader
 from django.utils.translation import ugettext_lazy as _
 
 from .models import Job
@@ -58,8 +58,7 @@ def on_comment_was_posted(sender, comment, **kwargs):
         job.display_name)
     text_message_template = loader.get_template('jobs/email/{}.txt'.format(template_name))
 
-    message_context = Context(context)
-    text_message = text_message_template.render(message_context)
+    text_message = text_message_template.render(context)
     send_mail(subject, text_message, settings.JOB_FROM_EMAIL, send_to)
 
 
@@ -73,15 +72,15 @@ def send_job_review_message(job, user, subject_template_path,
     subject_template = loader.get_template(subject_template_path)
     message_template = loader.get_template(message_template_path)
     reviewer_name = user.get_full_name() or user.username or 'Community Reviewer'
-    message_context = Context({
+    context = {
         'user_name': job.contact or 'Job Submitter',
         'reviewer_name': reviewer_name,
         'content_object': job,
         'site': Site.objects.get_current(),
-    })
+    }
     # subject can't contain newlines, thus strip() call
-    subject = subject_template.render(message_context).strip()
-    message = message_template.render(message_context)
+    subject = subject_template.render(context).strip()
+    message = message_template.render(context)
     send_mail(subject, message, settings.JOB_FROM_EMAIL,
               [job.email, EMAIL_JOBS_BOARD])
 
@@ -115,10 +114,9 @@ def on_job_was_submitted(sender, job, **kwargs):
     subject_template = loader.get_template('jobs/email/job_was_submitted_subject.txt')
     message_template = loader.get_template('jobs/email/job_was_submitted.txt')
 
-    message_context = Context({'content_object': job,
-                               'site': Site.objects.get_current()})
-    subject = subject_template.render(message_context)
-    message = message_template.render(message_context)
+    context = {'content_object': job, 'site': Site.objects.get_current()}
+    subject = subject_template.render(context)
+    message = message_template.render(context)
 
     send_mail(subject, message, settings.JOB_FROM_EMAIL,
               [EMAIL_JOBS_BOARD])

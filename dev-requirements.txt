@@ -7,6 +7,6 @@ Faker==0.7.18
 
 # Extra stuff required for local dev
 
-django-debug-toolbar
+django-debug-toolbar==1.8
 coverage
 ddt

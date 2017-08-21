@@ -1,7 +1,6 @@
 import logging
 from django import template
-from django.test import TestCase
-from . import admin  # Catch syntax errors in admin.
+from django.test import TestCase, override_settings
 from .models import Box
 
 logging.disable(logging.CRITICAL)
@@ -24,8 +23,8 @@ class TemplateTagTests(BaseTestCase):
         self.assertEqual(r, '')
 
 class ViewTests(BaseTestCase):
-    urls = 'boxes.urls'
 
+    @override_settings(ROOT_URLCONF='boxes.urls')
     def test_box_view(self):
         r = self.client.get('/test/')
         self.assertContains(r, self.box.content.rendered)

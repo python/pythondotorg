@@ -1,16 +1,16 @@
 from django.core import serializers
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 
 from pages.models import Page
 
 
-class Command(NoArgsCommand):
+class Command(BaeeCommand):
     """
     Dump PEP related Pages as indented JSON
     """
     help = "Dump PEP related Pages as indented JSON"
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         qs = Page.objects.filter(path__startswith='peps/')
 
         serializers.serialize(

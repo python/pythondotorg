@@ -239,7 +239,7 @@ class UsersViewsTestCase(TestCase):
             data=post_data, template_name='account/signup.html'
         )
         self.assertContains(
-            response, 'This username is already taken. Please choose another.'
+            response, 'A user with that username already exists.'
         )
         self.assertContains(
             response, 'A user is already registered with this e-mail address.'

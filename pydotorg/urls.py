@@ -24,10 +24,10 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
 
     # Redirect old download links to new downloads pages
-    url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/')),
-    url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/')),
-    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/')),
-    url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/')),
+    url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/', permanent=True)),
+    url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/', permanent=True)),
+    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/', permanent=True)),
+    url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/', permanent=True)),
 
     # duplicated downloads to getit to bypass China's firewall. See
     # https://github.com/python/pythondotorg/issues/427 for more info.

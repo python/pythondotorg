@@ -1,6 +1,5 @@
 {% extends "users/base.html" %}
 {% load users_tags %}
-{% load firstof from future %}
 
 {% block page_title %}{% firstof object.get_full_name object %} | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
