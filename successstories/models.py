@@ -78,14 +78,6 @@ class Story(NameSlugModel, ContentManageable):
             return self.company_url
 
 
-# Set 'help_text' since the 'name' field is a confusion for many people.
-# See #834 for an example report.
-# We need to do it this way, because the 'name' field is defined in
-# 'NameSlugModel'. Note that this would only work when 'NameSlugModel'
-# is an abstract class.
-Story._meta.get_field('name').help_text = 'Title of your success story'
-
-
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, created, **kwargs):
     """ Update download supernav """

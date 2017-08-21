@@ -19,6 +19,9 @@ class StoryForm(ContentManageableModelForm):
             'pull_quote',
             'content'
         )
+        labels = {
+            'name': 'Story name',
+        }
 
     def clean_name(self):
         name = self.cleaned_data.get('name')
