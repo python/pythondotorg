@@ -42,8 +42,8 @@ class MinutesDetail(DetailView):
 
         return obj
 
-    def get_context_data(self, *args, **kwargs):
-        context = super(MinutesDetail, self).get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         same_year = Minutes.objects.filter(
             date__year=self.object.date.year,

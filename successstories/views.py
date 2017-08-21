@@ -12,9 +12,9 @@ from .models import Story, StoryCategory
 class ContextMixin:
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(**kwargs)
-        ctx['category_list'] = StoryCategory.objects.all()
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['category_list'] = StoryCategory.objects.all()
+        return context
 
 
 class StoryCreate(ContextMixin, CreateView):

@@ -147,8 +147,8 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
     """ View to simply list distinct Countries that have current jobs """
     template_name = "jobs/job_locations.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         context['jobs'] = Job.objects.visible().distinct(
             'country', 'city'
@@ -270,16 +270,15 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         return None
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            user_can_edit=(
-                self.object.creator == self.request.user
-                or self.request.user.is_staff
-            ),
-            under_preview=True,
-            form=self.get_form(self.form_class),
+        context = super().get_context_data(**kwargs)
+        context['user_can_edit'] = (
+            self.object.creator == self.request.user or
+            self.has_jobs_board_admin_access()
         )
-        ctx.update(kwargs)
-        return ctx
+        context['under_preview'] = True
+        # TODO: why we pass this?
+        context['form'] = self.get_form(self.form_class)
+        return context
 
 
 class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
@@ -328,10 +327,9 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data()
-        ctx.update(kwargs)
-        ctx['needs_preview'] = not self.request.user.is_staff
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['needs_preview'] = not self.has_jobs_board_admin_access()
+        return context
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -354,13 +352,11 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            form_action='update',
-        )
-        ctx.update(kwargs)
-        ctx['next'] = self.request.GET.get('next') or self.request.POST.get('next')
-        ctx['needs_preview'] = not self.request.user.is_staff
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['form_action'] = 'update'
+        context['next'] = self.request.GET.get('next') or self.request.POST.get('next')
+        context['needs_preview'] = not self.has_jobs_board_admin_access()
+        return context
 
     def get_success_url(self):
         next_url = self.request.POST.get('next')
