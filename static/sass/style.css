@@ -1541,7 +1541,7 @@ input#s,
 .account-signin-authenticated {
   display: inline-block; }
 
-.psf .account-signin {
+.psf .account-signin, .jobs .account-signin {
   display: inline-block; }
 
 #site-map-link,
