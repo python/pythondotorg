@@ -222,14 +222,6 @@ class Job(ContentManageable):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
     @property
-    def visible(self):
-        if self.status != self.STATUS_APPROVED:
-            return False
-        if self.expires and self.expires <= timezone.now():
-            return False
-        return True
-
-    @property
     def editable(self):
         return self.status in (
             self.STATUS_DRAFT,

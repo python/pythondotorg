@@ -133,9 +133,3 @@ class JobsModelsTests(TestCase):
 
         job2 = self.create_job(region='')
         self.assertEqual(job2.display_location, 'Memphis, USA')
-
-    def test_expires_none(self):
-        # see issue #814
-        j1 = factories.ApprovedJobFactory()
-        j1.expires = None
-        self.assertTrue(j1.visible)
