@@ -1,17 +1,11 @@
 sudo: false
 language: python
 python: 3.4
-cache:
-  directories:
-    - ~/.cache/pip/wheels
+cache: pip
 env:
   global:
-    - PIP_WHEEL_DIR=$HOME/.cache/pip/wheels
-    - PIP_FIND_LINKS=file://$HOME/.cache/pip/wheels
     - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org
-install:
-  - pip wheel -r dev-requirements.txt
-  - pip install -r dev-requirements.txt
+install: pip install -r dev-requirements.txt
 before_script:
   - psql -c 'create database "python.org";' -U postgres
 script:
