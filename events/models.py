@@ -113,6 +113,8 @@ class Event(ContentManageable):
 
     @cached_property
     def previous_event(self):
+        if not self.next_time:
+            return None
         dt = self.next_time.dt_end
         try:
             return Event.objects.until_datetime(dt).filter(calendar=self.calendar)[0]
@@ -121,6 +123,8 @@ class Event(ContentManageable):
 
     @cached_property
     def next_event(self):
+        if not self.next_time:
+            return None
         dt = self.next_time.dt_start
         try:
             return Event.objects.for_datetime(dt).filter(calendar=self.calendar)[0]
