@@ -176,9 +176,6 @@ INSTALLED_APPS = [
     #'allauth.socialaccount.providers.openid',
     #'allauth.socialaccount.providers.twitter',
 
-    # Tastypie needs the `users` app to be already loaded.
-    'tastypie',
-
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',

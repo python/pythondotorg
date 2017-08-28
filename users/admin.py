@@ -4,9 +4,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from rest_framework.authtoken.admin import TokenAdmin
 
-from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
-from tastypie.models import ApiKey
-
 from .actions import export_csv
 from .models import User, Membership
 
@@ -20,12 +17,8 @@ class MembershipInline(admin.StackedInline):
     readonly_fields = ('created', 'updated')
 
 
-class ApiKeyInline(TastypieApiKeyInline):
-    readonly_fields = ('key', 'created')
-
-
 class UserAdmin(BaseUserAdmin):
-    inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
+    inlines = BaseUserAdmin.inlines + [MembershipInline]
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': (
@@ -59,18 +52,5 @@ class MembershipAdmin(admin.ModelAdmin):
     search_fields = ['creator__username']
     list_filter = ['membership_type']
 
-
-class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created', )
-    date_hierarchy = 'created'
-
-
 admin.site.register(User, UserAdmin)
 admin.site.register(Membership, MembershipAdmin)
-
-try:
-    admin.site.unregister(ApiKey)
-except admin.sites.NotRegistered:
-    pass
-finally:
-    admin.site.register(ApiKey, ApiKeyAdmin)
