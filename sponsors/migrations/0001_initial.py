@@ -26,9 +26,9 @@ class Migration(migrations.Migration):
                 ('is_published', models.BooleanField(db_index=True, default=False)),
                 ('featured', models.BooleanField(help_text='Check to include Sponsor in feature rotation', db_index=True, default=False)),
                 ('_content_rendered', models.TextField(editable=False)),
-                ('company', models.ForeignKey(to='companies.Company')),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='sponsors_sponsor_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='sponsors_sponsor_modified', blank=True)),
+                ('company', models.ForeignKey(to='companies.Company', on_delete=models.CASCADE)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='sponsors_sponsor_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='sponsors_sponsor_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'sponsor',

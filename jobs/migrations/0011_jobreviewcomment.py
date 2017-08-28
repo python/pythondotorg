@@ -24,9 +24,9 @@ class Migration(migrations.Migration):
                 ('comment', markupfield.fields.MarkupField(rendered_field=True)),
                 ('comment_markup_type', models.CharField(choices=[('', '--'), ('html', 'HTML'), ('plain', 'Plain'), ('markdown', 'Markdown'), ('restructuredtext', 'Restructured Text')], max_length=30, default='restructuredtext')),
                 ('_comment_rendered', models.TextField(editable=False)),
-                ('creator', models.ForeignKey(related_name='jobs_jobreviewcomment_creator', to=settings.AUTH_USER_MODEL, null=True, blank=True)),
-                ('job', models.ForeignKey(related_name='review_comments', to='jobs.Job')),
-                ('last_modified_by', models.ForeignKey(related_name='jobs_jobreviewcomment_modified', to=settings.AUTH_USER_MODEL, null=True, blank=True)),
+                ('creator', models.ForeignKey(related_name='jobs_jobreviewcomment_creator', to=settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)),
+                ('job', models.ForeignKey(related_name='review_comments', to='jobs.Job', on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(related_name='jobs_jobreviewcomment_modified', to=settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

@@ -94,7 +94,7 @@ def page_image_path(instance, filename):
 
 
 class Image(models.Model):
-    page = models.ForeignKey('pages.Page')
+    page = models.ForeignKey('pages.Page', on_delete=models.CASCADE)
     image = models.ImageField(upload_to=page_image_path, max_length=400)
 
     def __str__(self):
@@ -102,7 +102,7 @@ class Image(models.Model):
 
 
 class DocumentFile(models.Model):
-    page = models.ForeignKey('pages.Page')
+    page = models.ForeignKey('pages.Page', on_delete=models.CASCADE)
     document = models.FileField(upload_to='files/', max_length=500)
 
     def __str__(self):

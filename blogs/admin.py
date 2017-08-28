@@ -1,19 +1,17 @@
 from django.contrib import admin
 from django.core.management import call_command
+from django.utils.html import format_html
 
 from cms.admin import ContentManageableModelAdmin
 
 from .models import BlogEntry, Contributor, Translation, Feed, FeedAggregate
 
 
-
 class TranslationAdmin(ContentManageableModelAdmin):
     list_display = ['name', '_display_url']
 
     def _display_url(self, obj):
-        return """<a href="{0}">{0}</a>""".format(obj.url)
-
-    _display_url.allow_tags = True
+        return format_html('<a href="{0}">{0}</a>'.format(obj.url))
 
 admin.site.register(Translation, TranslationAdmin)
 

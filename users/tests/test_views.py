@@ -1,5 +1,3 @@
-from urllib.parse import urlencode
-
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.urlresolvers import reverse
@@ -44,28 +42,6 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(user.username, post_data['username'])
         self.assertEqual(user.email, post_data['email'])
         return response
-
-    def test_newline_in_username(self):
-        # django-allauth's user name validator can be escaped when
-        # the signup form sent with application/x-www-form-urlencoded
-        # encoded. See #1045 for details.
-        data =  urlencode({
-            'username': 'username\n',
-            'email': 'test@example.com',
-            'password1': 'password',
-            'password2': 'password',
-            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
-        })
-        url = reverse('account_signup')
-        response = self.client.post(
-            url, data, content_type='application/x-www-form-urlencoded'
-        )
-        self.assertEqual(response.status_code, 200)
-        form = response.context['form']
-        self.assertEqual(
-            form.errors['username'],
-            ['Please don\'t use whitespace characters in username.']
-        )
 
     def test_membership_create(self):
         url = reverse('users:user_membership_create')

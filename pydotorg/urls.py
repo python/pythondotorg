@@ -35,7 +35,7 @@ urlpatterns = [
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', views.DocumentationIndexView.as_view(), name='documentation'),
     url(r'^blog/$', RedirectView.as_view(url='/blogs/', permanent=True)),
-    url(r'^blogs/$', include('blogs.urls')),
+    url(r'^blogs/', include('blogs.urls')),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 
     # other section landing pages
@@ -52,7 +52,6 @@ urlpatterns = [
     url(r'^community/microbit/$', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
-    url(r'^newjobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
     url(r'^users/', include('users.urls', namespace='users')),
@@ -62,7 +61,7 @@ urlpatterns = [
     url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 
     # api
     url(r'^api/', include(v1_api.urls)),

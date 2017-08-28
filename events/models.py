@@ -46,7 +46,13 @@ class Calendar(ContentManageable):
 
 
 class EventCategory(NameSlugModel):
-    calendar = models.ForeignKey(Calendar, related_name='categories', null=True, blank=True)
+    calendar = models.ForeignKey(
+        Calendar,
+        related_name='categories',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name_plural = 'event categories'
@@ -57,7 +63,13 @@ class EventCategory(NameSlugModel):
 
 
 class EventLocation(models.Model):
-    calendar = models.ForeignKey(Calendar, related_name='locations', null=True, blank=True)
+    calendar = models.ForeignKey(
+        Calendar,
+        related_name='locations',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     name = models.CharField(max_length=255)
     address = models.CharField(blank=True, null=True, max_length=255)
@@ -92,10 +104,16 @@ class EventManager(models.Manager):
 class Event(ContentManageable):
     uid = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)
-    calendar = models.ForeignKey(Calendar, related_name='events')
+    calendar = models.ForeignKey(Calendar, related_name='events', on_delete=models.CASCADE)
 
     description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=False)
-    venue = models.ForeignKey(EventLocation, null=True, blank=True, related_name='events')
+    venue = models.ForeignKey(
+        EventLocation,
+        related_name='events',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     categories = models.ManyToManyField(EventCategory, related_name='events', blank=True)
     featured = models.BooleanField(default=False, db_index=True)
@@ -212,7 +230,7 @@ class OccurringRule(RuleMixin, models.Model):
 
     Shares the same API of `RecurringRule`.
     """
-    event = models.OneToOneField(Event, related_name='occurring_rule')
+    event = models.OneToOneField(Event, related_name='occurring_rule', on_delete=models.CASCADE)
     dt_start = models.DateTimeField(default=timezone.now)
     dt_end = models.DateTimeField(default=timezone.now)
     all_day = models.BooleanField(default=False)
@@ -255,7 +273,7 @@ class RecurringRule(RuleMixin, models.Model):
         (DAILY, 'day(s)'),
     )
 
-    event = models.ForeignKey(Event, related_name='recurring_rules')
+    event = models.ForeignKey(Event, related_name='recurring_rules', on_delete=models.CASCADE)
     begin = models.DateTimeField(default=timezone.now)
     finish = models.DateTimeField(default=timezone.now)
     duration_internal = models.DurationField(default=duration_default)
@@ -307,7 +325,7 @@ class RecurringRule(RuleMixin, models.Model):
 
 
 class Alarm(ContentManageable):
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     trigger = models.PositiveSmallIntegerField(_("hours before the event occurs"), default=24)
 
     def __str__(self):

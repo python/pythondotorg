@@ -25,8 +25,8 @@ class Migration(migrations.Migration):
                 ('content_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='restructuredtext')),
                 ('is_published', models.BooleanField(db_index=True, default=False)),
                 ('_content_rendered', models.TextField(editable=False)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='minutes_minutes_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='minutes_minutes_modified', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='minutes_minutes_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='minutes_minutes_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'minutes',

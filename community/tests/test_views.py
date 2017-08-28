@@ -9,8 +9,7 @@ class CommunityTagsTest(TemplateTestCase):
             media_type=Post.MEDIA_TEXT,
             status=Post.STATUS_PRIVATE
         )
-        ctx = {
-            'object': obj
-        }
-        template = "{% load community %}{% render_template_for object as html %}"
-        self.render_string(template, ctx)
+        template = '{% load community %}{% render_template_for post as html %}{{ html }}'
+        rendered = self.render_string(template, {'post': obj})
+        expected = '<h3><a href="/community/{0:d}/">todo: types/text.html - Post text ({0:d})</a></h3>\n'
+        self.assertEqual(rendered, expected.format(obj.pk))

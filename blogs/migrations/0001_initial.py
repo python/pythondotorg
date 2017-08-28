@@ -35,9 +35,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
                 ('updated', models.DateTimeField(blank=True)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_modified', blank=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='blog_contributor')),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_modified', blank=True, on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='blog_contributor', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Contributor',
@@ -84,8 +84,8 @@ class Migration(migrations.Migration):
                 ('blog_name', models.CharField(help_text='Displayed Name', max_length=200)),
                 ('last_entry_published', models.DateTimeField(db_index=True)),
                 ('last_entry_title', models.CharField(max_length=500)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_modified', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_relatedblog_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Related Blog',
@@ -101,8 +101,8 @@ class Migration(migrations.Migration):
                 ('updated', models.DateTimeField(blank=True)),
                 ('name', models.CharField(max_length=100)),
                 ('url', models.URLField(verbose_name='URL')),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_modified', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'Translation',
@@ -114,7 +114,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='blogentry',
             name='feed',
-            field=models.ForeignKey(to='blogs.Feed'),
+            field=models.ForeignKey(to='blogs.Feed', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

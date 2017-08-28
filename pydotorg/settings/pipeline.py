@@ -55,11 +55,14 @@ PIPELINE_JS = {
     },
 }
 
-PIPELINE_COMPILERS = (
-  'pipeline.compilers.sass.SASSCompiler',
-)
-PIPELINE_SASS_BINARY = 'cd %s && exec /usr/bin/env sass'  % os.path.join(BASE, 'static')
-PIPELINE_SASS_ARGUMENTS = '--quiet --compass --scss -I $(dirname $(dirname $(gem which susy)))/sass'
-
-PIPELINE_CSS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
-PIPELINE_JS_COMPRESSOR = 'pipeline.compressors.yui.YUICompressor'
+PIPELINE = {
+    'STYLESHEETS': PIPELINE_CSS,
+    'JAVASCRIPT': PIPELINE_JS,
+    'COMPILERS': (
+        'pipeline.compilers.sass.SASSCompiler',
+    ),
+    'CSS_COMPRESSOR': 'pipeline.compressors.yui.YUICompressor',
+    'JS_COMPRESSOR': 'pipeline.compressors.yui.YUICompressor',
+    'SASS_BINARY': 'cd %s && exec /usr/bin/env sass'  % os.path.join(BASE, 'static'),
+    'SASS_ARGUMENTS': '--quiet --compass --scss -I $(dirname $(dirname $(gem which susy)))/sass'
+}

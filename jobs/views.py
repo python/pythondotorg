@@ -5,10 +5,9 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
-from braces.views import GroupRequiredMixin
+from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
-from .mixins import LoginRequiredMixin
 from .models import Job, JobType, JobCategory, JobReviewComment
 
 
@@ -37,9 +36,9 @@ class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     raise_exception = True
 
     def check_membership(self, group):
-        # Add is_staff and is_superuser checks to stay compatible
-        # with current staff members.
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        # Add is_staff check to stay compatible with current staff members.
+        # is_superuser check is already in base class.
+        if self.request.user.is_staff:
             return True
         return super().check_membership(group)
 

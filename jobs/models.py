@@ -51,6 +51,7 @@ class Job(ContentManageable):
         JobCategory,
         related_name='jobs',
         limit_choices_to={'active': True},
+        on_delete=models.CASCADE,
     )
     job_types = models.ManyToManyField(
         JobType,
@@ -237,7 +238,7 @@ class Job(ContentManageable):
 
 
 class JobReviewComment(ContentManageable):
-    job = models.ForeignKey(Job, related_name='review_comments')
+    job = models.ForeignKey(Job, related_name='review_comments', on_delete=models.CASCADE)
     comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
     class Meta:
