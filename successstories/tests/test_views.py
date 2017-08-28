@@ -106,6 +106,7 @@ class StoryViewTests(TestCase):
         # body of the email doesn't contain any HTML tags.
         self.assertNotIn('<p>', mail.outbox[0].body)
         self.assertEqual(mail.outbox[0].content_subtype, 'plain')
+        self.assertEqual(mail.outbox[0].reply_to, [post_data['author_email']])
         stories = Story.objects.draft().filter(slug__exact='three')
         self.assertEqual(len(stories), 1)
 

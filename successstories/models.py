@@ -143,7 +143,6 @@ Review URL: {admin_url}
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,
-            headers={'Reply-To': instance.author_email},
-            # TODO: Pass 'reply_to=[instance.author_email]' when we upgrade Django.
+            reply_to=[instance.author_email],
         )
         email.send()
