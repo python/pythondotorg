@@ -90,7 +90,13 @@ class Membership(models.Model):
     created = models.DateTimeField(default=timezone.now, blank=True)
     updated = models.DateTimeField(blank=True)
 
-    creator = models.OneToOneField(User, null=True, blank=True, related_name='membership')
+    creator = models.OneToOneField(
+        User,
+        related_name='membership',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         if self.creator:

@@ -1,4 +1,3 @@
-from braces.views import LoginRequiredMixin
 from django.contrib.auth import authenticate, login
 from django.conf import settings
 from django.core.mail import send_mail
@@ -14,6 +13,7 @@ from django.views.generic import (
 from allauth.account.views import SignupView
 from honeypot.decorators import check_honeypot
 
+from pydotorg.mixins import LoginRequiredMixin
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,

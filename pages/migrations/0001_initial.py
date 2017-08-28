@@ -53,8 +53,8 @@ class Migration(migrations.Migration):
                 ('content_type', models.CharField(max_length=150, default='text/html')),
                 ('_content_rendered', models.TextField(editable=False)),
                 ('template_name', models.CharField(help_text="Example: 'pages/about.html'. If this isn't provided, the system will use 'pages/default.html'.", max_length=100, blank=True)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='pages_page_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='pages_page_modified', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='pages_page_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='pages_page_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['title', 'path'],
@@ -64,13 +64,13 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='image',
             name='page',
-            field=models.ForeignKey(to='pages.Page'),
+            field=models.ForeignKey(to='pages.Page', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='documentfile',
             name='page',
-            field=models.ForeignKey(to='pages.Page'),
+            field=models.ForeignKey(to='pages.Page', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

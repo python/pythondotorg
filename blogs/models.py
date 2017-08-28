@@ -16,7 +16,7 @@ class BlogEntry(models.Model):
     summary = models.TextField(blank=True)
     pub_date = models.DateTimeField()
     url = models.URLField('URL')
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Blog Entry'
@@ -76,7 +76,11 @@ class Translation(ContentManageable):
 
 class Contributor(ContentManageable):
     """ Blog Contributors """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="blog_contributor")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='blog_contributor',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name = 'Contributor'

@@ -59,25 +59,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='story',
             name='category',
-            field=models.ForeignKey(to='successstories.StoryCategory', related_name='success_stories'),
+            field=models.ForeignKey(to='successstories.StoryCategory', related_name='success_stories', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='story',
             name='company',
-            field=models.ForeignKey(null=True, to='companies.Company', related_name='success_stories', blank=True),
+            field=models.ForeignKey(null=True, to='companies.Company', related_name='success_stories', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='story',
             name='creator',
-            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='successstories_story_creator', blank=True),
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='successstories_story_creator', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='story',
             name='last_modified_by',
-            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='successstories_story_modified', blank=True),
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='successstories_story_modified', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

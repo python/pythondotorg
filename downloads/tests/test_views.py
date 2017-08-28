@@ -1,4 +1,3 @@
-import json
 import unittest.mock as mock
 
 from django.conf import settings
@@ -97,7 +96,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.Authorization_invalid = '%s invalid:token' % self.token_header
 
     def get_json(self, response):
-        json_response = json.loads(response.content.decode())
+        json_response = response.json()
         if 'objects' in json_response:
             return json_response['objects']
         return json_response

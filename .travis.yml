@@ -2,6 +2,10 @@ sudo: false
 language: python
 python: 3.4
 cache: pip
+addons:
+  postgresql: "9.4"
+services:
+  - postgresql
 env:
   global:
     - DATABASE_URL=postgres://postgres:@127.0.0.1:5432/python.org

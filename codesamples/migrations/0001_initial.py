@@ -27,8 +27,8 @@ class Migration(migrations.Migration):
                 ('copy_markup_type', models.CharField(max_length=30, choices=[('', '--'), ('html', 'html'), ('plain', 'plain'), ('markdown', 'markdown'), ('restructuredtext', 'restructuredtext')], default='html', blank=True)),
                 ('is_published', models.BooleanField(db_index=True, default=False)),
                 ('_copy_rendered', models.TextField(editable=False)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='codesamples_codesample_creator', blank=True)),
-                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='codesamples_codesample_modified', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='codesamples_codesample_creator', blank=True, on_delete=models.CASCADE)),
+                ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='codesamples_codesample_modified', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name': 'sample',

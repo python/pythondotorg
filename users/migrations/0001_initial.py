@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
                 ('psf_announcements', models.NullBooleanField(verbose_name='I would like to receive occasional PSF email announcements')),
                 ('created', models.DateTimeField(blank=True, default=django.utils.timezone.now)),
                 ('updated', models.DateTimeField(blank=True)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True, related_name='membership')),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True, related_name='membership', on_delete=models.CASCADE)),
             ],
             options={
             },

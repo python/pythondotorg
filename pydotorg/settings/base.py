@@ -77,7 +77,6 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_ADAPTER = 'users.adapters.PythonDotOrgAdapter'
 
 ### Templates
 
@@ -144,7 +143,6 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'jsonfield',
     'pipeline',
     'sitetree',
     'imagekit',
@@ -247,12 +245,7 @@ DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import (
-    PIPELINE_CSS, PIPELINE_JS,
-    PIPELINE_COMPILERS,
-    PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
-    PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
-)
+from .pipeline import PIPELINE
 
 ### contrib.messages
 

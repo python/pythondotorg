@@ -76,7 +76,13 @@ class Release(ContentManageable, NameSlugModel):
         help_text="Whether or not to show this release on the main /downloads/ page",
     )
     release_date = models.DateTimeField(default=timezone.now)
-    release_page = models.ForeignKey(Page, related_name='release', blank=True, null=True)
+    release_page = models.ForeignKey(
+        Page,
+        related_name='release',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     release_notes_url = models.URLField('Release Notes URL', blank=True)
 
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, default='')
@@ -259,8 +265,13 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     versions for example Windows and MacOS 32 vs 64 bit each file needs to be
     added separately
     """
-    os = models.ForeignKey(OS, related_name="releases", verbose_name='OS')
-    release = models.ForeignKey(Release, related_name="files")
+    os = models.ForeignKey(
+        OS,
+        related_name='releases',
+        verbose_name='OS',
+        on_delete=models.CASCADE,
+    )
+    release = models.ForeignKey(Release, related_name='files', on_delete=models.CASCADE)
     description = models.TextField(blank=True)
     is_source = models.BooleanField('Is Source Distribution', default=False)
     url = models.URLField('URL', unique=True, db_index=True, help_text="Download URL")

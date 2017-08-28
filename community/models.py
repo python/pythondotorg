@@ -1,7 +1,8 @@
+from django.contrib.postgres.fields import JSONField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from jsonfield import JSONField
+
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
@@ -41,7 +42,7 @@ class Post(ContentManageable):
     )
     media_type = models.IntegerField(choices=MEDIA_CHOICES, default=MEDIA_TEXT)
     source_url = models.URLField(max_length=1000, blank=True)
-    meta = JSONField(blank=True, default={})
+    meta = JSONField(blank=True, default=dict)
 
     STATUS_PRIVATE = 1
     STATUS_PUBLIC = 2
@@ -67,7 +68,13 @@ class Post(ContentManageable):
 
 
 class Link(ContentManageable):
-    post = models.ForeignKey(Post, related_name='related_%(class)s', editable=False, null=True)
+    post = models.ForeignKey(
+        Post,
+        related_name='related_%(class)s',
+        editable=False,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     url = models.URLField('URL', max_length=1000, blank=True)
 
     class Meta:
@@ -81,7 +88,13 @@ class Link(ContentManageable):
 
 
 class Photo(ContentManageable):
-    post = models.ForeignKey(Post, related_name='related_%(class)s', editable=False, null=True)
+    post = models.ForeignKey(
+        Post,
+        related_name='related_%(class)s',
+        editable=False,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     image = models.ImageField(upload_to='community/photos/', blank=True)
     image_url = models.URLField('Image URL', max_length=1000, blank=True)
     caption = models.TextField(blank=True)
@@ -98,7 +111,13 @@ class Photo(ContentManageable):
 
 
 class Video(ContentManageable):
-    post = models.ForeignKey(Post, related_name='related_%(class)s', editable=False, null=True)
+    post = models.ForeignKey(
+        Post,
+        related_name='related_%(class)s',
+        editable=False,
+        null=True,
+        on_delete=models.CASCADE,
+    )
     video_embed = models.TextField(blank=True)
     video_data = models.FileField(upload_to='community/videos/', blank=True, )
     caption = models.TextField(blank=True)

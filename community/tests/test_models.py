@@ -10,9 +10,8 @@ class ModelTestCase(TestCase):
             content='public post',
             media_type=Post.MEDIA_TEXT,
             status=Post.STATUS_PUBLIC,
-            meta='"foo"',
         )
-        self.assertEqual(post.meta, '"foo"')
+        self.assertEqual(post.meta, {})
         post.meta = {'SPAM': 42}
         post.save()
         self.assertEqual(post.meta, {'SPAM': 42})

@@ -62,6 +62,10 @@ class UsersFormsTestCase(TestCase):
         self.assertIn('email', form.errors)
 
     def test_newline_in_username(self):
+        # Note that since Django 1.9, forms.CharField().strip is True
+        # and it strips all whitespace characters by default so there
+        # is no need to do anything on our side.
+        #
         # django-allauth's default regex doesn't match '\n' at the
         # end of a string so as a result of this, users can signup
         # with a user name like 'username\n'.
@@ -78,11 +82,7 @@ class UsersFormsTestCase(TestCase):
             'password1': 'password',
             'password2': 'password',
         })
-        self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['username'],
-            ['Please don\'t use whitespace characters in username.']
-        )
+        self.assertTrue(form.is_valid())
 
 
 class UserProfileFormTestCase(TestCase):
