@@ -12,7 +12,7 @@ class ContentManageableModelForm(forms.ModelForm):
     def save(self, commit=True):
         obj = super().save(commit=False)
 
-        if self.request is not None and self.request.user.is_authenticated():
+        if self.request is not None and self.request.user.is_authenticated:
             if not obj.pk:
                 obj.creator = self.request.user
             else:

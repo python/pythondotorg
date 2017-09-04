@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -217,7 +217,7 @@ class JobDetail(JobMixin, DetailView):
         queryset = Job.objects.select_related()
         if self.has_jobs_board_admin_access():
             return queryset
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             # Combine visible jobs and user's non-visible jobs.
             # TODO: Add this to JobQuerySet and use where applicable.
             return queryset.visible() | queryset.by(self.request.user)

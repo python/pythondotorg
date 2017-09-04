@@ -77,6 +77,7 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
+ACCOUNT_USERNAME_VALIDATORS = 'users.validators.username_validators'
 
 ### Templates
 
@@ -112,7 +113,7 @@ ROOT_URLCONF = 'pydotorg.urls'
 
 # Note that we don't need to activate 'XFrameOptionsMiddleware' and
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = [
     'pydotorg.middleware.AdminNoCaching',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -124,7 +125,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-)
+]
 
 AUTH_USER_MODEL = 'users.User'
 

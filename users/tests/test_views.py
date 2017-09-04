@@ -1,7 +1,9 @@
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
+
+from users.factories import UserFactory
 
 from ..factories import MembershipFactory
 
@@ -10,12 +12,13 @@ User = get_user_model()
 
 class UsersViewsTestCase(TestCase):
     def setUp(self):
-        self.user = User.objects.create_user(
+        self.user = UserFactory(
             username='username',
             password='password',
             email='niklas@sundin.se',
+            membership=None,
         )
-        self.user2 = User.objects.create_user(
+        self.user2 = UserFactory(
             username='spameggs',
             password='password',
             search_visibility=0,
@@ -73,8 +76,8 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 302)  # Requires login now
 
-        membership = MembershipFactory(creator=self.user)
-        self.client.login(username='username', password='password')
+        self.assertTrue(self.user2.has_membership)
+        self.client.login(username=self.user2, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -224,7 +227,7 @@ class UsersViewsTestCase(TestCase):
     def test_usernames(self):
         url = reverse('account_signup')
         usernames = [
-            'foaso+bar', 'fööpython', 'foo.barahgs', 'foo@barbazbaz',
+            'foaso+bar', 'foo.barahgs', 'foo@barbazbaz',
             'foo.baarBAZ',
         ]
         post_data = {
@@ -235,10 +238,32 @@ class UsersViewsTestCase(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
         for i, username in enumerate(usernames):
-            post_data.update({
-                'username': username,
-                'email': 'foo{}@example.com'.format(i)
-            })
-            response = self.client.post(url, post_data, follow=True)
-            self.assertEqual(response.status_code, 200)
-            self.assertTemplateUsed(response, 'account/verification_sent.html')
+            with self.subTest(i=i, username=username):
+                post_data.update({
+                    'username': username,
+                    'email': 'foo{}@example.com'.format(i)
+                })
+                response = self.client.post(url, post_data, follow=True)
+                self.assertEqual(response.status_code, 200)
+                self.assertTemplateUsed(response, 'account/verification_sent.html')
+
+    def test_is_active_login(self):
+        # 'allauth.account.auth_backends.AuthenticationBackend'
+        # doesn't reject inactive users (but
+        # 'django.contrib.auth.backends.ModelBackend' does since
+        # Django 1.10) so if we use 'self.client.login()' it will
+        # return True. The actual rejection performs by the
+        # 'perform_login()' helper and it redirects inactive users
+        # to a separate view.
+        url = reverse('account_login')
+        user = UserFactory(is_active=False)
+        data = {'login': user.username, 'password': 'password'}
+        response = self.client.post(url, data)
+        self.assertRedirects(response, reverse('account_inactive'))
+        url = reverse('users:user_membership_create')
+        response = self.client.get(url)
+        # Ensure that an inactive user didn't get logged in.
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url)
+        )

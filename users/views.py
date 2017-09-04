@@ -1,7 +1,7 @@
 from django.contrib.auth import authenticate, login
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
@@ -29,11 +29,8 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
-            return redirect('account_login')
-        if self.request.user.has_membership:
+        if self.request.user.is_authenticated and self.request.user.has_membership:
             return redirect('users:user_membership_edit')
-
         return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
@@ -45,7 +42,7 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             self.object.creator = self.request.user
         self.object.save()
 
@@ -80,7 +77,7 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             self.object.creator = self.request.user
         self.object.save()
         return super().form_valid(form)

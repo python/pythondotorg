@@ -2,8 +2,8 @@
 
 # Required for running tests
 
-factory-boy==2.9.0
-Faker==0.7.18
+factory-boy==2.9.2
+Faker==0.8.1
 tblib==1.3.2
 
 # Extra stuff required for local dev

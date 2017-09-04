@@ -35,7 +35,7 @@ class LoginRequiredMixin(DjangoLoginRequiredMixin):
         )
         if self.raise_exception:
             if (self.redirect_unauthenticated_users and not
-                    self.request.user.is_authenticated()):
+                    self.request.user.is_authenticated):
                 return response
             raise PermissionDenied(self.get_permission_denied_message())
         return response
@@ -65,7 +65,7 @@ class GroupRequiredMixin(AccessMixin):
 
     def dispatch(self, request, *args, **kwargs):
         in_group = False
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             in_group = self.check_membership(self.get_group_required())
         if not in_group:
             return self.handle_no_permission()
