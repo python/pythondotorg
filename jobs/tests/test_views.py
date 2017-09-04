@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 
 from ..models import Job
@@ -150,6 +150,10 @@ class JobsViewTests(TestCase):
         # able to edit a job.
         form = response.context['form']
         data = form.initial
+        # Quoted from Django 1.10 release notes:
+        # Private API django.forms.models.model_to_dict() returns a
+        # queryset rather than a list of primary keys for ManyToManyFields.
+        data['job_types'] = [self.job_type.pk]
         data['description'] = 'Lorem ipsum dolor sit amet'
         response = self.client.post(url, data)
         self.assertRedirects(response, '/jobs/%d/preview/' % job.pk)

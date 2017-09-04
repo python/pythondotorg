@@ -6,13 +6,17 @@ from .views import PageView
 
 class PageFallbackMiddleware:
 
+    def __init__(self, get_response):
+        self.get_response = get_response
+
     def get_queryset(self, request):
         if request.user.is_staff:
             return Page.objects.all()
         else:
             return Page.objects.published()
 
-    def process_response(self, request, response):
+    def __call__(self, request):
+        response = self.get_response(request)
         # No need to check for a page for non-404 responses.
         if response.status_code != 404:
             return response

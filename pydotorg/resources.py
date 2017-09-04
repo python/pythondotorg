@@ -45,7 +45,7 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         return key_auth_check
 
     def get_identifier(self, request):
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return super().get_identifier(request)
         else:
             # returns a combination of IP address and hostname.

@@ -30,10 +30,7 @@ class UsersModelsTestCase(TestCase):
 
     def test_membership(self):
         plain_user = UserFactory()
-        self.assertFalse(plain_user.has_membership)
-
-        member = MembershipFactory()
-        self.assertTrue(member.creator.has_membership)
+        self.assertTrue(plain_user.has_membership)
 
     def test_higher_level_member(self):
         member1 = MembershipFactory()

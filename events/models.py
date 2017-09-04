@@ -3,7 +3,7 @@ from dateutil.rrule import rrule, YEARLY, MONTHLY, WEEKLY, DAILY
 from operator import itemgetter
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import date

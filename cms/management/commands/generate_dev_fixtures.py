@@ -27,8 +27,6 @@ class Command(BaseCommand):
         )
 
     def handle(self, **options):
-        outputfile = options.get('outputfile')
-
         content = io.StringIO()
         call_command(
             "dumpdata",
@@ -52,7 +50,7 @@ class Command(BaseCommand):
                 continue
             obj['fields']['password'] = make_password(None)
 
-        with gzip.open(outputfile, 'wb') as out:
+        with gzip.open(options['outputfile'], 'wb') as out:
             out.write(bytes(json.dumps(data, indent=4), 'UTF-8'))
 
 

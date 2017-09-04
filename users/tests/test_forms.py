@@ -84,6 +84,22 @@ class UsersFormsTestCase(TestCase):
         })
         self.assertTrue(form.is_valid())
 
+    def test_non_ascii_username(self):
+        form = SignupForm({
+            'username': 'fööpython',
+            'email': 'test@example.com',
+            'password1': 'password',
+            'password2': 'password',
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['username'],
+            [
+                'Enter a valid username. This value may contain only '
+                'English letters, numbers, and @/./+/-/_ characters.'
+            ]
+        )
+
 
 class UserProfileFormTestCase(TestCase):
 

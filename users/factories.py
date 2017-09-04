@@ -14,6 +14,7 @@ class UserFactory(factory.DjangoModelFactory):
     password = factory.PostGenerationMethodCall('set_password', 'password')
     search_visibility = User.SEARCH_PUBLIC
     email_privacy = User.EMAIL_PUBLIC
+    membership = factory.RelatedFactory('users.factories.MembershipFactory', 'creator')
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):
@@ -33,4 +34,4 @@ class MembershipFactory(factory.DjangoModelFactory):
     psf_code_of_conduct = True
     psf_announcements = True
 
-    creator = factory.SubFactory(UserFactory)
+    creator = factory.SubFactory(UserFactory, membership=None)
