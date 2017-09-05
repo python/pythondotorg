@@ -21,8 +21,8 @@ class UsersViewsTestCase(TestCase):
         self.user2 = UserFactory(
             username='spameggs',
             password='password',
-            search_visibility=0,
-            email_privacy=1,
+            search_visibility=User.SEARCH_PRIVATE,
+            email_privacy=User.EMAIL_PRIVATE,
             public_profile=False,
         )
 
@@ -94,6 +94,22 @@ class UsersViewsTestCase(TestCase):
         }
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
+
+    def test_membership_update_404(self):
+        url = reverse('users:user_membership_edit')
+        self.assertFalse(self.user.has_membership)
+        self.client.login(username=self.user, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_user_has_already_have_membership(self):
+        # Should redirect to /membership/edit/ if user already
+        # has membership.
+        url = reverse('users:user_membership_create')
+        self.assertTrue(self.user2.has_membership)
+        self.client.login(username=self.user2, password='password')
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('users:user_membership_edit'))
 
     def test_user_update(self):
         self.client.login(username='username', password='password')
@@ -267,3 +283,9 @@ class UsersViewsTestCase(TestCase):
             response,
             '{}?next={}'.format(reverse('account_login'), url)
         )
+
+    def test_user_list(self):
+        url = reverse('users:user_list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['user_list']), 1)

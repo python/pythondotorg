@@ -33,6 +33,12 @@ class EventsViewsTests(TestCase):
             finish=cls.now - datetime.timedelta(days=1),
         )
 
+    def test_events_homepage(self):
+        url = reverse('events:events')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
+
     def test_calendar_list(self):
         calendars_count = Calendar.objects.count()
         url = reverse('events:calendar_list')
@@ -143,6 +149,7 @@ class EventsViewsTests(TestCase):
 
     def test_upcoming_tag(self):
         self.assertEqual(len(get_events_upcoming()), 1)
+        self.assertEqual(len(get_events_upcoming(only_featured=True)), 1)
         self.rule.begin = self.now - datetime.timedelta(days=3)
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()

@@ -24,6 +24,10 @@ class UsersTagsTest(TemplateTestCase):
         rendered = self.render_string(template, {'user': user})
         self.assertEqual(rendered, "Lawrence, KS")
 
+        user = UserFactory(membership__region='KS', membership__country='USA')
+        rendered = self.render_string(template, {'user': user})
+        self.assertEqual(rendered, 'KS USA')
+
         user = UserFactory(
             membership__city='Lawrence',
             membership__region='KS',

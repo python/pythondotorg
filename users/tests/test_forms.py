@@ -3,7 +3,7 @@ from django.test import TestCase
 
 from allauth.account.forms import SignupForm
 
-from users.forms import UserProfileForm
+from users.forms import UserProfileForm, MembershipForm
 
 User = get_user_model()
 
@@ -98,6 +98,23 @@ class UsersFormsTestCase(TestCase):
                 'Enter a valid username. This value may contain only '
                 'English letters, numbers, and @/./+/-/_ characters.'
             ]
+        )
+
+    def test_user_membership(self):
+        form = MembershipForm({
+            'legal_name': 'Some Name',
+            'preferred_name': 'Sommy',
+            'email_address': 'sommy@example.com',
+            'city': 'Lawrence',
+            'region': 'Kansas',
+            'country': 'USA',
+            'postal_code': '66044',
+            'psf_announcements': True,
+        })
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors['psf_code_of_conduct'],
+            ['Agreeing to the code of conduct is required.']
         )
 
 
