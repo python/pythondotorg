@@ -1,4 +1,24 @@
 [run]
 branch = True
 source = .
-omit = manage.py,*/migrations/*,*/tests/*,*/tests.py,pydotorg/wsgi.py,*venv*,pydotorg/settings/*,pydotorg/compilers.py,*/factories.py
+omit =
+    *venv*
+    manage.py
+    pydotorg/wsgi.py
+    pydotorg/settings/*
+    pydotorg/compilers.py
+    */migrations/*
+    */tests/*
+    */tests.py
+    */actions.py
+    */admin.py
+    */factories.py
+    */search_indexes.py
+
+[report]
+exclude_lines =
+    def get_absolute_url
+    def __repr__
+    def __str__
+    if settings.DEBUG
+    if __name__ == .__main__.:

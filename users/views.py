@@ -35,15 +35,12 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if self.request.user.email:
-            kwargs['initial'] = {'email_address': self.request.user.email}
-
+        kwargs['initial'] = {'email_address': self.request.user.email}
         return kwargs
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated:
-            self.object.creator = self.request.user
+        self.object.creator = self.request.user
         self.object.save()
 
         # Send subscription email to mailing lists
@@ -77,8 +74,7 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated:
-            self.object.creator = self.request.user
+        self.object.creator = self.request.user
         self.object.save()
         return super().form_valid(form)
 
