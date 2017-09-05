@@ -1,7 +1,7 @@
 dj-database-url==0.4.2
 django-pipeline==1.6.13
 django-sitetree==1.8.0
-Django==1.10.7
+Django==1.11.4
 docutils==0.12
 Markdown==2.5.2
 Pillow==2.7.0
@@ -21,8 +21,8 @@ pyelasticsearch==0.6.1
 # TODO: 0.14.0 only supports Django 1.8 and 1.11.
 django-tastypie==0.13.3
 
-pytz==2016.7
-python-dateutil==2.4.0
+pytz==2017.2
+python-dateutil==2.6.1
 
 requests==2.5.1
 

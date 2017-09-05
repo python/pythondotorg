@@ -8,7 +8,7 @@ log = logging.getLogger(__name__)
 register = template.Library()
 
 
-@register.assignment_tag(takes_context=True)
+@register.simple_tag(takes_context=True)
 def render_template_for(context, obj, template=None, template_directory=None):
     """
     Renders a template based on the `media_type` of the given object in the
@@ -30,6 +30,7 @@ def render_template_for(context, obj, template=None, template_directory=None):
         {% render_template_for object template_directory='includes/types' as html %}
 
     """
+    context = context.flatten()
     context['object'] = obj
 
     template_list = []

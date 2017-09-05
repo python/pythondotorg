@@ -10,20 +10,27 @@ from ..templatetags.events import get_events_upcoming
 
 
 class EventsViewsTests(TestCase):
-    def setUp(self):
-        self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user, slug="test-calendar")
-        self.event = Event.objects.create(creator=self.user, calendar=self.calendar)
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username='username', password='password')
+        cls.calendar = Calendar.objects.create(creator=cls.user, slug="test-calendar")
+        cls.event = Event.objects.create(creator=cls.user, calendar=cls.calendar)
+        cls.event_past = Event.objects.create(title='Past Event', creator=cls.user, calendar=cls.calendar)
 
-        self.now = timezone.now()
+        cls.now = timezone.now()
 
-        recurring_time_dtstart = self.now + datetime.timedelta(days=3)
+        recurring_time_dtstart = cls.now + datetime.timedelta(days=3)
         recurring_time_dtend = recurring_time_dtstart + datetime.timedelta(days=5)
 
-        self.rule = RecurringRule.objects.create(
-            event=self.event,
+        cls.rule = RecurringRule.objects.create(
+            event=cls.event,
             begin=recurring_time_dtstart,
             finish=recurring_time_dtend,
+        )
+        cls.rule_past = RecurringRule.objects.create(
+            event=cls.event_past,
+            begin=cls.now - datetime.timedelta(days=2),
+            finish=cls.now - datetime.timedelta(days=1),
         )
 
     def test_calendar_list(self):
@@ -48,15 +55,6 @@ class EventsViewsTests(TestCase):
 
     def test_event_list_past(self):
         url = reverse('events:event_list_past', kwargs={"calendar_slug": self.calendar.slug})
-        response = self.client.get(url)
-
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 0)
-
-        self.rule.begin = self.now - datetime.timedelta(days=3)
-        self.rule.finish = self.now - datetime.timedelta(days=2)
-        self.rule.save()
-
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
@@ -108,7 +106,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['object'], dt.date())
-        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 2)
 
     def test_eventlocation_list(self):
         venue = EventLocation.objects.create(

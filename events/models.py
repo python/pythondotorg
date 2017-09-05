@@ -308,8 +308,10 @@ class RecurringRule(RuleMixin, models.Model):
     @property
     def dt_start(self):
         since = timezone.now()
-
-        return self.to_rrule().after(since)
+        recurrence = self.to_rrule().after(since)
+        if recurrence is None:
+            return since
+        return recurrence
 
     @property
     def dt_end(self):
