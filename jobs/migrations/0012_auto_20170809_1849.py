@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.apps import apps as global_apps
-from django.contrib.contenttypes.management import update_contenttypes
+from django.contrib.contenttypes.management import create_contenttypes
 from django.db import models, migrations
 from django.utils.timezone import now
 
@@ -18,7 +18,7 @@ def migrate_old_content(apps, schema_editor):
     except LookupError:
         # django_comments_xtd isn't installed.
         return
-    update_contenttypes(apps.app_configs['contenttypes'])
+    create_contenttypes(apps.app_configs['contenttypes'])
     JobReviewComment = apps.get_model('jobs', 'JobReviewComment')
     Job = apps.get_model('jobs', 'Job')
     ContentType = apps.get_model('contenttypes', 'ContentType')

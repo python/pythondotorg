@@ -116,8 +116,8 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
 
-        rt.begin = now + datetime.timedelta(days=5)
-        rt.finish = now + datetime.timedelta(days=3)
+        rt.begin = now + datetime.timedelta(days=7)
+        rt.finish = now + datetime.timedelta(days=9)
         rt.save()
 
         event = Event.objects.get(pk=self.event.pk)
