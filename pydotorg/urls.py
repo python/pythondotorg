@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # api
+    url(r'^api/v1/', views.RetiredAPIView.as_view(), name='retired_api'),
     url(r'^api/v2/', include(router.urls)),
 ]
 

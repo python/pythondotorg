@@ -3,7 +3,7 @@ import waffle
 from django.contrib.auth.mixins import AccessMixin, LoginRequiredMixin as DjangoLoginRequiredMixin
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import ImproperlyConfigured, PermissionDenied
-from django.http import Http404
+from django.http import Http404, JsonResponse
 
 
 class FlagMixin(object):
@@ -70,3 +70,17 @@ class GroupRequiredMixin(AccessMixin):
         if not in_group:
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
+
+
+class JSONResponseMixin:
+    """
+    A mixin that can be used to render a JSON response.
+    """
+    def render_to_json_response(self, context, **response_kwargs):
+        return JsonResponse(self.get_data(context), **response_kwargs)
+
+    def get_data(self, context):
+        """
+        Return an object that will be serialized as JSON by json.dumps().
+        """
+        return context
