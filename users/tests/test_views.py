@@ -16,6 +16,7 @@ class UsersViewsTestCase(TestCase):
             username='username',
             password='password',
             email='niklas@sundin.se',
+            search_visibility=User.SEARCH_PUBLIC,
             membership=None,
         )
         self.user2 = UserFactory(

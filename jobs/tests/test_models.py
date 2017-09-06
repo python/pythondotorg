@@ -83,7 +83,7 @@ class JobsModelsTests(TestCase):
 
     def test_job_type_with_active_jobs_manager(self):
         t1 = factories.JobTypeFactory()
-        t2 = factories.JobTypeFactory()
+        t2 = factories.JobTypeFactory(name='Spam')
         j1 = factories.ApprovedJobFactory()
         j1.job_types.add(t1)
 
@@ -94,7 +94,7 @@ class JobsModelsTests(TestCase):
 
     def test_job_category_with_active_jobs_manager(self):
         c1 = factories.JobCategoryFactory()
-        c2 = factories.JobCategoryFactory()
+        c2 = factories.JobCategoryFactory(name='Foo')
         j1 = factories.ApprovedJobFactory()
         j1.category = c1
         j1.save()
