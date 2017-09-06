@@ -9,11 +9,18 @@ class UserFactory(factory.DjangoModelFactory):
         model = User
         django_get_or_create = ('username',)
 
-    username = factory.Sequence(lambda n: 'zombie{}'.format(n))
-    email = factory.Sequence(lambda n: "zombie%s@example.com" % n)
+    username = factory.Faker('user_name')
+    email = factory.Faker('free_email')
     password = factory.PostGenerationMethodCall('set_password', 'password')
-    search_visibility = User.SEARCH_PUBLIC
-    email_privacy = User.EMAIL_PUBLIC
+    search_visibility = factory.Iterator([
+        User.SEARCH_PUBLIC,
+        User.SEARCH_PRIVATE,
+    ])
+    email_privacy = factory.Iterator([
+        User.EMAIL_PUBLIC,
+        User.EMAIL_PRIVATE,
+        User.EMAIL_NEVER,
+    ])
     membership = factory.RelatedFactory('users.factories.MembershipFactory', 'creator')
 
     @factory.post_generation
@@ -35,3 +42,9 @@ class MembershipFactory(factory.DjangoModelFactory):
     psf_announcements = True
 
     creator = factory.SubFactory(UserFactory, membership=None)
+
+
+def initial_data():
+    return {
+        'users': UserFactory.create_batch(size=10),
+    }

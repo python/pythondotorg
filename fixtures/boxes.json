@@ -1,198 +1,394 @@
 [
 {
-    "model": "boxes.box",
-    "pk": 1,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>The Python Software Foundation maintains and supports open-source Python software</h4>\r\n                                <p>The PSF runs <a href=\"#\">PyCon</a>, supports conferences around the world, and funds Python-related development with a grants program. <a href=\"#\">Learn more about the PSF</a>.\r\n                            </li>",
-        "created": "2013-10-11T19:20:08.893Z",
-        "_content_rendered": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>The Python Software Foundation maintains and supports open-source Python software</h4>\r\n                                <p>The PSF runs <a href=\"#\">PyCon</a>, supports conferences around the world, and funds Python-related development with a grants program. <a href=\"#\">Learn more about the PSF</a>.\r\n                            </li>",
         "label": "supernav-python-about",
-        "updated": "2013-10-11T19:20:08.895Z",
-        "last_modified_by": null
+        "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python.</a>.\r\n                            </li>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 2,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>",
-        "created": "2013-10-11T19:20:46.910Z",
-        "_content_rendered": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>",
         "label": "supernav-python-events",
-        "updated": "2013-10-11T19:24:34.021Z",
-        "last_modified_by": 1
+        "content": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 3,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<li class=\"tier-2 super-navigation\">\r\n    <p class=\"date-posted\"><small>Monday, March 4, 2013</small></p>\r\n    <h4>Introducing Electronic Contributor Agreements</h4>\r\n    <p class=\"excerpt\">\r\n        <small><br />\r\nWe're happy to announce the new way to file a contributor agreement: on the web at&nbsp;<a href=\"http://www.python.org/psf/contrib/contrib-form/\">http://www.python.org/psf/contrib/contrib-form/</a>.<br />\r\n<br />\r\nThrough the use of&nbsp;<a href=\"https://www.echosign.adobe.com/en/home.html\">Adobe's EchoSign</a>, we got rid of the old hand-written, print out, scan or photograph, then fax or email of your form ...<a class=\"readmore\" href=\"http://feedproxy.google.com/~r/PythonInsider/~3/tGNCqyOiun4/introducing-electronic-contributor.html\">Read more</a></small>\r\n    </p>\r\n</li>",
-        "created": "2013-10-11T19:21:09.179Z",
-        "_content_rendered": "<li class=\"tier-2 super-navigation\">\r\n    <p class=\"date-posted\"><small>Monday, March 4, 2013</small></p>\r\n    <h4>Introducing Electronic Contributor Agreements</h4>\r\n    <p class=\"excerpt\">\r\n        <small><br />\r\nWe're happy to announce the new way to file a contributor agreement: on the web at&nbsp;<a href=\"http://www.python.org/psf/contrib/contrib-form/\">http://www.python.org/psf/contrib/contrib-form/</a>.<br />\r\n<br />\r\nThrough the use of&nbsp;<a href=\"https://www.echosign.adobe.com/en/home.html\">Adobe's EchoSign</a>, we got rid of the old hand-written, print out, scan or photograph, then fax or email of your form ...<a class=\"readmore\" href=\"http://feedproxy.google.com/~r/PythonInsider/~3/tGNCqyOiun4/introducing-electronic-contributor.html\">Read more</a></small>\r\n    </p>\r\n</li>",
         "label": "supernav-python-blog",
-        "updated": "2013-10-11T19:24:30.112Z",
-        "last_modified_by": 1
+        "content": "<li class=\"tier-2 super-navigation\">\n    <p class=\"date-posted\"><small>Tuesday, July 12, 2016</small></p>\n    <h4>Python 3.6.0 alpha 3 preview release is now available</h4>\n    <p class=\"excerpt\">\n        <small><span style=\"font-family: inherit;\"><span style=\"background-color: white; color: #111111; line-height: 17.2900009155273px;\"><a href=\"https://www.python.org/downloads/release/python-360a3/\">Python 3.6.0a3</a>&nbsp;</span></span><span style=\"font-family: inherit;\"><span style=\"background-color: white; color: #111111; line-height: 17.2900009155273px;\"><span style=\"font-family: inherit;\">has been&nbsp;</span></span><span style=\"background-color: white; color: #111111; font-family: inherit; line-height: 17.2900009155273px;\">released.&nbsp;</span></span>&nbsp;3.6.0a3 is the third of four planned alpha pre-releases of Python 3.6, the next major release of Python. &nbsp;During the alpha phase, Python 3.6 remains under heavy development: additional features will be added and existing features may ...<a class=\"readmore\" href=\"http://feedproxy.google.com/~r/PythonInsider/~3/6i6vUY_x_SE/python-360-alpha-3-preview-release-is.html\">Read more</a></small>\n    </p>\n</li>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 4,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                \r\n                                <img src=\"/static/img/google-trans.png\" alt=\"Google\">\r\n                    \r\n                                <blockquote class=\"success-quote\">\r\n                                    Python allows us to produce maintainable features in record times, with a minimum of developers.\r\n                                </blockquote>\r\n                                <p class=\"quote-by\"><cite>Cuong Do, Software Architect</cite>, YouTube.com</p>\r\n                                \r\n                            </li>",
-        "created": "2013-10-11T19:21:24.310Z",
-        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                \r\n                                <img src=\"/static/img/google-trans.png\" alt=\"Google\">\r\n                    \r\n                                <blockquote class=\"success-quote\">\r\n                                    Python allows us to produce maintainable features in record times, with a minimum of developers.\r\n                                </blockquote>\r\n                                <p class=\"quote-by\"><cite>Cuong Do, Software Architect</cite>, YouTube.com</p>\r\n                                \r\n                            </li>",
-        "label": "supernav-python-success-stories",
-        "updated": "2013-10-11T19:24:24.715Z",
-        "last_modified_by": 1
-    }
-},
-{
-    "model": "boxes.box",
-    "pk": 5,
-    "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Local Events</h4>\r\n                                <p>Here are some events and groups in your area.</p>\r\n                                <ul class=\"menu\">\r\n                                    <li><time datetime=\"\">9/30<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Royal Python Society Meetup, Providence RI</a></li>\r\n                                    <li><time datetime=\"\">10/4<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Users Group, Boston MA</a></li>\r\n                                    <li><time datetime=\"\">10/5<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Enthusiasts, Cambridge MA</a></li>\r\n                            </ul>\r\n                            </li>",
-        "created": "2013-10-11T19:21:37.439Z",
-        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Local Events</h4>\r\n                                <p>Here are some events and groups in your area.</p>\r\n                                <ul class=\"menu\">\r\n                                    <li><time datetime=\"\">9/30<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Royal Python Society Meetup, Providence RI</a></li>\r\n                                    <li><time datetime=\"\">10/4<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Users Group, Boston MA</a></li>\r\n                                    <li><time datetime=\"\">10/5<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Enthusiasts, Cambridge MA</a></li>\r\n                            </ul>\r\n                            </li>",
         "label": "supernav-python-community",
-        "updated": "2013-10-11T19:24:20.418Z",
-        "last_modified_by": 1
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>The Python Community</h4>\r\n<p>Great software is supported by great people. Our user base is enthusiastic, dedicated to encouraging use of the language, and committed to being diverse and friendly.</p>\r\n\r\n<!--\r\n                                <p>Here are some events and groups in your area.</p>\r\n                                <ul class=\"menu\">\r\n                                    <li><time datetime=\"\">9/30<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Royal Python Society Meetup, Providence RI</a></li>\r\n                                    <li><time datetime=\"\">10/4<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Users Group, Boston MA</a></li>\r\n                                    <li><time datetime=\"\">10/5<span class=\"say-no-more\">/2012</span></time> <a href=\"#\">Python Enthusiasts, Cambridge MA</a></li>\r\n                            </ul>\r\n                            </li>-->",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 6,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation: download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or visit the <a href=\"/documentation.php#docs-by-version\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"#\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>",
-        "created": "2013-10-11T19:22:54.013Z",
-        "_content_rendered": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation: download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or visit the <a href=\"/documentation.php#docs-by-version\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"#\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"#\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>",
+        "label": "aboutpython-banner",
+        "content": "<h1 class=\"call-to-action\">\r\n    Python is powerful... and fast; <br>\r\n    plays well with others; <br>\r\n    runs everywhere; <br>\r\n    is friendly &amp; easy to learn; <br>\r\n    is Open.\r\n</h1>\r\n<p>These are some of the reasons people who use Python would rather not use anything else.</p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "usermessage-helplink",
+        "content": "<p>Can&rsquo;t find what you&rsquo;re looking for? <a href=\"/about/help/\">Try our comprehensive Help section</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
         "label": "supernav-python-documentation",
-        "updated": "2013-10-11T19:24:14.995Z",
-        "last_modified_by": 1
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation: download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or visit the <a href=\"/doc/versions/\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"http://docs.python.org/2/\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 7,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<!-- download supernav from templates/downloads/supernav.html -->\n<li class=\"tier-2 super-navigation\">\n    \n    <div class=\"download-unknown\">\n        <h4>Download Python for Any OS</h4>\n        <p>Python can be used on 21 different operating systems and environments.</p>\n        <p>\n            <a class=\"button\" href=\"/downloads/operating-systems/\">View the Full List</a>\n        </p>\n    </div>\n</li>\n",
-        "created": "2013-10-11T19:23:20.756Z",
-        "_content_rendered": "<!-- download supernav from templates/downloads/supernav.html -->\n<li class=\"tier-2 super-navigation\">\n    \n    <div class=\"download-unknown\">\n        <h4>Download Python for Any OS</h4>\n        <p>Python can be used on 21 different operating systems and environments.</p>\n        <p>\n            <a class=\"button\" href=\"/downloads/operating-systems/\">View the Full List</a>\n        </p>\n    </div>\n</li>\n",
-        "label": "supernav-python-downloads",
-        "updated": "2014-12-17T03:59:34.494Z",
-        "last_modified_by": 1
+        "label": "feedbacks-complete",
+        "content": "Thanks for submitting your feedback!",
+        "content_markup_type": "markdown"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 9,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n<p><a href=\"#\">Start with our Beginner\u2019s Guide</a></p>",
-        "created": "2013-10-11T17:25:22.402Z",
-        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n<p><a href=\"#\">Start with our Beginner\u2019s Guide</a></p>",
         "label": "homepage-get-started",
-        "updated": "2013-10-11T17:25:22.405Z",
-        "last_modified_by": null
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Get Started</h2>\r\n<p>Whether you're new to programming or an experienced developer, it's easy to learn and use Python.</p>\r\n<p><a href=\"/about/gettingstarted/\">Start with our Beginner&rsquo;s Guide</a></p>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 10,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions! Not sure which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Check here</a>.</p>\n<p>Latest: <a href=\"/downloads/release/python-350/\">Python 3.5.0</a> - <a href=\"/downloads/release/python-2710/\">python 2.7.10</a></p>",
-        "created": "2013-10-11T19:25:35.283Z",
-        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions! Not sure which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Check here</a>.</p>\n<p>Latest: <a href=\"/downloads/release/python-350/\">Python 3.5.0</a> - <a href=\"/downloads/release/python-2710/\">python 2.7.10</a></p>",
-        "label": "homepage-downloads",
-        "updated": "2014-12-17T03:59:34.567Z",
-        "last_modified_by": null
-    }
-},
-{
-    "model": "boxes.box",
-    "pk": 11,
-    "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>Docs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">docs.python.org</a></p>",
-        "created": "2013-10-11T19:26:23.201Z",
-        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>Docs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">docs.python.org</a></p>",
         "label": "homepage-documentation",
-        "updated": "2013-10-11T19:26:23.204Z",
-        "last_modified_by": null
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>Docs</h2>\r\n<p>Documentation for Python's standard library, along with tutorials and guides, are available online.</p>\r\n<p><a href=\"https://docs.python.org\">docs.python.org</a></p>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 12,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">jobs.python.org</a></p>",
-        "created": "2013-10-11T19:27:35.466Z",
-        "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n                        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor. </p>\r\n                        <p><a href=\"#\">jobs.python.org</a></p>",
         "label": "homepage-jobs",
-        "updated": "2013-10-11T19:27:35.468Z",
-        "last_modified_by": null
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you're trying to hire for? Our <strong>relaunched community-run job board</strong> is the place to go.</p>\r\n<p><a href=\"//jobs.python.org\">jobs.python.org</a></p>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 13,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<p>Python is a programming language that lets you work quickly <span class=\"breaker\"></span>and integrate systems more effectively. <a class=\"readmore\" href=\"#\">Learn More</a></p>",
-        "created": "2013-10-11T19:38:09.925Z",
-        "_content_rendered": "<p>Python is a programming language that lets you work quickly <span class=\"breaker\"></span>and integrate systems more effectively. <a class=\"readmore\" href=\"#\">Learn More</a></p>",
         "label": "homepage-introduction",
-        "updated": "2013-10-11T19:38:09.929Z",
-        "last_modified_by": null
+        "content": "<p>Python is a programming language that lets you work quickly <span class=\"breaker\"></span>and integrate systems more effectively. <a class=\"readmore\" href=\"/doc/\">Learn More</a></p>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 14,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\">\r\n    <span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"#\">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class=\"readmore\" href=\"#\">Learn more</a> </p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"{% url 'users:user_membership_edit' %}\">Become a Member</a>\r\n    <a class=\"button\" href=\"#\">Donate to the PSF</a>\r\n</p>",
-        "created": "2013-10-11T19:51:21.418Z",
-        "_content_rendered": "<h2 class=\"widget-title\">\r\n    <span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"#\">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class=\"readmore\" href=\"#\">Learn more</a> </p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"{% url 'users:user_membership_edit' %}\">Become a Member</a>\r\n    <a class=\"button\" href=\"#\">Donate to the PSF</a>\r\n</p>",
         "label": "widget-about-psf",
-        "updated": "2013-10-11T19:51:21.423Z",
-        "last_modified_by": null
+        "content": "<h2 class=\"widget-title\">\r\n    <span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"/psf/\">Python Software Foundation</a>\r\n</h2>\r\n<p>The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers. <a class=\"readmore\" href=\"/psf/\">Learn more</a> </p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"/users/membership/\">Become a Member</a>\r\n    <a class=\"button\" href=\"/psf/donations/\">Donate to the PSF</a>\r\n</p>",
+        "content_markup_type": "html"
     }
 },
 {
-    "model": "boxes.box",
-    "pk": 15,
     "fields": {
-        "content_markup_type": "html",
-        "creator": 1,
-        "content": "<h2 class=\"widget-title\">Sources</h2>\n<p>For most Unix systems, you must download and compile the source code. The same source code archive can also be used to build the Windows and Mac versions, and is the starting point for ports to all other platforms.</p>\n\n<p>Download the latest <a href=\"\">Python 2</a> and <a href=\"\">Python 3</a> source.</p>\n\n<p><a class=\"readmore\" href=\"/download/source/\">Read more</a></p>",
-        "created": "2014-12-17T03:58:44.264Z",
-        "_content_rendered": "<p><h2 class=\"widget-title\">Sources</h2>\n<p>For most Unix systems, you must download and compile the source code. The same source code archive can also be used to build the Windows and Mac versions, and is the starting point for ports to all other platforms</p></p>\n<p><p>Download the latest <a href=\"\">Python 2</a> and <a href=\"\">Python 3</a> source.</p>\n\n<p><a class=\"readmore\" href=\"/download/source/\">Read more</a></p>\n",
+        "label": "widget-use-python-for",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-python\"></span>Use Python for&hellip;</h2>\r\n<p class=\"give-me-more\"><a href=\"/about/apps\" title=\"More Applications\">More</a></p>\r\n\r\n<ul class=\"menu\">\r\n    <li><b>Web Programming</b>:\r\n        <span class=\"tag-wrapper\"><a class=\"tag\" href=\"http://www.djangoproject.com/\">Django</a>, <a class=\"tag\" href=\"http://www.pylonsproject.org/\">Pyramid</a>, <a class=\"tag\" href=\"http://bottlepy.org\">Bottle</a>, <a class=\"tag\" href=\"http://tornadoweb.org\">Tornado</a>, <a href=\"http://flask.pocoo.org/\" class=\"tag\">Flask</a>, <a class=\"tag\" href=\"http://www.web2py.com/\">web2py</a></span></li>\r\n    <li><b>GUI Development</b>:\r\n        <span class=\"tag-wrapper\"><a class=\"tag\" href=\"http://www.wxpython.org/\">wxPython</a>, <a class=\"tag\" href=\"http://wiki.python.org/moin/TkInter\">tkInter</a>, <a class=\"tag\" href=\"http://www.pygtk.org\">PyGtk</a>, <a class=\"tag\" href=\"https://wiki.gnome.org/Projects/PyGObject\">PyGObject</a>, <a class=\"tag\" href=\"http://www.riverbankcomputing.co.uk/software/pyqt/intro\">PyQt</a></span></li>\r\n    <li><b>Scientific and Numeric</b>:\r\n        <span class=\"tag-wrapper\">\r\n<a class=\"tag\" href=\"http://www.scipy.org\">SciPy</a>, <a class=\"tag\" href=\"http://pandas.pydata.org/\">Pandas</a>, <a href=\"http://ipython.org\" class=\"tag\">IPython</a></span></li>\r\n    <li><b>Software Development</b>:\r\n        <span class=\"tag-wrapper\"><a class=\"tag\" href=\"http://buildbot.net/\">Buildbot</a>, <a class=\"tag\" href=\"http://trac.edgewall.org/\">Trac</a>, <a class=\"tag\" href=\"http://roundup.sourceforge.net/\">Roundup</a></span></li>\r\n    <li><b>System Administration</b>:\r\n        <span class=\"tag-wrapper\"><a class=\"tag\" href=\"http://www.ansible.com\">Ansible</a>, <a class=\"tag\" href=\"http://www.saltstack.com\">Salt</a>, <a class=\"tag\" href=\"https://www.openstack.org\">OpenStack</a></span></li>\r\n</ul>\r\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "aboutpython-opensource",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-code\"></span>Open-source</h2>\r\n<p>Python is developed under an OSI-approved open source license, making it freely usable and distributable, even for commercial use. Python's license is administered by the <a href=\"/psf\">Python Software Foundation</a>.</p>\r\n<ul>\r\n    <li><a href=\"https://docs.python.org/license.html\">Learn more about the license</a></li>\r\n    <li><a href=\"http://opensource.org/licenses/Python-2.0\">Python license on OSI</a></li>\r\n    <li><a href=\"/psf-landing/\">Learn more about the Foundation</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "aboutpython-applications",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-pypi\"></span>Applications</h2>\r\n<p>The <a href=\"https://pypi.python.org\">Python Package Index (PyPI)</a> hosts thousands of third-party modules for Python. Both Python's standard library and the community-contributed modules allow for endless possibilities.</p>\r\n<ul>\r\n    <li><a href=\"/about/apps/#web-and-internet-development\">Web and Internet Development</a></li>\r\n    <li><a href=\"/about/apps/#database-access\">Database Access</a></li>\r\n    <li><a href=\"/about/apps/#desktop-guis\">Desktop GUIs</a></li>\r\n    <li><a href=\"/about/apps/#scientific-and-numeric\">Scientific &amp; Numeric</a></li>\r\n    <li><a href=\"/about/apps/#education\">Education</a></li>\r\n    <li><a href=\"/about/apps/#network-programming\">Network Programming</a></li>\r\n    <li><a href=\"/about/apps/#software-development\">Software &amp; Game Development</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "aboutpython-easytolearn",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-success-stories\"></span>Friendly & Easy to Learn</h2>\r\n<p>The community hosts conferences and meetups, collaborates on code, and much more. Python's documentation will help you along the way, and the mailing lists will keep you in touch.</p>\r\n<ul>\r\n    <li><a href=\"/community/workshops/\">Conferences and Workshops</a></li>\r\n    <li><a href=\"http://docs.python.org\">Python Documentation</a></li>\r\n    <li><a href=\"/community/lists\"/>Mailing Lists</a> and <a href=\"/community/irc/\">IRC channels</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "aboutpython-getstarted",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Getting Started</h2>\r\n<p>Python can be easy to pick up whether you're a first time programmer or you're experienced with other languages. The following pages are a useful first step to get on your way writing programs with Python!</p>\r\n<ul>\r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide/Programmers\">Beginner's Guide, Programmers</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide/NonProgrammers\">Beginner's Guide, Non-Programmers</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide/Download\">Beginner's Guide, Download & Installation</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide/Examples\">Code sample and snippets for Beginners</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "community-irc-channels",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-freenode\"></span>Internet Relay Chat</h2>\r\n<p><a href=\"http://freenode.net/\">Freenode IRC</a> hosts several channels. <a href=\"http://www.irchelp.org/\">Select an IRC client</a>, <a href=\"http://freenode.net/faq.shtml#registering\">register your nickname with Freenode</a>, and you can be off and running!</p>\r\n    <h4>Freenode IRC General Channels</h4>\r\n    <ul class=\"menu\">\r\n        <li><strong>#python</strong> for general questions</li>\r\n        <li><strong>#python-dev</strong> for CPython developers</li>\r\n        <li><strong>#distutils</strong> for Python packaging discussion</li>\r\n    </ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "community-widget1",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-get-started\"></span>Getting Started</h2>\r\n<p>New to the community? Here are some great places to get started:</p>\r\n<ul> \r\n    <li><a href=\"http://docs.python.org/3/faq/\">Python FAQs</a></li>\r\n    <li><a href=\"/community/workshops/\">Attend a Conference</a></li>\r\n    <li><a href=\"/community/diversity/\">Diversity Statement</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "community-banner",
+        "content": "<h1 class=\"call-to-action\">\r\n    <a href=\"#\">Python&rsquo;s community is vast</a>; <br>\r\n    <a href=\"#\">diverse &amp; aims to grow</a>; <br>\r\n    <a href=\"#\">Python is Open</a>.\r\n</h1>\r\n<p>Great software is supported by great people, and Python is no exception. Our user base is enthusiastic and dedicated to spreading use of the language far and wide. Our community can help support the beginner, the expert, and adds to the ever-increasing open-source knowledgebase. </p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "widget-weneedyou",
+        "content": "<h2 class=\"widget-title\"><span class=\"prompt\">&gt;&gt;&gt;</span> <a href=\"#\">Python Needs You</a></h2>\r\n<p>Open source software is made better when users can easily contribute code and documentation to fix bugs and add features. Python strongly encourages community involvement in improving the software. <a href=\"//docs.python.org/devguide\">Learn more</a> about how to make Python better for everyone.</p>\r\n<p class=\"click-these\">\r\n    <a class=\"button\" href=\"//docs.python.org/devguide/#contributing\">Contribute to Python</a>\r\n    <a class=\"button\" href=\"//bugs.python.org\">Bug Tracker</a>\r\n</p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "documentation-general",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-documentation\"></span>General</h2>\r\n<ul> \r\n    <li><a href=\"/dev/peps/\">PEP Index</a></li>\r\n    <li><a href=\"http://www.pyvideo.org\">Python Videos</a></li>\r\n    <li><a href=\"//docs.python.org/devguide\">Developer&rsquo;s Guide</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "documentation-advanced",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-advanced\"></span>Advanced</h2>\r\n<ul>\r\n    <li><a href=\"http://packaging.python.org/\">Python Packaging User Guide</a></li>\r\n    <li><a href=\"//docs.python.org/dev/\">In-development Docs</a></li>\r\n    <li><a href=\"/doc/essays/\">Guido&rsquo;s Essays</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "documentation-moderate",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-moderate\"></span>Moderate</h2>\r\n<ul> \r\n    <li><a href=\"https://wiki.python.org/moin/PythonPeriodicals\">Python Periodicals</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/PythonBooks\">Python Books</a></li>\r\n<!--    <li><a href=\"/doc/newstyle/\">New Style Classes</a></li> -->\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "documentation-beginners",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-beginner\"></span>Beginner</h2>\r\n<ul> \r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide\">Beginner&rsquo;s Guide</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/Python2orPython3\">Python 2&nbsp;or&nbsp;3?</a></li>\r\n    <li><a href=\"//docs.python.org/faq/\">Python FAQs</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "documentation-banner",
+        "content": "<h1 class=\"call-to-action\">Browse the docs online or download a copy of your own. Python's documentation, tutorials, and guides are constantly evolving.</h1>\r\n<p>Get started here, or scroll down for documentation broken out by type and subject.</p>\r\n<p class=\"download-buttons\">\r\n    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n    <a class=\"button\" href=\"http://docs.python.org/2/\">Python 2.x Docs</a>\r\n</p>\r\n<p>See also <a href=\"/doc/versions/\">Documentation Releases by Version</a> and <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "usermessage-releaseschedule",
+        "content": "<p>Looking for the release schedule? <a href=\"//www.google.com/calendar/embed?src=b6v58qvojllt0i6ql654r1vh00@group.calendar.google.com\"><span aria-hidden=\"true\" class=\"icon-calendar\"></span>Check the Google Calendar</a>. </p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-widget4",
+        "content": "<h2 class=\"widget-title\">History</h2>\r\n<p>Python was created in the early 1990s by Guido van Rossum at Stichting Mathematisch Centrum in the Netherlands as a successor of a language called ABC. Guido remains Python\u2019s principal author, although it includes many contributions from others. </p>\r\n<p><a class=\"readmore\" href=\"http://docs.python.org/3/license.html\">Read more</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-widget3",
+        "content": "<h2 class=\"widget-title\">Alternative Implementations</h2>\r\n<p>This site hosts the \"traditional\" implementation of Python (nicknamed CPython). A number of alternative implementations are available as well. </p>\r\n<p><a class=\"readmore\" href=\"/download/alternatives/\">Read more</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-widget1",
+        "content": "<h2 class=\"widget-title\">Licenses</h2>\r\n<p>All Python releases are <a href=\"http://www.opensource.org/\">Open Source</a>. Historically, most, but not all, Python releases have also been GPL-compatible. The Licenses page details GPL-compatibility and Terms and Conditions. </p>\r\n<p><a class=\"readmore\" href=\"http://docs.python.org/3/license.html#terms-and-conditions-for-accessing-or-otherwise-using-python\">Read more</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "events-subscriptions",
+        "content": "<h2 class=\"widget-title\">Python Events Calendars</h2>\r\n\r\n<br/>\r\n\r\n<p>For Python events near you, please have a look at the <a href=\"http://lmorillas.github.io/python_events/\"><b>Python events map</b></a>.</p>\r\n\r\n<p>The Python events calendars are maintained by the <a href=\"https://wiki.python.org/moin/PythonEventsCalendar#Python_Calendar_Team\">events calendar team</a>.</p>\r\n\r\n<p>Please see the <a href=\"https://wiki.python.org/moin/PythonEventsCalendar\">events calendar project page</a> for details on how to <a href=\"https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event\">submit events</a>, <a href=\"https://wiki.python.org/moin/PythonEventsCalendar#Available_Calendars\">subscribe to the calendars</a>, get <a href=\"https://twitter.com/PythonEvents\">Twitter feeds</a> or embed them.</p>\r\n\r\n<p>Thank you.</p>\r\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "blogs-copyright",
+        "content": "<h2 class=\"widget-title\">Copyright</h2>\r\n<p>Python Insider by the Python Core Developers is licensed under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/3.0/us/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href=\"http://blog.python.org\">blog.python.org</a>.</p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "blogs-subscriptions",
+        "content": "<h2 class=\"widget-title\"><span class=\"blog-name\">Python Insider</span> Subscriptions</h2>\r\n<p>Subscribe to Python Insider via:</p>\r\n<ul class=\"subscription-channels menu\">\r\n    <li><a href=\"http://feeds.feedburner.com/PythonInsider\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>RSS</a></li>\r\n    <li><a href=\"https://twitter.com/pythoninsider\"><span aria-hidden=\"true\" class=\"icon-twitter\"></span>Twitter</a></li>\r\n</ul>\r\n<p>Also check out the <a href=\"https://mail.python.org/pipermail/python-dev/\">Python-Dev mailing list</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "jobs-subscribe",
+        "content": "<h3 class=\"widget-title\">Stay up-to-date</h3>\r\n<p><a href=\"/jobs/feed/rss/\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>Subscribe via RSS</a></p>\r\n<p><a href=\"https://twitter.com/ThePSF\"><span aria-hidden=\"true\" class=\"icon-twitter\"></span>Follow The PSF via Twitter</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "jobs-getfeatured",
+        "content": "<p>Want your jobs to be featured? <a href=\"#\">Find out more</a>.</p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "widget-sidebar-aboutpsf",
+        "content": "<h3 class=\"widget-title\">The PSF</h3>\r\n<p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-news",
+        "content": "<div class=\"split-widget-wrapper shrubbery\">\r\n    <h2 class=\"widget-title\">PSF News </h2>\r\n    <p class=\"give-me-more\"><a href=\"http://pyfound.blogspot.com/\" title=\"More PSF News\">More</a></p>\r\n    <ul class=\"menu\">\r\n        <li><a href=\"#\">Simon Cross Awarded Community Service Award</a></li>\r\n        <li><a href=\"#\">Kenneth Gonsalves Posthumously Awarded Community Service Award</a></li>\r\n        <li><a href=\"#\">Announcing the 2012 Distinguished Service Award &ndash; John Hunter</a></li>\r\n        <li><a href=\"#\">Welcome New PSF Members!</a></li>\r\n    </ul>\r\n</div>\r\n<!-- Commented out for the time being ... malemburg, 2014-11-20\r\n<br/>\r\n<div class=\"split-widget-wrapper shrubbery\">\r\n    <h2 class=\"widget-title\">PSF Wiki </h2>\r\n    <p class=\"give-me-more\"><a href=\"https://wiki.python.org/psf/\" title=\"Enter PSF Wiki\">Enter</a></p>\r\n    <p><strong class=\"uppercase\">MEMBERS ONLY:</strong> The PSF Members&rsquo; Wiki is provided for collaboration amongst PSF members on internal projects. Become a member to see what exciting things we have in store for the Python family.</p>\r\n</div>\r\n-->",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-grants",
+        "content": "<h2 class=\"widget-title\">PSF Grants Program</h2>\r\n<p>The Python Software Foundation welcomes grant proposals for projects related to the development of Python, Python-related technology, and educational resources.</p>\r\n<p><a class=\"button\" href=\"/psf/grants/\">Proposal Guidelines, FAQ and Examples</a></p>\r\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-widget4",
+        "content": "<h2 class=\"widget-title\">Sponsors</h2>\r\n<p>Without our sponsors we wouldn't be able to help the Python community grow and prosper.</p>\r\n<p><a class=\"button\" href=\"/psf/sponsorship/\">Sponsorship Possibilities</a></p>\r\n<p><a href=\"/psf/members/#sponsor-members\">PSF Sponsors</a></p>\r\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-widget3",
+        "content": "<h2 class=\"widget-title\">Volunteer</h2>\r\n<p>Learn how you can help the PSF and the greater Python community!</p>\r\n<p><a href=\"/psf/volunteer\">How to Volunteer</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-widget2",
+        "content": "<h2 class=\"widget-title\">Donate</h2>\r\n<p>Assist the foundation's goals with a donation. The PSF is a recognized 501(c)(3) non-profit organization.</p>\r\n<p><a href=\"/psf/donations/\">How to Contribute</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-widget1",
+        "content": "<h2 class=\"widget-title\">Become a Member</h2>\r\n<p>Help the PSF promote, protect, and advance the Python programming language and community!</p>\r\n<p><a href=\"/psf/membership\">Membership FAQ</a>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-banner",
+        "content": "<h1 class=\"call-to-action\">The Python Software Foundation is an organization devoted to advancing open source technology related to the Python programming language. </h1>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "successstory-submityours",
+        "content": "<h3 class=\"widget-title\">Submit Yours!</h3>\r\n<p>Python users want to know more about Python in the wild. <a href=\"/success-stories/create/\">Tell us your story</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "psf-codeofconduct",
+        "content": "<!\u2014 This code of conduct is used on the membership form \u2014>\r\n<h3>The Python Software Foundation has adopted the following Code of Conduct for all of its members:</h3>\r\n    \r\n<p>The Python community is made up of members from around the globe with a diverse set of skills, personalities, and experiences. It is through these differences that our community experiences great successes and continued growth. When you\u2019re working with members of the community, we encourage you to follow these guidelines which help steer our interactions and strive to keep Python a positive, successful, and growing community.</p>\r\n    \r\n<p>A member of the Python community is:</p>\r\n    \r\n<div class=\"indent\">\r\n        <h3>Open</h3>\r\n        <p>Members of the community are open to collaboration, whether it&rsquo;s on PEPs, patches, problems, or otherwise. We&rsquo;re receptive to constructive comment and criticism, as the experiences and skill sets of other members contribute to the whole of our efforts. We&rsquo;re accepting of all who wish to take part in our activities, fostering an environment where anyone can participate and everyone can make a difference.</p>\r\n    \r\n        <h3>Considerate</h3>\r\n        <p>Members of the community are considerate of their peers &mdash; other Python users. We&rsquo;re thoughtful when addressing the efforts of others, keeping in mind that often times the labor was completed simply for the good of the community. We&rsquo;re attentive in our communications, whether in person or online, and we&rsquo;re tactful when approaching differing views.</p>\r\n    \r\n        <h3>Respectful</h3>\r\n        <p>Members of the community are respectful. We&rsquo;re respectful of others, their positions, their skills, their commitments, and their efforts. We&rsquo;re respectful of the volunteer efforts that permeate the Python community. We&rsquo;re respectful of the processes set forth in the community, and we work within them. When we disagree, we are courteous in raising our issues.</p>\r\n</div>\r\n    \r\n<p>Overall, we&rsquo;re good to each other. We contribute to this community not because we have to, but because we want to. If we remember that, these guidelines will come naturally.</p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-otherreleases",
+        "content": "<p><a href=\"/download/releases/\">View older releases</a><!-- removed by Frank until content available <small><em>Older releases: <a href=\"#\">Source releases, <a href=\"#\">binaries-1.1</a>, <a href=\"#\">binaries-1.2</a>, <a href=\"#\">binaries-1.3</a>, <a href=\"#\">binaries-1.4</a>, <a href=\"#\">binaries-1.5</a></em></small> --></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-banner",
+        "content": "<p>Wondering which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Here&rsquo;s more about the difference between Python 2 and 3.</a> </p>\r\n<p style=\"margin-top: 0.35em\">Looking for Python with a different OS? Python for <a href=\"/downloads/windows/\">Windows</a>, <a href=\"/downloads/source/\">Linux/UNIX</a>, <a href=\"/downloads/mac-osx/\">Mac OS X</a>, <a href=\"/download/other/\">Other</a></p>\r\n<p style=\"margin-top: 0.35em\">Want to help test development versions of Python?  <a href=\"/download/pre-releases/\">Pre-releases</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-dev",
+        "content": "<h2>Information about specific ports, and developer info</h2>\r\n\r\n<ul>\r\n   <li><a href=\"/downloads/windows/\">Windows (and DOS)</a></li>\r\n   <li><a href=\"/downloads/mac-osx/\">Macintosh</a></li>\r\n   <li><a href=\"/download/other/\">Other platforms</a></li>\r\n   <li><a href=\"/downloads/source/\">Source</a></li>\r\n   <li><a href=\"/dev/\">Python Developer's Guide</a></li>\r\n   <li><a href=\"http://bugs.python.org\">Python Issue Tracker</a></li>\r\n</ul>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "download-pgp",
+        "content": "<h2>OpenPGP Public Keys</h2>\r\n<p>\r\nSource and binary executables are signed by the release manager using their\r\nOpenPGP key.  The release managers and binary builders since Python 2.3 have\r\nbeen:\r\n</p>\r\n<ul>\r\n<li>Anthony Baxter (key id: <a class=\"reference external\" href=\"https://www.python.org/~anthony/anthonypub.asc\">6A45C816</a>)</li>\r\n<li>Georg Brandl (key id: <a class=\"reference external\" href=\"https://www.python.org/~gbrandl/gbrandlpub.asc\">36580288</a>)</li>\r\n<li>Ned Deily (key ids: <a class=\"reference external\" href=\"https://www.python.org/~nad/nadAA65421D.asc\">AA65421D</a>, <a class=\"reference external\" href=\"https://www.python.org/~nad/nadpub.asc\">6F5E1540</a>, and Apple Developer ID <strong>DJ3H93M7VJ</strong>)</li>\r\n<li>Steve Dower (key id: <a class=\"reference external\" href=\"https://pgp.mit.edu/pks/lookup?op=get&search=0xFC624643487034E5\">487034E5 </a>)</li>\r\n<li>Larry Hastings (key id: <a class=\"reference external\" href=\"https://www.python.org/~larry/larrygpg.asc\">F73C700D</a>)</li>\r\n<li>Martin v. L\u00f6wis (key id: <a class=\"reference external\" href=\"https://www.dcl.hpi.uni-potsdam.de/people/loewis/mvl.asc\">7D9DC8D2</a>)</li>\r\n<li>Ronald Oussoren (key id: E6DF025C)</li>\r\n<li>Benjamin Peterson (key id: <a class=\"reference external\" href=\"https://www.python.org/~peterson/pubkey.asc\">18ADD4FF and A4135B38</a>)</li>\r\n<li>Barry Warsaw (key ids: <a class=\"reference external\" href=\"http://barry.warsaw.us/barrypub-gpg.asc\">A74B06BF, EA5BBD71, and ED9D77D5</a>)</li>\r\n</ul>\r\n<br>\r\n<p>Note:  Barry's key id A74B06BF is used to sign the Python 2.6.8 and 2.6.9\r\nreleases.  His key id EA5BBD71 was used to sign all other Python 2.6 and 3.0\r\nreleases.  His key id ED9D77D5 is a v3 key and was used to sign older\r\nreleases.</p>\r\n<br>\r\n<p>You can import the release manager public keys by either downloading\r\n<a class=\"reference external\" href=\"/static/files/pubkeys.txt\">the public key file from here</a> and then\r\nrunning</p>\r\n\r\n<code><pre>\r\ngpg --import pubkeys.txt\r\n</pre></code>\r\n\r\n<p>or by grabbing the individual keys directly from the keyserver network\r\nby running this command:</p>\r\n\r\n<code><pre>\r\ngpg --recv-keys 6A45C816 36580288 7D9DC8D2 18ADD4FF A4135B38 A74B06BF EA5BBD71 ED9D77D5 E6DF025C AA65421D 6F5E1540 F73C700D 487034E5\r\n</pre></code>\r\n\r\n<p>On the version-specific download pages, you should see a link to both the\r\ndownloadable file and a detached signature file.  To verify the authenticity\r\nof the download, grab both files and then run this command:</p>\r\n\r\n<code><pre class=\"literal-block\">\r\ngpg --verify Python-3.4.2.tgz.asc\r\n</pre></code>\r\n\r\n<p>Note that you must use the name of the signature file, and you should use the\r\none that's appropriate to the download you're verifying.</p>\r\n\r\n<ul>\r\n<li>(These instructions are geared to\r\n<a class=\"reference external\" href=\"http://www.gnupg.org/\">GnuPG</a> and Unix command-line users.\r\nContributions of instructions for other platforms and OpenPGP\r\napplications are welcome.)</li>\r\n</ul>\r\n\r\n\r\n<h2>Other Useful Items</h2>\r\n<ul>\r\n<li>Looking for 3rd party <strong>Python modules</strong>?  The\r\n<a class=\"reference external\" href=\"http://pypi.python.org/pypi\">Package Index</a> has many of them.</li>\r\n<li>You can <a class=\"reference external\" href=\"http://docs.python.org/\">view</a> the standard documentation\r\nonline, or you can <a class=\"reference external\" href=\"http://docs.python.org/3/download.html\">download</a> it\r\nin HTML, PostScript, PDF and other formats.  See the main\r\n<a class=\"reference external\" href=\"/doc/\">Documentation</a> page.</li>\r\n<li>Information on <a class=\"reference external\" href=\"unpacking\">tools for unpacking archive files</a>\r\nprovided on python.org is available.</li>\r\n<li><strong>Tip</strong>: even if you download a ready-made binary for your\r\nplatform, it makes sense to also download the <a class=\"reference external\" href=\"source\">source</a>.\r\nThis lets you browse the standard library (the subdirectory <strong>Lib</strong>)\r\nand the standard collections of demos (<strong>Demo</strong>) and tools\r\n(<strong>Tools</strong>) that come with it.  There's a lot you can learn from the\r\nsource!</li>\r\n<li>There is also a <a class=\"reference external\" href=\"https://wiki.python.org/moin/EmacsEditor\">collection of Emacs packages</a>\r\nthat the Emacsing Pythoneer might find useful.  This includes major\r\nmodes for editing Python, C, C++, Java, etc., Python debugger\r\ninterfaces and more.  Most packages are compatible with Emacs and\r\nXEmacs.</li>\r\n</ul>\r\n\r\n<h2>Want to contribute?</h2>\r\n\r\n<p>Want to contribute?  See the <a class=\"reference external\" href=\"/dev/\">Python Developer's Guide</a>\r\nto learn about how Python development is managed.</p>\r\n</div>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "community-widget2",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-success-stories\"></span>Success Stories</h2>\r\n<blockquote>\r\n    My experience with the Python community has been awesome. I have met some fantastic people through local meetups and gotten great support. \r\n    <footer class=\"quote-by\"><a href=\"https://twitter.com/alex_gaynor\">@alex_gaynor</a></footer>\r\n</blockquote>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "community-widget3",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-email\"></span>Python Weekly</h2>\r\n<p>Python Weekly is a free weekly email newsletter featuring curated news, articles, new releases, jobs, and more. Curated by <a href=\"http://twitter.com/rahulgchaudhary\">Rahul Chaudhary</a> every Thursday. </p>\r\n<p>Go to <a href=\"http://www.pythonweekly.com/\">pythonweekly.com</a> to sign up.</p>\r\n<!--\r\n <form>\r\n    <fieldset title=\"Subscribe to Python Weekly\">\r\n        <label for=\"email\">Email</label>\r\n        <input type=\"email\" id=\"email\" required=\"required\" placeholder=\"Email address\">\r\n        <input type=\"submit\" name=\"submit\" value=\"Subscribe\">\r\n    </fieldset>\r\n</form>-->\r\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "supernav-python-success-stories",
+        "content": "<!-- successstories supernav from templates/successstories/supernav.html -->\n       <li class=\"tier-2 super-navigation\">\n            \n            <blockquote class=\"success-quote\">\n                Python and Zope speed development of devIS EZ Reusable Objects (EZRO), a flexible content management system used in the eGovernment sector\n            </blockquote>\n            <p class=\"quote-by\"><cite>Development InfoStructure (devIS)</cite>, <a href=\"http://www.devis.com/\">devIS</a></p>\n\n        </li>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "supernav-python-downloads",
+        "content": "<!-- download supernav from templates/downloads/supernav.html -->\n<li class=\"tier-2 super-navigation\">\n    \n    <div class=\"download-os-mac-osx\" style=\"display: none;\">\n        \n        <h4>Download for Mac OS X</h4>\n        \n        <p>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/3.5.2/python-3.5.2-macosx10.6.pkg\">Python 3.5.2</a>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/2.7.12/python-2.7.12-macosx10.6.pkg\">Python 2.7.12</a>\n        </p>\n        \n        <p>Not the OS you are looking for? Python can be used on many operating systems and environments. <a href=\"/downloads/\">View the full list of downloads</a>.</p>\n    </div>\n    \n    <div class=\"download-os-source\" style=\"display: none;\">\n        \n        <h3>Python Source</h3>\n        \n        <p>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz\">Python 3.5.2</a>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz\">Python 2.7.12</a>\n        </p>\n        \n        <p>Not the OS you are looking for? Python can be used on many operating systems and environments. <a href=\"/downloads/\">View the full list of downloads</a>.</p>\n    </div>\n    \n    <div class=\"download-os-windows\" style=\"display: none;\">\n        \n        <h4>Download for Windows</h4>\n        \n        <p>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/3.5.2/python-3.5.2.exe\">Python 3.5.2</a>\n            <a class=\"button\" href=\"https://www.python.org/ftp/python/2.7.12/python-2.7.12.msi\">Python 2.7.12</a>\n        </p>\n        <p><strong>Note that Python 3.5+ <em>cannot</em> be used on Windows XP or earlier.</strong></p>\n        <p>Not the OS you are looking for? Python can be used on many operating systems and environments. <a href=\"/downloads/\">View the full list of downloads</a>.</p>\n    </div>\n    \n    <div class=\"download-unknown\">\n        <h4>Download Python for Any OS</h4>\n        <p>Python can be used on many operating systems and environments.</p>\n        <p>\n            <a class=\"button\" href=\"/downloads/operating-systems/\">View the full list of downloads</a>\n        </p>\n    </div>\n</li>\n",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
         "label": "download-sources",
-        "updated": "2014-12-17T03:59:34.526Z",
-        "last_modified_by": null
+        "content": "<h2 class=\"widget-title\">Sources</h2>\n<p>For most Unix systems, you must download and compile the source code. The same source code archive can also be used to build the Windows and Mac versions, and is the starting point for ports to all other platforms.</p>\n\n<p>Download the latest <a href=\"https://www.python.org/ftp/python/3.5.2/Python-3.5.2.tar.xz\">Python 3</a> and <a href=\"https://www.python.org/ftp/python/2.7.12/Python-2.7.12.tar.xz\">Python 2</a> source.</p>\n\n<p><a class=\"readmore\" href=\"/download/source/\">Read more</a></p>",
+        "content_markup_type": "html"
+    }
+},
+{
+    "fields": {
+        "label": "homepage-downloads",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions! Not sure which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Check here</a>.</p>\n<p>Latest: <a href=\"/downloads/release/python-352/\">Python 3.5.2</a> - <a href=\"/downloads/release/python-2712/\">Python 2.7.12</a></p>",
+        "content_markup_type": "html"
     }
 }
 ]
