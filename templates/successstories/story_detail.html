@@ -28,7 +28,11 @@
         {% endif %}
 
         <h1>{{ story.name }}</h1>
-        <p class="company-byline">Written by {{ story.author }}, <a rel="external" href="{{ story.get_company_url }}">{{ story.get_company_name }}</a></p>
+        <p class="company-byline">
+            Written by <strong>{{ story.author }}</strong>
+            on <time datetime="{{ story.created|date:'c' }}">{{ story.created|date:'F Y' }}</time>,
+            <a rel="external" href="{{ story.get_company_url }}">{{ story.get_company_name }}</a>
+        </p>
 
         {{ story.content.rendered|safe }}
 
