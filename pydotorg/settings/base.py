@@ -216,9 +216,6 @@ LOGGING = {
     }
 }
 
-### Development
-DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
-
 ### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'
 HONEYPOT_VALUE = 'write your message'
