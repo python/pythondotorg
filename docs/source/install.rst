@@ -33,10 +33,8 @@ will need to set a password before using it::
 
 .. note::
 
-   You will also need to run ``./manage.py load_dev_fixtures`` to load all fixture
-   files.  This will download an approximately 11 MB gzipped set of fixtures
-   that are sanitized of sensitive user data and then loaded into your local
-   database.
+   You will also need to run ``./manage.py create_initial_data`` to create
+   initial data for the most used applications.
 
 .. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
 
@@ -85,14 +83,9 @@ To compile and compress static media, you will need *compass* and
    To install *yui-compressor*, use your OS's package manager or download it
    directly then add the executable to your ``PATH``.
 
-To load all fixture files::
+To create initial data for the most used applications, run::
 
-    $ ./manage.py load_dev_fixtures
-
-.. note::
-
-   This will download an approximately 11 MB gzipped set of fixtures that are
-   sanitized of sensitive user data and then loaded into your local database.
+    $ ./manage.py create_initial_data
 
 Finally, start the development server::
 
