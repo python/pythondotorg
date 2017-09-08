@@ -3,7 +3,7 @@ import inspect
 import pprint
 
 from django.apps import apps
-from django.core.management import BaseCommand
+from django.core.management import BaseCommand, call_command
 
 
 class Command(BaseCommand):
@@ -34,6 +34,15 @@ class Command(BaseCommand):
         confirm = input(self.style.WARNING(msg))
         if confirm not in ('y', 'yes'):
             return
+        if verbosity > 0:
+            self.stdout.write('Creating initial data for \'sitetree\'... ', ending='')
+        try:
+            call_command('loaddata', 'sitetree_menus', '-v0')
+        except Exception as exc:
+            self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+        else:
+            if verbosity > 0:
+                self.stdout.write(self.style.SUCCESS('DONE'))
         functions = self.collect_initial_data_functions()
         for app_name, function in functions.items():
             if verbosity > 0:
