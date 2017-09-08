@@ -33,7 +33,6 @@ class Command(BaseCommand):
             format='json',
             indent=4,
             exclude=[
-                "tastypie",
                 "sessions",
                 "account.emailconfirmation",
             ],

@@ -88,18 +88,6 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
             password='passworduser',
             is_staff=True,
         )
-        self.staff_key = self.staff_user.api_key.key
-        self.token_header = 'ApiKey'
-        self.Authorization = '%s %s:%s' % (
-            self.token_header, self.staff_user.username, self.staff_key,
-        )
-        self.Authorization_invalid = '%s invalid:token' % self.token_header
-
-    def get_json(self, response):
-        json_response = response.json()
-        if 'objects' in json_response:
-            return json_response['objects']
-        return json_response
 
     def test_invalid_token(self):
         url = self.create_url('os', self.linux.pk)
@@ -110,10 +98,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
 
         url = self.create_url('os')
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization_invalid)
-        # TODO: API v1 returns 200 for a GET request even if token is invalid.
-        # 'StaffAuthorization.read_list` returns 'object_list' unconditionally,
-        # and 'StaffAuthorization.read_detail` returns 'True'.
-        self.assertIn(response.status_code, [200, 401])
+        self.assertEqual(response.status_code, 401)
 
     def test_get_os(self):
         response = self.client.get(self.create_url('os'))
@@ -241,8 +226,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         # We'll get 401 because the default value of
         # 'Release.is_published' is False.
         response = self.client.get(new_url)
-        # TODO: API v1 returns 401; and API v2 returns 404.
-        self.assertIn(response.status_code, [401, 404])
+        self.assertEqual(response.status_code, 404)
         response = self.client.get(new_url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
@@ -417,10 +401,6 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 1)
-
-
-class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, TestCase):
-    api_version = 'v1'
 
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):

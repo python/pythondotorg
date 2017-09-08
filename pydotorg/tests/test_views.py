@@ -39,3 +39,18 @@ class ViewsTests(TestCase):
         self.assertContains(response, 'Browse Python 3.6.0 Documentation')
         self.assertContains(response, 'https://docs.python.org/3/whatsnew/3.6.html')
         self.assertContains(response, 'What\'s new in Python 3.6')
+
+    def test_retired_apis(self):
+        methods = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE']
+        urls = [
+            'pages/page',
+            'downloads/os',
+            'downloads/release',
+            'downloads/release_file',
+        ]
+        for url in urls:
+            for method in methods:
+                with self.subTest(method=method, url=url):
+                    response = self.client.generic(method, '/api/v1/{}/'.format(url))
+                    self.assertEqual(response.status_code, 410)
+                    self.assertIn('This API is deprecated.', response.json()['message'])

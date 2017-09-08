@@ -7,7 +7,6 @@ from django.db import models
 from django.utils import timezone
 
 from markupfield.fields import MarkupField
-from tastypie.models import create_api_key
 
 from .managers import UserManager
 
@@ -49,8 +48,6 @@ class User(AbstractUser):
             return True
         except Membership.DoesNotExist:
             return False
-
-models.signals.post_save.connect(create_api_key, sender=User)
 
 
 class Membership(models.Model):
