@@ -4,6 +4,7 @@ from django.urls import reverse
 from django.test import TestCase
 
 from users.factories import UserFactory
+from users.models import Membership
 
 from ..factories import MembershipFactory
 
@@ -290,3 +291,74 @@ class UsersViewsTestCase(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['user_list']), 1)
+
+    def test_user_delete_needs_to_be_logged_in(self):
+        url = reverse('users:user_delete', kwargs={'slug': self.user.username})
+        response = self.client.delete(url)
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url)
+        )
+
+    def test_user_delete_invalid_request_method(self):
+        url = reverse('users:user_delete', kwargs={'slug': self.user.username})
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_user_delete_different_user(self):
+        url = reverse('users:user_delete', kwargs={'slug': self.user.username})
+        self.client.login(username=self.user2.username, password='password')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_user_delete(self):
+        url = reverse('users:user_delete', kwargs={'slug': self.user.username})
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.delete(url)
+        self.assertRedirects(response, reverse('home'))
+        self.assertRaises(User.DoesNotExist, User.objects.get, username=self.user.username)
+        self.assertRaises(Membership.DoesNotExist, Membership.objects.get, creator=self.user)
+
+    def test_membership_delete_needs_to_be_logged_in(self):
+        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        response = self.client.delete(url)
+        self.assertRedirects(
+            response,
+            '{}?next={}'.format(reverse('account_login'), url)
+        )
+
+    def test_membership_delete_invalid_request_method(self):
+        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        self.client.login(username=self.user2.username, password='password')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_membership_delete_different_user_membership(self):
+        user = UserFactory()
+        self.assertTrue(user.has_membership)
+        url = reverse('users:user_membership_delete', kwargs={'slug': user.username})
+        self.client.login(username=self.user2.username, password='password')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 403)
+
+    def test_membership_does_not_exist(self):
+        self.assertFalse(self.user.has_membership)
+        url = reverse('users:user_membership_delete', kwargs={'slug': self.user.username})
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.delete(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_membership_delete(self):
+        self.assertTrue(self.user2.has_membership)
+        url = reverse('users:user_membership_delete', kwargs={'slug': self.user2.username})
+        self.client.login(username=self.user2.username, password='password')
+        response = self.client.delete(url)
+        self.assertRedirects(
+            response,
+            reverse('users:user_detail', kwargs={'slug': self.user2.username})
+        )
+        # TODO: We can't use 'self.user2.refresh_from_db()' because
+        # of https://code.djangoproject.com/ticket/27846.
+        with self.assertRaises(Membership.DoesNotExist):
+            Membership.objects.get(pk=self.user2.membership.pk)

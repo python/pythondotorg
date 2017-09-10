@@ -46,6 +46,19 @@
                 <button type="submit" name="Submit">Save Profile</button>
             </p>
         </form>
+
+        <form action="{% url 'users:user_delete' user.username %}"
+              method="post"
+              class="deletion-form"
+              onsubmit="return confirm('Are you sure? There is no way to get back your account.');">
+            {% csrf_token %}
+            <p>
+                <label for="id_delete_account">
+                    Note that once you delete your account, there is no going back.
+                </label>
+                <button type="submit" id="id_delete_account">Delete this account</button>
+            </p>
+        </form>
     </article>
 
 {% endblock user_content %}
