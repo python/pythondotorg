@@ -2215,6 +2215,21 @@ div.warning {
     }
 }
 
+form.deletion-form {
+    @extend div.warning;
+
+    border-radius: px2em( 10px );
+    padding: px2em( 15px );
+
+    button[type="submit"] {
+        @extend %button-style-red;
+        margin-top: px2em( 10px );
+    }
+    label {
+        color: $red;
+    }
+}
+
 div.sidebar {
     margin: 0 0 0.5em 1em;
     border: 1px solid #ddb;

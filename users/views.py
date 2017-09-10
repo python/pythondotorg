@@ -1,13 +1,14 @@
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
 from django.core.mail import send_mail
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import (
-    CreateView, DetailView, ListView, TemplateView, UpdateView
+    CreateView, DetailView, ListView, TemplateView, UpdateView, DeleteView,
 )
 
 from allauth.account.views import SignupView
@@ -18,8 +19,10 @@ from pydotorg.mixins import LoginRequiredMixin
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
-from .models import User, Membership
+from .models import Membership
 from .paginators import UserPaginator
+
+User = get_user_model()
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
@@ -137,3 +140,27 @@ class HoneypotSignupView(SignupView):
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+
+class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = User
+    success_url = reverse_lazy('home')
+    slug_field = 'username'
+    raise_exception = True
+    http_method_names = ['post', 'delete']
+
+    def test_func(self):
+        return self.get_object() == self.request.user
+
+
+class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Membership
+    slug_field = 'creator__username'
+    raise_exception = True
+    http_method_names = ['post', 'delete']
+
+    def get_success_url(self):
+        return reverse('users:user_detail', kwargs={'slug': self.request.user.username})
+
+    def test_func(self):
+        return self.get_object().creator == self.request.user

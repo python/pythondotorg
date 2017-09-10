@@ -102,6 +102,21 @@
         </p>
     </form>
 
+    {% if request.user.has_membership %}
+    <form action="{% url 'users:user_membership_delete' user.username %}"
+          method="post"
+          class="deletion-form"
+          onsubmit="return confirm('Are you sure?');">
+        {% csrf_token %}
+        <p>
+            <label for="id_delete_membership">
+                You can delete your PSF membership if you don't want to get emails from the PSF.
+            </label>
+            <button type="submit" id="id_delete_membership">Delete your PSF membership</button>
+        </p>
+    </form>
+    {% endif %}
+
 </article>
 
 {% endblock user_content %}
