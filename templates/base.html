@@ -232,7 +232,7 @@
                                 <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
                                 <ul class="subnav menu">
                                     <li class="tier-2 element-1" role="treeitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
-                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'users:user_change_password' %}">Change your password</a></li>
+                                    <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
                                     {% if request.user.has_membership %}
                                     <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF membership</a></li>
                                         {% if request.user.membership.needs_vote_affirmation %}

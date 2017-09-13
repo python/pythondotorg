@@ -11,7 +11,7 @@ from django.views.generic import (
     CreateView, DetailView, ListView, TemplateView, UpdateView, DeleteView,
 )
 
-from allauth.account.views import SignupView
+from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
@@ -140,6 +140,18 @@ class HoneypotSignupView(SignupView):
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    # Add honeypot support to 'password change' form and
+    # redirect it to the user editing form.
+
+    @method_decorator(check_honeypot)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('users:user_profile_edit')
 
 
 class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):

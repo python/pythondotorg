@@ -6,7 +6,7 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
 from cms.views import custom_404
-from users.views import HoneypotSignupView
+from users.views import HoneypotSignupView, CustomPasswordChangeView
 
 from . import views
 from .urls_api import v1_api, router
@@ -46,6 +46,10 @@ urlpatterns = [
 
     # Override /accounts/signup/ to add Honeypot.
     url(r'^accounts/signup/', HoneypotSignupView.as_view()),
+    # Override /accounts/password/change/ to add Honeypot
+    # and change success URL.
+    url(r'^accounts/password/change/$', CustomPasswordChangeView.as_view(),
+        name='account_change_password'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
     url(r'^community/', include('community.urls', namespace='community')),

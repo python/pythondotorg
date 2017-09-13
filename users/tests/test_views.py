@@ -362,3 +362,23 @@ class UsersViewsTestCase(TestCase):
         # of https://code.djangoproject.com/ticket/27846.
         with self.assertRaises(Membership.DoesNotExist):
             Membership.objects.get(pk=self.user2.membership.pk)
+
+    def test_password_change_honeypot(self):
+        url = reverse('account_change_password')
+        data = {
+            'oldpassword': 'password',
+            'password1': 'newpassword',
+            'password2': 'newpassword',
+        }
+        self.client.login(username=self.user.username, password='password')
+        response = self.client.post(url, data, follow=True)
+        # We should get 400 without 'HONEYPOT_FIELD_NAME'
+        # field in the post data.
+        self.assertEqual(response.status_code, 400)
+        data[settings.HONEYPOT_FIELD_NAME] = settings.HONEYPOT_VALUE
+        response = self.client.post(url, data, follow=True)
+        self.assertRedirects(response, reverse('users:user_profile_edit'))
+        self.client.logout()
+        logged_in = self.client.login(username=self.user.username,
+                                      password='newpassword')
+        self.assertTrue(logged_in)
