@@ -30,11 +30,14 @@
             <div class="user-profile-location">
                 <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
             </div>
+            {% comment %}
+            Disable it due to high amount of spam account.
             {% if object.bio and object.bio.raw.strip %}
             <div class="user-profile-bio">
                 <p><span class="profile-label">Bio:</span></p> {{ object.bio|escape }}
             </div>
             {% endif %}
+            {% comment %}
 
             {% comment %}
                 All possible supported networks with icons.
