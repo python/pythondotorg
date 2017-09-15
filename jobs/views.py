@@ -5,6 +5,9 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
+from cities_light.models import City
+from dal import autocomplete
+
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
@@ -392,3 +395,12 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
             return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
         else:
             return super().get_success_url()
+
+
+class CityAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        qs = City.objects.all()
+        if self.q:
+            qs = qs.filter(name__istartswith=self.q)
+        return qs

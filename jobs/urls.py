@@ -20,6 +20,7 @@ urlpatterns = [
     url(r'^locations/$', views.JobLocations.as_view(), name='job_locations'),
     url(r'^types/$', views.JobTypes.as_view(), name='job_types'),
     url(r'^categories/$', views.JobCategories.as_view(), name='job_categories'),
+    url(r'^dal-city-autocomplete/$', views.CityAutocomplete.as_view(), name='dal-city-autocomplete'),
     url(r'^(?P<pk>\d+)/edit/$', views.JobEdit.as_view(), name='job_edit'),
     url(r'^(?P<pk>\d+)/preview/$', views.JobPreview.as_view(), name='job_preview'),
     url(r'^(?P<pk>\d+)/$', views.JobDetail.as_view(), name='job_detail'),

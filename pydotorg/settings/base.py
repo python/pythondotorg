@@ -140,6 +140,10 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # dal and dal_select should be added before
+    # django.contrib.admin as documented.
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.admindocs',
 

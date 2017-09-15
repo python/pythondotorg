@@ -38,3 +38,4 @@ django-filter==1.0.4
 
 # TODO: https://github.com/yourlabs/django-cities-light/issues/153
 -e git+https://www.github.com/yourlabs/django-cities-light.git@85029487ee67b170b42168957c31f75a4070fb06#egg=django_cities_light
+django-autocomplete-light==3.2.10
