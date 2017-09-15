@@ -181,6 +181,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+
+    'cities_light',
 ]
 
 # Fixtures
@@ -276,3 +278,9 @@ REST_FRAMEWORK = {
         'user': '1000/day',
     },
 }
+
+### django-cities-light
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['en']
+# TODO: Add PPLS and STLMT?
+CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL']

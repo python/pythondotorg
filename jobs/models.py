@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
+from cities_light.models import City
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
@@ -89,6 +90,13 @@ class Job(ContentManageable):
     country_slug = models.SlugField(
         max_length=100,
         editable=False)
+
+    # TODO: Rename this to 'job_location'.
+    job_city = models.ForeignKey(
+        City,
+        null=True,
+        on_delete=models.CASCADE,  # TODO: should this set to 'NULL'?
+    )
 
     description = MarkupField(
         verbose_name='Job description',
@@ -216,7 +224,14 @@ class Job(ContentManageable):
         location_parts = [part for part in (self.city, self.region, self.country)
                             if part]
         location_str = ', '.join(location_parts)
-        return location_str
+        if location_str:
+            return location_str
+        return self.job_city.get_display_name()
+
+    @property
+    def job_city_slug(self):
+        if self.job_city:
+            return '-'.join([self.job_city.slug, self.job_city.country.slug])
 
     @property
     def is_new(self):

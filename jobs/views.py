@@ -48,9 +48,9 @@ class JobMixin:
         context = super().get_context_data(**kwargs)
 
         active_locations = Job.objects.visible().distinct(
-            'location_slug'
+            'job_city__slug'
         ).order_by(
-            'location_slug',
+            'job_city__slug',
         )
 
         context.update({
@@ -125,7 +125,7 @@ class JobListLocation(JobLocationMenu, JobMixin, ListView):
 
     def get_queryset(self):
         return Job.objects.visible().select_related().filter(
-            location_slug=self.kwargs['slug'])
+            job_city__slug=self.kwargs['slug'])
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):
@@ -346,7 +346,10 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         # We don't allow posting a job without logging in to the site.
-        kwargs['initial'] = {'email': self.request.user.email}
+        kwargs['initial'] = {
+            'email': self.request.user.email,
+            'contact': self.request.user.get_full_name(),
+        }
         return kwargs
 
     def get_context_data(self, **kwargs):
