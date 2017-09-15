@@ -91,11 +91,10 @@ class Job(ContentManageable):
         max_length=100,
         editable=False)
 
-    # TODO: Rename this to 'job_location'.
-    job_city = models.ForeignKey(
+    location = models.ForeignKey(
         City,
         null=True,
-        on_delete=models.CASCADE,  # TODO: should this set to 'NULL'?
+        on_delete=models.SET_NULL,
     )
 
     description = MarkupField(
@@ -220,18 +219,48 @@ class Job(ContentManageable):
         return self.company_description
 
     @property
+    def display_city(self):
+        if self.location:
+            return self.location
+        return self.city
+
+    @property
+    def display_region(self):
+        if self.location:
+            return self.location.region
+        return self.region
+
+    @property
+    def display_country(self):
+        if self.location:
+            return self.location.country
+        return self.country
+
+    @property
     def display_location(self):
+        if self.location:
+            return self.location.get_display_name()
         location_parts = [part for part in (self.city, self.region, self.country)
                             if part]
         location_str = ', '.join(location_parts)
-        if location_str:
-            return location_str
-        return self.job_city.get_display_name()
+        return location_str
 
     @property
-    def job_city_slug(self):
-        if self.job_city:
-            return '-'.join([self.job_city.slug, self.job_city.country.slug])
+    def job_location_slug(self):
+        if self.location:
+            return '-'.join([
+                self.location.slug,
+                self.location.region.slug,
+                self.location.country.slug,
+            ])
+        return self.location_slug
+
+    def get_location_slugs(self):
+        return (
+            self.location.slug,
+            self.location.region.slug,
+            self.location.country.slug,
+        )
 
     @property
     def is_new(self):

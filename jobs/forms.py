@@ -19,7 +19,7 @@ class JobForm(ContentManageableModelForm):
             'category',
             'job_types',
             'other_job_type',
-            'job_city',
+            'location',
             'description',
             'requirements',
             'company_description',
@@ -31,7 +31,7 @@ class JobForm(ContentManageableModelForm):
         )
         widgets = {
             'job_types': CheckboxSelectMultiple(),
-            'job_city': autocomplete.ModelSelect2(
+            'location': autocomplete.ModelSelect2(
                 url='jobs:dal-city-autocomplete',
                 attrs={
                     # Only trigger auto-completion after three characters

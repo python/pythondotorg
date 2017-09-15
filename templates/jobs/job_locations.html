@@ -13,11 +13,11 @@
 
     {% for j in jobs %}
     {% if forloop.first %}
-    <h2>{{ j.country }}</h2><ol class="list-recent-jobs list-row-container menu">
+    <h2>{{ j.display_country }}</h2><ol class="list-recent-jobs list-row-container menu">
     {% endif %}
-    {% ifchanged j.country %}{% if not forloop.first %}</ol><h2>{{ j.country }}</h2><ol class="list-recent-jobs list-row-container menu">{% endif %}{% endifchanged %}
-    {% ifchanged j.region j.city %}
-    <li><a href="{% url 'jobs:job_list_location' slug=j.location_slug %}">{{ j.city }}, {{ j.region }}</a></li>
+    {% ifchanged j.display_country %}{% if not forloop.first %}</ol><h2>{{ j.display_country }}</h2><ol class="list-recent-jobs list-row-container menu">{% endif %}{% endifchanged %}
+    {% ifchanged j.display_region j.display_city %}
+    <li><a href="{% url 'jobs:job_filter_location' city_slug=j.location.slug region_slug=j.location.region.slug country_slug=j.location.country.slug %}">{{ j.display_location }}</a></li>
     {% endifchanged %}
     {% endfor %}
 </div>

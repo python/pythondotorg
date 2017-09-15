@@ -14,6 +14,11 @@ urlpatterns = [
     url(r'^moderate/$', views.JobModerateList.as_view(), name='job_moderate'),
     url(r'^thanks/$', TemplateView.as_view(template_name="jobs/job_thanks.html"), name='job_thanks'),
     url(r'^location/telecommute/$', views.JobTelecommute.as_view(), name='job_telecommute'),
+    url(
+        r'^filter/(?P<city_slug>[-_\w]+)/(?P<region_slug>[-_\w]+)/(?P<country_slug>[-_\w]+)/$',
+        views.JobFilterLocation.as_view(),
+        name='job_filter_location',
+    ),
     url(r'^location/(?P<slug>[-_\w]+)/$', views.JobListLocation.as_view(), name='job_list_location'),
     url(r'^type/(?P<slug>[-_\w]+)/$', views.JobListType.as_view(), name='job_list_type'),
     url(r'^category/(?P<slug>[-_\w]+)/$', views.JobListCategory.as_view(), name='job_list_category'),

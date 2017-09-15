@@ -51,9 +51,9 @@ class JobMixin:
         context = super().get_context_data(**kwargs)
 
         active_locations = Job.objects.visible().distinct(
-            'job_city__slug'
+            'location__slug'
         ).order_by(
-            'job_city__slug',
+            'location__slug'
         )
 
         context.update({
@@ -128,7 +128,19 @@ class JobListLocation(JobLocationMenu, JobMixin, ListView):
 
     def get_queryset(self):
         return Job.objects.visible().select_related().filter(
-            job_city__slug=self.kwargs['slug'])
+            location_slug=self.kwargs['slug'])
+
+
+class JobFilterLocation(JobLocationMenu, JobMixin, ListView):
+    paginate_by = 25
+    template_name = 'jobs/job_location_list.html'
+
+    def get_queryset(self):
+        return Job.objects.from_location(
+            self.kwargs['city_slug'],
+            self.kwargs['region_slug'],
+            self.kwargs['country_slug'],
+        ).select_related()
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):
@@ -153,9 +165,9 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['jobs'] = Job.objects.visible().distinct(
-            'country', 'city'
+            'location__country__slug'
         ).order_by(
-            'country', 'city'
+            'location__country__slug'
         )
 
         return context
@@ -402,5 +414,9 @@ class CityAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
     def get_queryset(self):
         qs = City.objects.all()
         if self.q:
-            qs = qs.filter(name__istartswith=self.q)
+            qs = qs.filter(
+                Q(name__istartswith=self.q) |
+                Q(region__name__istartswith=self.q) |
+                Q(country__name__istartswith=self.q)
+            )
         return qs

@@ -2,6 +2,7 @@
 
 {% extends "jobs/base.html" %}
 {% load boxes %}
+{% load jobs %}
 
 {% block page_title %}Python Job Board | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -19,7 +20,7 @@
                     {% if object.is_new %}<span class="listing-new">New</span> {% endif %}<a href="{{ object.get_absolute_url }}">{{ object.job_title }}</a><br/>
 		    {{ object.company_name }}
                 </span>
-                <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.job_city_slug %}" title="More jobs in {{ object.display_location }}">{{ object.display_location }}</a></span>
+                <span class="listing-location"><a href="{% job_location_url job=object %}" title="More jobs in {{ object.display_location }}">{{ object.display_location }}</a></span>
             </h2>
             {% if object.job_types.all %}
             <span class="listing-job-type">{% for type in object.job_types.all %}<a href="{% url 'jobs:job_list_type' slug=type.slug %}" title="More {{ type.name }} jobs">{{ type.name }}</a>{% if not forloop.last %}, {% endif %}{% if forloop.last and object.other_job_type %}, {{ object.other_job_type }} {% endif %}{% endfor %}
