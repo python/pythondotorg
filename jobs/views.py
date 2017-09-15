@@ -87,7 +87,7 @@ class JobListMine(LoginRequiredMixin, JobMixin, ListView):
         return Job.objects.by(self.request.user).select_related()
 
 
-class JobListType(JobTypeMenu, ListView):
+class JobListType(JobTypeMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_type_list.html'
 
@@ -103,7 +103,7 @@ class JobListType(JobTypeMenu, ListView):
         return context
 
 
-class JobListCategory(JobCategoryMenu, ListView):
+class JobListCategory(JobCategoryMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_category_list.html'
 
@@ -119,7 +119,7 @@ class JobListCategory(JobCategoryMenu, ListView):
         return context
 
 
-class JobListLocation(JobLocationMenu, ListView):
+class JobListLocation(JobLocationMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_location_list.html'
 
