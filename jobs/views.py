@@ -361,10 +361,10 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
         # We don't allow posting a job without logging in to the site.
-        kwargs['initial'] = {
-            'email': self.request.user.email,
-            'contact': self.request.user.get_full_name(),
-        }
+        kwargs['initial'] = {'email': self.request.user.email}
+        full_name = self.request.user.get_full_name()
+        if full_name:
+            kwargs['initial']['contact'] = full_name
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -412,11 +412,11 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
 class CityAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
 
     def get_queryset(self):
-        qs = City.objects.all()
+        queryset = City.objects.all()
         if self.q:
-            qs = qs.filter(
+            queryset = queryset.filter(
                 Q(name__istartswith=self.q) |
                 Q(region__name__istartswith=self.q) |
                 Q(country__name__istartswith=self.q)
             )
-        return qs
+        return queryset
