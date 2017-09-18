@@ -90,13 +90,13 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
-                'django.contrib.auth.context_processors.auth',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
                 'django.template.context_processors.media',
                 'django.template.context_processors.static',
                 'django.template.context_processors.tz',
                 'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'pydotorg.context_processors.site_info',
                 'pydotorg.context_processors.url_name',
@@ -114,12 +114,11 @@ ROOT_URLCONF = 'pydotorg.urls'
 # Note that we don't need to activate 'XFrameOptionsMiddleware' and
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE = [
-    'pydotorg.middleware.AdminNoCaching',
-    'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'pydotorg.middleware.AdminNoCaching',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'waffle.middleware.WaffleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
