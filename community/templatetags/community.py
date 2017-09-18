@@ -1,15 +1,11 @@
-import logging
-
 from django import template
 from django.template.loader import render_to_string
 
-
-log = logging.getLogger(__name__)
 register = template.Library()
 
 
-@register.simple_tag(takes_context=True)
-def render_template_for(context, obj, template=None, template_directory=None):
+@register.simple_tag
+def render_template_for(obj, template=None, template_directory=None):
     """
     Renders a template based on the `media_type` of the given object in the
     given template directory, falling back to default.html.
@@ -30,8 +26,9 @@ def render_template_for(context, obj, template=None, template_directory=None):
         {% render_template_for object template_directory='includes/types' as html %}
 
     """
-    context = context.flatten()
-    context['object'] = obj
+    context = {
+        'object': obj,
+    }
 
     template_list = []
     if template:
