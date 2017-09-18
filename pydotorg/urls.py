@@ -11,7 +11,8 @@ from users.views import HoneypotSignupView, CustomPasswordChangeView
 from . import views
 from .urls_api import v1_api, router
 
-handler404 = custom_404
+# TODO: Disable this temporarily to debug #28488 in Django tracker.
+# handler404 = custom_404
 
 urlpatterns = [
     # homepage
