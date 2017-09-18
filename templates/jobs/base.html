@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load jobs %}
 
 {% block body_attributes %}class="jobs"{% endblock %}
 
@@ -46,7 +47,7 @@
         <ul class="subnav menu" role="menu" aria-hidden="true">
             <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_telecommute' %}">Telecommute</a></li>
             {% for l in active_locations %}
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_location' slug=l.job_location_slug %}">
+            <li class="tier-2" role="treeitem"><a href="{% job_location_url job=l %}">
                 {{ l.display_location }}
             </a></li>
             {% empty %}

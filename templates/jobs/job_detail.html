@@ -1,5 +1,6 @@
 {% extends "jobs/base.html" %}
 {% load boxes %}
+{% load jobs %}
 
 {% block page_title %}{{ object.display_name }} | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -32,7 +33,7 @@
 	     <br/><a href="{% url 'jobs:job_edit' pk=object.pk %}">Edit your listing</a>
 	    {% endif %}
         </span>
-        <span class="listing-location"><a href="{% url 'jobs:job_list_location' slug=object.job_location_slug %}" title="More jobs in {{ object.display_location }}">{{object.display_location}}</a></span>
+        <span class="listing-location"><a href="{% job_location_url job=object %}" title="More jobs in {{ object.display_location }}">{{object.display_location}}</a></span>
     </h1>
 
     <!-- User input html/markup/rst/whatever -->

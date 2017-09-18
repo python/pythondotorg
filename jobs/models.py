@@ -246,23 +246,6 @@ class Job(ContentManageable):
         return location_str
 
     @property
-    def job_location_slug(self):
-        if self.location:
-            return '-'.join([
-                self.location.slug,
-                self.location.region.slug,
-                self.location.country.slug,
-            ])
-        return self.location_slug
-
-    def get_location_slugs(self):
-        return (
-            self.location.slug,
-            self.location.region.slug,
-            self.location.country.slug,
-        )
-
-    @property
     def is_new(self):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
