@@ -4,11 +4,49 @@ import factory
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
+from cities_light.models import City, Region, Country
 from faker.providers import BaseProvider
 
 from users.factories import UserFactory
 
 from .models import JobType, JobCategory, Job
+
+
+class CitiesProvider(BaseProvider):
+
+    countries = [
+        'United States',
+        'Germany',
+        'Turkey',
+        'Middle Earth',
+    ]
+
+    regions = [
+        'New York',
+        'Berlin',
+        'Istanbul',
+        'Kansas',
+        'Mordor',
+    ]
+
+    cities = [
+        'New York',
+        'Berlin',
+        'Istanbul',
+        'Lawrence',
+        'Mordor',
+    ]
+
+    def job_city(self):
+        return self.random_element(self.cities)
+
+    def job_region(self):
+        return self.random_element(self.regions)
+
+    def job_country(self):
+        return self.random_element(self.countries)
+
+factory.Faker.add_provider(CitiesProvider)
 
 
 class JobProvider(BaseProvider):
@@ -57,6 +95,38 @@ class JobProvider(BaseProvider):
 factory.Faker.add_provider(JobProvider)
 
 
+class CountryFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = Country
+        django_get_or_create = ('name',)
+
+    name = factory.Faker('job_country')
+
+
+class RegionFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = Region
+        django_get_or_create = ('name', 'country')
+
+    name = factory.Faker('job_region')
+
+
+class CityFactory(factory.DjangoModelFactory):
+
+    class Meta:
+        model = City
+        django_get_or_create = ('name', 'region')
+
+    name = factory.Faker('job_city')
+    country = factory.SubFactory(CountryFactory)
+    region = factory.SubFactory(
+        RegionFactory,
+        country=factory.SelfAttribute('..country'),
+    )
+
+
 class JobCategoryFactory(factory.DjangoModelFactory):
 
     class Meta:
@@ -83,9 +153,7 @@ class JobFactory(factory.DjangoModelFactory):
     creator = factory.SubFactory(UserFactory)
     category = factory.SubFactory(JobCategoryFactory)
     job_title = factory.Faker('job_title')
-    city = 'Lawrence'
-    region = 'KS'
-    country = 'US'
+    location = factory.SubFactory(CityFactory)
     company_name = factory.Faker('company')
     company_description = factory.Faker('sentence', nb_words=10)
     contact = factory.Faker('name')
@@ -109,6 +177,17 @@ class JobFactory(factory.DjangoModelFactory):
             # A list of job_types were passed in, use them
             for job_type in extracted:
                 self.job_types.add(job_type)
+
+
+class LegacyJobFactory(JobFactory):
+    city = 'Lawrence'
+    region = 'KS'
+    country = 'US'
+    location = None
+
+
+class ApprovedLegacyJobFactory(LegacyJobFactory):
+    status = Job.STATUS_APPROVED
 
 
 class ApprovedJobFactory(JobFactory):

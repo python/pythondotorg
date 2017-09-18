@@ -15,7 +15,7 @@ urlpatterns = [
     url(r'^thanks/$', TemplateView.as_view(template_name="jobs/job_thanks.html"), name='job_thanks'),
     url(r'^location/telecommute/$', views.JobTelecommute.as_view(), name='job_telecommute'),
     url(
-        r'^filter/(?P<city_slug>[-_\w]+)/(?P<region_slug>[-_\w]+)/(?P<country_slug>[-_\w]+)/$',
+        r'^filter/location/(?P<city_slug>[-_\w]+)/(?P<region_slug>[-_\w]+)/(?P<country_slug>[-_\w]+)/$',
         views.JobFilterLocation.as_view(),
         name='job_filter_location',
     ),

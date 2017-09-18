@@ -13,4 +13,6 @@ def job_location_url(job):
             'region_slug': job.location.region.slug,
             'country_slug': job.location.country.slug,
         })
-    return reverse('jobs:job_list_location', kwargs={'slug': job.location_slug})
+    elif job.location_slug:
+        return reverse('jobs:job_list_location', kwargs={'slug': job.location_slug})
+    return ''

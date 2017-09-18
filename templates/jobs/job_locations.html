@@ -1,5 +1,6 @@
 {% extends "jobs/base.html" %}
 {% load boxes %}
+{% load jobs %}
 
 {% block page_title %}Job Locations | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -17,7 +18,7 @@
     {% endif %}
     {% ifchanged j.display_country %}{% if not forloop.first %}</ol><h2>{{ j.display_country }}</h2><ol class="list-recent-jobs list-row-container menu">{% endif %}{% endifchanged %}
     {% ifchanged j.display_region j.display_city %}
-    <li><a href="{% url 'jobs:job_filter_location' city_slug=j.location.slug region_slug=j.location.region.slug country_slug=j.location.country.slug %}">{{ j.display_location }}</a></li>
+    <li><a href="{% job_location_url job=j %}">{{ j.display_location }}</a></li>
     {% endifchanged %}
     {% endfor %}
 </div>

@@ -17,7 +17,7 @@ class JobsModelsTests(TestCase):
             "country": "USA",
         }
         job_kwargs.update(**kwargs)
-        job = factories.JobFactory(**job_kwargs)
+        job = factories.LegacyJobFactory(**job_kwargs)
 
         return job
 
