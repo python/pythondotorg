@@ -69,7 +69,9 @@ def custom_csrf_failure(request, reason=''):
         t = loader.get_template(CSRF_FAILURE_TEMPLATE_NAME)
     except TemplateDoesNotExist:
         # If the default template doesn't exist, use the string template.
-        t = Engine().from_string(CSRF_FAILURE_TEMPLATE)
+        t = Engine().from_string(CSRF_FAILURE_TEMPLATE + """
+        {{ more }}
+        """)
         c = Context(c)
     return HttpResponseForbidden(t.render(c), content_type='text/html')
 
