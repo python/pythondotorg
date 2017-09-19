@@ -1,9 +1,14 @@
+from django.conf import settings
+from django.utils.encoding import force_text
 from django.http import HttpResponseForbidden
 from django.template import Context, Engine, TemplateDoesNotExist, loader
 from django.utils.translation import ugettext as _
 from django.utils.version import get_docs_version
 from django.views.csrf import CSRF_FAILURE_TEMPLATE, CSRF_FAILURE_TEMPLATE_NAME
+from django.utils.http import is_same_domain
 from django.views.generic.base import TemplateView
+
+from urllib.parse import urlparse
 
 from codesamples.models import CodeSample
 from downloads.models import Release
@@ -11,6 +16,19 @@ from downloads.models import Release
 
 def custom_csrf_failure(request, reason=''):
     from django.middleware.csrf import REASON_NO_REFERER, REASON_NO_CSRF_COOKIE
+    referer = urlparse(force_text(
+        request.META.get('HTTP_REFERER'),
+        strings_only=True,
+        errors='replace'
+    ))
+    more = {
+        'server_port': request.get_port(),
+        'server_host': request.get_host(),
+        'good_hosts': settings.CSRF_TRUSTED_ORIGINS,
+        'good_referer': settings.CSRF_COOKIE_DOMAIN,
+        'referer': referer,
+        'same_domain': is_same_domain(referer.netloc, settings.CSRF_COOKIE_DOMAIN)
+    }
     c = {
         'title': _("Forbidden"),
         'main': _("CSRF verification failed. Request aborted."),
@@ -38,7 +56,14 @@ def custom_csrf_failure(request, reason=''):
         # TODO: Customized this to get more information.
         'DEBUG': True,
         'docs_version': get_docs_version(),
-        'more': _("More information is available with DEBUG=True."),
+        'more': """
+        server_port: %(server_port)s<br>
+        server_host: %(server_host)s<br>
+        good_hosts: %(good_hosts)s<br>
+        good_referer: %(good_referer)s<br>
+        referer: %(referer)s<br>
+        same_domain: %(same_domain)s<br>
+        """ % more,
     }
     try:
         t = loader.get_template(CSRF_FAILURE_TEMPLATE_NAME)

@@ -281,4 +281,4 @@ REST_FRAMEWORK = {
 
 # TODO: Added to debug a CSRF failure.
 CSRF_FAILURE_VIEW = 'pydotorg.views.custom_csrf_failure'
-CSRF_TRUSTED_ORIGINS = ['.python.org']
+# CSRF_TRUSTED_ORIGINS = ['staging.python.org']
