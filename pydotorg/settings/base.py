@@ -276,9 +276,3 @@ REST_FRAMEWORK = {
         'user': '1000/day',
     },
 }
-
-### CSRF settings
-
-# TODO: Added to debug a CSRF failure.
-CSRF_FAILURE_VIEW = 'pydotorg.views.custom_csrf_failure'
-CSRF_TRUSTED_ORIGINS = ['staging.python.org']
