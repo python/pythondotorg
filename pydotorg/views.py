@@ -41,15 +41,11 @@ def custom_csrf_failure(request, reason=''):
         'more': _("More information is available with DEBUG=True."),
     }
     try:
-        t = loader.get_template(template_name)
+        t = loader.get_template(CSRF_FAILURE_TEMPLATE_NAME)
     except TemplateDoesNotExist:
-        if template_name == CSRF_FAILURE_TEMPLATE_NAME:
-            # If the default template doesn't exist, use the string template.
-            t = Engine().from_string(CSRF_FAILURE_TEMPLATE)
-            c = Context(c)
-        else:
-            # Raise if a developer-specified template doesn't exist.
-            raise
+        # If the default template doesn't exist, use the string template.
+        t = Engine().from_string(CSRF_FAILURE_TEMPLATE)
+        c = Context(c)
     return HttpResponseForbidden(t.render(c), content_type='text/html')
 
 
