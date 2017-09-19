@@ -31,9 +31,9 @@ PEP_REPO_PATH = ''
 # have a sass compiler installed at all during local development if you aren't
 # adjusting the CSS at all.  Comment this out or adjust it to suit your local
 # environment needs if you are working with the CSS.
-PIPELINE['COMPILERS'] = (
-   'pydotorg.compilers.DummySASSCompiler',
-)
+# PIPELINE['COMPILERS'] = (
+#    'pydotorg.compilers.DummySASSCompiler',
+# )
 # Pass '-XssNNNNNk' to 'java' if you get 'java.lang.StackOverflowError' with
 # yui-compressor.
 # PIPELINE['YUI_BINARY'] = '/usr/bin/java -Xss200048k -jar /usr/share/yui-compressor/yui-compressor.jar'
