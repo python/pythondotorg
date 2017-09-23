@@ -29,7 +29,7 @@ class BaseDownloadTests(DownloadMixin):
 
     def setUp(self):
         self.release_275_page = Page.objects.create(
-            title='Python 2.7.5',
+            title='Python 2.7.5 Release',
             path='download/releases/2.7.5',
             content='whatever',
             is_published=True,
