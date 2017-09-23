@@ -628,7 +628,7 @@ html[xmlns] .slides { display: block; }
     .no-touch .main-navigation .tier-1 {
       float: left;
       width: 33.333333%; }
-      .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
+      .no-touch .main-navigation .tier-1.element-6:not(.unstacked), .no-touch .main-navigation .tier-1.element-7:not(.unstacked) {
         width: 16.6666665%; }
       .no-touch .main-navigation .tier-1.element-1 {
         -moz-border-radius-topleft: 8px;
@@ -2313,6 +2313,9 @@ html[xmlns] .slides { display: block; }
   .footer-links a {
     padding: 0.3em 0.75em; }
 
+  #python-jetbrains-survey {
+    display: block; }
+
   .flex-slideshow.home-slideshow .caption-wrapper {
     float: left;
     width: 49%; }
@@ -2472,7 +2475,10 @@ html[xmlns] .slides { display: block; }
   .event-description,
   .job-description {
     padding-left: 8.51064%;
-    padding-right: 8.51064%; } }
+    padding-right: 8.51064%; }
+
+  #python-jetbrains-survey {
+    display: block; } }
 /* - - - Larger than 1200px - - - */
 @media (min-width: 75em) {
   body:after {
@@ -2505,7 +2511,10 @@ html[xmlns] .slides { display: block; }
       margin-right: 17.3913%; }
 
   .community-banner {
-    background-position: 90% 0; } }
+    background-position: 90% 0; }
+
+  #python-jetbrains-survey {
+    display: block; } }
 /* http://dev.w3.org/csswg/css-device-adapt/
  * http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
  * for IE10 Snap Mode on Metro
