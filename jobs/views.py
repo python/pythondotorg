@@ -177,6 +177,7 @@ class JobTelecommute(JobLocationMenu, JobList):
 class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListView):
     template_name = 'jobs/job_review.html'
     paginate_by = 20
+    redirect_url = 'jobs:job_review'
 
     def get_queryset(self):
         return Job.objects.review()
@@ -208,7 +209,28 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         else:
             raise Http404
 
-        return redirect('jobs:job_review')
+        return redirect(self.redirect_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mode'] = 'review'
+        return context
+
+
+class JobModerateList(JobReview):
+    redirect_url = 'jobs:job_moderate'
+
+    def get_queryset(self):
+        queryset = Job.objects.moderate()
+        q = self.request.GET.get('q')
+        if q is not None:
+            return queryset.filter(job_title__icontains=q)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mode'] = 'moderate'
+        return context
 
 
 class JobDetail(JobMixin, DetailView):

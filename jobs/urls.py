@@ -11,6 +11,7 @@ urlpatterns = [
     url(r'^create-review-comment/$', views.JobReviewCommentCreate.as_view(), name='job_review_comment_create'),
     url(r'^mine/$', views.JobListMine.as_view(), name='job_list_mine'),
     url(r'^review/$', views.JobReview.as_view(), name='job_review'),
+    url(r'^moderate/$', views.JobModerateList.as_view(), name='job_moderate'),
     url(r'^thanks/$', TemplateView.as_view(template_name="jobs/job_thanks.html"), name='job_thanks'),
     url(r'^location/telecommute/$', views.JobTelecommute.as_view(), name='job_telecommute'),
     url(r'^location/(?P<slug>[-_\w]+)/$', views.JobListLocation.as_view(), name='job_list_location'),
