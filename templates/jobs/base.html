@@ -58,7 +58,16 @@
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-5 last"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
+    <li class="tier-1 element-5{% if not jobs_board_admin %} last{% endif %}"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
+    {% if jobs_board_admin %}
+    <li class="tier-1 element-6 last">
+        <a href="{% url 'jobs:job_review' %}">Admin</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_review' %}">Review queue</a></li>
+            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_moderate' %}">Moderate approved posts</a></li>
+        </ul>
+    </li>
+    {% endif %}
 </ul>
 {% endblock main_navigation %}
 

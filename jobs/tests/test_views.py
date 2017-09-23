@@ -485,6 +485,43 @@ class JobsReviewTests(TestCase):
         )
         self.job3.job_types.add(self.job_type)
 
+    def test_moderate(self):
+        url = reverse('jobs:job_moderate')
+
+        job = ApprovedJobFactory()
+
+        response = self.client.get(url)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+
+        self.client.login(username=self.another_username, password=self.another_password)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, '403.html')
+        self.client.logout()
+
+        self.client.login(username=self.super_username, password=self.super_password)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertIn(job, response.context['object_list'])
+        self.assertNotIn(self.job1, response.context['object_list'])
+
+    def test_moderate_search(self):
+        url = reverse('jobs:job_moderate')
+
+        job = ApprovedJobFactory(job_title='foo')
+        job2 = ApprovedJobFactory(job_title='bar foo')
+
+        self.client.login(username=self.super_username, password=self.super_password)
+        response = self.client.get(url, {'term': 'foo'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertIn(job, response.context['object_list'])
+        self.assertIn(job2, response.context['object_list'])
+
     def test_job_review(self):
         # FIXME: refactor to separate tests cases for clarity?
         mail.outbox = []
