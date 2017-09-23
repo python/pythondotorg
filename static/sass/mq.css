@@ -1459,6 +1459,10 @@ html[xmlns] .slides { display: block; }
     content: "Category: ";
     color: #666666; }
 
+  .listing-job-title:before {
+    content: "Title: ";
+    color: #666666; }
+
   .listing-job-type:before {
     content: "Looking for: ";
     color: #666666; }
