@@ -286,12 +286,6 @@ class UsersViewsTestCase(TestCase):
             '{}?next={}'.format(reverse('account_login'), url)
         )
 
-    def test_user_list(self):
-        url = reverse('users:user_list')
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['user_list']), 1)
-
     def test_user_delete_needs_to_be_logged_in(self):
         url = reverse('users:user_delete', kwargs={'slug': self.user.username})
         response = self.client.delete(url)

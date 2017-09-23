@@ -11,11 +11,6 @@
 
 {% block user_content %}
 
-    <div class="return-link">
-        <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
-    </div>
-
-
     {% if form.errors %}
     <div class="user-feedback level-error">
         <p role="alert"><span class="icon-alert" aria-hidden="true"><span class="larger">&#9888; </span></span>Please correct the errors <b>noted in red</b> below:</p>

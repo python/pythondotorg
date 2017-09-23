@@ -8,7 +8,7 @@ from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import (
-    CreateView, DetailView, ListView, TemplateView, UpdateView, DeleteView,
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView,
 )
 
 from allauth.account.views import SignupView, PasswordChangeView
@@ -20,7 +20,6 @@ from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import Membership
-from .paginators import UserPaginator
 
 User = get_user_model()
 
@@ -125,14 +124,6 @@ class UserDetail(DetailView):
         if self.request.user.username == self.kwargs['slug']:
             return queryset
         return queryset.searchable()
-
-
-class UserList(ListView):
-    paginate_by = 25
-    paginator_class = UserPaginator
-
-    def get_queryset(self):
-        return User.objects.searchable()
 
 
 class HoneypotSignupView(SignupView):

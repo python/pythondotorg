@@ -11,10 +11,6 @@
 
 {% block user_content %}
 
-<div class="return-link">
-    <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to User List</a>
-</div>
-
 <article class="text">
     {% if request.user.has_membership %}
     <h1 class="default-title">Edit your PSF Membership</h1>
