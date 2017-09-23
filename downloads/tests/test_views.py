@@ -28,7 +28,7 @@ TEST_THROTTLE_RATES = {
 }
 
 
-class DownloadViewsTests(BaseDownloadTests):
+class DownloadViewsTests(BaseDownloadTests, TestCase):
     def test_download_full_os_list(self):
         url = reverse('download:download_full_os_list')
         response = self.client.get(url)
@@ -63,6 +63,19 @@ class DownloadViewsTests(BaseDownloadTests):
         url = reverse('download:download_latest_python3')
         response = self.client.get(url)
         self.assertRedirects(response, latest_python3.get_absolute_url())
+
+    def test_redirect_page_object_to_release_detail_page(self):
+        self.release_275.release_page = None
+        self.release_275.save()
+        response = self.client.get(self.release_275_page.get_absolute_url())
+        self.assertRedirects(
+            response,
+            reverse(
+                'download:download_release_detail',
+                kwargs={'release_slug': self.release_275.slug},
+            ),
+            status_code=301,
+        )
 
 
 class RegressionTests(DownloadMixin, TestCase):
