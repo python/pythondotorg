@@ -1,7 +1,0 @@
-<ul>
-    {% for f in files %}
-        <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
-    {% empty %}
-        <li>No Files for this release</li>
-    {% endfor %}
-</ul>

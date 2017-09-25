@@ -1,7 +1,6 @@
 {% extends "downloads/base.html" %}
 {% load boxes %}
 {% load sitetree %}
-{% load download_tags %}
 
 {% block body_attributes %}class="python download"{% endblock %}
 
@@ -39,7 +38,13 @@
                     {% for r in releases %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
-                        {% os_release_files release=r os_slug=os_slug %}
+                        <ul>
+                            {% for f in r.files.all %}
+                                <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
+                            {% empty %}
+                                <li>No files for this release.</li>
+                            {% endfor %}
+                        </ul>
                     </li>
                     {% endfor %}
                 </ul>
@@ -51,7 +56,13 @@
                     {% for r in pre_releases %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
-                        {% os_release_files release=r os_slug=os_slug %}
+                        <ul>
+                            {% for f in r.files.all %}
+                                <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
+                            {% empty %}
+                                <li>No files for this release.</li>
+                            {% endfor %}
+                        </ul>
                     </li>
                     {% endfor %}
                 </ul>

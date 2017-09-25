@@ -1,8 +1,9 @@
+from django.db.models import Prefetch
 from django.urls import reverse
 from django.views.generic import DetailView, TemplateView, ListView, RedirectView
 from django.http import Http404
 
-from .models import OS, Release
+from .models import OS, Release, ReleaseFile
 
 
 class DownloadLatestPython2(RedirectView):
@@ -97,14 +98,17 @@ class DownloadOSList(DownloadBase, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        release_files = ReleaseFile.objects.select_related(
+            'os',
+        ).filter(os=self.object)
         context.update({
             'os_slug': self.object.slug,
-            'releases': Release.objects.released().filter(
-                files__os=self.object
-            ).distinct().order_by('-release_date'),
-            'pre_releases': Release.objects.published().pre_release().filter(
-                files__os=self.object
-            ).distinct().order_by('-release_date'),
+            'releases': Release.objects.released().prefetch_related(
+                Prefetch('files', queryset=release_files),
+            ).order_by('-release_date'),
+            'pre_releases': Release.objects.published().pre_release().prefetch_related(
+                Prefetch('files', queryset=release_files),
+            ).order_by('-release_date'),
         })
         return context
 
