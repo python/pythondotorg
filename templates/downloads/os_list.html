@@ -32,13 +32,31 @@
             <li><a href="{{ latest_python3.get_absolute_url }}">Latest Python 3 Release - {{ latest_python3.name }}</a></li>
             <li><a href="{{ latest_python2.get_absolute_url }}">Latest Python 2 Release - {{ latest_python2.name }}</a></li>
         </ul>
-        <ul>
-            {% for r in releases %}
-            <li>
-                <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
-                {% os_release_files release=r os_slug=os_slug %}
-            </li>
-            {% endfor %}
-        </ul>
+        <div class="col-row two-col">
+            <div class="column">
+                <h2>Stable Releases</h2>
+                <ul>
+                    {% for r in releases %}
+                    <li>
+                        <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
+                        {% os_release_files release=r os_slug=os_slug %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% if pre_releases %}
+            <div class="column">
+                <h2>Pre-releases</h2>
+                <ul>
+                    {% for r in pre_releases %}
+                    <li>
+                        <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
+                        {% os_release_files release=r os_slug=os_slug %}
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+        </div>
     </article>
 {% endblock content %}

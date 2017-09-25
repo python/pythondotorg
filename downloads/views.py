@@ -99,9 +99,12 @@ class DownloadOSList(DownloadBase, DetailView):
         context = super().get_context_data(**kwargs)
         context.update({
             'os_slug': self.object.slug,
-            'releases': Release.objects.filter(
-                files__os__slug=self.object.slug
-            ).select_related().distinct().order_by('-release_date')
+            'releases': Release.objects.released().filter(
+                files__os=self.object
+            ).distinct().order_by('-release_date'),
+            'pre_releases': Release.objects.published().pre_release().filter(
+                files__os=self.object
+            ).distinct().order_by('-release_date'),
         })
         return context
 
