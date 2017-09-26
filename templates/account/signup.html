@@ -31,9 +31,12 @@
 {% block content %}
 <h1>{% trans "Sign Up" %}</h1>
 
-<p>{% blocktrans %}Already have an account? Then please <a href="{{ login_url }}">sign in</a>.{% endblocktrans %}</p>
-
-<p><strong style="font-size: 150%">You do not need a python.org account to <a href="/download/">download</a> or use Python.</strong>
+<div class="user-feedback level-notice">
+    <p>
+        <span class="icon-alert" aria-hidden="true"></span>
+        You do not need a python.org account to <a href="{% url 'download:download' %}">download</a> or use Python.
+    </p>
+</div>
 
 <form class="signup" id="signup_form" method="post" action="{% url 'account_signup' %}">
   {% csrf_token %}

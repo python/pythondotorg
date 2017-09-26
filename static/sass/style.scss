@@ -1826,6 +1826,8 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .level-notice {
     background-color: lighten( $yellow, 30% );
     border: 2px solid $yellow;
+
+    span { color: darken( $yellow, 20% ); }
 }
 
 /* Something went wrong */
