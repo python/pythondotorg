@@ -5,13 +5,15 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
-from cities_light.models import City
 from dal import autocomplete
 
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
-from .models import Job, JobType, JobCategory, JobReviewComment
+from .models import (
+    Job, JobType, JobCategory, JobReviewComment,
+    City,
+)
 
 
 class JobListMenu:

@@ -8,7 +8,10 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
-from cities_light.models import City
+from cities_light.abstract_models import (
+    AbstractCity, AbstractRegion, AbstractCountry,
+)
+from cities_light.receivers import connect_default_signals
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
@@ -21,6 +24,31 @@ from .signals import (
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+
+
+class Country(AbstractCountry):
+    pass
+
+connect_default_signals(Country)
+
+
+class Region(AbstractRegion):
+    pass
+
+connect_default_signals(Region)
+
+
+class City(AbstractCity):
+
+    def get_display_name(self):
+        if self.region_id:
+            if self.name == self.region.name:
+                return '%s, %s' % (self.name, self.country.name)
+            return '%s, %s, %s' % (self.name, self.region.name,
+                                   self.country.name)
+        return '%s, %s' % (self.name, self.country.name)
+
+connect_default_signals(City)
 
 
 class JobType(NameSlugModel):
