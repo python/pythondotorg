@@ -4,7 +4,11 @@
     {% if object_list %}
     {% with object_list.0 as job %}
         {{ object_list|length }} Python job{{ object_list|length|pluralize }} in
-        {{ job.display_location }}
+        {% if filter_mode == 'country' %}
+            {{ job.display_country }}
+        {% else %}
+            {{ job.display_location }}
+        {% endif %}
     {% endwith %}
     {% else %}
         {{ block.super }}

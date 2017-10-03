@@ -134,6 +134,7 @@ class JobCategoryFactory(factory.DjangoModelFactory):
         django_get_or_create = ('name',)
 
     name = factory.Faker('job_category')
+    active = True
 
 
 class JobTypeFactory(factory.DjangoModelFactory):

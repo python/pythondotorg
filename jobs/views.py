@@ -55,12 +55,18 @@ class JobMixin:
         ).order_by(
             'location__slug'
         )
+        active_countries = Job.objects.visible().distinct(
+            'location__country__slug'
+        ).order_by(
+            'location__country__slug'
+        )
 
         context.update({
             'jobs_count': Job.objects.visible().count(),
             'active_types': JobType.objects.with_active_jobs(),
             'active_categories': JobCategory.objects.with_active_jobs(),
             'active_locations': active_locations,
+            'active_countries': active_countries,
             'jobs_board_admin': self.has_jobs_board_admin_access(),
         })
 
@@ -141,6 +147,26 @@ class JobFilterLocation(JobLocationMenu, JobMixin, ListView):
             self.kwargs['region_slug'],
             self.kwargs['country_slug'],
         ).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_mode'] = 'location'
+        return context
+
+
+class JobFilterCountry(JobLocationMenu, JobMixin, ListView):
+    paginate_by = 25
+    template_name = 'jobs/job_location_list.html'
+
+    def get_queryset(self):
+        return Job.objects.from_country(
+            self.kwargs['slug'],
+        ).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_mode'] = 'country'
+        return context
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):

@@ -89,3 +89,6 @@ class JobQuerySet(QuerySet):
             location__region__slug=region,
             location__country__slug=country,
         )
+
+    def from_country(self, country):
+        return self.visible().filter(location__country__slug=country)
