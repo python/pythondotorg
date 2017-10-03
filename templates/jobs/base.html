@@ -55,11 +55,13 @@
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-5 {% if view.job_location_view %}current_item selected{% endif %}">
+    <li class="tier-1 element-5 {% if view.job_country_view %}current_item selected{% endif %}">
+        {# TODO: add a template for this #}
         <a href="{% url 'jobs:job_locations' %}">Countries</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for l in active_countries %}
             <li class="tier-2" role="treeitem">
+                {# TODO: add a template tag for this #}
                 {% if l.location %}
                 <a href="{% url 'jobs:job_filter_country' slug=l.location.country.slug %}">
                 {% else %}

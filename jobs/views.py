@@ -34,6 +34,12 @@ class JobLocationMenu:
         return True
 
 
+class JobCountryMenu:
+
+    def job_country_view(self):
+        return True
+
+
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
     raise_exception = True
@@ -154,7 +160,7 @@ class JobFilterLocation(JobLocationMenu, JobMixin, ListView):
         return context
 
 
-class JobFilterCountry(JobLocationMenu, JobMixin, ListView):
+class JobFilterCountry(JobCountryMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_location_list.html'
 
