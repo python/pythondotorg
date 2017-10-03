@@ -4,12 +4,13 @@ import factory
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
-from cities_light.models import City, Region, Country
 from faker.providers import BaseProvider
 
 from users.factories import UserFactory
 
-from .models import JobType, JobCategory, Job
+from .models import (
+    JobType, JobCategory, Job, City, Region, Country,
+)
 
 
 class CitiesProvider(BaseProvider):
