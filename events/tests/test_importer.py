@@ -20,7 +20,7 @@ class EventsImporterTestCase(TestCase):
 
     def test_injest(self):
         importer = ICSImporter(self.calendar)
-        with open(EVENTS_CALENDAR) as fh:
+        with open(EVENTS_CALENDAR, encoding='utf-8') as fh:
             ical = fh.read()
         importer.import_events_from_text(ical)
 
