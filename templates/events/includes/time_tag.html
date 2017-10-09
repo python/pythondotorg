@@ -1,5 +1,52 @@
+{% load events %}
+
+{% with dt_start=next_time.dt_start %}
+
 {% if next_time.single_day %}
-<time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span>{% if next_time.all_day %} {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}{% endif %}{% endif %}</time>
+
+{% with dt_end=next_time.dt_end %}
+<time datetime="{{ dt_start|date:'c' }}">
+    {{ dt_start|date:"d N" }}
+    <span class="say-no-more">
+        {{ dt_start|date:"Y" }}
+    </span>
+
+    {% if not next_time.all_day %}
+    {{ dt_start|date:"fA"|lower }} {{ dt_start|date:"e" }}
+        {% if next_time.valid_dt_end %}
+        &ndash; {{ dt_end|date:"fA"|lower }} {{ dt_end|date:"e" }}
+        {% endif %}
+    {% endif %}
+</time>
+{% endwith %}
+
+{% elif next_time.all_day %}
+
+{% with dt_end=next_time.dt_end|exclude_ending_day %}
+<time datetime="{{ dt_start|date:'c' }}">
+    {{ dt_start|date:"d N" }}
+    {% if next_time.valid_dt_end %}
+        &ndash; {{ dt_end|date:"d N" }}
+    {% endif %}
+    <span class="say-no-more">
+        {{ dt_end|date:"Y" }}
+    </span>
+</time>
+{% endwith %}
+
 {% else %}
-<time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
+
+{% with dt_end=next_time.dt_end %}
+<time datetime="{{ dt_start|date:'c' }}">
+    {{ dt_start|date:"d N" }}
+    {% if next_time.valid_dt_end %}
+        &ndash; {{ dt_end|date:"d N" }}
+    {% endif %}
+    <span class="say-no-more">
+        {{ dt_end|date:"Y" }}
+    </span>
+</time>
+{% endwith %}
+
 {% endif %}
+{% endwith %}

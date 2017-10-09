@@ -1,5 +1,6 @@
 from django import template
 from django.utils import timezone
+from datetime import date, timedelta
 
 from ..models import Event
 
@@ -14,3 +15,9 @@ def get_events_upcoming(limit=5, only_featured=False):
     if only_featured:
         qs.filter(featured=True)
     return qs[:limit]
+
+
+@register.filter_function
+def exclude_ending_day(next_event_date):
+    return next_event_date - timedelta(days=1)
+
