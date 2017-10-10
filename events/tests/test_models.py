@@ -47,6 +47,24 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time, None)
         self.assertTrue(self.event.is_past)
 
+    def test_occurring_event_single_day(self):
+        now = seconds_resolution(timezone.now())
+
+        occurring_time_dtstart = now + datetime.timedelta(days=3)
+        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=1)
+
+        ot = OccurringRule.objects.create(
+            event=self.event,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtend,
+            all_day=True
+        )
+
+        self.assertEqual(self.event.next_time.dt_start, occurring_time_dtstart)
+        self.assertEqual(self.event.previous_time, None)
+        self.assertEqual(self.event.next_or_previous_time.dt_start, occurring_time_dtstart)
+        self.assertTrue(self.event.next_time.single_day)
+
     def test_recurring_event(self):
         now = seconds_resolution(timezone.now())
 
@@ -62,7 +80,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
 
-
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
         rt.save()
@@ -70,6 +87,25 @@ class EventsModelsTests(TestCase):
         event = Event.objects.get(pk=self.event.pk)
         self.assertEqual(event.next_time, None)
         self.assertEqual(Event.objects.for_datetime().count(), 0)
+
+    def test_recurring_event_single_day(self):
+        now = seconds_resolution(timezone.now())
+
+        occurring_time_dtstart = now + datetime.timedelta(days=3)
+        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=1)
+
+        rt = RecurringRule.objects.create(
+            event=self.event,
+            begin=occurring_time_dtstart,
+            finish=occurring_time_dtend,
+            all_day=True,
+            duration="1 days"
+        )
+
+        self.assertEqual(self.event.next_time.dt_start, occurring_time_dtstart)
+        self.assertEqual(self.event.previous_time, None)
+        self.assertEqual(self.event.next_or_previous_time.dt_start, occurring_time_dtstart)
+        self.assertTrue(self.event.next_time.single_day)
 
     def test_rrule(self):
         now = seconds_resolution(timezone.now())
