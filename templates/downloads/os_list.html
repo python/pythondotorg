@@ -38,6 +38,9 @@
                     {% for r in releases %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
+                        {% if os.slug == 'windows' and r.name >= 'Python 3.5' %}
+                        <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows XP or earlier.</strong></p>
+                        {% endif %}
                         <ul>
                             {% for f in r.files.all %}
                                 <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
