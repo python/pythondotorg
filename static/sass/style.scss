@@ -1943,7 +1943,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .breadcrumbs {
     padding: .5em 0;
     border-bottom: 1px solid $default-border-color;
-    white-space: nowrap;
 
     li { @include pe-inline-block(); }
 
