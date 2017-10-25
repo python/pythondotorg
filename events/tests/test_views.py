@@ -16,6 +16,7 @@ class EventsViewsTests(TestCase):
         cls.calendar = Calendar.objects.create(creator=cls.user, slug="test-calendar")
         cls.event = Event.objects.create(creator=cls.user, calendar=cls.calendar)
         cls.event_past = Event.objects.create(title='Past Event', creator=cls.user, calendar=cls.calendar)
+        cls.event_unlisted = Event.objects.create(creator=cls.user, calendar=cls.calendar, visible=False)
 
         cls.now = timezone.now()
 
@@ -31,6 +32,11 @@ class EventsViewsTests(TestCase):
             event=cls.event_past,
             begin=cls.now - datetime.timedelta(days=2),
             finish=cls.now - datetime.timedelta(days=1),
+        )
+        cls.rule_unpublished = RecurringRule.objects.create(
+            event=cls.event_unlisted,
+            begin=recurring_time_dtstart,
+            finish=recurring_time_dtend,
         )
 
     def test_events_homepage(self):
@@ -154,3 +160,31 @@ class EventsViewsTests(TestCase):
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
         self.assertEqual(len(get_events_upcoming()), 0)
+
+    def test_unlisted_event_is_not_listed_by_category(self):
+        category = EventCategory.objects.create(
+            name='Sprints',
+            slug='sprints',
+            calendar=self.calendar
+        )
+        self.event_unlisted.categories.add(category)
+        url = reverse('events:eventlist_category', kwargs={'calendar_slug': self.calendar.slug, 'slug': category.slug})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'], category)
+        self.assertEqual(len(response.context['object_list']), 0)
+
+    def test_unlisted_event_is_not_listed_by_location(self):
+        venue = EventLocation.objects.create(
+            name='PSF HQ',
+            calendar=self.calendar
+        )
+        self.event_unlisted.venue = venue
+        self.event_unlisted.save()
+        url = reverse('events:eventlist_location', kwargs={'calendar_slug': self.calendar.slug, 'pk': venue.pk})
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.context['object'], venue)
+        self.assertEqual(len(response.context['object_list']), 0)

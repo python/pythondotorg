@@ -117,6 +117,7 @@ class Event(ContentManageable):
 
     categories = models.ManyToManyField(EventCategory, related_name='events', blank=True)
     featured = models.BooleanField(default=False, db_index=True)
+    visible = models.BooleanField(default=True)
 
     objects = EventManager()
 
