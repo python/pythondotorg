@@ -38,7 +38,10 @@ class EventHomepage(ListView):
     template_name = 'events/event_list.html'
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).order_by('occurring_rule__dt_start')
+        events = Event.objects.for_datetime(timezone.now())
+        events = events.order_by('occurring_rule__dt_start')
+        events = events.filter(visible=True)
+        return events
 
 
 class EventDetail(DetailView):
@@ -63,7 +66,10 @@ class EventDetail(DetailView):
 class EventList(EventListBase):
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
+        events = Event.objects.for_datetime(timezone.now())
+        events = events.filter(calendar__slug=self.kwargs['calendar_slug'], visible=True)
+        events = events.order_by('occurring_rule__dt_start')
+        return events
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -76,7 +82,9 @@ class PastEventList(EventList):
     template_name = 'events/event_list_past.html'
 
     def get_queryset(self):
-        return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        events = Event.objects.until_datetime(timezone.now())
+        events = events.filter(calendar__slug=self.kwargs['calendar_slug'], visible=True)
+        return events
 
 
 class EventListByDate(EventList):
@@ -87,7 +95,9 @@ class EventListByDate(EventList):
         return datetime.date(year, month, day)
 
     def get_queryset(self):
-        return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        events = Event.objects.for_datetime(self.get_object())
+        events = events.filter(calendar__slug=self.kwargs['calendar_slug'], visible=True)
+        return events
 
 
 class EventListByCategory(EventList):
@@ -96,7 +106,7 @@ class EventListByCategory(EventList):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(categories__slug=self.kwargs['slug'])
+        return qs.filter(categories__slug=self.kwargs['slug'], visible=True)
 
 
 class EventListByLocation(EventList):
@@ -105,7 +115,7 @@ class EventListByLocation(EventList):
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(venue__pk=self.kwargs['pk'])
+        return qs.filter(venue__pk=self.kwargs['pk'], visible=True)
 
 
 class EventCategoryList(ListView):
