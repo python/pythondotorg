@@ -149,7 +149,7 @@ class EventsViewsTests(TestCase):
 
     def test_upcoming_tag(self):
         self.assertEqual(len(get_events_upcoming()), 1)
-        self.assertEqual(len(get_events_upcoming(only_featured=True)), 1)
+        self.assertEqual(len(get_events_upcoming(only_featured=True)), 0)
         self.rule.begin = self.now - datetime.timedelta(days=3)
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
