@@ -2,6 +2,7 @@ import os
 import unittest
 from django.test import TestCase
 from django.conf import settings
+from django.utils.timezone import datetime, make_aware
 
 from events.importer import ICSImporter
 from events.models import Calendar, Event
@@ -61,6 +62,15 @@ END:VCALENDAR
             e.description.rendered,
             '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
         )
+        self.assertTrue(e.next_or_previous_time.all_day)
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=2)),
+            e.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=3)),
+            e.next_or_previous_time.dt_end
+        )
 
         ical = """\
 BEGIN:VCALENDAR
@@ -94,3 +104,12 @@ END:VCALENDAR
         self.assertEqual(e.pk, e2.pk)
         self.assertEqual(e2.calendar.url, EVENTS_CALENDAR_URL)
         self.assertEqual(e2.description.rendered, 'Python Istanbul')
+        self.assertTrue(e.next_or_previous_time.all_day)
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=2)),
+            e.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=3)),
+            e.next_or_previous_time.dt_end
+        )

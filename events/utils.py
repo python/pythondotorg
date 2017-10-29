@@ -20,6 +20,13 @@ def date_to_datetime(date, tzinfo=None):
     return datetime.datetime(*date.timetuple()[:6], tzinfo=tzinfo)
 
 
+def extract_date_or_datetime(dt):
+    if isinstance(dt, datetime.datetime):
+        return convert_dt_to_aware(dt)
+    else:
+        return dt
+
+
 def convert_dt_to_aware(dt):
     if not isinstance(dt, datetime.datetime):
         dt = date_to_datetime(dt)
