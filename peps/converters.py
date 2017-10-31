@@ -33,7 +33,7 @@ def convert_pep0():
     for a Python.org Page returns the core body HTML necessary only
     """
     pep0_path = os.path.join(settings.PEP_REPO_PATH, 'pep-0000.html')
-    pep0_content = open(pep0_path).read()
+    pep0_content = open(pep0_path, encoding="utf-8 ").read()
 
     soup = BeautifulSoup(pep0_content)
 

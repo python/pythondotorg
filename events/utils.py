@@ -14,6 +14,10 @@ def minutes_resolution(dt):
     return dt - dt.second * datetime.timedelta(0, 1, 0) - dt.microsecond * datetime.timedelta(0, 0, 1)
 
 
+def extract_date_or_datetime(dt):
+    return dt if not isinstance(dt, datetime.datetime) else convert_dt_to_aware(dt)
+
+
 def date_to_datetime(date, tzinfo=None):
     if tzinfo is None:
         tzinfo = pytz.UTC

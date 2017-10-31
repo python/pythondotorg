@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-
+{% load events %}
 
 {% block page_title %}{{ object.title|striptags }} | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}{{ object.title|striptags }}{% endblock %}
@@ -25,13 +25,26 @@
                     {% endif %}
                     
                     {% with object.next_or_previous_time as next_time %}
+
                     {% if next_time.single_day %}
                     <!-- Single date with start and end times -->
                     <h3 class="single-event-date">
-                        <time class="single-date" datetime="{{ next_time.dt_start|date:'Y-m-d' }}">{{ next_time.dt_start|date:"d N" }}</time> 
-                        <time class="time-start" datetime="{{ next_time.dt_start|date:'Y-m-d H:i' }}">{% if not next_time.all_day %}from {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}{% endif %}</time> 
+                        <time class="single-date" datetime="{{ next_time.dt_start|date:'Y-m-d' }}">
+                            {{ next_time.dt_start|date:"d N" }}
+                        </time>
+                        <time class="time-start" datetime="{{ next_time.dt_start|date:'Y-m-d H:i' }}">
+                        {% if not next_time.all_day %}
+                            from {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}
+                        {% endif %}
+                        </time>
+
                         {% if next_time.valid_dt_end %}
-                        <time class="time-end" datetime="{{ next_time.dt_end|date:'Y-m-d H:i' }}">{% if not next_time.all_day %}to {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}</time>{% endif %}{% endif %}, 
+                        <time class="time-end" datetime="{{ next_time.dt_end|date:'Y-m-d H:i' }}">
+                        {% if not next_time.all_day %}
+                            to {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }},
+                        {% endif %}
+                        </time>
+                        {% endif %}
                         <time class="year" datetime="{{ next_time.dt_end|date:'Y' }}">{{ next_time.dt_end|date:"Y" }}</time>
                     </h3>
 
@@ -39,11 +52,33 @@
 
                     <!-- Different start and end dates -->
                     <h3 class="single-event-date">
-                        <time class="date-start" datetime="{{ next_time.dt_start|date:'c' }}">From {{ next_time.dt_start|date:"d N" }}{% if not next_time.all_day %} at {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}{% endif %}</time> 
-                        <time class="date-end" datetime="{{ next_time.dt_end|date:'c' }}">through {{ next_time.dt_end|date:"d N" }}{% if not next_time.all_day %} at {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}{% endif %}</time>, 
-                        <time class="year" datetime="{{ next_time.dt_end|date:"Y" }}">{{ next_time.dt_end|date:"Y" }}</time>
+                        <time class="date-start" datetime="{{ next_time.dt_start|date:'c' }}">
+                            From {{ next_time.dt_start|date:"d N" }}
+                            {% if not next_time.all_day %}
+                                at {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}
+                            {% endif %}
+                        </time>
+                        <time class="date-end" datetime="{{ next_time.dt_end|date:'c' }}">
+                            through
+                            {% if not next_time.all_day %}
+                                {{ next_time.dt_end|date:"d N" }} at {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }},
+                            {% else %}
+                                {{ next_time.dt_end|exclude_ending_day|date:"d N" }},
+                            {% endif %}
+                        </time>
+
+                        {% if next_time.all_day %}
+                        <time class="year" datetime="{{ next_time.dt_end|exclude_ending_day|date:"Y" }}">
+                            {{ next_time.dt_end|exclude_ending_day|date:"Y" }}
+                        </time>
+                        {% else %}
+                        <time class="year" datetime="{{ next_time.dt_end|date:"Y" }}">
+                            {{ next_time.dt_end|date:"Y" }}
+                        </time>
+                        {% endif %}
                     </h3>
                     {% endif %}
+
                     {% endwith %}
                     
                     <!-- Add a display for Recurrence Rules? -->

@@ -253,7 +253,10 @@ class OccurringRule(RuleMixin, models.Model):
 
     @property
     def single_day(self):
-        return self.dt_start.date() == self.dt_end.date()
+        return (
+            self.dt_start.date() == self.dt_end.date() or
+            self.all_day is True and self.dt_start + datetime.timedelta(days=1) == self.dt_end
+        )
 
 
 def duration_default():
@@ -319,7 +322,10 @@ class RecurringRule(RuleMixin, models.Model):
 
     @property
     def single_day(self):
-        return self.dt_start.date() == self.dt_end.date()
+        return (
+            self.dt_start.date() == self.dt_end.date() or
+            self.all_day is True and self.dt_start + datetime.timedelta(days=1) == self.dt_end
+        )
 
     def save(self, *args, **kwargs):
         self.duration_internal = timedelta_parse(self.duration)
