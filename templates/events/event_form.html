@@ -5,31 +5,14 @@
 {% block og_title %}Submit an Event{% endblock %}
 
 
-{% block body_attributes %}class="jobs job_form"{% endblock %}
-
-
-{% block header_content %}
-    {% if featured %}
-                <div class="featured-event">
-
-                    <h2 class="welcome-message">Featured Python Event</h2>
-
-                    <h1 class="call-to-action">{{ featured.title|striptags }}</h1>
-
-                    <p class="event-date"><time datetime="{{ featured.next_datetime.dt_start|date:'c' }}">
-                        {{ featured.next_datetime.dt_start|date:"l, F d, Y" }}
-                    </time></p>
-                    <p class="excerpt">{{ featured.description.rendered|striptags|truncatewords:"60" }} <a class="readmore" href="{{ featured.get_absolute_url }}">Read more</a></p>
-                </div>
-    {% endif %}
-{% endblock header_content %}
-
-
 {% block content_attributes %}with-right-sidebar{% endblock %}
+
 
 
 {% block content %}
     <article class="text">
+
+        <p>For bulk submittions, <a href="https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event">click here.</a></p>
 
         <header class="article-header">
             <h1 class="page-title">Submit an Event</h1>
@@ -41,7 +24,7 @@
 
             {{ form.as_p }}
             <p>
-                <button type="submit" name="Submit">Preview</button>
+                <button type="submit" name="Submit">Send</button>
             </p>
         </form>
     </article>
