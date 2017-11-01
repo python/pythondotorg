@@ -9,6 +9,7 @@ class EventForm(forms.Form):
     location = forms.CharField()
     date_from = forms.DateField(widget=forms.SelectDateWidget())
     date_to = forms.DateField(widget=forms.SelectDateWidget())
+    recurrence = forms.CharField()
     link = forms.URLField()
     description = forms.CharField(widget=forms.Textarea)
 
