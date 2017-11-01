@@ -1,12 +1,14 @@
 import datetime
 
 from django.contrib.auth import get_user_model
-from django.urls import reverse
+from django.core import mail
+from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 from django.utils import timezone
 
 from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRule
 from ..templatetags.events import get_events_upcoming
+from users.factories import UserFactory
 
 
 class EventsViewsTests(TestCase):
@@ -154,3 +156,62 @@ class EventsViewsTests(TestCase):
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
         self.assertEqual(len(get_events_upcoming()), 0)
+
+
+class EventSubmitTests(TestCase):
+    event_submit_url = reverse_lazy('events:event_submit')
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = UserFactory(password='password')
+        cls.post_data = {
+            'event_name': 'PyConES17',
+            'event_type': 'conference',
+            'python_focus': 'Country-wide conference',
+            'expected_attendees': '500',
+            'location': 'Complejo San Francisco, Caceres, Spain',
+            'date_from': '2017-9-22',
+            'date_to': '2017-9-24',
+            'recurrence': 'None',
+            'link': 'https://2017.es.pycon.org/en/',
+            'description': 'A conference no one can afford to miss',
+        }
+
+    def user_login(self):
+        self.client.login(username=self.user.username, password='password')
+
+    def test_submit_not_logged_in_is_redirected(self):
+        response = self.client.post(self.event_submit_url, self.post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, '/accounts/login/?next=/events/submit/')
+
+    def test_submit_without_data_is_rejected(self):
+        self.user_login()
+        response = self.client.post(self.event_submit_url, {})
+        # On invalid data, Django will return 200 with the
+        # fields marked as error.
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
+
+    def test_submit_success_sends_email(self):
+        self.user_login()
+        response = self.client.post(self.event_submit_url, self.post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('events:event_thanks'))
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'New event submission: "{}"'.format(self.post_data['event_name'])
+        )
+
+    def test_badheadererror(self):
+        self.user_login()
+        post_data = self.post_data.copy()
+        post_data['event_name'] = 'invalid\ntitle'
+        response = self.client.post(
+            self.event_submit_url, post_data, follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+        messages = list(response.context['messages'])
+        self.assertEqual(len(messages), 1)
+        self.assertEqual(messages[0].message, 'Invalid header found.')
