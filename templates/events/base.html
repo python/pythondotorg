@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load boxes %}
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block right_sidebar %}
+    <aside class="right-sidebar" role="secondary">
+        <div class="sidebar-widget subscribe-widget">
+            {% if calendar %}
+            <h2 class="widget-title">Python Event Subscriptions</h2>
+            <p>Subscribe to Python Event Calendars:</p>
+            <ul class="menu">
+                {% if calendar.embed %}<li><a href="{{ calendar.embed }}"><span aria-hidden="true" class="icon-embed"></span>Embeddable widget</a></li>{% endif %}
+                {% if calendar.rss %}<li><a href="{{ calendar.rss }}"><span aria-hidden="true" class="icon-feed"></span>Events via RSS</a></li>{% endif %}
+                {% if calendar.url %}<li><a href="{{ calendar.url }}"><span aria-hidden="true" class="icon-ical"></span>Events in iCal format</a></li>{% endif %}
+                {% if calendar.twitter %}<li><a href="{{ calendar.twitter }}"><span aria-hidden="true" class="icon-twitter"></span>Events on Twitter</a></li>{% endif %}
+            </ul>
+            {% endif %}
+            {% box 'events-subscriptions' %}
+	    </div>
+
+        {% if event_categories %}
+        <div class="sidebar-widget eventtypes-widget">
+            <h2 class="widget-title">Event Categories</h2>
+            <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
+            <ul class="menu">
+                {% for category in event_categories %}
+                <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+                {% endfor %}
+                <li><a class="readmore" href="{% url 'events:eventcategory_list' calendar_slug=view.kwargs.calendar_slug %}">More Types</a></li>
+            </ul>
+        </div>
+        {% endif %}
+
+        {% comment %}
+        Less useful to look at and use than I thought they might be.
+        Titles of locations are the whole address most times, and unless someone in the DB controlled the way they were written and presented, this might always be a mess
+        {% if event_locations %}
+        <div class="sidebar-widget authors-widget">
+            <h2 class="widget-title">Event Locations</h2>
+            <p class="give-me-more"><a href="#" title="More Event Locations">More</a></p>
+            <ul class="menu">
+                {% for location in event_locations %}
+                <li><a href="{{ location.get_absolute_url }}">{{ location.name }}</a></li>
+                {% endfor %}
+               <li><a class="readmore" href="{% url 'events:eventlocation_list' calendar_slug=view.kwargs.calendar_slug %}">More Locations</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        {% endcomment %}
+
+    </aside>
+{% endblock right_sidebar %}

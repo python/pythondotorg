@@ -783,6 +783,10 @@ input#s,
     @include fontface-adjust( $kilo );
 }
 
+.event-form .page-title {
+    margin-top: 0 !important;
+}
+
 /* For when we dont need to extra size buyt do want the margin */
 .default-title { word-spacing: .15em; }
 
