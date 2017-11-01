@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% load boxes %}
+
+{% block page_title %}Submit an Event | {{ SITE_INFO.site_name }}{% endblock %}
+{% block og_title %}Submit an Event{% endblock %}
+
+
+{% block body_attributes %}class="jobs job_form"{% endblock %}
+
+
+{% block header_content %}
+    {% if featured %}
+                <div class="featured-event">
+
+                    <h2 class="welcome-message">Featured Python Event</h2>
+
+                    <h1 class="call-to-action">{{ featured.title|striptags }}</h1>
+
+                    <p class="event-date"><time datetime="{{ featured.next_datetime.dt_start|date:'c' }}">
+                        {{ featured.next_datetime.dt_start|date:"l, F d, Y" }}
+                    </time></p>
+                    <p class="excerpt">{{ featured.description.rendered|striptags|truncatewords:"60" }} <a class="readmore" href="{{ featured.get_absolute_url }}">Read more</a></p>
+                </div>
+    {% endif %}
+{% endblock header_content %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+{% block content %}
+    <article class="text">
+
+        <header class="article-header">
+            {% if form_action == 'update' %}
+            <h1 class="page-title">Update <a href="{{ object.get_absolute_url }}">{{ object.job_title }}</a></h1>
+            {% else %}
+            <h1 class="page-title">Submit a Job Posting</h1>
+            {% endif %}
+        </header>
+
+        <form class="wide-form jobs-form" action="" method="post">
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+
+            {{ form.as_p }}
+            <p>
+                {% if form_action == 'update' and not needs_preview %}
+                    <button type="submit" name="Submit">Save</button>
+                {% else %}
+                    <button type="submit" name="Submit">Preview</button>
+                {% endif %}
+            </p>
+        </form>
+    </article>
+{% endblock content %}
