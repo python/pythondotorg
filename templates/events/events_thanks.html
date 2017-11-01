@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load boxes %}
+
+{% block page_title %}Event Submitted | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="python events{% if not featured %} default-page{% endif %}"{% endblock %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+{% block content %}
+<div class="row">
+    <h1>Thank you for filing a new event!</h1>
+    <div class="user-feedback level-success">
+        <p>
+            Your event has been submitted!
+        </p>
+        <p>
+            This has sent an email to the maintainers of the Python Events calendar.
+            Please check your email and await for updates. Thanks a lot!
+        </p>
+    </div>
+</div>
+{% endblock content %}
