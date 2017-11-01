@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     url(r'calendars/$', views.CalendarList.as_view(), name='calendar_list'),
+    url(r'^submit/$', views.EventSubmit.as_view(), name='event_submit'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/(?P<slug>[-_\w]+)/$', views.EventListByCategory.as_view(), name='eventlist_category'),
     url(r'(?P<calendar_slug>[-_\w]+)/categories/$', views.EventCategoryList.as_view(), name='eventcategory_list'),
     url(r'(?P<calendar_slug>[-_\w]+)/locations/(?P<pk>\d+)/$', views.EventListByLocation.as_view(), name='eventlist_location'),

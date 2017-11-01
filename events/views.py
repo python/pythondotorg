@@ -6,10 +6,12 @@ from django.template import loader
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.views.generic import DetailView, ListView
 from django.contrib.sites.models import Site
+from django.views.generic import DetailView, ListView, FormView
 
 from .models import Calendar, Event, EventCategory, EventLocation
+from pydotorg.mixins import LoginRequiredMixin
+from .forms import EventForm
 
 
 class CalendarList(ListView):
@@ -149,3 +151,15 @@ def send_event_mail(creator, event):
         from_email=creator.email,
         recipient_list=[settings.EVENTS_TO_EMAIL],
     )
+
+
+class EventSubmit(FormView, LoginRequiredMixin):
+    template_name = 'events/event_form.html'
+    form_class = EventForm
+    success_url = '/thanks/'
+
+    def form_valid(self, form):
+        # This method is called when valid form data has been POSTed.
+        # It should return an HttpResponse.
+        form.send_email()
+        return super(EventSubmit, self).form_valid(form)
