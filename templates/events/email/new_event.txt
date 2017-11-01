@@ -1,0 +1,13 @@
+The following event was submitted for approval:
+
+Name:     {{ event.name }}
+Type:     {{ event.type }}
+Focus:    {{ event.focus }}
+Approximate Number of Attendees: {{ event.attendees }}
+Location: {{ event.location }}
+Date/Time/Recurrence: {{ event.datetime }}
+Link:     <a href="{{ event.url }}">{{ event.name }}</a>
+
+To view and review:
+
+URL: https://{{ site.domain }}{{ event.get_absolute_url }}
