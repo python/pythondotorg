@@ -5,7 +5,8 @@ Type:     {{ event.event_type }}
 Focus:    {{ event.python_focus }}
 Approximate Number of Attendees: {{ event.expected_attendees }}
 Location: {{ event.location }}
-Date/Time/Recurrence: {{ event.date_from }} - {{ event.date_to }}
+Date/Time: {{ event.date_from }} - {{ event.date_to }}
+Recurrence: {{ event.recurrence }}
 Link:     <a href="{{ event.link }}">{{ event.event_name }}</a>
 
 Description:
