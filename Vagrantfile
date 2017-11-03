@@ -1,13 +1,13 @@
-# -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-VAGRANTFILE_API_VERSION = "2"
+Vagrant.require_version ">= 1.7.0"
 
-Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
-  config.vm.box = "ubuntu/trusty64"
+Vagrant.configure(2) do |config|
+  # TODO: https://askubuntu.com/a/854396
+  config.vm.box = "bento/ubuntu-16.04"
+  config.vm.boot_timeout = 1200
   config.vm.network "forwarded_port", guest: 8000, host: 8001
   config.vm.synced_folder ".", "/home/vagrant/pythondotorg"
-  config.vm.network "public_network"
   config.vm.provider "virtualbox" do |v|
     v.memory = 2048
   end
@@ -15,5 +15,6 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
     ansible.playbook = "provisioning/pythondotorg.yml"
     ansible.host_key_checking = false
   end
+  config.ssh.insert_key = false
   config.ssh.forward_agent = true
 end

@@ -20,7 +20,7 @@ Easy setup using Vagrant
     # on your local shell
     $ google-chrome http://localhost:8001/
 
-The box will be provisioned by Ansible_ 1.9.6 with Python 3.4, a virtualenv
+The box will be provisioned by Ansible_ 2.4.1.0 with Python 3.5, a virtualenv
 set up with requirements installed, and a database ready to use.
 
 The box also creates a superuser with username ``cbiggles`` for you. However, you
