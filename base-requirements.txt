@@ -7,10 +7,11 @@ Markdown==2.5.2
 Pillow==2.7.0
 psycopg2==2.6
 python3-openid==3.0.5
+# lxml used by BeautifulSoup.
 lxml==3.4.4
 cssselect==0.9.1
 feedparser==5.2.1
-beautifulsoup4==4.3.2
+beautifulsoup4==4.6.0
 icalendar==3.8.4
 chardet2==2.0.3
 # TODO: We may drop 'django-imagekit' completely.
