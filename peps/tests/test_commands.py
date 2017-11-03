@@ -31,5 +31,5 @@ class PEPManagementCommandTests(TestCase):
     def test_image_generated(self):
         call_command('generate_pep_pages')
         img = Image.objects.get(page__path='dev/peps/pep-3001/')
-        soup = BeautifulSoup(img.page.content.raw)
+        soup = BeautifulSoup(img.page.content.raw, 'lxml')
         self.assertIn(settings.MEDIA_URL, soup.find('img')['src'])

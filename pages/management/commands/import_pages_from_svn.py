@@ -53,7 +53,7 @@ class Command(BaseCommand):
             pass
 
     def save_images(self, content_path, page):
-        soup = BeautifulSoup(page.content.rendered)
+        soup = BeautifulSoup(page.content.rendered, 'lxml')
         images = soup.find_all('img')
 
         for image in images:
@@ -65,7 +65,7 @@ class Command(BaseCommand):
                 page=page,
                 image=dst
             )
-        wrapper = BeautifulSoup('<div>')
+        wrapper = BeautifulSoup('<div>', 'lxml')
         [wrapper.div.append(el) for el in soup.body.contents]
         page.content = "%s" % wrapper.div
         page.content_markup_type = 'html'
