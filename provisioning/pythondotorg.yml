@@ -2,16 +2,21 @@
 
 - name: Create a {{ project.name }} VM via Vagrant
   hosts: all
-  sudo: yes
-  sudo_user: root
   remote_user: vagrant
   vars_files:
     - env_vars.yml
   tasks:
+    # TODO: Remove this when we have a better 16.04 LTS box.
+    - name: Make /etc/apt/sources.list useful
+      become: yes
+      shell: "sed -i -- 's/#deb-src/deb-src/g' /etc/apt/sources.list && sudo sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list"
+
     - name: Run apt-get update
+      become: yes
       apt: update_cache=yes
 
     - name: Install base packages
+      become: yes
       apt: name={{ item }} state=latest
       with_items:
         - build-essential
@@ -22,31 +27,32 @@
         - git
         - python3
         - python3-dev
-        - python-setuptools
-        - python-pip
+        - python3-setuptools
+        - python3-pip
+        - python3-venv
         - ruby
+        # - acl
       register: result
       changed_when:
-        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
-
-    - name: Install base Python packages
-      pip: name=virtualenv
+        "result.stdout is defined and '0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
 
     - name: Install python-lxml deps
+      become: yes
       apt: pkg=python-lxml state=build-dep
       register: result
       changed_when:
         "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
 
     - name: Install base Ruby packages
-      sudo: yes
+      become: yes
       gem: name=bundler user_install=no
 
     - name: Install PostgreSQL
       apt: name={{ item }} state=installed
+      become: yes
       with_items:
-        - postgresql
-        - postgresql-contrib
+        - postgresql-9.5
+        - postgresql-contrib-9.5
         - libpq-dev
         - python-psycopg2
 
@@ -54,7 +60,10 @@
       service: name=postgresql state=started enabled=yes
 
     - name: Ensure database is created
-      sudo_user: postgres
+      become: yes
+      become_user: postgres
+      vars:
+        ansible_ssh_pipelining: true
       postgresql_db: name={{ database.name }}
                      encoding='UTF-8'
                      lc_collate='en_US.UTF-8'
@@ -62,7 +71,11 @@
                      state=present
 
     - name: Ensure user has access to the database
-      sudo_user: postgres
+      become: yes
+      become_user: postgres
+      # TODO: https://github.com/ansible/ansible/issues/16048
+      vars:
+        ansible_ssh_pipelining: true
       postgresql_user: db={{ database.name }}
                        name={{ database.user }}
                        priv=ALL
@@ -70,7 +83,6 @@
       notify: Restart PostgreSQL
 
     - name: Ensure python/pythondotorg is cloned
-      sudo: no
       git: repo={{ project.repo }}
            dest={{ project.path }}
            version=master
@@ -78,37 +90,27 @@
            clone=no
            update=no
 
-    # the venv module doesn't work with Debian version of Python 3.4
-    - name: Create virtualenv
-      sudo: no
-      command: virtualenv -p python3.4 {{ project.virtualenv }}
-               creates={{ project.virtualenv }}/bin/activate
-
     - name: Install packages required by the Django app inside virtualenv
-      sudo: no
       pip: virtualenv={{ project.virtualenv }}
+           virtualenv_command="/usr/bin/python3 -m venv"
            requirements={{ project.requirements }}
 
     - name: Install packages required by Gemfile
-      sudo: no
-      # TODO: use ``bundler: state=present`` when Ansible 2.0 released
-      command: "bundler install"
+      bundler: state=present
       args:
         chdir: "{{ project.path }}"
       register: result
-      changed_when: "result.rc != 0 or result.stderr != ''"
+      changed_when: "result.rc is defined and result.stderr is defined and result.rc != 0 or result.stderr != ''"
 
     - name: Install database migrations
-      sudo: no
       django_manage: command=migrate
                      app_path={{ project.path }}
                      virtualenv={{ project.virtualenv }}
                      settings={{ django.settings }}
       register: result
-      changed_when: "'No migrations to apply.' not in result.out"
+      changed_when: "result.out is defined and 'No migrations to apply.' not in result.out"
 
     - name: Create a superuser for Django admin
-      sudo: no
       django_manage:
           command="createsuperuser --noinput --username={{ django.superuser.name  }} --email={{ django.superuser.email }}"
           app_path={{ project.path }}
@@ -120,4 +122,5 @@
 
   handlers:
     - name: Restart PostgreSQL
+      become: yes
       service: name=postgresql state=restarted enabled=yes
