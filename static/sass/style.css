@@ -3046,21 +3046,6 @@ img.align-right {
   float: right;
   margin-left: 1.25em; }
 
-#python-jetbrains-survey {
-  display: none; }
-  #python-jetbrains-survey > img {
-    display: block;
-    margin: auto; }
-
-.python-jetbrains-survey-index-page {
-  margin: -0.3125em 0 2.1875em 0; }
-
-.python-jetbrains-survey-community-page {
-  margin: 0.625em 0 1.5625em 0; }
-
-.python-jetbrains-survey-downloads-page {
-  margin: 0.3125em 0 1.5625em 0; }
-
 span.highlighted {
   background-color: yellow; }
 
