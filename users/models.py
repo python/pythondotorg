@@ -131,3 +131,27 @@ class Membership(models.Model):
             self.last_vote_affirmation = timezone.now()
 
         return super().save(**kwargs)
+
+
+class UserGroup(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    url = models.URLField('URL')
+
+    TYPE_MEETUP = 'meetup'
+    TYPE_DISTRIBUTION_LIST = 'distribution list'
+    TYPE_OTHER = 'other'
+
+    TYPE_CHOICES = (
+        (TYPE_MEETUP, 'Meetup'),
+        (TYPE_DISTRIBUTION_LIST, 'Distribution List'),
+        (TYPE_OTHER, 'Other'),
+    )
+    url_type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+    )
+
+    start_date = models.DateField(null=True)
+    approved = models.BooleanField(default=False)
+    trusted = models.BooleanField(default=False)

@@ -14,7 +14,7 @@ class PageAdminImageFileWidget(admin.widgets.AdminFileWidget):
     def render(self, name, value, attrs=None):
         """ Fix admin rendering """
         content = super().render(name, value, attrs=None)
-        soup = BeautifulSoup(content)
+        soup = BeautifulSoup(content, 'lxml')
 
         # Show useful link/relationship in admin
         a_href = soup.find('a')
