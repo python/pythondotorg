@@ -33,6 +33,7 @@ class EventAdmin(ContentManageableModelAdmin):
     inlines = [OccurringRuleInline, RecurringRuleInline, AlarmInline]
     list_display = ['__str__', 'calendar', 'featured']
     list_filter = ['calendar', 'featured']
+    raw_id_fields = ['venue']
     search_fields = ['title']
 
 
