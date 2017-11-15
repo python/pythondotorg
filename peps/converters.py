@@ -181,13 +181,13 @@ def convert_pep_page(pep_number, content):
 
     data['content'] = str(pep_content)
 
-    pep_ext = ".txt"
+    pep_ext = '.txt'
     pep_rst_source = os.path.join(settings.PEP_REPO_PATH,
                             'pep-{}.rst'.format(pep_number))
     if os.path.exists(pep_rst_source):
-        pep_ext = ".rst"
+        pep_ext = '.rst'
 
-    source_link = "https://github.com/python/peps/blob/master/pep-{0}{1}".format(
+    source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
         pep_number, pep_ext)
     data['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
     return data
