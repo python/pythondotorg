@@ -1,11 +1,18 @@
 # Create your views here.
 import datetime
 
+from django.conf import settings
+from django.template import loader
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
-from django.views.generic import DetailView, ListView
+from django.contrib.sites.models import Site
+from django.contrib import messages
+from django.views.generic import DetailView, ListView, FormView
 
 from .models import Calendar, Event, EventCategory, EventLocation
+from pydotorg.mixins import LoginRequiredMixin
+from .forms import EventForm
 
 
 class CalendarList(ListView):
@@ -127,3 +134,31 @@ class EventLocationList(ListView):
 
     def get_queryset(self):
         return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])
+
+
+def send_event_mail(creator, event):
+    context = {
+        'event': event,
+        'creator': creator,
+        'site': Site.objects.get_current()
+    }
+
+    text_message_template = loader.get_template('events/email/new_event.txt')
+    text_message = text_message_template.render(context)
+
+    send_mail(
+        subject='Python Events: New event submission',
+        message=text_message,
+        from_email=creator.email,
+        recipient_list=[settings.EVENTS_TO_EMAIL],
+    )
+
+
+class EventSubmit(FormView, LoginRequiredMixin):
+    template_name = 'events/event_form.html'
+    form_class = EventForm
+    success_url = '/events/submit/thanks/'
+
+    def form_valid(self, form):
+        send_event_mail(self.request.user, form.cleaned_data)
+        return super(EventSubmit, self).form_valid(form)

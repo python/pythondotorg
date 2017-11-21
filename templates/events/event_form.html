@@ -1,0 +1,82 @@
+{% extends "base.html" %}
+{% load boxes %}
+
+{% block page_title %}Submit an Event | {{ SITE_INFO.site_name }}{% endblock %}
+{% block og_title %}Submit an Event{% endblock %}
+
+
+{% block body_attributes %}class="python events{% if not featured %} default-page{% endif %}"{% endblock %}
+
+
+{% block header_content %}
+    {% if featured %}
+                <div class="featured-event">
+
+                    <h2 class="welcome-message">Featured Python Event</h2>
+
+                    <h1 class="call-to-action">{{ featured.title|striptags }}</h1>
+
+                    <p class="event-date"><time datetime="{{ featured.next_datetime.dt_start|date:'c' }}">
+                        {{ featured.next_datetime.dt_start|date:"l, F d, Y" }}
+                    </time></p>
+                    <p class="excerpt">{{ featured.description.rendered|striptags|truncatewords:"60" }} <a class="readmore" href="{{ featured.get_absolute_url }}">Read more</a></p>
+                </div>
+    {% endif %}
+{% endblock header_content %}
+
+
+{% block content_attributes %}with-right-sidebar{% endblock %}
+
+
+
+{% block content %}
+    <article class="text">
+
+        <p>For bulk submittions, <a href="https://wiki.python.org/moin/PythonEventsCalendar#Submitting_an_Event">click here.</a></p>
+
+        <header class="article-header">
+            <h1 class="page-title">Submit an Event</h1>
+        </header>
+
+        <form class="wide-form" action="" method="post">
+            {% csrf_token %}
+            {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+
+            {{ form.as_p }}
+            <p>
+                <button type="submit" name="Submit">Send</button>
+            </p>
+        </form>
+    </article>
+{% endblock content %}
+
+{% block right_sidebar %}
+    <aside class="right-sidebar" role="secondary">
+        <div class="sidebar-widget subscribe-widget">
+            <h2 class="widget-title">Python Event Subscriptions</h2>
+            <p>Subscribe to Python Event Calendars:</p>
+            <ul class="menu">
+                {% if calendar.embed %}<li><a href="{{ calendar.embed }}"><span aria-hidden="true" class="icon-embed"></span>Embeddable widget</a></li>{% endif %}
+                {% if calendar.rss %}<li><a href="{{ calendar.rss }}"><span aria-hidden="true" class="icon-feed"></span>Events via RSS</a></li>{% endif %}
+                {% if calendar.url %}<li><a href="{{ calendar.url }}"><span aria-hidden="true" class="icon-ical"></span>Events in iCal format</a></li>{% endif %}
+                {% if calendar.twitter %}<li><a href="{{ calendar.twitter }}"><span aria-hidden="true" class="icon-twitter"></span>Events on Twitter</a></li>{% endif %}
+            </ul>
+            {% box 'events-subscriptions' %}
+
+        </div>
+        
+        {% if event_categories %}
+        <div class="sidebar-widget eventtypes-widget">
+            <h2 class="widget-title">Event Categories</h2>
+            <p class="give-me-more"><a href="#" title="More Event Categories">More</a></p>
+            <ul class="menu">
+                {% for category in event_categories %}
+                <li><a href="{{ category.get_absolute_url }}">{{ category.name }}</a></li>
+                {% endfor %}
+                <li><a class="readmore" href="{% url 'events:eventcategory_list' calendar_slug=view.kwargs.calendar_slug %}">More Types</a></li>
+            </ul>
+        </div>
+        {% endif %}
+        
+    </aside>
+{% endblock right_sidebar %}
