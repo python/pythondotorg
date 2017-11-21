@@ -23,8 +23,7 @@ def date_to_datetime(date, tzinfo=None):
 def extract_date_or_datetime(dt):
     if isinstance(dt, datetime.datetime):
         return convert_dt_to_aware(dt)
-    else:
-        return dt
+    return dt
 
 
 def convert_dt_to_aware(dt):
