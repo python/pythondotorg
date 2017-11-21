@@ -1,10 +1,9 @@
 from datetime import timedelta
 from icalendar import Calendar as ICalendar
-import pytz
 import requests
 
 from .models import EventLocation, Event, OccurringRule
-from .utils import convert_dt_to_aware
+from .utils import extract_date_or_datetime
 
 DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
@@ -29,8 +28,8 @@ class ICSImporter:
         # Django will already convert to datetime by setting the time to 0:00,
         # but won't add any timezone information. We will convert them to
         # aware datetime objects manually.
-        dt_start = convert_dt_to_aware(event_data['DTSTART'].dt)
-        dt_end = convert_dt_to_aware(event_data['DTEND'].dt)
+        dt_start = extract_date_or_datetime(event_data['DTSTART'].dt)
+        dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
 
         # Let's mark those occurrences as 'all-day'.
         all_day = (
@@ -40,7 +39,7 @@ class ICSImporter:
 
         defaults = {
             'dt_start': dt_start,
-            'dt_end': dt_end,
+            'dt_end': dt_end - timedelta(days=1) if all_day else dt_end,
             'all_day': all_day
         }
 
