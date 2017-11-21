@@ -1,0 +1,26 @@
+version: '2'
+
+services:
+  postgres:
+    image: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - DEBUG=false
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=1234
+      - POSTGRES_DB=pythondotorg
+
+  django:
+    restart: always
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+    links:
+      - postgres:db
+
+    command: ["/bin/bash","docker-start.sh"]
+    environment:
+      - DATABASE_URL=postgres://postgres:1234@db:5432/pythondotorg
