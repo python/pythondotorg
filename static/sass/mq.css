@@ -2519,3 +2519,11 @@ html[xmlns] .slides { display: block; }
 
 @viewport {
   width: device-width; }
+
+
+.element-4 ul,
+.element-2 ul{
+  height:288px;
+  overflow:hidden;
+  overflow-y:scroll;
+}
