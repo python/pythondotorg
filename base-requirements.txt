@@ -7,7 +7,7 @@ Django==1.7.11
 docutils==0.12
 Markdown==2.5.2
 Pillow==2.7.0
-psycopg2==2.7.4
+psycopg2==2.7.3.2
 python3-openid==3.0.5
 lxml==3.4.4
 cssselect==0.9.1
