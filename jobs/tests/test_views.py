@@ -119,6 +119,18 @@ class JobsViewTests(TestCase):
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
+    def test_disallow_editing_approved_jobs(self):
+        self.client.login(username=self.user.username, password='password')
+        url = reverse('jobs:job_edit', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_disallow_previewing_approved_jobs(self):
+        self.client.login(username=self.user.username, password='password')
+        url = reverse('jobs:job_preview', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
     def test_job_edit(self):
         username = 'kevinarnold'
         email = 'kevinarnold@example.com'
