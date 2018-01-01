@@ -225,13 +225,14 @@ class JobDetail(JobMixin, DetailView):
         return queryset.visible()
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            category_jobs=self.object.category.jobs.select_related('company__name')[:5],
-            user_can_edit=(self.object.creator == self.request.user),
-            job_review_form=JobReviewCommentForm(initial={'job': self.object}),
-        )
-        ctx.update(kwargs)
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['category_jobs'] = self.object.category.jobs.select_related('category')[:5]
+        context['user_can_edit'] = (
+            self.object.creator == self.request.user or
+            self.has_jobs_board_admin_access()
+        ) and self.object.editable
+        context['job_review_form'] = JobReviewCommentForm(initial={'job': self.object})
+        return context
 
 
 class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
@@ -255,12 +256,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
 
     def get_object(self, queryset=None):
         """ Show only approved jobs to the public, staff can see all jobs """
-        # 404 if job doesn't exist
-        try:
-            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
-        except Job.DoesNotExist:
-            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
-
+        job = super().get_object(queryset=queryset)
         # Only allow creator to preview and only while in draft status
         if job.creator == self.request.user and job.editable:
             return job
@@ -268,9 +264,12 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         if self.request.user.is_staff:
             return job
 
+        if not job.editable:
+            raise Http404
         return None
 
     def get_context_data(self, **kwargs):
+<<<<<<< HEAD
         ctx = super().get_context_data(
             user_can_edit=(
                 self.object.creator == self.request.user
@@ -281,6 +280,17 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         )
         ctx.update(kwargs)
         return ctx
+=======
+        context = super().get_context_data(**kwargs)
+        context['user_can_edit'] = (
+            self.object.creator == self.request.user or
+            self.has_jobs_board_admin_access()
+        ) and self.object.editable
+        context['under_preview'] = True
+        # TODO: why we pass this?
+        context['form'] = self.get_form(self.form_class)
+        return context
+>>>>>>> 5d74955... Fix Sentry ID 4708b8391d694ae689784337d2bdcce3
 
 
 class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
@@ -347,7 +357,7 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
     def get_queryset(self):
         if self.has_jobs_board_admin_access():
             return Job.objects.select_related()
-        return self.request.user.jobs_job_creator.all()
+        return self.request.user.jobs_job_creator.editable()
 
     def form_valid(self, form):
         """ set last_modified_by to the current user """
