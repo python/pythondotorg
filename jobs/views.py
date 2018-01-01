@@ -269,18 +269,6 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         return None
 
     def get_context_data(self, **kwargs):
-<<<<<<< HEAD
-        ctx = super().get_context_data(
-            user_can_edit=(
-                self.object.creator == self.request.user
-                or self.request.user.is_staff
-            ),
-            under_preview=True,
-            form=self.get_form(self.form_class),
-        )
-        ctx.update(kwargs)
-        return ctx
-=======
         context = super().get_context_data(**kwargs)
         context['user_can_edit'] = (
             self.object.creator == self.request.user or
@@ -290,7 +278,6 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         # TODO: why we pass this?
         context['form'] = self.get_form(self.form_class)
         return context
->>>>>>> 5d74955... Fix Sentry ID 4708b8391d694ae689784337d2bdcce3
 
 
 class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
