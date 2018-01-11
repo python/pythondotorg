@@ -110,7 +110,7 @@
             <form class="wide-form jobs-form" action="{% url 'jobs:job_review_comment_create' %}" method="post">
                 {% csrf_token %}
                 {{ job_review_form.as_p }}
-                {% if user_can_edit %}
+                {% if user_can_edit and not jobs_board_admin %}
                 <div>
                     <button type="submit" name="Submit">Submit</button>
                 </div>
