@@ -161,40 +161,46 @@
 @-ms-viewport { width: device-width; }
 @viewport { width: device-width; }
 
-@media(min-width: 39.9375em) {
+
+
+@media(min-width: px2em(940px)) {
   #mainnav .navigation.menu .tier-1 {
     &.element-2 .subnav {
       overflow: hidden;
       overflow-y: scroll;
+      height: px2em(180px);
+    }
+    &.element-3 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height: px2em(180px);
     }
     &.element-4 .subnav {
       overflow: hidden;
       overflow-y: scroll;
+      height: px2em(180px);
     }
   }
 }
-@media(max-width: 75em) and(min-width: 50em) {
+
+@media(min-width: px2em(639px)) and (max-width: px2em(940px)) {
   #mainnav .navigation.menu .tier-1 {
     &.element-2 .subnav {
-      height: 11.7em;
+      overflow: hidden;
+      overflow-y: scroll;
+      height:px2em(148px);
+    }
+    &.element-3 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      overflow-x: scroll;
+      height: px2em(148px);
+      width: 100%;
     }
     &.element-4 .subnav {
-      height: 14em;
-    }
-  }
-}
-@media(max-width: 75em) and(min-width: 58.75em) {
-  #mainnav .navigation.menu .tier-1.element-4 .subnav {
-    width: 350%;
-  }
-}
-@media(max-width: 50em) and(min-width: 39.9375em) {
-  #mainnav .navigation.menu .tier-1 {
-    &.element-2 .subnav {
-      height: 9.45em;
-    }
-    &.element-4 .subnav {
-      height: 9.45em;
+      overflow: hidden;
+      overflow-y: scroll;
+      height:px2em(148px);
     }
   }
 }
