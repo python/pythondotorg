@@ -387,7 +387,7 @@
 {
     "fields": {
         "label": "homepage-downloads",
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions! Not sure which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Check here</a>.</p>\n<p>Latest: <a href=\"/downloads/release/python-352/\">Python 3.5.2</a> - <a href=\"/downloads/release/python-2712/\">Python 2.7.12</a></p>",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions!.</p>\n<p>Latest: <a href=\"/downloads/release/python-352/\">Python 3.5.2</a></p>",
         "content_markup_type": "html"
     }
 }
