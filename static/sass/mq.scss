@@ -160,3 +160,47 @@
  */
 @-ms-viewport { width: device-width; }
 @viewport { width: device-width; }
+
+
+
+@media(min-width: px2em(940px)) {
+  #mainnav .navigation.menu .tier-1 {
+    &.element-2 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height: px2em(180px);
+    }
+    &.element-3 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height: px2em(180px);
+    }
+    &.element-4 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height: px2em(180px);
+    }
+  }
+}
+
+@media(min-width: px2em(639px)) and (max-width: px2em(940px)) {
+  #mainnav .navigation.menu .tier-1 {
+    &.element-2 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height:px2em(148px);
+    }
+    &.element-3 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      overflow-x: scroll;
+      height: px2em(148px);
+      width: 100%;
+    }
+    &.element-4 .subnav {
+      overflow: hidden;
+      overflow-y: scroll;
+      height:px2em(148px);
+    }
+  }
+}
