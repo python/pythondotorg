@@ -9,7 +9,7 @@ from cms.models import ContentManageable
 class BlogEntry(models.Model):
     """
     Model to store Blog entries from Blogger
-    Specificially http://blog.python.org/
+    Specificially https://blog.python.org/
     Feed URL is defined in settings.PYTHON_BLOG_FEED_URL
     """
     title = models.CharField(max_length=200)

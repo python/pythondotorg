@@ -5,14 +5,14 @@
 /* TEAMS */
 	Revolution Systems
 	Location: Lawrence, KS, USA
-	Site: http://www.revsys.com
-	Twitter: http://twitter.com/revsys
+	Site: https://www.revsys.com
+	Twitter: https://twitter.com/revsys
 
 	Guiding Light and Founder: Frank Wiles
-	Twitter: http://twitter.com/fwiles
+	Twitter: https://twitter.com/fwiles
 
 	Django Guru: Jacob Kaplan-Moss
-	Twitter: http://twitter.com/jacobian
+	Twitter: https://twitter.com/jacobian
 
 	Back End Developers: Jeff Triplett, Flavio Curella
 
@@ -21,17 +21,17 @@
 	Project Evolution
 	Location: Providence, RI, USA
 	Site: http://www.projectevolution.com
-	Twitter: http://twitter.com/pe1999
-	Facebook: http://facebook.com/pe1999
+	Twitter: https://twitter.com/pe1999
+	Facebook: https://facebook.com/pe1999
 
 	Guiding Light and Founder: Seth Burke
-	Twitter: http://twitter.com/srbpe
+	Twitter: https://twitter.com/srbpe
 
 	Technology Director: Peter Landry
-	Twitter: http://twitter.com/ubercore
+	Twitter: https://twitter.com/ubercore
 
 	Design Director: J. Hogue
-	Twitter: http://twitter.com/artinruins
+	Twitter: https://twitter.com/artinruins
 
 	Front End Development: Barry Menard, Jamie Re
 	Back End Development: Ray Schamp, Ben Spaulding, Matt Mikula
@@ -47,9 +47,9 @@
 
 
 /* PEOPLE WHO FOUND SECURITY BUGS IN THE WEBSITE */
-	Osama Mahmood (http://osamamahmood.blogspot.com)
-	Rafael Pablos (http://silverneox.blogspot.com)
-	Yadnyawalkya Tale (http://yadnyawalkya.blogspot.in)
+	Osama Mahmood (https://osamamahmood.blogspot.com)
+	Rafael Pablos (https://silverneox.blogspot.com)
+	Yadnyawalkya Tale (https://yadnyawalkya.blogspot.in)
 	Jose Carlos Exposito
 	Wai Yan Aung
 
