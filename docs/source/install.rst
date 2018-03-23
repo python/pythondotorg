@@ -36,7 +36,7 @@ will need to set a password before using it::
    You will also need to run ``./manage.py create_initial_data`` to create
    initial data for the most used applications.
 
-.. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
+.. _Ansible: https://docs.ansible.com/ansible/intro_installation.html
 
 .. _manual-setup:
 

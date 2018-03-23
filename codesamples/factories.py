@@ -42,7 +42,7 @@ def initial_data():
             <p>Experienced programmers in any other language can pick up Python very
             quickly, and beginners find the clean syntax and indentation structure
             easy to learn.
-            <a href=\"http://docs.python.org/3.3/tutorial/\">Whet your appetite</a>
+            <a href=\"https://docs.python.org/3/tutorial/\">Whet your appetite</a>
             with our Python overview.</p>
             """
         ),
@@ -64,7 +64,7 @@ def initial_data():
             straightforward: the operators <code>+</code>, <code>-</code>,
             <code>*</code> and <code>/</code> work as expected; parentheses
             <code>()</code> can be used for grouping.
-            <a href=\"http://docs.python.org/3.3/tutorial/introduction.html
+            <a href=\"https://docs.python.org/3/tutorial/introduction.html
             #using-python-as-a-calculator\">More about simple math functions</a>.
             </p>
             """
@@ -86,7 +86,7 @@ def initial_data():
             <p>Lists (known as arrays in other languages) are one of the
             compound data types that Python understands. Lists can be indexed,
             sliced and manipulated with other built-in functions.
-            <a href=\"http://docs.python.org/3.3/tutorial/introduction.html
+            <a href=\"https://docs.python.org/3/tutorial/introduction.html
             #lists\">More about lists</a></p>
             """
         ),
@@ -111,7 +111,7 @@ def initial_data():
             languages speak &mdash; <code>if</code>, <code>for</code>,
             <code>while</code> and <code>range</code> &mdash; with some of
             its own twists, of course.
-            <a href=\"http://docs.python.org/3.3/tutorial/controlflow.html\">
+            <a href=\"https://docs.python.org/3/tutorial/controlflow.html\">
             More control flow tools</a></p>
             """
         ),
@@ -136,7 +136,7 @@ def initial_data():
             <p>The core of extensible programming is defining functions.
             Python allows mandatory and optional arguments, keyword arguments,
             and even arbitrary argument lists.
-            <a href=\"http://docs.python.org/3.3/tutorial/controlflow.html
+            <a href=\"https://docs.python.org/3/tutorial/controlflow.html
             #defining-functions\">More about defining functions</a></p>
             """
         ),
