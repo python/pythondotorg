@@ -2234,6 +2234,20 @@ div.sidebar {
     }
 }
 
+// For Python survey
+
+#python-jetbrains-survey {
+    display: none;
+    > img {
+        display: block;
+        margin: auto;
+    }
+}
+
+.python-jetbrains-survey-index-page {
+    margin: px2em( -5px ) 0 px2em( 35px ) 0;
+}
+
 img.align-right {
     float: right;
     margin-left: px2em( 20px );
