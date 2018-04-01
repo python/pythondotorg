@@ -3045,6 +3045,15 @@ div.sidebar {
     margin-top: 0.625em;
     margin-bottom: 0; }
 
+#python-jetbrains-survey {
+  display: none; }
+  #python-jetbrains-survey > img {
+    display: block;
+    margin: auto; }
+
+.python-jetbrains-survey-index-page {
+  margin: -0.3125em 0 2.1875em 0; }
+
 img.align-right {
   float: right;
   margin-left: 1.25em; }
