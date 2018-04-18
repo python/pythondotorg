@@ -1595,8 +1595,7 @@ a.button {
     clear: none;
     border-left: 0;
     border-right: 0; }
-  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1
-  .element-8 {
+  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
     border-right: 1px solid #d5d6d8; }
   .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
     border-left: 1px solid #f7f7f8; }
