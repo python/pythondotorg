@@ -24,7 +24,13 @@
             {% if request.user.has_membership %}
             <li><a href="{% url 'users:user_membership_edit' %}">Edit PSF membership</a></li>
             {% else %}
-            <li><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
+            <li><a href="{% url 'users:user_membership_create' %}">Become a Basic member</a></li>
+            {% endif %}
+            <li><a href="{% url 'users:user_membership_supporting' %}">Become a Supporting member</a></li>
+            {% endif %}
+            <li><a href="{% url 'users:user_membership_managing' %}">Become a Managing member</a></li>
+            {% endif %}
+            <li><a href="{% url 'users:user_membership_contributing' %}">Become a Contributing member</a></li>
             {% endif %}
             <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
         </ul>
