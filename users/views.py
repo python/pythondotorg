@@ -167,3 +167,7 @@ class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.get_object().creator == self.request.user
+
+
+class MembershipSupporting(TemplateView):
+    template_name = 'users/membership_supporting.html'
