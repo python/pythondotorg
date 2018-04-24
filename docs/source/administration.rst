@@ -6,7 +6,7 @@ Administration
 Navigation
 ----------
 
-Navigation on the site is managed by the `Sitetree  <https://pypi.python.org/pypi/django-sitetree>`_ application.  The hierarchy should be fairly obvious.  The biggest gotcha is when defining the URLs.
+Navigation on the site is managed by the `Sitetree  <https://pypi.org/pypi/django-sitetree>`_ application.  The hierarchy should be fairly obvious.  The biggest gotcha is when defining the URLs.
 
 Many URLs are defined using `Django's URL system <https://docs.djangoproject.com/en/dev/topics/http/urls/>`_ however many are also simply defined as relative paths.  When editing a particular item in the Sitetree in the *Additional Settings* fieldset there is an option named *URL as pattern*.  If this option is checked the URL pattern is checked against the URLs defined by the Django applications. If it is left unchecked relative and absolute URLs can be entered.
 
