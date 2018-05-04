@@ -331,7 +331,7 @@
 {
     "fields": {
         "label": "download-banner",
-        "content": "<p>Wondering which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Here&rsquo;s more about the difference between Python 2 and 3.</a> </p>\r\n<p style=\"margin-top: 0.35em\">Looking for Python with a different OS? Python for <a href=\"/downloads/windows/\">Windows</a>, <a href=\"/downloads/source/\">Linux/UNIX</a>, <a href=\"/downloads/mac-osx/\">Mac OS X</a>, <a href=\"/download/other/\">Other</a></p>\r\n<p style=\"margin-top: 0.35em\">Want to help test development versions of Python?  <a href=\"/download/pre-releases/\">Pre-releases</a></p>",
+        "content": "<p>Looking for Python with a different OS? Python for <a href=\"/downloads/windows/\">Windows</a>, <a href=\"/downloads/source/\">Linux/UNIX</a>, <a href=\"/downloads/mac-osx/\">Mac OS X</a>, <a href=\"/download/other/\">Other</a></p>\r\n<p style=\"margin-top: 0.35em\">Want to help test development versions of Python?  <a href=\"/download/pre-releases/\">Pre-releases</a></p>\r\n<p style="margin-top: 0.35em">Looking for Python 2.7? See below for specific releases</p>",
         "content_markup_type": "html"
     }
 },
@@ -387,7 +387,7 @@
 {
     "fields": {
         "label": "homepage-downloads",
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions! Not sure which version to use? <a href=\"https://wiki.python.org/moin/Python2orPython3\">Check here</a>.</p>\n<p>Latest: <a href=\"/downloads/release/python-352/\">Python 3.5.2</a> - <a href=\"/downloads/release/python-2712/\">Python 2.7.12</a></p>",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-download\"></span>Download</h2>\n<p>Python source code and installers are available for download for all versions!.</p>\n<p>Latest: <a href=\"/downloads/release/python-352/\">Python 3.5.2</a></p>",
         "content_markup_type": "html"
     }
 }
