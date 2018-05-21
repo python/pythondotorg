@@ -331,7 +331,7 @@
 {
     "fields": {
         "label": "download-banner",
-        "content": "<p>Looking for Python with a different OS? Python for <a href=\"/downloads/windows/\">Windows</a>, <a href=\"/downloads/source/\">Linux/UNIX</a>, <a href=\"/downloads/mac-osx/\">Mac OS X</a>, <a href=\"/download/other/\">Other</a></p>\r\n<p style=\"margin-top: 0.35em\">Want to help test development versions of Python?  <a href=\"/download/pre-releases/\">Pre-releases</a></p>\r\n<p style="margin-top: 0.35em">Looking for Python 2.7? See below for specific releases</p>",
+        "content": "<p>Looking for Python with a different OS? Python for <a href=\"/downloads/windows/\">Windows</a>, <a href=\"/downloads/source/\">Linux/UNIX</a>, <a href=\"/downloads/mac-osx/\">Mac OS X</a>, <a href=\"/download/other/\">Other</a></p>\r\n<p style=\"margin-top: 0.35em\">Want to help test development versions of Python?  <a href=\"/download/pre-releases/\">Pre-releases</a></p>\r\n<p style=\"margin-top: 0.35em\">Looking for Python 2.7? See below for specific releases</p>",
         "content_markup_type": "html"
     }
 },
