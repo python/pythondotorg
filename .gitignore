@@ -16,3 +16,4 @@ static-root
 tmp/*
 media/*
 pydotorg/settings/mylocal.py
+.idea/
