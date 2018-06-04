@@ -56,9 +56,27 @@ And then you'll need to install dependencies::
     $ pip install -r dev-requirements.txt
 
 *pythondotorg* will look for a PostgreSQL database named ``pythondotorg`` by
-default. Run the following command to create a new database::
+default. Run the following commands to create a new database.
 
-    $ createdb pythondotorg -E utf-8 -l en_US.UTF-8
+Change to postgres user to perform postgres database administrative tasks::
+
+    $ sudo su - postgres
+
+You should now be in a shell session for the postgres user. Log into a Postgres session by typing::
+
+    $ psql
+
+Finally create a postgres database::
+
+    postgres=# createdb pythondotorg -E utf-8 -l en_US.UTF-8
+
+Exit the SQL prompt to get back to the postgres user's shell session::
+
+    postgres=# \q
+
+Exit out of the postgres user's shell session to get back to your regular user's shell session::
+
+    $ exit
 
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
