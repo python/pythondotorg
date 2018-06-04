@@ -9,9 +9,12 @@ INTERNAL_IPS = ['127.0.0.1']
 # For example,
 # PYTHON_ORG_CONTENT_SVN_PATH = '/Users/flavio/working_copies/beta.python.org/build/data'
 PYTHON_ORG_CONTENT_SVN_PATH = ''
+DATABASE_URL = os.path.join(BASE, 'test_sqlite.db')
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres:///pythondotorg')
+    # 'default': dj_database_url.config(default='postgres:///pythondotorg')
+    # 'default': dj_database_url.parse('postgres:///pythondotorg')
+    'default': dj_database_url.parse('sqlite:////' + DATABASE_URL)
 }
 
 HAYSTACK_CONNECTIONS = {
