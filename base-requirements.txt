@@ -4,7 +4,7 @@ django-sitetree==1.8.0
 Django==1.11.7
 docutils==0.12
 Markdown==2.5.2
-Pillow==2.7.0
+Pillow==5.1.0
 psycopg2==2.7.3.2
 python3-openid==3.0.5
 # lxml used by BeautifulSoup.
