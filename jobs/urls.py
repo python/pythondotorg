@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from . import views
 from . import feeds
 
+app_name = 'jobs'
 urlpatterns = [
     url(r'^$', views.JobList.as_view(), name='job_list'),
     url(r'^feed/rss/$', feeds.JobFeed(), name='job_rss'),

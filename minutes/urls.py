@@ -3,7 +3,6 @@ from django.conf.urls import url
 from .feeds import MinutesFeed
 from . import views
 
-
 urlpatterns = [
     url(r'^$', views.MinutesList.as_view(), name='minutes_list'),
     url(r'^feed/$', MinutesFeed(), name='minutes_feed'),
