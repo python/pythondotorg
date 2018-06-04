@@ -13,7 +13,7 @@ from .urls_api import v1_api, router
 
 handler404 = custom_404
 
-app_name = 'pydotorg'
+
 urlpatterns = [
     # homepage
     url(r'^$', views.IndexView.as_view(), name='home'),
