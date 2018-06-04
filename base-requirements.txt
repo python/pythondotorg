@@ -30,7 +30,7 @@ requests==2.5.1
 django-honeypot==0.6.0
 django-markupfield==1.4.3
 
-django-allauth==0.33.0
+django-allauth==0.36.0
 
 django-waffle==0.14
 
