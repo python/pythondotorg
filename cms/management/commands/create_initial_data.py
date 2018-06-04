@@ -10,9 +10,21 @@ class Command(BaseCommand):
 
     help = 'Create initial data by using factories.'
 
-    def collect_initial_data_functions(self):
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--app_label',
+            dest='app_label',
+            help='Provide an app label to create app specific data (e.g. --app_label boxes)',
+            default=False
+        )
+
+    def collect_initial_data_functions(self, app_label=None):
         functions = {}
-        for app in apps.get_app_configs():
+        if app_label:
+            app_list = [apps.get_app_config(app_label)]
+        else:
+            app_list = apps.get_app_configs()
+        for app in app_list:
             try:
                 factory_module = importlib.import_module('{}.factories'.format(app.name))
             except ImportError:
@@ -24,8 +36,9 @@ class Command(BaseCommand):
                         break
         return functions
 
-    def handle(self, **options):
+    def handle(self, *args, **options):
         verbosity = options['verbosity']
+        app_label = options['app_label']
         msg = (
             'Note that this command won\'t cleanup the database before '
             'creating new data.\n'
@@ -43,7 +56,7 @@ class Command(BaseCommand):
         else:
             if verbosity > 0:
                 self.stdout.write(self.style.SUCCESS('DONE'))
-        functions = self.collect_initial_data_functions()
+        functions = self.collect_initial_data_functions(app_label)
         for app_name, function in functions.items():
             if verbosity > 0:
                 self.stdout.write('Creating initial data for {!r}... '.format(app_name), ending='')
