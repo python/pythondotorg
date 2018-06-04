@@ -86,7 +86,18 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Now it's time to run migrations::
+If you prefer to use a simpler setup for your database you can use sqlite engine.
+To change database configuration to sqlite go to ``pydotorg/settings/local.py`` and:
+ - add DATABASE_URL variable
+ - modify DATABASES variable
+ Copy/paste the following snippet to replace the default settings::
+
+    DATABASE_URL = os.path.join(BASE, 'pythondotorg.db')
+    DATABASES = {
+        'default': dj_database_url.parse('sqlite:////' + DATABASE_URL)
+    }
+
+Whichever database type you chose, now it's time to run migrations::
 
     $ ./manage.py migrate
 
