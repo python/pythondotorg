@@ -139,6 +139,15 @@ class Job(ContentManageable):
     telecommuting = models.BooleanField(
         verbose_name='Telecommuting allowed?',
         default=False)
+
+    relocation = models.BooleanField(
+        verbose_name='Relocation support?',
+        default=False)
+
+    visa_sponsor = models.BooleanField(
+        verbose_name='visa sponsorhip?',
+        default=False)
+    
     agencies = models.BooleanField(
         verbose_name='Agencies are OK to contact?',
         default=True)
