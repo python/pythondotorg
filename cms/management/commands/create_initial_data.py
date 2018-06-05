@@ -18,7 +18,7 @@ class Command(BaseCommand):
             default=False,
         )
 
-    def collect_initial_data_functions(self, app_label=None):
+    def collect_initial_data_functions(self, app_label):
         functions = {}
         if app_label:
             try:
