@@ -12,8 +12,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--app-label',
-            dest='app_label',
+            'app-label',
+            nargs='?',
             help='Provide an app label to create app specific data (e.g. --app_label boxes)',
             default=False,
         )
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                         break
         return functions
 
-    def output(self, app_name, verbosity, done=False, result=False):
+    def output(self, app_name, verbosity, *, done=False, result=False):
         if verbosity > 0:
             if done:
                 self.stdout.write(self.style.SUCCESS('DONE'))
@@ -51,9 +51,8 @@ class Command(BaseCommand):
 
 
     def handle(self, **options):
-        # collect relevant cli arguments
         verbosity = options['verbosity']
-        app_label = options['app_label']
+        app_label = options['app-label']
         msg = (
             'Note that this command won\'t cleanup the database before '
             'creating new data.\n'
@@ -74,7 +73,7 @@ class Command(BaseCommand):
             except Exception as exc:
                 self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
             else:
-                self.output('sitetree', verbosity, True)
+                self.output('sitetree', verbosity, done=True)
 
         for app_name, function in functions.items():
             self.output(app_name, verbosity)
@@ -84,4 +83,4 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
                 continue
             else:
-                self.output(app_name, verbosity, True, result)
+                self.output(app_name, verbosity, done=True, result=result)
