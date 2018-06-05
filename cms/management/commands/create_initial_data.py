@@ -61,7 +61,7 @@ class Command(BaseCommand):
         confirm = input(self.style.WARNING(msg))
         if confirm not in ('y', 'yes'):
             return
-        # collect relevant functions for data generation
+        # Collect relevant functions for data generation.
         functions = self.collect_initial_data_functions(app_label)
         if not functions:
             return
