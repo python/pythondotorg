@@ -3,6 +3,7 @@ from django.views.generic import TemplateView
 
 from . import views
 
+app_name = 'events'
 urlpatterns = [
     url(r'calendars/$', views.CalendarList.as_view(), name='calendar_list'),
     url(r'^submit/$', views.EventSubmit.as_view(), name='event_submit'),

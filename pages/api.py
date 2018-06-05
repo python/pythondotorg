@@ -27,6 +27,7 @@ class PageResource(GenericResource):
             'path': ('exact',),
             'is_published': ('exact',),
         }
+        abstract = False
 
 
 class PageFilterSet(BaseFilterSet):

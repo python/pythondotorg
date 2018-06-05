@@ -1,12 +1,12 @@
-dj-database-url==0.4.2
-django-pipeline==1.6.13
-django-sitetree==1.8.0
-Django==1.11.7
+dj-database-url==0.5.0
+django-pipeline==1.6.14
+django-sitetree==1.10.0
+Django==2.0.6
 docutils==0.12
 Markdown==2.5.2
 Pillow==5.1.0
 psycopg2==2.7.3.2
-python3-openid==3.0.5
+python3-openid==3.1.0
 # lxml used by BeautifulSoup.
 lxml==4.1.1
 cssselect==0.9.1
@@ -15,12 +15,12 @@ beautifulsoup4==4.6.0
 icalendar==3.8.4
 chardet2==2.0.3
 # TODO: We may drop 'django-imagekit' completely.
-django-imagekit==4.0.1
-django-haystack==2.5.1
+django-imagekit==4.0.2
+django-haystack==2.8.1
 elasticsearch==1.3.0
 pyelasticsearch==0.6.1
 # TODO: 0.14.0 only supports Django 1.8 and 1.11.
-django-tastypie==0.13.3
+django-tastypie==0.14.1
 
 pytz==2017.2
 python-dateutil==2.6.1
@@ -28,11 +28,11 @@ python-dateutil==2.6.1
 requests==2.5.1
 
 django-honeypot==0.6.0
-django-markupfield==1.4.2
+django-markupfield==1.4.3
 
-django-allauth==0.33.0
+django-allauth==0.36.0
 
-django-waffle==0.12
+django-waffle==0.14
 
-djangorestframework==3.6.4
-django-filter==1.0.4
+djangorestframework==3.8.2
+django-filter==1.1.0

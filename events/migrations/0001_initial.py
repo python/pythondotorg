@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
                 ('updated', models.DateTimeField(blank=True)),
                 ('trigger', models.PositiveSmallIntegerField(verbose_name='hours before the event occurs', default=24)),
-                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='events_alarm_creator', blank=True)),
+                ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='events_alarm_creator', blank=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

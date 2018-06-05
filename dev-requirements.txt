@@ -8,6 +8,6 @@ tblib==1.3.2
 
 # Extra stuff required for local dev
 
-django-debug-toolbar==1.8
+django-debug-toolbar==1.9.1
 coverage
 ddt
