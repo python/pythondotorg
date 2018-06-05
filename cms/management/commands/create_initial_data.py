@@ -12,16 +12,20 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--app_label',
+            '--app-label',
             dest='app_label',
             help='Provide an app label to create app specific data (e.g. --app_label boxes)',
-            default=False
+            default=False,
         )
 
     def collect_initial_data_functions(self, app_label=None):
         functions = {}
         if app_label:
-            app_list = [apps.get_app_config(app_label)]
+            try:
+                app_list = [apps.get_app_config(app_label)]
+            except LookupError:
+                self.stdout.write(self.style.ERROR('The app label provided does not exist as an application'))
+                return
         else:
             app_list = apps.get_app_configs()
         for app in app_list:
@@ -36,7 +40,18 @@ class Command(BaseCommand):
                         break
         return functions
 
-    def handle(self, *args, **options):
+    def output(self, app_name, verbosity, done=False, result=False):
+        if verbosity > 0:
+            if done:
+                self.stdout.write(self.style.SUCCESS('DONE'))
+            else:
+                self.stdout.write('Creating initial data for {!r}... '.format(app_name), ending='')
+        if verbosity >= 2 and result:
+            pprint.pprint(result)
+
+
+    def handle(self, **options):
+        # collect relevant cli arguments
         verbosity = options['verbosity']
         app_label = options['app_label']
         msg = (
@@ -47,26 +62,26 @@ class Command(BaseCommand):
         confirm = input(self.style.WARNING(msg))
         if confirm not in ('y', 'yes'):
             return
-        if verbosity > 0:
-            self.stdout.write('Creating initial data for \'sitetree\'... ', ending='')
-        try:
-            call_command('loaddata', 'sitetree_menus', '-v0')
-        except Exception as exc:
-            self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
-        else:
-            if verbosity > 0:
-                self.stdout.write(self.style.SUCCESS('DONE'))
+        # collect relevant functions for data generation
         functions = self.collect_initial_data_functions(app_label)
+        if not functions:
+            return
+
+        if not app_label:
+            self.output('sitetree', verbosity)
+            try:
+                call_command('loaddata', 'sitetree_menus', '-v0')
+            except Exception as exc:
+                self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+            else:
+                self.output('sitetree', verbosity, True)
+
         for app_name, function in functions.items():
-            if verbosity > 0:
-                self.stdout.write('Creating initial data for {!r}... '.format(app_name), ending='')
+            self.output(app_name, verbosity)
             try:
                 result = function()
             except Exception as exc:
                 self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
                 continue
             else:
-                if verbosity > 0:
-                    self.stdout.write(self.style.SUCCESS('DONE'))
-                if verbosity >= 2:
-                    pprint.pprint(result)
+                self.output(app_name, verbosity, True, result)
