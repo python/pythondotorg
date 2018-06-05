@@ -15,7 +15,6 @@ class Command(BaseCommand):
             '--app-label',
             dest='app_label',
             help='Provide an app label to create app specific data (e.g. --app-label boxes)',
-            default=False,
         )
 
     def collect_initial_data_functions(self, app_label):
