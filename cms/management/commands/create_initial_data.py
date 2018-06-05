@@ -49,7 +49,6 @@ class Command(BaseCommand):
         if verbosity >= 2 and result:
             pprint.pprint(result)
 
-
     def handle(self, **options):
         verbosity = options['verbosity']
         app_label = options['app_label']
