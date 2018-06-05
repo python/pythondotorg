@@ -14,7 +14,7 @@ class Command(BaseCommand):
         parser.add_argument(
             '--app-label',
             dest='app_label',
-            help='Provide an app label to create app specific data (e.g. --app_label boxes)',
+            help='Provide an app label to create app specific data (e.g. --app-label boxes)',
             default=False,
         )
 
