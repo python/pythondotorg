@@ -24,7 +24,7 @@ class Command(BaseCommand):
             try:
                 app_list = [apps.get_app_config(app_label)]
             except LookupError:
-                self.stdout.write(self.style.ERROR('The app label provided does not exist as an application'))
+                self.stdout.write(self.style.ERROR('The app label provided does not exist as an application.'))
                 return
         else:
             app_list = apps.get_app_configs()
