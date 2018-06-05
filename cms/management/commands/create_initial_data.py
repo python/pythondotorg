@@ -12,8 +12,8 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            'app-label',
-            nargs='?',
+            '--app-label',
+            dest='app_label',
             help='Provide an app label to create app specific data (e.g. --app_label boxes)',
             default=False,
         )
@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
     def handle(self, **options):
         verbosity = options['verbosity']
-        app_label = options['app-label']
+        app_label = options['app_label']
         msg = (
             'Note that this command won\'t cleanup the database before '
             'creating new data.\n'
