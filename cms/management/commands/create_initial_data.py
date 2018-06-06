@@ -21,7 +21,7 @@ class Command(BaseCommand):
             '--flush',
             action='store_true',
             dest='do_flush',
-            help='Remove existing data in the database before creating new data.'
+            help='Remove existing data in the database before creating new data.',
         )
 
     def collect_initial_data_functions(self, app_label):
@@ -57,7 +57,8 @@ class Command(BaseCommand):
 
     def flush_handler(self, do_flush, verbosity):
         if do_flush:
-            msg = ('You have provided the --flush parameter, this will cleanup '
+            msg = (
+                'You have provided the --flush parameter, this will cleanup '
                 'the database before creating new data.\n'
                 'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
                 )
@@ -66,20 +67,16 @@ class Command(BaseCommand):
                 'Note that this command won\'t cleanup the database before '
                 'creating new data.\n'
                 'If you would like to cleanup the database before creating '
-                'new data, \nplease type \'n\' or \'no\' and call the '
-                'create_initial_data command adding the --flush parameter\n'
+                'new data, \ncall create_initial_data with --flush\n'
                 'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
             )
         confirm = input(self.style.WARNING(msg))
-        if do_flush and (confirm in ('y', 'yes')):
+        if do_flush and confirm in ('y', 'yes'):
             try:
-                cmd = flush.Command()
-                call_command(cmd, verbosity=verbosity, interactive=False)
+                call_command('flush', verbosity=verbosity, interactive=False)
             except Exception as exc:
                 self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
-            return confirm
-        else:
-            return confirm
+        return confirm
 
     def handle(self, **options):
         verbosity = options['verbosity']
