@@ -628,7 +628,7 @@ html[xmlns] .slides { display: block; }
     .no-touch .main-navigation .tier-1 {
       float: left;
       width: 33.333333%; }
-      .no-touch .main-navigation .tier-1.element-6, .no-touch .main-navigation .tier-1.element-7 {
+      .no-touch .main-navigation .tier-1.element-6:not(.unstacked), .no-touch .main-navigation .tier-1.element-7:not(.unstacked) {
         width: 16.6666665%; }
       .no-touch .main-navigation .tier-1.element-1 {
         -moz-border-radius-topleft: 8px;
@@ -1888,8 +1888,7 @@ html[xmlns] .slides { display: block; }
       clear: none;
       border-left: 0;
       border-right: 0; }
-    .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1
-    .element-8 {
+    .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
       border-right: 1px solid #d5d6d8; }
     .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
       border-left: 1px solid #f7f7f8; }
