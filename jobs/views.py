@@ -47,8 +47,9 @@ class JobMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        active_locations = Job.objects.visible().distinct(
-            'location_slug'
+        active_locations = Job.objects.visible(
+        ).values_list('location_slug', flat=True
+        ).distinct(
         ).order_by(
             'location_slug',
         )
@@ -149,8 +150,9 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        context['jobs'] = Job.objects.visible().distinct(
-            'country', 'city'
+        context['jobs'] = Job.objects.visible(
+        ).values_list('country', 'city', flat=True
+        ).distinct(
         ).order_by(
             'country', 'city'
         )
