@@ -16,6 +16,12 @@ class Command(BaseCommand):
             dest='app_label',
             help='Provide an app label to create app specific data (e.g. --app-label boxes)',
         )
+        parser.add_argument(
+            '--flush',
+            action='store_true',
+            dest='do_flush',
+            help='Remove existing data in the database before creating new data.',
+        )
 
     def collect_initial_data_functions(self, app_label):
         functions = {}
@@ -48,15 +54,35 @@ class Command(BaseCommand):
         if verbosity >= 2 and result:
             pprint.pprint(result)
 
+    def flush_handler(self, do_flush, verbosity):
+        if do_flush:
+            msg = (
+                'You have provided the --flush argument, this will cleanup '
+                'the database before creating new data.\n'
+                'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
+                )
+        else:
+            msg = (
+                'Note that this command won\'t cleanup the database before '
+                'creating new data.\n'
+                'If you would like to cleanup the database before creating '
+                'new data, call create_initial_data with --flush.\n'
+                'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
+            )
+        confirm = input(self.style.WARNING(msg))
+        if do_flush and confirm in ('y', 'yes'):
+            try:
+                call_command('flush', verbosity=verbosity, interactive=False)
+            except Exception as exc:
+                self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+        return confirm
+
     def handle(self, **options):
         verbosity = options['verbosity']
         app_label = options['app_label']
-        msg = (
-            'Note that this command won\'t cleanup the database before '
-            'creating new data.\n'
-            'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
-        )
-        confirm = input(self.style.WARNING(msg))
+        do_flush = options['do_flush']
+
+        confirm = self.flush_handler(do_flush, verbosity)
         if confirm not in ('y', 'yes'):
             return
         # Collect relevant functions for data generation.
