@@ -60,6 +60,37 @@ default. Run the following command to create a new database::
 
     $ createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
+.. note::
+
+   If the above command fails to create a database and you see an error message
+   similar to::
+
+       createdb: database creation failed: ERROR:  permission denied to create database
+
+   Follow the steps below to create the database:
+
+   Change to *postgres* user to perform database administrative tasks::
+
+       $ sudo su - postgres
+
+   You should now be in a shell session for the *postgres* user. Log into a ``psql``
+   session by typing::
+
+       $ psql
+
+   Finally create a database::
+
+       postgres=# createdb pythondotorg -E utf-8 -l en_US.UTF-8
+
+   Exit the SQL prompt to get back to the *postgres* user's shell session::
+
+       postgres=# \q
+
+   Exit out of the *postgres* user's shell session to get back to your regular
+   user's shell session::
+
+       $ exit
+
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::
@@ -68,7 +99,18 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Now it's time to run migrations::
+If you prefer to use a simpler setup for your database you can use SQLite.
+Set the ``DATABASE_URL`` environment variable for the current terminal session::
+
+    $ export DATABASE_URL="sqlite:///pythondotorg.db"
+
+.. note::
+
+   If you prefer to set this variable in a more permanent way add the above
+   line in your ``.bashrc`` file. Then it will be set for all terminal
+   sessions in your system.
+
+Whichever database type you chose, now it's time to run migrations::
 
     $ ./manage.py migrate
 
@@ -143,3 +185,4 @@ Useful commands
   in?::
 
       $ ./manage.py dumpdata --format=json --indent=4 $APPNAME > fixtures/$APPNAME.json
+
