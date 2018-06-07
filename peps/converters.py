@@ -34,36 +34,8 @@ def convert_pep0():
     """
     pep0_path = os.path.join(settings.PEP_REPO_PATH, 'pep-0000.html')
     pep0_content = open(pep0_path).read()
-
-    soup = BeautifulSoup(pep0_content, 'lxml')
-
-    body_children = list(soup.body.children)
-
-    # Grab header and PEP body
-    header = body_children[3]
-    pep_content = body_children[7]
-
-    # Fix PEP links
-    body_links = pep_content.find_all("a")
-
-    pep_href_re = re.compile(r'pep-(\d+)\.html')
-
-    for b in body_links:
-        m = pep_href_re.search(b.attrs['href'])
-
-        # Skip anything not matching 'pep-XXXX.html'
-        if not m:
-            continue
-
-        b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
-
-    # Remove Version from header
-    header_rows = header.find_all('th')
-    for t in header_rows:
-        if 'Version:' in t.text and 'N/A' in t.next_sibling.text:
-            t.parent.extract()
-
-    return ''.join([str(header), str(pep_content)])
+    data = convert_pep_page(0, pep0_content)
+    return data['content']
 
 
 def get_pep0_page(commit=True):
@@ -180,16 +152,6 @@ def convert_pep_page(pep_number, content):
     pep_content.body.unwrap()
 
     data['content'] = str(pep_content)
-
-    pep_ext = '.txt'
-    pep_rst_source = os.path.join(settings.PEP_REPO_PATH,
-                            'pep-{}.rst'.format(pep_number))
-    if os.path.exists(pep_rst_source):
-        pep_ext = '.rst'
-
-    source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
-        pep_number, pep_ext)
-    data['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
     return data
 
 
@@ -204,6 +166,13 @@ def get_pep_page(pep_number, commit=True):
         return
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
+    pep_rst_source = os.path.join(
+        settings.PEP_REPO_PATH, 'pep-{}.rst'.format(pep_number),
+    )
+    pep_ext = '.rst' if os.path.exists(pep_rst_source) else '.txt'
+    source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
+        pep_number, pep_ext)
+    pep_content['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
 
     pep_page, _ = Page.objects.get_or_create(path=pep_url(pep_number))
 
