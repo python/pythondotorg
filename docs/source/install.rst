@@ -62,31 +62,34 @@ default. Run the following command to create a new database::
 
 .. note::
 
-    If the above command fails to create a database and you see an error message similar to::
+   If the above command fails to create a database and you see an error message
+   similar to::
 
-        createdb: database creation failed: ERROR:  permission denied to create database
+       createdb: database creation failed: ERROR:  permission denied to create database
 
-    Follow the points below until you get to the migration section.
+   Follow the steps below to create the database:
 
-Change to postgres user to perform postgres database administrative tasks::
+   Change to *postgres* user to perform database administrative tasks::
 
-    $ sudo su - postgres
+       $ sudo su - postgres
 
-You should now be in a shell session for the postgres user. Log into a Postgres session by typing::
+   You should now be in a shell session for the *postgres* user. Log into a ``psql``
+   session by typing::
 
-    $ psql
+       $ psql
 
-Finally create a postgres database::
+   Finally create a database::
 
-    postgres=# createdb pythondotorg -E utf-8 -l en_US.UTF-8
+       postgres=# createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
-Exit the SQL prompt to get back to the postgres user's shell session::
+   Exit the SQL prompt to get back to the *postgres* user's shell session::
 
-    postgres=# \q
+       postgres=# \q
 
-Exit out of the postgres user's shell session to get back to your regular user's shell session::
+   Exit out of the *postgres* user's shell session to get back to your regular
+   user's shell session::
 
-    $ exit
+       $ exit
 
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
@@ -96,14 +99,16 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-If you prefer to use a simpler setup for your database you can use sqlite engine.
-Set environment variable for the current terminal session::
+If you prefer to use a simpler setup for your database you can use SQLite.
+Set the ``DATABASE_URL`` environment variable for the current terminal session::
 
     $ export DATABASE_URL="sqlite:///pythondotorg.db"
 
 .. note::
-    If you prefer to set this variable in a more permanent way add the above line in your .bashrc file.
-    Then it will be set for all terminal sessions in your system.
+
+   If you prefer to set this variable in a more permanent way add the above
+   line in your ``.bashrc`` file. Then it will be set for all terminal
+   sessions in your system.
 
 Whichever database type you chose, now it's time to run migrations::
 
