@@ -43,6 +43,5 @@ class PEPManagementCommandTests(TestCase):
         stdout = io.StringIO()
         call_command('dump_pep_pages', stdout=stdout)
         output = stdout.getvalue()
-
         result = list(serializers.deserialize('json', output))
         self.assertGreater(len(result), 0)
