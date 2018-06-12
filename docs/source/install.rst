@@ -60,6 +60,26 @@ default. Run the following command to create a new database::
 
     $ createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
+.. note::
+
+    If the above command fails to create a database and you see an error message similar to::
+
+        createdb: database creation failed: ERROR:  permission denied to create database
+
+    Try the command below which will use the default postgres user.
+
+Create a database with postgres user as the owner::
+
+    $ sudo -u postgres createdb pythondotorg -E utf-8 -l en_US.UTF-8
+
+.. note::
+
+    If you get an error like this::
+
+        createdb: database creation failed: ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_GB.UTF-8)
+
+    Then you will have to change the language (en_US) to what your database was set up with initially.
+
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::
@@ -68,7 +88,16 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Now it's time to run migrations::
+If you prefer to use a simpler setup for your database you can use sqlite engine.
+Set environment variable for the current terminal session::
+
+    $ export DATABASE_URL="sqlite:///pythondotorg.db"
+
+.. note::
+    If you prefer to set this variable in a more permanent way add the above line in your .bashrc file.
+    Then it will be set for all terminal sessions in your system.
+
+Whichever database type you chose, now it's time to run migrations::
 
     $ ./manage.py migrate
 
