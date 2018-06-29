@@ -67,29 +67,17 @@ default. Run the following command to create a new database::
 
        createdb: database creation failed: ERROR:  permission denied to create database
 
-   Follow the steps below to create the database:
+   Use the following command to create a database with *postgres* user as the
+   owner::
 
-   Change to *postgres* user to perform database administrative tasks::
+       $ sudo -u postgres createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
-       $ sudo su - postgres
+   If you get an error like this::
 
-   You should now be in a shell session for the *postgres* user. Log into a ``psql``
-   session by typing::
+       createdb: database creation failed: ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_GB.UTF-8)
 
-       $ psql
-
-   Finally create a database::
-
-       postgres=# createdb pythondotorg -E utf-8 -l en_US.UTF-8
-
-   Exit the SQL prompt to get back to the *postgres* user's shell session::
-
-       postgres=# \q
-
-   Exit out of the *postgres* user's shell session to get back to your regular
-   user's shell session::
-
-       $ exit
+   Then you will have to change the value of the ``-l`` option to what your
+   database was set up with initially.
 
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
