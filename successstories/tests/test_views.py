@@ -150,3 +150,28 @@ class StoryViewTests(TestCase):
         self.assertNotIn('Second line', mail.outbox[0].subject)
 
         del mail.outbox[:]
+
+    def test_story_duplicate_slug(self):
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'r87comwwwpythonorg',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
+
+        post_data = post_data.copy()
+        post_data['name'] = '///r87.com/?www.python.org/'
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please use a unique name.')
