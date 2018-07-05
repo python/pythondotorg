@@ -120,3 +120,33 @@ class StoryViewTests(TestCase):
         self.assertContains(response, 'Please use a unique name.')
 
         del mail.outbox[:]
+
+    def test_story_multiline_email_subject(self):
+        mail.outbox = []
+
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'First line\nSecond line',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'New success story submission: First line'
+        )
+        self.assertNotIn('Second line', mail.outbox[0].subject)
+
+        del mail.outbox[:]

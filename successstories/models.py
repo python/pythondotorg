@@ -136,8 +136,10 @@ Content:
 
 Review URL: {admin_url}
         """
+        name_lines = instance.name.splitlines()
+        name = name_lines[0] if name_lines else instance.name
         email = EmailMessage(
-            'New success story submission: {}'.format(instance.name),
+            'New success story submission: {}'.format(name),
             body.format(
                 name=instance.name,
                 company_name=instance.company_name,
