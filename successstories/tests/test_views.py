@@ -199,3 +199,25 @@ class StoryViewTests(TestCase):
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, url)
+
+    def test_nul_character(self):
+        # This was originally reported by Sentry (PYDOTORG-PROD-21,
+        # PYDOTORG-PROD-25) and fixed in Django 2.0 by adding
+        # ProhibitNullCharactersValidator validator.
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'Before\0After',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Null characters are not allowed.')
