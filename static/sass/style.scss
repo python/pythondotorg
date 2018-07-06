@@ -447,7 +447,9 @@ $optionsbar-text: #bbb;
         border-bottom: 1px solid lighten( $darkerblue, 8% );
     }
 
-    .subnav { display: none; }
+    .subnav {
+        display: none;
+    }
 }
 
 #site-map-link,
@@ -585,7 +587,9 @@ input#s,
         }
     }
 
-    :hover .subnav { display: block; }
+    :hover .subnav {
+        display: block;
+    }
 
     /*.close-subnav {
         @include pe-border( $color-bottom: $grey-light );
