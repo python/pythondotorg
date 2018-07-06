@@ -446,6 +446,10 @@ $optionsbar-text: #bbb;
         border-top: 1px solid darken( $darkerblue, 12% );
         border-bottom: 1px solid lighten( $darkerblue, 8% );
     }
+
+    .subnav {
+        display: none;
+    }
 }
 
 #site-map-link,
@@ -581,6 +585,10 @@ input#s,
                 border-color: transparent transparent $grey transparent;
             }
         }
+    }
+
+    :hover .subnav {
+        display: block;
     }
 
     /*.close-subnav {

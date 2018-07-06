@@ -1115,6 +1115,8 @@ h2.not-column {
     line-height: 1px;
     border-top: 1px solid #070a0c;
     border-bottom: 1px solid #2d3e4d; }
+  .options-bar .subnav {
+    display: none; }
 
 #site-map-link,
 .jump-to-menu,
@@ -1560,6 +1562,10 @@ input#s,
       .account-signin .subnav:before {
         top: -1.6em;
         border-color: transparent transparent #666666 transparent; }
+  .adjust-font-size :hover .subnav,
+  .winkwink-nudgenudge :hover .subnav,
+  .account-signin :hover .subnav {
+    display: block; }
 
 .account-signin {
   display: none; }
