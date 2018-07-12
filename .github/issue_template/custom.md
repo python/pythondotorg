@@ -1,5 +1,4 @@
 <!---
-This issue tracker is for python.org website.
 This is the repository and issue tracker for https://www.python.org website.
 
 If you're looking to file an issue with CPython itself, please go to
