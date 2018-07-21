@@ -21,4 +21,3 @@ https://bugs.python.org.
 * IRC: `#pydotorg` on Freenode
 * Staging site: https://staging.python.org/ (`master` branch)
 * License: Apache License
-
