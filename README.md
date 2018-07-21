@@ -7,10 +7,10 @@
 
 This is the repository and issue tracker for [python.org](https://www.python.org).
 The repository for CPython itself is at https://github.com/python/cpython, and the
-issue tracker is at https://bugs.python.org (bpo)
+issue tracker is at https://bugs.python.org.
 
-Issues related to Python's documentation (https://docs.python.org) can be filed in
-[bpo](https://bugs.python.org).
+Issues related to [Python's documentation](https://docs.python.org) can be filed in
+https://bugs.python.org.
 
 ### Contributing
 
