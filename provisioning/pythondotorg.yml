@@ -79,6 +79,7 @@
       postgresql_user: db={{ database.name }}
                        name={{ database.user }}
                        priv=ALL
+                       role_attr_flags=CREATEDB
                        state=present
       notify: Restart PostgreSQL
 
