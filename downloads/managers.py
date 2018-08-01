@@ -36,26 +36,7 @@ class ReleaseQuerySet(QuerySet):
         return self.filter(is_published=True, pre_release=False)
 
 
-class ReleaseManager(Manager):
-    def get_queryset(self):
-        return ReleaseQuerySet(self.model, using=self._db)
-
-    def published(self):
-        return self.get_queryset().published()
-
-    def draft(self):
-        return self.get_queryset().draft()
-
-    def downloads(self):
-        """ For the main downloads landing page """
-        return self.get_queryset().downloads()
-
-    def python2(self):
-        return self.get_queryset().python2()
-
-    def python3(self):
-        return self.get_queryset().python3()
-
+class ReleaseManager(Manager.from_queryset(ReleaseQuerySet)):
     def latest_python2(self):
         qs = self.get_queryset().latest_python2()
         if qs:
@@ -69,9 +50,3 @@ class ReleaseManager(Manager):
             return qs[0]
         else:
             return None
-
-    def pre_release(self):
-        return self.get_queryset().pre_release()
-
-    def released(self):
-        return self.get_queryset().released()
