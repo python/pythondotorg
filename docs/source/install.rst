@@ -23,9 +23,9 @@ the requirements installed, and a database ready to use.
 
 Once this is done it's time to create some data and run the server::
 
-    # SSH into the Vagrant box
+    # SSH into the Vagrant box.
     $ vagrant ssh
-    # Go to the pythondotorg/ directory and activate the virtual environment
+    # Go to the pythondotorg/ directory and activate the virtual environment.
     $ cd ~/pythondotorg
     $ . venv/bin/activate
     # Create initial data for the most used applications (optional).
@@ -33,12 +33,11 @@ Once this is done it's time to create some data and run the server::
     # Set a password for the superuser "cbiggles". This username and password
     # can be used to login to the admin environment.
     $ ./manage.py changepassword cbiggles
-    # run the server
+    # Run the server.
     $ ./manage.py runserver 0.0.0.0:8000
 
 Now use your favorite browser to go to http://localhost:8001/.
 The admin pages can be found at http://localhost:8001/admin/.
-
 
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _Ansible: https://docs.ansible.com/ansible/intro_installation.html
