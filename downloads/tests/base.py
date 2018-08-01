@@ -25,7 +25,7 @@ class DownloadMixin:
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 
-class BaseDownloadTests(DownloadMixin):
+class BaseDownloadTests(DownloadMixin, TestCase):
 
     def setUp(self):
         self.release_275_page = Page.objects.create(
