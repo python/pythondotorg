@@ -11,31 +11,35 @@ Here are two ways to hack on python.org:
 Easy setup using Vagrant
 ------------------------
 
+First, install Vagrant_ and Ansible_ on your machine.
+You should then be able to provision the Vagrant box.
+
 ::
 
     $ vagrant up
+
+The box will be provisioned with Python 3.5, a virtual environment with all
+the requirements installed, and a database ready to use.
+
+Once this is done it's time to create some data and run the server::
+
+    # SSH into the Vagrant box.
     $ vagrant ssh
-    # go to pythondotorg/ directory and activate virtualenv, then run
-    $ ./manage.py runserver 0.0.0.0:8000
-    # on your local shell
-    $ google-chrome http://localhost:8001/
-
-The box will be provisioned by Ansible_ 2.4.1.0 with Python 3.5, a virtualenv
-set up with requirements installed, and a database ready to use.
-
-The box also creates a superuser with username ``cbiggles`` for you. However, you
-will need to set a password before using it::
-
-    $ vagrant ssh
-    $ cd pythondotorg
+    # Go to the pythondotorg/ directory and activate the virtual environment.
+    $ cd ~/pythondotorg
     $ . venv/bin/activate
+    # Create initial data for the most used applications (optional).
+    $ ./manage.py create_initial_data
+    # Set a password for the superuser "cbiggles". This username and password
+    # can be used to login to the admin environment.
     $ ./manage.py changepassword cbiggles
+    # Run the server.
+    $ ./manage.py runserver 0.0.0.0:8000
 
-.. note::
+Now use your favorite browser to go to http://localhost:8001/.
+The admin pages can be found at http://localhost:8001/admin/.
 
-   You will also need to run ``./manage.py create_initial_data`` to create
-   initial data for the most used applications.
-
+.. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _Ansible: https://docs.ansible.com/ansible/intro_installation.html
 
 .. _manual-setup:
