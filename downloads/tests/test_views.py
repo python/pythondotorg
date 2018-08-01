@@ -460,7 +460,6 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         self.assertEqual(response.status_code, 200)
 
         # Second request should return '429 TOO MANY REQUESTS'.
-        url = self.create_url('os')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 429)
 
@@ -475,11 +474,9 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         self.assertEqual(response.status_code, 200)
 
         # Second request should be okay for a user.
-        url = self.create_url('os')
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 200)
 
         # Third request should return '429 TOO MANY REQUESTS'.
-        url = self.create_url('os')
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 429)
