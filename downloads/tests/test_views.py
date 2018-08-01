@@ -28,7 +28,7 @@ TEST_THROTTLE_RATES = {
 }
 
 
-class DownloadViewsTests(BaseDownloadTests, TestCase):
+class DownloadViewsTests(BaseDownloadTests):
     def test_download_full_os_list(self):
         url = reverse('download:download_full_os_list')
         response = self.client.get(url)
@@ -432,7 +432,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.assertEqual(len(content), 1)
 
 
-class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, TestCase):
+class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
     api_version = 'v1'
 
 
