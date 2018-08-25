@@ -1809,6 +1809,12 @@ html[xmlns] .slides { display: block; }
     #margin-left: -20px;
     text-align: right;
     clear: none; }
+  .list-recent-jobs .listing-actions {
+    clear: both;
+    overflow: hidden;
+    *zoom: 1;
+    padding-top: 0.9375em;
+    text-align: right; }
 
   /*h2*/
   .listing-company .listing-company-name {

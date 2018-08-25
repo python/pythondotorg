@@ -119,6 +119,57 @@ class JobsViewTests(TestCase):
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
+    def test_job_mine_remove(self):
+        url = reverse('jobs:job_list_mine')
+
+        self.client.login(username=self.user.username, password='password')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        job = response.context['object_list'][0]
+        self.assertNotEqual(job.status, job.STATUS_REMOVED)
+
+        url = reverse('jobs:job_remove', kwargs={'pk': job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('jobs:job_list_mine'))
+
+        job.refresh_from_db()
+        self.assertEqual(job.status, job.STATUS_REMOVED)
+
+    def test_job_mine_remove_404(self):
+        url = reverse('jobs:job_list_mine')
+
+        self.client.login(username=self.user2.username, password='password')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 0)
+
+        self.assertNotEqual(self.job.status, self.job.STATUS_REMOVED)
+
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('jobs:job_list_mine'))
+
+        self.assertNotEqual(self.job.status, self.job.STATUS_REMOVED)
+
+    def test_job_mine_remove_post_request(self):
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+
+        self.client.login(username=self.user.username, password='password')
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_job_mine_remove_login(self):
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            '/accounts/login/?next=/jobs/%d/remove/' % self.job.pk
+        )
+
     def test_disallow_editing_approved_jobs(self):
         self.client.login(username=self.user.username, password='password')
         url = reverse('jobs:job_edit', kwargs={'pk': self.job.pk})

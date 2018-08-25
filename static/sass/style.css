@@ -180,7 +180,7 @@
     clear: both; }
 
 /* Buttons */
-.psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
+.psf-widget .button, .python-needs-you-widget .button, .header-banner .button, .header-banner a.button, a.delete, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
 .sidebar-widget form button,
 .sidebar-widget form input[type=submit], input[type=submit], input[type=reset], button, a.button, .button {
   cursor: pointer;
@@ -211,11 +211,11 @@
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  .header-banner .button:hover, .header-banner a.button:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
+  .header-banner .button:hover, .header-banner a.button:hover, a.delete:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
   .sidebar-widget form button:hover,
-  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .header-banner .button:focus, .header-banner a.button:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
+  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .header-banner .button:focus, .header-banner a.button:focus, a.delete:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
   .sidebar-widget form button:focus,
-  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .header-banner .button:active, .header-banner a.button:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
+  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .header-banner .button:active, .header-banner a.button:active, a.delete:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
   .sidebar-widget form button:active,
   .sidebar-widget form input[type=submit]:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
@@ -252,7 +252,7 @@
     background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
     background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
 
-form.deletion-form button[type="submit"] {
+a.delete, form.deletion-form button[type="submit"] {
   background-color: #b55863;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFC57B84', endColorstr='#FFB55863');
@@ -266,7 +266,7 @@ form.deletion-form button[type="submit"] {
   border-bottom: 1px solid #74333b;
   border-left: 1px solid #74333b;
   color: white !important; }
-  form.deletion-form button[type="submit"]:hover, form.deletion-form button[type="submit"]:active {
+  a.delete:hover, form.deletion-form button[type="submit"]:hover, a.delete:active, form.deletion-form button[type="submit"]:active {
     background-color: inherit;
     color: white !important;
     background-color: #b55863;
@@ -2767,6 +2767,15 @@ p.quote-by-organization {
   display: inline-block;
   color: white;
   background-color: #b55863;
+  font-size: 0.58333em;
+  text-transform: uppercase;
+  letter-spacing: .0625em;
+  padding: 0.45em 0.5em 0;
+  margin-right: .25em; }
+.listing-company .listing-removed {
+  display: inline-block;
+  color: white;
+  background-color: #666666;
   font-size: 0.58333em;
   text-transform: uppercase;
   letter-spacing: .0625em;

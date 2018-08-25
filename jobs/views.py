@@ -86,6 +86,11 @@ class JobListMine(LoginRequiredMixin, JobMixin, ListView):
     def get_queryset(self):
         return Job.objects.by(self.request.user).select_related()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mine_listing'] = True
+        return context
+
 
 class JobListType(JobTypeMenu, JobMixin, ListView):
     paginate_by = 25
@@ -215,6 +220,19 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         context = super().get_context_data(**kwargs)
         context['mode'] = 'review'
         return context
+
+
+class JobRemove(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        try:
+            job = Job.objects.get(id=pk, creator=request.user)
+        except Job.DoesNotExist:
+            return redirect('jobs:job_list_mine')
+        job.status = Job.STATUS_REMOVED
+        job.save()
+        messages.add_message(request, messages.SUCCESS, "'%s' removed." % job)
+        return redirect('jobs:job_list_mine')
 
 
 class JobModerateList(JobReview):

@@ -23,5 +23,6 @@ urlpatterns = [
     url(r'^categories/$', views.JobCategories.as_view(), name='job_categories'),
     url(r'^(?P<pk>\d+)/edit/$', views.JobEdit.as_view(), name='job_edit'),
     url(r'^(?P<pk>\d+)/preview/$', views.JobPreview.as_view(), name='job_preview'),
+    url(r'^(?P<pk>\d+)/remove/$', views.JobRemove.as_view(), name='job_remove'),
     url(r'^(?P<pk>\d+)/$', views.JobDetail.as_view(), name='job_detail'),
 ]

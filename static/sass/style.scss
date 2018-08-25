@@ -242,6 +242,10 @@ input[type=submit], input[type=reset], button, a.button, .button {
     display: block;
 }
 
+a.delete {
+    @extend %button-style-red;
+}
+
 button[type=submit] { @extend %button-style-blue; }
 
 .primaryAction { }
@@ -1914,6 +1918,17 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         padding: .45em .5em 0;
         margin-right: .25em;
     }
+
+    .listing-removed {
+        display: inline-block;
+        color: $white;
+        background-color: $grey;
+        font-size: px2em( 14px, 24px );
+        text-transform: uppercase;
+        letter-spacing: .0625em;
+        padding: .45em .5em 0;
+        margin-right: .25em;
+     }
 
     .listing-location {
 
