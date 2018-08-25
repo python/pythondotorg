@@ -85,12 +85,9 @@ class Command(BaseCommand):
         confirm = self.flush_handler(do_flush, verbosity)
         if confirm not in ('y', 'yes'):
             return
-        # Collect relevant functions for data generation.
-        functions = self.collect_initial_data_functions(app_label)
-        if not functions:
-            return
 
-        if not app_label:
+        # Special case '--app-label=sitetree'.
+        if not app_label or app_label == 'sitetree':
             self.output('sitetree', verbosity)
             try:
                 call_command('loaddata', 'sitetree_menus', '-v0')
@@ -98,6 +95,11 @@ class Command(BaseCommand):
                 self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
             else:
                 self.output('sitetree', verbosity, done=True)
+
+        # Collect relevant functions for data generation.
+        functions = self.collect_initial_data_functions(app_label)
+        if not functions:
+            return
 
         for app_name, function in functions.items():
             self.output(app_name, verbosity)
