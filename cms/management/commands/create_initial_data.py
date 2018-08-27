@@ -1,3 +1,4 @@
+import collections
 import importlib
 import inspect
 import pprint
@@ -24,7 +25,7 @@ class Command(BaseCommand):
         )
 
     def collect_initial_data_functions(self, app_label):
-        functions = {}
+        functions = collections.OrderedDict()
         if app_label:
             try:
                 app_list = [apps.get_app_config(app_label)]
