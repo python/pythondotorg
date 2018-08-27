@@ -3,6 +3,7 @@
 *.pyc
 __pycache__
 .vagrant
+venv
 build
 ENV
 .coverage
