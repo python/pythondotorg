@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('title', models.CharField(max_length=500)),
                 ('keywords', models.CharField(help_text='HTTP meta-keywords', max_length=1000, blank=True)),
                 ('description', models.TextField(help_text='HTTP meta-description', blank=True)),

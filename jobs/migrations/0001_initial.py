@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('company_name', models.CharField(max_length=100, blank=True, null=True)),
                 ('company_description', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
                 ('job_title', models.CharField(max_length=100)),

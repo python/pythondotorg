@@ -19,7 +19,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(default=django.utils.timezone.now, db_index=True, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(max_length=200)),
                 ('slug', models.SlugField(unique=True)),
                 ('active', models.BooleanField(default=True, db_index=True)),

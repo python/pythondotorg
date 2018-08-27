@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_creator', blank=True, on_delete=models.CASCADE)),
                 ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_contributor_modified', blank=True, on_delete=models.CASCADE)),
                 ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, related_name='blog_contributor', on_delete=models.CASCADE)),
@@ -77,7 +77,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(help_text='Internal Name', max_length=100)),
                 ('feed_url', models.URLField(verbose_name='Feed URL')),
                 ('blog_url', models.URLField(verbose_name='Blog URL')),
@@ -98,7 +98,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(max_length=100)),
                 ('url', models.URLField(verbose_name='URL')),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='blogs_translation_creator', blank=True, on_delete=models.CASCADE)),
