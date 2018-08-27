@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(max_length=200)),
                 ('slug', models.SlugField(unique=True)),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='downloads_os_creator', blank=True, on_delete=models.CASCADE)),
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(max_length=200)),
                 ('slug', models.SlugField(unique=True)),
                 ('version', models.IntegerField(choices=[(3, 'Python 3.x.x'), (2, 'Python 2.x.x'), (1, 'Python 1.x.x')], default=2)),
@@ -68,7 +68,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('name', models.CharField(max_length=200)),
                 ('slug', models.SlugField(unique=True)),
                 ('description', models.TextField(blank=True)),

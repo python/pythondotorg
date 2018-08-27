@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('trigger', models.PositiveSmallIntegerField(verbose_name='hours before the event occurs', default=24)),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='events_alarm_creator', blank=True, on_delete=models.CASCADE)),
             ],
@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('url', models.URLField(verbose_name='URL iCal', blank=True, null=True)),
                 ('rss', models.URLField(verbose_name='RSS Feed', blank=True, null=True)),
                 ('embed', models.URLField(verbose_name='URL embed', blank=True, null=True)),
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('uid', models.CharField(max_length=200, blank=True, null=True)),
                 ('title', models.CharField(max_length=200)),
                 ('description', markupfield.fields.MarkupField(rendered_field=True)),

@@ -88,7 +88,7 @@ class Membership(models.Model):
     last_vote_affirmation = models.DateTimeField(blank=True, null=True)
 
     created = models.DateTimeField(default=timezone.now, blank=True)
-    updated = models.DateTimeField(blank=True)
+    updated = models.DateTimeField(default=timezone.now, blank=True)
 
     creator = models.OneToOneField(
         User,

@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, verbose_name='ID', primary_key=True, auto_created=True)),
                 ('created', models.DateTimeField(blank=True, default=django.utils.timezone.now, db_index=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('comment', markupfield.fields.MarkupField(rendered_field=True)),
                 ('comment_markup_type', models.CharField(choices=[('', '--'), ('html', 'HTML'), ('plain', 'Plain'), ('markdown', 'Markdown'), ('restructuredtext', 'Restructured Text')], max_length=30, default='restructuredtext')),
                 ('_comment_rendered', models.TextField(editable=False)),

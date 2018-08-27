@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
                 ('psf_code_of_conduct', models.NullBooleanField(verbose_name='I agree to the PSF Code of Conduct')),
                 ('psf_announcements', models.NullBooleanField(verbose_name='I would like to receive occasional PSF email announcements')),
                 ('created', models.DateTimeField(blank=True, default=django.utils.timezone.now)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, blank=True, related_name='membership', on_delete=models.CASCADE)),
             ],
             options={

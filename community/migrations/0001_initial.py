@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('url', models.URLField(max_length=1000, verbose_name='URL', blank=True)),
                 ('creator', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='community_link_creator', blank=True, on_delete=models.CASCADE)),
                 ('last_modified_by', models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='community_link_modified', blank=True, on_delete=models.CASCADE)),
@@ -38,7 +38,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('image', models.ImageField(upload_to='community/photos/', blank=True)),
                 ('image_url', models.URLField(max_length=1000, verbose_name='Image URL', blank=True)),
                 ('caption', models.TextField(blank=True)),
@@ -59,7 +59,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('title', models.CharField(max_length=200, blank=True, null=True)),
                 ('content', markupfield.fields.MarkupField(rendered_field=True)),
                 ('abstract', models.TextField(null=True, blank=True)),
@@ -85,7 +85,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('video_embed', models.TextField(blank=True)),
                 ('video_data', models.FileField(upload_to='community/videos/', blank=True)),
                 ('caption', models.TextField(blank=True)),
