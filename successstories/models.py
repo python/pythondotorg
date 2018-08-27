@@ -100,9 +100,13 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
             'story': instance,
         })
 
-        box, _ = Box.objects.get_or_create(label='supernav-python-success-stories')
-        box.content = content
-        box.save()
+        box, _ = Box.objects.update_or_create(
+            label='supernav-python-success-stories',
+            defaults={
+                'content': content,
+                'content_markup_type': 'html',
+            }
+        )
 
         # Purge Fastly cache
         purge_url('/box/supernav-python-success-stories/')
