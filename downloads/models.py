@@ -158,9 +158,13 @@ def update_supernav():
         'python_files': python_files,
     })
 
-    box = Box.objects.get(label='supernav-python-downloads')
-    box.content = content
-    box.save()
+    box, _ = Box.objects.update_or_create(
+        label='supernav-python-downloads',
+        defaults={
+            'content': content,
+            'content_markup_type': 'html',
+        }
+    )
 
     # Update latest Sources box on Download landing page
     if latest_python2:
@@ -173,13 +177,17 @@ def update_supernav():
     else:
         latest_python3_source = None
 
-    source_box = Box.objects.get(label='download-sources')
     source_content = render_to_string('downloads/download-sources-box.html', {
         'latest_python2_source': latest_python2_source,
         'latest_python3_source': latest_python3_source,
     })
-    source_box.content = source_content
-    source_box.save()
+    source_box, _ = Box.objects.update_or_create(
+        label='download-sources',
+        defaults={
+            'content': source_content,
+            'content_markup_type': 'html',
+        }
+    )
 
 
 def update_homepage_download_box():
@@ -198,9 +206,13 @@ def update_homepage_download_box():
         'latest_python3': latest_python3,
     })
 
-    box = Box.objects.get(label='homepage-downloads')
-    box.content = content
-    box.save()
+    box, _ = Box.objects.update_or_create(
+        label='homepage-downloads',
+        defaults={
+            'content': content,
+            'content_markup_type': 'html',
+        }
+    )
 
 
 @receiver(post_save, sender=Release)

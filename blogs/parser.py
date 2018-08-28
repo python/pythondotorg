@@ -40,6 +40,10 @@ def update_blog_supernav():
     latest_entry = BlogEntry.objects.filter(feed_id=1).latest()
     rendered_box = _render_blog_supernav(latest_entry)
 
-    box = Box.objects.get(label='supernav-python-blog')
-    box.content = rendered_box
-    box.save()
+    box, _ = Box.objects.update_or_create(
+        label='supernav-python-blog',
+        defaults={
+            'content': rendered_box,
+            'content_markup_type': 'html',
+        }
+    )

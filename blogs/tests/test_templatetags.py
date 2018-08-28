@@ -15,9 +15,6 @@ class BlogTemplateTagTest(TestCase):
 
     def setUp(self):
         self.test_file_path = get_test_rss_path()
-        box = Box.objects.create(label='supernav-python-blog')
-        box.content.markup_type = 'html'
-        box.save()
 
     def test_get_latest_entries(self):
         """
