@@ -58,15 +58,15 @@ class GroupRequiredMixin(AccessMixin):
         return self.group_required
 
     def check_membership(self, group):
+        if not self.request.user.is_authenticated:
+            return False
         if self.request.user.is_superuser:
             return True
         user_groups = self.request.user.groups.values_list('name', flat=True)
         return set(group).intersection(set(user_groups))
 
     def dispatch(self, request, *args, **kwargs):
-        in_group = False
-        if self.request.user.is_authenticated:
-            in_group = self.check_membership(self.get_group_required())
+        in_group = self.check_membership(self.get_group_required())
         if not in_group:
             return self.handle_no_permission()
         return super().dispatch(request, *args, **kwargs)
