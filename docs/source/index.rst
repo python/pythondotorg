@@ -27,6 +27,7 @@ Contents:
    contributing
    administration
    pep_generation
+   commands
 
 Indices and tables
 ==================
