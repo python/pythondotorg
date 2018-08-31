@@ -121,6 +121,9 @@ To create initial data for the most used applications, run::
 
     $ ./manage.py create_initial_data
 
+See :ref:`command-create-initial-data` for the command options to specify 
+while creating initial data.
+
 Finally, start the development server::
 
     $ ./manage.py runserver
