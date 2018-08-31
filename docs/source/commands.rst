@@ -30,6 +30,6 @@ Command-line options
 
    Remove existing data in the database before creating new data.
 
-.. option:: --app-label <app label>
+.. option:: --app-label <app_label>
 
-   Create initial data with the *<app label>* provided.
+   Create initial data with the *app_label* provided.
