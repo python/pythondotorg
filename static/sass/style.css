@@ -2802,6 +2802,11 @@ p.quote-by-organization {
   *zoom: 1; }
   .job-post-meta span {
     display: block; }
+  .job-post-meta .listing-actions {
+    border-top: 1px solid #caccce;
+    clear: both;
+    padding-top: 1.25em;
+    text-align: right; }
 
 .job-tags {
   margin-bottom: 0; }

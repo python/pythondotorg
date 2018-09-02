@@ -1962,6 +1962,13 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         @include clearfix();
 
         span { display: block; }
+
+        .listing-actions {
+            border-top: 1px solid #caccce;
+            clear: both;
+            padding-top: px2em( 20px );
+            text-align: right;
+        }
     }
         .job-tags { margin-bottom: 0; }
 
