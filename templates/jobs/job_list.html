@@ -39,7 +39,9 @@
             <span class="listing-company-category"><a href="{% url 'jobs:job_list_category' slug=object.category.slug %}" title="More jobs in {{ object.category.name }}">{{ object.category.name }}</a></span>
             {% if mine_listing and object.creator == request.user and object.status != 'removed' %}
             <div class="listing-actions">
-                <a class="button delete" href="{% url 'jobs:job_remove' pk=object.pk %}">Remove</a>
+                <a class="button delete"
+                   href="{% url 'jobs:job_remove' pk=object.pk %}"
+                   onclick="return confirm('Are you sure? You can\'t undo this action.');">Remove</a>
             </div>
             {% endif %}
         </li>
