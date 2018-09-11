@@ -35,6 +35,8 @@ def convert_pep0():
     pep0_path = os.path.join(settings.PEP_REPO_PATH, 'pep-0000.html')
     pep0_content = open(pep0_path).read()
     data = convert_pep_page(0, pep0_content)
+    if data is None:
+        return
     return data['content']
 
 
@@ -46,6 +48,8 @@ def get_pep0_page(commit=True):
     return both Page objects.
     """
     pep0_content = convert_pep0()
+    if pep0_content is None:
+        return None, None
     pep0_page, _ = Page.objects.get_or_create(path='dev/peps/')
     pep0000_page, _ = Page.objects.get_or_create(path='dev/peps/pep-0000/')
     for page in [pep0_page, pep0000_page]:
@@ -147,6 +151,10 @@ def convert_pep_page(pep_number, content):
 
         b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
 
+    # Return early if 'html' or 'body' return None.
+    if pep_content.html is None or pep_content.body is None:
+        return
+
     # Strip <html> and <body> tags.
     pep_content.html.unwrap()
     pep_content.body.unwrap()
@@ -166,6 +174,8 @@ def get_pep_page(pep_number, commit=True):
         return
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
+    if pep_content is None:
+        return None
     pep_rst_source = os.path.join(
         settings.PEP_REPO_PATH, 'pep-{}.rst'.format(pep_number),
     )

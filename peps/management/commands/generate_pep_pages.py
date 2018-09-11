@@ -49,6 +49,9 @@ class Command(BaseCommand):
 
         verbose("Generating PEP0 index page")
         pep0_page, _ = get_pep0_page()
+        if pep0_page is None:
+            verbose("HTML version of PEP 0 cannot be generated.")
+            return
 
         image_paths = set()
 
@@ -74,6 +77,12 @@ class Command(BaseCommand):
             if pep_match:
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
+                if p is None:
+                    verbose(
+                        "- HTML version PEP {!r} cannot be generated.".format(
+                            pep_number
+                        )
+                    )
                 verbose("====== Title: '{}'".format(p.title))
             else:
                 verbose("- Skipping invalid '{}'".format(f))
