@@ -1,3 +1,5 @@
+.. _management-commands:
+
 Management Commands
 ===================
 
@@ -33,3 +35,30 @@ Command-line options
 .. option:: --app-label <app_label>
 
    Create initial data with the *app_label* provided.
+
+.. _command-generate-pep-pages:
+
+generate_pep_pages
+------------------
+
+This command generates ``pages.Page`` objects from the output
+of the existing PEP repository generation process. You run it like::
+
+    $ ./manage.py generate_pep_pages
+
+To get verbose output, specify ``--verbosity`` option::
+
+    $ ./manage.py generate_pep_pages --verbosity=2
+
+It uses the conversion code in the ``peps/converters.py`` file, in an
+attempt to normalize the formatting for display purposes.
+
+.. _command-dump-pep-pages:
+
+dump_pep_pages
+--------------
+
+This command simply dumps our PEP related pages as JSON to :attr:`sys.stdout`.
+You can run like::
+
+    $ ./manage.py dump_pep_pages

@@ -22,34 +22,13 @@ The PEP Page Generation process is as follows:
 3. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
    of the cloned PEP Repository
 
-4. Run in your ``pythondotorg`` repository::
+4. Generate PEP pages in your ``pythondotorg`` repository 
+   (More details at :ref:`command-generate-pep-pages`). You can run like::
 
    $ ./manage.py generate_pep_pages
 
 This process runs periodically via cron to keep the PEP pages up to date.
-
-Management Commands
--------------------
-
-generate_pep_pages
-^^^^^^^^^^^^^^^^^^
-
-This Django management command generates ``pages.Page`` objects from the output
-of the existing PEP repository generation process. You run it like::
-
-    $ ./manage.py generate_pep_pages
-
-To get verbose output run it like::
-
-    $ ./manage.py generate_pep_pages --verbosity=2
-
-It uses the conversion code in the ``peps.converters`` module in an attempt to
-normalize the formatting for display purposes.
-
-dump_pep_pages
-^^^^^^^^^^^^^^
-
-This simply dumps our PEP related pages as JSON. The ``dumpdata`` content is
-written to ``stdout`` just like a normal ``dumpdata`` command.
+   
+See :ref:`management-commands` for all management commands.
 
 .. _PEP Repository: https://github.com/python/peps.git
