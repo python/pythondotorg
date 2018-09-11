@@ -23,12 +23,12 @@ The PEP Page Generation process is as follows:
    of the cloned PEP Repository
 
 4. Generate PEP pages in your ``pythondotorg`` repository 
-(More details at :ref: `command-generate-pep-pages`). You can run like::
+   (More details at :ref:`command-generate-pep-pages`). You can run like::
 
    $ ./manage.py generate_pep_pages
 
 This process runs periodically via cron to keep the PEP pages up to date.
    
-See :ref: `management-commands` for all Management Commands.
+See :ref:`management-commands` for all management commands.
 
 .. _PEP Repository: https://github.com/python/peps.git
