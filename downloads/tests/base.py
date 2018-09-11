@@ -4,7 +4,6 @@ from django.test import TestCase
 from django.utils import timezone
 
 from pages.models import Page
-from boxes.models import Box
 from ..models import OS, Release, ReleaseFile
 
 
@@ -13,19 +12,12 @@ class DownloadMixin:
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.download_supernav_box, _ = Box.objects.get_or_create(label='supernav-python-downloads')
-        cls.download_supernav_box.content.markup_type = 'html'
-        cls.download_supernav_box.save()
-        cls.download_homepage_box, _ = Box.objects.get_or_create(label='homepage-downloads')
-        cls.download_homepage_box.content.markup_type = 'html'
-        cls.download_homepage_box.save()
-        cls.download_sources_box, _ = Box.objects.get_or_create(label='download-sources')
         cls.windows, _ = OS.objects.get_or_create(name='Windows')
         cls.osx, _ = OS.objects.get_or_create(name='Mac OSX')
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 
-class BaseDownloadTests(DownloadMixin):
+class BaseDownloadTests(DownloadMixin, TestCase):
 
     def setUp(self):
         self.release_275_page = Page.objects.create(

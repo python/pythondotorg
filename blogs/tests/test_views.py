@@ -2,8 +2,6 @@ from django.core.management import call_command
 from django.urls import reverse
 from django.test import TestCase
 
-from boxes.models import Box
-
 from ..models import BlogEntry, Feed
 
 from .utils import get_test_rss_path
@@ -13,9 +11,6 @@ class BlogViewTest(TestCase):
 
     def setUp(self):
         self.test_file_path = get_test_rss_path()
-        box = Box.objects.create(label='supernav-python-blog')
-        box.content.markup_type = 'html'
-        box.save()
 
     def test_blog_home(self):
         """

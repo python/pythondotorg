@@ -3,6 +3,7 @@ from django.conf.urls import url
 from . import views
 
 
+app_name = 'users'
 urlpatterns = [
     url(r'^edit/$', views.UserUpdate.as_view(), name='user_profile_edit'),
     url(r'^membership/$', views.MembershipCreate.as_view(), name='user_membership_create'),

@@ -3,7 +3,7 @@ from django.shortcuts import render
 from urllib.parse import urljoin
 
 LEGACY_PYTHON_DOMAIN = 'http://legacy.python.org'
-PYPI_URL = 'https://pypi.python.org/'
+PYPI_URL = 'https://pypi.org/'
 
 
 def legacy_path(path):

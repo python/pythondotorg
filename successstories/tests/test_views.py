@@ -120,3 +120,104 @@ class StoryViewTests(TestCase):
         self.assertContains(response, 'Please use a unique name.')
 
         del mail.outbox[:]
+
+    def test_story_multiline_email_subject(self):
+        mail.outbox = []
+
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'First line\nSecond line',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
+
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertEqual(
+            mail.outbox[0].subject,
+            'New success story submission: First line'
+        )
+        self.assertNotIn('Second line', mail.outbox[0].subject)
+
+        del mail.outbox[:]
+
+    def test_story_duplicate_slug(self):
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'r87comwwwpythonorg',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
+
+        post_data = post_data.copy()
+        post_data['name'] = '///r87.com/?www.python.org/'
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Please use a unique name.')
+
+    def test_slug_field_max_length(self):
+        # name and slug fields come from NameSlugModel and their max_length
+        # attributes weren't equal. Default value of SlugField.max_length is
+        # 50 and since we set CharField.max_length to 200, we have to update
+        # SlugField.max_length as well. This was found by Netsparker and
+        # recorded by Sentry. See PYDOTORG-PROD-23 for details.
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': '|nslookup${IFS}"vprlkb-tutkaenivhxr1i4bxrdosuteo8wh4mb2r""cys.r87.me"',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, url)
+
+    def test_nul_character(self):
+        # This was originally reported by Sentry (PYDOTORG-PROD-21,
+        # PYDOTORG-PROD-25) and fixed in Django 2.0 by adding
+        # ProhibitNullCharactersValidator validator.
+        url = reverse('success_story_create')
+
+        post_data = {
+            'name': 'Before\0After',
+            'company_name': 'Company Three',
+            'company_url': 'http://djangopony.com/',
+            'category': self.category.pk,
+            'author': 'Kevin Arnold',
+            'author_email': 'kevin@arnold.com',
+            'pull_quote': 'Liver!',
+            'content': 'Growing up is never easy.\n\nFoo bar baz.\n',
+            settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
+        }
+
+        response = self.client.post(url, post_data)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Null characters are not allowed.')

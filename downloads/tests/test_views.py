@@ -28,7 +28,7 @@ TEST_THROTTLE_RATES = {
 }
 
 
-class DownloadViewsTests(BaseDownloadTests, TestCase):
+class DownloadViewsTests(BaseDownloadTests):
     def test_download_full_os_list(self):
         url = reverse('download:download_full_os_list')
         response = self.client.get(url)
@@ -432,7 +432,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.assertEqual(len(content), 1)
 
 
-class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, TestCase):
+class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
     api_version = 'v1'
 
 
@@ -460,7 +460,6 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         self.assertEqual(response.status_code, 200)
 
         # Second request should return '429 TOO MANY REQUESTS'.
-        url = self.create_url('os')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 429)
 
@@ -475,11 +474,9 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         self.assertEqual(response.status_code, 200)
 
         # Second request should be okay for a user.
-        url = self.create_url('os')
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 200)
 
         # Third request should return '429 TOO MANY REQUESTS'.
-        url = self.create_url('os')
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 429)

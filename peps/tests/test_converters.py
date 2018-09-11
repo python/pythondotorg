@@ -25,6 +25,16 @@ class PEPConverterTests(TestCase):
         )
 
     @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
+    def test_source_link_rst(self):
+        pep = get_pep_page('0012')
+        self.assertEqual(pep.title, 'PEP 12 -- Sample reStructuredText PEP Template')
+        self.assertIn(
+            'Source: <a href="https://github.com/python/peps/blob/master/'
+            'pep-0012.rst">https://github.com/python/peps/blob/master/pep-0012.rst</a>',
+            pep.content.rendered
+        )
+
+    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_invalid_pep_number(self):
         with captured_stdout() as stdout:
             get_pep_page('9999999')

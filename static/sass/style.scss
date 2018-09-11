@@ -242,6 +242,10 @@ input[type=submit], input[type=reset], button, a.button, .button {
     display: block;
 }
 
+a.delete {
+    @extend %button-style-red;
+}
+
 button[type=submit] { @extend %button-style-blue; }
 
 .primaryAction { }
@@ -446,6 +450,10 @@ $optionsbar-text: #bbb;
         border-top: 1px solid darken( $darkerblue, 12% );
         border-bottom: 1px solid lighten( $darkerblue, 8% );
     }
+
+    .subnav {
+        display: none;
+    }
 }
 
 #site-map-link,
@@ -581,6 +589,10 @@ input#s,
                 border-color: transparent transparent $grey transparent;
             }
         }
+    }
+
+    :hover .subnav {
+        display: block;
     }
 
     /*.close-subnav {
@@ -781,6 +793,10 @@ input#s,
     color: $grey;
     word-spacing: .15em;
     @include fontface-adjust( $kilo );
+}
+
+.event-form .page-title {
+    margin-top: 0 !important;
 }
 
 /* For when we dont need to extra size buyt do want the margin */
@@ -1903,6 +1919,17 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         margin-right: .25em;
     }
 
+    .listing-removed {
+        display: inline-block;
+        color: $white;
+        background-color: $grey;
+        font-size: px2em( 14px, 24px );
+        text-transform: uppercase;
+        letter-spacing: .0625em;
+        padding: .45em .5em 0;
+        margin-right: .25em;
+     }
+
     .listing-location {
 
         a {
@@ -1935,6 +1962,13 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         @include clearfix();
 
         span { display: block; }
+
+        .listing-actions {
+            border-top: 1px solid #caccce;
+            clear: both;
+            padding-top: px2em( 20px );
+            text-align: right;
+        }
     }
         .job-tags { margin-bottom: 0; }
 
@@ -1943,7 +1977,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .breadcrumbs {
     padding: .5em 0;
     border-bottom: 1px solid $default-border-color;
-    white-space: nowrap;
 
     li { @include pe-inline-block(); }
 
@@ -2256,27 +2289,6 @@ img.align-right {
     margin-left: px2em( 20px );
 }
 
-// For Python survey
-
-#python-jetbrains-survey {
-    display: none;
-    > img {
-        display: block;
-        margin: auto;
-    }
-}
-
-.python-jetbrains-survey-index-page {
-    margin: px2em( -5px ) 0 px2em( 35px ) 0;
-}
-
-.python-jetbrains-survey-community-page {
-    margin: px2em( 10px ) 0 px2em( 25px ) 0;
-}
-
-.python-jetbrains-survey-downloads-page {
-    margin: px2em( 5px ) 0 px2em( 25px ) 0;
-}
 
 // For django-haystack's highlighter
 

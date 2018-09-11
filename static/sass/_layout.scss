@@ -730,6 +730,13 @@
             text-align: right;
             clear: none;
         }
+
+        .listing-actions {
+            clear: both;
+            @include clearfix();
+            padding-top: px2em( 15px );
+            text-align: right;
+        }
     }
     /*h2*/ .listing-company {
 
@@ -826,8 +833,8 @@
             &.element-1,
             &.element-2,
             &.element-4,
-            &.element-5, &
-            .element-8 {
+            &.element-5,
+            &.element-8 {
                 border-right: 1px solid lighten( $grey-lighter, 4% );
             }
             &.element-2,
@@ -1136,10 +1143,6 @@
 
         a { padding: 0.3em 0.75em; }
     }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
 }
 
 
@@ -1196,10 +1199,6 @@
     .job-description {
         @include pad( 1,1 );
     }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
 }
 
 
@@ -1232,8 +1231,4 @@
     }
 
     .community-banner { background-position: 90% 0; }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
 }

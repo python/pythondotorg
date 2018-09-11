@@ -1,5 +1,5 @@
 # Directions for robots.  See this URL:
-# http://www.robotstxt.org/wc/norobots.html
+# http://www.robotstxt.org/robotstxt.html
 # for a description of the file format.
 
 User-agent: HTTrack

@@ -49,58 +49,6 @@ root.RetinaImage=RetinaImage;RetinaImage.prototype.swap=function(path){if(typeof
 load();}
 if(Retina.isRetina()){Retina.init(root);}})();
 
-
-/*
- *  Heading Anchors v1.0.2
- *  Copyright (c) 2010-2012 Rafaël Blais Masson <http://twitter.com/rafBM>
- *
- *  Freely distributable under the terms of the MIT license.
- *  <http://github.com/rafBM/heading-anchors>
- *
- 
-function HeadingAnchors(customSelector) {
-        
-    if (!document.querySelectorAll || ![].forEach)
-        return; 
-    
-    var $ = function(selector) {
-        return [].slice.call(document.querySelectorAll(selector), 0); 
-    }; 
-    
-    var slugize = function(str) {
-        return str.replace(/['’]/g, '').replace(/[^a-z0-9]+/ig, '-'); 
-    }; 
-    
-    var existingSlugsNumbers = {},
-        selector = customSelector ? customSelector : 'h2, h3, h4'; 
-    
-    $(selector).forEach(function(heading) {
-        var anchor = document.createElement('a'),
-            slug = slugize(heading.id ? heading.id : heading.textContent); 
-        
-        anchor.className = 'heading-anchor'; 
-        
-        // if slug #Foo-bar already exists, create #Foo-bar-2, #Foo-bar-3 and so on
-        if (slug in existingSlugsNumbers) {
-        existingSlugsNumbers[slug] += 1; 
-        slug += '-' + existingSlugsNumbers[slug]; 
-        } else {
-        existingSlugsNumbers[slug] = 1; 
-        }
-        
-        anchor.href = '#' + slug; 
-        heading.id = slug; 
-        
-        anchor.innerHTML = '¶'; 
-        heading.appendChild(anchor); 
-    }); 
-    
-    var headingInHash = document.getElementById(location.hash.substr(1)); 
-    if (headingInHash)
-        window.scrollTo(0, headingInHash.offsetTop); 
-}*/
-
-
 /*
  * jQuery FlexSlider v2.1
  * http://www.woothemes.com/flexslider/
@@ -144,18 +92,3 @@ f.controlNav.update("remove",a.last);c.directionNav&&f.directionNav.update()};a.
 a.slides.eq(b).remove();a.doMath();a.update(e,"remove");a.slides=d(c.selector+":not(.clone)",a);a.setup();c.removed(a)};f.init()};d.flexslider.defaults={namespace:"flex-",selector:".slides > li",animation:"fade",easing:"swing",direction:"horizontal",reverse:!1,animationLoop:!0,smoothHeight:!1,startAt:0,slideshow:!0,slideshowSpeed:7E3,animationSpeed:600,initDelay:0,randomize:!1,pauseOnAction:!0,pauseOnHover:!1,useCSS:!0,touch:!0,video:!1,controlNav:!0,directionNav:!0,prevText:"Previous",nextText:"Next",
 keyboard:!0,multipleKeyboard:!1,mousewheel:!1,pausePlay:!1,pauseText:"Pause",playText:"Play",controlsContainer:"",manualControls:"",sync:"",asNavFor:"",itemWidth:0,itemMargin:0,minItems:0,maxItems:0,move:0,start:function(){},before:function(){},after:function(){},end:function(){},added:function(){},removed:function(){}};d.fn.flexslider=function(j){void 0===j&&(j={});if("object"===typeof j)return this.each(function(){var a=d(this),c=a.find(j.selector?j.selector:".slides > li");1===c.length?(c.fadeIn(400),
 j.start&&j.start(a)):void 0==a.data("flexslider")&&new d.flexslider(this,j)});var l=d(this).data("flexslider");switch(j){case "play":l.play();break;case "pause":l.pause();break;case "next":l.flexAnimate(l.getTarget("next"),!0);break;case "prev":case "previous":l.flexAnimate(l.getTarget("prev"),!0);break;default:"number"===typeof j&&l.flexAnimate(j,!0)}}})(jQuery);
-
-
-/*! A fix for the iOS orientationchange zoom bug.
- * Script by @scottjehl, rebound by @wilto.
- * https://github.com/scottjehl/iOS-Orientationchange-Fix
- * MIT License.
- */
-(function(w){if(!(/iPhone|iPad|iPod/.test(navigator.platform)&&navigator.userAgent.indexOf("AppleWebKit")>-1)){return;}
-var doc=w.document;if(!doc.querySelector){return;}
-var meta=doc.querySelector("meta[name=viewport]"),initialContent=meta&&meta.getAttribute("content"),disabledZoom=initialContent+",maximum-scale=1",enabledZoom=initialContent+",maximum-scale=10",enabled=true,x,y,z,aig;if(!meta){return;}
-function restoreZoom(){meta.setAttribute("content",enabledZoom);enabled=true;}
-function disableZoom(){meta.setAttribute("content",disabledZoom);enabled=false;}
-function checkTilt(e){aig=e.accelerationIncludingGravity;x=Math.abs(aig.x);y=Math.abs(aig.y);z=Math.abs(aig.z);if(!w.orientation&&(x>7||((z>6&&y<8||z<8&&y>6)&&x>5))){if(enabled){disableZoom();}}
-else if(!enabled){restoreZoom();}}
-w.addEventListener("orientationchange",restoreZoom,false);w.addEventListener("devicemotion",checkTilt,false);})(this);

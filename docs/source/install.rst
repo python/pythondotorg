@@ -11,32 +11,36 @@ Here are two ways to hack on python.org:
 Easy setup using Vagrant
 ------------------------
 
+First, install Vagrant_ and Ansible_ on your machine.
+You should then be able to provision the Vagrant box.
+
 ::
 
     $ vagrant up
+
+The box will be provisioned with Python 3.5, a virtual environment with all
+the requirements installed, and a database ready to use.
+
+Once this is done it's time to create some data and run the server::
+
+    # SSH into the Vagrant box.
     $ vagrant ssh
-    # go to pythondotorg/ directory and activate virtualenv, then run
-    $ ./manage.py runserver 0.0.0.0:8000
-    # on your local shell
-    $ google-chrome http://localhost:8001/
-
-The box will be provisioned by Ansible_ 1.9.6 with Python 3.4, a virtualenv
-set up with requirements installed, and a database ready to use.
-
-The box also creates a superuser with username ``cbiggles`` for you. However, you
-will need to set a password before using it::
-
-    $ vagrant ssh
-    $ cd pythondotorg
+    # Go to the pythondotorg/ directory and activate the virtual environment.
+    $ cd ~/pythondotorg
     $ . venv/bin/activate
+    # Create initial data for the most used applications (optional).
+    $ ./manage.py create_initial_data
+    # Set a password for the superuser "cbiggles". This username and password
+    # can be used to login to the admin environment.
     $ ./manage.py changepassword cbiggles
+    # Run the server.
+    $ ./manage.py runserver 0.0.0.0:8000
 
-.. note::
+Now use your favorite browser to go to http://localhost:8001/.
+The admin pages can be found at http://localhost:8001/admin/.
 
-   You will also need to run ``./manage.py create_initial_data`` to create
-   initial data for the most used applications.
-
-.. _Ansible: http://docs.ansible.com/ansible/intro_installation.html
+.. _Vagrant: https://www.vagrantup.com/downloads.html
+.. _Ansible: https://docs.ansible.com/ansible/intro_installation.html
 
 .. _manual-setup:
 
@@ -60,6 +64,25 @@ default. Run the following command to create a new database::
 
     $ createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
+.. note::
+
+   If the above command fails to create a database and you see an error message
+   similar to::
+
+       createdb: database creation failed: ERROR:  permission denied to create database
+
+   Use the following command to create a database with *postgres* user as the
+   owner::
+
+       $ sudo -u postgres createdb pythondotorg -E utf-8 -l en_US.UTF-8
+
+   If you get an error like this::
+
+       createdb: database creation failed: ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_GB.UTF-8)
+
+   Then you will have to change the value of the ``-l`` option to what your
+   database was set up with initially.
+
 To change database configuration, you can add the following setting to
 ``pydotorg/settings/local.py`` (or you can use the ``DATABASE_URL`` environment
 variable)::
@@ -68,7 +91,18 @@ variable)::
         'default': dj_database_url.parse('postgres:///your_database_name')
     }
 
-Now it's time to run migrations::
+If you prefer to use a simpler setup for your database you can use SQLite.
+Set the ``DATABASE_URL`` environment variable for the current terminal session::
+
+    $ export DATABASE_URL="sqlite:///pythondotorg.db"
+
+.. note::
+
+   If you prefer to set this variable in a more permanent way add the above
+   line in your ``.bashrc`` file. Then it will be set for all terminal
+   sessions in your system.
+
+Whichever database type you chose, now it's time to run migrations::
 
     $ ./manage.py migrate
 
@@ -86,6 +120,9 @@ To compile and compress static media, you will need *compass* and
 To create initial data for the most used applications, run::
 
     $ ./manage.py create_initial_data
+
+See :ref:`command-create-initial-data` for the command options to specify 
+while creating initial data.
 
 Finally, start the development server::
 
@@ -143,3 +180,4 @@ Useful commands
   in?::
 
       $ ./manage.py dumpdata --format=json --indent=4 $APPNAME > fixtures/$APPNAME.json
+

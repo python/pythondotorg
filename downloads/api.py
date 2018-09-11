@@ -27,6 +27,7 @@ class OSResource(GenericResource):
             'name': ('exact',),
             'slug': ('exact',),
         }
+        abstract = False
 
 
 class ReleaseResource(GenericResource):
@@ -50,6 +51,7 @@ class ReleaseResource(GenericResource):
             'version': ('exact', 'startswith',),
             'release_date': (ALL,)
         }
+        abstract = False
 
 
 class ReleaseFileResource(GenericResource):
@@ -72,6 +74,7 @@ class ReleaseFileResource(GenericResource):
             'release': ALL_WITH_RELATIONS,
             'description': ('contains',),
         }
+        abstract = False
 
 
 # Django Rest Framework

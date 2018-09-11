@@ -52,7 +52,7 @@ class ContentManageable(models.Model):
 
 class NameSlugModel(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True)
+    slug = models.SlugField(max_length=200, unique=True)
 
     class Meta:
         abstract = True

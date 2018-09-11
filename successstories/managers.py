@@ -19,22 +19,7 @@ class StoryQuerySet(QuerySet):
         return self.published()[:4]
 
 
-# TODO: Use StoryQuerySet.as_manager()
-class StoryManager(Manager):
-    def get_queryset(self):
-        return StoryQuerySet(self.model, using=self._db)
-
-    def draft(self):
-        return self.get_queryset().draft()
-
-    def published(self):
-        return self.get_queryset().published()
-
-    def featured(self):
-        return self.get_queryset().featured()
-
-    def latest(self):
-        return self.get_queryset().latest()
+class StoryManager(Manager.from_queryset(StoryQuerySet)):
 
     def random_featured(self):
         # We don't just call queryset.order_by('?') because that

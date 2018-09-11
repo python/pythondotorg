@@ -1,7 +1,7 @@
 import os
-import unittest
+
 from django.test import TestCase
-from django.conf import settings
+from django.utils.timezone import datetime, make_aware
 
 from events.importer import ICSImporter
 from events.models import Calendar, Event
@@ -61,6 +61,15 @@ END:VCALENDAR
             e.description.rendered,
             '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
         )
+        self.assertTrue(e.next_or_previous_time.all_day)
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=2)),
+            e.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=3)),
+            e.next_or_previous_time.dt_end
+        )
 
         ical = """\
 BEGIN:VCALENDAR
@@ -94,3 +103,71 @@ END:VCALENDAR
         self.assertEqual(e.pk, e2.pk)
         self.assertEqual(e2.calendar.url, EVENTS_CALENDAR_URL)
         self.assertEqual(e2.description.rendered, 'Python Istanbul')
+        self.assertTrue(e.next_or_previous_time.all_day)
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=2)),
+            e.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2016, month=4, day=3)),
+            e.next_or_previous_time.dt_end
+        )
+
+    def test_import_event_excludes_ending_day_when_all_day_is_true(self):
+        ical = """\
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20150328
+DTEND;VALUE=DATE:20150330
+DTSTAMP:20150202T092425Z
+UID:pythoncalendartest@python.org
+SUMMARY:PythonCamp 2015 - Python Bar Camp in Cologne
+DESCRIPTION:Python PythonCamp 2015 - Python Bar Camp in Cologne
+LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Cologne\, Germany
+END:VEVENT
+END:VCALENDAR
+"""
+        importer = ICSImporter(self.calendar)
+        importer.import_events_from_text(ical)
+
+        all_day_event = Event.objects.get(uid='pythoncalendartest@python.org')
+        self.assertTrue(all_day_event.next_or_previous_time.all_day)
+        self.assertFalse(all_day_event.next_or_previous_time.single_day)
+        self.assertEqual(
+            make_aware(datetime(year=2015, month=3, day=28)),
+            all_day_event.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2015, month=3, day=29)),
+            all_day_event.next_or_previous_time.dt_end
+        )
+
+    def test_import_event_does_not_exclude_ending_day_when_all_day_is_false(self):
+        ical = """\
+BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART:20130802T200000Z
+DTEND:20130802T203000Z
+DTSTAMP:20150202T092425Z
+UID:pythoncalendartestsingleday@python.org
+SUMMARY:PythonCamp 2015 - Python Bar Camp in Cologne
+DESCRIPTION:Python PythonCamp 2015 - Python Bar Camp in Cologne
+LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Cologne\, Germany
+END:VEVENT
+END:VCALENDAR
+"""
+
+        importer = ICSImporter(self.calendar)
+        importer.import_events_from_text(ical)
+
+        single_day_event = Event.objects.get(uid='pythoncalendartestsingleday@python.org')
+        self.assertFalse(single_day_event.next_or_previous_time.all_day)
+        self.assertTrue(single_day_event.next_or_previous_time.single_day)
+        self.assertEqual(
+            make_aware(datetime(year=2013, month=8, day=2, hour=20)),
+            single_day_event.next_or_previous_time.dt_start
+        )
+        self.assertEqual(
+            make_aware(datetime(year=2013, month=8, day=2, hour=20, minute=30)),
+            single_day_event.next_or_previous_time.dt_end
+        )

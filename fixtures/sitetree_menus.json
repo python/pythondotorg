@@ -67,7 +67,7 @@
     "access_loggedin": false, 
     "inmenu": true, 
     "alias": "docs-meta", 
-    "url": "docs-landing", 
+    "url": "https://docs.python.org/",
     "hint": "Docs.python.org", 
     "inbreadcrumbs": true, 
     "parent": null, 
@@ -90,12 +90,12 @@
     "access_loggedin": false, 
     "inmenu": true, 
     "alias": "pypi-meta", 
-    "url": "pypl-landing", 
-    "hint": "PyPI.python.org", 
+    "url": "https://pypi.org/",
+    "hint": "pypi.org",
     "inbreadcrumbs": true, 
     "parent": null, 
     "hidden": false, 
-    "title": "PyPi"
+    "title": "PyPI"
   }, 
   "model": "sitetree.treeitem"
 },
@@ -113,7 +113,7 @@
     "access_loggedin": false, 
     "inmenu": true, 
     "alias": "jobs-meta", 
-    "url": "jobs-landing", 
+    "url": "jobs:job_list",
     "hint": "Jobs.python.org", 
     "inbreadcrumbs": true, 
     "parent": null, 
@@ -127,7 +127,7 @@
   "fields": {
     "access_permissions": [], 
     "access_restricted": false, 
-    "urlaspattern": true, 
+    "urlaspattern": false,
     "sort_order": 6, 
     "access_perm_type": 1, 
     "insitetree": true, 
@@ -135,13 +135,13 @@
     "description": "", 
     "access_loggedin": false, 
     "inmenu": true, 
-    "alias": "shop-meta", 
-    "url": "shop-landing", 
-    "hint": "Shop.python.org", 
+    "alias": null,
+    "url": "/community/",
+    "hint": "Python Community",
     "inbreadcrumbs": true, 
     "parent": null, 
     "hidden": false, 
-    "title": "Shop"
+    "title": "Community"
   }, 
   "model": "sitetree.treeitem"
 },

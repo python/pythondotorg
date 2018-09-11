@@ -4,6 +4,7 @@ from django.views.generic import TemplateView
 from . import views
 from . import feeds
 
+app_name = 'jobs'
 urlpatterns = [
     url(r'^$', views.JobList.as_view(), name='job_list'),
     url(r'^feed/rss/$', feeds.JobFeed(), name='job_rss'),
@@ -33,5 +34,6 @@ urlpatterns = [
     url(r'^dal-city-autocomplete/$', views.CityAutocomplete.as_view(), name='dal-city-autocomplete'),
     url(r'^(?P<pk>\d+)/edit/$', views.JobEdit.as_view(), name='job_edit'),
     url(r'^(?P<pk>\d+)/preview/$', views.JobPreview.as_view(), name='job_preview'),
+    url(r'^(?P<pk>\d+)/remove/$', views.JobRemove.as_view(), name='job_remove'),
     url(r'^(?P<pk>\d+)/$', views.JobDetail.as_view(), name='job_detail'),
 ]

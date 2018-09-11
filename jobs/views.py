@@ -103,6 +103,11 @@ class JobListMine(LoginRequiredMixin, JobMixin, ListView):
     def get_queryset(self):
         return Job.objects.by(self.request.user).select_related()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mine_listing'] = True
+        return context
+
 
 class JobListType(JobTypeMenu, JobMixin, ListView):
     paginate_by = 25
@@ -266,6 +271,19 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         return context
 
 
+class JobRemove(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        try:
+            job = Job.objects.get(id=pk, creator=request.user)
+        except Job.DoesNotExist:
+            return redirect('jobs:job_list_mine')
+        job.status = Job.STATUS_REMOVED
+        job.save()
+        messages.add_message(request, messages.SUCCESS, "'%s' removed." % job)
+        return redirect('jobs:job_list_mine')
+
+
 class JobModerateList(JobReview):
     redirect_url = 'jobs:job_moderate'
 
@@ -300,7 +318,7 @@ class JobDetail(JobMixin, DetailView):
         context['user_can_edit'] = (
             self.object.creator == self.request.user or
             self.has_jobs_board_admin_access()
-        )
+        ) and self.object.editable
         context['job_review_form'] = JobReviewCommentForm(initial={'job': self.object})
         return context
 
@@ -326,12 +344,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
 
     def get_object(self, queryset=None):
         """ Show only approved jobs to the public, staff can see all jobs """
-        # 404 if job doesn't exist
-        try:
-            job = Job.objects.select_related().get(pk=self.kwargs['pk'])
-        except Job.DoesNotExist:
-            raise Http404("No Job with PK#{} found.".format(self.kwargs['pk']))
-
+        job = super().get_object(queryset=queryset)
         # Only allow creator to preview and only while in draft status
         if job.creator == self.request.user and job.editable:
             return job
@@ -339,6 +352,8 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         if self.request.user.is_staff:
             return job
 
+        if not job.editable:
+            raise Http404
         return None
 
     def get_context_data(self, **kwargs):
@@ -346,7 +361,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         context['user_can_edit'] = (
             self.object.creator == self.request.user or
             self.has_jobs_board_admin_access()
-        )
+        ) and self.object.editable
         context['under_preview'] = True
         # TODO: why we pass this?
         context['form'] = self.get_form(self.form_class)
@@ -419,7 +434,7 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
     def get_queryset(self):
         if self.has_jobs_board_admin_access():
             return Job.objects.select_related()
-        return self.request.user.jobs_job_creator.all()
+        return self.request.user.jobs_job_creator.editable()
 
     def form_valid(self, form):
         """ set last_modified_by to the current user """

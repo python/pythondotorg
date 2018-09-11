@@ -120,3 +120,4 @@ class GenericResource(ModelResource):
         authentication = ApiKeyOrGuestAuthentication()
         authorization = StaffAuthorization()
         throttle = CacheThrottle(throttle_at=600) # default is 150 req/hr
+        abstract = True

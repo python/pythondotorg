@@ -100,9 +100,13 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
             'story': instance,
         })
 
-        box, _ = Box.objects.get_or_create(label='supernav-python-success-stories')
-        box.content = content
-        box.save()
+        box, _ = Box.objects.update_or_create(
+            label='supernav-python-success-stories',
+            defaults={
+                'content': content,
+                'content_markup_type': 'html',
+            }
+        )
 
         # Purge Fastly cache
         purge_url('/box/supernav-python-success-stories/')
@@ -136,8 +140,10 @@ Content:
 
 Review URL: {admin_url}
         """
+        name_lines = instance.name.splitlines()
+        name = name_lines[0] if name_lines else instance.name
         email = EmailMessage(
-            'New success story submission: {}'.format(instance.name),
+            'New success story submission: {}'.format(name),
             body.format(
                 name=instance.name,
                 company_name=instance.company_name,

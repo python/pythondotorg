@@ -1809,6 +1809,12 @@ html[xmlns] .slides { display: block; }
     #margin-left: -20px;
     text-align: right;
     clear: none; }
+  .list-recent-jobs .listing-actions {
+    clear: both;
+    overflow: hidden;
+    *zoom: 1;
+    padding-top: 0.9375em;
+    text-align: right; }
 
   /*h2*/
   .listing-company .listing-company-name {
@@ -1888,8 +1894,7 @@ html[xmlns] .slides { display: block; }
       clear: none;
       border-left: 0;
       border-right: 0; }
-    .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1
-    .element-8 {
+    .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
       border-right: 1px solid #d5d6d8; }
     .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
       border-left: 1px solid #f7f7f8; }
@@ -2317,9 +2322,6 @@ html[xmlns] .slides { display: block; }
   .footer-links a {
     padding: 0.3em 0.75em; }
 
-  #python-jetbrains-survey {
-    display: block; }
-
   .flex-slideshow.home-slideshow .caption-wrapper {
     float: left;
     width: 49%; }
@@ -2479,10 +2481,7 @@ html[xmlns] .slides { display: block; }
   .event-description,
   .job-description {
     padding-left: 8.51064%;
-    padding-right: 8.51064%; }
-
-  #python-jetbrains-survey {
-    display: block; } }
+    padding-right: 8.51064%; } }
 /* - - - Larger than 1200px - - - */
 @media (min-width: 75em) {
   body:after {
@@ -2515,10 +2514,7 @@ html[xmlns] .slides { display: block; }
       margin-right: 17.3913%; }
 
   .community-banner {
-    background-position: 90% 0; }
-
-  #python-jetbrains-survey {
-    display: block; } }
+    background-position: 90% 0; } }
 /* http://dev.w3.org/csswg/css-device-adapt/
  * http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
  * for IE10 Snap Mode on Metro

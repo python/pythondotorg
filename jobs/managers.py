@@ -57,6 +57,9 @@ class JobQuerySet(QuerySet):
     def featured(self):
         return self.filter(is_featured=True)
 
+    def editable(self):
+        return self.exclude(status__exact=self.model.STATUS_APPROVED)
+
     def review(self):
         review_threshold = timezone.now() - datetime.timedelta(days=120)
         return self.filter(
