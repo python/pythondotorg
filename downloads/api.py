@@ -1,5 +1,7 @@
-from rest_framework import viewsets
+from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
+from rest_framework.decorators import action
+from rest_framework.response import Response
 
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
@@ -121,3 +123,14 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
     filter_class = ReleaseFileFilter
+
+    @action(detail=False, methods=['delete'])
+    def delete_by_release(self, request):
+        release = request.query_params.get('release')
+        if release is None:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        # TODO: We can add support for pagination in the future.
+        queryset = self.filter_queryset(self.get_queryset())
+        # This calls 'mixins.DestroyModelMixin.perform_destroy()'.
+        self.perform_destroy(queryset)
+        return Response(status=status.HTTP_204_NO_CONTENT)

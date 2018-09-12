@@ -445,6 +445,14 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         self.token_header = 'Token'
         self.Authorization = '%s %s' % (self.token_header, self.staff_key)
         self.Authorization_invalid = '%s invalidtoken' % self.token_header
+        self.normal_user = UserFactory(
+            username='normaluser',
+            password='password',
+        )
+        self.normal_user_key = self.normal_user.auth_token.key
+        self.Authorization_normal = '%s %s' % (
+            self.token_header, self.normal_user_key,
+        )
 
     def get_json(self, response):
         return response.data
@@ -480,3 +488,58 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         # Third request should return '429 TOO MANY REQUESTS'.
         response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
         self.assertEqual(response.status_code, 429)
+
+    def test_filter_release_file_delete_by_release(self):
+        # Django Rest Framework doesn't support DELETE requests in
+        # <name>-list views.
+        # Delete all files of a release.
+        response = self.json_client(
+            'delete',
+            # TODO: Find a way to use view.reverse_action() at
+            # http://www.django-rest-framework.org/api-guide/viewsets/#reversing-action-urls
+            self.create_url(
+                'release_file/delete_by_release',
+                filters={'release': self.release_275.pk},
+            ),
+            HTTP_AUTHORIZATION=self.Authorization,
+        )
+        self.assertEqual(response.status_code, 204)
+
+        # Making a GET request after the deletion shouldn't return any results.
+        response = self.client.get(
+            self.create_url('release_file', filters={'release': self.release_275.pk})
+        )
+        self.assertEqual(response.status_code, 200)
+        content = self.get_json(response)
+        self.assertEqual(len(content), 0)
+
+        # Making a valid request should return 403 Forbidden if it
+        # comes from a non-staff user.
+        response = self.json_client(
+            'delete',
+            self.create_url(
+                'release_file/delete_by_release',
+                filters={'release': self.release_275.pk},
+            ),
+            HTTP_AUTHORIZATION=self.Authorization_normal,
+        )
+        self.assertEqual(response.status_code, 403)
+
+        # Calling /release_file/delete_by_release/ with no '?release=N' should
+        # return 400.
+        response = self.json_client(
+            'delete',
+            self.create_url('release_file/delete_by_release'),
+            HTTP_AUTHORIZATION=self.Authorization,
+        )
+        self.assertEqual(response.status_code, 400)
+
+        # /release_file/delete_by_release/ should only accept DELETE requests.
+        response = self.client.get(
+            self.create_url(
+                'release_file/delete_by_release',
+                filters={'release': self.release_275.pk},
+            ),
+            HTTP_AUTHORIZATION=self.Authorization,
+        )
+        self.assertEqual(response.status_code, 405)
