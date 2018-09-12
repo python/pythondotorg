@@ -3,7 +3,7 @@ from dateutil.rrule import rrule, YEARLY, MONTHLY, WEEKLY, DAILY
 from operator import itemgetter
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import date
@@ -14,11 +14,10 @@ from django.utils.translation import ugettext_lazy as _
 from cms.models import ContentManageable, NameSlugModel
 
 from markupfield.fields import MarkupField
-from timedelta.fields import TimedeltaField
-from timedelta.helpers import nice_repr as timedelta_nice_repr
-from timedelta.helpers import parse as timedelta_parse
 
-from .utils import minutes_resolution, convert_dt_to_aware
+from .utils import (
+    minutes_resolution, convert_dt_to_aware, timedelta_nice_repr, timedelta_parse,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -47,7 +46,13 @@ class Calendar(ContentManageable):
 
 
 class EventCategory(NameSlugModel):
-    calendar = models.ForeignKey(Calendar, related_name='categories', null=True, blank=True)
+    calendar = models.ForeignKey(
+        Calendar,
+        related_name='categories',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name_plural = 'event categories'
@@ -58,7 +63,13 @@ class EventCategory(NameSlugModel):
 
 
 class EventLocation(models.Model):
-    calendar = models.ForeignKey(Calendar, related_name='locations', null=True, blank=True)
+    calendar = models.ForeignKey(
+        Calendar,
+        related_name='locations',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     name = models.CharField(max_length=255)
     address = models.CharField(blank=True, null=True, max_length=255)
@@ -93,12 +104,18 @@ class EventManager(models.Manager):
 class Event(ContentManageable):
     uid = models.CharField(max_length=200, null=True, blank=True)
     title = models.CharField(max_length=200)
-    calendar = models.ForeignKey(Calendar, related_name='events')
+    calendar = models.ForeignKey(Calendar, related_name='events', on_delete=models.CASCADE)
 
     description = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=False)
-    venue = models.ForeignKey(EventLocation, null=True, blank=True, related_name='events')
+    venue = models.ForeignKey(
+        EventLocation,
+        related_name='events',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
-    categories = models.ManyToManyField(EventCategory, related_name='events', blank=True, null=True)
+    categories = models.ManyToManyField(EventCategory, related_name='events', blank=True)
     featured = models.BooleanField(default=False, db_index=True)
 
     objects = EventManager()
@@ -114,6 +131,8 @@ class Event(ContentManageable):
 
     @cached_property
     def previous_event(self):
+        if not self.next_time:
+            return None
         dt = self.next_time.dt_end
         try:
             return Event.objects.until_datetime(dt).filter(calendar=self.calendar)[0]
@@ -122,6 +141,8 @@ class Event(ContentManageable):
 
     @cached_property
     def next_event(self):
+        if not self.next_time:
+            return None
         dt = self.next_time.dt_start
         try:
             return Event.objects.for_datetime(dt).filter(calendar=self.calendar)[0]
@@ -209,7 +230,7 @@ class OccurringRule(RuleMixin, models.Model):
 
     Shares the same API of `RecurringRule`.
     """
-    event = models.OneToOneField(Event, related_name='occurring_rule')
+    event = models.OneToOneField(Event, related_name='occurring_rule', on_delete=models.CASCADE)
     dt_start = models.DateTimeField(default=timezone.now)
     dt_end = models.DateTimeField(default=timezone.now)
     all_day = models.BooleanField(default=False)
@@ -235,6 +256,10 @@ class OccurringRule(RuleMixin, models.Model):
         return self.dt_start.date() == self.dt_end.date()
 
 
+def duration_default():
+    return datetime.timedelta(minutes=15)
+
+
 class RecurringRule(RuleMixin, models.Model):
     """
     A repeating occurrence of an Event.
@@ -248,10 +273,11 @@ class RecurringRule(RuleMixin, models.Model):
         (DAILY, 'day(s)'),
     )
 
-    event = models.ForeignKey(Event, related_name='recurring_rules')
+    event = models.ForeignKey(Event, related_name='recurring_rules', on_delete=models.CASCADE)
     begin = models.DateTimeField(default=timezone.now)
     finish = models.DateTimeField(default=timezone.now)
-    duration = TimedeltaField(default='15 mins')
+    duration_internal = models.DurationField(default=duration_default)
+    duration = models.CharField(max_length=50, default='15 min')
     interval = models.PositiveSmallIntegerField(default=1)
     frequency = models.PositiveSmallIntegerField(FREQ_CHOICES, default=WEEKLY)
     all_day = models.BooleanField(default=False)
@@ -282,23 +308,26 @@ class RecurringRule(RuleMixin, models.Model):
     @property
     def dt_start(self):
         since = timezone.now()
-
-        return self.to_rrule().after(since)
+        recurrence = self.to_rrule().after(since)
+        if recurrence is None:
+            return since
+        return recurrence
 
     @property
     def dt_end(self):
-        duration = self.duration
-        if not isinstance(duration, datetime.timedelta):
-            duration = timedelta_parse(duration)
-        return self.dt_start + duration
+        return self.dt_start + self.duration_internal
 
     @property
     def single_day(self):
         return self.dt_start.date() == self.dt_end.date()
 
+    def save(self, *args, **kwargs):
+        self.duration_internal = timedelta_parse(self.duration)
+        super().save(*args, **kwargs)
+
 
 class Alarm(ContentManageable):
-    event = models.ForeignKey(Event)
+    event = models.ForeignKey(Event, on_delete=models.CASCADE)
     trigger = models.PositiveSmallIntegerField(_("hours before the event occurs"), default=24)
 
     def __str__(self):

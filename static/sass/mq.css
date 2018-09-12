@@ -1459,6 +1459,10 @@ html[xmlns] .slides { display: block; }
     content: "Category: ";
     color: #666666; }
 
+  .listing-job-title:before {
+    content: "Title: ";
+    color: #666666; }
+
   .listing-job-type:before {
     content: "Looking for: ";
     color: #666666; }
@@ -1805,6 +1809,12 @@ html[xmlns] .slides { display: block; }
     #margin-left: -20px;
     text-align: right;
     clear: none; }
+  .list-recent-jobs .listing-actions {
+    clear: both;
+    overflow: hidden;
+    *zoom: 1;
+    padding-top: 0.9375em;
+    text-align: right; }
 
   /*h2*/
   .listing-company .listing-company-name {

@@ -116,8 +116,8 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
 
-        rt.begin = now + datetime.timedelta(days=5)
-        rt.finish = now + datetime.timedelta(days=3)
+        rt.begin = now + datetime.timedelta(days=7)
+        rt.finish = now + datetime.timedelta(days=9)
         rt.save()
 
         event = Event.objects.get(pk=self.event.pk)
@@ -176,3 +176,13 @@ class EventsModelsTests(TestCase):
         )
         self.assertEqual(self.event.next_event, event2)
         self.assertEqual(event2.previous_event, self.event)
+
+    def test_event_next_event(self):
+        # 'Event.next_event' can return None if there is no
+        # OccurringRule or RecurringRule found.
+        self.assertIsNone(self.event.next_event)
+
+    def test_event_previous_event(self):
+        # 'Event.previous_event' can return None if there is no
+        # OccurringRule or RecurringRule found.
+        self.assertIsNone(self.event.previous_event)

@@ -1,5 +1,10 @@
+import re
+
+from django.http import HttpResponsePermanentRedirect
+from django.urls import reverse
 from django.views.generic import DetailView
 
+from downloads.models import Release
 from .models import Page
 
 
@@ -37,3 +42,24 @@ class PageView(DetailView):
         context = self.super().get_extra_context(*args, **kwargs)
         context['in_pages_app'] = True
         return context
+
+    def get(self, request, *args, **kwargs):
+        # Redirect '/download/releases/X.Y.Z' to
+        # '/downloads/release/python-XYZ/' if the latter URL doesn't have
+        # 'release_page' (which points to the former URL) field set.
+        # See #956 for details.
+        matched = re.match(r'/download/releases/([\d.]+)/$', self.request.path)
+        if matched is not None:
+            release_slug = 'python-{}'.format(matched.group(1).replace('.', ''))
+            try:
+                Release.objects.get(slug=release_slug, release_page__isnull=True)
+            except Release.DoesNotExist:
+                pass
+            else:
+                return HttpResponsePermanentRedirect(
+                    reverse(
+                        'download:download_release_detail',
+                        kwargs={'release_slug': release_slug},
+                    )
+                )
+        return super().get(request, *args, **kwargs)

@@ -67,6 +67,11 @@ class JobQuerySet(QuerySet):
             Q(created__gte=review_threshold)
         ).order_by('created')
 
+    def moderate(self):
+        return self.filter(
+            ~Q(status__exact=self.model.STATUS_REVIEW)
+        )
+
     def visible(self):
         """
         Jobs that should be publicly visible on the website. They will have an

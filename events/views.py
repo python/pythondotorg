@@ -1,11 +1,16 @@
-# Create your views here.
 import datetime
 
-from django.shortcuts import get_object_or_404
+from django.contrib import messages
+from django.core.mail import BadHeaderError
+from django.shortcuts import get_object_or_404, redirect
+from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView, ListView, FormView
+
+from pydotorg.mixins import LoginRequiredMixin
 
 from .models import Calendar, Event, EventCategory, EventLocation
+from .forms import EventForm
 
 
 class CalendarList(ListView):
@@ -127,3 +132,17 @@ class EventLocationList(ListView):
 
     def get_queryset(self):
         return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])
+
+
+class EventSubmit(LoginRequiredMixin, FormView):
+    template_name = 'events/event_form.html'
+    form_class = EventForm
+    success_url = reverse_lazy('events:event_thanks')
+
+    def form_valid(self, form):
+        try:
+            form.send_email(self.request.user)
+        except BadHeaderError:
+            messages.add_message(self.request, messages.ERROR, 'Invalid header found.')
+            return redirect('events:event_submit')
+        return super().form_valid(form)

@@ -5,7 +5,19 @@
 {% block content %}
 {% load companies %}
 <div class="row">
+    {% if mode == 'review' %}
     <h1>Job Listing Reviews</h1>
+    {% else %}
+    <h1>Moderate Job Posts</h1>
+    <form action="" class="wide-form" method="get">
+        <label for="q">Job title:</label>
+        <input type="text" name="q" id="q" placeholder="Type 'django' or 'test'" value="{{ request.GET.q }}">
+        <button type="submit">Search</button>
+        {% if request.GET.q %}
+        <a class="button" href="{% url 'jobs:job_moderate' %}">Clear search result</a>
+        {% endif %}
+    </form>
+    {% endif %}
     <table>
         <thead>
             <tr>
@@ -19,6 +31,9 @@
         <td><a href="{% url 'jobs:job_detail' pk=object.pk %}">{{ object.pk }}</a></td>
         <td>
             <p><strong>Title:</strong> {{ object.job_title }}</p>
+            {% if mode == 'moderate' %}
+            <p><strong>Status:</strong> {{ object.status }}</p>
+            {% endif %}
             <p><strong>Company:</strong> {{ object.company_name }}</p>
             <p><strong>Posted:</strong> <time datetime="{{ object.created|date:"c" }}">{{ object.created|date:"d F Y" }}</time></p>
             <p><strong>Category:</strong> {{ object.category }}</p>
@@ -33,9 +48,13 @@
                 {% csrf_token %}
                 <input type="hidden" name="job_id" value="{{ object.id }}">
                 <div>
+                    {% if mode == 'review' %}
                     <a class="button" href="{% url 'jobs:job_detail' pk=object.pk %}">Review</a>
                     <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
                     <button name="action" value="approve">Approve</button>
+                    {% else %}
+                    <a class="button" href="{% url 'jobs:job_edit' pk=object.pk %}?next={{request.get_full_path}}">Edit</a>
+                    {% endif %}
                     <button name="action" value="reject">Reject</button>
                     <button name="action" value="archive">Archive</button>
                     <button name="action" value="remove">Remove</button>
@@ -51,17 +70,24 @@
     {% if page_obj.has_previous or page_obj.has_next %}
     <ul class="pagination menu">
         {% if page_obj.has_previous %}
-            <li class="previous"><a href="?page={{ page_obj.previous_page_number }}">Prev</a></li>
+            <li class="previous">
+                <a href="?page={{ page_obj.previous_page_number }}{% if request.GET.q %}&amp;q={{ request.GET.q }}{% endif %}">Prev</a>
+            </li>
         {% else %}
             <li class="previous"><a class="disabled" href="">Prev</a></li>
         {% endif %}
 
         {% for page in paginator.page_range %}
-        <li><a {% if page_obj.number == page %}class="active" {% endif %}href="?page={{ page }}">{{ page }}</a></li>
+        <li>
+            <a {% if page_obj.number == page %}class="active" {% endif %}
+               href="?page={{ page }}{% if request.GET.q %}&amp;q={{ request.GET.q }}{% endif %}">{{ page }}</a>
+        </li>
         {% endfor %}
 
         {% if page_obj.has_next %}
-            <li class="next"><a href="?page={{ page_obj.next_page_number }}">Next</a></li>
+            <li class="next">
+                <a href="?page={{ page_obj.next_page_number }}{% if request.GET.q %}&amp;q={{ request.GET.q }}{% endif %}">Next</a>
+            </li>
         {% else %}
             <li class="next"><a class="disabled" href="">Next</a></li>
         {% endif %}

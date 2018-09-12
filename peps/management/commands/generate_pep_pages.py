@@ -1,7 +1,7 @@
 import re
 import os
 
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from django.conf import settings
 
 from peps.converters import (
@@ -11,7 +11,7 @@ from peps.converters import (
 pep_number_re = re.compile(r'pep-(\d+)')
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Generate CMS Pages from flat file PEP data.
 
@@ -32,7 +32,7 @@ class Command(NoArgsCommand):
         # All images are pngs
         return path.endswith('.png')
 
-    def handle_noargs(self, **options):
+    def handle(self, **options):
         verbosity = int(options['verbosity'])
 
         def verbose(msg):
@@ -49,6 +49,9 @@ class Command(NoArgsCommand):
 
         verbose("Generating PEP0 index page")
         pep0_page, _ = get_pep0_page()
+        if pep0_page is None:
+            verbose("HTML version of PEP 0 cannot be generated.")
+            return
 
         image_paths = set()
 
@@ -74,6 +77,12 @@ class Command(NoArgsCommand):
             if pep_match:
                 pep_number = pep_match.groups(1)[0]
                 p = get_pep_page(pep_number)
+                if p is None:
+                    verbose(
+                        "- HTML version PEP {!r} cannot be generated.".format(
+                            pep_number
+                        )
+                    )
                 verbose("====== Title: '{}'".format(p.title))
             else:
                 verbose("- Skipping invalid '{}'".format(f))

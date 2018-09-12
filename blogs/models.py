@@ -9,14 +9,14 @@ from cms.models import ContentManageable
 class BlogEntry(models.Model):
     """
     Model to store Blog entries from Blogger
-    Specificially http://blog.python.org/
+    Specificially https://blog.python.org/
     Feed URL is defined in settings.PYTHON_BLOG_FEED_URL
     """
     title = models.CharField(max_length=200)
     summary = models.TextField(blank=True)
     pub_date = models.DateTimeField()
     url = models.URLField('URL')
-    feed = models.ForeignKey('Feed')
+    feed = models.ForeignKey('Feed', on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = 'Blog Entry'
@@ -76,7 +76,11 @@ class Translation(ContentManageable):
 
 class Contributor(ContentManageable):
     """ Blog Contributors """
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name="blog_contributor")
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name='blog_contributor',
+        on_delete=models.CASCADE,
+    )
 
     class Meta:
         verbose_name = 'Contributor'

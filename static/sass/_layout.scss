@@ -730,6 +730,13 @@
             text-align: right;
             clear: none;
         }
+
+        .listing-actions {
+            clear: both;
+            @include clearfix();
+            padding-top: px2em( 15px );
+            text-align: right;
+        }
     }
     /*h2*/ .listing-company {
 

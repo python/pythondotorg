@@ -1,8 +1,9 @@
-from pydotorg.tests.test_classes import TemplateTestCase
+from django.test import TestCase
+
 from ..models import Post
 
 
-class CommunityManagersTest(TemplateTestCase):
+class CommunityManagersTest(TestCase):
     def test_post_manager(self):
         private_post = Post.objects.create(
             content='private post',

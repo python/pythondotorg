@@ -11,7 +11,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 
 class Sponsor(ContentManageable):
-    company = models.ForeignKey(Company)
+    company = models.ForeignKey(Company, on_delete=models.CASCADE)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, blank=True)
     is_published = models.BooleanField(default=False, db_index=True)
     featured = models.BooleanField(

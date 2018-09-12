@@ -6,10 +6,10 @@ from django.views.generic.base import TemplateView, RedirectView
 from django.conf import settings
 
 from cms.views import custom_404
-from users.views import HoneypotSignupView
+from users.views import HoneypotSignupView, CustomPasswordChangeView
 
 from . import views
-from .urls_api import v1_api
+from .urls_api import v1_api, router
 
 handler404 = custom_404
 
@@ -25,10 +25,10 @@ urlpatterns = [
     url(r'^about/$', TemplateView.as_view(template_name="python/about.html"), name='about'),
 
     # Redirect old download links to new downloads pages
-    url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/')),
-    url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/')),
-    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/')),
-    url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/')),
+    url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/', permanent=True)),
+    url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/', permanent=True)),
+    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/', permanent=True)),
+    url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/', permanent=True)),
 
     # duplicated downloads to getit to bypass China's firewall. See
     # https://github.com/python/pythondotorg/issues/427 for more info.
@@ -36,7 +36,7 @@ urlpatterns = [
     url(r'^downloads/', include('downloads.urls', namespace='download')),
     url(r'^doc/$', views.DocumentationIndexView.as_view(), name='documentation'),
     url(r'^blog/$', RedirectView.as_view(url='/blogs/', permanent=True)),
-    url(r'^blogs/$', include('blogs.urls')),
+    url(r'^blogs/', include('blogs.urls')),
     url(r'^inner/$', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 
     # other section landing pages
@@ -47,13 +47,16 @@ urlpatterns = [
 
     # Override /accounts/signup/ to add Honeypot.
     url(r'^accounts/signup/', HoneypotSignupView.as_view()),
+    # Override /accounts/password/change/ to add Honeypot
+    # and change success URL.
+    url(r'^accounts/password/change/$', CustomPasswordChangeView.as_view(),
+        name='account_change_password'),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^box/', include('boxes.urls')),
     url(r'^community/', include('community.urls', namespace='community')),
     url(r'^community/microbit/$', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     url(r'^events/', include('events.urls', namespace='events')),
     url(r'^jobs/', include('jobs.urls', namespace='jobs')),
-    url(r'^newjobs/', include('jobs.urls', namespace='jobs')),
     url(r'^sponsors/', include('sponsors.urls')),
     url(r'^success-stories/', include('successstories.urls')),
     url(r'^users/', include('users.urls', namespace='users')),
@@ -63,13 +66,18 @@ urlpatterns = [
     url(r'^search/', include('haystack.urls')),
     # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 
     # api
     url(r'^api/', include(v1_api.urls)),
+    url(r'^api/v2/', include(router.urls)),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    import debug_toolbar
+    urlpatterns = [
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+    ] + urlpatterns

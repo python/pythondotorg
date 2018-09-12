@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -51,6 +51,7 @@ class Job(ContentManageable):
         JobCategory,
         related_name='jobs',
         limit_choices_to={'active': True},
+        on_delete=models.CASCADE,
     )
     job_types = models.ManyToManyField(
         JobType,
@@ -222,14 +223,6 @@ class Job(ContentManageable):
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
     @property
-    def visible(self):
-        if self.status != self.STATUS_APPROVED:
-            return False
-        if self.expires and self.expires <= timezone.now():
-            return False
-        return True
-
-    @property
     def editable(self):
         return self.status in (
             self.STATUS_DRAFT,
@@ -245,7 +238,7 @@ class Job(ContentManageable):
 
 
 class JobReviewComment(ContentManageable):
-    job = models.ForeignKey(Job, related_name='review_comments')
+    job = models.ForeignKey(Job, related_name='review_comments', on_delete=models.CASCADE)
     comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
     class Meta:

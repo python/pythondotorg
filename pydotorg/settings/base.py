@@ -6,7 +6,7 @@ from django.contrib.messages import constants
 ### Basic config
 
 BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-DEBUG = TEMPLATE_DEBUG = True
+DEBUG = True
 SITE_ID = 1
 SECRET_KEY = 'its-a-secret-to-everybody'
 
@@ -52,7 +52,11 @@ STATICFILES_DIRS = [
     os.path.join(BASE, 'static'),
 ]
 STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
-
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'pipeline.finders.PipelineFinder',
+)
 
 ### Authentication
 
@@ -73,46 +77,54 @@ ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_ADAPTER = 'users.adapters.PythonDotOrgAdapter'
+ACCOUNT_USERNAME_VALIDATORS = 'users.validators.username_validators'
 
 ### Templates
 
-TEMPLATE_DIRS = [
-    os.path.join(BASE, 'templates')
-]
-
-TEMPLATE_CONTEXT_PROCESSORS = [
-    "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
-    "django.core.context_processors.request",
-    "django.contrib.messages.context_processors.messages",
-    "pydotorg.context_processors.site_info",
-    "pydotorg.context_processors.url_name",
-    "pydotorg.context_processors.get_host_with_scheme",
-    "pydotorg.context_processors.blog_url",
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE, 'templates'),
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+                'pydotorg.context_processors.site_info',
+                'pydotorg.context_processors.url_name',
+                'pydotorg.context_processors.get_host_with_scheme',
+                'pydotorg.context_processors.blog_url',
+            ],
+        },
+    },
 ]
 
 ### URLs, WSGI, middleware, etc.
 
 ROOT_URLCONF = 'pydotorg.urls'
 
-MIDDLEWARE_CLASSES = (
-    'pydotorg.middleware.AdminNoCaching',
-    'django.middleware.common.CommonMiddleware',
+# Note that we don't need to activate 'XFrameOptionsMiddleware' and
+# 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
+MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'pydotorg.middleware.AdminNoCaching',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'waffle.middleware.WaffleMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-)
+]
 
 AUTH_USER_MODEL = 'users.User'
 
@@ -131,10 +143,8 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
 
-    'jsonfield',
     'pipeline',
     'sitetree',
-    'timedelta',
     'imagekit',
     'haystack',
     'honeypot',
@@ -167,6 +177,10 @@ INSTALLED_APPS = [
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
+
+    'rest_framework',
+    'rest_framework.authtoken',
+    'django_filters',
 ]
 
 # Fixtures
@@ -201,9 +215,6 @@ LOGGING = {
     }
 }
 
-### Development
-DEV_FIXTURE_URL = 'https://www.python.org/m/fixtures/dev-fixtures.json.gz'
-
 ### Honeypot
 HONEYPOT_FIELD_NAME = 'email_body_text'
 HONEYPOT_VALUE = 'write your message'
@@ -226,20 +237,45 @@ FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
 JOB_THRESHOLD_DAYS = 90
 JOB_FROM_EMAIL = 'jobs@python.org'
 
+# Events
+EVENTS_TO_EMAIL = 'events@python.org'
+
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import (
-    PIPELINE_CSS, PIPELINE_JS,
-    PIPELINE_COMPILERS,
-    PIPELINE_SASS_BINARY, PIPELINE_SASS_ARGUMENTS,
-    PIPELINE_CSS_COMPRESSOR, PIPELINE_JS_COMPRESSOR,
-)
+from .pipeline import PIPELINE
 
 ### contrib.messages
 
 MESSAGE_TAGS = {
     constants.INFO: 'general',
+}
+
+### SecurityMiddleware
+
+X_FRAME_OPTIONS = 'DENY'
+
+### django-rest-framework
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+    ),
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'URL_FIELD_NAME': 'resource_uri',
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ),
+    'DEFAULT_THROTTLE_CLASSES': (
+        'rest_framework.throttling.AnonRateThrottle',
+        'rest_framework.throttling.UserRateThrottle',
+    ),
+    'DEFAULT_THROTTLE_RATES': {
+        'anon': '100/day',
+        'user': '1000/day',
+    },
 }

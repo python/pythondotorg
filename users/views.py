@@ -1,25 +1,27 @@
-from braces.views import LoginRequiredMixin
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import get_user_model
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
 from django.core.mail import send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse, reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views.generic import (
-    CreateView, DetailView, ListView, TemplateView, UpdateView
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView,
 )
 
-from allauth.account.views import SignupView
+from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
+from pydotorg.mixins import LoginRequiredMixin
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
-from .models import User, Membership
-from .paginators import UserPaginator
+from .models import Membership
+
+User = get_user_model()
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
@@ -29,24 +31,18 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
-        if not self.request.user.is_authenticated():
-            return redirect('account_login')
-        if self.request.user.has_membership:
+        if self.request.user.is_authenticated and self.request.user.has_membership:
             return redirect('users:user_membership_edit')
-
         return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
-        if self.request.user.email:
-            kwargs['initial'] = {'email_address': self.request.user.email}
-
+        kwargs['initial'] = {'email_address': self.request.user.email}
         return kwargs
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated():
-            self.object.creator = self.request.user
+        self.object.creator = self.request.user
         self.object.save()
 
         # Send subscription email to mailing lists
@@ -80,8 +76,7 @@ class MembershipUpdate(LoginRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         self.object = form.save(commit=False)
-        if self.request.user.is_authenticated():
-            self.object.creator = self.request.user
+        self.object.creator = self.request.user
         self.object.save()
         return super().form_valid(form)
 
@@ -131,16 +126,44 @@ class UserDetail(DetailView):
         return queryset.searchable()
 
 
-class UserList(ListView):
-    paginate_by = 25
-    paginator_class = UserPaginator
-
-    def get_queryset(self):
-        return User.objects.searchable()
-
-
 class HoneypotSignupView(SignupView):
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
         return super().dispatch(*args, **kwargs)
+
+
+class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    # Add honeypot support to 'password change' form and
+    # redirect it to the user editing form.
+
+    @method_decorator(check_honeypot)
+    def dispatch(self, *args, **kwargs):
+        return super().dispatch(*args, **kwargs)
+
+    def get_success_url(self):
+        return reverse('users:user_profile_edit')
+
+
+class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = User
+    success_url = reverse_lazy('home')
+    slug_field = 'username'
+    raise_exception = True
+    http_method_names = ['post', 'delete']
+
+    def test_func(self):
+        return self.get_object() == self.request.user
+
+
+class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    model = Membership
+    slug_field = 'creator__username'
+    raise_exception = True
+    http_method_names = ['post', 'delete']
+
+    def get_success_url(self):
+        return reverse('users:user_detail', kwargs={'slug': self.request.user.username})
+
+    def test_func(self):
+        return self.get_object().creator == self.request.user

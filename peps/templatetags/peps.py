@@ -5,7 +5,7 @@ from pages.models import Page
 register = template.Library()
 
 
-@register.assignment_tag()
+@register.simple_tag
 def get_newest_pep_pages(limit=5):
     """ Retrieve the most recently added PEPs """
     latest_peps = Page.objects.filter(

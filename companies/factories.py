@@ -2,10 +2,6 @@ import factory
 
 from .models import Company
 
-__all__ = (
-    'CompanyFactory'
-)
-
 
 class CompanyFactory(factory.DjangoModelFactory):
 
@@ -13,5 +9,13 @@ class CompanyFactory(factory.DjangoModelFactory):
         model = Company
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: 'Company {}'.format(n))
-    email = factory.Sequence(lambda n: 'zombie_{}@python.org'.format(n))
+    name = factory.Faker('company')
+    contact = factory.Faker('name')
+    email = factory.Faker('company_email')
+    url = factory.Faker('url')
+
+
+def initial_data():
+    return {
+        'companies': CompanyFactory.create_batch(size=10),
+    }

@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -38,8 +38,18 @@ class StoryCategory(NameSlugModel):
 class Story(NameSlugModel, ContentManageable):
     company_name = models.CharField(max_length=500)
     company_url = models.URLField(verbose_name='Company URL')
-    company = models.ForeignKey(Company, blank=True, null=True, related_name='success_stories')
-    category = models.ForeignKey(StoryCategory, related_name='success_stories')
+    company = models.ForeignKey(
+        Company,
+        related_name='success_stories',
+        blank=True,
+        null=True,
+        on_delete=models.CASCADE,
+    )
+    category = models.ForeignKey(
+        StoryCategory,
+        related_name='success_stories',
+        on_delete=models.CASCADE,
+    )
     author = models.CharField(max_length=500, help_text='Author of the content')
     author_email = models.EmailField(max_length=100, blank=True, null=True)
     pull_quote = models.TextField()
@@ -78,14 +88,6 @@ class Story(NameSlugModel, ContentManageable):
             return self.company_url
 
 
-# Set 'help_text' since the 'name' field is a confusion for many people.
-# See #834 for an example report.
-# We need to do it this way, because the 'name' field is defined in
-# 'NameSlugModel'. Note that this would only work when 'NameSlugModel'
-# is an abstract class.
-Story._meta.get_field('name').help_text = 'Title of your success story'
-
-
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, created, **kwargs):
     """ Update download supernav """
@@ -98,9 +100,13 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
             'story': instance,
         })
 
-        box, _ = Box.objects.get_or_create(label='supernav-python-success-stories')
-        box.content = content
-        box.save()
+        box, _ = Box.objects.update_or_create(
+            label='supernav-python-success-stories',
+            defaults={
+                'content': content,
+                'content_markup_type': 'html',
+            }
+        )
 
         # Purge Fastly cache
         purge_url('/box/supernav-python-success-stories/')
@@ -134,8 +140,10 @@ Content:
 
 Review URL: {admin_url}
         """
+        name_lines = instance.name.splitlines()
+        name = name_lines[0] if name_lines else instance.name
         email = EmailMessage(
-            'New success story submission: {}'.format(instance.name),
+            'New success story submission: {}'.format(name),
             body.format(
                 name=instance.name,
                 company_name=instance.company_name,
@@ -151,7 +159,6 @@ Review URL: {admin_url}
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,
-            headers={'Reply-To': instance.author_email},
-            # TODO: Pass 'reply_to=[instance.author_email]' when we upgrade Django.
+            reply_to=[instance.author_email],
         )
         email.send()

@@ -1,9 +1,8 @@
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.core.exceptions import ImproperlyConfigured
-from django.test.utils import override_settings
+from django.test.utils import captured_stdout
 
 from peps.converters import get_pep0_page, get_pep_page, add_pep_image
-from pydotorg.test_utils import captured_stdout
 
 from . import FAKE_PEP_REPO
 

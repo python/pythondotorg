@@ -81,6 +81,20 @@
     }
 }
 
+%button-style-red {
+    @extend %button-style;
+    @include vertical-gradient( lighten($red, 10%), $red );
+    @include pe-border( $color-top: darken($red, 20%), $color-right: darken($red, 20%), $color-bottom: darken($red, 20%), $color-left: darken($red, 20%) );
+
+    color: $white !important;
+
+    &:hover, &:active {
+        background-color: inherit;
+        color: $white !important;
+        @include vertical-gradient( lighten($red, 20%), $red );
+    }
+}
+
 %button-style-blue {
     @extend %button-style;
     color: $grey-lightest !important;

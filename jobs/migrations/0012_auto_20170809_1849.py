@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 from django.apps import apps as global_apps
-from django.contrib.contenttypes.management import update_contenttypes
+from django.contrib.contenttypes.management import create_contenttypes
 from django.db import models, migrations
 from django.utils.timezone import now
 
@@ -18,13 +18,15 @@ def migrate_old_content(apps, schema_editor):
     except LookupError:
         # django_comments_xtd isn't installed.
         return
-    update_contenttypes(apps.app_configs['contenttypes'])
+    create_contenttypes(apps.app_configs['contenttypes'])
     JobReviewComment = apps.get_model('jobs', 'JobReviewComment')
     Job = apps.get_model('jobs', 'Job')
     ContentType = apps.get_model('contenttypes', 'ContentType')
     db_alias = schema_editor.connection.alias
     try:
-        job_contenttype = ContentType.objects.using(db_alias).get(name=content_type)
+        # 'ContentType.name' is now a property in Django 1.8 so we
+        # can't use it to query a ContentType anymore.
+        job_contenttype = ContentType.objects.using(db_alias).get(model=content_type)
     except ContentType.DoesNotExist:
         return
     old_comments = Comment.objects.using(db_alias).filter(

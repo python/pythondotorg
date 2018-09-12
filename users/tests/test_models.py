@@ -5,7 +5,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..factories import UserFactory, MembershipFactory
-from ..models import Membership
+from ..models import Membership, UserGroup
 
 User = get_user_model()
 
@@ -30,10 +30,7 @@ class UsersModelsTestCase(TestCase):
 
     def test_membership(self):
         plain_user = UserFactory()
-        self.assertFalse(plain_user.has_membership)
-
-        member = MembershipFactory()
-        self.assertTrue(member.creator.has_membership)
+        self.assertTrue(plain_user.has_membership)
 
     def test_higher_level_member(self):
         member1 = MembershipFactory()
@@ -56,3 +53,20 @@ class UsersModelsTestCase(TestCase):
         )
 
         self.assertTrue(member3.needs_vote_affirmation)
+
+
+class UserGroupsModelsTestCase(TestCase):
+    def test_create_usergroup(self):
+        group = UserGroup.objects.create(
+            name='PLUG',
+            location='London, UK',
+            url='http://meetup.com/plug',
+            url_type=UserGroup.TYPE_MEETUP,
+        )
+        self.assertEqual(group.name, 'PLUG')
+        self.assertEqual(group.location, 'London, UK')
+        self.assertEqual(group.url, 'http://meetup.com/plug')
+        self.assertEqual(group.url_type, UserGroup.TYPE_MEETUP)
+        self.assertIsNone(group.start_date)
+        self.assertFalse(group.approved)
+        self.assertFalse(group.trusted)

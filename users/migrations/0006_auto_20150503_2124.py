@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='membership',
             name='creator',
-            field=models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL, related_name='membership'),
+            field=models.OneToOneField(null=True, blank=True, to=settings.AUTH_USER_MODEL, related_name='membership', on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

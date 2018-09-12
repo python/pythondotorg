@@ -1,6 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.test import TestCase
 
 from ..models import Job
@@ -119,6 +119,57 @@ class JobsViewTests(TestCase):
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
+    def test_job_mine_remove(self):
+        url = reverse('jobs:job_list_mine')
+
+        self.client.login(username=self.user.username, password='password')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+
+        job = response.context['object_list'][0]
+        self.assertNotEqual(job.status, job.STATUS_REMOVED)
+
+        url = reverse('jobs:job_remove', kwargs={'pk': job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('jobs:job_list_mine'))
+
+        job.refresh_from_db()
+        self.assertEqual(job.status, job.STATUS_REMOVED)
+
+    def test_job_mine_remove_404(self):
+        url = reverse('jobs:job_list_mine')
+
+        self.client.login(username=self.user2.username, password='password')
+
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 0)
+
+        self.assertNotEqual(self.job.status, self.job.STATUS_REMOVED)
+
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('jobs:job_list_mine'))
+
+        self.assertNotEqual(self.job.status, self.job.STATUS_REMOVED)
+
+    def test_job_mine_remove_post_request(self):
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+
+        self.client.login(username=self.user.username, password='password')
+
+        response = self.client.post(url)
+        self.assertEqual(response.status_code, 405)
+
+    def test_job_mine_remove_login(self):
+        url = reverse('jobs:job_remove', kwargs={'pk': self.job.pk})
+        response = self.client.get(url)
+        self.assertRedirects(
+            response,
+            '/accounts/login/?next=/jobs/%d/remove/' % self.job.pk
+        )
+
     def test_disallow_editing_approved_jobs(self):
         self.client.login(username=self.user.username, password='password')
         url = reverse('jobs:job_edit', kwargs={'pk': self.job.pk})
@@ -162,6 +213,10 @@ class JobsViewTests(TestCase):
         # able to edit a job.
         form = response.context['form']
         data = form.initial
+        # Quoted from Django 1.10 release notes:
+        # Private API django.forms.models.model_to_dict() returns a
+        # queryset rather than a list of primary keys for ManyToManyFields.
+        data['job_types'] = [self.job_type.pk]
         data['description'] = 'Lorem ipsum dolor sit amet'
         response = self.client.post(url, data)
         self.assertRedirects(response, '/jobs/%d/preview/' % job.pk)
@@ -492,6 +547,43 @@ class JobsReviewTests(TestCase):
             contact=self.contact
         )
         self.job3.job_types.add(self.job_type)
+
+    def test_moderate(self):
+        url = reverse('jobs:job_moderate')
+
+        job = ApprovedJobFactory()
+
+        response = self.client.get(url)
+        self.assertRedirects(response, '{}?next={}'.format(reverse('account_login'), url))
+
+        self.client.login(username=self.another_username, password=self.another_password)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, '403.html')
+        self.client.logout()
+
+        self.client.login(username=self.super_username, password=self.super_password)
+
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertIn(job, response.context['object_list'])
+        self.assertNotIn(self.job1, response.context['object_list'])
+
+    def test_moderate_search(self):
+        url = reverse('jobs:job_moderate')
+
+        job = ApprovedJobFactory(job_title='foo')
+        job2 = ApprovedJobFactory(job_title='bar foo')
+
+        self.client.login(username=self.super_username, password=self.super_password)
+        response = self.client.get(url, {'term': 'foo'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertIn(job, response.context['object_list'])
+        self.assertIn(job2, response.context['object_list'])
 
     def test_job_review(self):
         # FIXME: refactor to separate tests cases for clarity?

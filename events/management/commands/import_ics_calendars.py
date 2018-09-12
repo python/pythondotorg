@@ -1,8 +1,8 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management import BaseCommand
 from events.models import Calendar
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     """
     Imports ICS calendars.
     When used in cron jobs, it is advised to add file-locking by using the flock(1)
@@ -12,7 +12,7 @@ class Command(NoArgsCommand):
 
     """
 
-    def handle_noargs(self, *args, **kwargs):
+    def handle(self, **options):
         calendars = Calendar.objects.filter(url__isnull=False)
         for calendar in calendars:
             calendar.import_events()

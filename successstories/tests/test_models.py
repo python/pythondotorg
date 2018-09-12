@@ -24,4 +24,4 @@ class StoryModelTests(TestCase):
 
     def test_get_admin_url(self):
         self.assertEqual(self.story1.get_admin_url(),
-                         '/admin/successstories/story/%d/' % self.story1.pk)
+                         '/admin/successstories/story/%d/change/' % self.story1.pk)

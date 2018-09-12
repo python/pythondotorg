@@ -4,11 +4,57 @@ import factory
 from django.contrib.auth.models import Group
 from django.utils import timezone
 
+from faker.providers import BaseProvider
+
 from users.factories import UserFactory
 
 from .models import JobType, JobCategory, Job
 
-next_month = timezone.now() + datetime.timedelta(days=30)
+
+class JobProvider(BaseProvider):
+
+    job_types = [
+        'Big Data',
+        'Cloud',
+        'Database',
+        'Evangelism',
+        'Systems',
+        'Test',
+        'Web',
+        'Operations',
+    ]
+
+    job_categories = [
+        'Software Developer',
+        'Software Engineer',
+        'Data Analyst',
+        'Administrator',
+    ]
+
+    job_titles = [
+        'Senior Python Developer',
+        'Django Developer',
+        'Full Stack Python/Django Developer',
+        'Machine Learning Engineer',
+        'Full Stack Developer',
+        'Python Data Engineer',
+        'Senior Test Automation Engineer',
+        'Backend Python Engineer',
+        'Python Tech Lead',
+        'Junior Developer',
+    ]
+
+    def job_type(self):
+        return self.random_element(self.job_types)
+
+    def job_category(self):
+        return self.random_element(self.job_categories)
+
+    def job_title(self):
+        return self.random_element(self.job_titles)
+
+
+factory.Faker.add_provider(JobProvider)
 
 
 class JobCategoryFactory(factory.DjangoModelFactory):
@@ -17,7 +63,7 @@ class JobCategoryFactory(factory.DjangoModelFactory):
         model = JobCategory
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: 'Job Category {}'.format(n))
+    name = factory.Faker('job_category')
 
 
 class JobTypeFactory(factory.DjangoModelFactory):
@@ -26,7 +72,7 @@ class JobTypeFactory(factory.DjangoModelFactory):
         model = JobType
         django_get_or_create = ('name',)
 
-    name = factory.Sequence(lambda n: 'Job Type {}'.format(n))
+    name = factory.Faker('job_type')
 
 
 class JobFactory(factory.DjangoModelFactory):
@@ -36,20 +82,22 @@ class JobFactory(factory.DjangoModelFactory):
 
     creator = factory.SubFactory(UserFactory)
     category = factory.SubFactory(JobCategoryFactory)
-    job_title = factory.Sequence(lambda n: 'Job Title #{}'.format(n))
+    job_title = factory.Faker('job_title')
     city = 'Lawrence'
     region = 'KS'
     country = 'US'
-    company_name = factory.Sequence(lambda n: 'Company #{}'.format(n))
-    company_description = factory.Sequence(lambda n: 'Company {} Description'.format(n))
-    contact = 'John Recruiter'
-    email = factory.Sequence(lambda n: 'recruiter{}@example.com'.format(n))
+    company_name = factory.Faker('company')
+    company_description = factory.Faker('sentence', nb_words=10)
+    contact = factory.Faker('name')
+    email = factory.Faker('email')
     url = 'https://www.example.com/'
 
     description = 'Test Description'
     requirements = 'Test Requirements'
 
-    expires = next_month
+    @factory.lazy_attribute
+    def expires(self):
+        return timezone.now() + datetime.timedelta(days=30)
 
     @factory.post_generation
     def job_types(self, create, extracted, **kwargs):
@@ -97,3 +145,18 @@ class JobsBoardAdminGroupFactory(factory.DjangoModelFactory):
         django_get_or_create = ('name',)
 
     name = 'Job Board Admin'
+
+
+def initial_data():
+    return {
+        'jobs': [
+            ArchivedJobFactory(),
+            DraftJobFactory(),
+            ExpiredJobFactory(),
+            RejectedJobFactory(),
+            RemovedJobFactory(),
+        ] + ApprovedJobFactory.create_batch(size=5) + ReviewJobFactory.create_batch(size=3),
+        'groups': [
+            JobsBoardAdminGroupFactory(),
+        ],
+    }

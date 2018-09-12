@@ -1,21 +1,6 @@
-/*
- * Scripts for this specific project
- */
-
-/*
- * Set variables that any script can use
- */
-if( !window.Modernizr ) {
-    var hastouch = has_feature( "touch" ),
-        hasplaceholder = has_feature( "placeholder" ),
-        hasgeneratedcontent = has_feature( "generatedcontent" ),
-        is_ltie9 = has_feature( "lt-ie9" );
-} else {
-    var hastouch = false,
-        hasplaceholder = false,
-        hasgeneratedcontent = false,
-        is_ltie9 = false;
-}
+var hastouch = Modernizr.touch;
+var hasplaceholder = Modernizr.placeholder;
+var is_ltie9 = $("html").hasClass( "lt-ie9" );
 
 if( !window.Retina ) {
     var is_retina = false;
@@ -151,45 +136,6 @@ function on_resize_orientationchange() {
             //console.log( "! supernavs_loaded has fired" );
         }
     }
-
-
-    /* Load a Google Map into the Community landing page
-    if ( mq_tag.indexOf("local_meetup_map") !=-1 && ! local_meetups_loaded ) {
-
-        $.getScript('//maps.google.com/maps/api/js?sensor="+hastouch+"');
-
-        if (navigator.geolocation) {
-            
-            navigator.geolocation.getCurrentPosition(function(position){
-                var latitude = position.coords.latitude;
-                var longitude = position.coords.longitude;
-                var coords = new google.maps.LatLng(latitude, longitude);
-                
-                var mapOptions = {
-                    zoom: 15,
-                    center: coords,
-                    mapTypeControl: true,
-                    navigationControlOptions: {
-                        style: google.maps.NavigationControlStyle.SMALL
-                    },
-                    mapTypeId: google.maps.MapTypeId.ROADMAP
-                };
-                map = new google.maps.Map(
-                    document.getElementById("#local_meetups"), mapOptions
-                );
-                var marker = new google.maps.Marker({
-                    position: coords,
-                    map: map,
-                    title: "Your current location!"
-                });
- 
-            });
-        } else {
-            alert("Geolocation API is not supported in your browser.");
-        }
-        local_meetups_loaded = true;
-        console.log( "! local_meetups_map has fired" );
-    } */
 
 };
 
@@ -330,7 +276,7 @@ $().ready(function() {
                 controlNav: false,
                 directionNav: false,
                 useCSS: true, // use CSS transitions if available
-                touch: hastouch,
+                touch: hastouch
             });
         }
 
@@ -344,10 +290,7 @@ $().ready(function() {
      * Scales the font-size up or down by about 2 pixels.
      * Requires jQuery.cookie.js. Only load for touch devices.
      */
-    if ( !window.cookie ) {
-        //console.log( "cookie.js has not loaded" );
-    } else {
-
+    if ( window.cookie ) {
         if ( hastouch ) {
 
             var $cookie_name = "Python-FontSize";
@@ -421,15 +364,6 @@ $().ready(function() {
         });
     }
 
-
-    /* Trigger accordions where applicable */
-    $("a.accordion-trigger").click(function() {
-		var iden = jQuery(this).attr('href');
-		//$(this).toggleClass("opened");
-		$(iden).slideToggle();
-	});
-
-
     /*
      * Add a class to the selected radio/checkbox parent label
      * Requires inputs to be nested in labels:
@@ -452,20 +386,5 @@ $().ready(function() {
         $('label:has(input:checkbox:checked)').addClass('active');
     });
 
-
-    /* Non-media query enabled browsers need any critical content on page load. */
-    if ( is_ltie9 ) {
-        //console.log( "! something has fired because this is a non-media-query browser" );
-    }
-
     getPythonStatus();
 });
-
-
-/*
- * Function to help with feature detection.
- * Used in tandem with Modernizr for the best effect. Pass this function values of a Modernizr class name.
- */
-function has_feature( feature ) {
-    if ( $("html").hasClass( feature ) ) { return true; } else { return false; }
-}

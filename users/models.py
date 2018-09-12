@@ -1,15 +1,15 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.core.urlresolvers import reverse
+from django.contrib.auth.models import AbstractUser
+from django.urls import reverse
 from django.db import models
 from django.utils import timezone
 
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
 
-from .managers import UserQuerySet
+from .managers import UserManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
@@ -37,7 +37,7 @@ class User(AbstractUser):
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
-    objects = UserManager.from_queryset(UserQuerySet)()
+    objects = UserManager()
 
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})
@@ -88,9 +88,15 @@ class Membership(models.Model):
     last_vote_affirmation = models.DateTimeField(blank=True, null=True)
 
     created = models.DateTimeField(default=timezone.now, blank=True)
-    updated = models.DateTimeField(blank=True)
+    updated = models.DateTimeField(default=timezone.now, blank=True)
 
-    creator = models.OneToOneField(User, null=True, blank=True, related_name='membership')
+    creator = models.OneToOneField(
+        User,
+        related_name='membership',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+    )
 
     def __str__(self):
         if self.creator:
@@ -125,3 +131,27 @@ class Membership(models.Model):
             self.last_vote_affirmation = timezone.now()
 
         return super().save(**kwargs)
+
+
+class UserGroup(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    url = models.URLField('URL')
+
+    TYPE_MEETUP = 'meetup'
+    TYPE_DISTRIBUTION_LIST = 'distribution list'
+    TYPE_OTHER = 'other'
+
+    TYPE_CHOICES = (
+        (TYPE_MEETUP, 'Meetup'),
+        (TYPE_DISTRIBUTION_LIST, 'Distribution List'),
+        (TYPE_OTHER, 'Other'),
+    )
+    url_type = models.CharField(
+        max_length=20,
+        choices=TYPE_CHOICES,
+    )
+
+    start_date = models.DateField(null=True)
+    approved = models.BooleanField(default=False)
+    trusted = models.BooleanField(default=False)

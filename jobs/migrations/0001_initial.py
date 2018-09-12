@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(primary_key=True, auto_created=True, serialize=False, verbose_name='ID')),
                 ('created', models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True)),
-                ('updated', models.DateTimeField(blank=True)),
+                ('updated', models.DateTimeField(default=django.utils.timezone.now, blank=True)),
                 ('company_name', models.CharField(max_length=100, blank=True, null=True)),
                 ('company_description', markupfield.fields.MarkupField(rendered_field=True, blank=True)),
                 ('job_title', models.CharField(max_length=100)),
@@ -87,19 +87,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='category',
-            field=models.ForeignKey(to='jobs.JobCategory', related_name='jobs'),
+            field=models.ForeignKey(to='jobs.JobCategory', related_name='jobs', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='job',
             name='company',
-            field=models.ForeignKey(help_text='Choose a specific company here or enter Name and Description Below', null=True, to='companies.Company', related_name='jobs', blank=True),
+            field=models.ForeignKey(help_text='Choose a specific company here or enter Name and Description Below', null=True, to='companies.Company', related_name='jobs', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='job',
             name='creator',
-            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_creator', blank=True),
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_creator', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='job',
             name='last_modified_by',
-            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_modified', blank=True),
+            field=models.ForeignKey(null=True, to=settings.AUTH_USER_MODEL, related_name='jobs_job_modified', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

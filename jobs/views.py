@@ -1,14 +1,13 @@
 from django.contrib import messages
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
-from braces.views import GroupRequiredMixin
+from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
-from .mixins import LoginRequiredMixin
 from .models import Job, JobType, JobCategory, JobReviewComment
 
 
@@ -37,9 +36,9 @@ class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     raise_exception = True
 
     def check_membership(self, group):
-        # Add is_staff and is_superuser checks to stay compatible
-        # with current staff members.
-        if self.request.user.is_staff or self.request.user.is_superuser:
+        # Add is_staff check to stay compatible with current staff members.
+        # is_superuser check is already in base class.
+        if self.request.user.is_staff:
             return True
         return super().check_membership(group)
 
@@ -87,8 +86,13 @@ class JobListMine(LoginRequiredMixin, JobMixin, ListView):
     def get_queryset(self):
         return Job.objects.by(self.request.user).select_related()
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mine_listing'] = True
+        return context
 
-class JobListType(JobTypeMenu, ListView):
+
+class JobListType(JobTypeMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_type_list.html'
 
@@ -104,7 +108,7 @@ class JobListType(JobTypeMenu, ListView):
         return context
 
 
-class JobListCategory(JobCategoryMenu, ListView):
+class JobListCategory(JobCategoryMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_category_list.html'
 
@@ -120,7 +124,7 @@ class JobListCategory(JobCategoryMenu, ListView):
         return context
 
 
-class JobListLocation(JobLocationMenu, ListView):
+class JobListLocation(JobLocationMenu, JobMixin, ListView):
     paginate_by = 25
     template_name = 'jobs/job_location_list.html'
 
@@ -147,8 +151,8 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
     """ View to simply list distinct Countries that have current jobs """
     template_name = "jobs/job_locations.html"
 
-    def get_context_data(self, *args, **kwargs):
-        context = super().get_context_data(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
 
         context['jobs'] = Job.objects.visible().distinct(
             'country', 'city'
@@ -178,6 +182,7 @@ class JobTelecommute(JobLocationMenu, JobList):
 class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListView):
     template_name = 'jobs/job_review.html'
     paginate_by = 20
+    redirect_url = 'jobs:job_review'
 
     def get_queryset(self):
         return Job.objects.review()
@@ -209,7 +214,41 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         else:
             raise Http404
 
-        return redirect('jobs:job_review')
+        return redirect(self.redirect_url)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mode'] = 'review'
+        return context
+
+
+class JobRemove(LoginRequiredMixin, View):
+
+    def get(self, request, pk):
+        try:
+            job = Job.objects.get(id=pk, creator=request.user)
+        except Job.DoesNotExist:
+            return redirect('jobs:job_list_mine')
+        job.status = Job.STATUS_REMOVED
+        job.save()
+        messages.add_message(request, messages.SUCCESS, "'%s' removed." % job)
+        return redirect('jobs:job_list_mine')
+
+
+class JobModerateList(JobReview):
+    redirect_url = 'jobs:job_moderate'
+
+    def get_queryset(self):
+        queryset = Job.objects.moderate()
+        q = self.request.GET.get('q')
+        if q is not None:
+            return queryset.filter(job_title__icontains=q)
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['mode'] = 'moderate'
+        return context
 
 
 class JobDetail(JobMixin, DetailView):
@@ -218,7 +257,7 @@ class JobDetail(JobMixin, DetailView):
         queryset = Job.objects.select_related()
         if self.has_jobs_board_admin_access():
             return queryset
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             # Combine visible jobs and user's non-visible jobs.
             # TODO: Add this to JobQuerySet and use where applicable.
             return queryset.visible() | queryset.by(self.request.user)
@@ -326,10 +365,9 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data()
-        ctx.update(kwargs)
-        ctx['needs_preview'] = not self.request.user.is_staff
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['needs_preview'] = not self.has_jobs_board_admin_access()
+        return context
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -352,13 +390,11 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
-        ctx = super().get_context_data(
-            form_action='update',
-        )
-        ctx.update(kwargs)
-        ctx['next'] = self.request.GET.get('next') or self.request.POST.get('next')
-        ctx['needs_preview'] = not self.request.user.is_staff
-        return ctx
+        context = super().get_context_data(**kwargs)
+        context['form_action'] = 'update'
+        context['next'] = self.request.GET.get('next') or self.request.POST.get('next')
+        context['needs_preview'] = not self.has_jobs_board_admin_access()
+        return context
 
     def get_success_url(self):
         next_url = self.request.POST.get('next')

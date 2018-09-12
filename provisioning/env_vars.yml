@@ -10,7 +10,6 @@ project:
 
 django:
   settings: pydotorg.settings.local
-  fixtures: /home/vagrant/pythondotorg/fixtures/*.json
   superuser:
     name: cbiggles
     email: cbiggless@example.com

@@ -1,6 +1,5 @@
 {% extends "users/base.html" %}
 {% load users_tags %}
-{% load firstof from future %}
 
 {% block page_title %}{% firstof object.get_full_name object %} | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -15,10 +14,6 @@
 
 {% block user_content %}
 
-    <div class="return-link">
-        <a href="{% url 'users:user_list' %}"><span class="icon-arrow-left" aria-hidden="true"><span>&#9664;</span></span>Back to Users</a>
-    </div>
-
     <article class="text">
         <div class="user-profile-display">
 
@@ -28,10 +23,11 @@
             <div class="user-profile-membership">
                 <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span> PSF Member?</span> {{ object.has_membership|yesno|capfirst }}</p>
             </div>
+            {% comment %}
             <div class="user-profile-location">
                 <p><span class="profile-label">Location:</span> {{ object|user_location|default:"Not Specified" }}</p>
             </div>
-            {% comment %}
+
             Disable it due to high amount of spam account.
             {% if object.bio and object.bio.raw.strip %}
             <div class="user-profile-bio">
@@ -40,11 +36,9 @@
             {% endif %}
             {% endcomment %}
 
-            {% comment %}
                 All possible supported networks with icons.
                 We don't need to support all of these through the profile if you do not want to
-            {% endcomment %}
-            {% comment %}
+
             <div class="user-social-profiles">
                 <ul class="menu">
                     <li><a href="#" title="To this user's Twitter profile"><span class="icon-twitter" aria-hidden="true"></span>{% firstof object.get_full_name object %} on Twitter</a></li>
