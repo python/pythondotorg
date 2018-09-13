@@ -39,7 +39,7 @@ class ReleaseFileFactory(factory.DjangoModelFactory):
 
 
 class APISession(requests.Session):
-    base_url = 'https://www.python.org/api/v1/'
+    base_url = 'https://www.python.org/api/v2/'
 
     def request(self, method, url, **kwargs):
         url = urljoin(self.base_url, url)
@@ -70,13 +70,11 @@ def initial_data():
             ('releases', 'downloads/release/'),
             ('release_files', 'downloads/release_file/')
         ]:
-            while resource_uri:
-                response = session.get(resource_uri, params={'limit': 1000}).json()
+            response = session.get(resource_uri)
+            object_list = response.json()
 
-                for obj in response['objects']:
-                    objects[key][_get_id(obj, 'resource_uri')] = obj
-
-                resource_uri = response['meta']['next']
+            for obj in object_list:
+                objects[key][_get_id(obj, 'resource_uri')] = obj
 
     # Create the list of operating systems
     objects['oss'] = {k: OSFactory.build(**obj) for k, obj in objects['oss'].items()}
