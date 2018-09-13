@@ -41,6 +41,18 @@ class ReleaseFileFactory(factory.DjangoModelFactory):
 class APISession(requests.Session):
     base_url = 'https://www.python.org/api/v2/'
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.headers.update(
+            {
+                'Accept': 'application/json',
+                'User-agent': (
+                    f'pythondotorg/create_initial_data'
+                    f' ({requests.utils.default_user_agent()})'
+                )
+            }
+        )
+
     def request(self, method, url, **kwargs):
         url = urljoin(self.base_url, url)
         response = super().request(method, url, **kwargs)
