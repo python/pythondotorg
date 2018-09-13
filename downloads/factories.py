@@ -43,7 +43,9 @@ class APISession(requests.Session):
 
     def request(self, method, url, **kwargs):
         url = urljoin(self.base_url, url)
-        return super().request(method, url, **kwargs)
+        response = super().request(method, url, **kwargs)
+        response.raise_for_status()
+        return response
 
 
 def _get_id(obj, key):
