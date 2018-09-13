@@ -79,14 +79,12 @@ def initial_data():
                 objects[key][_get_id(obj, 'resource_uri')] = obj
 
     # Create the list of operating systems
-    objects['oss'] = {k: OSFactory.build(**obj) for k, obj in objects['oss'].items()}
-    OS.objects.bulk_create(objects['oss'].values())
+    objects['oss'] = {k: OSFactory(**obj) for k, obj in objects['oss'].items()}
 
     # Create all the releases
     for key, obj in objects['releases'].items():
         obj.pop('release_page')  # Ignore release pages
-        objects['releases'][key] = ReleaseFactory.build(**obj)
-    Release.objects.bulk_create(objects['releases'].values())
+        objects['releases'][key] = ReleaseFactory(**obj)
 
     # Create all release files
     for key, obj in tuple(objects['release_files'].items()):
@@ -101,8 +99,7 @@ def initial_data():
         else:
             obj['release'] = release
             obj['os'] = objects['oss'][_get_id(obj, 'os')]
-            objects['release_files'][key] = ReleaseFileFactory.build(**obj)
-    ReleaseFile.objects.bulk_create(objects['release_files'].values())
+            objects['release_files'][key] = ReleaseFileFactory(**obj)
 
     return {
         'oss': list(objects.pop('oss').values()),
