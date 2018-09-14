@@ -53,7 +53,7 @@ First, clone the repository::
 
 Then create a virtual environment::
 
-    $ python3.4 -m venv venv
+    $ python3.6 -m venv venv
 
 And then you'll need to install dependencies::
 
