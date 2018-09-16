@@ -51,8 +51,8 @@
       apt: name={{ item }} state=installed
       become: yes
       with_items:
-        - postgresql-9.5
-        - postgresql-contrib-9.5
+        - postgresql #-9.5
+        - postgresql-contrib #-9.5
         - libpq-dev
         - python-psycopg2
 
