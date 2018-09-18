@@ -6,11 +6,6 @@
   vars_files:
     - env_vars.yml
   tasks:
-    # TODO: Remove this when we have a better 16.04 LTS box.
-    - name: Make /etc/apt/sources.list useful
-      become: yes
-      shell: "sed -i -- 's/#deb-src/deb-src/g' /etc/apt/sources.list && sudo sed -i -- 's/# deb-src/deb-src/g' /etc/apt/sources.list"
-
     - name: Run apt-get update
       become: yes
       apt: update_cache=yes
@@ -36,13 +31,6 @@
       changed_when:
         "result.stdout is defined and '0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
 
-    - name: Install python-lxml deps
-      become: yes
-      apt: pkg=python-lxml state=build-dep
-      register: result
-      changed_when:
-        "'0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
-
     - name: Install base Ruby packages
       become: yes
       gem: name=bundler user_install=no
@@ -51,8 +39,8 @@
       apt: name={{ item }} state=installed
       become: yes
       with_items:
-        - postgresql #-9.5
-        - postgresql-contrib #-9.5
+        - postgresql
+        - postgresql-contrib
         - libpq-dev
         - python-psycopg2
 
