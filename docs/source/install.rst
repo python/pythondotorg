@@ -18,8 +18,8 @@ You should then be able to provision the Vagrant box.
 
     $ vagrant up
 
-The box will be provisioned with Python 3.5, a virtual environment with all
-the requirements installed, and a database ready to use.
+The box will be provisioned with a latest Python 3.6 version, a virtual
+environment with all the requirements installed, and a database ready to use.
 
 Once this is done it's time to create some data and run the server::
 
