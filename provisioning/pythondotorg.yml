@@ -16,8 +16,6 @@
       with_items:
         - build-essential
         - libpq-dev
-        - libxml2-dev
-        - libxslt-dev
         - lib32z1-dev
         - git
         - python3
@@ -26,7 +24,6 @@
         - python3-pip
         - python3-venv
         - ruby
-        # - acl
       register: result
       changed_when:
         "result.stdout is defined and '0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
