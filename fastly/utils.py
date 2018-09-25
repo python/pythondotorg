@@ -3,20 +3,17 @@ import requests
 from django.conf import settings
 
 
-def purge_url(path):
+def purge_url(*paths):
     """
-    Purge a Fastly.com URL given a path. path argument must begin with a slash
+    Purge the Fastly.com URL cache for each given path.
     """
-    if settings.DEBUG:
+    api_key = getattr(settings, 'FASTLY_API_KEY', None)
+    if not api_key or settings.DEBUG:
         return
 
-    api_key = getattr(settings, 'FASTLY_API_KEY', None)
-    if api_key:
-        response = requests.request(
+    for path in paths:
+        requests.request(
             'PURGE',
             'https://www.python.org{}'.format(path),
             headers={'Fastly-Key': api_key},
         )
-        return response
-
-    return None
