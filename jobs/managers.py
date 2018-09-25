@@ -63,8 +63,8 @@ class JobQuerySet(QuerySet):
     def review(self):
         review_threshold = timezone.now() - datetime.timedelta(days=120)
         return self.filter(
-            Q(status__exact=self.model.STATUS_REVIEW) &
-            Q(created__gte=review_threshold)
+            status=self.model.STATUS_REVIEW,
+            created__gte=review_threshold,
         ).order_by('created')
 
     def moderate(self):
@@ -84,4 +84,4 @@ class JobQuerySet(QuerySet):
         )
 
     def by(self, user):
-        return self.filter(Q(creator=user))
+        return self.filter(creator=user)
