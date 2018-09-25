@@ -242,21 +242,23 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 
     # Only purge on published instances
     if instance.is_published:
-        # Purge our common pages
-        purge_url('/downloads/')
-        purge_url('/downloads/latest/python2/')
-        purge_url('/downloads/latest/python3/')
-        purge_url('/downloads/mac-osx/')
-        purge_url('/downloads/source/')
-        purge_url('/downloads/windows/')
+        purge_url(
+            # Purge our common pages
+            '/downloads/',
+            '/downloads/latest/python2/',
+            '/downloads/latest/python3/',
+            '/downloads/mac-osx/',
+            '/downloads/source/',
+            '/downloads/windows/',
+            # See issue #584 for details
+            '/box/supernav-python-downloads/',
+            '/box/homepage-downloads/',
+            '/box/download-sources/',
+            # Purge the release page itself
+            instance.get_absolute_url(),
+        )
         if instance.get_version() is not None:
             purge_url('/ftp/python/{}/'.format(instance.get_version()))
-        # See issue #584 for details
-        purge_url('/box/supernav-python-downloads/')
-        purge_url('/box/homepage-downloads/')
-        purge_url('/box/download-sources/')
-        # Purge the release page itself
-        purge_url(instance.get_absolute_url())
 
 
 @receiver(post_save, sender=Release)
