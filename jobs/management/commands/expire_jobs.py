@@ -14,10 +14,8 @@ class Command(BaseCommand):
         days = getattr(settings, 'JOB_THRESHOLD_DAYS', 90)
         expiration = timezone.now() - datetime.timedelta(days=days)
 
-        Job.objects.filter(
-            status=Job.STATUS_APPROVED,
-            expires__lte=expiration,
+        Job.objects.approved().filter(
+            expires__lte=expiration
         ).update(
             status=Job.STATUS_EXPIRED
         )
-
