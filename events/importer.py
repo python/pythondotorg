@@ -13,17 +13,6 @@ class ICSImporter:
     def __init__(self, calendar):
         self.calendar = calendar
 
-    def create_or_update_model(self, model_class, **kwargs):
-        defaults = kwargs.get('defaults', {})
-        instance, created = model_class.objects.get_or_create(**kwargs)
-        if not created:
-            # update the instance if necessary
-            for k, v in defaults.items():
-                if getattr(instance, k) != v:
-                    setattr(instance, k, v)
-            instance.save()
-        return instance, created
-
     def import_occurrence(self, event, event_data):
         # Django will already convert to datetime by setting the time to 0:00,
         # but won't add any timezone information. We will convert them to
@@ -43,7 +32,7 @@ class ICSImporter:
             'all_day': all_day
         }
 
-        self.create_or_update_model(OccurringRule, event=event, defaults=defaults)
+        OccurringRule.objects.update_or_create(event=event, defaults=defaults)
 
     def import_event(self, event_data):
         uid = event_data['UID']
@@ -60,7 +49,7 @@ class ICSImporter:
             'venue': location,
             'calendar': self.calendar,
         }
-        event, _ = self.create_or_update_model(Event, uid=uid, defaults=defaults)
+        event, _ = Event.objects.update_or_create(uid=uid, defaults=defaults)
         self.import_occurrence(event, event_data)
 
     def fetch(self, url):
