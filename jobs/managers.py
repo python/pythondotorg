@@ -37,28 +37,28 @@ class JobCategoryQuerySet(QuerySet):
 class JobQuerySet(QuerySet):
 
     def approved(self):
-        return self.filter(status__exact=self.model.STATUS_APPROVED)
+        return self.filter(status=self.model.STATUS_APPROVED)
 
     def archived(self):
-        return self.filter(status__exact=self.model.STATUS_ARCHIVED)
+        return self.filter(status=self.model.STATUS_ARCHIVED)
 
     def draft(self):
-        return self.filter(status__exact=self.model.STATUS_DRAFT)
+        return self.filter(status=self.model.STATUS_DRAFT)
 
     def expired(self):
-        return self.filter(status__exact=self.model.STATUS_EXPIRED)
+        return self.filter(status=self.model.STATUS_EXPIRED)
 
     def rejected(self):
-        return self.filter(status__exact=self.model.STATUS_REJECTED)
+        return self.filter(status=self.model.STATUS_REJECTED)
 
     def removed(self):
-        return self.filter(status__exact=self.model.STATUS_REMOVED)
+        return self.filter(status=self.model.STATUS_REMOVED)
 
     def featured(self):
         return self.filter(is_featured=True)
 
     def editable(self):
-        return self.exclude(status__exact=self.model.STATUS_APPROVED)
+        return self.exclude(status=self.model.STATUS_APPROVED)
 
     def review(self):
         review_threshold = timezone.now() - datetime.timedelta(days=120)
