@@ -1,5 +1,7 @@
 import requests
 
+from urllib.parse import urljoin
+
 from django.conf import settings
 
 
@@ -14,6 +16,6 @@ def purge_url(*paths):
     for path in paths:
         requests.request(
             'PURGE',
-            'https://www.python.org{}'.format(path),
+            urljoin('https://www.python.org', path),
             headers={'Fastly-Key': api_key},
         )
