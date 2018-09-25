@@ -77,11 +77,7 @@ class JobQuerySet(QuerySet):
         Jobs that should be publicly visible on the website. They will have an
         approved status and be less than 90 days old
         """
-        now = timezone.now()
-        return self.filter(
-            Q(status__exact=self.model.STATUS_APPROVED) &
-            Q(expires__gte=now)
-        )
+        return self.approved().filter(expires__gte=timezone.now())
 
     def by(self, user):
         return self.filter(creator=user)
