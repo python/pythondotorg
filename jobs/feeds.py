@@ -14,16 +14,12 @@ class JobFeed(Feed):
         return Job.objects.approved()[:20]
 
     def item_title(self, item):
-        return "{} - {}".format(item.job_title, item.company_name)
+        return item.display_name
 
     def item_description(self, item):
         """ Description """
-        location_parts = (item.city, item.region, item.country)
-        location = ",".join(location_part for location_part in location_parts
-            if location_part is not None)
-        return "{}\n{}\n{}".format(
-            location,
+        return '\n'.join([
+            item.display_location,
             item.description,
             item.requirements,
-        )
-
+        ])
