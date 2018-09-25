@@ -1,6 +1,5 @@
 import datetime
 
-from django.db.models import Q
 from django.db.models.query import QuerySet
 from django.utils import timezone
 
@@ -68,9 +67,7 @@ class JobQuerySet(QuerySet):
         ).order_by('created')
 
     def moderate(self):
-        return self.filter(
-            ~Q(status__exact=self.model.STATUS_REVIEW)
-        )
+        return self.exclude(status=self.model.STATUS_REVIEW)
 
     def visible(self):
         """
