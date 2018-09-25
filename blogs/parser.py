@@ -1,11 +1,12 @@
 import datetime
 import feedparser
 
+from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.timezone import make_aware, utc
 
 from boxes.models import Box
-from .models import BlogEntry
+from .models import BlogEntry, Feed
 
 
 def get_all_entries(feed_url):
@@ -37,13 +38,20 @@ def _render_blog_supernav(entry):
 
 def update_blog_supernav():
     """Retrieve latest entry and update blog supernav item """
-    latest_entry = BlogEntry.objects.filter(feed_id=1).latest()
-    rendered_box = _render_blog_supernav(latest_entry)
-
-    box, _ = Box.objects.update_or_create(
-        label='supernav-python-blog',
-        defaults={
-            'content': rendered_box,
-            'content_markup_type': 'html',
-        }
-    )
+    try:
+        latest_entry = BlogEntry.objects.filter(
+            feed=Feed.objects.get(
+                feed_url=settings.PYTHON_BLOG_FEED_URL,
+            )
+        ).latest()
+    except (BlogEntry.DoesNotExist, Feed.DoesNotExist):
+        pass
+    else:
+        rendered_box = _render_blog_supernav(latest_entry)
+        box, _ = Box.objects.update_or_create(
+            label='supernav-python-blog',
+            defaults={
+                'content': rendered_box,
+                'content_markup_type': 'html',
+            }
+        )
