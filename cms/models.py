@@ -22,11 +22,7 @@ class ContentManageable(models.Model):
 
     # We allow creator to be null=True so that we can, if we must, create a
     # ContentManageable object in a context where we don't have a creator (i.e.
-    # where there isn't a request.user sitting around). However, we still leave
-    # it blank=False so that any time we try to *validate* a ContentManageable
-    # object we'll get an error. This is a reasonable compromise that lets us
-    # track creators fairly well without necessarily over-enforcing it in places
-    # where it'd be invasive.
+    # where there isn't a request.user sitting around).
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         related_name='%(app_label)s_%(class)s_creator',
