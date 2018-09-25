@@ -5,10 +5,15 @@ from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
 
+from dal import autocomplete
+
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
 from .forms import JobForm, JobReviewCommentForm
-from .models import Job, JobType, JobCategory, JobReviewComment
+from .models import (
+    Job, JobType, JobCategory, JobReviewComment,
+    City,
+)
 
 
 class JobListMenu:
@@ -31,6 +36,12 @@ class JobLocationMenu:
         return True
 
 
+class JobCountryMenu:
+
+    def job_country_view(self):
+        return True
+
+
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
     group_required = "Job Board Admin"
     raise_exception = True
@@ -48,9 +59,14 @@ class JobMixin:
         context = super().get_context_data(**kwargs)
 
         active_locations = Job.objects.visible().distinct(
-            'location_slug'
+            'location__slug'
         ).order_by(
-            'location_slug',
+            'location__slug'
+        )
+        active_countries = Job.objects.visible().distinct(
+            'location__country__slug'
+        ).order_by(
+            'location__country__slug'
         )
 
         context.update({
@@ -58,6 +74,7 @@ class JobMixin:
             'active_types': JobType.objects.with_active_jobs(),
             'active_categories': JobCategory.objects.with_active_jobs(),
             'active_locations': active_locations,
+            'active_countries': active_countries,
             'jobs_board_admin': self.has_jobs_board_admin_access(),
         })
 
@@ -133,6 +150,38 @@ class JobListLocation(JobLocationMenu, JobMixin, ListView):
             location_slug=self.kwargs['slug'])
 
 
+class JobFilterLocation(JobLocationMenu, JobMixin, ListView):
+    paginate_by = 25
+    template_name = 'jobs/job_location_list.html'
+
+    def get_queryset(self):
+        return Job.objects.from_location(
+            self.kwargs['city_slug'],
+            self.kwargs['region_slug'],
+            self.kwargs['country_slug'],
+        ).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_mode'] = 'location'
+        return context
+
+
+class JobFilterCountry(JobCountryMenu, JobMixin, ListView):
+    paginate_by = 25
+    template_name = 'jobs/job_location_list.html'
+
+    def get_queryset(self):
+        return Job.objects.from_country(
+            self.kwargs['slug'],
+        ).select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['filter_mode'] = 'country'
+        return context
+
+
 class JobTypes(JobTypeMenu, JobMixin, ListView):
     """ View to simply list JobType instances that have current jobs """
     template_name = "jobs/job_types.html"
@@ -155,9 +204,9 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
         context = super().get_context_data(**kwargs)
 
         context['jobs'] = Job.objects.visible().distinct(
-            'country', 'city'
+            'location__country__slug'
         ).order_by(
-            'country', 'city'
+            'location__country__slug'
         )
 
         return context
@@ -362,6 +411,9 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
         kwargs['request'] = self.request
         # We don't allow posting a job without logging in to the site.
         kwargs['initial'] = {'email': self.request.user.email}
+        full_name = self.request.user.get_full_name()
+        if full_name:
+            kwargs['initial']['contact'] = full_name
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -404,3 +456,16 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
             return reverse('jobs:job_preview', kwargs={'pk': self.object.id})
         else:
             return super().get_success_url()
+
+
+class CityAutocomplete(LoginRequiredMixin, autocomplete.Select2QuerySetView):
+
+    def get_queryset(self):
+        queryset = City.objects.all()
+        if self.q:
+            queryset = queryset.filter(
+                Q(name__istartswith=self.q) |
+                Q(region__name__istartswith=self.q) |
+                Q(country__name__istartswith=self.q)
+            )
+        return queryset

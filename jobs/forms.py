@@ -1,6 +1,7 @@
 from django import forms
 from django.forms.widgets import CheckboxSelectMultiple, HiddenInput
 
+from dal import autocomplete
 from markupfield.widgets import MarkupTextarea
 
 from .models import Job, JobReviewComment
@@ -18,9 +19,7 @@ class JobForm(ContentManageableModelForm):
             'category',
             'job_types',
             'other_job_type',
-            'city',
-            'region',
-            'country',
+            'location',
             'description',
             'requirements',
             'company_description',
@@ -32,6 +31,14 @@ class JobForm(ContentManageableModelForm):
         )
         widgets = {
             'job_types': CheckboxSelectMultiple(),
+            'location': autocomplete.ModelSelect2(
+                url='jobs:dal-city-autocomplete',
+                attrs={
+                    # Only trigger auto-completion after three characters
+                    # have been typed.
+                    'data-minimum-input-length': 3,
+                },
+            ),
         }
 
     def __init__(self, *args, **kwargs):

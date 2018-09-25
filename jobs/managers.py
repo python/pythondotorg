@@ -85,3 +85,13 @@ class JobQuerySet(QuerySet):
 
     def by(self, user):
         return self.filter(Q(creator=user))
+
+    def from_location(self, city, region, country):
+        return self.visible().filter(
+            location__slug=city,
+            location__region__slug=region,
+            location__country__slug=country,
+        )
+
+    def from_country(self, country):
+        return self.visible().filter(location__country__slug=country)

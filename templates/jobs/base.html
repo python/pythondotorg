@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load jobs %}
 
 {% block body_attributes %}class="jobs"{% endblock %}
 
@@ -46,21 +47,36 @@
         <ul class="subnav menu" role="menu" aria-hidden="true">
             <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_telecommute' %}">Telecommute</a></li>
             {% for l in active_locations %}
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_location' slug=l.location_slug %}">
-                {% if l.region and l.region != l.city %}
-                    {{ l.city }}, {{ l.region }} &ndash; {{ l.country }}
-                {% else %}
-                    {{ l.city }} &ndash; {{ l.country }}
-                {% endif %}
+            <li class="tier-2" role="treeitem"><a href="{% job_location_url job=l %}">
+                {{ l.display_location }}
             </a></li>
             {% empty %}
-            <li class="tier-2" role="treeitem">No Active Locations</li>
+            <li class="tier-2" role="treeitem">No location found.</li>
             {% endfor %}
         </ul>
     </li>
-    <li class="tier-1 element-5{% if not jobs_board_admin %} last{% endif %}"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
+    <li class="tier-1 element-5 {% if view.job_country_view %}current_item selected{% endif %}">
+        {# TODO: add a template for this #}
+        <a href="{% url 'jobs:job_locations' %}">Countries</a>
+        <ul class="subnav menu" role="menu" aria-hidden="true">
+            {% for l in active_countries %}
+            <li class="tier-2" role="treeitem">
+                {# TODO: add a template tag for this #}
+                {% if l.location %}
+                <a href="{% url 'jobs:job_filter_country' slug=l.location.country.slug %}">
+                {% else %}
+                    <a href="">
+                {% endif %}
+                {{ l.display_country }}
+            </a></li>
+            {% empty %}
+            <li class="tier-2" role="treeitem">No country found.</li>
+            {% endfor %}
+        </ul>
+    </li>
+    <li class="tier-1 element-6{% if not jobs_board_admin %} last{% endif %}"><a href="{% url 'jobs:job_create' %}">Submit</a></li>
     {% if jobs_board_admin %}
-    <li class="tier-1 element-6 last">
+    <li class="tier-1 element-7 last">
         <a href="{% url 'jobs:job_review' %}">Admin</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_review' %}">Review queue</a></li>

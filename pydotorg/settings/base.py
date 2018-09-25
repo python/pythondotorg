@@ -140,6 +140,10 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # dal and dal_select should be added before
+    # django.contrib.admin as documented.
+    'dal',
+    'dal_select2',
     'django.contrib.admin',
     'django.contrib.admindocs',
 
@@ -181,6 +185,8 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+
+    'cities_light',
 ]
 
 # Fixtures
@@ -279,3 +285,9 @@ REST_FRAMEWORK = {
         'user': '1000/day',
     },
 }
+
+### django-cities-light
+
+CITIES_LIGHT_TRANSLATION_LANGUAGES = ['en']
+CITIES_LIGHT_INCLUDE_CITY_TYPES = ['PPL', 'PPLA', 'PPLC', 'PPLS']
+CITIES_LIGHT_APP_NAME = 'jobs'

@@ -7,6 +7,7 @@ from ..models import Job
 from ..factories import (
     ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
     ReviewJobFactory, JobsBoardAdminGroupFactory,
+    ApprovedLegacyJobFactory,
 )
 from users.factories import UserFactory
 
@@ -36,6 +37,16 @@ class JobsViewTests(TestCase):
         self.job = ApprovedJobFactory(
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
+            email='hr@company.com',
+            is_featured=True,
+            telecommuting=True,
+            creator=self.user,
+        )
+        self.job.job_types.add(self.job_type)
+
+        self.job_legacy = ApprovedLegacyJobFactory(
+            description='Lorem ipsum dolor sit amet',
+            category=self.job_category,
             city='Memphis',
             region='TN',
             country='USA',
@@ -44,14 +55,10 @@ class JobsViewTests(TestCase):
             telecommuting=True,
             creator=self.user,
         )
-        self.job.job_types.add(self.job_type)
 
         self.job_draft = DraftJobFactory(
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
-            city='Memphis',
-            region='TN',
-            country='USA',
             email='hr@company.com',
             is_featured=True,
             creator=self.user,
@@ -75,11 +82,12 @@ class JobsViewTests(TestCase):
         url = reverse('jobs:job_list_category', kwargs={'slug': self.job_category.slug})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 2)
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
-        url = reverse('jobs:job_list_location', kwargs={'slug': self.job.location_slug})
+    def test_job_list_location(self):
+        url = reverse('jobs:job_list_location', kwargs={'slug': self.job_legacy.location_slug})
         response = self.client.get(url)
         self.assertEqual(len(response.context['object_list']), 1)
         self.assertEqual(response.status_code, 200)
@@ -115,7 +123,7 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 1)
-        self.assertEqual(response.context['jobs_count'], 2)
+        self.assertEqual(response.context['jobs_count'], 3)
         self.assertTemplateUsed(response, 'jobs/base.html')
         self.assertTemplateUsed(response, 'jobs/job_list.html')
 
@@ -238,7 +246,7 @@ class JobsViewTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.context['jobs_count'], 1)
+        self.assertEqual(response.context['jobs_count'], 2)
         self.assertTemplateUsed(response, 'jobs/base.html')
 
         # Logout users cannot see the job details.
@@ -296,9 +304,7 @@ class JobsViewTests(TestCase):
             'company_name': 'Some Company',
             'company_description': 'Some Description',
             'job_title': 'Test Job',
-            'city': 'San Diego',
-            'region': 'CA',
-            'country': 'USA',
+            'location': self.job.location.pk,
             'description': 'Lorem ipsum dolor sit amet',
             'requirements': 'Some requirements',
             'email': 'hr@company.com'
@@ -411,9 +417,6 @@ class JobsViewTests(TestCase):
         job2 = ReviewJobFactory(
             description='Lorem ipsum dolor sit amet',
             category=self.job_category,
-            city='Lawrence',
-            region='KS',
-            country='USA',
             email='hr@company.com',
         )
         job2.job_types.add(self.job_type)
@@ -423,10 +426,6 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertIn(self.job, response.context['jobs'])
         self.assertNotIn(job2, response.context['jobs'])
-
-        content = str(response.content)
-        self.assertIn('Memphis', content)
-        self.assertNotIn('Lawrence', content)
 
     def test_job_telecommute(self):
         url = reverse('jobs:job_telecommute')

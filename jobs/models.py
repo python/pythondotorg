@@ -8,6 +8,10 @@ from django.dispatch import receiver
 from django.template.defaultfilters import slugify
 from django.utils import timezone
 
+from cities_light.abstract_models import (
+    AbstractCity, AbstractRegion, AbstractCountry,
+)
+from cities_light.receivers import connect_default_signals
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
@@ -20,6 +24,31 @@ from .signals import (
 
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+
+
+class Country(AbstractCountry):
+    pass
+
+connect_default_signals(Country)
+
+
+class Region(AbstractRegion):
+    pass
+
+connect_default_signals(Region)
+
+
+class City(AbstractCity):
+
+    def get_display_name(self):
+        if self.region_id:
+            if self.name == self.region.name:
+                return '%s, %s' % (self.name, self.country.name)
+            return '%s, %s, %s' % (self.name, self.region.name,
+                                   self.country.name)
+        return '%s, %s' % (self.name, self.country.name)
+
+connect_default_signals(City)
 
 
 class JobType(NameSlugModel):
@@ -89,6 +118,12 @@ class Job(ContentManageable):
     country_slug = models.SlugField(
         max_length=100,
         editable=False)
+
+    location = models.ForeignKey(
+        City,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     description = MarkupField(
         verbose_name='Job description',
@@ -212,7 +247,27 @@ class Job(ContentManageable):
         return self.company_description
 
     @property
+    def display_city(self):
+        if self.location:
+            return self.location
+        return self.city
+
+    @property
+    def display_region(self):
+        if self.location:
+            return self.location.region
+        return self.region
+
+    @property
+    def display_country(self):
+        if self.location:
+            return self.location.country
+        return self.country
+
+    @property
     def display_location(self):
+        if self.location:
+            return self.location.get_display_name()
         location_parts = [part for part in (self.city, self.region, self.country)
                             if part]
         location_str = ', '.join(location_parts)
