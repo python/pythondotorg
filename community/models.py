@@ -12,17 +12,6 @@ from .managers import PostQuerySet
 
 DEFAULT_MARKUP_TYPE = 'html'  # getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
-'''
-Text
-Photo
-Video
-Link
-
-Audio
-Quote
-Chat
-'''
-
 
 class Post(ContentManageable):
     title = models.CharField(max_length=200, blank=True, null=True)
