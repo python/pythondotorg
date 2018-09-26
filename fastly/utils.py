@@ -13,9 +13,8 @@ def purge_url(*paths):
     if not api_key or settings.DEBUG:
         return
 
-    for path in paths:
-        requests.request(
-            'PURGE',
-            urljoin('https://www.python.org', path),
-            headers={'Fastly-Key': api_key},
-        )
+    with requests.session() as session:
+        session.headers['Fastly-Key'] = api_key
+        for path in paths:
+            url = urljoin('https://www.python.org', path)
+            session.request('PURGE', url)
