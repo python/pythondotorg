@@ -12,7 +12,7 @@ from markupfield.fields import MarkupField
 
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
-from fastly.utils import purge_url
+from fastly.utils import purge_urls
 from pages.models import Page
 
 from .managers import ReleaseManager
@@ -242,7 +242,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 
     # Only purge on published instances
     if instance.is_published:
-        purge_url(
+        purge_urls(
             # Purge our common pages
             '/downloads/',
             '/downloads/latest/python2/',
@@ -258,7 +258,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
             instance.get_absolute_url(),
         )
         if instance.get_version() is not None:
-            purge_url('/ftp/python/{}/'.format(instance.get_version()))
+            purge_urls('/ftp/python/{}/'.format(instance.get_version()))
 
 
 @receiver(post_save, sender=Release)

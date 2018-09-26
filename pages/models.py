@@ -18,7 +18,7 @@ from django.dispatch import receiver
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-from fastly.utils import purge_url
+from fastly.utils import purge_urls
 
 from .managers import PageQuerySet
 
@@ -86,7 +86,7 @@ def purge_fastly_cache(sender, instance, **kwargs):
     Purge fastly.com cache if in production and the page is published.
     Requires settings.FASTLY_API_KEY being set
     """
-    purge_url(instance.path)
+    purge_urls(instance.path)
 
 
 def page_image_path(instance, filename):

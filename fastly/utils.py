@@ -5,7 +5,7 @@ from urllib.parse import urljoin
 from django.conf import settings
 
 
-def purge_url(*paths):
+def purge_urls(*paths):
     """
     Purge the Fastly.com URL cache for each given path.
     """
