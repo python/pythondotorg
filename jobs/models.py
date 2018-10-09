@@ -11,7 +11,7 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
-from fastly.utils import purge_url
+from fastly.utils import purge_urls
 
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
 from .signals import (
@@ -263,6 +263,8 @@ def purge_fastly_cache(sender, instance, **kwargs):
         return
 
     if instance.status == Job.STATUS_APPROVED:
-        purge_url(reverse('jobs:job_detail', kwargs={'pk': instance.pk}))
-        purge_url(reverse('jobs:job_list'))
-        purge_url(reverse('jobs:job_rss'))
+        purge_urls(
+            reverse('jobs:job_detail', kwargs={'pk': instance.pk}),
+            reverse('jobs:job_list'),
+            reverse('jobs:job_rss'),
+        )
