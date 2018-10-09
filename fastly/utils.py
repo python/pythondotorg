@@ -7,7 +7,7 @@ from django.conf import settings
 
 def purge_urls(*paths):
     """
-    Purge the Fastly.com URL cache for each given path.
+    Purge Fastly cache for each given path.
     """
     api_key = getattr(settings, 'FASTLY_API_KEY', None)
     if not api_key or settings.DEBUG:
