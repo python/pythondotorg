@@ -1,6 +1,6 @@
-import requests
+import urllib.parse
 
-from urllib.parse import urljoin
+import requests
 
 from django.conf import settings
 
@@ -16,5 +16,5 @@ def purge_urls(*paths):
     with requests.session() as session:
         session.headers['Fastly-Key'] = api_key
         for path in paths:
-            url = urljoin('https://www.python.org', path)
+            url = urllib.parse.urljoin('https://www.python.org', path)
             session.request('PURGE', url)
