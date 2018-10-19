@@ -25,7 +25,7 @@ django-tastypie==0.14.1
 pytz==2017.2
 python-dateutil==2.6.1
 
-requests==2.5.1
+requests[security]==2.19.1
 
 django-honeypot==0.6.0
 django-markupfield==1.4.3
