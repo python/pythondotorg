@@ -14,7 +14,7 @@ from .managers import StoryManager
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from companies.models import Company
-from fastly.utils import purge_urls
+from fastly.utils import purge_url
 
 
 PSF_TO_EMAILS = ['ewa@python.org']
@@ -109,11 +109,11 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
         )
 
         # Purge Fastly cache
-        purge_urls('/box/supernav-python-success-stories/')
+        purge_url('/box/supernav-python-success-stories/')
 
     if instance.is_published:
         # Purge the page itself
-        purge_urls(instance.get_absolute_url())
+        purge_url(instance.get_absolute_url())
 
 
 @receiver(post_save, sender=Story)
