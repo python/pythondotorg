@@ -1143,11 +1143,6 @@
 
         a { padding: 0.3em 0.75em; }
     }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
-
 }
 
 
@@ -1204,11 +1199,6 @@
     .job-description {
         @include pad( 1,1 );
     }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
-
 }
 
 
@@ -1241,8 +1231,4 @@
     }
 
     .community-banner { background-position: 90% 0; }
-
-    #python-jetbrains-survey {
-        display: block;
-    }
 }

@@ -2322,9 +2322,6 @@ html[xmlns] .slides { display: block; }
   .footer-links a {
     padding: 0.3em 0.75em; }
 
-  #python-jetbrains-survey {
-    display: block; }
-
   .flex-slideshow.home-slideshow .caption-wrapper {
     float: left;
     width: 49%; }
@@ -2484,10 +2481,7 @@ html[xmlns] .slides { display: block; }
   .event-description,
   .job-description {
     padding-left: 8.51064%;
-    padding-right: 8.51064%; }
-
-  #python-jetbrains-survey {
-    display: block; } }
+    padding-right: 8.51064%; } }
 /* - - - Larger than 1200px - - - */
 @media (min-width: 75em) {
   body:after {
@@ -2520,10 +2514,7 @@ html[xmlns] .slides { display: block; }
       margin-right: 17.3913%; }
 
   .community-banner {
-    background-position: 90% 0; }
-
-  #python-jetbrains-survey {
-    display: block; } }
+    background-position: 90% 0; } }
 /* http://dev.w3.org/csswg/css-device-adapt/
  * http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/
  * for IE10 Snap Mode on Metro
