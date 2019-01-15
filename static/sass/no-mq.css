@@ -363,18 +363,18 @@ html[xmlns] .slides { display: block; }
 /* Base styles for a navigation with dropdowns mixin */
 /* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
 /* A single row of main navigation -- DESKTOP ONLY */
-/* 
- * ! ===== START Media Queries ===== 
+/*
+ * ! ===== START Media Queries =====
  *
  * Define media queries here as mix-ins. Deliver the ones we want inside of complete mqs in mq.scss
- * Alternately, deliver the rule-sets that we want to IE7 and 8 to render 
- * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss. 
+ * Alternately, deliver the rule-sets that we want to IE7 and 8 to render
+ * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss.
  *
- * Column structure =  
- * 
+ * Column structure =
+ *
  *  Susy mix-ins with examples:
- *  @include span-columns(3 omega, 12); 
- *  @include omega; 
+ *  @include span-columns(3 omega, 12);
+ *  @include omega;
  *  @include prefix(3); 3 columns of padding before
  *  @include suffix(3); 3 columns of padding after
  *  @include pad(3,3); 3 columns of padding on each side
@@ -456,6 +456,9 @@ a.button {
   vertical-align: baseline;
   width: auto; }
 
+.search-field:focus {
+  width: 8em; }
+
 /* Simple Column Structure */
 .three-col {
   /* Only works if we are using all single .column, not .double-col as well */ }
@@ -483,6 +486,15 @@ a.button {
 .site-headline {
   float: left; }
 
+.options-bar-container {
+  float: right; }
+
+.donate-button {
+  display: inline;
+  margin: 0 0.5em 0 0;
+  position: relative;
+  top: 19px; }
+
 .options-bar {
   float: right;
   width: auto; }
@@ -499,7 +511,7 @@ a.button {
   transition: width 0.3s ease-in-out; }
 
 .search-field:focus {
-  width: 8em;
+  width: 6em;
   margin-right: .5em; }
 
 /*modernizr*/
@@ -542,9 +554,9 @@ a.button {
 .with-supernav .super-navigation {
   display: none; }
 
-/* 
- * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
- * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097 
+/*
+ * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets.
+ * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097
  */
 .python-navigation {
   background-color: #2d618c;
@@ -1176,6 +1188,10 @@ a.button {
   content: "Category: ";
   color: #666666; }
 
+.listing-job-title:before {
+  content: "Title: ";
+  color: #666666; }
+
 .listing-job-type:before {
   content: "Looking for: ";
   color: #666666; }
@@ -1250,6 +1266,9 @@ a.button {
   width: 293.92px;
   height: 72.16px; }
 
+.donate-button {
+  top: 33px; }
+
 .options-bar {
   margin: 0.875em 0; }
 
@@ -1259,7 +1278,7 @@ a.button {
   margin-right: .5em;
   width: 11em; }
   .search-field:focus {
-    width: 15em; }
+    width: 13em; }
 
 .home .header-banner {
   margin: 0 2em 0 1em; }
@@ -1360,24 +1379,24 @@ a.button {
   padding-top: 1em; }
 
 .about-banner {
-  background: 120% 0 no-repeat url('../img/landing-about.png?1414305901') transparent;
+  background: 120% 0 no-repeat url('../img/landing-about.png?1543670309') transparent;
   min-height: 345px;
   padding-bottom: 3.5em;
   margin-bottom: -2.5em; }
 
 .download-for-current-os {
-  background: 130% 0 no-repeat url('../img/landing-downloads.png?1414305901') transparent;
+  background: 130% 0 no-repeat url('../img/landing-downloads.png?1543670309') transparent;
   min-height: 345px;
   padding-bottom: 4em;
   margin-bottom: -3em; }
 
 .documentation-banner {
-  background: 130% 0 no-repeat url('../img/landing-docs.png?1414305901') transparent;
+  background: 130% 0 no-repeat url('../img/landing-docs.png?1543670309') transparent;
   padding-bottom: 1em; }
 
 .community-banner {
   text-align: left;
-  background: 110% 0 no-repeat url('../img/landing-community.png?1418509184') transparent;
+  background: 110% 0 no-repeat url('../img/landing-community.png?1543670309') transparent;
   min-height: 345px;
   padding-bottom: 2em;
   margin-bottom: -1.25em; }
@@ -1481,7 +1500,7 @@ a.button {
     right: 1em;
     width: 210px;
     height: 210px;
-    background: top left no-repeat url('../img/python-logo-large.png?1414305901') transparent; }
+    background: top left no-repeat url('../img/python-logo-large.png?1543670309') transparent; }
   .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
     margin-right: 34.04255%; }
 
@@ -1516,6 +1535,12 @@ a.button {
   #margin-left: -20px;
   text-align: right;
   clear: none; }
+.list-recent-jobs .listing-actions {
+  clear: both;
+  overflow: hidden;
+  *zoom: 1;
+  padding-top: 0.9375em;
+  text-align: right; }
 
 /*h2*/
 .listing-company .listing-company-name {
@@ -1595,8 +1620,7 @@ a.button {
     clear: none;
     border-left: 0;
     border-right: 0; }
-  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1
-  .element-8 {
+  .sitemap .tier-1.element-1, .sitemap .tier-1.element-2, .sitemap .tier-1.element-4, .sitemap .tier-1.element-5, .sitemap .tier-1.element-8 {
     border-right: 1px solid #d5d6d8; }
   .sitemap .tier-1.element-2, .sitemap .tier-1.element-3, .sitemap .tier-1.element-5, .sitemap .tier-1.element-6, .sitemap .tier-1.element-7, .sitemap .tier-1.element-8, .sitemap .tier-1.element-9 {
     border-left: 1px solid #f7f7f8; }
@@ -1779,6 +1803,9 @@ a.button {
     width: 18em;
     margin-right: .5em; }
 
+.donate-button {
+  top: 38px; }
+
 .options-bar {
   margin: 1.3125em 0; }
 
@@ -1791,7 +1818,7 @@ a.button {
             <h2>Download for Mac OSX</h2>
             <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
             </p><p>
-                <a class="button">Python 3.3.0</a> 
+                <a class="button">Python 3.3.0</a>
                 <a class="button">Python 2.7.3</a>
             </p>
         </li></ul>
