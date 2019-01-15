@@ -363,18 +363,18 @@ html[xmlns] .slides { display: block; }
 /* Base styles for a navigation with dropdowns mixin */
 /* A two-tier, stacked version of the main navigation -- DESKTOP ONLY */
 /* A single row of main navigation -- DESKTOP ONLY */
-/* 
- * ! ===== START Media Queries ===== 
+/*
+ * ! ===== START Media Queries =====
  *
  * Define media queries here as mix-ins. Deliver the ones we want inside of complete mqs in mq.scss
- * Alternately, deliver the rule-sets that we want to IE7 and 8 to render 
- * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss. 
+ * Alternately, deliver the rule-sets that we want to IE7 and 8 to render
+ * by calling the mixin WITHOUT surrounding it in a media query for no-mq.scss.
  *
- * Column structure =  
- * 
+ * Column structure =
+ *
  *  Susy mix-ins with examples:
- *  @include span-columns(3 omega, 12); 
- *  @include omega; 
+ *  @include span-columns(3 omega, 12);
+ *  @include omega;
  *  @include prefix(3); 3 columns of padding before
  *  @include suffix(3); 3 columns of padding after
  *  @include pad(3,3); 3 columns of padding on each side
@@ -501,7 +501,10 @@ html[xmlns] .slides { display: block; }
   a.button {
     display: inline-block;
     vertical-align: baseline;
-    width: auto; } }
+    width: auto; }
+
+  .search-field:focus {
+    width: 8em; } }
 /* - - - Larger than 640px, less that 940px - - - */
 @media (min-width: 39.9375em) and (max-width: 58.75em) {
   body:after {
@@ -766,6 +769,15 @@ html[xmlns] .slides { display: block; }
   .site-headline {
     float: left; }
 
+  .options-bar-container {
+    float: right; }
+
+  .donate-button {
+    display: inline;
+    margin: 0 0.5em 0 0;
+    position: relative;
+    top: 19px; }
+
   .options-bar {
     float: right;
     width: auto; }
@@ -782,7 +794,7 @@ html[xmlns] .slides { display: block; }
     transition: width 0.3s ease-in-out; }
 
   .search-field:focus {
-    width: 8em;
+    width: 6em;
     margin-right: .5em; }
 
   /*modernizr*/
@@ -825,9 +837,9 @@ html[xmlns] .slides { display: block; }
   .with-supernav .super-navigation {
     display: none; }
 
-  /* 
-   * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets. 
-   * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097 
+  /*
+   * This is super cool. Uses two arrays to spit out a bunch of repetitive rulesets.
+   * Associative array example borrowed from https://github.com/nex3/sass/issues/132#issuecomment-4335097
    */
   .python-navigation {
     background-color: #2d618c;
@@ -1539,6 +1551,9 @@ html[xmlns] .slides { display: block; }
     width: 293.92px;
     height: 72.16px; }
 
+  .donate-button {
+    top: 33px; }
+
   .options-bar {
     margin: 0.875em 0; }
 
@@ -1548,7 +1563,7 @@ html[xmlns] .slides { display: block; }
     margin-right: .5em;
     width: 11em; }
     .search-field:focus {
-      width: 15em; }
+      width: 13em; }
 
   .home .header-banner {
     margin: 0 2em 0 1em; }
@@ -1649,24 +1664,24 @@ html[xmlns] .slides { display: block; }
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1414305901') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1543670309') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1414305901') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1543670309') transparent;
     min-height: 345px;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1414305901') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1543670309') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
-    background: 110% 0 no-repeat url('../img/landing-community.png?1418509184') transparent;
+    background: 110% 0 no-repeat url('../img/landing-community.png?1543670309') transparent;
     min-height: 345px;
     padding-bottom: 2em;
     margin-bottom: -1.25em; }
@@ -1770,7 +1785,7 @@ html[xmlns] .slides { display: block; }
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large.png?1414305901') transparent; }
+      background: top left no-repeat url('../img/python-logo-large.png?1543670309') transparent; }
     .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
       margin-right: 34.04255%; }
 
@@ -2087,6 +2102,9 @@ html[xmlns] .slides { display: block; }
       width: 18em;
       margin-right: .5em; }
 
+  .donate-button {
+    top: 38px; }
+
   .options-bar {
     margin: 1.3125em 0; }
 
@@ -2099,7 +2117,7 @@ html[xmlns] .slides { display: block; }
               <h2>Download for Mac OSX</h2>
               <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
               </p><p>
-                  <a class="button">Python 3.3.0</a> 
+                  <a class="button">Python 3.3.0</a>
                   <a class="button">Python 2.7.3</a>
               </p>
           </li></ul>

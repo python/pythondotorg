@@ -136,6 +136,10 @@
         vertical-align: baseline;
         width: auto;
     }
+
+    .search-field:focus {
+        width: 8em;
+    }
 }
 
 
@@ -171,6 +175,17 @@
 
     .site-headline { float: left; }
 
+    .options-bar-container {
+      float: right;
+    }
+
+    .donate-button {
+      display: inline;
+      margin: 0 0.5em 0 0;
+      position: relative;
+      top: 19px;
+    }
+
     .options-bar {
         float: right;
         width: auto;
@@ -189,7 +204,7 @@
     }
 
     .search-field:focus {
-        width: 8em;
+        width: 6em;
         margin-right: .5em;
     }
 
@@ -485,6 +500,10 @@
         }
     }
 
+    .donate-button {
+      top: 33px;
+    }
+
     .options-bar { margin: rhythm( .5 ) 0; }
 
     .search-field {
@@ -493,7 +512,7 @@
         margin-right: .5em;
         width: 11em;
 
-        &:focus { width: 15em; }
+        &:focus { width: 13em; }
     }
 
     .home .header-banner { margin: 0 2em 0 1em; }
@@ -882,6 +901,10 @@
             }
         }
 
+    .donate-button {
+      top: 38px;
+    }
+
     .options-bar { margin: rhythm( .75 ) 0; }
 
     /* Supernavs in main-navigation */
@@ -900,7 +923,7 @@
     </li>*/
     .with-supernav {
 
-        .subnav { 
+        .subnav {
             display: none;
             border-right: 1px solid rgba( #666, .3 );
         }

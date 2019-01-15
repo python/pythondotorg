@@ -426,6 +426,21 @@ h2.not-column {
     }
 }
 
+.options-bar-container {
+    float: none;
+}
+
+.donate-button {
+    @extend %button-style-yellow;
+}
+
+.donate-button {
+    display: block;
+    text-align: center;
+    position: relative;
+    top: 0;
+    margin: 1em 0.7em;
+}
 
 $optionsbar-text: #bbb;
 
