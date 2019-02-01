@@ -17,7 +17,7 @@ from companies.models import Company
 from fastly.utils import purge_url
 
 
-PSF_TO_EMAILS = ['ewa@python.org']
+PSF_TO_EMAILS = ['psf-staff@python.org']
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 
