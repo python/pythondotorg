@@ -2,15 +2,12 @@
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
-/* @import "compass/css3/columns" */
-/* @import "compass/css3/hyphenation"; */
 /* Needed for the link-colors() function */
 /* Needed for the horizontal-list() function */
 /* When remembering whether or not there's a hyphen in white-space is too hard */
 /* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
 /* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
 /* Other interesting functions: 
-	@import "compass/utilities/color/contrast";
 		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
 		Used to pass two colors into a get out the most readable color. 
 		Good for situations where we dont want to create a new color, 
@@ -225,15 +222,12 @@ html[xmlns] .slides { display: block; }
 /* Define constants for the application and to configure the blueprint framework. */
 /* ===== Compass Imports ===== */
 /* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
-/* @import "compass/css3/columns" */
-/* @import "compass/css3/hyphenation"; */
 /* Needed for the link-colors() function */
 /* Needed for the horizontal-list() function */
 /* When remembering whether or not there's a hyphen in white-space is too hard */
 /* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
 /* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
 /* Other interesting functions: 
-	@import "compass/utilities/color/contrast";
 		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
 		Used to pass two colors into a get out the most readable color. 
 		Good for situations where we dont want to create a new color, 

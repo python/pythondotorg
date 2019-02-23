@@ -27,6 +27,7 @@ MIDDLEWARE = [
 
 MEDIAFILES_LOCATION = 'm'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
+STATICFILES_STORAGE = 'custom_storages.PipelineManifestStorage'
 
 EMAIL_HOST = os.environ.get('EMAIL_HOST')
 EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
