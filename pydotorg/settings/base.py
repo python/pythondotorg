@@ -39,7 +39,7 @@ DATE_FORMAT = 'Y-m-d'
 ### Files (media and static)
 
 MEDIA_ROOT = os.path.join(BASE, 'media')
-MEDIA_URL = '/m/'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
