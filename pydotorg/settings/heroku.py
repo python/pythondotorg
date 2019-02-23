@@ -25,7 +25,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
 ] + MIDDLEWARE
 
-MEDIAFILES_LOCATION = 'm'
+MEDIAFILES_LOCATION = 'media'
 DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
 STATICFILES_STORAGE = 'custom_storages.PipelineManifestStorage'
 
