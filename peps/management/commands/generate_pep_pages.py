@@ -1,11 +1,19 @@
 import re
 import os
 
+from contextlib import ExitStack
+from tarfile import TarFile
+from tempfile import TemporaryDirectory, TemporaryFile
+
+import requests
+
 from django.core.management import BaseCommand
 from django.conf import settings
 
+from dateutil.parser import parse as parsedate
+
 from peps.converters import (
-    get_pep0_page, get_pep_page, add_pep_image, get_peps_rss
+    get_pep0_page, get_pep_page, add_pep_image, get_peps_rss, get_peps_last_updated
 )
 
 pep_number_re = re.compile(r'pep-(\d+)')
@@ -42,60 +50,82 @@ class Command(BaseCommand):
 
         verbose("== Starting PEP page generation")
 
-        verbose("Generating RSS Feed")
-        peps_rss = get_peps_rss()
-        if not peps_rss:
-            verbose("Could not find generated RSS feed. Skipping.")
+        with ExitStack() as stack:
+            verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
+            peps_last_updated = get_peps_last_updated()
+            with requests.get(settings.PEP_ARTIFACT_URL, stream=True) as r:
+                artifact_last_modified = parsedate(r.headers['last-modified'])
+                if peps_last_updated > artifact_last_modified:
+                    verbose(f"== No update to artifacts, we're done here!")
+                    return
 
-        verbose("Generating PEP0 index page")
-        pep0_page, _ = get_pep0_page()
-        if pep0_page is None:
-            verbose("HTML version of PEP 0 cannot be generated.")
-            return
+                temp_file = stack.enter_context(TemporaryFile())
+                for chunk in r.iter_content(chunk_size=8192):
+                    if chunk:
+                        temp_file.write(chunk)
 
-        image_paths = set()
+            temp_file.seek(0)
 
-        # Find pep pages
-        for f in os.listdir(settings.PEP_REPO_PATH):
+            temp_dir = stack.enter_context(TemporaryDirectory())
+            tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
+            tar_ball.extractall(path=temp_dir, numeric_owner=False)
 
-            if self.is_image(f):
-                verbose("- Deferring import of image '{}'".format(f))
-                image_paths.add(f)
-                continue
+            artifacts_path = os.path.join(temp_dir, 'peps')
 
-            # Skip files we aren't looking for
-            if not self.is_pep_page(f):
-                verbose("- Skipping non-PEP file '{}'".format(f))
-                continue
+            verbose("Generating RSS Feed")
+            peps_rss = get_peps_rss(artifacts_path)
+            if not peps_rss:
+                verbose("Could not find generated RSS feed. Skipping.")
 
-            if 'pep-0000.html' in f:
-                verbose("- Skipping duplicate PEP0 index")
-                continue
+            verbose("Generating PEP0 index page")
+            pep0_page, _ = get_pep0_page(artifacts_path)
+            if pep0_page is None:
+                verbose("HTML version of PEP 0 cannot be generated.")
+                return
 
-            verbose("Generating PEP Page from '{}'".format(f))
-            pep_match = pep_number_re.match(f)
-            if pep_match:
-                pep_number = pep_match.groups(1)[0]
-                p = get_pep_page(pep_number)
-                if p is None:
-                    verbose(
-                        "- HTML version PEP {!r} cannot be generated.".format(
-                            pep_number
+            image_paths = set()
+
+            # Find pep pages
+            for f in os.listdir(artifacts_path):
+
+                if self.is_image(f):
+                    verbose("- Deferring import of image '{}'".format(f))
+                    image_paths.add(f)
+                    continue
+
+                # Skip files we aren't looking for
+                if not self.is_pep_page(f):
+                    verbose("- Skipping non-PEP file '{}'".format(f))
+                    continue
+
+                if 'pep-0000.html' in f:
+                    verbose("- Skipping duplicate PEP0 index")
+                    continue
+
+                verbose("Generating PEP Page from '{}'".format(f))
+                pep_match = pep_number_re.match(f)
+                if pep_match:
+                    pep_number = pep_match.groups(1)[0]
+                    p = get_pep_page(artifacts_path, pep_number)
+                    if p is None:
+                        verbose(
+                            "- HTML version PEP {!r} cannot be generated.".format(
+                                pep_number
+                            )
                         )
-                    )
-                verbose("====== Title: '{}'".format(p.title))
-            else:
-                verbose("- Skipping invalid '{}'".format(f))
+                    verbose("====== Title: '{}'".format(p.title))
+                else:
+                    verbose("- Skipping invalid '{}'".format(f))
 
-        # Find pep images. This needs to happen afterwards, because we need
-        for img in image_paths:
-            pep_match = pep_number_re.match(img)
-            if pep_match:
-                pep_number = pep_match.groups(1)[0]
-                verbose("Generating image for PEP {} at '{}'".format(
-                    pep_number, img))
-                add_pep_image(pep_number, img)
-            else:
-                verbose("- Skipping non-PEP related image '{}'".format(img))
+            # Find pep images. This needs to happen afterwards, because we need
+            for img in image_paths:
+                pep_match = pep_number_re.match(img)
+                if pep_match:
+                    pep_number = pep_match.groups(1)[0]
+                    verbose("Generating image for PEP {} at '{}'".format(
+                        pep_number, img))
+                    add_pep_image(artifacts_path, pep_number, img)
+                else:
+                    verbose("- Skipping non-PEP related image '{}'".format(img))
 
         verbose("== Finished")

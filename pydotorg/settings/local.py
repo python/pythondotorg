@@ -24,9 +24,8 @@ HAYSTACK_CONNECTIONS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Set the path to where the PEP repo's HTML source files are located
-# For example, PEP_REPO_PATH = '/Users/frank/work/src/pythondotorg/tmp/peps'
-PEP_REPO_PATH = ''
+# Set the URL to where to fetch PEP artifacts from
+PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
 # have a sass compiler installed at all during local development if you aren't
