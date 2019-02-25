@@ -214,26 +214,15 @@ def add_pep_image(artifact_path, pep_number, path):
     # Find existing images, we have to loop here as we can't use the ORM
     # to query against image__path
     existing_images = Image.objects.filter(page=page)
-    MISSING = False
+
     FOUND = False
-
     for image in existing_images:
-        image_root_path = os.path.join(settings.MEDIA_ROOT, page.path, path)
-
-        if image.image.path.endswith(path):
+        if image.image.name.endswith(path):
             FOUND = True
-            # File is missing on disk, recreate
-            if not os.path.exists(image_root_path):
-                MISSING = image
-
             break
 
-    if not FOUND or MISSING:
-        image = None
-        if MISSING:
-            image = MISSING
-        else:
-            image = Image(page=page)
+    if not FOUND:
+        image = Image(page=page)
 
         with open(image_path, 'rb') as image_obj:
             image.image.save(path, File(image_obj))
@@ -244,7 +233,7 @@ def add_pep_image(artifact_path, pep_number, path):
     soup = BeautifulSoup(page.content.raw, 'lxml')
     for img_tag in soup.findAll('img'):
         if img_tag['src'] == path:
-            img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
+            img_tag['src'] = image.image.url
 
     page.content.raw = str(soup)
     page.save()
