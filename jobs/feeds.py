@@ -20,6 +20,6 @@ class JobFeed(Feed):
         """ Description """
         return '\n'.join([
             item.display_location,
-            item.description,
-            item.requirements,
+            item.description.rendered,
+            item.requirements.rendered,
         ])
