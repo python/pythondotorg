@@ -90,7 +90,7 @@ def purge_fastly_cache(sender, instance, **kwargs):
 
 
 def page_image_path(instance, filename):
-    return os.path.join(settings.MEDIA_ROOT, instance.page.path, filename)
+    return os.path.join(instance.page.path, filename)
 
 
 class Image(models.Model):
