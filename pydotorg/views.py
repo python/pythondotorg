@@ -1,4 +1,5 @@
-from django.views.generic.base import TemplateView
+from django.conf import settings
+from django.views.generic.base import RedirectView, TemplateView
 
 from codesamples.models import CodeSample
 from downloads.models import Release
@@ -26,3 +27,19 @@ class DocumentationIndexView(TemplateView):
             'latest_python3': Release.objects.latest_python3(),
         })
         return context
+
+
+class MediaMigrationView(RedirectView):
+    prefix = None
+    permanent = True
+    query_string = False
+
+    def get_redirect_url(self, *args, **kwargs):
+        image_path = kwargs['url']
+        if self.prefix:
+            image_path = '/'.join([self.prefix, image_path])
+        return '/'.join([
+            settings.AWS_S3_ENDPOINT_URL,
+            settings.AWS_STORAGE_BUCKET_NAME,
+            image_path,
+        ])

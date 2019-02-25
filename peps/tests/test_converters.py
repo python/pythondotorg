@@ -9,14 +9,8 @@ from . import FAKE_PEP_REPO
 
 class PEPConverterTests(TestCase):
 
-    @override_settings(PEP_REPO_PATH='/path/that/does/not/exist')
-    def test_converter_path_checks(self):
-        with self.assertRaises(ImproperlyConfigured):
-            get_pep0_page()
-
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_source_link(self):
-        pep = get_pep_page('0525')
+        pep = get_pep_page(FAKE_PEP_REPO, '0525')
         self.assertEqual(pep.title, 'PEP 525 -- Asynchronous Generators')
         self.assertIn(
             'Source: <a href="https://github.com/python/peps/blob/master/'
@@ -24,9 +18,8 @@ class PEPConverterTests(TestCase):
             pep.content.rendered
         )
 
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_source_link_rst(self):
-        pep = get_pep_page('0012')
+        pep = get_pep_page(FAKE_PEP_REPO, '0012')
         self.assertEqual(pep.title, 'PEP 12 -- Sample reStructuredText PEP Template')
         self.assertIn(
             'Source: <a href="https://github.com/python/peps/blob/master/'
@@ -34,27 +27,24 @@ class PEPConverterTests(TestCase):
             pep.content.rendered
         )
 
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_invalid_pep_number(self):
         with captured_stdout() as stdout:
-            get_pep_page('9999999')
+            get_pep_page(FAKE_PEP_REPO, '9999999')
         self.assertRegex(
             stdout.getvalue(),
             r"PEP Path '(.*)9999999(.*)' does not exist, skipping"
         )
 
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_add_image_not_found(self):
         with captured_stdout() as stdout:
-            add_pep_image('0525', '/path/that/does/not/exist')
+            add_pep_image(FAKE_PEP_REPO, '0525', '/path/that/does/not/exist')
         self.assertRegex(
             stdout.getvalue(),
             r"Image Path '(.*)/path/that/does/not/exist(.*)' does not exist, skipping"
         )
 
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_html_do_not_prettify(self):
-        pep = get_pep_page('3001')
+        pep = get_pep_page(FAKE_PEP_REPO, '3001')
         self.assertEqual(
             pep.title,
             'PEP 3001 -- Procedure for reviewing and improving standard library modules'
@@ -66,9 +56,8 @@ class PEPConverterTests(TestCase):
             pep.content.rendered
         )
 
-    @override_settings(PEP_REPO_PATH=FAKE_PEP_REPO)
     def test_strip_html_and_body_tags(self):
-        pep = get_pep_page('0525')
+        pep = get_pep_page(FAKE_PEP_REPO, '0525')
         self.assertNotIn('<html>', pep.content.rendered)
         self.assertNotIn('</html>', pep.content.rendered)
         self.assertNotIn('<body>', pep.content.rendered)

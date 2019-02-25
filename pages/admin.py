@@ -12,21 +12,8 @@ from .models import Page, Image, DocumentFile
 class PageAdminImageFileWidget(admin.widgets.AdminFileWidget):
 
     def render(self, name, value, attrs=None):
-        """ Fix admin rendering """
         content = super().render(name, value, attrs=None)
-        soup = BeautifulSoup(content, 'lxml')
-
-        # Show useful link/relationship in admin
-        a_href = soup.find('a')
-        if a_href and a_href.attrs['href']:
-            a_href.attrs['href'] = a_href.attrs['href'].replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
-            a_href.string = a_href.text.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
-
-            if '//' in a_href.attrs['href']:
-                a_href.attrs['href'] = a_href.attrs['href'].replace('//', '/')
-                a_href.string = a_href.text.replace('//', '/')
-
-        return mark_safe(soup)
+        return content
 
 
 class ImageInlineAdmin(admin.StackedInline):

@@ -39,7 +39,7 @@ DATE_FORMAT = 'Y-m-d'
 ### Files (media and static)
 
 MEDIA_ROOT = os.path.join(BASE, 'media')
-MEDIA_URL = '/m/'
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -227,7 +227,7 @@ PYTHON_BLOG_URL = "http://blog.python.org"
 MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
 ### PEP Repo Location
-PEP_REPO_PATH = ''
+PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 ### Fastly ###
 FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to

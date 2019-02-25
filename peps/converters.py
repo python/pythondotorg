@@ -1,4 +1,5 @@
 import functools
+import datetime
 import re
 import os
 
@@ -7,6 +8,7 @@ from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.files import File
+from django.db.models import Max
 
 from pages.models import Page, Image
 
@@ -14,25 +16,25 @@ PEP_TEMPLATE = 'pages/pep-page.html'
 pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
 
-def check_paths(func):
-    """Ensure that our PEP_REPO_PATH is setup correctly."""
-    @functools.wraps(func)
-    def wrapped(*args, **kwargs):
-        if not hasattr(settings, 'PEP_REPO_PATH'):
-            raise ImproperlyConfigured('No PEP_REPO_PATH in settings')
-        if not os.path.exists(settings.PEP_REPO_PATH):
-            raise ImproperlyConfigured('Path set as PEP_REPO_PATH does not exist')
-        return func(*args, **kwargs)
-    return wrapped
+def get_peps_last_updated():
+    last_update = Page.objects.filter(
+        path__startswith='dev/peps',
+    ).aggregate(Max('updated')).get('updated__max')
+    if last_update is None:
+        return datetime.datetime(
+            1970, 1, 1, tzinfo=datetime.timezone(
+                datetime.timedelta(0)
+            )
+        )
+    return last_update
 
 
-@check_paths
-def convert_pep0():
+def convert_pep0(artifact_path):
     """
     Take existing generated pep-0000.html and convert to something suitable
     for a Python.org Page returns the core body HTML necessary only
     """
-    pep0_path = os.path.join(settings.PEP_REPO_PATH, 'pep-0000.html')
+    pep0_path = os.path.join(artifact_path, 'pep-0000.html')
     pep0_content = open(pep0_path).read()
     data = convert_pep_page(0, pep0_content)
     if data is None:
@@ -40,14 +42,14 @@ def convert_pep0():
     return data['content']
 
 
-def get_pep0_page(commit=True):
+def get_pep0_page(artifact_path, commit=True):
     """
     Using convert_pep0 above, create a CMS ready pep0 page and return it
 
     pep0 is used as the directory index, but it's also an actual pep, so we
     return both Page objects.
     """
-    pep0_content = convert_pep0()
+    pep0_content = convert_pep0(artifact_path)
     if pep0_content is None:
         return None, None
     pep0_page, _ = Page.objects.get_or_create(path='dev/peps/')
@@ -88,7 +90,6 @@ def fix_headers(soup, data):
     return soup, data
 
 
-@check_paths
 def convert_pep_page(pep_number, content):
     """
     Handle different formats that pep2html.py outputs
@@ -163,12 +164,12 @@ def convert_pep_page(pep_number, content):
     return data
 
 
-def get_pep_page(pep_number, commit=True):
+def get_pep_page(artifact_path, pep_number, commit=True):
     """
     Given a pep_number retrieve original PEP source text, rst, or html.
     Get or create the associated Page and return it
     """
-    pep_path = os.path.join(settings.PEP_REPO_PATH, 'pep-{}.html'.format(pep_number))
+    pep_path = os.path.join(artifact_path, 'pep-{}.html'.format(pep_number))
     if not os.path.exists(pep_path):
         print("PEP Path '{}' does not exist, skipping".format(pep_path))
         return
@@ -177,7 +178,7 @@ def get_pep_page(pep_number, commit=True):
     if pep_content is None:
         return None
     pep_rst_source = os.path.join(
-        settings.PEP_REPO_PATH, 'pep-{}.rst'.format(pep_number),
+        artifact_path, 'pep-{}.rst'.format(pep_number),
     )
     pep_ext = '.rst' if os.path.exists(pep_rst_source) else '.txt'
     source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
@@ -198,8 +199,8 @@ def get_pep_page(pep_number, commit=True):
     return pep_page
 
 
-def add_pep_image(pep_number, path):
-    image_path = os.path.join(settings.PEP_REPO_PATH, path)
+def add_pep_image(artifact_path, pep_number, path):
+    image_path = os.path.join(artifact_path, path)
     if not os.path.exists(image_path):
         print("Image Path '{}' does not exist, skipping".format(image_path))
         return
@@ -213,26 +214,15 @@ def add_pep_image(pep_number, path):
     # Find existing images, we have to loop here as we can't use the ORM
     # to query against image__path
     existing_images = Image.objects.filter(page=page)
-    MISSING = False
+
     FOUND = False
-
     for image in existing_images:
-        image_root_path = os.path.join(settings.MEDIA_ROOT, page.path, path)
-
-        if image.image.path.endswith(path):
+        if image.image.name.endswith(path):
             FOUND = True
-            # File is missing on disk, recreate
-            if not os.path.exists(image_root_path):
-                MISSING = image
-
             break
 
-    if not FOUND or MISSING:
-        image = None
-        if MISSING:
-            image = MISSING
-        else:
-            image = Image(page=page)
+    if not FOUND:
+        image = Image(page=page)
 
         with open(image_path, 'rb') as image_obj:
             image.image.save(path, File(image_obj))
@@ -243,7 +233,7 @@ def add_pep_image(pep_number, path):
     soup = BeautifulSoup(page.content.raw, 'lxml')
     for img_tag in soup.findAll('img'):
         if img_tag['src'] == path:
-            img_tag['src'] = os.path.join(settings.MEDIA_URL, page.path, path)
+            img_tag['src'] = image.image.url
 
     page.content.raw = str(soup)
     page.save()
@@ -251,9 +241,8 @@ def add_pep_image(pep_number, path):
     return image
 
 
-@check_paths
-def get_peps_rss():
-    rss_feed = os.path.join(settings.PEP_REPO_PATH, 'peps.rss')
+def get_peps_rss(artifact_path):
+    rss_feed = os.path.join(artifact_path, 'peps.rss')
     if not os.path.exists(rss_feed):
         return
 
