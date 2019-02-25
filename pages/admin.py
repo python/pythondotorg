@@ -19,14 +19,14 @@ class PageAdminImageFileWidget(admin.widgets.AdminFileWidget):
         # Show useful link/relationship in admin
         a_href = soup.find('a')
         if a_href and a_href.attrs['href']:
-            a_href.attrs['href'] = a_href.attrs['href'].replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
+            a_href.attrs['href'] = a_href.attrs['href'].replace(settings.MEDIA_ROOT, '')
             a_href.string = a_href.text.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
 
             if '//' in a_href.attrs['href']:
                 a_href.attrs['href'] = a_href.attrs['href'].replace('//', '/')
                 a_href.string = a_href.text.replace('//', '/')
 
-        return mark_safe(soup)
+        return mark_safe(str(soup))
 
 
 class ImageInlineAdmin(admin.StackedInline):
