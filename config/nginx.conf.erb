@@ -279,6 +279,15 @@ http {
 
                 location /favicon.ico {
                     alias /app/static-root/favicon.ico;
+                    add_header Cache-Control "max-age=604800, public";  # 604800 is 7 days
+                }
+
+                location /downloads/ {
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header Host $http_host;
+                        proxy_redirect off;
+                        add_header Cache-Control "max-age=604800, public";  # 604800 is 7 days
+                        proxy_pass http://app_server/downloads/;
                 }
 
 		location / {
