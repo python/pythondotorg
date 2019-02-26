@@ -1,2 +1,2 @@
 release: python manage.py migrate --noinput
-web: gunicorn pydotorg.wsgi
+web: bin/start-nginx gunicorn -c gunicorn.conf pydotorg.wsgi
