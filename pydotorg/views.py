@@ -17,6 +17,10 @@ class IndexView(TemplateView):
         return context
 
 
+class AuthenticatedView(TemplateView):
+    template_name = "includes/authenticated.html"
+
+
 class DocumentationIndexView(TemplateView):
     template_name = 'python/documentation.html'
 
