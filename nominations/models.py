@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 from django.utils.text import slugify
 
@@ -18,6 +20,13 @@ class Election(models.Model):
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
+    @property
+    def nominations_closed(self):
+        if self.nominations_close:
+            return datetime.datetime.now(datetime.timezone.utc) > self.nominations_close
+
+        return False
+
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
         super(Election, self).save(*args, **kwargs)
@@ -33,6 +42,10 @@ class Nominee(models.Model):
     )
     name = models.CharField(max_length=1024, blank=False, null=True)
     email = models.CharField(max_length=1024, blank=False, null=True)
+    previous_board_service = models.CharField(max_length=1024, blank=False, null=True)
+    employer = models.CharField(max_length=1024, blank=False, null=True)
+    other_affiliations = models.CharField(max_length=2048, blank=True, null=True)
+
     user = models.ForeignKey(
         User,
         related_name="nominations_recieved",
@@ -45,6 +58,21 @@ class Nominee(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
+
+    def editable(self, user=None):
+        return user == self.user
+
+    def visible(self, user=None):
+        if self.accepted and self.approved and self.election.nominations_closed:
+            return True
+
+        if user is None:
+            return False
+
+        if user.is_staff or user == self.user:
+            return True
+
+        return False
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -80,3 +108,24 @@ class Nomination(models.Model):
 
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
+
+    def editable(self, user=None):
+        if user == self.nominee:
+            return True
+
+        if user == self.nominator and not (self.accepted or self.approved):
+            return True
+
+        return False
+
+    def visible(self, user=None):
+        if self.accepted and self.approved and self.election.nominations_closed:
+            return True
+
+        if user is None:
+            return False
+
+        if user.is_staff or user == self.nominee or user == self.nominator:
+            return True
+
+        return False

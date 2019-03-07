@@ -14,6 +14,25 @@ Nomination for {{ nomination.name }}
   <header class="article-header">
     <h1 class="page-title">Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election</h1>
   </header>
+{% if nomination.nominee == request.user %}
+  <center>
+    <i>You are the nominee for this nomination.</i>
+  {% if editable %}
+    <a href="{% url 'nominations:nomination_edit' election=nomination.election.slug pk=nomination.id %}">Edit</a>
+  {% else %}
+    <i>It is no longer editable as nominations are closed.</i>
+  {% endif %}
+  </center>
+{% elif nomination.nominator == request.user %}
+  <center>
+    <i>You made this nomination.</i>
+  {% if editable %}
+    <a href="{% url 'nominations:nomination_edit' election=nomination.election.slug pk=nomination.id %}">Edit</a>
+  {% else %}
+    <i>It is no longer editable as it has been accepted.</i>
+  {% endif %}
+  </center>
+{% endif %}
   <div>
     <ul>
       <li><b>Name</b>: {{ nomination.name }}</li>

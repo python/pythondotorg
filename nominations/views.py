@@ -1,5 +1,6 @@
 from django.views.generic import CreateView, UpdateView, DetailView
 from django.urls import reverse
+from django.http import Http404
 
 from pydotorg.mixins import LoginRequiredMixin
 
@@ -67,6 +68,15 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UpdateView):
 
 
 class NominationView(DetailView):
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.visible(user=request.user):
+            raise Http404
+
+        context = self.get_context_data(object=self.object)
+        context["editable"] = self.object.editable(user=request.user)
+        return self.render_to_response(context)
 
     def get_queryset(self):
         queryset = Nomination.objects.select_related()

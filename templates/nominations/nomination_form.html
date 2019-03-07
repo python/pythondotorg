@@ -30,11 +30,7 @@ Update Nomination
 
             {{ form.as_p }}
             <p>
-                {% if form_action == 'update' and not needs_preview %}
-                    <button type="submit" name="Submit">Save</button>
-                {% else %}
-                    <button type="submit" name="Submit">Preview</button>
-                {% endif %}
+                <button type="submit" name="Submit">Save</button>
             </p>
         </form>
     </article>
