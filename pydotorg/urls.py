@@ -64,6 +64,7 @@ urlpatterns = [
     url(r'^psf/records/board/minutes/', include('minutes.urls')),
     url(r'^membership/', include('membership.urls')),
     url(r'^search/', include('haystack.urls')),
+    url(r'^nominations/', include('nominations.urls')),
     # admin
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', admin.site.urls),

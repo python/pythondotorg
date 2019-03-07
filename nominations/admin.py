@@ -9,15 +9,15 @@ class ElectionAdmin(admin.ModelAdmin):
 
 class NomineeAdmin(admin.ModelAdmin):
     raw_id_fields = ("user",)
-    list_display = ("__str__", "election", "accepted", "approved",)
-    list_filter = ("election", "accepted", "approved",)
+    list_display = ("__str__", "election", "accepted", "approved")
+    list_filter = ("election", "accepted", "approved")
     readonly_fields = ("slug",)
 
 
 class NominationAdmin(admin.ModelAdmin):
     raw_id_fields = ("nominee",)
-    list_display = ("__str__", "election", "accepted", "approved",)
-    list_filter = ("election", "accepted", "approved",)
+    list_display = ("__str__", "election", "accepted", "approved")
+    list_filter = ("election", "accepted", "approved")
 
 
 admin.site.register(Election, ElectionAdmin)

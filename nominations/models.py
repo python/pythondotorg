@@ -7,8 +7,9 @@ from users.models import User
 
 
 class Election(models.Model):
+
     def __str__(self):
-        return f'{self.name} - {self.date}'
+        return f"{self.name} - {self.date}"
 
     name = models.CharField(max_length=100)
     date = models.DateField()
@@ -23,10 +24,13 @@ class Election(models.Model):
 
 
 class Nominee(models.Model):
-    def __str__(self):
-        return f'{self.name}'
 
-    election = models.ForeignKey(Election, related_name="nominees", on_delete=models.CASCADE)
+    def __str__(self):
+        return f"{self.name}"
+
+    election = models.ForeignKey(
+        Election, related_name="nominees", on_delete=models.CASCADE
+    )
     name = models.CharField(max_length=1024, blank=False, null=True)
     email = models.CharField(max_length=1024, blank=False, null=True)
     user = models.ForeignKey(
@@ -48,8 +52,9 @@ class Nominee(models.Model):
 
 
 class Nomination(models.Model):
+
     def __str__(self):
-        return f'{self.name} <{self.email}>'
+        return f"{self.name} <{self.email}>"
 
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
 
@@ -58,7 +63,9 @@ class Nomination(models.Model):
     previous_board_service = models.CharField(max_length=1024, blank=False, null=True)
     employer = models.CharField(max_length=1024, blank=False, null=True)
     other_affiliations = models.CharField(max_length=2048, blank=True, null=True)
-    nomination_statement = MarkupField(escape_html=True, markup_type='markdown', blank=False, null=True)
+    nomination_statement = MarkupField(
+        escape_html=True, markup_type="markdown", blank=False, null=True
+    )
 
     nominator = models.ForeignKey(
         User, related_name="nominations_made", on_delete=models.CASCADE
