@@ -9,8 +9,9 @@ from users.models import User
 
 
 class Election(models.Model):
+
     class Meta:
-        ordering = ['-date']
+        ordering = ["-date"]
 
     def __str__(self):
         return f"{self.name} - {self.date}"
@@ -25,22 +26,30 @@ class Election(models.Model):
     @property
     def nominations_open(self):
         if self.nominations_open_at and self.nominations_close_at:
-            return self.nominations_open_at < datetime.datetime.now(datetime.timezone.utc) < self.nominations_close_at
+            return self.nominations_open_at < datetime.datetime.now(
+                datetime.timezone.utc
+            ) < self.nominations_close_at
+
         return False
 
     @property
     def nominations_complete(self):
         if self.nominations_close_at:
-            return self.nominations_close_at < datetime.datetime.now(datetime.timezone.utc)
+            return self.nominations_close_at < datetime.datetime.now(
+                datetime.timezone.utc
+            )
+
         return False
 
     @property
     def status(self):
         if not self.nominations_open:
             if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
-                return 'Nominations Not Yet Open'
-            return 'Nominations Closed'
-        return 'Nominations Open'
+                return "Nominations Not Yet Open"
+
+            return "Nominations Closed"
+
+        return "Nominations Open"
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -50,7 +59,7 @@ class Election(models.Model):
 class Nominee(models.Model):
 
     class Meta:
-        unique_together = ('user', 'election',)
+        unique_together = ("user", "election")
 
     def __str__(self):
         return f"{self.name}"
@@ -76,6 +85,34 @@ class Nominee(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
+
+    @property
+    def display_name(self):
+        if self.name:
+            return self.name
+
+        return self.nominations.first().self.name
+
+    @property
+    def display_previous_board_service(self):
+        if self.previous_board_service:
+            return self.previous_board_service
+
+        return self.nominations.first().self.previous_board_service
+
+    @property
+    def display_employer(self):
+        if self.employer:
+            return self.employer
+
+        return self.nominations.first().self.employer
+
+    @property
+    def display_other_affiliations(self):
+        if self.other_affiliations:
+            return self.other_affiliations
+
+        return self.nominations.first().self.other_affiliations
 
     def editable(self, user=None):
         return user == self.user

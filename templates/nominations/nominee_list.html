@@ -1,0 +1,54 @@
+{% extends "psf/default.html" %}
+{% load nominations %}
+
+{% block page_title %}
+Nomination for {{ nomination.name }}
+| {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations nominations_view"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}stylesheets/deque-patterns.min.css">
+{% endblock %}
+
+{% block extra_js %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/deque-patterns.min.js"></script>
+{% endblock %}
+
+{% block content %}
+<h1 class="page-title">Nominees for {{ election.name }} Election</h1>
+{% for nominee in object_list|shuffle %}
+<h2>{{ nominee.name }}</h2>
+<details id="{{ nominee.slug }}">
+  <summary>
+    Nomination details
+  </summary>
+  <div>
+    <ul>
+      <li><b>Name</b>: {{ nominee.display_name }}</li>
+      <li><b>Previous Board Service</b>: {{ nominee.display_previous_board_service }}</li>
+      <li><b>Employer</b>: {{ nominee.display_employer }}</li>
+      <li><b>Other Affiliations</b>: {{ nominee.display_other_affiliations }}</li>
+      <li><b>Nomination Statements</b>:
+        <ul>
+        {% for nomination in nominee.nominations.all %}
+          <details>
+            <summary>
+              <b><i>Nomination by</i></b>: {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
+            </summary>
+            <br/>
+            <div style="border-style: solid; border-width: 2px; padding: 1em; background-color: #eeeeee;">
+            {{ nomination.nomination_statement.rendered|safe }}
+            </div>
+          </details>
+        {% endfor %}
+        </ul>
+      </li>
+    </ul>
+  </div>
+</details>
+{% endfor %}
+{% endblock content %}

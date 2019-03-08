@@ -17,7 +17,9 @@ class NominationForm(forms.ModelForm):
             "other_affiliations",
             "nomination_statement",
         )
-        widgets = {"nomination_statement": MarkupTextarea()}  #, "self_nomination": forms.CheckboxInput()}
+        widgets = {
+            "nomination_statement": MarkupTextarea()
+        }  # , "self_nomination": forms.CheckboxInput()}
         help_texts = {
             "name": "Name of the person you are nominating.",
             "email": "Email address for the person you are nominating.",
@@ -27,5 +29,9 @@ class NominationForm(forms.ModelForm):
             "nomination_statement": "Markdown syntax supported.",
         }
 
+
 class NominationCreateForm(NominationForm):
-    self_nomination = forms.BooleanField(required=False, help_text="If you are nominating yourself, we will automatically associate the nomination with your python.org user.")
+    self_nomination = forms.BooleanField(
+        required=False,
+        help_text="If you are nominating yourself, we will automatically associate the nomination with your python.org user.",
+    )
