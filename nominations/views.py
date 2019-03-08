@@ -1,4 +1,4 @@
-from django.views.generic import CreateView, UpdateView, DetailView
+from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.urls import reverse
 from django.http import Http404
 
@@ -6,6 +6,10 @@ from pydotorg.mixins import LoginRequiredMixin
 
 from .models import Nomination, Nominee, Election
 from .forms import NominationForm, NominationCreateForm
+
+
+class ElectionsList(ListView):
+    model = Election
 
 
 class NominationMixin:

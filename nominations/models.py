@@ -9,23 +9,38 @@ from users.models import User
 
 
 class Election(models.Model):
+    class Meta:
+        ordering = ['-date']
 
     def __str__(self):
         return f"{self.name} - {self.date}"
 
     name = models.CharField(max_length=100)
     date = models.DateField()
-    nominations_open = models.DateTimeField(blank=True, null=True)
-    nominations_close = models.DateTimeField(blank=True, null=True)
+    nominations_open_at = models.DateTimeField(blank=True, null=True)
+    nominations_close_at = models.DateTimeField(blank=True, null=True)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     @property
-    def nominations_closed(self):
-        if self.nominations_close:
-            return datetime.datetime.now(datetime.timezone.utc) > self.nominations_close
-
+    def nominations_open(self):
+        if self.nominations_open_at and self.nominations_close_at:
+            return self.nominations_open_at < datetime.datetime.now(datetime.timezone.utc) < self.nominations_close_at
         return False
+
+    @property
+    def nominations_complete(self):
+        if self.nominations_close_at:
+            return self.nominations_close_at < datetime.datetime.now(datetime.timezone.utc)
+        return False
+
+    @property
+    def status(self):
+        if not self.nominations_open:
+            if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
+                return 'Nominations Not Yet Open'
+            return 'Nominations Closed'
+        return 'Nominations Open'
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
@@ -66,7 +81,7 @@ class Nominee(models.Model):
         return user == self.user
 
     def visible(self, user=None):
-        if self.accepted and self.approved and self.election.nominations_closed:
+        if self.accepted and self.approved and not self.election.nominations_open_at:
             return True
 
         if user is None:
@@ -122,7 +137,7 @@ class Nomination(models.Model):
         return False
 
     def visible(self, user=None):
-        if self.accepted and self.approved and self.election.nominations_closed:
+        if self.accepted and self.approved and not self.election.nominations_open_at:
             return True
 
         if user is None:
