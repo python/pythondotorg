@@ -4,8 +4,8 @@ from django.http import Http404
 
 from pydotorg.mixins import LoginRequiredMixin
 
-from .models import Nomination, Election
-from .forms import NominationForm
+from .models import Nomination, Nominee, Election
+from .forms import NominationForm, NominationCreateForm
 
 
 class NominationMixin:
@@ -19,7 +19,7 @@ class NominationMixin:
 
 class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     model = Nomination
-    form_class = NominationForm
+    form_class = NominationCreateForm
 
     login_message = "Please login to make a nomination."
 
@@ -32,6 +32,20 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     def form_valid(self, form):
         form.instance.nominator = self.request.user
         form.instance.election = Election.objects.get(slug=self.kwargs["election"])
+        if form.cleaned_data.get('self_nomination', False):
+            try:
+                nominee = Nominee.objects.get(user=self.request.user, election=form.instance.election)
+            except Nominee.DoesNotExist:
+                nominee = Nominee.objects.create(
+                    user=self.request.user,
+                    election=form.instance.election,
+                    name=form.cleaned_data['name'],
+                    email=form.cleaned_data['email'],
+                    previous_board_service=form.cleaned_data['previous_board_service'],
+                    employer=form.cleaned_data['employer'],
+                    other_affiliations=form.cleaned_data['other_affiliations'],
+                )
+            form.instance.nominee = nominee
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):

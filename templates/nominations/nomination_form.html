@@ -27,11 +27,13 @@ Update Nomination
         <form class="wide-form jobs-form" action="" method="post">
             {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
-
-            {{ form.as_p }}
-            <p>
+            <table>
+                {{ form.as_table }}
+            </table>
+            <br>
+            <center>
                 <button type="submit" name="Submit">Save</button>
-            </p>
+            </center>
         </form>
     </article>
 {% endblock content %}
