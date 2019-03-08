@@ -22,7 +22,16 @@ class NominationMixin:
 
 
 class NomineeList(NominationMixin, ListView):
-    model = Nominee
+    template_name = 'nominations/nominee_list.html'
+
+    def get_queryset(self, *args, **kwargs):
+        election = Election.objects.get(slug=self.kwargs["election"])
+        if election.nominations_complete or self.request.user.is_superuser:
+            return Nominee.objects.filter(
+                accepted=True, approved=True, election=election
+            )
+        elif self.request.user.is_authenticated:
+            return Nominee.objects.filter(user=self.request.user)
 
 
 class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
@@ -66,11 +75,6 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
 class NominationEdit(LoginRequiredMixin, NominationMixin, UpdateView):
     model = Nomination
     form_class = NominationForm
-
-    #    def get_queryset(self):
-    #        if self.has_jobs_board_admin_access():
-    #            return Nomination.objects.select_related()
-    #        return self.request.user.jobs_job_creator.editable()
 
     def get_success_url(self):
         next_url = self.request.POST.get("next")

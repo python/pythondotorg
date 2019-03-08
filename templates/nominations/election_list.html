@@ -27,7 +27,7 @@
                 <li>Nominations Close: {{ election.nominations_close_at }}</li>
               {% else %}
                 {% if election.nominations_complete %}
-                  <li><a href="#">View nominations</a></li>
+                  <li><a href="{% url 'nominations:nominees_list' election=election.slug %}">View nominations</a></li>
                   <li>Election began: {{ election.date }}</li>
                   <li>Nominations Opened: {{ election.nominations_open_at }}</li>
                   <li>Nominations Closed: {{ election.nominations_close_at }}</li>
