@@ -12,6 +12,7 @@ urlpatterns = [
     url(r'^membership/thanks/$', views.MembershipThanks.as_view(), name='user_membership_thanks'),
     url(r'^membership/affirm/$', views.MembershipVoteAffirm.as_view(), name='membership_affirm_vote'),
     url(r'^membership/affirm/done/$', views.MembershipVoteAffirmDone.as_view(), name='membership_affirm_vote_done'),
+    url(r'^nominations/$', views.UserNominationsView.as_view(), name='user_nominations_view'),
     url(r'^(?P<slug>[-_\w\@\.+]+)/delete/$', views.UserDeleteView.as_view(), name='user_delete'),
     url(r'^(?P<slug>[-_\w\@\.+]+)/$', views.UserDetail.as_view(), name='user_detail'),
 ]

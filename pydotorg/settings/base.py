@@ -166,6 +166,7 @@ INSTALLED_APPS = [
     'downloads',
     'codesamples',
     'work_groups',
+    'nominations',
 
     'allauth',
     'allauth.account',

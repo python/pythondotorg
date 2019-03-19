@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
@@ -167,3 +169,25 @@ class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
 
     def test_func(self):
         return self.get_object().creator == self.request.user
+
+
+class UserNominationsView(LoginRequiredMixin, TemplateView):
+    model = User
+    template_name = 'users/nominations_view.html'
+
+    def get_queryset(self):
+        return User.objects.select_related()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        elections = defaultdict(lambda: {'nominations_recieved': [], 'nominations_made': []})
+        for nomination in self.request.user.nominations_recieved.all():
+            nominations = nomination.nominations.all()
+            for nomin in nominations:
+                nomin.is_editable = nomin.editable(user=self.request.user)
+                elections[nomination.election]['nominations_recieved'].append(nomin)
+        for nomination in self.request.user.nominations_made.all():
+            nomination.is_editable = nomination.editable(user=self.request.user)
+            elections[nomination.election]['nominations_made'].append(nomination)
+        context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
+        return context

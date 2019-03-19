@@ -1,0 +1,46 @@
+{% extends "psf/default.html" %}
+{% load boxes %}
+
+{% block page_title %}Elections | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+
+{% block content %}
+<h1>Elections</h1>
+<div class="row">
+    <ol class="list-elections menu">
+        {% regroup object_list by status as election_list %}
+        {% for status, elections in election_list %}
+          <h2>{{ status }}</h2>
+          <ul>
+          {% for election in elections %}
+          <li>
+              {{ election.name }} Election
+              <ul>
+              {% if election.nominations_open %}
+                <li>Election begins: {{ election.date }}</li>
+                <li><a href="{% url 'nominations:nomination_create' election=election.slug %}">Submit a nomination</a></li>
+                <li>Nominations Opened: {{ election.nominations_open_at }}</li>
+                <li>Nominations Close: {{ election.nominations_close_at }}</li>
+              {% else %}
+                {% if election.nominations_complete %}
+                  <li><a href="{% url 'nominations:nominees_list' election=election.slug %}">View nominations</a></li>
+                  <li>Election began: {{ election.date }}</li>
+                  <li>Nominations Opened: {{ election.nominations_open_at }}</li>
+                  <li>Nominations Closed: {{ election.nominations_close_at }}</li>
+                {% else %}
+                  <li>Election begins: {{ election.date }}</li>
+                  <li>Nominations Open: {{ election.nominations_open_at }}</li>
+                  <li>Nominations Close: {{ election.nominations_close_at }}</li>
+                {% endif %}
+              {% endif %}
+              </ul>
+          </li>
+          {% endfor %}
+          </ul>
+        {% empty %}
+        {% endfor %}
+    </ol>
+</div>
+{% endblock content %}
