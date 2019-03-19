@@ -67,12 +67,6 @@ class Nominee(models.Model):
     election = models.ForeignKey(
         Election, related_name="nominees", on_delete=models.CASCADE
     )
-    name = models.CharField(max_length=1024, blank=False, null=True)
-    email = models.CharField(max_length=1024, blank=False, null=True)
-    previous_board_service = models.CharField(max_length=1024, blank=False, null=True)
-    employer = models.CharField(max_length=1024, blank=False, null=True)
-    other_affiliations = models.CharField(max_length=2048, blank=True, null=True)
-
     user = models.ForeignKey(
         User,
         related_name="nominations_recieved",
@@ -87,38 +81,48 @@ class Nominee(models.Model):
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     @property
-    def display_name(self):
-        if self.name:
-            return self.name
+    def name(self):
+        return f"{self.user.first_name} {self.user.last_name}"
 
-        return self.nominations.first().self.name
+    @property
+    def nominations_received(self):
+        return self.nominations.filter(accepted=True, approved=True).exclude(nominator=self.user).all()
+
+    @property
+    def nominations_pending(self):
+        return self.nominations.exclude(accepted=False, approved=False).exclude(nominator=self.user).all()
+
+    @property
+    def self_nomination(self):
+        return self.nominations.filter(nominator=self.user).first()
+
+    @property
+    def display_name(self):
+        return self.name
 
     @property
     def display_previous_board_service(self):
-        if self.previous_board_service:
-            return self.previous_board_service
+        if self.self_nomination is not None and self.self_nomination.previous_board_service:
+            return self.self_nomination.previous_board_service
 
-        return self.nominations.first().self.previous_board_service
+        return self.nominations.first().previous_board_service
 
     @property
     def display_employer(self):
-        if self.employer:
-            return self.employer
+        if self.self_nomination is not None and self.self_nomination.employer:
+            return self.self_nomination.employer
 
-        return self.nominations.first().self.employer
+        return self.nominations.first().employer
 
     @property
     def display_other_affiliations(self):
-        if self.other_affiliations:
-            return self.other_affiliations
+        if self.self_nomination is not None and self.self_nomination.other_affiliations:
+            return self.self_nomination.other_affiliations
 
-        return self.nominations.first().self.other_affiliations
-
-    def editable(self, user=None):
-        return user == self.user
+        return self.nominations.first().other_affiliations
 
     def visible(self, user=None):
-        if self.accepted and self.approved and not self.election.nominations_open_at:
+        if self.accepted and self.approved and not self.election.nominations_open:
             return True
 
         if user is None:
@@ -165,10 +169,10 @@ class Nomination(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     def editable(self, user=None):
-        if user == self.nominee:
+        if self.nominee and user == self.nominee.user and self.election.nominations_open:
             return True
 
-        if user == self.nominator and not (self.accepted or self.approved):
+        if user == self.nominator and not (self.accepted or self.approved) and self.election.nominations_open:
             return True
 
         return False

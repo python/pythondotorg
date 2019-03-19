@@ -20,6 +20,7 @@
         <ul class="menu">
             <li>Manage your Information: </li>
             <li><a href="{% url 'users:user_detail' slug=request.user.username %}">View profile</a></li>
+            <li><a href="{% url 'users:user_nominations_view' %}">Nominations</a></li>
             <li><a href="{% url 'users:user_profile_edit' %}">Edit profile</a></li>
             {% if request.user.has_membership %}
             <li><a href="{% url 'users:user_membership_edit' %}">Edit PSF membership</a></li>

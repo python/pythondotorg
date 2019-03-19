@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.urls import reverse
 from django.http import Http404
@@ -29,16 +30,42 @@ class NomineeList(NominationMixin, ListView):
         if election.nominations_complete or self.request.user.is_superuser:
             return Nominee.objects.filter(
                 accepted=True, approved=True, election=election
-            )
+            ).exclude(user=None)
         elif self.request.user.is_authenticated:
             return Nominee.objects.filter(user=self.request.user)
 
 
+class NomineeDetail(NominationMixin, DetailView):
+
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.visible(user=request.user):
+            raise Http404
+
+        context = self.get_context_data(object=self.object)
+        return self.render_to_response(context)
+
+    def get_queryset(self):
+        election = Election.objects.get(slug=self.kwargs["election"])
+        queryset = Nominee.objects.filter(election=election).select_related()
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
 class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     model = Nomination
-    form_class = NominationCreateForm
 
     login_message = "Please login to make a nomination."
+
+    def get_form_class(self):
+        election = Election.objects.get(slug=self.kwargs["election"])
+        if election.nominations_complete:
+            messages.error(self.request, f"Nominations for {election.name} Election are closed")
+            raise Http404(f"Nominations for {election.name} Election are closed")
+        return NominationCreateForm
 
     def get_success_url(self):
         return reverse(
@@ -58,13 +85,10 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
                 nominee = Nominee.objects.create(
                     user=self.request.user,
                     election=form.instance.election,
-                    name=form.cleaned_data["name"],
-                    email=form.cleaned_data["email"],
-                    previous_board_service=form.cleaned_data["previous_board_service"],
-                    employer=form.cleaned_data["employer"],
-                    other_affiliations=form.cleaned_data["other_affiliations"],
+                    accepted=True,
                 )
             form.instance.nominee = nominee
+            form.instance.accepted = True
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
@@ -103,7 +127,7 @@ class NominationView(DetailView):
             raise Http404
 
         context = self.get_context_data(object=self.object)
-        context["editable"] = self.object.editable(user=request.user)
+        context["editable"] = self.object.editable(user=self.request.user)
         return self.render_to_response(context)
 
     def get_queryset(self):

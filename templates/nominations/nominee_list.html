@@ -330,7 +330,7 @@ details div p
   <p>Nominations close at {{ election.nominations_close_at }}, this is a preview of only nominations relevant to you.</p>
   {% endif %}
   {% for nominee in object_list|shuffle %}
-  <h2>{{ nominee.name }}</h2>
+  <h2><a href="{% url 'nominations:nominee_detail' election=election.slug slug=nominee.slug %}">{{ nominee.display_name }}</a></h2>
   <details id="{{ nominee.slug }}">
     <summary>
       Nomination details
@@ -341,17 +341,28 @@ details div p
         <li><b>Previous Board Service</b>: {{ nominee.display_previous_board_service }}</li>
         <li><b>Employer</b>: {{ nominee.display_employer }}</li>
         <li><b>Other Affiliations</b>: {{ nominee.display_other_affiliations }}</li>
-        <li><b>Nomination Statements</b>:
+        {% if nominee.self_nomination %}
+        <li><b>Nominee Statement</b>:
           <ul>
-          {% for nomination in nominee.nominations.all %}
-          <b><i>Nomination by</i></b>: {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
-          <br/>
-          <div style="border-style: solid; border-width: 2px; padding: 1em; background-color: #efefef;">
-          {{ nomination.nomination_statement.rendered|safe }}
+          <div style="border-style: none;">
+          {{ nominee.self_nomination.nomination_statement.rendered|safe }}
           </div>
-          {% endfor %}
           </ul>
+        {% endif %}
+        {% if nominee.nominations_received %}
+        <li><b>Nomination Statements</b>:
+          {% for nomination in nominee.nominations_received.all %}
+          <details>
+            <summary>
+              <b><i>Nomination by</i></b>: {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
+            </summary>
+            <div style="padding: 1em; background-color: #efefef;">
+            {{ nomination.nomination_statement.rendered|safe }}
+            </div>
+          </details>
+          {% endfor %}
         </li>
+        {% endif %}
       </ul>
     </div>
   </details>
@@ -359,6 +370,7 @@ details div p
 {% else %}
 {% if not election.nominations_complete %}
   <p>Nominations close at {{ election.nominations_close_at }} and Nominees will be visible here after that time.</p>
+  <p>You can submit a nomination for this election <a href="{% url 'nominations:nomination_create' election=election.slug %}">here</a>.</p>
 {% endif %}
 {% endif %}
 {% endblock content %}

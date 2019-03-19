@@ -7,9 +7,14 @@ app_name = "nominations"
 urlpatterns = [
     url(r"^elections/$", views.ElectionsList.as_view(), name="elections_list"),
     url(
-        r"^(?P<election>[-\w]+)/nominees/$",
+        r"^elections/(?P<election>[-\w]+)/nominees/$",
         views.NomineeList.as_view(),
         name="nominees_list",
+    ),
+    url(
+        r"^elections/(?P<election>[-\w]+)/nominees/(?P<slug>[-\w]+)/$",
+        views.NomineeDetail.as_view(),
+        name="nominee_detail",
     ),
     url(
         r"^(?P<election>[-\w]+)/create/$",

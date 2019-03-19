@@ -29,7 +29,11 @@ Nomination for {{ nomination.name }}
   {% if editable %}
     <a href="{% url 'nominations:nomination_edit' election=nomination.election.slug pk=nomination.id %}">Edit</a>
   {% else %}
+    {% if nomination.election.nominations_open %}
     <i>It is no longer editable as it has been accepted.</i>
+    {% else %}
+    <i>It is no longer editable as nominations are closed.</i>
+    {% endif %}
   {% endif %}
   </center>
 {% endif %}

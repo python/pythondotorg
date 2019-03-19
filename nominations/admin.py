@@ -16,7 +16,7 @@ class NomineeAdmin(admin.ModelAdmin):
 
 class NominationAdmin(admin.ModelAdmin):
     raw_id_fields = ("nominee",)
-    list_display = ("__str__", "election", "accepted", "approved")
+    list_display = ("__str__", "election", "nominator", "accepted", "approved")
     list_filter = ("election", "accepted", "approved")
 
 
