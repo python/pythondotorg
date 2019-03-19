@@ -86,11 +86,15 @@ class Nominee(models.Model):
 
     @property
     def nominations_received(self):
-        return self.nominations.filter(accepted=True, approved=True).exclude(nominator=self.user).all()
+        return self.nominations.filter(accepted=True, approved=True).exclude(
+            nominator=self.user
+        ).all()
 
     @property
     def nominations_pending(self):
-        return self.nominations.exclude(accepted=False, approved=False).exclude(nominator=self.user).all()
+        return self.nominations.exclude(accepted=False, approved=False).exclude(
+            nominator=self.user
+        ).all()
 
     @property
     def self_nomination(self):
@@ -172,7 +176,9 @@ class Nomination(models.Model):
         if self.nominee and user == self.nominee.user and self.election.nominations_open:
             return True
 
-        if user == self.nominator and not (self.accepted or self.approved) and self.election.nominations_open:
+        if user == self.nominator and not (
+            self.accepted or self.approved
+        ) and self.election.nominations_open:
             return True
 
         return False

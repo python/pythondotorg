@@ -23,14 +23,17 @@ class NominationMixin:
 
 
 class NomineeList(NominationMixin, ListView):
-    template_name = 'nominations/nominee_list.html'
+    template_name = "nominations/nominee_list.html"
 
     def get_queryset(self, *args, **kwargs):
         election = Election.objects.get(slug=self.kwargs["election"])
         if election.nominations_complete or self.request.user.is_superuser:
             return Nominee.objects.filter(
                 accepted=True, approved=True, election=election
-            ).exclude(user=None)
+            ).exclude(
+                user=None
+            )
+
         elif self.request.user.is_authenticated:
             return Nominee.objects.filter(user=self.request.user)
 
@@ -63,8 +66,11 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     def get_form_class(self):
         election = Election.objects.get(slug=self.kwargs["election"])
         if election.nominations_complete:
-            messages.error(self.request, f"Nominations for {election.name} Election are closed")
+            messages.error(
+                self.request, f"Nominations for {election.name} Election are closed"
+            )
             raise Http404(f"Nominations for {election.name} Election are closed")
+
         return NominationCreateForm
 
     def get_success_url(self):
