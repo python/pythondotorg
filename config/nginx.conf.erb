@@ -35,6 +35,8 @@ http {
 		server_name _;
 		keepalive_timeout 5;
 
+                port_in_redirect off;
+
                 # Legacy redirects & Rewrites from dinsdale apache
                 location ~ ^/~(barry|bwarsaw)$ {
                   return 301 http://barry.warsaw.us/;
