@@ -11,7 +11,7 @@ Here are two ways to hack on python.org:
 Easy setup using Vagrant
 ------------------------
 
-First, install Vagrant_ and Ansible_ on your machine.
+First, install Vagrant_ (2.0+) and Ansible_ (2.0+) on your machine.
 You should then be able to provision the Vagrant box.
 
 ::
@@ -21,7 +21,8 @@ You should then be able to provision the Vagrant box.
 The box will be provisioned with a latest Python 3.6 version, a virtual
 environment with all the requirements installed, and a database ready to use.
 
-Once this is done it's time to create some data and run the server::
+Once this is done it's time to create some data and start the development server
+for the first time::
 
     # SSH into the Vagrant box.
     $ vagrant ssh
@@ -36,8 +37,15 @@ Once this is done it's time to create some data and run the server::
     # Run the server.
     $ ./manage.py runserver 0.0.0.0:8000
 
-Now use your favorite browser to go to http://localhost:8001/.
-The admin pages can be found at http://localhost:8001/admin/.
+Now use your favorite browser to go to http://localhost:8001/. The admin pages
+can be found at http://localhost:8001/admin/. You can use your superuser
+credentials to log in to Django admin.
+
+You will only need to run the following two commands the next time you want to
+work on python.org::
+
+    $ vagrant ssh
+    $ ./manage.py runserver 0.0.0.0:8000
 
 .. _Vagrant: https://www.vagrantup.com/downloads.html
 .. _Ansible: https://docs.ansible.com/ansible/intro_installation.html
@@ -55,7 +63,8 @@ Then create a virtual environment::
 
     $ python3.6 -m venv venv
 
-And then you'll need to install dependencies::
+And then you'll need to install dependencies. You don't need to use ``pip3``
+inside a Python 3 virtual environment::
 
     $ pip install -r dev-requirements.txt
 
@@ -76,6 +85,9 @@ default. Run the following command to create a new database::
 
        $ sudo -u postgres createdb pythondotorg -E utf-8 -l en_US.UTF-8
 
+   Note that this solution may not work if you've installed PostgreSQL via
+   Homebrew.
+
    If you get an error like this::
 
        createdb: database creation failed: ERROR:  new collation (en_US.UTF-8) is incompatible with the collation of the template database (en_GB.UTF-8)
@@ -88,7 +100,7 @@ To change database configuration, you can add the following setting to
 variable)::
 
     DATABASES = {
-        'default': dj_database_url.parse('postgres:///your_database_name')
+        'default': dj_database_url.parse('postgres:///your_database_name'),
     }
 
 If you prefer to use a simpler setup for your database you can use SQLite.

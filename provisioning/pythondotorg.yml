@@ -18,7 +18,6 @@
         - libpq-dev
         - lib32z1-dev
         - git
-        - python3
         - python3-dev
         - python3-setuptools
         - python3-pip
@@ -76,7 +75,7 @@
            clone=no
            update=no
 
-    - name: Install packages required by the Django app inside virtualenv
+    - name: Install dependencies for the Django app inside virtual environment
       pip: virtualenv={{ project.virtualenv }}
            virtualenv_command="/usr/bin/python3 -m venv"
            requirements={{ project.requirements }}
@@ -88,7 +87,7 @@
       register: result
       changed_when: "result.rc is defined and result.stderr is defined and result.rc != 0 or result.stderr != ''"
 
-    - name: Install database migrations
+    - name: Apply database migrations
       django_manage: command=migrate
                      app_path={{ project.path }}
                      virtualenv={{ project.virtualenv }}

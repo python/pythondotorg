@@ -13,6 +13,7 @@ Vagrant.configure(2) do |config|
   end
   config.vm.provision "ansible" do |ansible|
     ansible.playbook = "provisioning/pythondotorg.yml"
+    ansible.compatibility_mode = "2.0"
     ansible.host_key_checking = false
   end
   config.ssh.insert_key = false
