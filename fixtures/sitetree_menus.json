@@ -58,7 +58,7 @@
   "fields": {
     "access_permissions": [], 
     "access_restricted": false, 
-    "urlaspattern": true, 
+    "urlaspattern": false,
     "sort_order": 3, 
     "access_perm_type": 1, 
     "insitetree": true, 
@@ -81,7 +81,7 @@
   "fields": {
     "access_permissions": [], 
     "access_restricted": false, 
-    "urlaspattern": true, 
+    "urlaspattern": false,
     "sort_order": 4, 
     "access_perm_type": 1, 
     "insitetree": true, 
