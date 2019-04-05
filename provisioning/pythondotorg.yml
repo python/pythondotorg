@@ -32,7 +32,7 @@
       gem: name=bundler user_install=no
 
     - name: Install PostgreSQL
-      apt: name={{ item }} state=installed
+      apt: name={{ item }} state=present
       become: yes
       with_items:
         - postgresql
