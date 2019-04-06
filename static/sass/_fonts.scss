@@ -41,9 +41,6 @@
 .icon-help:before {
 	content: "\3f";
 }
-.icon-google-plus:before {
-	content: "\e608";
-}
 .icon-download:before {
 	content: "\e609";
 }
@@ -146,7 +143,7 @@
  */
 /*modernizr*/ .no-fontface, .no-svg, .no-generatedcontent { 
     
-    .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-google-plus, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+    .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
         
         &:before {
             display: none; 
@@ -162,7 +159,7 @@
 /* Show in IE8: supports FontFace (eot) but not SVG. */
 .ie8 {
     
-    .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-google-plus, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+    .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
         
         &:before {
             display: inline; 

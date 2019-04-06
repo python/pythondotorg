@@ -21,7 +21,6 @@ window.onload = function() {
 			'icon-freenode' : '&#xe00d;',
 			'icon-get-started' : '&#xe00e;',
 			'icon-github' : '&#xe00f;',
-			'icon-google-plus' : '&#xe010;',
 			'icon-help' : '&#xe011;',
 			'icon-pypi' : '&#xe014;',
 			'icon-python' : '&#xe015;',

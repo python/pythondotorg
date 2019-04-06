@@ -28,7 +28,7 @@ Instead of a list of all class selectors,
 you can use the generic selector below, but it's slower:
 [class*="icon-"]:before {
 */
-.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-google-plus:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
+.icon-alert:before, .icon-arrow-down:before, .icon-arrow-left:before, .icon-arrow-right:before, .icon-arrow-up:before, .icon-calendar:before, .icon-close:before, .icon-code:before, .icon-documentation:before, .icon-email:before, .icon-facebook:before, .icon-feed:before, .icon-freenode:before, .icon-get-started:before, .icon-github:before, .icon-help:before, .icon-pypi:before, .icon-python:before, .icon-python-alt:before, .icon-search:before, .icon-sitemap:before, .icon-stack-overflow:before, .icon-statistics:before, .icon-success-stories:before, .icon-text-resize:before, .icon-thumbs-down:before, .icon-thumbs-up:before, .icon-twitter:before, .icon-versions:before, .icon-community:before, .icon-download:before, .icon-news:before, .icon-jobs:before, .icon-beginner:before, .icon-moderate:before, .icon-advanced:before, .icon-search-alt:before {
 	font-family: 'Pythonicon';
 	speak: none;
 	font-style: normal;
@@ -82,9 +82,6 @@ you can use the generic selector below, but it's slower:
 }
 .icon-github:before {
 	content: "\e00f";
-}
-.icon-google-plus:before {
-	content: "\e010";
 }
 .icon-help:before {
 	content: "\e011";
