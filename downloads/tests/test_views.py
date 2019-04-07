@@ -226,6 +226,8 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 5)
+        content = self.get_json(response)
+        self.assertFalse(content[0]['is_latest'])
 
     def test_post_release(self):
         release_page = PageFactory(
@@ -242,6 +244,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
             'name': 'python 3.3',
             'slug': 'py3-3',
             'release_page': release_page_url,
+            'is_latest': True,
         }
         response = self.json_client('post', url, data)
         self.assertEqual(response.status_code, 401)
@@ -261,6 +264,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         content = self.get_json(response)
         self.assertEqual(content['name'], data['name'])
         self.assertEqual(content['slug'], data['slug'])
+        self.assertTrue(content['is_latest'])
         self.assertIn(data['release_page'], content['release_page'])
 
     def test_delete_release(self):

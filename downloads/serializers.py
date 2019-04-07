@@ -19,6 +19,7 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
             'slug',
             'version',
             'is_published',
+            'is_latest',
             'release_date',
             'pre_release',
             'release_page',
