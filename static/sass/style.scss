@@ -185,6 +185,21 @@ form {
     ul { @extend .menu; }
 }
 
+div.download-button-container {
+    @include clearfix();
+
+    .microsoft-download-box {
+        float: right;
+        padding-top: px2em( 2px );
+        width: px2em( 260px );
+    }
+
+    a > img {
+        display: inline;
+        margin: 0;
+    }
+}
+
 .errorlist {
     @extend .menu;
     color: $red;
