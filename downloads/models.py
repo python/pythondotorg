@@ -126,35 +126,33 @@ class Release(ContentManageable, NameSlugModel):
 
 
 def update_supernav():
-    try:
-        latest_python2 = Release.objects.latest_python2()
-    except Release.DoesNotExist:
-        latest_python2 = None
-
-    try:
-        latest_python3 = Release.objects.latest_python3()
-    except Release.DoesNotExist:
-        latest_python3 = None
+    latest_python3 = Release.objects.latest_python3()
+    if not latest_python3:
+        return
 
     python_files = []
     for o in OS.objects.all():
         data = {
             'os': o,
-            'python2': None,
             'python3': None,
         }
 
-        if latest_python2:
-            data['python2'] = latest_python2.download_file_for_os(o.slug)
-
-        if latest_python3:
-            data['python3'] = latest_python3.download_file_for_os(o.slug)
+        release_file = latest_python3.download_file_for_os(o.slug)
+        if not release_file:
+            continue
+        data['python3'] = release_file
 
         python_files.append(data)
 
+    if not python_files:
+        return
+
+    if not all(f['python3'] for f in python_files):
+        # We have a latest Python release, different OSes, but don't have release
+        # files for the release, so return early.
+        return
+
     content = render_to_string('downloads/supernav.html', {
-        'latest_python2': latest_python2,
-        'latest_python3': latest_python3,
         'python_files': python_files,
     })
 
@@ -166,21 +164,27 @@ def update_supernav():
         }
     )
 
-    # Update latest Sources box on Download landing page
+
+def update_download_landing_sources_box():
+    latest_python2 = Release.objects.latest_python2()
+    latest_python3 = Release.objects.latest_python3()
+
+    context = {}
+
     if latest_python2:
         latest_python2_source = latest_python2.download_file_for_os('source')
-    else:
-        latest_python2_source = None
+        if latest_python2_source:
+            context['latest_python2_source'] = latest_python2_source
 
     if latest_python3:
         latest_python3_source = latest_python3.download_file_for_os('source')
-    else:
-        latest_python3_source = None
+        if latest_python3_source:
+            context['latest_python3_source'] = latest_python3_source
 
-    source_content = render_to_string('downloads/download-sources-box.html', {
-        'latest_python2_source': latest_python2_source,
-        'latest_python3_source': latest_python3_source,
-    })
+    if 'latest_python2_source' not in context or 'latest_python3_source' not in context:
+        return
+
+    source_content = render_to_string('downloads/download-sources-box.html', context)
     source_box, _ = Box.objects.update_or_create(
         label='download-sources',
         defaults={
@@ -191,20 +195,21 @@ def update_supernav():
 
 
 def update_homepage_download_box():
-    try:
-        latest_python2 = Release.objects.latest_python2()
-    except Release.DoesNotExist:
-        latest_python2 = None
+    latest_python2 = Release.objects.latest_python2()
+    latest_python3 = Release.objects.latest_python3()
 
-    try:
-        latest_python3 = Release.objects.latest_python3()
-    except Release.DoesNotExist:
-        latest_python3 = None
+    context = {}
 
-    content = render_to_string('downloads/homepage-downloads-box.html', {
-        'latest_python2': latest_python2,
-        'latest_python3': latest_python3,
-    })
+    if latest_python2:
+        context['latest_python2'] = latest_python2
+
+    if latest_python3:
+        context['latest_python3'] = latest_python3
+
+    if 'latest_python2' not in context or 'latest_python3' not in context:
+        return
+
+    content = render_to_string('downloads/homepage-downloads-box.html', context)
 
     box, _ = Box.objects.update_or_create(
         label='homepage-downloads',
@@ -260,14 +265,16 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 
 
 @receiver(post_save, sender=Release)
-def update_download_supernav(sender, instance, **kwargs):
-    """ Update download supernav """
+def update_download_supernav_and_boxes(sender, instance, **kwargs):
     # Skip in fixtures
     if kwargs.get('raw', False):
         return
 
     if instance.is_published:
-        update_supernav()
+        # Supernav only has download buttons for Python 3.
+        if instance.version == instance.PYTHON3:
+            update_supernav()
+        update_download_landing_sources_box()
         update_homepage_download_box()
 
 
