@@ -226,7 +226,6 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 5)
-        content = self.get_json(response)
         self.assertFalse(content[0]['is_latest'])
 
     def test_post_release(self):
