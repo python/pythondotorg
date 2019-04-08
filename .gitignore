@@ -15,3 +15,5 @@ static-root/
 static/stylesheets/mq.css
 static/stylesheets/no-mq.css
 static/stylesheets/style.css
+__pycache__/
+docs/build/
