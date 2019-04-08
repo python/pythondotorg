@@ -44,6 +44,7 @@ credentials to log in to Django admin.
 You will only need to run the following two commands the next time you want to
 work on python.org::
 
+    $ vagrant up
     $ vagrant ssh
     $ ./manage.py runserver 0.0.0.0:8000
 
