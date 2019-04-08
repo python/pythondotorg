@@ -41,7 +41,7 @@ Now use your favorite browser to go to http://localhost:8001/. The admin pages
 can be found at http://localhost:8001/admin/. You can use your superuser
 credentials to log in to Django admin.
 
-You will only need to run the following four commands the next time you want to
+You will only need to run the following five commands the next time you want to
 work on python.org::
 
     $ vagrant up
