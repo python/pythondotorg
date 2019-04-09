@@ -51,26 +51,7 @@ class Command(BaseCommand):
         verbose("== Starting PEP page generation")
 
         with ExitStack() as stack:
-            verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            peps_last_updated = get_peps_last_updated()
-            with requests.get(settings.PEP_ARTIFACT_URL, stream=True) as r:
-                artifact_last_modified = parsedate(r.headers['last-modified'])
-                if peps_last_updated > artifact_last_modified:
-                    verbose(f"== No update to artifacts, we're done here!")
-                    return
-
-                temp_file = stack.enter_context(TemporaryFile())
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:
-                        temp_file.write(chunk)
-
-            temp_file.seek(0)
-
-            temp_dir = stack.enter_context(TemporaryDirectory())
-            tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
-            tar_ball.extractall(path=temp_dir, numeric_owner=False)
-
-            artifacts_path = os.path.join(temp_dir, 'peps')
+            artifacts_path = self.get_artifacts_path(stack, verbose)
 
             verbose("Generating RSS Feed")
             peps_rss = get_peps_rss(artifacts_path)
@@ -129,3 +110,30 @@ class Command(BaseCommand):
                     verbose("- Skipping non-PEP related image '{}'".format(img))
 
         verbose("== Finished")
+
+    def get_artifacts_path(self, stack, verbose):
+        if settings.DEBUG and settings.PEP_REPO_PATH:
+            return settings.PEP_REPO_PATH
+
+        verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
+        peps_last_updated = get_peps_last_updated()
+        with requests.get(settings.PEP_ARTIFACT_URL, stream=True) as r:
+            artifact_last_modified = parsedate(r.headers['last-modified'])
+            if peps_last_updated > artifact_last_modified:
+                verbose(f"== No update to artifacts, we're done here!")
+                return
+
+            temp_file = stack.enter_context(TemporaryFile())
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    temp_file.write(chunk)
+
+        temp_file.seek(0)
+
+        temp_dir = stack.enter_context(TemporaryDirectory())
+        tar_ball = stack.enter_context(
+            TarFile.open(fileobj=temp_file, mode='r:gz'))
+        tar_ball.extractall(path=temp_dir, numeric_owner=False)
+        artifacts_path = os.path.join(temp_dir, 'peps')
+
+        return artifacts_path

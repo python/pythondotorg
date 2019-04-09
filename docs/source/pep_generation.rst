@@ -18,6 +18,7 @@ The PEP Page Generation process is as follows:
 2. From the cloned PEP Repository, run::
 
       $ make -j
+      $ make rss
 
 3. Set ``PEP_REPO_PATH`` in ``pydotorg/settings/local.py`` to the location
    of the cloned PEP Repository

@@ -6,16 +6,14 @@ from django.test import TestCase, override_settings
 from django.conf import settings
 from django.core import serializers
 from django.core.management import call_command
-from django.core.exceptions import ImproperlyConfigured
 
 import responses
 
 from pages.models import Image
 
-from . import FAKE_PEP_REPO
+from . import FAKE_PEP_REPO, FAKE_PEP_ARTIFACT
 
 
-@responses.activate
 class PEPManagementCommandTests(TestCase):
 
     def setUp(self):
@@ -31,10 +29,16 @@ class PEPManagementCommandTests(TestCase):
         )
 
     @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
-    def test_generate_pep_pages_real(self):
+    @responses.activate
+    def test_generate_pep_pages_real_with_artifact_url(self):
+        call_command('generate_pep_pages')
+
+    @override_settings(DEBUG=True, PEP_REPO_PATH=FAKE_PEP_REPO)
+    def test_generate_pep_pages_real_with_local_repo(self):
         call_command('generate_pep_pages')
 
     @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
+    @responses.activate
     def test_image_generated(self):
         call_command('generate_pep_pages')
         img = Image.objects.get(page__path='dev/peps/pep-3001/')
@@ -42,6 +46,7 @@ class PEPManagementCommandTests(TestCase):
         self.assertIn(settings.MEDIA_URL, soup.find('img')['src'])
 
     @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
+    @responses.activate
     def test_dump_pep_pages(self):
         call_command('generate_pep_pages')
         stdout = io.StringIO()
