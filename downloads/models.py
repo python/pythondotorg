@@ -154,6 +154,7 @@ def update_supernav():
 
     content = render_to_string('downloads/supernav.html', {
         'python_files': python_files,
+        'last_updated': timezone.now(),
     })
 
     box, _ = Box.objects.update_or_create(
