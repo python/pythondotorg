@@ -2,6 +2,7 @@
 
 {% extends "base.html" %}
 {% load boxes %}
+{% load banners %}
 
 {# TODO: Try to deduplicate this and templates/pages/default.html. #}
 {% block page_title %}{{ page.title }} | Python Software Foundation{% endblock %}
@@ -25,6 +26,8 @@
 
 {% block breadcrumbs %}
     {% load sitetree %}
+
+    {% render_active_banner True %}
 
     {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
 {% endblock breadcrumbs %}
