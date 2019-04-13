@@ -7,8 +7,7 @@ from django.db import migrations
 
 def migrate_old_content(apps, schema_editor):
     Box = apps.get_model('boxes', 'Box')
-    Box.objects.filter(label='events-subscriptions').update(content=
-        '<h2 class=\"widget-title\">Python Events Calendars</h2>\r\n\r\n<br/>\r\n\r\n'
+    Box.objects.filter(label='events-subscriptions').update(content=        '<h2 class=\"widget-title\">Python Events Calendars</h2>\r\n\r\n<br/>\r\n\r\n'
         '<p>For Python events near you, please have a look at the <a href=\"http://lmorillas.github.io/python_events/\">'
         '<b>Python events map</b></a>.</p>\r\n\r\n'
         '<p>The Python events calendars are maintained by the <a href=\"https://wiki.python.org/moin/PythonEventsCalendar#Python_Calendar_Team\">events calendar team</a>.</p>\r\n\r\n'
