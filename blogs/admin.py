@@ -38,7 +38,7 @@ class BlogEntryAdmin(admin.ModelAdmin):
         self.message_user(request, "Blog entries updated.")
 
     sync_new_entries.short_description = "Sync new blog entries"
-    
+
 
 admin.site.register(BlogEntry, BlogEntryAdmin)
 
