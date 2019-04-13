@@ -68,7 +68,7 @@ class BlogTemplateTagTest(TestCase):
             slug='test',
             description='testing',
         )
-        fa.feeds.add(f1,f2)
+        fa.feeds.add(f1, f2)
 
 
         t = Template("""
