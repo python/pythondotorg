@@ -46,10 +46,10 @@ class APISession(requests.Session):
         self.headers.update(
             {
                 'Accept': 'application/json',
-                'User-agent': (
+                'User-Agent': (
                     f'pythondotorg/create_initial_data'
                     f' ({requests.utils.default_user_agent()})'
-                )
+                ),
             }
         )
 
@@ -62,7 +62,7 @@ class APISession(requests.Session):
 
 def _get_id(obj, key):
     """
-    Get the ID of an object by extracting it from the resource uri.
+    Get the ID of an object by extracting it from the resource_uri field.
     """
     key = obj.pop(key, '')
     if key:
@@ -85,7 +85,7 @@ def initial_data():
         for key, resource_uri in [
             ('oses', 'downloads/os/'),
             ('releases', 'downloads/release/'),
-            ('release_files', 'downloads/release_file/')
+            ('release_files', 'downloads/release_file/'),
         ]:
             response = session.get(resource_uri)
             object_list = response.json()
@@ -98,19 +98,18 @@ def initial_data():
 
     # Create all the releases
     for key, obj in objects['releases'].items():
-        # TODO: Create release pages
-        obj.pop('release_page')  # Ignore release pages
+        # TODO: We are ignoring release pages for now.
+        obj.pop('release_page')
         objects['releases'][key] = ReleaseFactory(**obj)
 
-    # Create all release files
+    # Create all release files.
     for key, obj in tuple(objects['release_files'].items()):
         release_id = _get_id(obj, 'release')
         try:
             release = objects['releases'][release_id]
         except KeyError:
             # Release files for draft releases are available through the API,
-            # the releases are not.
-            # https://github.com/python/pythondotorg/issues/1308
+            # the releases are not. See #1308 for details.
             objects['release_files'].pop(key)
         else:
             obj['release'] = release
