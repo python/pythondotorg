@@ -76,14 +76,14 @@ def initial_data():
     it from the python.org API.
     """
     objects = {
-        'oss': {},
+        'oses': {},
         'releases': {},
         'release_files': {},
     }
 
     with APISession() as session:
         for key, resource_uri in [
-            ('oss', 'downloads/os/'),
+            ('oses', 'downloads/os/'),
             ('releases', 'downloads/release/'),
             ('release_files', 'downloads/release_file/')
         ]:
@@ -94,7 +94,7 @@ def initial_data():
                 objects[key][_get_id(obj, 'resource_uri')] = obj
 
     # Create the list of operating systems
-    objects['oss'] = {k: OSFactory(**obj) for k, obj in objects['oss'].items()}
+    objects['oses'] = {k: OSFactory(**obj) for k, obj in objects['oses'].items()}
 
     # Create all the releases
     for key, obj in objects['releases'].items():
@@ -113,11 +113,11 @@ def initial_data():
             objects['release_files'].pop(key)
         else:
             obj['release'] = release
-            obj['os'] = objects['oss'][_get_id(obj, 'os')]
+            obj['os'] = objects['oses'][_get_id(obj, 'os')]
             objects['release_files'][key] = ReleaseFileFactory(**obj)
 
     return {
-        'oss': list(objects.pop('oss').values()),
+        'oses': list(objects.pop('oses').values()),
         'releases': list(objects.pop('releases').values()),
         'release_files': list(objects.pop('release_files').values()),
     }
