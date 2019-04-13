@@ -14,13 +14,9 @@ class Command(BaseCommand):
 
             for entry in entries:
                 url = entry.pop('url')
-                e, created = BlogEntry.objects.get_or_create(
-                    feed=feed, url=url, defaults=entry
+                BlogEntry.objects.update_or_create(
+                    feed=feed, url=url, defaults=entry,
                 )
-
-                # Update our info if it's changed
-                if not created and e.pub_date < entry['pub_date']:
-                    BlogEntry.objects.filter(pk=e.pk).update(**entry)
 
             feed.last_import = now()
             feed.save()
