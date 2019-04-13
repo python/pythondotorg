@@ -98,6 +98,7 @@ def initial_data():
 
     # Create all the releases
     for key, obj in objects['releases'].items():
+        # TODO: Create release pages
         obj.pop('release_page')  # Ignore release pages
         objects['releases'][key] = ReleaseFactory(**obj)
 
