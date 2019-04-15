@@ -10,7 +10,7 @@ from cms.models import ContentManageable
 from .managers import PostQuerySet
 
 
-DEFAULT_MARKUP_TYPE = 'html'  # getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+DEFAULT_MARKUP_TYPE = 'html'
 
 
 class Post(ContentManageable):
