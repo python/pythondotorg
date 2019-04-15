@@ -7,15 +7,15 @@ from cms.admin import ContentManageableModelAdmin
 from .models import BlogEntry, Contributor, Translation, Feed, FeedAggregate
 
 
+@admin.register(Translation)
 class TranslationAdmin(ContentManageableModelAdmin):
     list_display = ['name', '_display_url']
 
     def _display_url(self, obj):
         return format_html('<a href="{0}">{0}</a>'.format(obj.url))
 
-admin.site.register(Translation, TranslationAdmin)
 
-
+@admin.register(Contributor)
 class ContributorAdmin(ContentManageableModelAdmin):
     list_display = ['_display_name']
 
@@ -25,9 +25,8 @@ class ContributorAdmin(ContentManageableModelAdmin):
         else:
             return "{} (PK#{})".format(obj.user.username, obj.user.pk)
 
-admin.site.register(Contributor, ContributorAdmin)
 
-
+@admin.register(BlogEntry)
 class BlogEntryAdmin(admin.ModelAdmin):
     list_display = ['title', 'pub_date']
     date_hierarchy = 'pub_date'
@@ -38,14 +37,11 @@ class BlogEntryAdmin(admin.ModelAdmin):
         self.message_user(request, "Blog entries updated.")
 
     sync_new_entries.short_description = "Sync new blog entries"
-    
 
-admin.site.register(BlogEntry, BlogEntryAdmin)
 
+@admin.register(FeedAggregate)
 class FeedAggregateAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'description']
     prepopulated_fields = {'slug': ('name',)}
-
-admin.site.register(FeedAggregate, FeedAggregateAdmin)
 
 admin.site.register(Feed)

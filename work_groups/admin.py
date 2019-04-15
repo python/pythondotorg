@@ -5,6 +5,7 @@ from cms.admin import ContentManageableModelAdmin
 from .models import WorkGroup
 
 
+@admin.register(WorkGroup)
 class WorkGroupAdmin(ContentManageableModelAdmin):
     search_fields = ['name', 'slug', 'url', 'short_description', 'purpose']
     list_display = ('name', 'active', 'approved')
@@ -33,4 +34,3 @@ class WorkGroupAdmin(ContentManageableModelAdmin):
             'members',
         )})
     ]
-admin.site.register(WorkGroup, WorkGroupAdmin)

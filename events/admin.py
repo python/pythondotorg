@@ -9,10 +9,6 @@ class EventInline(admin.StackedInline):
     extra = 0
 
 
-class CalendarAdmin(ContentManageableModelAdmin):
-    pass
-
-
 class OccurringRuleInline(admin.StackedInline):
     model = OccurringRule
     extra = 0
@@ -29,6 +25,7 @@ class AlarmInline(admin.StackedInline):
     extra = 0
 
 
+@admin.register(Event)
 class EventAdmin(ContentManageableModelAdmin):
     inlines = [OccurringRuleInline, RecurringRuleInline, AlarmInline]
     list_display = ['__str__', 'calendar', 'featured']
@@ -37,14 +34,11 @@ class EventAdmin(ContentManageableModelAdmin):
     search_fields = ['title']
 
 
+@admin.register(EventLocation)
 class EventLocationAdmin(admin.ModelAdmin):
     list_filter = ['calendar']
 
 
-admin.site.register(Calendar, CalendarAdmin)
 admin.site.register(EventCategory, NameSlugAdmin)
-admin.site.register(Event, EventAdmin)
-admin.site.register(OccurringRule)
-admin.site.register(RecurringRule)
-admin.site.register(Alarm, ContentManageableModelAdmin)
-admin.site.register(EventLocation, EventLocationAdmin)
+admin.site.register((OccurringRule, RecurringRule))
+admin.site.register((Alarm, Calendar), ContentManageableModelAdmin)

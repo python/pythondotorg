@@ -4,6 +4,7 @@ from .models import Minutes
 from cms.admin import ContentManageableModelAdmin
 
 
+@admin.register(Minutes)
 class MinutesAdmin(ContentManageableModelAdmin):
     date_hierarchy = 'date'
 
@@ -14,5 +15,3 @@ class MinutesAdmin(ContentManageableModelAdmin):
     def get_list_display(self, request):
         fields = list(super().get_list_display(request))
         return fields + ['is_published']
-
-admin.site.register(Minutes, MinutesAdmin)
