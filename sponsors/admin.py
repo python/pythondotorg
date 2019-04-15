@@ -4,6 +4,7 @@ from .models import Sponsor
 from cms.admin import ContentManageableModelAdmin
 
 
+@admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
     raw_id_fields = ['company']
 
@@ -14,5 +15,3 @@ class SponsorAdmin(ContentManageableModelAdmin):
     def get_list_display(self, request):
         fields = list(super().get_list_display(request))
         return fields + ['is_published']
-
-admin.site.register(Sponsor, SponsorAdmin)

@@ -19,6 +19,7 @@ class VideoInline(ContentManageableStackedInline):
     extra = 0
 
 
+@admin.register(Post)
 class PostAdmin(ContentManageableModelAdmin):
     date_hierarchy = 'created'
     list_display = ['__str__', 'status', 'media_type']
@@ -30,12 +31,7 @@ class PostAdmin(ContentManageableModelAdmin):
     ]
 
 
+@admin.register(Link, Photo, Video)
 class PostTypeAdmin(ContentManageableModelAdmin):
     date_hierarchy = 'created'
     raw_id_fields = ['post']
-
-
-admin.site.register(Post, PostAdmin)
-admin.site.register(Link, PostTypeAdmin)
-admin.site.register(Photo, PostTypeAdmin)
-admin.site.register(Video, PostTypeAdmin)

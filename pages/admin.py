@@ -61,6 +61,7 @@ class PagePathFilter(admin.SimpleListFilter):
             return queryset.filter(path__startswith=self.value())
 
 
+@admin.register(Page)
 class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
     list_display = ('get_title', 'path', 'is_published',)
@@ -71,5 +72,3 @@ class PageAdmin(ContentManageableModelAdmin):
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
     ]
     save_as = True
-
-admin.site.register(Page, PageAdmin)

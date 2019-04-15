@@ -4,6 +4,7 @@ from .models import JobType, JobCategory, Job, JobReviewComment
 from cms.admin import NameSlugAdmin, ContentManageableModelAdmin
 
 
+@admin.register(Job)
 class JobAdmin(ContentManageableModelAdmin):
     date_hierarchy = 'created'
     filter_horizontal = ['job_types']
@@ -13,26 +14,21 @@ class JobAdmin(ContentManageableModelAdmin):
     search_fields = ['id', 'job_title']
 
 
+@admin.register(JobType)
 class JobTypeAdmin(NameSlugAdmin):
     list_display = ['__str__', 'active']
     list_filter = ['active']
     ordering = ('-active', 'name')
 
-admin.site.register(JobType, JobTypeAdmin)
 
-
+@admin.register(JobCategory)
 class JobCategoryAdmin(NameSlugAdmin):
     list_display = ['__str__', 'active']
     list_filter = ['active']
     ordering = ('-active', 'name')
 
 
+@admin.register(JobReviewComment)
 class JobReviewCommentAdmin(ContentManageableModelAdmin):
     list_display = ['__str__', 'job']
     ordering = ('-created',)
-
-admin.site.register(JobCategory, JobCategoryAdmin)
-
-admin.site.register(Job, JobAdmin)
-
-admin.site.register(JobReviewComment, JobReviewCommentAdmin)

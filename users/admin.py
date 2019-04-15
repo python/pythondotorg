@@ -24,6 +24,7 @@ class ApiKeyInline(TastypieApiKeyInline):
     readonly_fields = ('key', 'created')
 
 
+@admin.register(User)
 class UserAdmin(BaseUserAdmin):
     inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
     fieldsets = (
@@ -48,6 +49,7 @@ class UserAdmin(BaseUserAdmin):
     full_name.short_description = 'Name'
 
 
+@admin.register(Membership)
 class MembershipAdmin(admin.ModelAdmin):
     actions = [export_csv]
     list_display = (
@@ -64,9 +66,6 @@ class ApiKeyAdmin(admin.ModelAdmin):
     list_display = ('user', 'created', )
     date_hierarchy = 'created'
 
-
-admin.site.register(User, UserAdmin)
-admin.site.register(Membership, MembershipAdmin)
 
 try:
     admin.site.unregister(ApiKey)
