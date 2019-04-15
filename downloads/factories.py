@@ -64,10 +64,10 @@ def _get_id(obj, key):
     """
     Get the ID of an object by extracting it from the resource_uri field.
     """
-    key = obj.pop(key, '')
-    if key:
+    resource_uri = obj.pop(key, '')
+    if resource_uri:
         # i.e. /foo/1/ -> /foo/1 -> ('/foo', '/', '1') -> '1'
-        return key.rstrip('/').rpartition('/')[-1]
+        return resource_uri.rstrip('/').rpartition('/')[-1]
 
 
 def initial_data():
