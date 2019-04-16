@@ -12,6 +12,7 @@ from markupfield.fields import MarkupField
 
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
+from fastly import register_function
 from fastly.utils import purge_url
 from pages.models import Page
 
@@ -237,6 +238,21 @@ def promote_latest_release(sender, instance, **kwargs):
         ).update(is_latest=False)
 
 
+@register_function
+def _purge_download_pages():
+    # Purge our common pages
+    purge_url('/downloads/')
+    purge_url('/downloads/latest/python2/')
+    purge_url('/downloads/latest/python3/')
+    purge_url('/downloads/mac-osx/')
+    purge_url('/downloads/source/')
+    purge_url('/downloads/windows/')
+    # See issue #584 for details
+    purge_url('/box/supernav-python-downloads/')
+    purge_url('/box/homepage-downloads/')
+    purge_url('/box/download-sources/')
+
+
 @receiver(post_save, sender=Release)
 def purge_fastly_download_pages(sender, instance, **kwargs):
     """
@@ -248,19 +264,9 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 
     # Only purge on published instances
     if instance.is_published:
-        # Purge our common pages
-        purge_url('/downloads/')
-        purge_url('/downloads/latest/python2/')
-        purge_url('/downloads/latest/python3/')
-        purge_url('/downloads/mac-osx/')
-        purge_url('/downloads/source/')
-        purge_url('/downloads/windows/')
+        _purge_download_pages()
         if instance.get_version() is not None:
             purge_url('/ftp/python/{}/'.format(instance.get_version()))
-        # See issue #584 for details
-        purge_url('/box/supernav-python-downloads/')
-        purge_url('/box/homepage-downloads/')
-        purge_url('/box/download-sources/')
         # Purge the release page itself
         purge_url(instance.get_absolute_url())
 
