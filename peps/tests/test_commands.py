@@ -6,42 +6,43 @@ from django.test import TestCase, override_settings
 from django.conf import settings
 from django.core import serializers
 from django.core.management import call_command
-from django.core.exceptions import ImproperlyConfigured
 
 import responses
 
 from pages.models import Image
 
-from . import FAKE_PEP_REPO
+from . import FAKE_PEP_ARTIFACT
 
 
-@responses.activate
+PEP_ARTIFACT_URL = 'https://example.net/fake-peps.tar.gz'
+
+
+@override_settings(PEP_ARTIFACT_URL=PEP_ARTIFACT_URL)
 class PEPManagementCommandTests(TestCase):
 
     def setUp(self):
-        self.peps_tar = io.open(FAKE_PEP_ARTIFACT, 'rb')
         responses.add(
             responses.GET,
-            'https://example.net/fake-peps.tar.gz',
+            PEP_ARTIFACT_URL,
             headers={'Last-Modified': 'Sun, 24 Feb 2019 18:01:42 GMT'},
             stream=True,
             content_type='application/x-tar',
             status=200,
-            body=self.peps_tar,
+            body=open(FAKE_PEP_ARTIFACT, 'rb'),
         )
 
-    @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
+    @responses.activate
     def test_generate_pep_pages_real(self):
         call_command('generate_pep_pages')
 
-    @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
+    @responses.activate
     def test_image_generated(self):
         call_command('generate_pep_pages')
         img = Image.objects.get(page__path='dev/peps/pep-3001/')
         soup = BeautifulSoup(img.page.content.raw, 'lxml')
         self.assertIn(settings.MEDIA_URL, soup.find('img')['src'])
 
-    @override_settings(PEP_ARTIFACT_URL='https://example.net/fake-peps.tar.gz')
+    @responses.activate
     def test_dump_pep_pages(self):
         call_command('generate_pep_pages')
         stdout = io.StringIO()
