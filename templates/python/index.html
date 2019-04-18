@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load banners %}
 
 {% block body_attributes %}class="python home" id="homepage"{% endblock %}
 
@@ -35,6 +36,8 @@
 
 
 {% block content %}
+
+                {% render_active_banner %}
 
                 <div class="row">
 

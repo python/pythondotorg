@@ -1,7 +1,7 @@
 {# ===== PSF LANDING PAGE ===== #}
 
 {% extends "base.html" %}
-{% load boxes sponsors blogs %}
+{% load boxes sponsors blogs banners %}
 
 {% block page_title %}Python Software Foundation{% endblock %}
 
@@ -30,6 +30,7 @@
 
 
 {% block content %}
+                {% render_active_psf_banner %}
 
                 <div class="row">
                     <div class="psf-widget0">
