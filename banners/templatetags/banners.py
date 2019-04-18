@@ -6,18 +6,24 @@ from banners.models import Banner
 register = template.Library()
 
 
-@register.simple_tag
-def render_active_banner(psf_pages_only=True):
-    if not psf_pages_only:
-        banner = Banner.objects.filter(active=True, psf_pages_only=psf_pages_only).first()
-    else:
-        banner = Banner.objects.filter(active=True).first()
+def _render_banner(banner=None):
     if banner is not None:
-        tmpl = template.loader.get_template('banners/banner.html')
-        ctx = {
-            'message': banner.message,
-            'title': banner.title,
-            'link': banner.link,
-        }
-        return tmpl.render(ctx)
+        return render_to_string(
+            'banners/banner.html',
+            {
+                'message': banner.message,
+                'title': banner.title,
+                'link': banner.link,
+            }
+        )
     return ''
+
+@register.simple_tag
+def render_active_banner():
+    banner = Banner.objects.filter(active=True, psf_pages_only=False).first()
+    return _render_banner(banner=banner)
+
+@register.simple_tag
+def render_active_psf_banner():
+    banner = Banner.objects.filter(active=True).first()
+    return _render_banner(banner=banner)

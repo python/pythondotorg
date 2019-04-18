@@ -27,7 +27,7 @@
 {% block breadcrumbs %}
     {% load sitetree %}
 
-    {% render_active_banner True %}
+    {% render_active_psf_banner %}
 
     {% sitetree_breadcrumbs from "main" template "sitetree/breadcrumbs.html" %}
 {% endblock breadcrumbs %}
