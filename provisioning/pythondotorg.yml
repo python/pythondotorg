@@ -75,6 +75,11 @@
            clone=no
            update=no
 
+    - name: Ensure fresh virtual environment
+      file:
+        path: "{{ project.virtualenv }}"
+        state: absent
+
     - name: Install dependencies for the Django app inside virtual environment
       pip: virtualenv={{ project.virtualenv }}
            virtualenv_command="/usr/bin/python3 -m venv"

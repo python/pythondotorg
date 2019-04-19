@@ -5,10 +5,12 @@ from .models import Story, StoryCategory
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
 
 
+@admin.register(StoryCategory)
 class StoryCategoryAdmin(NameSlugAdmin):
     prepopulated_fields = {'slug': ('name',)}
 
 
+@admin.register(Story)
 class StoryAdmin(ContentManageableModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
     raw_id_fields = ['category']
@@ -25,6 +27,3 @@ class StoryAdmin(ContentManageableModelAdmin):
     def show_link(self, obj):
         return format_html('<a href="{0}">\U0001F517</a>'.format(obj.get_absolute_url()))
     show_link.short_description = 'View on site'
-
-admin.site.register(StoryCategory, StoryCategoryAdmin)
-admin.site.register(Story, StoryAdmin)

@@ -22,5 +22,4 @@ class FeedAggregateAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'description']
     prepopulated_fields = {'slug': ('name',)}
 
-
 admin.site.register(Feed)

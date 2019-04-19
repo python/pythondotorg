@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load banners %}
 
 {% block page_title %}Download Python | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}Download Python{% endblock %}
@@ -37,6 +38,8 @@
 
 {% block content %}
                 <div class="row download-list-widget">
+
+                    {% render_active_banner %}
 
                     <h2 class="widget-title">Looking for a specific release?</h2>
                     <p class="success-quote">Python releases by version number:</p>

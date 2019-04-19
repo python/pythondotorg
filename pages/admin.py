@@ -1,37 +1,17 @@
-from django.conf import settings
 from django.contrib import admin
-from django.db import models
-from django.utils.safestring import mark_safe
-
-from bs4 import BeautifulSoup
 
 from cms.admin import ContentManageableModelAdmin
 from .models import Page, Image, DocumentFile
-
-
-class PageAdminImageFileWidget(admin.widgets.AdminFileWidget):
-
-    def render(self, name, value, attrs=None):
-        content = super().render(name, value, attrs=None)
-        return content
 
 
 class ImageInlineAdmin(admin.StackedInline):
     model = Image
     extra = 1
 
-    formfield_overrides = {
-        models.ImageField: {'widget': PageAdminImageFileWidget},
-    }
-
 
 class DocumentFileInlineAdmin(admin.StackedInline):
     model = DocumentFile
     extra = 1
-
-    formfield_overrides = {
-        models.FileField: {'widget': PageAdminImageFileWidget},
-    }
 
 
 class PagePathFilter(admin.SimpleListFilter):
@@ -61,6 +41,7 @@ class PagePathFilter(admin.SimpleListFilter):
             return queryset.filter(path__startswith=self.value())
 
 
+@admin.register(Page)
 class PageAdmin(ContentManageableModelAdmin):
     search_fields = ['title', 'path']
     list_display = ('get_title', 'path', 'is_published',)
@@ -71,5 +52,3 @@ class PageAdmin(ContentManageableModelAdmin):
         ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
     ]
     save_as = True
-
-admin.site.register(Page, PageAdmin)

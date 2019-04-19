@@ -4,6 +4,7 @@ from .models import OS, Release, ReleaseFile
 from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
 
 
+@admin.register(OS)
 class OSAdmin(ContentManageableModelAdmin):
     model = OS
     prepopulated_fields = {"slug": ("name",)}
@@ -14,6 +15,7 @@ class ReleaseFileInline(ContentManageableStackedInline):
     extra = 0
 
 
+@admin.register(Release)
 class ReleaseAdmin(ContentManageableModelAdmin):
     inlines = [ReleaseFileInline]
     prepopulated_fields = {"slug": ("name",)}
@@ -23,6 +25,3 @@ class ReleaseAdmin(ContentManageableModelAdmin):
     list_filter = ['version', 'is_published', 'show_on_download_page']
     search_fields = ['name', 'slug']
     ordering = ['-release_date']
-
-admin.site.register(OS, OSAdmin)
-admin.site.register(Release, ReleaseAdmin)
