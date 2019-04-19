@@ -1,6 +1,6 @@
 from django.views.generic import TemplateView
 
-from .models import BlogEntry, Translation, Contributor
+from .models import BlogEntry
 
 
 class BlogHome(TemplateView):
@@ -21,8 +21,6 @@ class BlogHome(TemplateView):
         context.update({
             'latest_entry': latest_entry,
             'entries': other_entries,
-            'translations': Translation.objects.all(),
-            'contributors': Contributor.objects.all(),
         })
 
         return context

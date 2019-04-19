@@ -1,29 +1,7 @@
 from django.contrib import admin
 from django.core.management import call_command
-from django.utils.html import format_html
 
-from cms.admin import ContentManageableModelAdmin
-
-from .models import BlogEntry, Contributor, Translation, Feed, FeedAggregate
-
-
-@admin.register(Translation)
-class TranslationAdmin(ContentManageableModelAdmin):
-    list_display = ['name', '_display_url']
-
-    def _display_url(self, obj):
-        return format_html('<a href="{0}">{0}</a>'.format(obj.url))
-
-
-@admin.register(Contributor)
-class ContributorAdmin(ContentManageableModelAdmin):
-    list_display = ['_display_name']
-
-    def _display_name(self, obj):
-        if obj.user.first_name or obj.user.last_name:
-            return "{} {}".format(obj.user.first_name, obj.user.last_name)
-        else:
-            return "{} (PK#{})".format(obj.user.username, obj.user.pk)
+from .models import BlogEntry, Feed, FeedAggregate
 
 
 @admin.register(BlogEntry)

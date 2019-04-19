@@ -3,10 +3,7 @@ from django.test import TestCase
 from django.template import Template, Context
 from django.utils.timezone import now
 
-from boxes.models import Box
-
 from ..templatetags.blogs import get_latest_blog_entries
-from ..parser import _render_blog_supernav
 from ..models import BlogEntry, Feed, FeedAggregate
 from .utils import get_test_rss_path
 
@@ -22,9 +19,8 @@ class BlogTemplateTagTest(TestCase):
         management command
         """
         Feed.objects.create(
-            id=1, name='psf default', website_url='example.org',
+            name='psf default', website_url='https://example.org',
             feed_url=self.test_file_path)
-        entries = None
         call_command('update_blogs')
         entries = get_latest_blog_entries()
 
@@ -33,9 +29,6 @@ class BlogTemplateTagTest(TestCase):
             entries[0].pub_date.isoformat(),
             '2013-03-04T15:00:00+00:00'
         )
-        b = Box.objects.get(label='supernav-python-blog')
-        rendered_box = _render_blog_supernav(BlogEntry.objects.latest())
-        self.assertEqual(b.content.raw, rendered_box)
 
     def test_feed_list(self):
         f1 = Feed.objects.create(
@@ -61,14 +54,14 @@ class BlogTemplateTagTest(TestCase):
             summary='',
             pub_date=now(),
             url='path/to/foo',
-            feed=f1
+            feed=f2
         )
         fa = FeedAggregate.objects.create(
             name='test',
             slug='test',
             description='testing',
         )
-        fa.feeds.add(f1,f2)
+        fa.feeds.add(f1, f2)
 
 
         t = Template("""

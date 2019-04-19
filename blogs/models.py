@@ -1,7 +1,6 @@
 import feedparser
 
 from django.db import models
-from django.conf import settings
 
 from cms.models import ContentManageable
 
@@ -42,6 +41,7 @@ class Feed(models.Model):
     def __str__(self):
         return self.name
 
+
 class FeedAggregate(models.Model):
     """
     An aggregate of RSS feeds.
@@ -56,48 +56,6 @@ class FeedAggregate(models.Model):
 
     def __str__(self):
         return self.name
-
-class Translation(ContentManageable):
-    """ Model to store blog translation links """
-    name = models.CharField(max_length=100)
-    url = models.URLField('URL')
-
-    class Meta:
-        verbose_name = 'Translation'
-        verbose_name_plural = 'Translations'
-        ordering = ('name', )
-
-    def __str__(self):
-        return self.name
-
-    def get_absolute_url(self):
-        return self.url
-
-
-class Contributor(ContentManageable):
-    """ Blog Contributors """
-    user = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        related_name='blog_contributor',
-        on_delete=models.CASCADE,
-    )
-
-    class Meta:
-        verbose_name = 'Contributor'
-        verbose_name_plural = 'Contributors'
-        ordering = ('user__last_name', 'user__first_name')
-
-    def __str__(self):
-        return self.user.get_full_name()
-
-    def get_absolute_url(self):
-        return self.user.get_absolute_url()
-
-    def get_display_name(self):
-        if self.user.first_name or self.user.last_name:
-            return """{} {}""".format(self.user.first_name, self.user.last_name)
-        else:
-            return self.user.username
 
 
 class RelatedBlog(ContentManageable):
