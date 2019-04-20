@@ -52,20 +52,7 @@ class Command(BaseCommand):
 
         with ExitStack() as stack:
             verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            peps_last_updated = get_peps_last_updated()
-            with requests.get(settings.PEP_ARTIFACT_URL, stream=True) as r:
-                artifact_last_modified = parsedate(r.headers['last-modified'])
-                if peps_last_updated > artifact_last_modified:
-                    verbose(f"== No update to artifacts, we're done here!")
-                    return
-
-                temp_file = stack.enter_context(TemporaryFile())
-                for chunk in r.iter_content(chunk_size=8192):
-                    if chunk:
-                        temp_file.write(chunk)
-
-            temp_file.seek(0)
-
+            temp_file = self.get_artifact_tar_ball(stack, verbose)
             temp_dir = stack.enter_context(TemporaryDirectory())
             tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
             tar_ball.extractall(path=temp_dir, numeric_owner=False)
@@ -129,3 +116,24 @@ class Command(BaseCommand):
                     verbose("- Skipping non-PEP related image '{}'".format(img))
 
         verbose("== Finished")
+
+    def get_artifact_tar_ball(self, stack, verbose):
+        artifact_url = settings.PEP_ARTIFACT_URL
+        if not (artifact_url.startswith('http://') or
+                artifact_url.startswith('https://')):
+            return stack.enter_context(open(artifact_url, 'rb'))
+
+        peps_last_updated = get_peps_last_updated()
+        with requests.get(artifact_url, stream=True) as r:
+            artifact_last_modified = parsedate(r.headers['last-modified'])
+            if peps_last_updated > artifact_last_modified:
+                verbose(f"== No update to artifacts, we're done here!")
+                return
+
+            temp_file = stack.enter_context(TemporaryFile())
+            for chunk in r.iter_content(chunk_size=8192):
+                if chunk:
+                    temp_file.write(chunk)
+
+        temp_file.seek(0)
+        return temp_file
