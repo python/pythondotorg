@@ -117,7 +117,7 @@ class Command(BaseCommand):
 
         verbose("== Finished")
 
-    def get_artifact_tar_ball(self, stack, verbose):
+    def get_artifact_tarball(self, stack, verbose):
         artifact_url = settings.PEP_ARTIFACT_URL
         if not (artifact_url.startswith('http://') or
                 artifact_url.startswith('https://')):
