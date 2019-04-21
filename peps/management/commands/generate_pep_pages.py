@@ -52,7 +52,7 @@ class Command(BaseCommand):
 
         with ExitStack() as stack:
             verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            temp_file = self.get_artifact_tar_ball(stack, verbose)
+            temp_file = self.get_artifact_tarball(stack, verbose)
             temp_dir = stack.enter_context(TemporaryDirectory())
             tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
             tar_ball.extractall(path=temp_dir, numeric_owner=False)
