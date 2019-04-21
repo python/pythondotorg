@@ -25,7 +25,7 @@ HAYSTACK_CONNECTIONS = {
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Set the path to where to fetch PEP artifacts from.
-# The value can be local path or remote URL
+# The value can be a local path or a remote URL.
 PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')
 
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
