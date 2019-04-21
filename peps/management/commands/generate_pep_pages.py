@@ -52,7 +52,10 @@ class Command(BaseCommand):
 
         with ExitStack() as stack:
             verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            temp_file = self.get_artifact_tarball(stack, verbose)
+            temp_file = self.get_artifact_tarball(stack)
+            if not temp_file:
+                verbose("== No update to artifacts, we're done here!")
+                return
             temp_dir = stack.enter_context(TemporaryDirectory())
             tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
             tar_ball.extractall(path=temp_dir, numeric_owner=False)
@@ -117,7 +120,7 @@ class Command(BaseCommand):
 
         verbose("== Finished")
 
-    def get_artifact_tarball(self, stack, verbose):
+    def get_artifact_tarball(self, stack):
         artifact_url = settings.PEP_ARTIFACT_URL
         if not artifact_url.startswith(('http://', 'https://')):
             return stack.enter_context(open(artifact_url, 'rb'))
@@ -126,7 +129,6 @@ class Command(BaseCommand):
         with requests.get(artifact_url, stream=True) as r:
             artifact_last_modified = parsedate(r.headers['last-modified'])
             if peps_last_updated > artifact_last_modified:
-                verbose(f"== No update to artifacts, we're done here!")
                 return
 
             temp_file = stack.enter_context(TemporaryFile())
