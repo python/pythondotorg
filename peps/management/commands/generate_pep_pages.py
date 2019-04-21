@@ -119,8 +119,7 @@ class Command(BaseCommand):
 
     def get_artifact_tarball(self, stack, verbose):
         artifact_url = settings.PEP_ARTIFACT_URL
-        if not (artifact_url.startswith('http://') or
-                artifact_url.startswith('https://')):
+        if not artifact_url.startswith(('http://', 'https://')):
             return stack.enter_context(open(artifact_url, 'rb'))
 
         peps_last_updated = get_peps_last_updated()
