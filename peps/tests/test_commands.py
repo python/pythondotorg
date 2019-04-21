@@ -32,7 +32,11 @@ class PEPManagementCommandTests(TestCase):
         )
 
     @responses.activate
-    def test_generate_pep_pages_real(self):
+    def test_generate_pep_pages_real_with_remote_artifact(self):
+        call_command('generate_pep_pages')
+
+    @override_settings(PEP_ARTIFACT_URL=FAKE_PEP_ARTIFACT)
+    def test_generate_pep_pages_real_with_local_artifact(self):
         call_command('generate_pep_pages')
 
     @responses.activate
