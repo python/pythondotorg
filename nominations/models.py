@@ -19,6 +19,9 @@ class Election(models.Model):
     date = models.DateField()
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
+    description = MarkupField(
+        escape_html=True, markup_type="markdown", blank=False, null=True
+    )
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
