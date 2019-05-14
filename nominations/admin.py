@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from nominations.models import (Election, Nominee, Nomination)
+from nominations.models import Election, Nominee, Nomination
 
 
 @admin.register(Election)

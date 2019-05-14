@@ -14,7 +14,6 @@ class ElectionsList(ListView):
 
 
 class NominationMixin:
-
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         self.election = Election.objects.get(slug=self.kwargs["election"])
@@ -30,16 +29,13 @@ class NomineeList(NominationMixin, ListView):
         if election.nominations_complete or self.request.user.is_superuser:
             return Nominee.objects.filter(
                 accepted=True, approved=True, election=election
-            ).exclude(
-                user=None
-            )
+            ).exclude(user=None)
 
         elif self.request.user.is_authenticated:
             return Nominee.objects.filter(user=self.request.user)
 
 
 class NomineeDetail(NominationMixin, DetailView):
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if not self.object.visible(user=request.user):
@@ -126,7 +122,6 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UpdateView):
 
 
 class NominationView(DetailView):
-
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
         if not self.object.visible(user=request.user):

@@ -9,7 +9,6 @@ from users.models import User
 
 
 class Election(models.Model):
-
     class Meta:
         ordering = ["-date"]
 
@@ -26,9 +25,11 @@ class Election(models.Model):
     @property
     def nominations_open(self):
         if self.nominations_open_at and self.nominations_close_at:
-            return self.nominations_open_at < datetime.datetime.now(
-                datetime.timezone.utc
-            ) < self.nominations_close_at
+            return (
+                self.nominations_open_at
+                < datetime.datetime.now(datetime.timezone.utc)
+                < self.nominations_close_at
+            )
 
         return False
 
@@ -57,7 +58,6 @@ class Election(models.Model):
 
 
 class Nominee(models.Model):
-
     class Meta:
         unique_together = ("user", "election")
 
@@ -86,15 +86,19 @@ class Nominee(models.Model):
 
     @property
     def nominations_received(self):
-        return self.nominations.filter(accepted=True, approved=True).exclude(
-            nominator=self.user
-        ).all()
+        return (
+            self.nominations.filter(accepted=True, approved=True)
+            .exclude(nominator=self.user)
+            .all()
+        )
 
     @property
     def nominations_pending(self):
-        return self.nominations.exclude(accepted=False, approved=False).exclude(
-            nominator=self.user
-        ).all()
+        return (
+            self.nominations.exclude(accepted=False, approved=False)
+            .exclude(nominator=self.user)
+            .all()
+        )
 
     @property
     def self_nomination(self):
@@ -106,7 +110,10 @@ class Nominee(models.Model):
 
     @property
     def display_previous_board_service(self):
-        if self.self_nomination is not None and self.self_nomination.previous_board_service:
+        if (
+            self.self_nomination is not None
+            and self.self_nomination.previous_board_service
+        ):
             return self.self_nomination.previous_board_service
 
         return self.nominations.first().previous_board_service
@@ -143,7 +150,6 @@ class Nominee(models.Model):
 
 
 class Nomination(models.Model):
-
     def __str__(self):
         return f"{self.name} <{self.email}>"
 
@@ -173,12 +179,18 @@ class Nomination(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     def editable(self, user=None):
-        if self.nominee and user == self.nominee.user and self.election.nominations_open:
+        if (
+            self.nominee
+            and user == self.nominee.user
+            and self.election.nominations_open
+        ):
             return True
 
-        if user == self.nominator and not (
-            self.accepted or self.approved
-        ) and self.election.nominations_open:
+        if (
+            user == self.nominator
+            and not (self.accepted or self.approved)
+            and self.election.nominations_open
+        ):
             return True
 
         return False
