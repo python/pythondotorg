@@ -12,17 +12,18 @@
 
     - name: Install base packages
       become: yes
-      apt: name={{ item }} state=latest
-      with_items:
-        - build-essential
-        - libpq-dev
-        - lib32z1-dev
-        - git
-        - python3-dev
-        - python3-setuptools
-        - python3-pip
-        - python3-venv
-        - ruby
+      apt:
+        name:
+          - build-essential
+          - libpq-dev
+          - lib32z1-dev
+          - git
+          - python3-dev
+          - python3-setuptools
+          - python3-pip
+          - python3-venv
+          - ruby
+        state: latest
       register: result
       changed_when:
         "result.stdout is defined and '0 upgraded, 0 newly installed, 0 to remove and' not in result.stdout"
@@ -32,13 +33,14 @@
       gem: name=bundler user_install=no
 
     - name: Install PostgreSQL
-      apt: name={{ item }} state=present
+      apt:
+        name:
+          - postgresql
+          - postgresql-contrib
+          - libpq-dev
+          - python-psycopg2
+        state: present
       become: yes
-      with_items:
-        - postgresql
-        - postgresql-contrib
-        - libpq-dev
-        - python-psycopg2
 
     - name: Ensure the PostgreSQL service is running
       service: name=postgresql state=started enabled=yes
