@@ -33,5 +33,5 @@ django-allauth==0.36.0
 
 django-waffle==0.14
 
-djangorestframework==3.8.2
+djangorestframework==3.9.1
 django-filter==1.1.0
