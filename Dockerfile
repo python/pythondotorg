@@ -1,7 +1,4 @@
-FROM python:3.7-alpine
-
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+FROM python:3.6-alpine
 
 WORKDIR /web
 COPY . /web
@@ -24,8 +21,7 @@ RUN apk add git jpeg-dev libpq
 RUN gem install bundler \
     && bundle install
 
-RUN pip install pip --upgrade \
-    && pip install -r dev-requirements.txt
+RUN pip install -r dev-requirements.txt
 
 RUN apk del .build-deps
 

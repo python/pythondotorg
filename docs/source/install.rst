@@ -22,14 +22,11 @@ include docker-compose which can be used to bring up the application:
 docker-compose will bring up the application container and a PostgreSQL 
 container. The website will be available at http://localhost:8000.
 
-Each time changes are made to local files the application container
-will need to be rebuilt:
+To access the application container run the following command:
 
 ::
 
-    $ docker-compose up --build
-    # You can also make changes inside the application container
-    $ docker exec -it $(docker ps | grep "pythondotorg_web" | awk '{print $1}') /bin/ash
+    $ docker-compose exec web sh
 
 .. _Docker: https://docs.docker.com/install/
 

@@ -5,7 +5,7 @@ services:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
     environment:
-      DATABASE_URL: "${DB_TYPE:-postgres}://${DB_USER:-admin}:${DB_PASSWORD:-password}@${DB_HOST:-db}:${DB_PORT:-5432}/${DB_NAME:-pythondotorg}"
+      DATABASE_URL: postgres://admin:password@db:5432/pythondotorg
     ports:
       - "8000:8000"
     volumes:
