@@ -1,15 +1,42 @@
 Installing
 ==========
 
-Here are two ways to hack on python.org:
+Here are three ways to hack on python.org:
 
-1. :ref:`vagrant-setup`
-2. :ref:`manual-setup`
+1. :ref:`docker-setup`
+2. :ref:`vagrant-setup`
+3. :ref:`manual-setup`
+
+.. _docker-setup:
+
+Docker Setup
+------------
+
+First, install Docker_ on your machine. The Docker installation will
+include docker-compose which can be used to bring up the application:
+
+::
+
+    $ docker-compose up
+
+docker-compose will bring up the application container and a PostgreSQL 
+container. The website will be available at http://localhost:8000.
+
+Each time changes are made to local files the application container
+will need to be rebuilt:
+
+::
+
+    $ docker-compose up --build
+    # You can also make changes inside the application container
+    $ docker exec -it $(docker ps | grep "pythondotorg_web" | awk '{print $1}') /bin/ash
+
+.. _Docker: https://docs.docker.com/install/
 
 .. _vagrant-setup:
 
-Easy setup using Vagrant
-------------------------
+Vagrant Setup
+-------------
 
 First, install Vagrant_ (2.0+) and Ansible_ (2.0+) on your machine.
 You should then be able to provision the Vagrant box.
