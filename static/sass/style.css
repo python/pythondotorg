@@ -845,17 +845,6 @@ dl {
     border-bottom: 1px solid #caccce; }
 
 /* ! ===== Form elements ===== */
-div.download-button-container {
-  overflow: hidden;
-  *zoom: 1; }
-  div.download-button-container .microsoft-download-box {
-    float: right;
-    padding-top: 0.125em;
-    width: 16.25em; }
-  div.download-button-container a > img {
-    display: inline;
-    margin: 0; }
-
 .errorlist {
   color: #b55863;
   margin-bottom: 0; }
