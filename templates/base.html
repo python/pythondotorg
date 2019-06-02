@@ -162,10 +162,12 @@
 
                 {# Fallback for browsers that do not display generated content... HTML entity will be the icon instead #}
                 <a id="close-python-network" class="jump-link" href="#python-network" aria-hidden="true">
-                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close
+                    <span aria-hidden="true" class="icon-arrow-down"><span>&#9660;</span></span> Close / Open
                 </a>
 
-                {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}
+                <div id="sitetree_menu_trunk">
+                    {% sitetree_menu from "main" include "trunk" template "sitetree/top.html" %}                    
+                </div>
 
                 <a id="python-network" class="jump-link" href="#top" aria-hidden="true">
                     <span aria-hidden="true" class="icon-arrow-up"><span>&#9650;</span></span> The Python Network

@@ -185,17 +185,17 @@ $().ready(function() {
 
     /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
+        $('#sitetree_menu_trunk').toggle();
         return false;
     });
 
     $("#python-network").click(function() {
-        $('body, html').animate({ scrollTop: $('#top').offset().top }, 300);
+        $('html, body').animate({ scrollTop: 0 }, 500);
         return false;
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
+        $('html, body').animate({ scrollTop: 0 }, 500);
         return false;
     });
 
