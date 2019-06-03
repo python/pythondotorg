@@ -73,12 +73,6 @@ function on_resize_orientationchange() {
 
         if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
 
-            $.get("/box/supernav-python-about/",
-                function(data){
-                 $('li#about .subnav').append( data );
-                }, "html");
-            $('li#about').addClass("with-supernav");
-
             $.get("/box/supernav-python-downloads/",
                 function(data){
                  $('li#downloads .subnav').append( data );

@@ -1,13 +1,6 @@
 [
 {
     "fields": {
-        "label": "supernav-python-about",
-        "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python.</a>.\r\n                            </li>",
-        "content_markup_type": "html"
-    }
-},
-{
-    "fields": {
         "label": "supernav-python-events",
         "content": "<li class=\"tier-2 super-navigation\">Find events from the Python Community around the world!</li>",
         "content_markup_type": "html"
