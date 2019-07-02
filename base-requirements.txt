@@ -26,7 +26,7 @@ python-dateutil==2.6.1
 
 requests[security]>=2.20.0
 
-django-honeypot==0.6.0
+django-honeypot==0.7.0
 django-markupfield==1.4.3
 
 django-allauth==0.36.0
