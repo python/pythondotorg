@@ -183,7 +183,7 @@ $().ready(function() {
     }
     /* Animate some scrolling for smoother transitions */
 
-    /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
+    /* ! Not currently working in IE10/Windows 8, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         return false;
@@ -195,7 +195,7 @@ $().ready(function() {
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
+        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 500);
         return false;
     });
 
