@@ -9,7 +9,7 @@ from .views import legacy_path
 import datetime
 
 
-class ContentManagableAdminTests(unittest.TestCase):
+class ContentManageableAdminTests(unittest.TestCase):
     def make_admin(self, **kwargs):
         """
         Construct a dummy subclass of ContentManageableModelAdmin with

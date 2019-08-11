@@ -239,9 +239,9 @@
       "duplicate": "This seems to be a duplicate of your earlier posting.\n\nIf not, please rephrase to make the difference clear.\n\nThanks."
     };
     $(document).ready(function() {
-        var commment_field = $('#id_comment');
+        var comment_field = $('#id_comment');
         $('#canned_response').change(function(){
-            commment_field.val(responses[$(this).val()]);
+            comment_field.val(responses[$(this).val()]);
         });
     });
 </script>
