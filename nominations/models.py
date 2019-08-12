@@ -1,8 +1,12 @@
 import datetime
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.urls import reverse
 from django.utils.text import slugify
 
+from fastly.utils import purge_url
 from markupfield.fields import MarkupField
 
 from users.models import User
@@ -82,6 +86,12 @@ class Nominee(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse(
+            "nominations:nominee_detail",
+            kwargs={"election": self.election.slug, "slug": self.slug},
+        )
 
     @property
     def name(self):
@@ -180,6 +190,18 @@ class Nomination(models.Model):
 
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
+
+    def get_absolute_url(self):
+        return reverse(
+            "nominations:nomination_detail",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
+    def get_edit_url(self):
+        return reverse(
+            "nominations:nomination_edit",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
 
     def editable(self, user=None):
         if (
