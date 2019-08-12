@@ -231,3 +231,26 @@ class Nomination(models.Model):
             return True
 
         return False
+
+
+@receiver(post_save, sender=Nomination)
+def purge_nomination_pages(sender, instance, created, **kwargs):
+    """ Purge pages that contain the rendered markup """
+    # Skip in fixtures
+    if kwargs.get("raw", False):
+        return
+
+    # Purge the nomination page itself
+    purge_url(instance.get_absolute_url())
+
+    if instance.nominee:
+        # Purge the nominee page
+        purge_url(instance.nominee.get_absolute_url())
+
+    if instance.election:
+        # Purge the election page
+        purge_url(
+            reverse(
+                "nominations:nominees_list", kwargs={"election": instance.election.slug}
+            )
+        )
