@@ -330,7 +330,7 @@ details div p
   <p>Nominations close at {{ election.nominations_close_at }}, this is a preview of only nominations relevant to you.</p>
   {% endif %}
   {% for nominee in object_list|shuffle %}
-  <h2><a href="{% url 'nominations:nominee_detail' election=election.slug slug=nominee.slug %}">{{ nominee.display_name }}</a></h2>
+  <h2><a href="{{ nominee.get_absolute_url }}">{{ nominee.display_name }}</a></h2>
   <details id="{{ nominee.slug }}">
     <summary>
       Nomination details

@@ -28,7 +28,7 @@
     {% else %}
     Nomination from {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
     {% endif %}
-    <a href="{% url 'nominations:nomination_detail' election=election.slug pk=nomination.id %}">
+    <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
       View/Edit
       {% else %}
@@ -50,7 +50,7 @@
     {% else %}
     {{ nomination.name }}
     {% endif %}
-    <a href="{% url 'nominations:nomination_detail' election=election.slug pk=nomination.id %}">
+    <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
       View/Edit
       {% else %}
