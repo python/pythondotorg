@@ -60,6 +60,7 @@ class MembershipAdmin(admin.ModelAdmin):
     date_hierarchy = 'created'
     search_fields = ['creator__username']
     list_filter = ['membership_type']
+    raw_id_fields = ['creator']
 
 
 class ApiKeyAdmin(admin.ModelAdmin):
