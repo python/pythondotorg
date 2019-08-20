@@ -27,7 +27,7 @@ class AlarmInline(admin.StackedInline):
 
 @admin.register(Event)
 class EventAdmin(ContentManageableModelAdmin):
-    inlines = [OccurringRuleInline, RecurringRuleInline, AlarmInline]
+    inlines = [OccurringRuleInline, RecurringRuleInline]
     list_display = ['__str__', 'calendar', 'featured']
     list_filter = ['calendar', 'featured']
     raw_id_fields = ['venue']
