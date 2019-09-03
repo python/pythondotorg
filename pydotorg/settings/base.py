@@ -118,6 +118,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'pydotorg.middleware.AdminNoCaching',
+    'pydotorg.middleware.GlobalSurrogateKey',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'waffle.middleware.WaffleMiddleware',
@@ -281,3 +282,7 @@ REST_FRAMEWORK = {
         'user': '1000/day',
     },
 }
+
+### pydotorg.middleware.GlobalSurrogateKey
+
+GLOBAL_SURROGATE_KEY = 'pydotorg-app'
