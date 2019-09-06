@@ -13,6 +13,8 @@ from markupfield.fields import MarkupField
 from cms.models import ContentManageable, NameSlugModel
 from fastly.utils import purge_url
 
+from users.models import User
+
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
 from .signals import (
     job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted
@@ -108,6 +110,12 @@ class Job(ContentManageable):
         verbose_name='URL',
         null=True,
         blank=True)
+
+    submitted_by = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     STATUS_DRAFT = 'draft'
     STATUS_REVIEW = 'review'
