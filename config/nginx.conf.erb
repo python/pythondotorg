@@ -50,6 +50,10 @@ http {
                   return 301 http://www.python.org/psf;
                 }
 
+                location /psf/codeofconduct {
+                  return 301 /psf/conduct;
+                }
+
                 location /topics/xml {
                   return 301 http://pyxml.sourceforge.net/topics;
                 }
