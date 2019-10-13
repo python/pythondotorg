@@ -13,7 +13,7 @@ class DownloadMixin:
     def setUpClass(cls):
         super().setUpClass()
         cls.windows, _ = OS.objects.get_or_create(name='Windows')
-        cls.osx, _ = OS.objects.get_or_create(name='Mac OSX')
+        cls.osx, _ = OS.objects.get_or_create(name='macOS')
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 
@@ -52,8 +52,8 @@ class BaseDownloadTests(DownloadMixin, TestCase):
         self.release_275_osx = ReleaseFile.objects.create(
             os=self.osx,
             release=self.release_275,
-            name='Mac OSX 64-bit/32-bit',
-            description='Mac OS X 10.6 and later',
+            name='macOS 64-bit/32-bit',
+            description='macOS 10.6 and later',
             url='ftp/python/2.7.5/python-2.7.5-macosx10.6.dmg',
         )
 

@@ -523,7 +523,7 @@ Along the way it was remarked that the &lt;a class="reference external" href="ht
 &lt;div class="section" id="virtualenv-inclusion"&gt;
 &lt;h4&gt;
 &lt;tt class="docutils literal"&gt;virtualenv&lt;/tt&gt; Inclusion&lt;/h4&gt;
-In about two minutes, discussion on PEP &lt;a class="reference external" href="http://www.python.org/dev/peps/pep-0405/"&gt;405&lt;/a&gt; came and went. Carl Meyer mentioned that a reference implementation is available and is working pretty well. A look from the OSX maintainers would be beneficial, and both Ned Deily and Ronald Oussoren were in attendance. It seemed like one of the only things left in terms of the PEP was to find someone to make a declaration on it, and Thomas Wouters put his name out there if Nick Coghlan wasn't going to do t (update: Nick will be the PEP czar).&lt;/div&gt;
+In about two minutes, discussion on PEP &lt;a class="reference external" href="http://www.python.org/dev/peps/pep-0405/"&gt;405&lt;/a&gt; came and went. Carl Meyer mentioned that a reference implementation is available and is working pretty well. A look from the macOS maintainers would be beneficial, and both Ned Deily and Ronald Oussoren were in attendance. It seemed like one of the only things left in terms of the PEP was to find someone to make a declaration on it, and Thomas Wouters put his name out there if Nick Coghlan wasn't going to do t (update: Nick will be the PEP czar).&lt;/div&gt;
 &lt;br /&gt;
 &lt;div class="section" id="pep-397-inclusion"&gt;
 &lt;h4&gt;

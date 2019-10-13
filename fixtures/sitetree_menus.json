@@ -419,7 +419,7 @@
     "model": "sitetree.treeitem",
     "pk": 20,
     "fields": {
-        "title": "Mac OS X",
+        "title": "macOS",
         "hint": "",
         "url": "/downloads/mac-osx/",
         "urlaspattern": false,
