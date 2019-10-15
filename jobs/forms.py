@@ -33,6 +33,13 @@ class JobForm(ContentManageableModelForm):
         widgets = {
             'job_types': CheckboxSelectMultiple(),
         }
+        help_texts = {
+            'email': (
+                "<b>This email address will be publicly displayed for "
+                "applicants to contact if they are interested in the "
+                "posting.</b>"
+            ),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)

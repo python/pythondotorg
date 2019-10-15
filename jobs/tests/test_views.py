@@ -320,10 +320,6 @@ class JobsViewTests(TestCase):
         creator = User.objects.create_user(username, email, password)
         self.client.login(username=creator.username, password='secret')
 
-        # Check that the email is already there.
-        response = self.client.get(url)
-        self.assertEqual(response.context['form'].initial['email'], email)
-
         response = self.client.post(url, post_data, follow=True)
 
         # Job was saved in draft mode
@@ -379,9 +375,6 @@ class JobsViewTests(TestCase):
         self.client.login(username=user_data['username'],
                           password=user_data['password'])
         response = self.client.get(create_url)
-
-        self.assertEqual(response.context['form'].initial,
-                         {'email': user_data['email']})
 
     def test_job_types(self):
         job_type2 = JobTypeFactory(
