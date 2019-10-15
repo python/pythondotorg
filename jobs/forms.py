@@ -35,8 +35,9 @@ class JobForm(ContentManageableModelForm):
         }
         help_texts = {
             'email': (
-                "This email address will be shown for applicants to contact "
-                "if they are interested in the posting."
+                "<b>This email address will be publicly displayed for "
+                "applicants to contact if they are interested in the "
+                "posting.</b>"
             ),
         }
 

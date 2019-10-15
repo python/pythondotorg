@@ -360,8 +360,6 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
-        # We don't allow posting a job without logging in to the site.
-        kwargs['initial'] = {}
         return kwargs
 
     def get_context_data(self, **kwargs):
