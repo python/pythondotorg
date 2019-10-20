@@ -1632,6 +1632,9 @@ input#s,
       color: #666666; }
     .slide-code code .output {
       color: #dddddd; }
+    .slide-code code .code-prompt {
+      color: #c65d09; }
+
 
 .js .launch-shell, .no-js .launch-shell {
   display: none; }
