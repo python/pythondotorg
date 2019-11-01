@@ -109,7 +109,7 @@ class Job(ContentManageable):
     url = models.URLField(
         verbose_name='URL',
         null=True,
-        blank=True)
+        blank=False)
 
     submitted_by = models.ForeignKey(
         User,
