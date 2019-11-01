@@ -301,7 +301,8 @@ class JobsViewTests(TestCase):
             'country': 'USA',
             'description': 'Lorem ipsum dolor sit amet',
             'requirements': 'Some requirements',
-            'email': 'hr@company.com'
+            'email': 'hr@company.com',
+            'url': 'https://jobs.company.com',
         }
 
         # Check that anonymous posting is not allowed. See #852.
