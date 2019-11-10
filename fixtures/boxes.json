@@ -45,7 +45,7 @@
 {
     "fields": {
         "label": "supernav-python-documentation",
-        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation: download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or visit the <a href=\"/doc/versions/\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n                                    <a class=\"button\" href=\"http://docs.python.org/2/\">Python 2.x Docs</a>\r\n                                </p>\r\n                                <p>See also <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>\r\n                            </li>",
+        "content": "                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python&rsquo;s standard documentation: download, browse or watch a tutorial.</h4>\r\n                                <p>Get started below, or visit the <a href=\"/doc/versions/\">Documentation page to browse by version</a>. </p>\r\n                                <p class=\"download-buttons\">\r\n                                    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n</p>                            </li>",
         "content_markup_type": "html"
     }
 },
@@ -178,14 +178,14 @@
 {
     "fields": {
         "label": "documentation-beginners",
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-beginner\"></span>Beginner</h2>\r\n<ul> \r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide\">Beginner&rsquo;s Guide</a></li>\r\n    <li><a href=\"https://wiki.python.org/moin/Python2orPython3\">Python 2&nbsp;or&nbsp;3?</a></li>\r\n    <li><a href=\"//docs.python.org/faq/\">Python FAQs</a></li>\r\n</ul>",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-beginner\"></span>Beginner</h2>\r\n<ul> \r\n    <li><a href=\"https://wiki.python.org/moin/BeginnersGuide\">Beginner&rsquo;s Guide</a></li>\r\n    <li><a href=\"//docs.python.org/faq/\">Python FAQs</a></li>\r\n</ul>",
         "content_markup_type": "html"
     }
 },
 {
     "fields": {
         "label": "documentation-banner",
-        "content": "<h1 class=\"call-to-action\">Browse the docs online or download a copy of your own. Python's documentation, tutorials, and guides are constantly evolving.</h1>\r\n<p>Get started here, or scroll down for documentation broken out by type and subject.</p>\r\n<p class=\"download-buttons\">\r\n    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n    <a class=\"button\" href=\"http://docs.python.org/2/\">Python 2.x Docs</a>\r\n</p>\r\n<p>See also <a href=\"/doc/versions/\">Documentation Releases by Version</a> and <a href=\"https://wiki.python.org/moin/Python2orPython3\">Should I use Python 2 or 3</a>? </p>",
+        "content": "<h1 class=\"call-to-action\">Browse the docs online or download a copy of your own. Python's documentation, tutorials, and guides are constantly evolving.</h1>\r\n<p>Get started here, or scroll down for documentation broken out by type and subject.</p>\r\n<p class=\"download-buttons\">\r\n    <a class=\"button\" href=\"http://docs.python.org/3/\">Python 3.x Docs</a> \r\n</p>\r\n<p>See also <a href=\"/doc/versions/\">Documentation Releases by Version</a>\r\n</p>",
         "content_markup_type": "html"
     }
 },
