@@ -273,6 +273,10 @@ http {
                   return 302 http://legacy.python.org/sf$1;
                 }
 
+                location /news/ {
+                  return 302 /blogs/;
+                }
+
                 location /static/ {
                     alias /app/static-root/;
                     add_header Cache-Control "max-age=604800, public";  # 604800 is 7 days
