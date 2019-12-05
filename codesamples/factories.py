@@ -31,7 +31,7 @@ def initial_data():
 
             <span class=\"comment\"># Input, assignment</span>
             >>> name = input('What is your name?\\n')
-            >>> print('Hi, %s.' % name)
+            >>> print(f'Hi, {name}.')
             <span class=\"output\">What is your name?
             Python
             Hi, Python.</span></code>
