@@ -447,6 +447,23 @@
     .release-download { width: 25%; }
     .release-enhancements { width: 25%; }
 
+    .release-version,
+    .release-status,
+    .release-start,
+    .release-end,
+    .release-pep {
+        -moz-box-orient: vertical;
+        display: inline-block;
+        margin-right: -4px;
+        vertical-align: middle;
+    }
+
+    .release-version { width: 15%; }
+    .release-status { width: 20%; }
+    .release-start { width: 25%; }
+    .release-end { width: 25%; }
+    .release-pep { width: 15%; }
+
     /* Previous Next pattern */
     .previous-next {
         @include clearfix();
