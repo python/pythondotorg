@@ -2,6 +2,7 @@ import functools
 import datetime
 import re
 import os
+import filecmp
 
 from bs4 import BeautifulSoup
 
@@ -221,8 +222,15 @@ def add_pep_image(artifact_path, pep_number, path):
             FOUND = True
             break
 
-    if not FOUND:
-        image = Image(page=page)
+    # Add image if it does not exist or the new image differs from the existing
+    if not FOUND or not filecmp.cmp(image_path, image.image.path):
+        # If it does not exist we need a new image object ...
+        if not FOUND:
+            image = Image(page=page)
+        # ... otherwise we re-use the existing object from the loop above but
+        # first remove the image file (django does not override)
+        else:
+            os.remove(image.image.path)
 
         with open(image_path, 'rb') as image_obj:
             image.image.save(path, File(image_obj))
