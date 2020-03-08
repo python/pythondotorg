@@ -4,6 +4,7 @@ import re
 import os
 
 from bs4 import BeautifulSoup
+import requests
 
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
@@ -181,9 +182,11 @@ def get_pep_page(artifact_path, pep_number, commit=True):
         artifact_path, 'pep-{}.rst'.format(pep_number),
     )
     pep_ext = '.rst' if os.path.exists(pep_rst_source) else '.txt'
-    source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
-        pep_number, pep_ext)
-    pep_content['content'] += """Source: <a href="{0}">{0}</a>""".format(source_link)
+    pep_filename = 'pep-{}{}'.format(pep_number, pep_ext)
+    source_link = 'https://github.com/python/peps/blob/master/{}'.format(pep_filename)
+    pep_footer = """<div>Source: <a href="{0}">{0}</a></div>""".format(source_link)
+    pep_footer += get_commit_history_info(pep_filename)
+    pep_content['content'] += pep_footer
 
     pep_page, _ = Page.objects.get_or_create(path=pep_url(pep_number))
 
@@ -197,6 +200,28 @@ def get_pep_page(artifact_path, pep_number, commit=True):
         pep_page.save()
 
     return pep_page
+
+
+def get_commit_history_info(pep_filename):
+    commit_info = ''
+
+    try:
+        data = requests.get(
+            'https://api.github.com/repos/python/peps/commits?path={}'.format(pep_filename)
+        )
+    except Exception:
+        return commit_info
+
+    json_data = data.json()
+    if len(json_data) > 0:
+        commit_date = json_data[0]['commit']['committer']['date']
+        commit_url = 'https://github.com/python/peps/commits/master/{}'.format(
+            pep_filename
+        )
+        commit_info = """<div>Last modified: <a href="{0}">{1}</a></div>""".format(
+            commit_url, commit_date
+        )
+    return commit_info
 
 
 def add_pep_image(artifact_path, pep_number, path):

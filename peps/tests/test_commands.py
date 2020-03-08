@@ -9,6 +9,8 @@ from django.core.management import call_command
 
 import responses
 
+from unittest.mock import patch
+
 from pages.models import Image
 
 from . import FAKE_PEP_ARTIFACT
@@ -32,7 +34,11 @@ class PEPManagementCommandTests(TestCase):
         )
 
     @responses.activate
-    def test_generate_pep_pages_real_with_remote_artifact(self):
+    @patch('peps.converters.get_commit_history_info')
+    def test_generate_pep_pages_real_with_remote_artifact(
+        self, mock_get_commit_history
+    ):
+        mock_get_commit_history.return_value = ''
         call_command('generate_pep_pages')
 
     @override_settings(PEP_ARTIFACT_URL=FAKE_PEP_ARTIFACT)
@@ -40,14 +46,18 @@ class PEPManagementCommandTests(TestCase):
         call_command('generate_pep_pages')
 
     @responses.activate
-    def test_image_generated(self):
+    @patch('peps.converters.get_commit_history_info')
+    def test_image_generated(self, mock_get_commit_history):
+        mock_get_commit_history.return_value = ''
         call_command('generate_pep_pages')
         img = Image.objects.get(page__path='dev/peps/pep-3001/')
         soup = BeautifulSoup(img.page.content.raw, 'lxml')
         self.assertIn(settings.MEDIA_URL, soup.find('img')['src'])
 
     @responses.activate
-    def test_dump_pep_pages(self):
+    @patch('peps.converters.get_commit_history_info')
+    def test_dump_pep_pages(self, mock_get_commit_history):
+        mock_get_commit_history.return_value = ''
         call_command('generate_pep_pages')
         stdout = io.StringIO()
         call_command('dump_pep_pages', stdout=stdout)
