@@ -1,3 +1,4 @@
+import re
 import textwrap
 
 import factory
@@ -22,20 +23,31 @@ class CodeSampleFactory(factory.DjangoModelFactory):
 
 
 def initial_data():
+    def format_html(code):
+        """Add HTML tags for highlighting of the given code snippet."""
+        code = code.strip()
+        for pattern, repl in [
+            (r'^([^\s\.>#].*)$', r'<span class="output">\1</span>'),
+            (r'^(>>>)', r'<span class="code-prompt">\1</span>'),
+            (r'^(\.\.\.)', r'<span class="code-prompt">\1</span>'),
+            (r'(#.*)$', r'<span class="comment">\1</span>'),
+        ]:
+            code = re.sub(pattern, repl, code, flags=re.MULTILINE)
+        return f'<pre><code>{code}</code></pre>'
+
     code_samples = [
         (
-            """\
-            <pre><code><span class=\"comment\"># Simple output (with Unicode)</span>
-            >>> print(\"Hello, I'm Python!\")
-            <span class=\"output\">Hello, I'm Python!</span>
+            r"""
+            # Simple output (with Unicode)
+            >>> print("Hello, I'm Python!")
+            Hello, I'm Python!
 
-            <span class=\"comment\"># Input, assignment</span>
-            >>> name = input('What is your name?\\n')
+            # Input, assignment
+            >>> name = input('What is your name?\n')
             >>> print('Hi, %s.' % name)
-            <span class=\"output\">What is your name?
+            What is your name?
             Python
-            Hi, Python.</span></code>
-            </pre>
+            Hi, Python.
             """,
             """\
             <h1>Quick &amp; Easy to Learn</h1>
@@ -47,16 +59,16 @@ def initial_data():
             """
         ),
         (
-            """\
-            <pre><code><span class=\"comment\"># Simple arithmetic</span>
+            """
+            # Simple arithmetic
             >>> 1 / 2
-            <span class=\"output\">0.5</span>
+            0.5
             >>> 2 ** 3
-            <span class=\"output\">8</span>
-            >>> 17 / 3  <span class=\"comment\"># true division returns a float</span>
-            <span class=\"output\">5.666666666666667</span>
-            >>> 17 // 3  <span class=\"comment\"># floor division</span>
-            <span class=\"output\">5</span></code></pre>
+            8
+            >>> 17 / 3  # true division returns a float
+            5.666666666666667
+            >>> 17 // 3  # floor division
+            5
             """,
             """\
             <h1>Intuitive Interpretation</h1>
@@ -70,16 +82,16 @@ def initial_data():
             """
         ),
         (
-            """\
-            <pre><code><span class=\"comment\"># List comprehensions</span>
+            """
+            # List comprehensions
             >>> fruits = ['Banana', 'Apple', 'Lime']
             >>> loud_fruits = [fruit.upper() for fruit in fruits]
             >>> print(loud_fruits)
-            <span class=\"output\">['BANANA', 'APPLE', 'LIME']</span>
+            ['BANANA', 'APPLE', 'LIME']
 
-            <span class=\"comment\"># List and the enumerate function</span>
+            # List and the enumerate function
             >>> list(enumerate(fruits))
-            <span class=\"output\">[(0, 'Banana'), (1, 'Apple'), (2, 'Lime')]</span></code></pre>
+            [(0, 'Banana'), (1, 'Apple'), (2, 'Lime')]
             """,
             """\
             <h1>Compound Data Types</h1>
@@ -91,19 +103,15 @@ def initial_data():
             """
         ),
         (
-            """\
-            <pre>
-            <code>
-            <span class=\"comment\"># For loop on a list</span>
+            """
+            # For loop on a list
             >>> numbers = [2, 4, 6, 8]
             >>> product = 1
             >>> for number in numbers:
             ...     product = product * number
             ...
             >>> print('The product is:', product)
-            <span class=\"output\">The product is: 384</span>
-            </code>
-            </pre>
+            The product is: 384
             """,
             """\
             <h1>All the Flow You&rsquo;d Expect</h1>
@@ -116,10 +124,8 @@ def initial_data():
             """
         ),
         (
-            """\
-            <pre>
-            <code>
-            <span class=\"comment\"># Write Fibonacci series up to n</span>
+            """
+            # Write Fibonacci series up to n
             >>> def fib(n):
             >>>     a, b = 0, 1
             >>>     while a &lt; n:
@@ -127,9 +133,7 @@ def initial_data():
             >>>         a, b = b, a+b
             >>>     print()
             >>> fib(1000)
-            <span class=\"output\">0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610</span>
-            </code>
-            </pre>
+            0 1 1 2 3 5 8 13 21 34 55 89 144 233 377 610
             """,
             """\
             <h1>Functions Defined</h1>
@@ -144,7 +148,8 @@ def initial_data():
     return {
         'boxes': [
             CodeSampleFactory(
-                code=textwrap.dedent(code), copy=textwrap.dedent(copy),
+                code=format_html(textwrap.dedent(code)),
+                copy=textwrap.dedent(copy),
             ) for code, copy in code_samples
         ],
     }
