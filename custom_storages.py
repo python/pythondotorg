@@ -10,4 +10,12 @@ class MediaStorage(S3Boto3Storage):
 
 
 class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStorage):
-    pass
+    """
+    Override the replacement patterns to match URL-encoded quotations.
+    """
+    patterns = (
+        ("*.css", (
+            r"""(url\((?:['"]|%22|%27){0,1}\s*(.*?)(?:['"]|%22|%27){0,1}\))""",
+            (r"""(@import\s*["']\s*(.*?)["'])""", """@import url("%s")"""),
+        )),
+    )
