@@ -1110,6 +1110,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .download-list-widget { @extend .small-widget; }
+.active-release-list-widget { @extend .small-widget; }
 
 .blog-widget { @extend %indent-time-elements; }
 
@@ -1791,6 +1792,25 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .release-number { font-family: $default-font-bold; }
+
+.release-version,
+.release-status,
+.release-start,
+.release-end,
+.release-pep {
+    display: block;
+}
+.release-version { font-family: $default-font-bold; }
+
+
+.active-release-list-widget {
+
+    .list-row-headings,
+    .list-row-container li { font-size: px2em( 14px ); }
+
+    .list-row-container { margin-bottom: .5em; }
+
+}
 
 .download-list-widget {
 
