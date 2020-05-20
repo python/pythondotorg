@@ -17,3 +17,6 @@ class MinutesFeed(Feed):
 
     def item_description(self, item):
         return item.content
+
+    def item_pubdate(self, item):
+        return item.date
