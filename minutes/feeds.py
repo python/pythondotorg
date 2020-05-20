@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.syndication.views import Feed
 from django.urls import reverse_lazy
 
@@ -19,4 +21,6 @@ class MinutesFeed(Feed):
         return item.content
 
     def item_pubdate(self, item):
-        return item.date
+        # item.date is a datetime.date, this needs a datetime.datetime,
+        # so set it to midnight on the given date
+        return datetime.combine(item.date, datetime.min.time())
