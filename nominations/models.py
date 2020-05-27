@@ -227,7 +227,7 @@ class Nomination(models.Model):
         if user is None:
             return False
 
-        if user.is_staff or user == self.nominee or user == self.nominator:
+        if user.is_staff or user == self.nominee.user or user == self.nominator:
             return True
 
         return False
