@@ -85,7 +85,7 @@
     "fields": {
         "title": "PyPI",
         "hint": "Python Package Index",
-        "url": "https://pypi.python.org/",
+        "url": "https://pypi.org/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
