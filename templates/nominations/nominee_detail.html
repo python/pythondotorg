@@ -21,9 +21,9 @@ Nominee for {{ election.name }} Election
         {% if nominee.self_nomination %}
         <li><b>Nominee Statement</b>:
           <ul>
-          <div style="border-style: none;">
+          <article class="text">
           {{ nominee.self_nomination.nomination_statement.rendered|safe }}
-          </div>
+          </article>
           </ul>
         {% endif %}
         {% if nominee.nominations_received %}
