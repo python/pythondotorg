@@ -9,6 +9,8 @@ positioned into the URL structure using the nav app.
 import os
 import re
 
+from copy import deepcopy
+
 from django.conf import settings
 from django.core import validators
 from django.db import models
@@ -16,6 +18,9 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from markupfield.fields import MarkupField
+from markupfield.markup import DEFAULT_MARKUP_TYPES
+
+import cmarkgfm
 
 from cms.models import ContentManageable
 from fastly.utils import purge_url
@@ -43,13 +48,24 @@ is_valid_page_path = validators.RegexValidator(
     ),
 )
 
+RENDERERS = deepcopy(DEFAULT_MARKUP_TYPES)
+for i, renderer in enumerate(RENDERERS):
+    if renderer[0] == 'markdown':
+        markdown_index = i
+
+RENDERERS[markdown_index] = (
+    'markdown',
+    cmarkgfm.github_flavored_markdown_to_html,
+    'Markdown'
+)
+
 
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
     keywords = models.CharField(max_length=1000, blank=True, help_text="HTTP meta-keywords")
     description = models.TextField(blank=True, help_text="HTTP meta-description")
     path = models.CharField(max_length=500, validators=[is_valid_page_path], unique=True, db_index=True)
-    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+    content = MarkupField(markup_choices=RENDERERS, default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=True, db_index=True)
     content_type = models.CharField(max_length=150, default='text/html')
     template_name = models.CharField(
