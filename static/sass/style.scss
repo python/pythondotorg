@@ -38,12 +38,9 @@
 
 
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
-html {
-    background-color: darken($blue, 10%);
-    font: normal 100%/1.625 $default-font;
-}
-
 body {
+   background-color: darken($blue, 10%);
+   font: normal 100%/1.625 $default-font;
    color: $default-color;
    background-color: $white;
 
