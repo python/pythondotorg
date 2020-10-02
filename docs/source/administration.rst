@@ -29,7 +29,7 @@ By convention the application will have a template named ``supernav.html``. For 
 
 .. _pages:
 
-Pages
+Pages and their content
 -----
 
 Pages are individual entire pages of markup content.  They are require ``Title``, ``Path``, and ``Content`` to be acceptable in the system.  Note that Pages are implemented using a fall through system of URL routing so a user cannot override an existing defined Django URL on accident with a Page.
