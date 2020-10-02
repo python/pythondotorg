@@ -171,6 +171,11 @@ files, use ``sass`` itself in a separate terminal window::
 
     $ make sass
 
+Or, if you want to run both ``manage.py runserver`` and ``sass`` in the same
+terminal window, use::
+
+    $ make run
+
 .. _django-pipeline: https://github.com/cyberdelia/django-pipeline/issues/313
 
 
