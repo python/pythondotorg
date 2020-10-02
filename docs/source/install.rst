@@ -132,6 +132,12 @@ To compile and compress static media, you will need *compass* and
    To install *yui-compressor*, use your OS's package manager or download it
    directly then add the executable to your ``PATH``.
 
+.. note::
+
+   You may need to have Ruby developer headers installed. Use your OS's
+   package manager to install them (usually named as ``ruby-dev`` or
+   ``ruby-devel``).
+
 To create initial data for the most used applications, run::
 
     $ ./manage.py create_initial_data
