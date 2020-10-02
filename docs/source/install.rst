@@ -169,8 +169,7 @@ Due to performance issues of django-pipeline_, we are using a dummy compiler
 ``pydotorg.compilers.DummySASSCompiler`` in development mode. To generate CSS
 files, use ``sass`` itself in a separate terminal window::
 
-    $ cd static
-    $ sass --compass --scss -I $(dirname $(dirname $(gem which susy))) --trace --watch sass/style.scss:sass/style.css
+    $ make sass
 
 .. _django-pipeline: https://github.com/cyberdelia/django-pipeline/issues/313
 
