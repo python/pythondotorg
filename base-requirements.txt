@@ -12,7 +12,7 @@ python3-openid==3.1.0
 lxml==4.1.1
 cssselect==0.9.1
 feedparser==5.2.1
-beautifulsoup4==4.6.0
+beautifulsoup4==4.9.3
 icalendar==3.8.4
 chardet2==2.0.3
 # TODO: We may drop 'django-imagekit' completely.
