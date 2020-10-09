@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.urls import reverse
 from django.db import models
+from ordered_model.models import OrderedModel
 
 from markupfield.fields import MarkupField
 
@@ -89,3 +90,29 @@ class ConcernedParty(models.Model):
     class Meta:
         verbose_name = "concerned party"
         verbose_name_plural = "concerned parties"
+
+
+class Meeting(models.Model):
+    title = models.CharField(max_length=500)
+    date = models.DateField(db_index=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    parties = models.ManyToManyField(ConcernedParty)
+    minutes = models.OneToOneField(Minutes, null=True, blank=True, on_delete=models.CASCADE, related_name="meeting")
+
+    def __str__(self):
+        return f"{self.title}"
+
+    class Meta:
+        verbose_name = "meeting"
+        verbose_name_plural = "meetings"
+
+
+class AgendaItem(OrderedModel):
+    """ Class for items such as reports, discussion topics, or
+        resolutions which are submitted before a meeting.
+        These are constructed together into a completed Agenda object. """
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    title = models.CharField(max_length=500)
+    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+    owners = models.ManyToManyField(ConcernedParty)
+    order_with_respect_to = 'meeting'
