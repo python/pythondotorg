@@ -1,10 +1,13 @@
 import datetime
 
+from django.conf import settings
 from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from ..models import Minutes
+from ..meetings_factories import new_psf_board_meeting
+from users.factories import UserFactory
 
 User = get_user_model()
 
@@ -85,3 +88,83 @@ class MinutesViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(self.m1, response.context['minutes'])
+
+
+class PreviewMeetingMinutesAdminViewTests(TestCase):
+
+    def setUp(self):
+        self.date = datetime.date.today()
+        self.psf_board_meeting = new_psf_board_meeting(self.date)
+        self.url = reverse("admin:preview_minutes_meeting", args=[self.psf_board_meeting.pk])
+        self.user = UserFactory(is_superuser=True, is_staff=True)
+        self.client.force_login(self.user)
+
+    def test_login_required(self):
+        self.client.logout()
+        admin_login = reverse("admin:login")
+        redirect_url = f"{admin_login}?next={self.url}"
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_requires_permission(self):
+        self.user.is_superuser = False
+        self.user.is_staff = False
+        self.user.save()
+        admin_login = reverse("admin:login")
+        redirect_url = f"{admin_login}?next={self.url}"
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_404_if_meeting_does_not_exist(self):
+        self.psf_board_meeting.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(404, response.status_code)
+
+    def test_create_draft_minute_and_redirect_to_preview(self):
+        self.assertEqual(0, Minutes.objects.count())
+
+        response = self.client.get(self.url)
+        new_minutes = Minutes.objects.get()
+
+        self.assertRedirects(response, new_minutes.get_absolute_url(), fetch_redirect_response=False)
+        self.assertEqual(self.psf_board_meeting, new_minutes.meeting)
+        self.assertEqual(self.date, new_minutes.date)
+        self.assertEqual(self.psf_board_meeting.get_content(), new_minutes.content.raw)
+        self.assertEqual("markdown", new_minutes.content_markup_type)
+        self.assertFalse(new_minutes.is_published)
+
+    def test_update_existing_meeting_minutes(self):
+        minutes = Minutes.objects.create(
+            content='foo',
+            is_published=False,
+            date=self.date,
+        )
+        self.psf_board_meeting.minutes = minutes
+        self.psf_board_meeting.save()
+
+        response = self.client.get(self.url)
+        minutes.refresh_from_db()
+
+        self.assertRedirects(response, minutes.get_absolute_url(), fetch_redirect_response=False)
+        self.assertEqual(self.psf_board_meeting.get_content(), minutes.content.raw)
+        self.assertEqual("markdown", minutes.content_markup_type)
+
+    def test_do_not_update_content_if_minutes_were_already_published(self):
+        minutes = Minutes.objects.create(
+            content='previous content',
+            is_published=True,
+            date=self.date,
+        )
+        self.psf_board_meeting.minutes = minutes
+        self.psf_board_meeting.save()
+
+        response = self.client.get(self.url)
+        minutes.refresh_from_db()
+
+        self.assertRedirects(response, minutes.get_absolute_url(), fetch_redirect_response=False)
+        self.assertEqual("previous content", minutes.content.raw)
+        self.assertEqual("restructuredtext", minutes.content_markup_type)  # restructuredtext as default

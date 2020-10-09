@@ -122,6 +122,27 @@ class Meeting(models.Model):
     parties = models.ManyToManyField(ConcernedParty)
     minutes = models.OneToOneField(Minutes, null=True, blank=True, on_delete=models.CASCADE, related_name="meeting")
 
+    def get_content(self):
+        content = ""
+
+        # TODO more semantic query
+        for item in self.agendaitem_set.all():
+            content += f"\n# {item.title}\n"
+            content += item.content.raw
+
+        return content.strip()
+
+    def update_minutes(self):
+        if not self.minutes:
+            self.minutes = Minutes.objects.create(is_published=False, date=self.date)
+            self.save()
+
+        if not self.minutes.is_published:
+            # TODO; guarantee same markup field types
+            self.minutes.content = self.get_content()
+            self.minutes.content_markup_type = "markdown"
+            self.minutes.save()
+
     def __str__(self):
         return f"{self.title}"
 
