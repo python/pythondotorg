@@ -56,9 +56,18 @@ class Concern(models.Model):
     #  or "PIP UX Project 2020" under the Packaging Working Group
     parent_concern = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name="children_concerns")
 
+    def __str__(self):
+        if self.parent_concern_id:
+            return f"{self.parent_concern} > {self.name}"
+        return self.name
+
     class Meta:
         verbose_name = "concern"
         verbose_name_plural = "concerns"
+
+    @property
+    def concerned_parties(self):
+        return ConcernedParty.objects.filter(role__in=self.concernrole_set.all())
 
 
 class ConcernRole(models.Model):
@@ -76,16 +85,30 @@ class ConcernRole(models.Model):
         verbose_name_plural = "concern roles"
 
 
+class ConcernedPartyQuerySet(models.QuerySet):
+    def by_concern(self, concern):
+        return self.filter(role__concern__name__iexact=concern)
+
+    def by_concern_role(self, concern, role):
+        return self.by_concern(concern).filter(role__name__iexact=role)
+
+
 class ConcernedParty(models.Model):
     """ Effectively a "Group" for a given concern that makes managing
         access and reminders more straightforward. This may include the ability
         to email a notification that a meeting has been scheduled, remind
         attendees to submit reports, etc. """
+    objects = ConcernedPartyQuerySet.as_manager()
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     role = models.ForeignKey(ConcernRole, on_delete=models.CASCADE)
 
     def __str__(self):
         return f"{self.user} as {self.role}"
+
+    @property
+    def display_name(self):
+        return self.user.get_full_name() or self.user.username
 
     class Meta:
         verbose_name = "concerned party"
