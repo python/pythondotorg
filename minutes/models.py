@@ -41,3 +41,51 @@ class Minutes(ContentManageable):
 
     def get_date_day(self):
         return self.date.strftime("%d").zfill(2)
+
+
+class Concern(models.Model):
+    """ A "Concern" is a sort of Organizational Unit
+        which can exist in a tree like structure """
+
+    #  Name of the "Concern", Example: PSF Board, Packaging Working Group,
+    #  or "Project"
+    name = models.CharField(max_length=128)
+    #  If applicable, a "parent" concern.
+    #  Example: Finance committee of PSF Board,
+    #  or "PIP UX Project 2020" under the Packaging Working Group
+    parent_concern = models.ForeignKey('self', null=True, blank=True, on_delete=models.CASCADE, related_name="children_concerns")
+
+    class Meta:
+        verbose_name = "concern"
+        verbose_name_plural = "concerns"
+
+
+class ConcernRole(models.Model):
+    """ A User's role within a concern, may be generic and come with
+        certain specific items that they are responsible for or allowed
+        to provide """
+    name = models.CharField(max_length=128)
+    concern = models.ForeignKey(Concern, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.concern}: {self.name}"
+
+    class Meta:
+        verbose_name = "concern role"
+        verbose_name_plural = "concern roles"
+
+
+class ConcernedParty(models.Model):
+    """ Effectively a "Group" for a given concern that makes managing
+        access and reminders more straightforward. This may include the ability
+        to email a notification that a meeting has been scheduled, remind
+        attendees to submit reports, etc. """
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    role = models.ForeignKey(ConcernRole, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return f"{self.user} as {self.role}"
+
+    class Meta:
+        verbose_name = "concerned party"
+        verbose_name_plural = "concerned parties"
