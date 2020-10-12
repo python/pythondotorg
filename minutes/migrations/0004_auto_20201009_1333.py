@@ -33,7 +33,6 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('title', models.CharField(max_length=500)),
                 ('date', models.DateField(db_index=True)),
-                ('started_at', models.DateTimeField(blank=True, null=True)),
                 ('minutes', models.OneToOneField(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='meeting', to='minutes.Minutes')),
                 ('parties', models.ManyToManyField(to='minutes.ConcernedParty')),
             ],

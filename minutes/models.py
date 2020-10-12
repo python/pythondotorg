@@ -118,7 +118,6 @@ class ConcernedParty(models.Model):
 class Meeting(models.Model):
     title = models.CharField(max_length=500)
     date = models.DateField(db_index=True)
-    started_at = models.DateTimeField(null=True, blank=True)
     parties = models.ManyToManyField(ConcernedParty)
     minutes = models.OneToOneField(Minutes, null=True, blank=True, on_delete=models.CASCADE, related_name="meeting")
 
