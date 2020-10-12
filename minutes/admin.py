@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils.html import mark_safe
 from django.urls import path, reverse
 
-from .models import Minutes, Meeting, ConcernRole, Concern, ConcernedParty, DEFAULT_MARKUP_TYPE
+from .models import Minutes, Meeting, ConcernRole, Concern, ConcernedParty, DEFAULT_MARKUP_TYPE, AgendaItem
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -20,9 +20,16 @@ class MinutesAdmin(ContentManageableModelAdmin):
         return fields + ['is_published']
 
 
+class AgendaItemInline(admin.TabularInline):
+    model = AgendaItem
+    readonly_fields = ['owners']
+    extra = 0
+
+
 @admin.register(Meeting)
 class MeetingAdmin(admin.ModelAdmin):
     list_display = ["title", "date", "display_preview_minutes_link"]
+    inlines = [AgendaItemInline]
 
     def display_preview_minutes_link(self, obj):
         url = reverse("admin:preview_minutes_meeting", args=[obj.pk])
