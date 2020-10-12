@@ -68,4 +68,9 @@ class ConcernAdmin(admin.ModelAdmin):
 
 @admin.register(ConcernedParty)
 class ConcernedPartyAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["__str__", "user", "role"]
+    list_filter = ["role__concern"]
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("user", "role__concern__parent_concern")
