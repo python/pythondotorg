@@ -58,6 +58,12 @@ class ConcernRoleInline(admin.TabularInline):
 @admin.register(Concern)
 class ConcernAdmin(admin.ModelAdmin):
     inlines = [ConcernRoleInline]
+    list_display = ["__str__", "concern_roles"]
+
+    def concern_roles(self, obj):
+        return " / ".join(obj.concernrole_set.values_list("name", flat=True))
+    concern_roles.description = "Roles"
+
 
 
 @admin.register(ConcernedParty)
