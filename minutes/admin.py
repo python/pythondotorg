@@ -70,6 +70,7 @@ class ConcernAdmin(admin.ModelAdmin):
 class ConcernedPartyAdmin(admin.ModelAdmin):
     list_display = ["__str__", "user", "role"]
     list_filter = ["role__concern"]
+    raw_id_fields = ["user"]
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
