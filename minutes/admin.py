@@ -1,9 +1,10 @@
 from django.contrib import admin
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.html import mark_safe
 from django.urls import path, reverse
 
 from .models import Minutes, Meeting, ConcernRole, Concern, ConcernedParty, DEFAULT_MARKUP_TYPE, AgendaItem, MinuteItem
+from .forms import NewPSFBoardMeetingForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -48,10 +49,24 @@ class MeetingAdmin(admin.ModelAdmin):
         meeting.update_minutes()
         return redirect(meeting.minutes.get_absolute_url())
 
+    def new_psf_board_meeting_view(self, request):
+        form = NewPSFBoardMeetingForm()
+        if request.method.lower() == "post":
+            form = NewPSFBoardMeetingForm(data=request.POST)
+            if form.is_valid():
+                meeting = form.save()
+                redirect_url = reverse("admin:minutes_meeting_change", args=[meeting.pk])
+                return redirect(redirect_url)
+
+        context = {"form": form}
+        return render(request, "minutes/admin/new_psf_board_meeting_form.html", context=context)
+
+
     def get_urls(self, *args, **kwargs):
         urls = super().get_urls(*args, **kwargs)
         custom_urls = [
             path("<int:meeting_pk>/view-minutes", self.admin_site.admin_view(self.preview_minutes_view), name="preview_minutes_meeting",),
+            path("add/psf-board-meeting", self.admin_site.admin_view(self.new_psf_board_meeting_view), name="new_psf_board_meeting",),
         ]
         return custom_urls + urls
 

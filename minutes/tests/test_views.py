@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from ..models import Minutes
+from ..forms import NewPSFBoardMeetingForm
+from ..models import Minutes, Meeting
 from ..meetings_factories import new_psf_board_meeting
 from users.factories import UserFactory
 
@@ -168,3 +169,55 @@ class PreviewMeetingMinutesAdminViewTests(TestCase):
         self.assertRedirects(response, minutes.get_absolute_url(), fetch_redirect_response=False)
         self.assertEqual("previous content", minutes.content.raw)
         self.assertEqual("restructuredtext", minutes.content_markup_type)  # restructuredtext as default
+
+
+class CreatePSFBoardMeetingAdminViewTests(TestCase):
+
+    def setUp(self):
+        self.date = datetime.date.today()
+        self.url = reverse("admin:new_psf_board_meeting")
+        self.user = UserFactory(is_superuser=True, is_staff=True)
+        self.client.force_login(self.user)
+
+    def test_login_required(self):
+        self.client.logout()
+        admin_login = reverse("admin:login")
+        redirect_url = f"{admin_login}?next={self.url}"
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_requires_permission(self):
+        self.user.is_superuser = False
+        self.user.is_staff = False
+        self.user.save()
+        admin_login = reverse("admin:login")
+        redirect_url = f"{admin_login}?next={self.url}"
+
+        response = self.client.get(self.url)
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_render_html_with_simple_date_form(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "minutes/admin/new_psf_board_meeting_form.html")
+        self.assertIsInstance(context["form"], NewPSFBoardMeetingForm)
+
+    def test_create_new_meeting_with_valid_input(self):
+        self.assertFalse(Meeting.objects.exists())
+        response = self.client.post(self.url, data={"date": self.date})
+        context = response.context
+
+        psf_meeting = Meeting.objects.get()
+        redirect_url = reverse("admin:minutes_meeting_change", args=[psf_meeting.pk])
+        self.assertRedirects(response, redirect_url)
+
+    def test_handle_errors_if_invalid_post_data(self):
+        response = self.client.post(self.url, data={})
+
+        self.assertFalse(Meeting.objects.exists())
+        self.assertTemplateUsed(response, "minutes/admin/new_psf_board_meeting_form.html")
+        self.assertTrue(response.context["form"].errors)
