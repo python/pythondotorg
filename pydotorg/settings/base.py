@@ -151,6 +151,7 @@ INSTALLED_APPS = [
     'haystack',
     'honeypot',
     'waffle',
+    'ordered_model',
 
     'users',
     'boxes',

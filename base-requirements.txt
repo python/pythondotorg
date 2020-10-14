@@ -36,3 +36,4 @@ django-waffle==0.14
 
 djangorestframework==3.8.2
 django-filter==1.1.0
+django-ordered-model==3.4.1
