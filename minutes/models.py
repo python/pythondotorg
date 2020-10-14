@@ -129,6 +129,9 @@ class Meeting(models.Model):
             content += f"\n# {item.title}\n"
             content += item.content.raw
 
+        for item in self.minuteitem_set.all():
+            content += f"\n{item.content.raw}\n"
+
         return content.strip()
 
     def update_minutes(self):
