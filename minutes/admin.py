@@ -36,6 +36,7 @@ class MinuteItemInline(admin.TabularInline):
 class MeetingAdmin(admin.ModelAdmin):
     list_display = ["title", "date", "display_preview_minutes_link"]
     inlines = [AgendaItemInline, MinuteItemInline]
+    readonly_fields = ['minutes']
 
     def display_preview_minutes_link(self, obj):
         url = reverse("admin:preview_minutes_meeting", args=[obj.pk])
