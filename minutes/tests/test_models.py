@@ -2,7 +2,7 @@ import datetime
 
 from django.test import TestCase
 
-from ..models import Minutes, Concern, ConcernRole, ConcernedParty
+from ..models import Minutes, Concern, ConcernRole, ConcernedParty, Meeting, MinuteItem, AgendaItem
 from users.factories import UserFactory
 
 
@@ -82,3 +82,53 @@ class ConcernsRelatedModelsTests(TestCase):
         concerned_party.user.save()
         # defaults to username
         self.assertEqual(concerned_party.user.username, concerned_party.display_name)
+
+
+class MeetingModelTests(TestCase):
+
+    def setUp(self):
+        self.meeting = Meeting.objects.create(
+            title='PSF board meeting',
+            date=datetime.date.today(),
+        )
+        self.items = [
+            AgendaItem.objects.create(meeting=self.meeting, title="topic 1", content="content 1"),
+            MinuteItem.objects.create(meeting=self.meeting, content="minute 1"),
+        ]
+
+    def test_update_minutes_create_new_minute(self):
+        self.assertIsNone(self.meeting.minutes)
+
+        self.meeting.update_minutes()
+        self.meeting.refresh_from_db()
+
+        minutes = self.meeting.minutes
+        self.assertFalse(minutes.is_published)
+        self.assertEqual(minutes.date, self.meeting.date)
+        for item in self.items:
+            assert item.content.raw in minutes.content.raw
+
+    def test_update_not_published_minutes(self):
+        minutes = Minutes.objects.create(date=self.meeting.date, content='previous content')
+        self.meeting.minutes = minutes
+        self.meeting.save()
+
+        self.meeting.update_minutes()
+        minutes.refresh_from_db()
+
+        self.assertFalse(minutes.is_published)
+        self.assertEqual(minutes.date, self.meeting.date)
+        for item in self.items:
+            assert item.content.raw in minutes.content.raw
+
+    def test_do_not_update_published_minutes(self):
+        minutes = Minutes.objects.create(date=self.meeting.date, content='content', is_published=True)
+        self.meeting.minutes = minutes
+        self.meeting.save()
+
+        self.meeting.update_minutes()
+        minutes.refresh_from_db()
+
+        self.assertTrue(minutes.is_published)
+        self.assertEqual(minutes.date, self.meeting.date)
+        self.assertEqual(minutes.content.raw, "content")
