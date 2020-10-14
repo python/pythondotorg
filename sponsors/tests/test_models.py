@@ -6,30 +6,29 @@ from companies.models import Company
 
 class SponsorModelTests(TestCase):
     def setUp(self):
-        self.company1 = Company.objects.create(name='Python')
+        self.company1 = Company.objects.create(name="Python")
 
-        self.Sponsor1 = Sponsor.objects.create(
-            company=self.company1,
-            is_published=True)
+        self.Sponsor1 = Sponsor.objects.create(company=self.company1, is_published=True)
 
-        self.company2 = Company.objects.create(name='Python Hidden')
+        self.company2 = Company.objects.create(name="Python Hidden")
 
         self.Sponsor2 = Sponsor.objects.create(
-            company=self.company2,
-            is_published=False)
+            company=self.company2, is_published=False
+        )
 
     def test_draft(self):
-        self.assertQuerysetEqual(Sponsor.objects.draft(), ['<Sponsor: Python Hidden>'])
+        self.assertQuerysetEqual(Sponsor.objects.draft(), ["<Sponsor: Python Hidden>"])
 
     def test_published(self):
-        self.assertQuerysetEqual(Sponsor.objects.published(), ['<Sponsor: Python>'])
+        self.assertQuerysetEqual(Sponsor.objects.published(), ["<Sponsor: Python>"])
 
     def test_featured(self):
-        self.company3 = Company.objects.create(name='Python Featured')
+        self.company3 = Company.objects.create(name="Python Featured")
 
         self.Sponsor3 = Sponsor.objects.create(
-            company=self.company3,
-            is_published=True,
-            featured=True)
+            company=self.company3, is_published=True, featured=True
+        )
 
-        self.assertQuerysetEqual(Sponsor.objects.featured(), ['<Sponsor: Python Featured>'])
+        self.assertQuerysetEqual(
+            Sponsor.objects.featured(), ["<Sponsor: Python Featured>"]
+        )

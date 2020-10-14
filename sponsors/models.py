@@ -7,7 +7,7 @@ from companies.models import Company
 
 from .managers import SponsorQuerySet
 
-DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
 
 class Sponsor(ContentManageable):
@@ -23,8 +23,8 @@ class Sponsor(ContentManageable):
     objects = SponsorQuerySet.as_manager()
 
     class Meta:
-        verbose_name = 'sponsor'
-        verbose_name_plural = 'sponsors'
+        verbose_name = "sponsor"
+        verbose_name_plural = "sponsors"
 
     def __str__(self):
         return self.company.name
