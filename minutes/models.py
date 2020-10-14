@@ -124,12 +124,11 @@ class Meeting(models.Model):
     def get_content(self):
         content = ""
 
-        # TODO more semantic query
-        for item in self.agendaitem_set.all():
+        for item in self.agenda_items.all():
             content += f"\n# {item.title}\n"
             content += item.content.raw
 
-        for item in self.minuteitem_set.all():
+        for item in self.minute_items.all():
             content += f"\n{item.content.raw}\n"
 
         return content.strip()
@@ -157,7 +156,7 @@ class AgendaItem(OrderedModel):
     """ Class for items such as reports, discussion topics, or
         resolutions which are submitted before a meeting.
         These are constructed together into a completed Agenda object. """
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name="agenda_items")
     title = models.CharField(max_length=500)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     owners = models.ManyToManyField(ConcernedParty)
@@ -167,6 +166,6 @@ class AgendaItem(OrderedModel):
 class MinuteItem(OrderedModel):
     """ Class for items such as notes or action items generated during a meeting.
         These are constructed together into a completed Minutes object """
-    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE, related_name="minute_items")
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     order_with_respect_to = 'meeting'
