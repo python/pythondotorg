@@ -96,7 +96,7 @@ class PreviewMeetingMinutesAdminViewTests(TestCase):
     def setUp(self):
         self.date = datetime.date.today()
         self.psf_board_meeting = new_psf_board_meeting(self.date)
-        self.url = reverse("admin:preview_minutes_meeting", args=[self.psf_board_meeting.pk])
+        self.url = reverse("admin:minutes_meeting_preview_minutes", args=[self.psf_board_meeting.pk])
         self.user = UserFactory(is_superuser=True, is_staff=True)
         self.client.force_login(self.user)
 
@@ -175,7 +175,7 @@ class CreatePSFBoardMeetingAdminViewTests(TestCase):
 
     def setUp(self):
         self.date = datetime.date.today()
-        self.url = reverse("admin:new_psf_board_meeting")
+        self.url = reverse("admin:minutes_meeting_new_psf_board_meeting")
         self.user = UserFactory(is_superuser=True, is_staff=True)
         self.client.force_login(self.user)
 

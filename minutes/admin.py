@@ -40,7 +40,7 @@ class MeetingAdmin(admin.ModelAdmin):
     readonly_fields = ['minutes']
 
     def display_preview_minutes_link(self, obj):
-        url = reverse("admin:preview_minutes_meeting", args=[obj.pk])
+        url = reverse("admin:minutes_meeting_preview_minutes", args=[obj.pk])
         return mark_safe(f'<a href="{url}" target="_blank">Click to preview</a>')
     display_preview_minutes_link.short_description = "Preview meeting minutes"
 
@@ -65,8 +65,8 @@ class MeetingAdmin(admin.ModelAdmin):
     def get_urls(self, *args, **kwargs):
         urls = super().get_urls(*args, **kwargs)
         custom_urls = [
-            path("<int:meeting_pk>/view-minutes", self.admin_site.admin_view(self.preview_minutes_view), name="preview_minutes_meeting",),
-            path("add/psf-board-meeting", self.admin_site.admin_view(self.new_psf_board_meeting_view), name="new_psf_board_meeting",),
+            path("<int:meeting_pk>/view-minutes", self.admin_site.admin_view(self.preview_minutes_view), name="minutes_meeting_preview_minutes",),
+            path("add/psf-board-meeting", self.admin_site.admin_view(self.new_psf_board_meeting_view), name="minutes_meeting_new_psf_board_meeting",),
         ]
         return custom_urls + urls
 
