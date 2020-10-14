@@ -159,3 +159,11 @@ class AgendaItem(OrderedModel):
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     owners = models.ManyToManyField(ConcernedParty)
     order_with_respect_to = 'meeting'
+
+
+class MinuteItem(OrderedModel):
+    """ Class for items such as notes or action items generated during a meeting.
+        These are constructed together into a completed Minutes object """
+    meeting = models.ForeignKey(Meeting, on_delete=models.CASCADE)
+    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
+    order_with_respect_to = 'meeting'
