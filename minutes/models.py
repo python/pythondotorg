@@ -119,6 +119,7 @@ class Meeting(models.Model):
     title = models.CharField(max_length=500)
     date = models.DateField(db_index=True)
     parties = models.ManyToManyField(ConcernedParty)
+    ad_hoc_parties = models.ManyToManyField(ConcernedParty, blank=True, related_name="ad_hoc_meeting")
     minutes = models.OneToOneField(Minutes, null=True, blank=True, on_delete=models.CASCADE, related_name="meeting")
 
     def get_content(self):
