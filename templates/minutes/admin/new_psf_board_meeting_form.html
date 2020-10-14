@@ -1,0 +1,63 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n admin_urls admin_static admin_modify %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='minutes' %}">{% trans 'Minutes' %}</a> &gt
+  <a href="{% url 'admin:minutes_meeting_changelist' %}">{% trans 'Meetings' %}</a> &gt
+  {% trans 'Add new PSF Board Meeting' %}
+</div>
+{% endblock %}
+
+{% block content %}<div id="content-main">
+<form action="{% url 'admin:minutes_meeting_new_psf_board_meeting' %}" method="post" id="new_psf_board_meeting_form">
+{% csrf_token %}
+
+<div>
+{{ form.media }}
+ {% if form.errors %}
+    <p class="errornote">
+    {% if form.errors|length == 1 %}{% trans "Please correct the error below." %}{% else %}{% trans "Please correct the errors below." %}{% endif %}
+    </p>
+    {{ form.non_field_errors }}
+{% endif %}
+</div>
+
+
+<fieldset class="module aligned">
+    <h2>{% trans "New PSF Board Meeting" %}</h2>
+    <div class="description">{% trans "Create a Meeting object and populates it as a PSF Boad Meeting" %}</div>
+
+        <div class="form-row">
+            {% for field in form %}
+                <div{% if not line.fields|length_is:'1' %} class="fieldBox{% if field.field.name %} field-{{ field.field.name }}{% endif %}{% if not field.is_readonly and field.errors %} errors{% endif %}{% if field.field.is_hidden %} hidden{% endif %}"{% elif field.is_checkbox %} class="checkbox-row"{% endif %}>
+                    {% if not line.fields|length_is:'1' and not field.is_readonly %}{{ field.errors }}{% endif %}
+                    {% if field.is_checkbox %}
+                        {{ field }}{{ field.label_tag }}
+                    {% else %}
+                        {{ field.label_tag }}
+                        {% if field.is_readonly %}
+                            <div class="readonly">{{ field.contents }}</div>
+                        {% else %}
+                            {{ field }}
+                        {% endif %}
+                    {% endif %}
+                    {% if field.help_text %}
+                        <div class="help">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        </div>
+</fieldset>
+
+
+<div class="submit-row">
+    <input type="submit" value="Save" class="default">
+</div>
+
+</form>
+<div>
+</div>{% endblock %}

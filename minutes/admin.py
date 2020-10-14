@@ -38,6 +38,7 @@ class MeetingAdmin(admin.ModelAdmin):
     list_display = ["title", "date", "display_preview_minutes_link"]
     inlines = [AgendaItemInline, MinuteItemInline]
     readonly_fields = ['minutes']
+    change_list_template = 'minutes/admin/meeting_change_list.html'
 
     def display_preview_minutes_link(self, obj):
         url = reverse("admin:minutes_meeting_preview_minutes", args=[obj.pk])
@@ -58,9 +59,8 @@ class MeetingAdmin(admin.ModelAdmin):
                 redirect_url = reverse("admin:minutes_meeting_change", args=[meeting.pk])
                 return redirect(redirect_url)
 
-        context = {"form": form}
+        context = {"form": form, "has_permission": True, "content": "foo"}
         return render(request, "minutes/admin/new_psf_board_meeting_form.html", context=context)
-
 
     def get_urls(self, *args, **kwargs):
         urls = super().get_urls(*args, **kwargs)
