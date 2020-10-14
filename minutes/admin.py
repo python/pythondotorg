@@ -43,7 +43,7 @@ class MeetingAdmin(admin.ModelAdmin):
         return mark_safe(f'<a href="{url}" target="_blank">Click to preview</a>')
     display_preview_minutes_link.short_description = "Preview meeting minutes"
 
-    def preview_minutes(self, request, meeting_pk):
+    def preview_minutes_view(self, request, meeting_pk):
         meeting = get_object_or_404(self.get_queryset(request), pk=meeting_pk)
         meeting.update_minutes()
         return redirect(meeting.minutes.get_absolute_url())
@@ -51,7 +51,7 @@ class MeetingAdmin(admin.ModelAdmin):
     def get_urls(self, *args, **kwargs):
         urls = super().get_urls(*args, **kwargs)
         custom_urls = [
-            path("<int:meeting_pk>/view-minutes", self.admin_site.admin_view(self.preview_minutes), name="preview_minutes_meeting",),
+            path("<int:meeting_pk>/view-minutes", self.admin_site.admin_view(self.preview_minutes_view), name="preview_minutes_meeting",),
         ]
         return custom_urls + urls
 
