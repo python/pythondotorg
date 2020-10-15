@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import truncatechars
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 
@@ -101,6 +102,12 @@ class SponsorshipBenefit(OrderedModel):
 
     def __str__(self):
         return f"{self.program} > {self.name}"
+
+    def _short_name(self):
+        return truncatechars(self.name, 42)
+
+    _short_name.short_description = "Benefit Name"
+    short_name = property(_short_name)
 
     class Meta(OrderedModel.Meta):
         pass

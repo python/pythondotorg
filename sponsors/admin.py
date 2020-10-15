@@ -21,7 +21,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
     ordering = ("program", "order")
     list_display = [
         "program",
-        "name",
+        "short_name",
         "minimum_level",
         "internal_value",
         "move_up_down_links",
