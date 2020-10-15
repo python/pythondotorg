@@ -7,7 +7,7 @@ from sponsors.models import SponsorshipBenefit, SponsorshipLevel, SponsorshipPro
 
 
 class SponsorshiptBenefitsForm(forms.Form):
-    levels = forms.ModelChoiceField(
+    level = forms.ModelChoiceField(
         queryset=SponsorshipLevel.objects.all(),
         widget=forms.RadioSelect(), required=False,
     )
