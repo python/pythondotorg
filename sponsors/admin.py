@@ -19,8 +19,32 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(OrderedModelAdmin):
     ordering = ("program", "order")
-    list_display = ["program", "name", "minimum_level", "value", "move_up_down_links"]
+    list_display = [
+        "program",
+        "name",
+        "minimum_level",
+        "internal_value",
+        "move_up_down_links",
+    ]
     list_filter = ["program"]
+
+    fieldsets = [
+        (
+            "Public",
+            {"fields": ("name", "description", "program", "levels", "minimum_level"),},
+        ),
+        (
+            "Internal",
+            {
+                "fields": (
+                    "internal_description",
+                    "internal_value",
+                    "capacity",
+                    "conflicts",
+                )
+            },
+        ),
+    ]
 
 
 @admin.register(Sponsor)

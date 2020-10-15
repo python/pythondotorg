@@ -34,18 +34,70 @@ class SponsorshipProgram(OrderedModel):
 
 
 class SponsorshipBenefit(OrderedModel):
-    name = models.CharField(max_length=64)
-    description = models.TextField(null=True, blank=True)
-    program = models.ForeignKey(
-        SponsorshipProgram, null=True, blank=False, on_delete=models.SET_NULL
+    # Public facing
+    name = models.CharField(
+        max_length=1024,
+        verbose_name="Benefit Name",
+        help_text="For display in the application form, statement of work, and sponsor dashboard.",
     )
-    value = models.PositiveIntegerField(null=True, blank=True)
-    levels = models.ManyToManyField(SponsorshipLevel, related_name="benefits")
+    description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name="Benefit Description",
+        help_text="For display on generated prospectuses and the website.",
+    )
+    program = models.ForeignKey(
+        SponsorshipProgram,
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        verbose_name="Sponsorship Program",
+        help_text="Which sponsorship program the benefit is associated with.",
+    )
+    levels = models.ManyToManyField(
+        SponsorshipLevel,
+        related_name="benefits",
+        verbose_name="Sponsorship Levels",
+        help_text="What sponsorship levels this benefit is included in.",
+    )
     minimum_level = models.ForeignKey(
-        SponsorshipLevel, null=True, blank=True, on_delete=models.SET_NULL
+        SponsorshipLevel,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        verbose_name="Minimum Sponsorship Level",
+        help_text="The minimum sponsorship level required to receive this benefit.",
     )
 
-    conflicts = models.ManyToManyField("self", blank=True, symmetrical=True)
+    # Internal
+    internal_description = models.TextField(
+        null=True,
+        blank=True,
+        verbose_name="Internal Description or Notes",
+        help_text="Any description or notes for internal use.",
+    )
+    internal_value = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Internal Value",
+        help_text=(
+            "Value used internally to calculate sponsorship level when applicants "
+            "construct their own sponsorship packages."
+        ),
+    )
+    capacity = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Capacity",
+        help_text="For benefits with limited capacity, set it here.",
+    )
+    conflicts = models.ManyToManyField(
+        "self",
+        blank=True,
+        symmetrical=True,
+        verbose_name="Conflicts",
+        help_text="For benefits that conflict with one another,",
+    )
 
     def __str__(self):
         return f"{self.program} > {self.name}"
