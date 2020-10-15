@@ -16,11 +16,24 @@
 
           {{ form.level }}
 
+          <div id="benefits_container">
           {% for field in form.benefits_programs %}
             {{ field.label }}
             {{ field }}
           {% endfor %}
+          </div>
+
           <input type="submit" value="Submit">
+
+          <div id="levels_benefits" style="display: none">
+          {% for level, benefits in form.benefits_by_levels.items %}
+            <div id="level_benefits_{{ level }}">
+              {% for benefit in benefits %}
+                <div>{{ benefit }}</div>
+              {% endfor %}
+            </div>
+          {% endfor %}
+          </div>
         </form>
     </article>
 

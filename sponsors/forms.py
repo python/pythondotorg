@@ -28,6 +28,13 @@ class SponsorshiptBenefitsForm(forms.Form):
     def benefits_programs(self):
         return [f for f in self if f.name.startswith("benefits_")]
 
+    @property
+    def benefits_by_levels(self):
+        levels_benefits = {}
+        for level in SponsorshipLevel.objects.all():
+            levels_benefits[level.id] = level.benefits.values_list("id", flat=True)
+        return levels_benefits
+
     def clean(self):
         cleaned_data = super().clean()
 

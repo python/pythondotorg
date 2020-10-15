@@ -22,6 +22,10 @@ class SponsorshipLevel(OrderedModel):
     class Meta(OrderedModel.Meta):
         pass
 
+    @property
+    def benefits(self):
+        return self.sponsorshipbenefit_set.all()
+
 
 class SponsorshipProgram(OrderedModel):
     name = models.CharField(max_length=64)
