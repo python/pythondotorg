@@ -9,7 +9,18 @@
         <h1>Form </h1>
         <form action="." method="POST">
           {% csrf_token %}
-          {{ form.as_p }}
+
+          {% if form.errors %}
+            {{ form.non_field_errors }}
+          {% endif %}
+
+          {{ form.levels }}
+
+
+          {% for field in form.benefits_programs %}
+            {{ field.label }}
+            {{ field }}
+          {% endfor %}
           <input type="submit" value="Submit">
         </form>
     </article>
