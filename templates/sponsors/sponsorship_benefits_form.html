@@ -36,5 +36,28 @@
           </div>
         </form>
     </article>
-
 {% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script type="text/javascript">
+  /// TODO move this script to a proper JS file
+  $(document).ready(function(){
+
+      $("input[name=level]").change(function(){
+        let level = this.value;
+        if (level.length == 0) return;
+
+        let checkboxesContainer = $('#benefits_container');
+        checkboxesContainer.find(':checkbox').each(function(){
+            $(this).prop('checked', false);
+        });
+
+        levelBenefits = $("#level_benefits_" + level).children().each(function(){
+            let benefit = $(this).html()
+            checkboxesContainer.find(`[value=${benefit}]`).prop("checked", true);
+        });
+      });
+  });
+  </script>
+{% endblock %}
