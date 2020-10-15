@@ -1,0 +1,17 @@
+{% extends "psf/full-width.html" %}
+{% load boxes %}
+
+{% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block content %}
+
+    <article class="text">
+        <h1>Form </h1>
+        <form action="." method="POST">
+          {% csrf_token %}
+          {{ form.as_p }}
+          <input type="submit" value="Submit">
+        </form>
+    </article>
+
+{% endblock content %}

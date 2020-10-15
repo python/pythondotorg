@@ -1,8 +1,10 @@
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 
 from ..models import Sponsor
 from companies.models import Company
+
+from sponsors.forms import SponsorshiptBenefitsForm
 
 
 class SponsorViewTests(TestCase):
@@ -22,3 +24,13 @@ class SponsorViewTests(TestCase):
         r = self.client.get(url)
         self.assertEqual(r.status_code, 200)
         self.assertEqual(len(r.context["sponsors"]), 1)
+
+
+class NewSponsorshipApplicationViewTests(TestCase):
+    url = reverse_lazy("new_sponsorship_application")
+
+    def test_display_template_with_form(self):
+        r = self.client.get(self.url)
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
