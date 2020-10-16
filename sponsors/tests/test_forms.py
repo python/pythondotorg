@@ -6,12 +6,15 @@ from sponsors.models import SponsorshipBenefit
 
 
 class SponsorshiptBenefitsFormTests(TestCase):
-
     def setUp(self):
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
-        self.program_1_benefits = baker.make(SponsorshipBenefit, program=self.psf, _quantity=3)
-        self.program_2_benefits = baker.make(SponsorshipBenefit, program=self.wk, _quantity=5)
+        self.program_1_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=3
+        )
+        self.program_2_benefits = baker.make(
+            SponsorshipBenefit, program=self.wk, _quantity=5
+        )
 
     def test_benefits_organized_by_program(self):
         form = SponsorshiptBenefitsForm()
@@ -37,5 +40,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertIn("__all__", form.errors)
 
-        form = SponsorshiptBenefitsForm(data={"benefits_psf": [self.program_1_benefits[0].id]})
+        form = SponsorshiptBenefitsForm(
+            data={"benefits_psf": [self.program_1_benefits[0].id]}
+        )
         self.assertTrue(form.is_valid())

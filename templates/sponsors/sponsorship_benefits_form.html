@@ -14,7 +14,7 @@
             {{ form.non_field_errors }}
           {% endif %}
 
-          {{ form.level }}
+          {{ form.package }}
 
           <div id="benefits_container">
           {% for field in form.benefits_programs %}
@@ -25,9 +25,9 @@
 
           <input type="submit" value="Submit">
 
-          <div id="levels_benefits" style="display: none">
-          {% for level, benefits in form.benefits_by_levels.items %}
-            <div id="level_benefits_{{ level }}">
+          <div id="package_benefits" style="display: none">
+          {% for package, benefits in form.benefits_by_package.items %}
+            <div id="package_benefits_{{ package }}">
               {% for benefit in benefits %}
                 <div>{{ benefit }}</div>
               {% endfor %}
@@ -44,16 +44,16 @@
   /// TODO move this script to a proper JS file
   $(document).ready(function(){
 
-      $("input[name=level]").change(function(){
-        let level = this.value;
-        if (level.length == 0) return;
+      $("input[name=package]").change(function(){
+        let package = this.value;
+        if (package.length == 0) return;
 
         let checkboxesContainer = $('#benefits_container');
         checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
         });
 
-        levelBenefits = $("#level_benefits_" + level).children().each(function(){
+        packageBenefits = $("#package_benefits_" + package).children().each(function(){
             let benefit = $(this).html()
             checkboxesContainer.find(`[value=${benefit}]`).prop("checked", true);
         });

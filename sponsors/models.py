@@ -12,7 +12,7 @@ from .managers import SponsorQuerySet
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
 
-class SponsorshipLevel(OrderedModel):
+class SponsorshipPackage(OrderedModel):
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
 
@@ -59,19 +59,21 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Sponsorship Program",
         help_text="Which sponsorship program the benefit is associated with.",
     )
-    levels = models.ManyToManyField(
-        SponsorshipLevel,
+    packages = models.ManyToManyField(
+        SponsorshipPackage,
         related_name="benefits",
-        verbose_name="Sponsorship Levels",
-        help_text="What sponsorship levels this benefit is included in.",
+        verbose_name="Sponsorship Packages",
+        help_text="What sponsorship packages this benefit is included in.",
     )
-    minimum_level = models.ForeignKey(
-        SponsorshipLevel,
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        verbose_name="Minimum Sponsorship Level",
-        help_text="The minimum sponsorship level required to receive this benefit.",
+    package_only = models.BooleanField(
+        default=False,
+        verbose_name="Package Only Benefit",
+        help_text="If a benefit is only available via a sponsorship package, select this option.",
+    )
+    new = models.BooleanField(
+        default=False,
+        verbose_name="New Benefit",
+        help_text='If selected, display a "New This Year" badge along side the benefit.',
     )
 
     # Internal
@@ -86,7 +88,7 @@ class SponsorshipBenefit(OrderedModel):
         blank=True,
         verbose_name="Internal Value",
         help_text=(
-            "Value used internally to calculate sponsorship level when applicants "
+            "Value used internally to calculate sponsorship value when applicants "
             "construct their own sponsorship packages."
         ),
     )
@@ -95,6 +97,11 @@ class SponsorshipBenefit(OrderedModel):
         blank=True,
         verbose_name="Capacity",
         help_text="For benefits with limited capacity, set it here.",
+    )
+    soft_capacity = models.BooleanField(
+        default=False,
+        verbose_name="Soft Capacity",
+        help_text="If a benefit's capacity is flexible, select this option.",
     )
     conflicts = models.ManyToManyField(
         "self",

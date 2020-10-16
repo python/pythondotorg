@@ -1,14 +1,8 @@
 from django.contrib import admin
 from ordered_model.admin import OrderedModelAdmin
 
-from .models import SponsorshipLevel, SponsorshipProgram, SponsorshipBenefit, Sponsor
+from .models import SponsorshipPackage, SponsorshipProgram, SponsorshipBenefit, Sponsor
 from cms.admin import ContentManageableModelAdmin
-
-
-@admin.register(SponsorshipLevel)
-class SponsorshipLevelAdmin(OrderedModelAdmin):
-    ordering = ("order",)
-    list_display = ["name", "move_up_down_links"]
 
 
 @admin.register(SponsorshipProgram)
@@ -22,7 +16,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
     list_display = [
         "program",
         "short_name",
-        "minimum_level",
+        "package_only",
         "internal_value",
         "move_up_down_links",
     ]
@@ -31,7 +25,16 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
     fieldsets = [
         (
             "Public",
-            {"fields": ("name", "description", "program", "levels", "minimum_level"),},
+            {
+                "fields": (
+                    "name",
+                    "description",
+                    "program",
+                    "packages",
+                    "package_only",
+                    "new",
+                ),
+            },
         ),
         (
             "Internal",
@@ -40,11 +43,18 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
                     "internal_description",
                     "internal_value",
                     "capacity",
+                    "soft_capacity",
                     "conflicts",
                 )
             },
         ),
     ]
+
+
+@admin.register(SponsorshipPackage)
+class SponsorshipPackageAdmin(OrderedModelAdmin):
+    ordering = ("order",)
+    list_display = ["name", "move_up_down_links"]
 
 
 @admin.register(Sponsor)
