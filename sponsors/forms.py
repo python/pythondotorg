@@ -1,3 +1,4 @@
+from itertools import chain
 from django import forms
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
@@ -55,10 +56,22 @@ class SponsorshiptBenefitsForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
+        benefits = list(chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs)))
 
-        if not any([cleaned_data.get(bp.name) for bp in self.benefits_programs]):
+        if not benefits:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
             )
+
+        benefits = [b.id for b in benefits]
+        for benefit in benefits:
+            conflicts = set(self.benefits_conflicts.get(benefit, []))
+            if not conflicts:
+                return
+
+            if set(benefits).intersection(conflicts):
+                raise forms.ValidationError(
+                    _("The application has 1 or more benefits that conflicts.")
+                )
 
         return cleaned_data

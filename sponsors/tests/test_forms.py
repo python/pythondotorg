@@ -75,3 +75,16 @@ class SponsorshiptBenefitsFormTests(TestCase):
             self.assertEqual(map[b.id], [benefit_1.id])
         for b in self.program_2_benefits:
             self.assertEqual(map[b.id], [benefit_2.id])
+
+    def test_invalid_form_if_any_conflict(self):
+        benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk)
+        benefit_1.conflicts.add(*self.program_1_benefits)
+
+        data = {"benefits_psf": [b.id for b in self.program_1_benefits]}
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        data["benefits_working_group"] = [benefit_1.id]
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("The application has 1 or more benefits that conflicts.", form.errors["__all__"])
