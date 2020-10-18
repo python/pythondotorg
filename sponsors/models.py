@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import truncatechars
 from markupfield.fields import MarkupField
-from ordered_model.models import OrderedModel
+from ordered_model.models import OrderedModel, OrderedModelManager
 
 from cms.models import ContentManageable
 from companies.models import Company
@@ -38,7 +38,15 @@ class SponsorshipProgram(OrderedModel):
         pass
 
 
+class SponsorshipBenefitManager(OrderedModelManager):
+
+    def with_conflicts(self):
+        return self.exclude(conflicts__isnull=True)
+
+
 class SponsorshipBenefit(OrderedModel):
+    objects = SponsorshipBenefitManager()
+
     # Public facing
     name = models.CharField(
         max_length=1024,

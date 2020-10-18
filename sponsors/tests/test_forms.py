@@ -58,3 +58,20 @@ class SponsorshiptBenefitsFormTests(TestCase):
 
         self.assertEqual(sorted(map[psf_package.id]), sorted([b.id for b in self.program_1_benefits]))
         self.assertEqual(sorted(map[extra_package.id]), sorted([b.id for b in extra_benefits]))
+
+    def test_benefits_conflicts_helper_property(self):
+        benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
+        benefit_1.conflicts.add(*self.program_1_benefits)
+        benefit_2.conflicts.add(*self.program_2_benefits)
+
+        form = SponsorshiptBenefitsForm()
+        map = form.benefits_conflicts
+
+        # conflicts are symmetrical relationships
+        self.assertEqual(2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map))
+        self.assertEqual(sorted(map[benefit_1.id]), sorted([b.id for b in self.program_1_benefits]))
+        self.assertEqual(sorted(map[benefit_2.id]), sorted([b.id for b in self.program_2_benefits]))
+        for b in self.program_1_benefits:
+            self.assertEqual(map[b.id], [benefit_1.id])
+        for b in self.program_2_benefits:
+            self.assertEqual(map[b.id], [benefit_2.id])

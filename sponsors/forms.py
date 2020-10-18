@@ -41,6 +41,18 @@ class SponsorshiptBenefitsForm(forms.Form):
             )
         return packages_benefits
 
+    @property
+    def benefits_conflicts(self):
+        """
+        Returns a dict with benefits ids as keys and their list of conlicts ids as values
+        """
+        conflicts = {}
+        for benefit in SponsorshipBenefit.objects.with_conflicts():
+            benefits_conflicts = benefit.conflicts.values_list("id", flat=True)
+            if benefits_conflicts:
+                conflicts[benefit.id] = list(benefits_conflicts)
+        return conflicts
+
     def clean(self):
         cleaned_data = super().clean()
 
