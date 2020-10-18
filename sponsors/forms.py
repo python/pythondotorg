@@ -31,6 +31,9 @@ class SponsorshiptBenefitsForm(forms.Form):
 
     @property
     def benefits_by_package(self):
+        """
+        Returns a dict with packages ids as keys and a list of benefits ids as values
+        """
         packages_benefits = {}
         for package in SponsorshipPackage.objects.all():
             packages_benefits[package.id] = package.benefits.values_list(
