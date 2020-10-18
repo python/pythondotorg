@@ -10,11 +10,11 @@ class SponsorshiptBenefitsForm(forms.Form):
         queryset=SponsorshipPackage.objects.all(),
         widget=forms.RadioSelect(),
         required=False,
+        empty_label=None,
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
         benefits_qs = SponsorshipBenefit.objects.select_related("program")
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")
