@@ -7,7 +7,7 @@
 
     <article class="text">
         <h1>Form </h1>
-        <form action="." method="POST">
+        <form id="application_form" action="." method="POST">
           {% csrf_token %}
 
           {% if form.errors %}
@@ -15,6 +15,8 @@
           {% endif %}
 
           {{ form.package }}
+
+          <button type="button" id="clear_form_btn" name="clear">Clear Selections</button>
 
           <div id="benefits_container">
           {% for field in form.benefits_programs %}
@@ -43,6 +45,9 @@
   <script type="text/javascript">
   /// TODO move this script to a proper JS file
   $(document).ready(function(){
+      $("#clear_form_btn").click(function(){
+          $("#application_form").trigger("reset");
+      })
 
       $("input[name=package]").change(function(){
         let package = this.value;
