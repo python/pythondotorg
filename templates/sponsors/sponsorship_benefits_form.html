@@ -40,7 +40,7 @@
     {% endfor %}
     </div>
 
-    <div id="conflicts_container" style="display: block">
+    <div id="conflicts_container" style="display: none">
     {% for benefit, conflicts in form.benefits_conflicts.items %}
       <div id="conflicts_with_{{ benefit }}">
         {% for conflict in conflicts %}
@@ -48,6 +48,7 @@
         {% endfor %}
       </div>
     {% endfor %}
+    </div>
 {% endblock content %}
 
 {% block javascript %}
