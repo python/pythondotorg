@@ -26,7 +26,7 @@ def price_calculator_view(request):
     form = SponsorshiptBenefitsForm(data=request.GET)
     if form.is_valid():
         status_code = 200
-        data = {"cost": sum(b.internal_value for b in form.get_benefits())}
+        data = {"cost": sum(b.internal_value or 0 for b in form.get_benefits())}
     else:
         status_code = 400
         data = {"errors": form.errors}

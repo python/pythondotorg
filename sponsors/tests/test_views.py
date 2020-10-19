@@ -59,3 +59,11 @@ class CalculateSponsorshipCost(TestCase):
 
         self.assertEqual(400, response.status_code)
         self.assertIn("errors", response.json())
+
+    def test_return_zero_if_benefits_have_no_value(self):
+        SponsorshipBenefit.objects.all().update(internal_value=None)
+
+        response = self.client.get(self.url, data=self.data)
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual({"cost": 0}, response.json())
