@@ -39,7 +39,6 @@ class SponsorshipProgram(OrderedModel):
 
 
 class SponsorshipBenefitManager(OrderedModelManager):
-
     def with_conflicts(self):
         return self.exclude(conflicts__isnull=True)
 

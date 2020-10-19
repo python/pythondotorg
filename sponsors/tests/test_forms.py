@@ -56,8 +56,12 @@ class SponsorshiptBenefitsFormTests(TestCase):
         form = SponsorshiptBenefitsForm()
         map = form.benefits_by_package
 
-        self.assertEqual(sorted(map[psf_package.id]), sorted([b.id for b in self.program_1_benefits]))
-        self.assertEqual(sorted(map[extra_package.id]), sorted([b.id for b in extra_benefits]))
+        self.assertEqual(
+            sorted(map[psf_package.id]), sorted([b.id for b in self.program_1_benefits])
+        )
+        self.assertEqual(
+            sorted(map[extra_package.id]), sorted([b.id for b in extra_benefits])
+        )
 
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
@@ -68,9 +72,15 @@ class SponsorshiptBenefitsFormTests(TestCase):
         map = form.benefits_conflicts
 
         # conflicts are symmetrical relationships
-        self.assertEqual(2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map))
-        self.assertEqual(sorted(map[benefit_1.id]), sorted([b.id for b in self.program_1_benefits]))
-        self.assertEqual(sorted(map[benefit_2.id]), sorted([b.id for b in self.program_2_benefits]))
+        self.assertEqual(
+            2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map)
+        )
+        self.assertEqual(
+            sorted(map[benefit_1.id]), sorted([b.id for b in self.program_1_benefits])
+        )
+        self.assertEqual(
+            sorted(map[benefit_2.id]), sorted([b.id for b in self.program_2_benefits])
+        )
         for b in self.program_1_benefits:
             self.assertEqual(map[b.id], [benefit_1.id])
         for b in self.program_2_benefits:
@@ -87,4 +97,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
         data["benefits_working_group"] = [benefit_1.id]
         form = SponsorshiptBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
-        self.assertIn("The application has 1 or more benefits that conflicts.", form.errors["__all__"])
+        self.assertIn(
+            "The application has 1 or more benefits that conflicts.",
+            form.errors["__all__"],
+        )

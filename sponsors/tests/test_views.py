@@ -43,10 +43,10 @@ class CalculateSponsorshipCost(TestCase):
 
     def setUp(self):
         self.program = baker.make(SponsorshipProgram, name="PSF")
-        self.benefits = baker.make(SponsorshipBenefit, program=self.program, internal_value=10, _quantity=3)
-        self.data = {
-            'benefits_psf': [b.id for b in self.benefits]
-        }
+        self.benefits = baker.make(
+            SponsorshipBenefit, program=self.program, internal_value=10, _quantity=3
+        )
+        self.data = {"benefits_psf": [b.id for b in self.benefits]}
 
     def test_sponsorship_cost(self):
         response = self.client.get(self.url, data=self.data)

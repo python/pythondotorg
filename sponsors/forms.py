@@ -56,7 +56,9 @@ class SponsorshiptBenefitsForm(forms.Form):
 
     def get_benefits(self, cleaned_data=None):
         cleaned_data = cleaned_data or self.cleaned_data
-        return list(chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs)))
+        return list(
+            chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
+        )
 
     def clean(self):
         cleaned_data = super().clean()
