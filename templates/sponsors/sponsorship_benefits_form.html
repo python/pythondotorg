@@ -25,6 +25,10 @@
           {% endfor %}
           </div>
 
+          <div id="cost_container" calculate_cost_url="{% url 'new_sponsorship_application_price_calc' %}">
+            <span id="cost_label"></span>
+          </div>
+
           <input type="submit" value="Submit">
           </div>
         </form>
@@ -87,6 +91,16 @@
             checkboxesContainer.find(`[value=${conflict}]`).prop("checked", false);
         });
 
+      });
+
+      $("#application_form").change(function(){
+        let url = $("#cost_container").attr("calculate_cost_url");
+        let data = $(this).serialize();
+
+        $.get(url, data).done(function(data){
+            let cost = data.cost;
+            $("#cost_label").html(`Sponsorship cost is $${cost}.00`)
+        })
       });
   });
   </script>
