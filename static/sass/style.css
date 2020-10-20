@@ -3634,6 +3634,17 @@ span.highlighted {
   #sponsorship_application_container #clear_form_btn {
     margin: 1em 0 1em 0;
     display: inline-block; }
+    #sponsorship_application_container #clear_form_btn button {
+      border-color: #999999;
+      color: #222222 !important;
+      background-color: #999999;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFCCCCCC', endColorstr='#FF999999');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #cccccc), color-stop(90%, #999999));
+      background-image: -webkit-linear-gradient(#cccccc 10%, #999999 90%);
+      background-image: -moz-linear-gradient(#cccccc 10%, #999999 90%);
+      background-image: -o-linear-gradient(#cccccc 10%, #999999 90%);
+      background-image: linear-gradient(#cccccc 10%, #999999 90%); }
   #sponsorship_application_container #benefits_container {
     display: block; }
     #sponsorship_application_container #benefits_container .title {

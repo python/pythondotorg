@@ -2414,6 +2414,12 @@ span.highlighted {
     #clear_form_btn {
         margin: 1em 0 1em 0;
         display: inline-block;
+
+        button {
+            border-color: $grey-light;
+            color: $grey-darker !important;
+            @include vertical-gradient(lighten( $grey-light, 20% ), $grey-light);
+        }
     }
 
     #benefits_container{

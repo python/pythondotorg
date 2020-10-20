@@ -2,7 +2,9 @@ $(document).ready(function(){
     let checkboxesContainer = $('#benefits_container');
     $("#clear_form_btn").click(function(){
         $("#application_form").trigger("reset");
-    })
+        $("#application_form [class=active]").removeClass("active");
+        $("#cost_label").html("Select a package or customize the benefits");
+    });
 
     $("input[name=package]").change(function(){
       let package = this.value;
@@ -37,7 +39,10 @@ $(document).ready(function(){
           let conflictId = $(this).html();
           let conflictCheckbox = checkboxesContainer.find(`[value=${conflictId}]`);
           let checked = conflictCheckbox.prop("checked");
-          if (checked) conflictCheckbox.trigger("click");
+          if (checked){
+            conflictCheckbox.trigger("click");
+            conflictCheckbox.parent().removeClass("active");
+          }
       });
       $("#cost_label").html("Submit your application and we'll get in touch...");
     });

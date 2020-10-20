@@ -23,7 +23,9 @@
             <span id="cost_label">Select a package or customize the benefits</span>
           </div>
 
-          <button type="button" id="clear_form_btn" name="clear">Clear Selections</button>
+          <div id="clear_form_btn">
+          <button type="button" name="clear">Clear Selections</button>
+          </div>
 
           <div id="benefits_container">
           {% for field in form.benefits_programs %}
