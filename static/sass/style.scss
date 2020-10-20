@@ -2393,3 +2393,21 @@ span.highlighted {
 
 /* Keep this at the bottom since it will create a huge set of data */
 @import "fonts";
+
+/* ! ===== SPONSORSHIP APP ===== */
+#sponsorship_application_container {
+    display: block;
+    text-align: center;
+
+    #package_selection {
+        display: inline-block;
+        li {float: left;}
+        label {margin-left: 1em;}
+    }
+    display: block;
+    text-align: center;
+
+    #clear_form_btn {
+        margin: 1em 0 1em 0;
+    }
+}

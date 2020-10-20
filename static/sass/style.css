@@ -3617,4 +3617,17 @@ span.highlighted {
   font-weight: normal;
   font-style: italic; }
 
-/*# sourceMappingURL=style.css.map */
+/* ! ===== SPONSORSHIP APP ===== */
+#sponsorship_application_container {
+  display: block;
+  text-align: center;
+  display: block;
+  text-align: center; }
+  #sponsorship_application_container #package_selection {
+    display: inline-block; }
+    #sponsorship_application_container #package_selection li {
+      float: left; }
+    #sponsorship_application_container #package_selection label {
+      margin-left: 1em; }
+  #sponsorship_application_container #clear_form_btn {
+    margin: 1em 0 1em 0; }
