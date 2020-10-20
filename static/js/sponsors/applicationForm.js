@@ -14,7 +14,7 @@ $(document).ready(function(){
 
       $("#package_benefits_" + package).children().each(function(){
           let benefit = $(this).html()
-          checkboxesContainer.find(`[value=${benefit}]`).prop("checked", true);
+          checkboxesContainer.find(`[value=${benefit}]`).trigger("click");
       });
 
       let url = $("#cost_container").attr("calculate_cost_url");
@@ -23,7 +23,6 @@ $(document).ready(function(){
       $.get(url, data).done(function(data){
           let cost = data.cost;
           $("#cost_label").html(`Sponsorship cost is $${cost}.00`)
-          $("#cost_container").show();
       })
     });
 
@@ -40,6 +39,6 @@ $(document).ready(function(){
           let checked = conflictCheckbox.prop("checked");
           if (checked) conflictCheckbox.trigger("click");
       });
-      $("#cost_container").hide();
+      $("#cost_label").html("Submit your application and we'll get in touch...");
     });
 });

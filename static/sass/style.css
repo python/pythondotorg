@@ -3629,5 +3629,28 @@ span.highlighted {
       float: left; }
     #sponsorship_application_container #package_selection label {
       margin-left: 1em; }
+  #sponsorship_application_container #cost_container {
+    display: block; }
   #sponsorship_application_container #clear_form_btn {
-    margin: 1em 0 1em 0; }
+    margin: 1em 0 1em 0;
+    display: inline-block; }
+  #sponsorship_application_container #benefits_container {
+    display: block; }
+    #sponsorship_application_container #benefits_container .title {
+      margin: 0 0 1em 0;
+      padding: 0;
+      color: #3776ab;
+      background-color: #e6e8ea; }
+    #sponsorship_application_container #benefits_container .benefits_checkboxes {
+      overflow: auto;
+      vertical-align: top;
+      display: inline-block;
+      border-radius: 10px;
+      border-width: 2px;
+      border-style: solid;
+      border-color: #ffd343;
+      padding: 1em;
+      margin-right: 1em;
+      width: 31%; }
+      #sponsorship_application_container #benefits_container .benefits_checkboxes ul {
+        text-align: left; }

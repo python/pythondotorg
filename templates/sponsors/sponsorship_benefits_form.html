@@ -8,7 +8,6 @@
     <article id="sponsorship_application_container" class="text">
         <h1>Sponsorship Application</h1>
 
-        <p><b>Select a package or customize the benefits</b></p>
         <form id="application_form" action="." method="POST">
           {% csrf_token %}
 
@@ -21,15 +20,17 @@
           </div>
 
           <div id="cost_container" calculate_cost_url="{% url 'new_sponsorship_application_price_calc' %}">
-            <span id="cost_label"></span>
+            <span id="cost_label">Select a package or customize the benefits</span>
           </div>
 
           <button type="button" id="clear_form_btn" name="clear">Clear Selections</button>
 
           <div id="benefits_container">
           {% for field in form.benefits_programs %}
-            {{ field.label }}
+            <div class="benefits_checkboxes">
+            <h3 class="title">{{ field.label }}</h3>
             {{ field }}
+            </div>
           {% endfor %}
           </div>
 

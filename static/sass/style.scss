@@ -2407,7 +2407,40 @@ span.highlighted {
     display: block;
     text-align: center;
 
+    #cost_container{
+        display: block;
+    }
+
     #clear_form_btn {
         margin: 1em 0 1em 0;
+        display: inline-block;
+    }
+
+    #benefits_container{
+        display: block;
+
+        .title {
+            margin: 0 0 1em 0;
+            padding: 0;
+            color: $blue;
+            background-color: $grey-lightest;
+        }
+
+        .benefits_checkboxes {
+            overflow: auto;
+            vertical-align: top;
+            display: inline-block;
+            border-radius: 10px;
+            border-width: 2px;
+            border-style: solid;
+            border-color: $yellow;
+            padding: 1em;
+            margin-right: 1em;
+            width: 31%;
+
+            ul {
+              text-align: left;
+            }
+        }
     }
 }
