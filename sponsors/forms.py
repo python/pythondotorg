@@ -6,6 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 from sponsors.models import SponsorshipBenefit, SponsorshipPackage, SponsorshipProgram
 
 
+class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
+    widget = forms.CheckboxSelectMultiple
+
+    def label_from_instance(self, obj):
+        return obj.name
+
+
+
 class SponsorshiptBenefitsForm(forms.Form):
     package = forms.ModelChoiceField(
         queryset=SponsorshipPackage.objects.all(),
@@ -19,9 +27,8 @@ class SponsorshiptBenefitsForm(forms.Form):
         benefits_qs = SponsorshipBenefit.objects.select_related("program")
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")
-            self.fields[f"benefits_{slug}"] = forms.ModelMultipleChoiceField(
+            self.fields[f"benefits_{slug}"] = PickSponsorshipBenefitsField(
                 queryset=benefits_qs.filter(program=program),
-                widget=forms.CheckboxSelectMultiple(),
                 required=False,
                 label=_(f"{program.name} Sponsorship Benefits"),
             )
