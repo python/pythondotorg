@@ -16,6 +16,10 @@
 
           {{ form.package }}
 
+          <div id="cost_container" calculate_cost_url="{% url 'new_sponsorship_application_price_calc' %}">
+            <span id="cost_label"></span>
+          </div>
+
           <button type="button" id="clear_form_btn" name="clear">Clear Selections</button>
 
           <div id="benefits_container">
@@ -23,10 +27,6 @@
             {{ field.label }}
             {{ field }}
           {% endfor %}
-          </div>
-
-          <div id="cost_container" calculate_cost_url="{% url 'new_sponsorship_application_price_calc' %}">
-            <span id="cost_label"></span>
           </div>
 
           <input type="submit" value="Submit">
@@ -77,6 +77,15 @@
             let benefit = $(this).html()
             checkboxesContainer.find(`[value=${benefit}]`).prop("checked", true);
         });
+
+        let url = $("#cost_container").attr("calculate_cost_url");
+        let data = $("form").serialize();
+
+        $.get(url, data).done(function(data){
+            let cost = data.cost;
+            $("#cost_label").html(`Sponsorship cost is $${cost}.00`)
+            $("#cost_container").show();
+        })
       });
 
       $("input[id^=id_benefits_]").change(function(){
@@ -87,21 +96,14 @@
         if (!active) return;
 
         $(`#conflicts_with_${benefit}`).children().each(function(){
-            let conflict = $(this).html()
-            checkboxesContainer.find(`[value=${conflict}]`).prop("checked", false);
+            let conflictId = $(this).html();
+            let conflictCheckbox = checkboxesContainer.find(`[value=${conflictId}]`);
+            let checked = conflictCheckbox.prop("checked");
+            if (checked) conflictCheckbox.trigger("click");
         });
-
+        $("#cost_container").hide();
       });
 
-      $("#application_form").change(function(){
-        let url = $("#cost_container").attr("calculate_cost_url");
-        let data = $(this).serialize();
-
-        $.get(url, data).done(function(data){
-            let cost = data.cost;
-            $("#cost_label").html(`Sponsorship cost is $${cost}.00`)
-        })
-      });
   });
   </script>
 {% endblock %}
