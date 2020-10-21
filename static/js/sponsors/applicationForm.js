@@ -35,6 +35,7 @@ $(document).ready(function(){
     $("input[id^=id_benefits_]").change(function(){
       let benefit = this.value;
       if (benefit.length == 0) return;
+      if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
 
       let active = checkboxesContainer.find(`[value=${benefit}]`).prop("checked");
       if (!active) return;
@@ -48,7 +49,5 @@ $(document).ready(function(){
             conflictCheckbox.parent().removeClass("active");
           }
       });
-
-      if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
     });
 });
