@@ -3661,8 +3661,8 @@ span.highlighted {
       border-style: solid;
       border-color: #ffd343;
       padding: 1em;
-      margin-right: 1em;
-      width: 31%; }
+      margin-right: 0.5em;
+      width: 30%; }
       #sponsorship_application_container #benefits_container .benefits_checkboxes ul {
         text-align: left; }
         #sponsorship_application_container #benefits_container .benefits_checkboxes ul li {
