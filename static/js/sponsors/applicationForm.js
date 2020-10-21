@@ -1,5 +1,7 @@
 $(document).ready(function(){
     let checkboxesContainer = $('#benefits_container');
+    let costLabel = $("#cost_label");
+
     $("#clear_form_btn").click(function(){
         $("#application_form").trigger("reset");
         $("#application_form [class=active]").removeClass("active");
@@ -9,6 +11,8 @@ $(document).ready(function(){
     $("input[name=package]").change(function(){
       let package = this.value;
       if (package.length == 0) return;
+
+      costLabel.html("Updating cost...")
 
       checkboxesContainer.find(':checkbox').each(function(){
           $(this).prop('checked', false);
@@ -24,7 +28,7 @@ $(document).ready(function(){
 
       $.get(url, data).done(function(data){
           let cost = data.cost;
-          $("#cost_label").html(`Sponsorship cost is $${cost}.00`)
+          costLabel.html(`Sponsorship cost is $${cost}.00`)
       })
     });
 
@@ -44,6 +48,7 @@ $(document).ready(function(){
             conflictCheckbox.parent().removeClass("active");
           }
       });
-      $("#cost_label").html("Submit your application and we'll get in touch...");
+
+      if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
     });
 });
