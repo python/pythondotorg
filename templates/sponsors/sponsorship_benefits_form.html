@@ -35,14 +35,13 @@
             <ul id="id_{{ field.name }}">
             {% for benefit in field.field.queryset %}
                 <li class="{% cycle '' 'highlight' %}">
-                    <label for="id_{{field.name}}_{{ forloop.counter0 }}">
-                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}">{{ benefit.name }}
+                    <label for="id_{{field.name}}_{{ forloop.counter0 }}" title="{% if benefit.package_only %}This benefit is only available with packages{% endif %}">
+                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.package_only %}disabled{% endif %}>{{ benefit.name }}
                     </label>
                 </li>
             {% endfor %}
             {% resetcycle %}
             </ul>
-
 
             </div>
           {% endfor %}
