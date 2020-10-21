@@ -71,6 +71,7 @@ class SponsorshipBenefit(OrderedModel):
         related_name="benefits",
         verbose_name="Sponsorship Packages",
         help_text="What sponsorship packages this benefit is included in.",
+        blank=True,
     )
     package_only = models.BooleanField(
         default=False,
