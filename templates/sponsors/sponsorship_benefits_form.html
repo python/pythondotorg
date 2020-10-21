@@ -31,7 +31,19 @@
           {% for field in form.benefits_programs %}
             <div class="benefits_checkboxes">
             <h3 class="title">{{ field.label }}</h3>
-            {{ field }}
+
+            <ul id="id_{{ field.name }}">
+            {% for benefit in field.field.queryset %}
+                <li class="{% cycle '' 'highlight' %}">
+                    <label for="id_{{field.name}}_{{ forloop.counter0 }}">
+                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}">{{ benefit.name }}
+                    </label>
+                </li>
+            {% endfor %}
+            {% resetcycle %}
+            </ul>
+
+
             </div>
           {% endfor %}
           </div>
@@ -48,6 +60,7 @@
           <div>{{ benefit }}</div>
         {% endfor %}
       </div>
+
     {% endfor %}
     </div>
 

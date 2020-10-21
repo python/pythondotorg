@@ -2446,6 +2446,14 @@ span.highlighted {
 
             ul {
               text-align: left;
+
+              li {
+                padding: 0.25em 0.5em 0 0.5em;
+              }
+
+              .highlight {
+                background-color: lighten($grey-lightest, 3%);
+              }
             }
         }
     }
