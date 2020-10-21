@@ -118,6 +118,23 @@ class SponsorshipBenefit(OrderedModel):
         help_text="For benefits that conflict with one another,",
     )
 
+    @property
+    def unavailability_message(self):
+        if self.package_only:
+            return "This benefit is only available with packages"
+        elif (
+            self.remaining_capacity is not None
+            and self.remaining_capacity <= 0
+            and not self.soft_capacity
+        ):
+            return "This benefit is currently at capacity"
+        return ""
+
+    @property
+    def remaining_capacity(self):
+        # TODO implement logic to compute
+        return self.capacity
+
     def __str__(self):
         return f"{self.program} > {self.name}"
 

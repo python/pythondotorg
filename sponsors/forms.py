@@ -13,7 +13,6 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
         return obj.name
 
 
-
 class SponsorshiptBenefitsForm(forms.Form):
     package = forms.ModelChoiceField(
         queryset=SponsorshipPackage.objects.all(),
