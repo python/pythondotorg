@@ -21,6 +21,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
         "move_up_down_links",
     ]
     list_filter = ["program"]
+    search_fields = ["name"]
 
     fieldsets = [
         (
