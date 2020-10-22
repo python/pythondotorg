@@ -41,6 +41,8 @@ class SponsorshiptBenefitsForm(forms.Form):
         """
         Returns a dict with packages ids as keys and a list of benefits ids as values
         """
+        # TODO this dict is now being sent by the application form view via context.
+        # TODO delete this + add view unit tests
         packages_benefits = {}
         for package in SponsorshipPackage.objects.all():
             packages_benefits[package.id] = package.benefits.values_list(
