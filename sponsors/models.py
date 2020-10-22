@@ -19,6 +19,11 @@ class SponsorshipPackage(OrderedModel):
     def __str__(self):
         return self.name
 
+    @property
+    def cost(self):
+        qs = self.benefits.exclude(internal_value__isnull=True)
+        return sum(qs.values_list("internal_value", flat=True))
+
     class Meta(OrderedModel.Meta):
         pass
 

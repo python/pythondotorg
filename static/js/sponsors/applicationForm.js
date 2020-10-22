@@ -1,6 +1,7 @@
 $(document).ready(function(){
     let checkboxesContainer = $('#benefits_container');
     let costLabel = $("#cost_label");
+    let cost = 0;
 
     $("#clear_form_btn").click(function(){
         $("#application_form").trigger("reset");
@@ -18,7 +19,8 @@ $(document).ready(function(){
           $(this).prop('checked', false);
       });
 
-      $("#package_benefits_" + package).children().each(function(){
+      let packageInfo = $("#package_benefits_" + package);
+      packageInfo.children().each(function(){
           let benefit = $(this).html()
           checkboxesContainer.find(`[value=${benefit}]`).trigger("click");
       });
@@ -26,10 +28,8 @@ $(document).ready(function(){
       let url = $("#cost_container").attr("calculate_cost_url");
       let data = $("form").serialize();
 
-      $.get(url, data).done(function(data){
-          let cost = data.cost;
-          costLabel.html(`Sponsorship cost is $${cost}.00`)
-      })
+      let cost = packageInfo.attr("data-cost");
+      costLabel.html(`Sponsorship cost is $${cost}.00`)
     });
 
     $("input[id^=id_benefits_]").change(function(){
