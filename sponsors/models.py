@@ -119,17 +119,24 @@ class SponsorshipBenefit(OrderedModel):
         help_text="For benefits that conflict with one another,",
     )
 
+    PACKAGE_ONLY_MESSAGE = "This benefit is only available with packages"
+    NO_CAPACITY_MESSAGE = "This benefit is currently at capacity"
+
     @property
     def unavailability_message(self):
         if self.package_only:
-            return "This benefit is only available with packages"
-        elif (
+            return self.PACKAGE_ONLY_MESSAGE
+        if not self.has_capacity:
+            return self.NO_CAPACITY_MESSAGE
+        return ""
+
+    @property
+    def has_capacity(self):
+        return not (
             self.remaining_capacity is not None
             and self.remaining_capacity <= 0
             and not self.soft_capacity
-        ):
-            return "This benefit is currently at capacity"
-        return ""
+        )
 
     @property
     def remaining_capacity(self):
