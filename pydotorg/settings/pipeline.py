@@ -31,6 +31,15 @@ PIPELINE_CSS = {
             'media': 'screen',
         },
     },
+    'font-awesome': {
+        'source_filenames': (
+            'stylesheets/font-awesome.min.css',
+        ),
+        'output_filename': 'stylesheets/no-mq.css',
+        'extra_context': {
+            'media': 'screen',
+        },
+    },
 }
 
 PIPELINE_JS = {
