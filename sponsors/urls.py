@@ -10,9 +10,4 @@ urlpatterns = [
         views.NewSponsorshipApplication.as_view(),
         name="new_sponsorship_application",
     ),
-    url(
-        r"^application/price-calc$",
-        views.price_calculator_view,
-        name="new_sponsorship_application_price_calc",
-    ),
 ]

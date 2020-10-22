@@ -22,20 +22,10 @@ class NewSponsorshipApplication(FormView):
     success_url = reverse_lazy("new_sponsorship_application")
 
     def get_context_data(self, *args, **kwargs):
-        kwargs.update({
-            "benefit_model": SponsorshipBenefit,
-            "sponsorship_packages": SponsorshipPackage.objects.all(),
-        })
+        kwargs.update(
+            {
+                "benefit_model": SponsorshipBenefit,
+                "sponsorship_packages": SponsorshipPackage.objects.all(),
+            }
+        )
         return super().get_context_data(*args, **kwargs)
-
-
-def price_calculator_view(request):
-    form = SponsorshiptBenefitsForm(data=request.GET)
-    if form.is_valid():
-        status_code = 200
-        data = {"cost": sum(b.internal_value or 0 for b in form.get_benefits())}
-    else:
-        status_code = 400
-        data = {"errors": form.errors}
-
-    return JsonResponse(data, status=status_code)

@@ -36,34 +36,3 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
         self.assertEqual(r.status_code, 200)
         self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
-
-
-class CalculateSponsorshipCost(TestCase):
-    url = reverse_lazy("new_sponsorship_application_price_calc")
-
-    def setUp(self):
-        self.program = baker.make(SponsorshipProgram, name="PSF")
-        self.benefits = baker.make(
-            SponsorshipBenefit, program=self.program, internal_value=10, _quantity=3
-        )
-        self.data = {"benefits_psf": [b.id for b in self.benefits]}
-
-    def test_sponsorship_cost(self):
-        response = self.client.get(self.url, data=self.data)
-
-        self.assertEqual(200, response.status_code)
-        self.assertEqual({"cost": 30}, response.json())
-
-    def test_bad_request_if_invalid_form(self):
-        response = self.client.get(self.url, data={})
-
-        self.assertEqual(400, response.status_code)
-        self.assertIn("errors", response.json())
-
-    def test_return_zero_if_benefits_have_no_value(self):
-        SponsorshipBenefit.objects.all().update(internal_value=None)
-
-        response = self.client.get(self.url, data=self.data)
-
-        self.assertEqual(200, response.status_code)
-        self.assertEqual({"cost": 0}, response.json())
