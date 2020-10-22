@@ -1,5 +1,9 @@
 {% extends "psf/full-width.html" %}
-{% load boxes %}
+{% load pipeline boxes %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
 
 {% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
 
@@ -28,6 +32,13 @@
           </div>
 
           <div id="benefits_container">
+            <div id="benefits_icons_legend">
+              <div>
+                <span><i class="fa fa-cubes"></i> {{ benefit_model.PACKAGE_ONLY_MESSAGE }}</span>
+                <span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>
+              </div>
+            </div>
+
           {% for field in form.benefits_programs %}
             <div class="benefits_checkboxes">
             <h3 class="title">{{ field.label }}</h3>
@@ -36,7 +47,10 @@
             {% for benefit in field.field.queryset %}
                 <li class="{% cycle '' 'highlight' %}">
                     <label for="id_{{field.name}}_{{ forloop.counter0 }}" title="{{ benefit.unavailability_message }}">
-                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %}>{{ benefit.name }}
+                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %}>
+                        {{ benefit.name }}
+                        {% if benefit.package_only %}<i class="fa fa-cubes"></i>{% endif %}
+                        {% if not benefit.has_capacity %}<i class="fa fa-close"></i>{% endif %}
                     </label>
                 </li>
             {% endfor %}

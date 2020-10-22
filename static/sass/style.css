@@ -3645,6 +3645,16 @@ span.highlighted {
       background-image: -moz-linear-gradient(#cccccc 10%, #999999 90%);
       background-image: -o-linear-gradient(#cccccc 10%, #999999 90%);
       background-image: linear-gradient(#cccccc 10%, #999999 90%); }
+  #sponsorship_application_container #benefits_icons_legend {
+    font-size: 85%; }
+    #sponsorship_application_container #benefits_icons_legend div {
+      border-radius: 5px;
+      border-width: 1px;
+      border-style: solid;
+      border-color: #e6e8ea;
+      margin: auto;
+      display: inline-block;
+      padding: 0.25em; }
   #sponsorship_application_container #benefits_container {
     display: block; }
     #sponsorship_application_container #benefits_container .title {
@@ -3662,6 +3672,8 @@ span.highlighted {
       border-color: #ffd343;
       padding: 1em;
       margin-right: 0.5em;
+      margin-top: 0.25em;
+      margin-bottom: 0.5em;
       width: 30%; }
       #sponsorship_application_container #benefits_container .benefits_checkboxes ul {
         text-align: left; }
@@ -3669,3 +3681,5 @@ span.highlighted {
           padding: 0.25em 0.5em 0 0.5em; }
         #sponsorship_application_container #benefits_container .benefits_checkboxes ul .highlight {
           background-color: #eef0f1; }
+        #sponsorship_application_container #benefits_container .benefits_checkboxes ul .fa {
+          margin-left: 0.25em; }

@@ -2422,6 +2422,20 @@ span.highlighted {
         }
     }
 
+    #benefits_icons_legend {
+        font-size: 85%;
+
+        div {
+            border-radius: 5px;
+            border-width: 1px;
+            border-style: solid;
+            border-color: $grey-lightest;
+            margin: auto;
+            display: inline-block;
+            padding: 0.25em;
+        }
+    }
+
     #benefits_container{
         display: block;
 
@@ -2442,6 +2456,8 @@ span.highlighted {
             border-color: $yellow;
             padding: 1em;
             margin-right: 0.5em;
+            margin-top: 0.25em;
+            margin-bottom: 0.5em;
             width: 30%;
 
             ul {
@@ -2453,6 +2469,10 @@ span.highlighted {
 
               .highlight {
                 background-color: lighten($grey-lightest, 3%);
+              }
+
+              .fa {
+                margin-left: 0.25em;
               }
             }
         }

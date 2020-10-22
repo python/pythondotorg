@@ -2,7 +2,7 @@ from django.http import JsonResponse
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy
 
-from .models import Sponsor
+from .models import Sponsor, SponsorshipBenefit
 
 from sponsors.forms import SponsorshiptBenefitsForm
 
@@ -20,6 +20,10 @@ class NewSponsorshipApplication(FormView):
     form_class = SponsorshiptBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"
     success_url = reverse_lazy("new_sponsorship_application")
+
+    def get_context_data(self, *args, **kwargs):
+        kwargs["benefit_model"] = SponsorshipBenefit
+        return super().get_context_data(*args, **kwargs)
 
 
 def price_calculator_view(request):
