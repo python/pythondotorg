@@ -28,7 +28,7 @@ class SponsorViewTests(TestCase):
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
-    # TODO unit test post behavior
+    # TODO unit test valid post behavior
     url = reverse_lazy("new_sponsorship_application")
 
     def setUp(self):
@@ -55,3 +55,10 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertEqual(2, packages.count())
         self.assertIn(psf_package, packages)
         self.assertIn(extra_package, packages)
+
+    def test_display_form_with_errors_if_invalid_post(self):
+        r = self.client.post(self.url, {})
+        form = r.context["form"]
+
+        self.assertIsInstance(form, SponsorshiptBenefitsForm)
+        self.assertTrue(form.errors)
