@@ -73,6 +73,7 @@ class SponsorshiptBenefitsForm(forms.Form):
         Validate chosen benefits. Invalid scenarios are:
         - benefits with conflits
         - package only benefits and form without SponsorshipProgram
+        - benefit with no capacity, except if soft
         """
         package = cleaned_data.get("package")
         benefits = self.get_benefits(cleaned_data)
@@ -98,6 +99,11 @@ class SponsorshiptBenefitsForm(forms.Form):
                     raise forms.ValidationError(
                         _("The application has 1 or more package only benefits but wrong package.")
                     )
+
+            if not benefit.has_capacity:
+                raise forms.ValidationError(
+                    _("The application has 1 or more benefits with no capacity.")
+                )
 
         return cleaned_data
 

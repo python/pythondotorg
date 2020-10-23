@@ -137,3 +137,23 @@ class SponsorshiptBenefitsFormTests(TestCase):
         }
         form = SponsorshiptBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
+
+    def test_benefit_with_no_capacity_should_not_validate(self):
+        SponsorshipBenefit.objects.all().update(capacity=0)
+
+        data = {"benefits_psf": [self.program_1_benefits[0]]}
+
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "The application has 1 or more benefits with no capacity.",
+            form.errors["__all__"],
+        )
+
+    def test_benefit_with_soft_capacity_should_validate(self):
+        SponsorshipBenefit.objects.all().update(capacity=0, soft_capacity=True)
+
+        data = {"benefits_psf": [self.program_1_benefits[0]]}
+
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
