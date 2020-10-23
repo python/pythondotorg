@@ -72,18 +72,22 @@ class SponsorshiptBenefitsForm(forms.Form):
         for benefit in benefits:
             conflicts = set(self.benefits_conflicts.get(benefit.id, []))
             if conflicts and set(benefits_ids).intersection(conflicts):
-                    raise forms.ValidationError(
-                        _("The application has 1 or more benefits that conflicts.")
-                    )
+                raise forms.ValidationError(
+                    _("The application has 1 or more benefits that conflicts.")
+                )
 
             if benefit.package_only:
                 if not package:
                     raise forms.ValidationError(
-                        _("The application has 1 or more package only benefits and no package.")
+                        _(
+                            "The application has 1 or more package only benefits and no package."
+                        )
                     )
                 elif not benefit.packages.filter(id=package.id).exists():
                     raise forms.ValidationError(
-                        _("The application has 1 or more package only benefits but wrong package.")
+                        _(
+                            "The application has 1 or more package only benefits but wrong package."
+                        )
                     )
 
             if not benefit.has_capacity:
