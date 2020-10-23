@@ -101,3 +101,39 @@ class SponsorshiptBenefitsFormTests(TestCase):
             "The application has 1 or more benefits that conflicts.",
             form.errors["__all__"],
         )
+
+    def test_package_only_benefit_without_package_should_not_validate(self):
+        SponsorshipBenefit.objects.all().update(package_only=True)
+
+        data = {"benefits_psf": [self.program_1_benefits[0]]}
+
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "The application has 1 or more package only benefits and no package.",
+            form.errors["__all__"],
+        )
+
+    def test_package_only_benefit_with_wrong_package_should_not_validate(self):
+        SponsorshipBenefit.objects.all().update(package_only=True)
+        package = baker.make("sponsors.SponsorshipPackage")
+        package.benefits.add(*SponsorshipBenefit.objects.all())
+
+        data = {
+            "benefits_psf": [self.program_1_benefits[0]],
+            "package": baker.make("sponsors.SponsorshipPackage").id,  # other package
+        }
+
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "The application has 1 or more package only benefits but wrong package.",
+            form.errors["__all__"],
+        )
+
+        data = {
+            "benefits_psf": [self.program_1_benefits[0]],
+            "package": package.id,
+        }
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())

@@ -68,24 +68,39 @@ class SponsorshiptBenefitsForm(forms.Form):
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
 
-    def clean(self):
-        cleaned_data = super().clean()
+    def _clean_benefits(self, cleaned_data):
+        """
+        Validate chosen benefits. Invalid scenarios are:
+        - benefits with conflits
+        - package only benefits and form without SponsorshipProgram
+        """
+        package = cleaned_data.get("package")
         benefits = self.get_benefits(cleaned_data)
-
         if not benefits:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
             )
 
-        benefits = [b.id for b in benefits]
+        benefits_ids = [b.id for b in benefits]
         for benefit in benefits:
-            conflicts = set(self.benefits_conflicts.get(benefit, []))
-            if not conflicts:
-                return
+            conflicts = set(self.benefits_conflicts.get(benefit.id, []))
+            if conflicts and set(benefits_ids).intersection(conflicts):
+                    raise forms.ValidationError(
+                        _("The application has 1 or more benefits that conflicts.")
+                    )
 
-            if set(benefits).intersection(conflicts):
-                raise forms.ValidationError(
-                    _("The application has 1 or more benefits that conflicts.")
-                )
+            if benefit.package_only:
+                if not package:
+                    raise forms.ValidationError(
+                        _("The application has 1 or more package only benefits and no package.")
+                    )
+                elif not benefit.packages.filter(id=package.id).exists():
+                    raise forms.ValidationError(
+                        _("The application has 1 or more package only benefits but wrong package.")
+                    )
 
         return cleaned_data
+
+    def clean(self):
+        cleaned_data = super().clean()
+        return self._clean_benefits(cleaned_data)
