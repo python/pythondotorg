@@ -37,20 +37,6 @@ class SponsorshiptBenefitsForm(forms.Form):
         return [f for f in self if f.name.startswith("benefits_")]
 
     @property
-    def benefits_by_package(self):
-        """
-        Returns a dict with packages ids as keys and a list of benefits ids as values
-        """
-        # TODO this dict is now being sent by the application form view via context.
-        # TODO delete this + add view unit tests
-        packages_benefits = {}
-        for package in SponsorshipPackage.objects.all():
-            packages_benefits[package.id] = package.benefits.values_list(
-                "id", flat=True
-            )
-        return packages_benefits
-
-    @property
     def benefits_conflicts(self):
         """
         Returns a dict with benefits ids as keys and their list of conlicts ids as values

@@ -45,24 +45,6 @@ class SponsorshiptBenefitsFormTests(TestCase):
         )
         self.assertTrue(form.is_valid())
 
-    def test_benefit_by_packages_helper_property(self):
-        psf_package = baker.make("sponsors.SponsorshipPackage")
-        psf_package.benefits.add(*self.program_1_benefits)
-
-        extra_package = baker.make("sponsors.SponsorshipPackage")
-        extra_benefits = baker.make("sponsors.SponsorshipBenefit", _quantity=5)
-        extra_package.benefits.add(*extra_benefits)
-
-        form = SponsorshiptBenefitsForm()
-        map = form.benefits_by_package
-
-        self.assertEqual(
-            sorted(map[psf_package.id]), sorted([b.id for b in self.program_1_benefits])
-        )
-        self.assertEqual(
-            sorted(map[extra_package.id]), sorted([b.id for b in extra_benefits])
-        )
-
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
         benefit_1.conflicts.add(*self.program_1_benefits)
