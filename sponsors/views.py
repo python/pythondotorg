@@ -1,3 +1,6 @@
+from django.conf import settings
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy
@@ -16,6 +19,7 @@ class SponsorList(ListView):
         return Sponsor.objects.select_related().published()
 
 
+@method_decorator(staff_member_required(login_url=settings.LOGIN_URL), name="dispatch")
 class NewSponsorshipApplication(FormView):
     form_class = SponsorshiptBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"

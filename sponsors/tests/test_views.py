@@ -1,4 +1,5 @@
 from model_bakery import baker
+from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 
@@ -40,6 +41,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
+        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
+        self.client.force_login(self.user)
 
     def test_display_template_with_form_and_context(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
@@ -62,3 +65,21 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
         self.assertIsInstance(form, SponsorshiptBenefitsForm)
         self.assertTrue(form.errors)
+
+    def test_login_required(self):
+        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
