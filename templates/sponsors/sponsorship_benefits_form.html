@@ -68,7 +68,7 @@
 
     <div id="package_benefits" style="display: none">
     {% for package in sponsorship_packages %}
-      <div id="package_benefits_{{ package.id }}" data-cost="{{ package.cost }}">
+      <div id="package_benefits_{{ package.id }}" data-cost="{{ package.sponsorship_amount }}">
         {% for benefit in package.benefits.all %}
           <div>{{ benefit.id }}</div>
         {% endfor %}

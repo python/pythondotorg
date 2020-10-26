@@ -54,16 +54,3 @@ class SponsorshipBenefitModelTests(TestCase):
         self.assertFalse(benefit.has_capacity)
         benefit.soft_capacity = True
         self.assertTrue(benefit.has_capacity)
-
-
-class SponsorshipPackageModelTests(TestCase):
-    def setUp(self):
-        self.package = baker.make("sponsors.SponsorshipPackage")
-
-    def test_cost_calc(self):
-        baker.make(SponsorshipBenefit, internal_value=None)
-        baker.make(SponsorshipBenefit, internal_value=0)
-        baker.make(SponsorshipBenefit, internal_value=10, _quantity=3)
-        self.package.benefits.add(*SponsorshipBenefit.objects.all())
-
-        self.assertEqual(30, self.package.cost)
