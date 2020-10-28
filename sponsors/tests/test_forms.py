@@ -1,7 +1,11 @@
+from pathlib import Path
 from model_bakery import baker
+
+from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
-from sponsors.forms import SponsorshiptBenefitsForm
+from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors.models import SponsorshipBenefit
 
 
@@ -139,3 +143,79 @@ class SponsorshiptBenefitsFormTests(TestCase):
 
         form = SponsorshiptBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
+
+
+class SponsorshipApplicationFormTests(TestCase):
+    def setUp(self):
+        self.data = {
+            "name": "CompanyX",
+            "primary_phone": "+14141413131",
+            "mailing_address": "4th street",
+            "contact_name": "Bernardo",
+            "contact_email": "bernardo@companyemail.com",
+            "contact_phone": "+1999999999",
+        }
+        self.static_images_dir = Path(settings.STATICFILES_DIRS[0]) / "img"
+        psf_logo = self.static_images_dir / "psf-logo.png"
+        assert psf_logo.exists(), f"File {psf_logo} does not exist"
+
+        with psf_logo.open("rb") as fd:
+            self.files = {
+                "web_logo": SimpleUploadedFile("logo.png", fd.read()),
+            }
+
+    def test_required_fields(self):
+        required_fields = [
+            "name",
+            "web_logo",
+            "primary_phone",
+            "mailing_address",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
+        ]
+
+        form = SponsorshipApplicationForm({})
+
+        self.assertFalse(form.is_valid())
+        self.assertEqual(len(required_fields), len(form.errors))
+        for required in required_fields:
+            self.assertIn(required, form.errors)
+
+    def test_create_sponsorship_information_with_valid_data(self):
+        form = SponsorshipApplicationForm(self.data, self.files)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        sponsor_info = form.save()
+
+        self.assertTrue(sponsor_info.pk)
+        self.assertEqual(sponsor_info.name, "CompanyX")
+        self.assertTrue(sponsor_info.web_logo)
+        self.assertEqual(sponsor_info.primary_phone, "+14141413131")
+        self.assertEqual(sponsor_info.mailing_address, "4th street")
+        self.assertEqual(sponsor_info.description, "")
+        self.assertIsNone(sponsor_info.print_logo.name)
+        self.assertEqual(sponsor_info.landing_page_url, "")
+        contact = sponsor_info.contacts.get()
+        self.assertEqual(contact.name, "Bernardo")
+        self.assertEqual(contact.email, "bernardo@companyemail.com")
+        self.assertEqual(contact.phone, "+1999999999")
+
+    def test_create_sponsorship_information_with_valid_data_for_non_required_inputs(
+        self,
+    ):
+        self.data["description"] = "Important company"
+        self.data["landing_page_url"] = "https://companyx.com"
+        psf_logo_print = self.static_images_dir / "psf-logo_print.png"
+        assert psf_logo_print.exists(), f"File {psf_logo_print} does not exist"
+        with psf_logo_print.open("rb") as fd:
+            self.files["print_logo"] = SimpleUploadedFile("pring_logo.png", fd.read())
+
+        form = SponsorshipApplicationForm(self.data, self.files)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        sponsor_info = form.save()
+
+        self.assertEqual(sponsor_info.description, "Important company")
+        self.assertTrue(sponsor_info.print_logo)
+        self.assertEqual(sponsor_info.landing_page_url, "https://companyx.com")
