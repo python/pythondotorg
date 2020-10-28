@@ -60,6 +60,9 @@ class SponsorshiptBenefitsForm(forms.Form):
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
 
+    def get_package(self):
+        return self.cleaned_data.get("package")
+
     def _clean_benefits(self, cleaned_data):
         """
         Validate chosen benefits. Invalid scenarios are:

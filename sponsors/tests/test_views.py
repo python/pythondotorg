@@ -1,4 +1,7 @@
+import json
 from model_bakery import baker
+from itertools import chain
+
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
@@ -83,6 +86,35 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
+        package = baker.make("sponsors.SponsorshipPackage")
+        for benefit in self.program_1_benefits:
+            benefit.packages.add(package)
+
+        data = {
+            "benefits_psf": [b.id for b in self.program_1_benefits],
+            "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "package": package.id,
+        }
+        response = self.client.post(self.url, data=data)
+
+        self.assertRedirects(response, reverse("new_sponsorship_application"))
+        cookie_value = json.loads(
+            response.client.cookies["sponsorship_selected_benefits"].value
+        )
+        self.assertEqual(data, cookie_value)
+
+    def test_populate_form_initial_with_values_from_cookie(self):
+        initial = {
+            "benefits_psf": [b.id for b in self.program_1_benefits],
+            "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "package": "",
+        }
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(initial)
+        r = self.client.get(self.url)
+
+        self.assertEqual(initial, r.context["form"].initial)
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
