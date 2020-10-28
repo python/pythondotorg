@@ -6,7 +6,7 @@ from django.test import TestCase
 from ..models import Sponsor, SponsorshipProgram, SponsorshipBenefit
 from companies.models import Company
 
-from sponsors.forms import SponsorshiptBenefitsForm
+from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 
 
 class SponsorViewTests(TestCase):
@@ -28,9 +28,9 @@ class SponsorViewTests(TestCase):
         self.assertEqual(len(r.context["sponsors"]), 1)
 
 
-class NewSponsorshipApplicationViewTests(TestCase):
+class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
     # TODO unit test valid post behavior
-    url = reverse_lazy("new_sponsorship_application")
+    url = reverse_lazy("select_sponsorship_application_benefits")
 
     def setUp(self):
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
@@ -83,3 +83,33 @@ class NewSponsorshipApplicationViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class NewSponsorshipApplicationViewTests(TestCase):
+    url = reverse_lazy("new_sponsorship_application")
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+
+    def test_display_template_with_form_and_context(self):
+        r = self.client.get(self.url)
+
+        self.assertEqual(r.status_code, 200)
+        self.assertTemplateUsed(r, "sponsors/new_sponsorship_application_form.html")
+        self.assertIsInstance(r.context["form"], SponsorshipApplicationForm)
+
+    def test_display_form_with_errors_if_invalid_post(self):
+        r = self.client.post(self.url, {})
+        form = r.context["form"]
+
+        self.assertIsInstance(form, SponsorshipApplicationForm)
+        self.assertTrue(form.errors)
+
+    def test_login_required(self):
+        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
