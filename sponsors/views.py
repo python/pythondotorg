@@ -1,10 +1,12 @@
+import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.generic import ListView, FormView
-from django.urls import reverse_lazy
+from django.urls import reverse_lazy, reverse
+from django.shortcuts import redirect
 
 from .models import Sponsor, SponsorshipBenefit, SponsorshipPackage
 
@@ -68,3 +70,8 @@ class NewSponsorshipApplicationView(FormView):
     form_class = SponsorshipApplicationForm
     template_name = "sponsors/new_sponsorship_application_form.html"
     success_url = reverse_lazy("new_sponsorship_application")
+
+    def get(self, *args, **kwargs):
+        if not cookies.get_sponsorship_selected_benefits(self.request):
+            return redirect(reverse("select_sponsorship_application_benefits"))
+        return super().get(*args, **kwargs)

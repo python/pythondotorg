@@ -121,8 +121,15 @@ class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
 
     def setUp(self):
-        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True)
         self.client.force_login(self.user)
+        self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
+        self.program_1_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=3
+        )
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
+            {"package": "", "benefits_psf": [b.id for b in self.program_1_benefits]}
+        )
 
     def test_display_template_with_form_and_context(self):
         r = self.client.get(self.url)
@@ -145,3 +152,22 @@ class NewSponsorshipApplicationViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url)
+
+    def test_redirect_user_back_to_benefits_selection_if_no_selected_benefits_cookie(
+        self,
+    ):
+        self.client.cookies.pop("sponsorship_selected_benefits")
+        r = self.client.get(self.url)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.client.cookies["sponsorship_selected_benefits"] = ""
+        r = self.client.get(self.url)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.client.cookies["sponsorship_selected_benefits"] = "{}"
+        r = self.client.get(self.url)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.client.cookies["sponsorship_selected_benefits"] = "invalid"
+        r = self.client.get(self.url)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
