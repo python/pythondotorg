@@ -2,9 +2,11 @@ import json
 from model_bakery import baker
 from itertools import chain
 
+from django.contrib import messages
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
+from django.contrib.messages import get_messages
 
 from .utils import get_static_image_file_as_upload
 from ..models import (
@@ -18,6 +20,13 @@ from ..models import (
 from companies.models import Company
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+
+
+def assertMessage(msg, expected_content, expected_level):
+    assert msg.level == expected_level, f"Message {msg} level is not {expected_level}"
+    assert (
+        str(msg) == expected_content
+    ), f"Message {msg} content is not {expected_content}"
 
 
 class SponsorViewTests(TestCase):
@@ -177,8 +186,13 @@ class NewSponsorshipApplicationViewTests(TestCase):
     def test_redirect_user_back_to_benefits_selection_if_no_selected_benefits_cookie(
         self,
     ):
+        redirect_msg = "You have to select sponsorship package and benefits before."
+        redirect_lvl = messages.INFO
+
         self.client.cookies.pop("sponsorship_selected_benefits")
         r = self.client.get(self.url)
+        r_messages = list(get_messages(r.wsgi_request))
+        assertMessage(r_messages[0], redirect_msg, redirect_lvl)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
         self.client.cookies["sponsorship_selected_benefits"] = ""
@@ -210,8 +224,14 @@ class NewSponsorshipApplicationViewTests(TestCase):
     def test_redirect_user_back_to_benefits_selection_if_post_without_valid_set_of_benefits(
         self,
     ):
+        redirect_msg = "You have to select sponsorship package and benefits before."
+        redirect_lvl = messages.INFO
+
         self.client.cookies.pop("sponsorship_selected_benefits")
         r = self.client.post(self.url, data=self.data)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+        r_messages = list(get_messages(r.wsgi_request))
+        assertMessage(r_messages[0], redirect_msg, redirect_lvl)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
         self.data["web_logo"] = get_static_image_file_as_upload(

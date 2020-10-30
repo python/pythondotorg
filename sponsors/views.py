@@ -1,5 +1,6 @@
 import json
 from django.conf import settings
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.db import transaction
@@ -72,10 +73,14 @@ class NewSponsorshipApplicationView(FormView):
     template_name = "sponsors/new_sponsorship_application_form.html"
     success_url = reverse_lazy("finish_sponsorship_application")
 
+    def _redirect_back_to_benefits(self):
+        msg = "You have to select sponsorship package and benefits before."
+        messages.add_message(self.request, messages.INFO, msg)
+        return redirect(reverse("select_sponsorship_application_benefits"))
+
     def get(self, *args, **kwargs):
         if not cookies.get_sponsorship_selected_benefits(self.request):
-            # TODO message user about why they are being redirected
-            return redirect(reverse("select_sponsorship_application_benefits"))
+            return self._redirect_back_to_benefits()
         return super().get(*args, **kwargs)
 
     @transaction.atomic
@@ -83,8 +88,7 @@ class NewSponsorshipApplicationView(FormView):
         benefits_data = cookies.get_sponsorship_selected_benefits(self.request)
         benefits_form = SponsorshiptBenefitsForm(data=benefits_data)
         if not benefits_form.is_valid():
-            # TODO message user about why they are being redirected
-            return redirect(reverse("select_sponsorship_application_benefits"))
+            return self._redirect_back_to_benefits()
 
         sponsor = form.save()
         Sponsorship.new(
