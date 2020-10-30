@@ -235,6 +235,7 @@ class Sponsorship(models.Model):
         sponsorship = cls.objects.create(
             sponsor_info=sponsor_info,
             level_name="" if not package else package.name,
+            sponsorship_fee=None if not package else package.sponsorship_amount,
         )
 
         for benefit in benefits:

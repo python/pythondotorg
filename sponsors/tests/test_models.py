@@ -72,6 +72,7 @@ class SponsorshipModelTests(TestCase):
         self.assertIsNone(sponsorship.start_date)
         self.assertIsNone(sponsorship.end_date)
         self.assertEqual(sponsorship.level_name, "")
+        self.assertIsNone(sponsorship.sponsorship_fee)
 
         self.assertEqual(sponsorship.benefits.count(), len(benefits))
         for benefit in benefits:
@@ -83,7 +84,9 @@ class SponsorshipModelTests(TestCase):
     def test_create_new_sponsorship_with_package(self):
         benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
         package = baker.make(
-            "sponsors.SponsorshipPackage", name="PSF Sponsorship Program"
+            "sponsors.SponsorshipPackage",
+            name="PSF Sponsorship Program",
+            sponsorship_amount=100,
         )
         info = baker.make("sponsors.SponsorInformation")
 
@@ -92,3 +95,4 @@ class SponsorshipModelTests(TestCase):
         sponsorship.refresh_from_db()
 
         self.assertEqual(sponsorship.level_name, "PSF Sponsorship Program")
+        self.assertEqual(sponsorship.sponsorship_fee, 100)
