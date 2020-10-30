@@ -1,12 +1,10 @@
-from pathlib import Path
 from model_bakery import baker
 
-from django.conf import settings
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors.models import SponsorshipBenefit
+from .utils import get_static_image_file_as_upload
 
 
 class SponsorshiptBenefitsFormTests(TestCase):
@@ -155,14 +153,9 @@ class SponsorshipApplicationFormTests(TestCase):
             "contact_email": "bernardo@companyemail.com",
             "contact_phone": "+1999999999",
         }
-        self.static_images_dir = Path(settings.STATICFILES_DIRS[0]) / "img"
-        psf_logo = self.static_images_dir / "psf-logo.png"
-        assert psf_logo.exists(), f"File {psf_logo} does not exist"
-
-        with psf_logo.open("rb") as fd:
-            self.files = {
-                "web_logo": SimpleUploadedFile("logo.png", fd.read()),
-            }
+        self.files = {
+            "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png")
+        }
 
     def test_required_fields(self):
         required_fields = [
@@ -206,10 +199,9 @@ class SponsorshipApplicationFormTests(TestCase):
     ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
-        psf_logo_print = self.static_images_dir / "psf-logo_print.png"
-        assert psf_logo_print.exists(), f"File {psf_logo_print} does not exist"
-        with psf_logo_print.open("rb") as fd:
-            self.files["print_logo"] = SimpleUploadedFile("pring_logo.png", fd.read())
+        self.files["print_logo"] = get_static_image_file_as_upload(
+            "psf-logo_print.png", "logo_print.png"
+        )
 
         form = SponsorshipApplicationForm(self.data, self.files)
         self.assertTrue(form.is_valid(), form.errors)
