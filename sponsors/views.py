@@ -2,13 +2,14 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 
-from .models import Sponsor, SponsorshipBenefit, SponsorshipPackage
+from .models import Sponsor, SponsorshipBenefit, SponsorshipPackage, Sponsorship
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors import cookies
@@ -73,8 +74,20 @@ class NewSponsorshipApplicationView(FormView):
 
     def get(self, *args, **kwargs):
         if not cookies.get_sponsorship_selected_benefits(self.request):
+            # TODO message user about why they are being redirected
             return redirect(reverse("select_sponsorship_application_benefits"))
         return super().get(*args, **kwargs)
 
-    def form_invalid(self, *args, **kwargs):
-        return super().form_invalid(*args, **kwargs)
+    @transaction.atomic
+    def form_valid(self, form):
+        benefits_data = cookies.get_sponsorship_selected_benefits(self.request)
+        benefits_form = SponsorshiptBenefitsForm(data=benefits_data)
+        if not benefits_form.is_valid():
+            # TODO message user about why they are being redirected
+            return redirect(reverse("select_sponsorship_application_benefits"))
+
+        sponsor = form.save()
+        Sponsorship.new(
+            sponsor, benefits_form.get_benefits(), benefits_form.get_package()
+        )
+        return super().form_valid(form)

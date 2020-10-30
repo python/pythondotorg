@@ -7,7 +7,14 @@ from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 
 from .utils import get_static_image_file_as_upload
-from ..models import Sponsor, SponsorshipProgram, SponsorshipBenefit, SponsorInformation, SponsorContact
+from ..models import (
+    Sponsor,
+    SponsorshipProgram,
+    SponsorshipBenefit,
+    SponsorInformation,
+    SponsorContact,
+    Sponsorship,
+)
 from companies.models import Company
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
@@ -128,8 +135,12 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.program_1_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=3
         )
+        self.package = baker.make("sponsors.SponsorshipPackage")
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
-            {"package": "", "benefits_psf": [b.id for b in self.program_1_benefits]}
+            {
+                "package": self.package.id,
+                "benefits_psf": [b.id for b in self.program_1_benefits],
+            }
         )
         self.data = {
             "name": "CompanyX",
@@ -138,7 +149,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "contact_name": "Bernardo",
             "contact_email": "bernardo@companyemail.com",
             "contact_phone": "+1999999999",
-            "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png")
+            "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
         }
 
     def test_display_template_with_form_and_context(self):
@@ -189,4 +200,37 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertRedirects(r, reverse("finish_sponsorship_application"))
 
         self.assertTrue(SponsorInformation.objects.filter(name="CompanyX").exists())
-        self.assertTrue(SponsorContact.objects.filter(sponsor__name="CompanyX").exists())
+        self.assertTrue(
+            SponsorContact.objects.filter(sponsor__name="CompanyX").exists()
+        )
+        sponsorship = Sponsorship.objects.get(sponsor_info__name="CompanyX")
+        self.assertTrue(sponsorship.benefits.exists())
+        self.assertTrue(sponsorship.level_name)
+
+    def test_redirect_user_back_to_benefits_selection_if_post_without_valid_set_of_benefits(
+        self,
+    ):
+        self.client.cookies.pop("sponsorship_selected_benefits")
+        r = self.client.post(self.url, data=self.data)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.data["web_logo"] = get_static_image_file_as_upload(
+            "psf-logo.png", "logo.png"
+        )
+        self.client.cookies["sponsorship_selected_benefits"] = ""
+        r = self.client.post(self.url, data=self.data)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.data["web_logo"] = get_static_image_file_as_upload(
+            "psf-logo.png", "logo.png"
+        )
+        self.client.cookies["sponsorship_selected_benefits"] = "{}"
+        r = self.client.post(self.url, data=self.data)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+        self.data["web_logo"] = get_static_image_file_as_upload(
+            "psf-logo.png", "logo.png"
+        )
+        self.client.cookies["sponsorship_selected_benefits"] = "invalid"
+        r = self.client.post(self.url, data=self.data)
+        self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
