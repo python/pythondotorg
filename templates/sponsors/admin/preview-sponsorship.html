@@ -1,0 +1,20 @@
+<html>
+<head>
+</head>
+<body>
+
+<h1>Sponsorship Terms</h1>
+
+<p><b>Term 1:</b> some content...</p>
+
+<p>{{ sponsorship.sponsor_info.name }}</p>
+
+
+<ul>
+{% for benefit in sponsorship.benefits.all %}
+  <li>{{ benefit.name }}</li>
+{% endfor %}
+</ul>
+
+</body>
+</html>

@@ -188,6 +188,9 @@ class SponsorInformation(models.Model):
     primary_phone = models.CharField("Sponsor Primary Phone", max_length=32)
     mailing_address = models.TextField("Sponsor Mailing/Billing Address")
 
+    def __str__(self):
+        return f"{self.name} information"
+
 
 class SponsorContact(models.Model):
     sponsor = models.ForeignKey(
