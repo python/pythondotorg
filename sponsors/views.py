@@ -69,9 +69,12 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
 class NewSponsorshipApplicationView(FormView):
     form_class = SponsorshipApplicationForm
     template_name = "sponsors/new_sponsorship_application_form.html"
-    success_url = reverse_lazy("new_sponsorship_application")
+    success_url = reverse_lazy("finish_sponsorship_application")
 
     def get(self, *args, **kwargs):
         if not cookies.get_sponsorship_selected_benefits(self.request):
             return redirect(reverse("select_sponsorship_application_benefits"))
         return super().get(*args, **kwargs)
+
+    def form_invalid(self, *args, **kwargs):
+        return super().form_invalid(*args, **kwargs)
