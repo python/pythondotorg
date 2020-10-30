@@ -94,4 +94,7 @@ class NewSponsorshipApplicationView(FormView):
         Sponsorship.new(
             sponsor, benefits_form.get_benefits(), benefits_form.get_package()
         )
-        return super().form_valid(form)
+
+        response = super().form_valid(form)
+        cookies.delete_sponsorship_selected_benefits(response)
+        return response

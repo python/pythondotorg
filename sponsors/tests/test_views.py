@@ -220,6 +220,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
         sponsorship = Sponsorship.objects.get(sponsor_info__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
         self.assertTrue(sponsorship.level_name)
+        self.assertEqual(
+            r.client.cookies.get("sponsorship_selected_benefits").value, ""
+        )
 
     def test_redirect_user_back_to_benefits_selection_if_post_without_valid_set_of_benefits(
         self,
