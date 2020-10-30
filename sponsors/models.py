@@ -223,8 +223,30 @@ class Sponsorship(models.Model):
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
 
-    level_name = models.CharField(max_length=64)
+    level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
+
+    @classmethod
+    def new(cls, sponsor_info, benefits, package=None):
+        """
+        Creates a Sponsorship with a SponsorInformation and a list of SponsorshipBenefit.
+        This will create SponsorBenefit copies from the benefits
+        """
+        sponsorship = cls.objects.create(
+            sponsor_info=sponsor_info,
+            level_name="" if not package else package.name,
+        )
+
+        for benefit in benefits:
+            SponsorBenefit.objects.create(
+                sponsorship=sponsorship,
+                sponsorship_benefit=benefit,
+                name=benefit.name,
+                description=benefit.description,
+                program=benefit.program,
+            )
+
+        return sponsorship
 
 
 class SponsorBenefit(models.Model):
