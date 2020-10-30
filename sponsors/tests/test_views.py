@@ -49,7 +49,6 @@ class SponsorViewTests(TestCase):
 
 
 class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
-    # TODO unit test valid post behavior
     url = reverse_lazy("select_sponsorship_application_benefits")
 
     def setUp(self):
