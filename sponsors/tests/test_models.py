@@ -29,13 +29,13 @@ class SponsorshipBenefitModelTests(TestCase):
 class SponsorshipModelTests(TestCase):
     def test_create_new_sponsorship(self):
         benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
-        info = baker.make("sponsors.SponsorInformation")
+        sponsor = baker.make("sponsors.Sponsor")
 
-        sponsorship = Sponsorship.new(info, benefits)
+        sponsorship = Sponsorship.new(sponsor, benefits)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 
-        self.assertEqual(sponsorship.sponsor_info, info)
+        self.assertEqual(sponsorship.sponsor, sponsor)
         self.assertEqual(sponsorship.applied_on, date.today())
         self.assertIsNone(sponsorship.approved_on)
         self.assertIsNone(sponsorship.start_date)
@@ -57,9 +57,9 @@ class SponsorshipModelTests(TestCase):
             name="PSF Sponsorship Program",
             sponsorship_amount=100,
         )
-        info = baker.make("sponsors.SponsorInformation")
+        sponsor = baker.make("sponsors.Sponsor")
 
-        sponsorship = Sponsorship.new(info, benefits, package=package)
+        sponsorship = Sponsorship.new(sponsor, benefits, package=package)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 

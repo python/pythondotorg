@@ -76,7 +76,7 @@ class SponsorAdmin(ContentManageableModelAdmin):
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     list_display = [
-        "sponsor_info",
+        "sponsor",
         "applied_on",
         "approved_on",
         "start_date",
@@ -86,7 +86,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor_info")
+        return qs.select_related("sponsor")
 
     def display_sponsorship_link(self, obj):
         url = reverse("admin:sponsors_sponsorship_preview", args=[obj.pk])

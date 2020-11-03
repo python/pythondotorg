@@ -7,7 +7,7 @@ from sponsors.models import (
     SponsorshipBenefit,
     SponsorshipPackage,
     SponsorshipProgram,
-    SponsorInformation,
+    Sponsor,
     SponsorContact,
 )
 
@@ -149,7 +149,7 @@ class SponsorshipApplicationForm(forms.Form):
     contact_phone = forms.CharField(label="Contact Phone", max_length=32)
 
     def save(self):
-        sponsor_info = SponsorInformation.objects.create(
+        sponsor = Sponsor.objects.create(
             name=self.cleaned_data["name"],
             web_logo=self.cleaned_data["web_logo"],
             primary_phone=self.cleaned_data["primary_phone"],
@@ -159,9 +159,9 @@ class SponsorshipApplicationForm(forms.Form):
             print_logo=self.cleaned_data.get("print_logo"),
         )
         SponsorContact.objects.create(
-            sponsor=sponsor_info,
+            sponsor=sponsor,
             name=self.cleaned_data["contact_name"],
             phone=self.cleaned_data["contact_phone"],
             email=self.cleaned_data["contact_email"],
         )
-        return sponsor_info
+        return sponsor

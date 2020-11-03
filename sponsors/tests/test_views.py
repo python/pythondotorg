@@ -13,7 +13,7 @@ from ..models import (
     Sponsor,
     SponsorshipProgram,
     SponsorshipBenefit,
-    SponsorInformation,
+    Sponsor,
     SponsorContact,
     Sponsorship,
 )
@@ -187,16 +187,16 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
     def test_create_new_sponsorship(self):
-        self.assertFalse(SponsorInformation.objects.exists())
+        self.assertFalse(Sponsor.objects.exists())
 
         r = self.client.post(self.url, data=self.data)
         self.assertRedirects(r, reverse("finish_sponsorship_application"))
 
-        self.assertTrue(SponsorInformation.objects.filter(name="CompanyX").exists())
+        self.assertTrue(Sponsor.objects.filter(name="CompanyX").exists())
         self.assertTrue(
             SponsorContact.objects.filter(sponsor__name="CompanyX").exists()
         )
-        sponsorship = Sponsorship.objects.get(sponsor_info__name="CompanyX")
+        sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
         self.assertTrue(sponsorship.level_name)
         self.assertEqual(

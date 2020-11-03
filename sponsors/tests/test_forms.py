@@ -175,26 +175,26 @@ class SponsorshipApplicationFormTests(TestCase):
         for required in required_fields:
             self.assertIn(required, form.errors)
 
-    def test_create_sponsorship_information_with_valid_data(self):
+    def test_create_sponsor_with_valid_data(self):
         form = SponsorshipApplicationForm(self.data, self.files)
         self.assertTrue(form.is_valid(), form.errors)
 
-        sponsor_info = form.save()
+        sponsor = form.save()
 
-        self.assertTrue(sponsor_info.pk)
-        self.assertEqual(sponsor_info.name, "CompanyX")
-        self.assertTrue(sponsor_info.web_logo)
-        self.assertEqual(sponsor_info.primary_phone, "+14141413131")
-        self.assertEqual(sponsor_info.mailing_address, "4th street")
-        self.assertEqual(sponsor_info.description, "")
-        self.assertIsNone(sponsor_info.print_logo.name)
-        self.assertEqual(sponsor_info.landing_page_url, "")
-        contact = sponsor_info.contacts.get()
+        self.assertTrue(sponsor.pk)
+        self.assertEqual(sponsor.name, "CompanyX")
+        self.assertTrue(sponsor.web_logo)
+        self.assertEqual(sponsor.primary_phone, "+14141413131")
+        self.assertEqual(sponsor.mailing_address, "4th street")
+        self.assertEqual(sponsor.description, "")
+        self.assertIsNone(sponsor.print_logo.name)
+        self.assertEqual(sponsor.landing_page_url, "")
+        contact = sponsor.contacts.get()
         self.assertEqual(contact.name, "Bernardo")
         self.assertEqual(contact.email, "bernardo@companyemail.com")
         self.assertEqual(contact.phone, "+1999999999")
 
-    def test_create_sponsorship_information_with_valid_data_for_non_required_inputs(
+    def test_create_sponsor_with_valid_data_for_non_required_inputs(
         self,
     ):
         self.data["description"] = "Important company"
@@ -206,8 +206,8 @@ class SponsorshipApplicationFormTests(TestCase):
         form = SponsorshipApplicationForm(self.data, self.files)
         self.assertTrue(form.is_valid(), form.errors)
 
-        sponsor_info = form.save()
+        sponsor = form.save()
 
-        self.assertEqual(sponsor_info.description, "Important company")
-        self.assertTrue(sponsor_info.print_logo)
-        self.assertEqual(sponsor_info.landing_page_url, "https://companyx.com")
+        self.assertEqual(sponsor.description, "Important company")
+        self.assertTrue(sponsor.print_logo)
+        self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
