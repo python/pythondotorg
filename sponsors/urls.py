@@ -5,7 +5,6 @@ from . import views
 
 
 urlpatterns = [
-    url(r"^$", views.SponsorList.as_view(), name="sponsor_list"),
     url(
         r"^application/new/$",
         views.NewSponsorshipApplicationView.as_view(),

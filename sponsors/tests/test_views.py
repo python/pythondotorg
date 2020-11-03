@@ -17,7 +17,6 @@ from ..models import (
     SponsorContact,
     Sponsorship,
 )
-from companies.models import Company
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 
@@ -27,25 +26,6 @@ def assertMessage(msg, expected_content, expected_level):
     assert (
         str(msg) == expected_content
     ), f"Message {msg} content is not {expected_content}"
-
-
-class SponsorViewTests(TestCase):
-    def setUp(self):
-        self.company1 = Company.objects.create(name="Python")
-
-        self.Sponsor1 = Sponsor.objects.create(company=self.company1, is_published=True)
-
-        self.company2 = Company.objects.create(name="Python Hidden")
-
-        self.Sponsor2 = Sponsor.objects.create(
-            company=self.company2, is_published=False
-        )
-
-    def test_sponsor_list(self):
-        url = reverse("sponsor_list")
-        r = self.client.get(url)
-        self.assertEqual(r.status_code, 200)
-        self.assertEqual(len(r.context["sponsors"]), 1)
 
 
 class SelectSponsorshipApplicationBenefitsViewTests(TestCase):

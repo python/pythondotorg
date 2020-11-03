@@ -11,4 +11,9 @@ def featured_sponsor_rotation():
     """
     Retrieve featured Sponsors for rotation
     """
-    return {"sponsors": Sponsor.objects.featured()}
+    # TODO remove this code completely if not necessary
+    # this templatetag logic was removed by the PR #1667
+    # the Sponsor model got updated and its previous use was deprecated
+    # this templated tag is used at https://www.python.org/psf-landing/ but since the prod
+    # DB doesn't have any published sponsor, the default message is being print
+    return {}

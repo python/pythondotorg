@@ -16,15 +16,6 @@ from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors import cookies
 
 
-class SponsorList(ListView):
-    model = Sponsor
-    template_name = "sponsors/sponsor_list.html"
-    context_object_name = "sponsors"
-
-    def get_queryset(self):
-        return Sponsor.objects.select_related().published()
-
-
 @method_decorator(staff_member_required(login_url=settings.LOGIN_URL), name="dispatch")
 class SelectSponsorshipApplicationBenefitsView(FormView):
     form_class = SponsorshiptBenefitsForm
