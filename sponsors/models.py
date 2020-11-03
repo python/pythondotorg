@@ -247,17 +247,6 @@ class SponsorBenefit(models.Model):
     )
 
 
-################################################################################
-# Honestly not sure if we want to keep this object as is, or consider
-# reimplementing from scratch. For the purposes of this work I'm just going to
-# work around it for the moment and we can consider deletion/replacement at a
-# later review
-
-
-# Fix FKs from SponsorshipInformation
-################################################################################
-
-
 class Sponsor(ContentManageable):
     name = models.CharField(
         max_length=100,
