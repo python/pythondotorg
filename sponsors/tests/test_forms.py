@@ -156,9 +156,13 @@ class SponsorshipApplicationFormTests(TestCase):
             "name": "CompanyX",
             "primary_phone": "+14141413131",
             "mailing_address": "4th street",
-            "contact_name": "Bernardo",
-            "contact_email": "bernardo@companyemail.com",
-            "contact_phone": "+1999999999",
+            "contact-0-name": "Bernardo",
+            "contact-0-email": "bernardo@companyemail.com",
+            "contact-0-phone": "+1999999999",
+            "contact-TOTAL_FORMS": 1,
+            "contact-MAX_NUM_FORMS": 5,
+            "contact-MIN_NUM_FORMS": 1,
+            "contact-INITIAL_FORMS": 1,
         }
         self.files = {
             "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png")
@@ -170,15 +174,20 @@ class SponsorshipApplicationFormTests(TestCase):
             "web_logo",
             "primary_phone",
             "mailing_address",
-            "contact_name",
-            "contact_email",
-            "contact_phone",
+            "__all__",
         ]
 
-        form = SponsorshipApplicationForm({})
+        form = SponsorshipApplicationForm(
+            {
+                "contact-TOTAL_FORMS": 0,
+                "contact-MAX_NUM_FORMS": 5,
+                "contact-MIN_NUM_FORMS": 1,
+                "contact-INITIAL_FORMS": 1,
+            }
+        )
 
         self.assertFalse(form.is_valid())
-        self.assertEqual(len(required_fields), len(form.errors))
+        self.assertEqual(len(required_fields), len(form.errors), msg=form.errors)
         for required in required_fields:
             self.assertIn(required, form.errors)
 

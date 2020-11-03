@@ -160,11 +160,6 @@ class SponsorshipApplicationForm(forms.Form):
         label="Sponsor Mailing/Billing Address", widget=forms.TextInput
     )
 
-    # contact information
-    contact_name = forms.CharField(max_length=100)
-    contact_email = forms.EmailField(max_length=256)
-    contact_phone = forms.CharField(label="Contact Phone", max_length=32)
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
@@ -175,6 +170,20 @@ class SponsorshipApplicationForm(forms.Form):
             )
             qs = Sponsor.objects.filter(id__in=sponsor_ids)
         self.fields["sponsor"] = forms.ModelChoiceField(queryset=qs, required=False)
+
+        formset_kwargs = {"prefix": "contact"}
+        if self.data:
+            self.contacts_formset = SponsorContactFormSet(self.data, **formset_kwargs)
+        else:
+            self.contacts_formset = SponsorContactFormSet(**formset_kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        if not self.contacts_formset.is_valid():
+            msg = "Errors with contact(s) information"
+            if not self.contacts_formset.errors:
+                msg = "You have to enter at least one contact"
+            raise forms.ValidationError(msg)
 
     def save(self):
         selected_sponsor = self.cleaned_data.get("sponsor")
@@ -190,11 +199,10 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             print_logo=self.cleaned_data.get("print_logo"),
         )
-        SponsorContact.objects.create(
-            sponsor=sponsor,
-            name=self.cleaned_data["contact_name"],
-            phone=self.cleaned_data["contact_phone"],
-            email=self.cleaned_data["contact_email"],
-            user=self.user,
-        )
+        for form in self.contacts_formset.forms:
+            contact = form.save(commit=False)
+            contact.sponsor = sponsor
+            contact.user = self.user
+            contact.save()
+
         return sponsor
