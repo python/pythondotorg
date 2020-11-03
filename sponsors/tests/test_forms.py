@@ -1,8 +1,14 @@
 from model_bakery import baker
 
+from django.conf import settings
 from django.test import TestCase
 
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+from sponsors.forms import (
+    SponsorshiptBenefitsForm,
+    SponsorshipApplicationForm,
+    SponsorContact,
+    Sponsor,
+)
 from sponsors.models import SponsorshipBenefit
 from .utils import get_static_image_file_as_upload
 
@@ -176,7 +182,8 @@ class SponsorshipApplicationFormTests(TestCase):
             self.assertIn(required, form.errors)
 
     def test_create_sponsor_with_valid_data(self):
-        form = SponsorshipApplicationForm(self.data, self.files)
+        user = baker.make(settings.AUTH_USER_MODEL)
+        form = SponsorshipApplicationForm(self.data, self.files, user=user)
         self.assertTrue(form.is_valid(), form.errors)
 
         sponsor = form.save()
@@ -193,6 +200,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(contact.name, "Bernardo")
         self.assertEqual(contact.email, "bernardo@companyemail.com")
         self.assertEqual(contact.phone, "+1999999999")
+        self.assertEqual(contact.user, user)
 
     def test_create_sponsor_with_valid_data_for_non_required_inputs(
         self,
@@ -211,3 +219,25 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(sponsor.description, "Important company")
         self.assertTrue(sponsor.print_logo)
         self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
+
+    def test_use_previous_user_sponsor(self):
+        contact = baker.make(SponsorContact, user__email="foo@foo.com")
+        self.data["sponsor"] = contact.sponsor.id
+
+        form = SponsorshipApplicationForm(self.data, self.files, user=contact.user)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        saved_sponsor = form.save()
+        self.assertEqual(saved_sponsor, contact.sponsor)
+        self.assertEqual(Sponsor.objects.count(), 1)
+        self.assertEqual(saved_sponsor.contacts.get(), contact)
+
+    def test_invalidate_form_if_user_selects_sponsort_from_other_user(self):
+        contact = baker.make(SponsorContact, user__email="foo@foo.com")
+        self.data["sponsor"] = contact.sponsor.id
+        other_user = baker.make(settings.AUTH_USER_MODEL)
+
+        form = SponsorshipApplicationForm(self.data, self.files, user=other_user)
+
+        self.assertFalse(form.is_valid())
+        self.assertIn("sponsor", form.errors)

@@ -194,7 +194,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
         self.assertTrue(Sponsor.objects.filter(name="CompanyX").exists())
         self.assertTrue(
-            SponsorContact.objects.filter(sponsor__name="CompanyX").exists()
+            SponsorContact.objects.filter(
+                sponsor__name="CompanyX", user=self.user
+            ).exists()
         )
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())

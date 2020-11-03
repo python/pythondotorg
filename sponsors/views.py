@@ -74,6 +74,11 @@ class NewSponsorshipApplicationView(FormView):
             return self._redirect_back_to_benefits()
         return super().get(*args, **kwargs)
 
+    def get_form_kwargs(self, *args, **kwargs):
+        form_kwargs = super().get_form_kwargs(*args, **kwargs)
+        form_kwargs["user"] = self.request.user
+        return form_kwargs
+
     @transaction.atomic
     def form_valid(self, form):
         benefits_data = cookies.get_sponsorship_selected_benefits(self.request)

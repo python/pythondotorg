@@ -148,7 +148,22 @@ class SponsorshipApplicationForm(forms.Form):
     contact_email = forms.EmailField(max_length=256)
     contact_phone = forms.CharField(label="Contact Phone", max_length=32)
 
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        qs = Sponsor.objects.none()
+        if self.user:
+            sponsor_ids = SponsorContact.objects.filter(user=self.user).values_list(
+                "sponsor", flat=True
+            )
+            qs = Sponsor.objects.filter(id__in=sponsor_ids)
+        self.fields["sponsor"] = forms.ModelChoiceField(queryset=qs, required=False)
+
     def save(self):
+        selected_sponsor = self.cleaned_data.get("sponsor")
+        if selected_sponsor:
+            return selected_sponsor
+
         sponsor = Sponsor.objects.create(
             name=self.cleaned_data["name"],
             web_logo=self.cleaned_data["web_logo"],
@@ -163,5 +178,6 @@ class SponsorshipApplicationForm(forms.Form):
             name=self.cleaned_data["contact_name"],
             phone=self.cleaned_data["contact_phone"],
             email=self.cleaned_data["contact_email"],
+            user=self.user,
         )
         return sponsor
