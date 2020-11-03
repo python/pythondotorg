@@ -8,8 +8,9 @@ from sponsors.forms import (
     SponsorshipApplicationForm,
     SponsorContact,
     Sponsor,
+    SponsorContactFormSet,
 )
-from sponsors.models import SponsorshipBenefit
+from sponsors.models import SponsorshipBenefit, SponsorContact
 from .utils import get_static_image_file_as_upload
 
 
@@ -241,3 +242,41 @@ class SponsorshipApplicationFormTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("sponsor", form.errors)
+
+
+class SponsorContactFormSetTests(TestCase):
+    def setUp(self):
+        self.data = {
+            "contact-TOTAL_FORMS": 0,
+            "contact-MAX_NUM_FORMS": 5,
+            "contact-MIN_NUM_FORMS": 1,
+            "contact-INITIAL_FORMS": 1,
+        }
+
+    def test_contact_formset(self):
+        sponsor = baker.make(Sponsor)
+        self.data.update(
+            {
+                "contact-0-name": "Bernardo",
+                "contact-0-email": "bernardo@companyemail.com",
+                "contact-0-phone": "+1999999999",
+                "contact-1-name": "Foo",
+                "contact-1-email": "foo@bar.com",
+                "contact-1-phone": "+1111111111",
+                "contact-TOTAL_FORMS": 2,
+            }
+        )
+
+        formset = SponsorContactFormSet(self.data, prefix="contact")
+        self.assertTrue(formset.is_valid())
+        for form in formset.forms:
+            contact = form.save(commit=False)
+            contact.sponsor = sponsor
+            contact.save()
+
+        self.assertEqual(2, SponsorContact.objects.count())
+
+    def test_invalidate_formset_if_no_form(self):
+        self.data["contact-TOTAL_FORMS"] = 0
+        formset = SponsorContactFormSet(self.data, prefix="contact")
+        self.assertFalse(formset.is_valid())

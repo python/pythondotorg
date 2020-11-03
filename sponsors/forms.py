@@ -19,6 +19,23 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
         return obj.name
 
 
+class SponsorContactForm(forms.ModelForm):
+    class Meta:
+        model = SponsorContact
+        fields = ["name", "email", "phone"]
+
+
+SponsorContactFormSet = forms.formset_factory(
+    SponsorContactForm,
+    extra=0,
+    min_num=1,
+    validate_min=True,
+    can_delete=False,
+    can_order=False,
+    max_num=5,
+)
+
+
 class SponsorshiptBenefitsForm(forms.Form):
     package = forms.ModelChoiceField(
         queryset=SponsorshipPackage.objects.all(),
