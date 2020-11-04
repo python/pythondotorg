@@ -3698,3 +3698,14 @@ span.highlighted {
     margin-right: 2em; }
   #new_sponsorship_application_container #file_fields .helptext {
     display: inline-block; }
+#new_sponsorship_application_container #sponsor-contacts-container table {
+  table-layout: fixed;
+  width: 100%; }
+  #new_sponsorship_application_container #sponsor-contacts-container table * {
+    vertical-align: middle; }
+  #new_sponsorship_application_container #sponsor-contacts-container table th {
+    width: 25%; }
+  #new_sponsorship_application_container #sponsor-contacts-container table td {
+    width: 75%; }
+#new_sponsorship_application_container #sponsor-contacts-container .contact-form {
+  margin-top: 1em; }

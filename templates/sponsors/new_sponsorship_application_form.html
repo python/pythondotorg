@@ -84,12 +84,22 @@
         <span class="helptext">{{ form.mailing_address.help_text }}</span>
         {% endif %}
       </p>
+
+      <div id="sponsor-contacts-container">
+      <h1>Contacts</h1>
       {{ form.contacts_formset.management_form }}
-     <table>
-         {% for form in form.contacts_formset %}
-         {{ form }}
-         {% endfor %}
-     </table>
+
+        <div class="contact-form">
+          <span><b>Primary contact</b></span>
+          <table>
+             {% for form in form.contacts_formset %}
+             {{ form }}
+             {% endfor %}
+          </table>
+        </div>
+
+      </div>
+
       <input type="submit" value="Submit">
     </form>
   </article>

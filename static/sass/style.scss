@@ -2504,4 +2504,21 @@ span.highlighted {
     }
   }
 
+  #sponsor-contacts-container {
+    table {
+      table-layout: fixed;
+      width: 100%;
+      * {vertical-align: middle;}
+      th {
+        width: 25%;
+      }
+      td {
+        width: 75%;
+      }
+    }
+
+    .contact-form {
+        margin-top: 1em;
+    }
+  }
 }
