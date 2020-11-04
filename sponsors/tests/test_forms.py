@@ -210,7 +210,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(contact.name, "Bernardo")
         self.assertEqual(contact.email, "bernardo@companyemail.com")
         self.assertEqual(contact.phone, "+1999999999")
-        self.assertEqual(contact.user, user)
+        self.assertIsNone(contact.user)
 
     def test_create_sponsor_with_valid_data_for_non_required_inputs(
         self,
@@ -251,6 +251,31 @@ class SponsorshipApplicationFormTests(TestCase):
 
         self.assertFalse(form.is_valid())
         self.assertIn("sponsor", form.errors)
+
+    def test_create_multiple_contacts_and_user_contact(self):
+        user_email = "secondary@companyemail.com"
+        self.data.update(
+            {
+                "contact-1-name": "Secondary",
+                "contact-1-email": user_email,
+                "contact-1-phone": "+1123123123",
+                "contact-TOTAL_FORMS": 2,
+            }
+        )
+        user = baker.make(settings.AUTH_USER_MODEL, email=user_email.upper())
+        form = SponsorshipApplicationForm(self.data, self.files, user=user)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        sponsor = form.save()
+
+        self.assertEqual(2, sponsor.contacts.count())
+        c1, c2 = sponsor.contacts.all()
+        self.assertEqual(c1.name, "Bernardo")
+        self.assertTrue(c1.primary)  # first contact should be the primary one
+        self.assertIsNone(c1.user)
+        self.assertEqual(c2.name, "Secondary")
+        self.assertFalse(c2.primary)
+        self.assertEqual(c2.user, user)
 
 
 class SponsorContactFormSetTests(TestCase):

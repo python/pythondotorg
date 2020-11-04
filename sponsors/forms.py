@@ -199,10 +199,13 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             print_logo=self.cleaned_data.get("print_logo"),
         )
-        for form in self.contacts_formset.forms:
-            contact = form.save(commit=False)
+        contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
+        for i, contact in enumerate(contacts):
+            if i == 0:  # first contact is the primary one
+                contact.primary = True
+            if self.user and self.user.email.lower() == contact.email.lower():
+                contact.user = self.user
             contact.sponsor = sponsor
-            contact.user = self.user
             contact.save()
 
         return sponsor

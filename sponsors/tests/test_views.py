@@ -117,7 +117,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
 
     def setUp(self):
-        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True)
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, email="bernardo@companyemail.com"
+        )
         self.client.force_login(self.user)
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.program_1_benefits = baker.make(
@@ -135,7 +137,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "primary_phone": "+14141413131",
             "mailing_address": "4th street",
             "contact-0-name": "Bernardo",
-            "contact-0-email": "bernardo@companyemail.com",
+            "contact-0-email": self.user.email,
             "contact-0-phone": "+1999999999",
             "contact-TOTAL_FORMS": 1,
             "contact-MAX_NUM_FORMS": 5,
