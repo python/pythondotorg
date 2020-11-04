@@ -284,3 +284,6 @@ class Sponsor(ContentManageable):
     class Meta:
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
+
+    def __str__(self):
+        return f"{self.name}"
