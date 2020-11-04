@@ -2478,3 +2478,30 @@ span.highlighted {
         }
     }
 }
+
+
+#new_sponsorship_application_container {
+  .form_field {
+    margin-top: 1em;
+    margin-bottom: 0;
+    textarea, input { margin-bottom: 0px }
+  }
+
+  .helptext {
+    font-size: 85%;
+  }
+
+  #file_fields {
+    display: block;
+
+    .form_field{
+      display: inline-block;
+      margin-right: 2em;
+    }
+
+    .helptext {
+      display: inline-block;
+    }
+  }
+
+}

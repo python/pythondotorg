@@ -3683,3 +3683,18 @@ span.highlighted {
           background-color: #eef0f1; }
         #sponsorship_application_container #benefits_container .benefits_checkboxes ul .fa {
           margin-left: 0.25em; }
+
+#new_sponsorship_application_container .form_field {
+  margin-top: 1em;
+  margin-bottom: 0; }
+  #new_sponsorship_application_container .form_field textarea, #new_sponsorship_application_container .form_field input {
+    margin-bottom: 0px; }
+#new_sponsorship_application_container .helptext {
+  font-size: 85%; }
+#new_sponsorship_application_container #file_fields {
+  display: block; }
+  #new_sponsorship_application_container #file_fields .form_field {
+    display: inline-block;
+    margin-right: 2em; }
+  #new_sponsorship_application_container #file_fields .helptext {
+    display: inline-block; }
