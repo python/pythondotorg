@@ -2505,7 +2505,9 @@ span.highlighted {
   }
 
   #sponsor-contacts-container {
+    margin-bottom: 1em;
     table {
+      margin-bottom: 0;
       table-layout: fixed;
       width: 100%;
       * {vertical-align: middle;}
@@ -2515,10 +2517,30 @@ span.highlighted {
       td {
         width: 75%;
       }
+
+      .remove-contact-row {
+          display: none;
+          font-size:75%;
+          label {
+              display: inline;
+              cursor: pointer;
+              text-decoration: underline;
+              color: $red !important;
+          }
+      }
+    }
+
+
+    .formset-btn {
+      margin-top: 0.5em;
+      font-size: 65%;
+      border-color: $green;
+      color: $white !important;
+      @include vertical-gradient(lighten( $green, 20% ), $green);
     }
 
     .contact-form {
-        margin-top: 1em;
+        margin-bottom: 1em;
     }
   }
 }

@@ -86,18 +86,20 @@
       </p>
 
       <div id="sponsor-contacts-container">
-      <h1>Contacts</h1>
-      {{ form.contacts_formset.management_form }}
+        <h1>Contacts</h1>
+        {{ form.contacts_formset.management_form }}
 
-        <div class="contact-form">
-          <span><b>Primary contact</b></span>
+        <span><b>Primary contact</b></span>
+        <div class="contact-form form-row">
           <table>
              {% for form in form.contacts_formset %}
              {{ form }}
              {% endfor %}
+             <tr class="remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
           </table>
         </div>
 
+        <button class="formset-btn add-form-row" type="button">Extra contact</button>
       </div>
 
       <input type="submit" value="Submit">
@@ -105,3 +107,76 @@
   </article>
 
 {% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script type='text/javascript'>
+  // JS reference from https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+
+  function updateElementIndex(el, prefix, ndx) {
+      var id_regex = new RegExp('(' + prefix + '-\\d+)');
+      var replacement = prefix + '-' + ndx;
+      if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+      if (el.id) el.id = el.id.replace(id_regex, replacement);
+      if (el.name) el.name = el.name.replace(id_regex, replacement);
+  }
+  function cloneMore(selector, prefix) {
+      var newElement = $(selector).clone(true);
+      var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+      newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+          var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+          var id = 'id_' + name;
+          $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+      });
+      newElement.find('label').each(function() {
+          var forValue = $(this).attr('for');
+          if (forValue) {
+            forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+            $(this).attr({'for': forValue});
+          }
+      });
+      newElement.find(".remove-contact-row").show();
+      total++;
+      $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+      $(selector).after(newElement);
+      var conditionRow = $('.form-row:not(:last)');
+      conditionRow.find('.btn.add-form-row')
+      .removeClass('btn-success').addClass('btn-danger')
+      .removeClass('add-form-row').addClass('remove-form-row')
+      .html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>');
+
+      var maxForms = $('#id_' + prefix + '-MAX_NUM_FORMS').val();
+      if (total >= maxForms) {
+          $(".add-form-row").hide();
+      }
+
+      return false;
+  }
+  function deleteForm(prefix, btn) {
+      var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+      if (total > 1){
+          btn.closest('.form-row').remove();
+          var forms = $('.form-row');
+          $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+          for (var i=0, formCount=forms.length; i<formCount; i++) {
+              $(forms.get(i)).find(':input').each(function() {
+                  updateElementIndex(this, prefix, i);
+              });
+          }
+          $(".add-form-row").show();
+      }
+      return false;
+  }
+  let formPrefix = "contact";
+  $(document).on('click', '.add-form-row', function(e){
+      e.preventDefault();
+      cloneMore('.form-row:last', formPrefix);
+      return false;
+  });
+  $(document).on('click', '.remove-form-row', function(e){
+      e.preventDefault();
+      deleteForm(formPrefix, $(this));
+      return false;
+  });
+</script>
+{% endblock %}
