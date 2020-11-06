@@ -228,6 +228,7 @@ class SponsorshipApplicationFormTests(TestCase):
 
         self.assertEqual(sponsor.description, "Important company")
         self.assertTrue(sponsor.print_logo)
+        self.assertFalse(form.user_with_previous_sponsors)
         self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
 
     def test_use_previous_user_sponsor(self):
@@ -238,6 +239,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertTrue(form.is_valid(), form.errors)
 
         saved_sponsor = form.save()
+        self.assertTrue(form.user_with_previous_sponsors)
         self.assertEqual(saved_sponsor, contact.sponsor)
         self.assertEqual(Sponsor.objects.count(), 1)
         self.assertEqual(saved_sponsor.contacts.get(), contact)
@@ -250,6 +252,7 @@ class SponsorshipApplicationFormTests(TestCase):
         form = SponsorshipApplicationForm(self.data, self.files, user=other_user)
 
         self.assertFalse(form.is_valid())
+        self.assertFalse(form.user_with_previous_sponsors)
         self.assertIn("sponsor", form.errors)
 
     def test_create_multiple_contacts_and_user_contact(self):

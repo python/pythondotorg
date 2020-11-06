@@ -215,4 +215,4 @@ class SponsorshipApplicationForm(forms.Form):
     def user_with_previous_sponsors(self):
         if not self.user:
             return False
-        return self.fields['sponsor'].queryset.exists()
+        return self.fields["sponsor"].queryset.exists()
