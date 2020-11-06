@@ -11,6 +11,7 @@ from .models import (
     SponsorshipBenefit,
     Sponsor,
     Sponsorship,
+    SponsorContact,
 )
 from cms.admin import ContentManageableModelAdmin
 
@@ -68,9 +69,14 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     list_display = ["name", "move_up_down_links"]
 
 
+class SponsorContactInline(admin.TabularInline):
+    model = SponsorContact
+    extra = 0
+
+
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
-    pass
+    inlines = [SponsorContactInline]
 
 
 @admin.register(Sponsorship)

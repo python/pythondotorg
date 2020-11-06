@@ -180,6 +180,9 @@ class SponsorContact(models.Model):
         if self.user is not None and (self.primary or self.manager):
             return True
 
+    def __str__(self):
+        return f"Contact {self.name} from {self.sponsor}"
+
 
 class Sponsorship(models.Model):
     sponsor = models.ForeignKey("Sponsor", null=True, on_delete=models.SET_NULL)
