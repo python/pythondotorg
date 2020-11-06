@@ -134,6 +134,7 @@ class SponsorshipApplicationForm(forms.Form):
         max_length=100,
         label="Sponsor name",
         help_text="Name of the sponsor, for public display.",
+        required=False,
     )
     description = forms.CharField(
         label="Sponsor description",
@@ -149,6 +150,7 @@ class SponsorshipApplicationForm(forms.Form):
     web_logo = forms.ImageField(
         label="Sponsor web logo",
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        required=False,
     )
     print_logo = forms.FileField(
         label="Sponsor print logo",
@@ -156,9 +158,15 @@ class SponsorshipApplicationForm(forms.Form):
         required=False,
     )
 
-    primary_phone = forms.CharField(label="Sponsor Primary Phone", max_length=32)
+    primary_phone = forms.CharField(
+        label="Sponsor Primary Phone",
+        max_length=32,
+        required=False,
+    )
     mailing_address = forms.CharField(
-        label="Sponsor Mailing/Billing Address", widget=forms.TextInput
+        label="Sponsor Mailing/Billing Address",
+        widget=forms.TextInput,
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -180,11 +188,40 @@ class SponsorshipApplicationForm(forms.Form):
 
     def clean(self):
         cleaned_data = super().clean()
-        if not self.contacts_formset.is_valid():
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not self.contacts_formset.is_valid():
             msg = "Errors with contact(s) information"
             if not self.contacts_formset.errors:
                 msg = "You have to enter at least one contact"
             raise forms.ValidationError(msg)
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not name:
+            raise forms.ValidationError("This field is required.")
+        return name.strip()
+
+    def clean_web_logo(self):
+        web_logo = self.cleaned_data.get("web_logo", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not web_logo:
+            raise forms.ValidationError("This field is required.")
+        return web_logo
+
+    def clean_primary_phone(self):
+        primary_phone = self.cleaned_data.get("primary_phone", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not primary_phone:
+            raise forms.ValidationError("This field is required.")
+        return primary_phone.strip()
+
+    def clean_mailing_address(self):
+        mailing_address = self.cleaned_data.get("mailing_address", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not mailing_address:
+            raise forms.ValidationError("This field is required.")
+        return mailing_address.strip()
 
     def save(self):
         selected_sponsor = self.cleaned_data.get("sponsor")

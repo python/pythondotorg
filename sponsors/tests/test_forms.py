@@ -233,7 +233,7 @@ class SponsorshipApplicationFormTests(TestCase):
 
     def test_use_previous_user_sponsor(self):
         contact = baker.make(SponsorContact, user__email="foo@foo.com")
-        self.data["sponsor"] = contact.sponsor.id
+        self.data = {"sponsor": contact.sponsor.id}
 
         form = SponsorshipApplicationForm(self.data, self.files, user=contact.user)
         self.assertTrue(form.is_valid(), form.errors)
@@ -246,7 +246,7 @@ class SponsorshipApplicationFormTests(TestCase):
 
     def test_invalidate_form_if_user_selects_sponsort_from_other_user(self):
         contact = baker.make(SponsorContact, user__email="foo@foo.com")
-        self.data["sponsor"] = contact.sponsor.id
+        self.data = {"sponsor": contact.sponsor.id}
         other_user = baker.make(settings.AUTH_USER_MODEL)
 
         form = SponsorshipApplicationForm(self.data, self.files, user=other_user)
@@ -254,6 +254,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertFalse(form.user_with_previous_sponsors)
         self.assertIn("sponsor", form.errors)
+        self.assertEqual(1, len(form.errors))
 
     def test_create_multiple_contacts_and_user_contact(self):
         user_email = "secondary@companyemail.com"

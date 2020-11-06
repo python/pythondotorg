@@ -194,6 +194,7 @@
       let sponsor = $(this).val();
       if (sponsor.length) {
           $("#new-appication-fields").hide();
+          $('input[required=""]').removeAttr("required");
       }
       return false;
   });
