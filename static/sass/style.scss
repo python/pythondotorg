@@ -2504,6 +2504,12 @@ span.highlighted {
     }
   }
 
+  #new-application-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $link-color;
+  }
+
   #sponsor-contacts-container {
     margin-bottom: 1em;
     table {
@@ -2519,14 +2525,14 @@ span.highlighted {
       }
 
       .remove-contact-row {
-          display: none;
-          font-size:75%;
-          label {
-              display: inline;
-              cursor: pointer;
-              text-decoration: underline;
-              color: $red !important;
-          }
+        display: none;
+        font-size:75%;
+        label {
+          display: inline;
+          cursor: pointer;
+          text-decoration: underline;
+          color: $red !important;
+        }
       }
     }
 

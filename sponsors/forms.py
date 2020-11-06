@@ -2,6 +2,7 @@ from itertools import chain
 from django import forms
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import cached_property
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -209,3 +210,9 @@ class SponsorshipApplicationForm(forms.Form):
             contact.save()
 
         return sponsor
+
+    @cached_property
+    def user_with_previous_sponsors(self):
+        if not self.user:
+            return False
+        return self.fields['sponsor'].queryset.exists()

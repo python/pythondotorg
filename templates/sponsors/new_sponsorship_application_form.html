@@ -11,7 +11,9 @@
     <form action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
 
-      <p class="form_field">
+      {% if form.user_with_previous_sponsors %}
+      <p>You have already filled previous sponsorship application forms. Select an existing sponsor or <span id="new-application-link">create a new one</span>.</p>
+      <p id="sponsor-select-field" class="form_field">
         <label>{{ form.sponsor.label }}</label>
         {% render_field form.sponsor %}
         {% if form.sponsor.help_text %}
@@ -19,87 +21,92 @@
         <span class="helptext">{{ form.sponsor.help_text }}</span>
         {% endif %}
       </p>
+      {% endif %}
 
-      <p class="form_field">
-        <label>{{ form.name.label }}</label>
-        {% render_field form.name %}
-        {% if form.name.help_text %}
-        <br/>
-        <span class="helptext">{{ form.name.help_text }}</span>
-        {% endif %}
-      </p>
+      <div id="new-appication-fields" {% if form.user_with_previous_sponsors %}style="display: none"{% endif %}>
 
-      <p class="form_field">
-        <label>{{ form.description.label }}</label>
-        {% render_field form.description %}
-        {% if form.description.help_text %}
-        <br/>
-        <span class="helptext">{{ form.description.help_text }}</span>
-        {% endif %}
-      </p>
-
-      <p class="form_field">
-        <label>{{ form.landing_page_url.label }}</label>
-        {% render_field form.landing_page_url %}
-        {% if form.landing_page_url.help_text %}
-        <br/>
-        <span class="helptext">{{ form.landing_page_url.help_text }}</span>
-        {% endif %}
-      </p>
-
-      <div id="file_fields">
         <p class="form_field">
-          <label>{{ form.web_logo.label }}</label>
-          {% render_field form.web_logo %}
-          {% if form.web_logo.help_text %}
+          <label>{{ form.name.label }}</label>
+          {% render_field form.name %}
+          {% if form.name.help_text %}
           <br/>
-          <span class="helptext">{{ form.web_logo.help_text }}</span>
+          <span class="helptext">{{ form.name.help_text }}</span>
           {% endif %}
         </p>
 
         <p class="form_field">
-          <label>{{ form.print_logo.label }}</label>
-          {% render_field form.print_logo %}
-          {% if form.print_logo.help_text %}
+          <label>{{ form.description.label }}</label>
+          {% render_field form.description %}
+          {% if form.description.help_text %}
           <br/>
-          <span class="helptext">{{ form.print_logo.help_text }}</span>
+          <span class="helptext">{{ form.description.help_text }}</span>
           {% endif %}
         </p>
-      </div>
 
-      <p class="form_field">
-        <label>{{ form.primary_phone.label }}</label>
-        {% render_field form.primary_phone %}
-        {% if form.primary_phone.help_text %}
-        <br/>
-        <span class="helptext">{{ form.primary_phone.help_text }}</span>
-        {% endif %}
-      </p>
+        <p class="form_field">
+          <label>{{ form.landing_page_url.label }}</label>
+          {% render_field form.landing_page_url %}
+          {% if form.landing_page_url.help_text %}
+          <br/>
+          <span class="helptext">{{ form.landing_page_url.help_text }}</span>
+          {% endif %}
+        </p>
 
-      <p class="form_field">
-        <label>{{ form.mailing_address.label }}</label>
-        {% render_field form.mailing_address %}
-        {% if form.mailing_address.help_text %}
-        <br/>
-        <span class="helptext">{{ form.mailing_address.help_text }}</span>
-        {% endif %}
-      </p>
+        <div id="file_fields">
+          <p class="form_field">
+            <label>{{ form.web_logo.label }}</label>
+            {% render_field form.web_logo %}
+            {% if form.web_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.web_logo.help_text }}</span>
+            {% endif %}
+          </p>
 
-      <div id="sponsor-contacts-container">
-        <h1>Contacts</h1>
-        {{ form.contacts_formset.management_form }}
-
-        <span><b>Primary contact</b></span>
-        <div class="contact-form form-row">
-          <table>
-             {% for form in form.contacts_formset %}
-             {{ form }}
-             {% endfor %}
-             <tr class="remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
-          </table>
+          <p class="form_field">
+            <label>{{ form.print_logo.label }}</label>
+            {% render_field form.print_logo %}
+            {% if form.print_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.print_logo.help_text }}</span>
+            {% endif %}
+          </p>
         </div>
 
-        <button class="formset-btn add-form-row" type="button">Extra contact</button>
+        <p class="form_field">
+          <label>{{ form.primary_phone.label }}</label>
+          {% render_field form.primary_phone %}
+          {% if form.primary_phone.help_text %}
+          <br/>
+          <span class="helptext">{{ form.primary_phone.help_text }}</span>
+          {% endif %}
+        </p>
+
+        <p class="form_field">
+          <label>{{ form.mailing_address.label }}</label>
+          {% render_field form.mailing_address %}
+          {% if form.mailing_address.help_text %}
+          <br/>
+          <span class="helptext">{{ form.mailing_address.help_text }}</span>
+          {% endif %}
+        </p>
+
+        <div id="sponsor-contacts-container">
+          <h1>Contacts</h1>
+          {{ form.contacts_formset.management_form }}
+
+          <span><b>Primary contact</b></span>
+          <div class="contact-form form-row">
+            <table>
+               {% for form in form.contacts_formset %}
+               {{ form }}
+               {% endfor %}
+               <tr class="remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
+            </table>
+          </div>
+
+          <button class="formset-btn add-form-row" type="button">Extra contact</button>
+        </div>
+
       </div>
 
       <input type="submit" value="Submit">
@@ -176,6 +183,21 @@
   $(document).on('click', '.remove-form-row', function(e){
       e.preventDefault();
       deleteForm(formPrefix, $(this));
+      return false;
+  });
+  $(document).on("change", "#id_sponsor", function(e){
+      e.preventDefault();
+      let sponsor = $(this).val();
+      if (sponsor.length) {
+          $("#new-appication-fields").hide();
+      }
+      return false;
+  });
+  $(document).on("click", "#new-application-link", function(e){
+      e.preventDefault();
+      console.log('vai');
+      $("#id_sponsor").val("");
+      $("#new-appication-fields").show();
       return false;
   });
 </script>
