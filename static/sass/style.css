@@ -3693,11 +3693,17 @@ span.highlighted {
   font-size: 85%; }
 #new_sponsorship_application_container #file_fields {
   display: block; }
-  #new_sponsorship_application_container #file_fields .form_field {
+  #new_sponsorship_application_container #file_fields .field_container {
     display: inline-block;
-    margin-right: 2em; }
+    width: 49%; }
+  #new_sponsorship_application_container #file_fields .form_field {
+    display: block; }
   #new_sponsorship_application_container #file_fields .helptext {
-    display: inline-block; }
+    display: block; }
+#new_sponsorship_application_container #new-application-link {
+  cursor: pointer;
+  text-decoration: underline;
+  color: #3776ab; }
 #new_sponsorship_application_container #sponsor-contacts-container {
   margin-bottom: 1em; }
   #new_sponsorship_application_container #sponsor-contacts-container table {

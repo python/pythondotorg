@@ -2494,13 +2494,17 @@ span.highlighted {
   #file_fields {
     display: block;
 
-    .form_field{
+    .field_container {
       display: inline-block;
-      margin-right: 2em;
+      width: 49%;
+    }
+
+    .form_field{
+      display: block;
     }
 
     .helptext {
-      display: inline-block;
+      display: block;
     }
   }
 

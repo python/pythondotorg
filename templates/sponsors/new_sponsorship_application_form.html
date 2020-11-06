@@ -53,6 +53,7 @@
         </p>
 
         <div id="file_fields">
+          <div class="field_container">
           <p class="form_field">
             <label>{{ form.web_logo.label }}</label>
             {% render_field form.web_logo %}
@@ -61,7 +62,9 @@
             <span class="helptext">{{ form.web_logo.help_text }}</span>
             {% endif %}
           </p>
+          </div>
 
+          <div class="field_container">
           <p class="form_field">
             <label>{{ form.print_logo.label }}</label>
             {% render_field form.print_logo %}
@@ -70,6 +73,7 @@
             <span class="helptext">{{ form.print_logo.help_text }}</span>
             {% endif %}
           </p>
+          </div>
         </div>
 
         <p class="form_field">
