@@ -1,6 +1,0 @@
-<h3><a href="{{ result.path }}">Job - {{ result.name }}</a></h3>
-
-<p>Location: {{ result.city }}{% if result.region %}, {{ result.region }}{% endif %} {{ result.country }}</p>
-
-{% if result.telecommuting %}<p>Telecommuting: Yes</p>{% endif %}
-<p>{{ result.description|safe }}</p>

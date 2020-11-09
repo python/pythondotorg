@@ -1,7 +1,0 @@
-{{ object.name }}
-{{ object.description }}
-{{ object.name }}
-{{ object.description }}
-{{ object.name }}
-{{ object.description }}
-{{ object.path }}

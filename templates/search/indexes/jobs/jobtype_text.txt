@@ -1,3 +1,0 @@
-job type
-{{ object.name }}
-{{ object.name }} type

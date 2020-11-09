@@ -1,9 +1,0 @@
-{{ object.title }}
-{{ object.name }}
-{{ object.venue }}
-{{ object.title }}
-{{ object.name }}
-{{ object.venue }}
-{{ object.description }}
-{{ object.description }}
-

@@ -1,5 +1,0 @@
-{% if next_time.single_day %}
-<time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}<span class="say-no-more"> {{ next_time.dt_start|date:"Y" }}</span>{% if not next_time.all_day %} {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}{% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }} {{ next_time.dt_end|date:"e" }}{% endif %}{% endif %}</time>
-{% else %}
-<time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}{% if next_time.valid_dt_end %} &ndash; {{ next_time.dt_end|date:"d N" }}{% endif %} <span class="say-no-more"> {{ next_time.dt_end|date:"Y" }}</span></time>
-{% endif %}

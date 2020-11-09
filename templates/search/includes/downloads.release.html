@@ -1,7 +1,0 @@
-<h3>Release &ndash; <a href="{{ result.path }}">{{ result.name }}</a></h3>
-<p>Version: {{ result.version }}</p>
-<p>Released: {{ result.release_date|date }}</p>
-<p>{{ result.description|safe }}</p>
-{% if result.release_notes_url %}
-<p><a href="{{ result.release_notes_url }}">View Release Notes</a></p>
-{% endif %}

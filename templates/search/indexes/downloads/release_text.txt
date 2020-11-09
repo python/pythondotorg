@@ -1,4 +1,0 @@
-{{ object.name }}
-{{ object.version }}
-{{ object.path }}
-{{ object.content }}

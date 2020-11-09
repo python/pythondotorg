@@ -1,1 +1,0 @@
-Job Submitted for Approval: {{ content_object.display_name }}
