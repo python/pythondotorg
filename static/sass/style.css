@@ -3722,6 +3722,10 @@ span.highlighted {
     width: 75%; }
   #new_sponsorship_application_container #sponsor-contacts-container table .remove-contact-row {
     display: none; }
+  #new_sponsorship_application_container #sponsor-contacts-container table input {
+    margin: 0 0.5em 0 0; }
+  #new_sponsorship_application_container #sponsor-contacts-container table br {
+    display: none; }
 #new_sponsorship_application_container #sponsor-contacts-container .formset-btn {
   margin-top: 0.5em;
   font-size: 65%;
