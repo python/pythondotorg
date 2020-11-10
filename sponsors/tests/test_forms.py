@@ -274,7 +274,7 @@ class SponsorshipApplicationFormTests(TestCase):
         sponsor = form.save()
 
         self.assertEqual(2, sponsor.contacts.count())
-        c1, c2 = sponsor.contacts.all()
+        c1, c2 = sorted(sponsor.contacts.all(), key=lambda c: c.name)
         self.assertEqual(c1.name, "Bernardo")
         self.assertTrue(c1.primary)  # first contact should be the primary one
         self.assertIsNone(c1.user)
