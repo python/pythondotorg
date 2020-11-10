@@ -3689,6 +3689,10 @@ span.highlighted {
   margin-bottom: 0; }
   #new_sponsorship_application_container .form_field textarea, #new_sponsorship_application_container .form_field input {
     margin-bottom: 0px; }
+  #new_sponsorship_application_container .form_field select {
+    margin-bottom: 0px; }
+#new_sponsorship_application_container #sponsorship-info-container ul {
+  margin-bottom: 0px; }
 #new_sponsorship_application_container .helptext {
   font-size: 85%; }
 #new_sponsorship_application_container #file_fields {
@@ -3704,38 +3708,39 @@ span.highlighted {
   cursor: pointer;
   text-decoration: underline;
   color: #3776ab; }
-#new_sponsorship_application_container #sponsor-contacts-container {
+#new_sponsorship_application_container #sponsor-contacts-container table {
+  margin-bottom: 0;
+  table-layout: fixed;
+  width: 100%; }
+  #new_sponsorship_application_container #sponsor-contacts-container table * {
+    vertical-align: middle; }
+  #new_sponsorship_application_container #sponsor-contacts-container table th {
+    width: 25%; }
+  #new_sponsorship_application_container #sponsor-contacts-container table td {
+    width: 75%; }
+  #new_sponsorship_application_container #sponsor-contacts-container table .remove-contact-row {
+    display: none; }
+#new_sponsorship_application_container #sponsor-contacts-container .formset-btn {
+  margin-top: 0.5em;
+  font-size: 65%;
+  border-color: #82b043;
+  color: white !important;
+  background-color: #82b043;
+  *zoom: 1;
+  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB2D287', endColorstr='#FF82B043');
+  background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b2d287), color-stop(90%, #82b043));
+  background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
+  background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
+  background-image: -o-linear-gradient(#b2d287 10%, #82b043 90%);
+  background-image: linear-gradient(#b2d287 10%, #82b043 90%); }
+#new_sponsorship_application_container #sponsor-contacts-container .contact-form {
   margin-bottom: 1em; }
-  #new_sponsorship_application_container #sponsor-contacts-container table {
-    margin-bottom: 0;
-    table-layout: fixed;
-    width: 100%; }
-    #new_sponsorship_application_container #sponsor-contacts-container table * {
-      vertical-align: middle; }
-    #new_sponsorship_application_container #sponsor-contacts-container table th {
-      width: 25%; }
-    #new_sponsorship_application_container #sponsor-contacts-container table td {
-      width: 75%; }
-    #new_sponsorship_application_container #sponsor-contacts-container table .remove-contact-row {
-      display: none;
-      font-size: 75%; }
-      #new_sponsorship_application_container #sponsor-contacts-container table .remove-contact-row label {
-        display: inline;
-        cursor: pointer;
-        text-decoration: underline;
-        color: #b55863 !important; }
-  #new_sponsorship_application_container #sponsor-contacts-container .formset-btn {
-    margin-top: 0.5em;
-    font-size: 65%;
-    border-color: #82b043;
-    color: white !important;
-    background-color: #82b043;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB2D287', endColorstr='#FF82B043');
-    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b2d287), color-stop(90%, #82b043));
-    background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
-    background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
-    background-image: -o-linear-gradient(#b2d287 10%, #82b043 90%);
-    background-image: linear-gradient(#b2d287 10%, #82b043 90%); }
-  #new_sponsorship_application_container #sponsor-contacts-container .contact-form {
-    margin-bottom: 1em; }
+#new_sponsorship_application_container #submit-btn {
+  margin-top: 1em; }
+#new_sponsorship_application_container .remove {
+  font-size: 75%; }
+  #new_sponsorship_application_container .remove label {
+    display: inline;
+    cursor: pointer;
+    text-decoration: underline;
+    color: #b55863 !important; }

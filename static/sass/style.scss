@@ -2484,7 +2484,12 @@ span.highlighted {
   .form_field {
     margin-top: 1em;
     margin-bottom: 0;
-    textarea, input { margin-bottom: 0px }
+    textarea, input { margin-bottom: 0px };
+    select { margin-bottom: 0px };
+  }
+
+  #sponsorship-info-container {
+    ul { margin-bottom: 0px; }
   }
 
   .helptext {
@@ -2515,7 +2520,6 @@ span.highlighted {
   }
 
   #sponsor-contacts-container {
-    margin-bottom: 1em;
     table {
       margin-bottom: 0;
       table-layout: fixed;
@@ -2530,13 +2534,6 @@ span.highlighted {
 
       .remove-contact-row {
         display: none;
-        font-size:75%;
-        label {
-          display: inline;
-          cursor: pointer;
-          text-decoration: underline;
-          color: $red !important;
-        }
       }
     }
 
@@ -2551,6 +2548,18 @@ span.highlighted {
 
     .contact-form {
         margin-bottom: 1em;
+    }
+  }
+
+  #submit-btn { margin-top: 1em; }
+
+  .remove {
+    font-size:75%;
+    label {
+      display: inline;
+      cursor: pointer;
+      text-decoration: underline;
+      color: $red !important;
     }
   }
 }

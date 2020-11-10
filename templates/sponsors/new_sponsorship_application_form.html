@@ -8,18 +8,31 @@
   <article id="new_sponsorship_application_container" class="text">
     <h1>Submit Sponsorship Information</h1>
 
+    <div id="sponsorship-info-container" class="user-feedback level-general">
+      <p style="display: inline">We need more information to proceed with your sponsorship application.
+      {% if sponsorship_package %}
+        You selected the <b>{{ sponsorship_package.name }}</b> package with the following benefits:
+      {% else %}
+        You selected the following benefits:
+      {% endif %}
+      </p>
+      <ul>
+        {% for benefit in sponsorship_benefits %}
+          <p>{{ benefit.name }}</p>
+        {% endfor %}
+      </ul>
+      <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
+    </div>
+
     <form action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
 
       {% if form.user_with_previous_sponsors %}
-      <p>You have already filled previous sponsorship application forms. Select an existing sponsor or <span id="new-application-link">create a new one</span>.</p>
       <p id="sponsor-select-field" class="form_field">
         <label>{{ form.sponsor.label }}</label>
         {% render_field form.sponsor %}
-        {% if form.sponsor.help_text %}
         <br/>
-        <span class="helptext">{{ form.sponsor.help_text }}</span>
-        {% endif %}
+        <span class="helptext">You have already filled previous sponsorship application forms. Select an existing sponsor or <span id="new-application-link">create a new one</span>.
       </p>
       {% endif %}
 
@@ -104,7 +117,7 @@
                {% for form in form.contacts_formset %}
                {{ form }}
                {% endfor %}
-               <tr class="remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
+               <tr class="remove remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
             </table>
           </div>
 
@@ -113,7 +126,7 @@
 
       </div>
 
-      <input type="submit" value="Submit">
+      <input id="submit-btn" type="submit" value="Submit">
     </form>
   </article>
 
@@ -203,6 +216,11 @@
       console.log('vai');
       $("#id_sponsor").val("");
       $("#new-appication-fields").show();
+      return false;
+  });
+  $(document).on("click", "#close-info-container", function(e){
+      e.preventDefault();
+      $("#sponsorship-info-container").hide();
       return false;
   });
 </script>

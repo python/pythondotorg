@@ -1,4 +1,5 @@
 import json
+from itertools import chain
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -69,8 +70,12 @@ class NewSponsorshipApplicationView(FormView):
         messages.add_message(self.request, messages.INFO, msg)
         return redirect(reverse("select_sponsorship_application_benefits"))
 
+    @property
+    def benefits_data(self):
+        return cookies.get_sponsorship_selected_benefits(self.request)
+
     def get(self, *args, **kwargs):
-        if not cookies.get_sponsorship_selected_benefits(self.request):
+        if not self.benefits_data:
             return self._redirect_back_to_benefits()
         return super().get(*args, **kwargs)
 
@@ -79,10 +84,27 @@ class NewSponsorshipApplicationView(FormView):
         form_kwargs["user"] = self.request.user
         return form_kwargs
 
+    def get_context_data(self, *args, **kwargs):
+        package_id = self.benefits_data["package"]
+        package = (
+            None if not package_id else SponsorshipPackage.objects.get(id=package_id)
+        )
+        benefits_ids = chain(
+            *[self.benefits_data[k] for k in self.benefits_data if k != "package"]
+        )
+        kwargs.update(
+            {
+                "sponsorship_package": package,
+                "sponsorship_benefits": SponsorshipBenefit.objects.filter(
+                    id__in=benefits_ids
+                ),
+            }
+        )
+        return super().get_context_data(*args, **kwargs)
+
     @transaction.atomic
     def form_valid(self, form):
-        benefits_data = cookies.get_sponsorship_selected_benefits(self.request)
-        benefits_form = SponsorshiptBenefitsForm(data=benefits_data)
+        benefits_form = SponsorshiptBenefitsForm(data=self.benefits_data)
         if not benefits_form.is_valid():
             return self._redirect_back_to_benefits()
 

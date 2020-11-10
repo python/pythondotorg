@@ -152,6 +152,22 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertTemplateUsed(r, "sponsors/new_sponsorship_application_form.html")
         self.assertIsInstance(r.context["form"], SponsorshipApplicationForm)
+        self.assertEqual(r.context["sponsorship_package"], self.package)
+        self.assertEqual(
+            len(r.context["sponsorship_benefits"]), len(self.program_1_benefits)
+        )
+        for benefit in self.program_1_benefits:
+            self.assertIn(benefit, r.context["sponsorship_benefits"])
+
+    def test_return_package_as_none_if_not_previously_selected(self):
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
+            {
+                "package": "",
+                "benefits_psf": [b.id for b in self.program_1_benefits],
+            }
+        )
+        r = self.client.get(self.url)
+        self.assertIsNone(r.context["sponsorship_package"])
 
     def test_display_form_with_errors_if_invalid_post(self):
         r = self.client.post(self.url, {})
