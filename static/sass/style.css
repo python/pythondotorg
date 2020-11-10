@@ -3710,23 +3710,23 @@ span.highlighted {
   cursor: pointer;
   text-decoration: underline;
   color: #3776ab; }
-#new_sponsorship_application_container #sponsor-contacts-container table {
+#new_sponsorship_application_container .sponsor-contacts-container table {
   margin-bottom: 0;
   table-layout: fixed;
   width: 100%; }
-  #new_sponsorship_application_container #sponsor-contacts-container table * {
+  #new_sponsorship_application_container .sponsor-contacts-container table * {
     vertical-align: middle; }
-  #new_sponsorship_application_container #sponsor-contacts-container table th {
+  #new_sponsorship_application_container .sponsor-contacts-container table th {
     width: 25%; }
-  #new_sponsorship_application_container #sponsor-contacts-container table td {
+  #new_sponsorship_application_container .sponsor-contacts-container table td {
     width: 75%; }
-  #new_sponsorship_application_container #sponsor-contacts-container table .remove-contact-row {
+  #new_sponsorship_application_container .sponsor-contacts-container table .remove-contact-row {
     display: none; }
-  #new_sponsorship_application_container #sponsor-contacts-container table input {
+  #new_sponsorship_application_container .sponsor-contacts-container table input {
     margin: 0 0.5em 0 0; }
-  #new_sponsorship_application_container #sponsor-contacts-container table br {
+  #new_sponsorship_application_container .sponsor-contacts-container table br {
     display: none; }
-#new_sponsorship_application_container #sponsor-contacts-container .formset-btn {
+#new_sponsorship_application_container .sponsor-contacts-container .formset-btn {
   margin-top: 0.5em;
   font-size: 65%;
   border-color: #82b043;
@@ -3739,7 +3739,7 @@ span.highlighted {
   background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: -o-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: linear-gradient(#b2d287 10%, #82b043 90%); }
-#new_sponsorship_application_container #sponsor-contacts-container .contact-form {
+#new_sponsorship_application_container .sponsor-contacts-container .contact-form {
   margin-bottom: 1em; }
 #new_sponsorship_application_container #submit-btn {
   margin-top: 1em; }

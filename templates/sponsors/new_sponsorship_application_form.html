@@ -112,18 +112,18 @@
           {% endif %}
         </p>
 
-        <div id="sponsor-contacts-container">
-          <h1>Contacts</h1>
+        <h1>Contacts</h1>
           {{ form.contacts_formset.management_form }}
+          <div class="sponsor-contacts-container">
 
-          <div class="contact-form form-row">
-            <table>
-               {% for form in form.contacts_formset %}
-               {{ form }}
-               {% endfor %}
-               <tr class="remove remove-contact-row remove-form-row"><th><label>Remove contact</label></th></tr>
-            </table>
-          </div>
+            {% for form in form.contacts_formset %}
+            <div class="contact-form form-row">
+              <table>
+                 {{ form }}
+                 <tr class="remove {% if forloop.first %}remove-contact-row {% endif %}remove-form-row"><th><label>Remove contact</label></th></tr>
+              </table>
+            </div>
+            {% endfor %}
 
           <button class="formset-btn add-form-row" type="button">Extra contact</button>
         </div>
