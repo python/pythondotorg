@@ -41,7 +41,7 @@
       </p>
       {% endif %}
 
-      <div id="new-appication-fields" {% if form.user_with_previous_sponsors %}style="display: none"{% endif %}>
+      <div id="new-appication-fields" {% if form.user_with_previous_sponsors and not form.errors %}style="display: none"{% endif %}>
 
         <p class="form_field">
           <label>{{ form.name.label }} <span class="error-message">{% if form.name.errors %}{{ form.name.errors.as_text }}</span>{% endif %}</label>
