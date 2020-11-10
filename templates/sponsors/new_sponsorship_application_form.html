@@ -11,7 +11,7 @@
     <div id="sponsorship-info-container" class="user-feedback level-general">
       <p style="display: inline">We need more information to proceed with your sponsorship application.
       {% if sponsorship_package %}
-        You selected the <b>{{ sponsorship_package.name }}</b> package with the following benefits:
+        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price }}.00 {% endif %}and the following benefits:
       {% else %}
         You selected the following benefits:
       {% endif %}

@@ -92,12 +92,18 @@ class NewSponsorshipApplicationView(FormView):
         benefits_ids = chain(
             *[self.benefits_data[k] for k in self.benefits_data if k != "package"]
         )
+        benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
+        price = None
+
+        # TODO: we have to consider the conflicts as well.
+        if package and set(benefits).issubset(set(package.benefits.all())):
+            price = package.sponsorship_amount
+
         kwargs.update(
             {
                 "sponsorship_package": package,
-                "sponsorship_benefits": SponsorshipBenefit.objects.filter(
-                    id__in=benefits_ids
-                ),
+                "sponsorship_benefits": benefits,
+                "sponsorship_price": price,
             }
         )
         return super().get_context_data(*args, **kwargs)

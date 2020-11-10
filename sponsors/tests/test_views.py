@@ -126,6 +126,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
             SponsorshipBenefit, program=self.psf, _quantity=3
         )
         self.package = baker.make("sponsors.SponsorshipPackage")
+        for benefit in self.program_1_benefits:
+            benefit.packages.add(self.package)
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
                 "package": self.package.id,
@@ -157,6 +159,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertEqual(
             len(r.context["sponsorship_benefits"]), len(self.program_1_benefits)
         )
+        self.assertEqual(
+            r.context["sponsorship_price"], self.package.sponsorship_amount
+        )
         for benefit in self.program_1_benefits:
             self.assertIn(benefit, r.context["sponsorship_benefits"])
 
@@ -168,6 +173,24 @@ class NewSponsorshipApplicationViewTests(TestCase):
         )
         r = self.client.get(self.url)
         self.assertIsNone(r.context["sponsorship_package"])
+        self.assertIsNone(r.context["sponsorship_price"])
+
+    def test_no_sponsorship_price_if_customized_benefits(self):
+        extra_benefit = baker.make(SponsorshipBenefit)
+        benefits = self.program_1_benefits + [extra_benefit]
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
+            {
+                "package": self.package.id,
+                "benefits_psf": [b.id for b in benefits],
+            }
+        )
+
+        r = self.client.get(self.url)
+
+        self.assertEqual(r.context["sponsorship_package"], self.package)
+        self.assertIsNone(r.context["sponsorship_price"])
+        for benefit in benefits:
+            self.assertIn(benefit, r.context["sponsorship_benefits"])
 
     def test_display_form_with_errors_if_invalid_post(self):
         r = self.client.post(self.url, {})
