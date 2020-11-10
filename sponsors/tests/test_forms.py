@@ -159,6 +159,7 @@ class SponsorshipApplicationFormTests(TestCase):
             "contact-0-name": "Bernardo",
             "contact-0-email": "bernardo@companyemail.com",
             "contact-0-phone": "+1999999999",
+            "contact-0-primary": True,
             "contact-TOTAL_FORMS": 1,
             "contact-MAX_NUM_FORMS": 5,
             "contact-MIN_NUM_FORMS": 1,
@@ -280,6 +281,14 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(c2.name, "Secondary")
         self.assertFalse(c2.primary)
         self.assertEqual(c2.user, user)
+
+    def test_invalidate_form_if_no_primary_contact(self):
+        self.data.pop("contact-0-primary")
+        user = baker.make(settings.AUTH_USER_MODEL)
+        form = SponsorshipApplicationForm(self.data, self.files, user=user)
+        self.assertFalse(form.is_valid())
+        msg = "You have to mark at least one contact as the primary one."
+        self.assertIn(msg, form.errors["__all__"])
 
 
 class SponsorContactFormSetTests(TestCase):

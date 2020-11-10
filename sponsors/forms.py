@@ -23,7 +23,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone"]
+        fields = ["name", "email", "phone", "primary"]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -194,6 +194,13 @@ class SponsorshipApplicationForm(forms.Form):
             if not self.contacts_formset.errors:
                 msg = "You have to enter at least one contact"
             raise forms.ValidationError(msg)
+        elif not sponsor:
+            has_primary_contact = any(
+                f.cleaned_data.get("primary") for f in self.contacts_formset.forms
+            )
+            if not has_primary_contact:
+                msg = "You have to mark at least one contact as the primary one."
+                raise forms.ValidationError(msg)
 
     def clean_name(self):
         name = self.cleaned_data.get("name", "")
@@ -238,9 +245,7 @@ class SponsorshipApplicationForm(forms.Form):
             print_logo=self.cleaned_data.get("print_logo"),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
-        for i, contact in enumerate(contacts):
-            if i == 0:  # first contact is the primary one
-                contact.primary = True
+        for contact in contacts:
             if self.user and self.user.email.lower() == contact.email.lower():
                 contact.user = self.user
             contact.sponsor = sponsor

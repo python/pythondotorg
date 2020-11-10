@@ -73,7 +73,6 @@
         <div id="file_fields">
           <div class="field_container">
           <p class="form_field">
-            <label>{{ form.web_logo.label }}</label>
           <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.web_logo %}
             {% if form.web_logo.help_text %}
@@ -117,7 +116,6 @@
           <h1>Contacts</h1>
           {{ form.contacts_formset.management_form }}
 
-          <span><b>Primary contact</b></span>
           <div class="contact-form form-row">
             <table>
                {% for form in form.contacts_formset %}

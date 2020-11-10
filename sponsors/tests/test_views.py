@@ -139,6 +139,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "contact-0-name": "Bernardo",
             "contact-0-email": self.user.email,
             "contact-0-phone": "+1999999999",
+            "contact-0-primary": True,
             "contact-TOTAL_FORMS": 1,
             "contact-MAX_NUM_FORMS": 5,
             "contact-MIN_NUM_FORMS": 1,
