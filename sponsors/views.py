@@ -85,7 +85,7 @@ class NewSponsorshipApplicationView(FormView):
         return form_kwargs
 
     def get_context_data(self, *args, **kwargs):
-        package_id = self.benefits_data["package"]
+        package_id = self.benefits_data.get("package")
         package = (
             None if not package_id else SponsorshipPackage.objects.get(id=package_id)
         )

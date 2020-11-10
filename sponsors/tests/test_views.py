@@ -162,7 +162,6 @@ class NewSponsorshipApplicationViewTests(TestCase):
     def test_return_package_as_none_if_not_previously_selected(self):
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
-                "package": "",
                 "benefits_psf": [b.id for b in self.program_1_benefits],
             }
         )
