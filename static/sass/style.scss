@@ -2486,6 +2486,8 @@ span.highlighted {
     margin-bottom: 0;
     textarea, input { margin-bottom: 0px };
     select { margin-bottom: 0px };
+
+    .error-message { font-size: 75% }
   }
 
   #sponsorship-info-container {
@@ -2561,5 +2563,10 @@ span.highlighted {
       text-decoration: underline;
       color: $red !important;
     }
+  }
+
+  .errorlist {
+    margin: 0;
+    font-size: 75%;
   }
 }

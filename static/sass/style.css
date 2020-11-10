@@ -3691,6 +3691,8 @@ span.highlighted {
     margin-bottom: 0px; }
   #new_sponsorship_application_container .form_field select {
     margin-bottom: 0px; }
+  #new_sponsorship_application_container .form_field .error-message {
+    font-size: 75%; }
 #new_sponsorship_application_container #sponsorship-info-container ul {
   margin-bottom: 0px; }
 #new_sponsorship_application_container .helptext {
@@ -3744,3 +3746,6 @@ span.highlighted {
     cursor: pointer;
     text-decoration: underline;
     color: #b55863 !important; }
+#new_sponsorship_application_container .errorlist {
+  margin: 0;
+  font-size: 75%; }

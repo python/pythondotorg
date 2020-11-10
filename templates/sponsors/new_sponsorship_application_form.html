@@ -24,6 +24,11 @@
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
     </div>
 
+    {% if form.errors %}
+    <span class="error-message">The form has one or more errors</span>
+    {{ form.non_field_errors }}
+    {% endif %}
+
     <form action="" method="POST" enctype="multipart/form-data">
       {% csrf_token %}
 
@@ -39,7 +44,7 @@
       <div id="new-appication-fields" {% if form.user_with_previous_sponsors %}style="display: none"{% endif %}>
 
         <p class="form_field">
-          <label>{{ form.name.label }}</label>
+          <label>{{ form.name.label }} <span class="error-message">{% if form.name.errors %}{{ form.name.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.name %}
           {% if form.name.help_text %}
           <br/>
@@ -48,7 +53,7 @@
         </p>
 
         <p class="form_field">
-          <label>{{ form.description.label }}</label>
+          <label>{{ form.description.label }} <span class="error-message">{% if form.description.errors %}{{ form.description.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.description %}
           {% if form.description.help_text %}
           <br/>
@@ -57,7 +62,7 @@
         </p>
 
         <p class="form_field">
-          <label>{{ form.landing_page_url.label }}</label>
+          <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}{{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.landing_page_url %}
           {% if form.landing_page_url.help_text %}
           <br/>
@@ -69,6 +74,7 @@
           <div class="field_container">
           <p class="form_field">
             <label>{{ form.web_logo.label }}</label>
+          <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.web_logo %}
             {% if form.web_logo.help_text %}
             <br/>
@@ -79,7 +85,7 @@
 
           <div class="field_container">
           <p class="form_field">
-            <label>{{ form.print_logo.label }}</label>
+            <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.print_logo %}
             {% if form.print_logo.help_text %}
             <br/>
@@ -90,7 +96,7 @@
         </div>
 
         <p class="form_field">
-          <label>{{ form.primary_phone.label }}</label>
+          <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.primary_phone %}
           {% if form.primary_phone.help_text %}
           <br/>
@@ -99,7 +105,7 @@
         </p>
 
         <p class="form_field">
-          <label>{{ form.mailing_address.label }}</label>
+          <label>{{ form.mailing_address.label }} <span class="error-message">{% if form.mailing_address.errors %}{{ form.mailing_address.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.mailing_address %}
           {% if form.mailing_address.help_text %}
           <br/>
