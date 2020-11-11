@@ -13,8 +13,9 @@ from django.shortcuts import redirect
 
 from .models import Sponsor, SponsorshipBenefit, SponsorshipPackage, Sponsorship
 
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors import cookies
+from sponsors import use_cases
+from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 
 
 @method_decorator(staff_member_required(login_url=settings.LOGIN_URL), name="dispatch")
@@ -114,9 +115,9 @@ class NewSponsorshipApplicationView(FormView):
             return self._redirect_back_to_benefits()
 
         sponsor = form.save()
-        Sponsorship.new(
-            sponsor, benefits_form.get_benefits(), benefits_form.get_package()
-        )
+
+        uc = use_cases.CreateSponsorshipApplicationUseCase()
+        uc.execute(sponsor, benefits_form.get_benefits(), benefits_form.get_package())
 
         response = super().form_valid(form)
         cookies.delete_sponsorship_selected_benefits(response)
