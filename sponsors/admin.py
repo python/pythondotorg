@@ -18,7 +18,11 @@ from cms.admin import ContentManageableModelAdmin
 
 @admin.register(SponsorshipProgram)
 class SponsorshipProgramAdmin(OrderedModelAdmin):
-    pass
+    ordering = ("order",)
+    list_display = [
+        "name",
+        "move_up_down_links",
+    ]
 
 
 @admin.register(SponsorshipBenefit)
