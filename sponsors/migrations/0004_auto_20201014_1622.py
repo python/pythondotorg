@@ -40,10 +40,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={
-                "ordering": ("order",),
-                "abstract": False,
-            },
+            options={"ordering": ("order",), "abstract": False,},
         ),
         migrations.CreateModel(
             name="SponsorshipLevel",
@@ -66,10 +63,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=64)),
                 ("sponsorship_amount", models.PositiveIntegerField()),
             ],
-            options={
-                "ordering": ("order",),
-                "abstract": False,
-            },
+            options={"ordering": ("order",), "abstract": False,},
         ),
         migrations.CreateModel(
             name="SponsorshipProgram",
@@ -92,10 +86,7 @@ class Migration(migrations.Migration):
                 ("name", models.CharField(max_length=64)),
                 ("description", models.TextField(blank=True, null=True)),
             ],
-            options={
-                "ordering": ("order",),
-                "abstract": False,
-            },
+            options={"ordering": ("order",), "abstract": False,},
         ),
         migrations.AddField(
             model_name="sponsorshipbenefit",

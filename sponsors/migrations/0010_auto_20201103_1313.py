@@ -11,10 +11,7 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name="sponsorship",
-            name="sponsor_info",
-        ),
+        migrations.RemoveField(model_name="sponsorship", name="sponsor_info",),
         migrations.AddField(
             model_name="sponsor",
             name="description",
@@ -93,7 +90,5 @@ class Migration(migrations.Migration):
                 to="sponsors.Sponsor",
             ),
         ),
-        migrations.DeleteModel(
-            name="SponsorInformation",
-        ),
+        migrations.DeleteModel(name="SponsorInformation",),
     ]
