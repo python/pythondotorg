@@ -2478,3 +2478,97 @@ span.highlighted {
         }
     }
 }
+
+
+#new_sponsorship_application_container {
+  .form_field {
+    margin-top: 1em;
+    margin-bottom: 0;
+    textarea, input { margin-bottom: 0px };
+    select { margin-bottom: 0px };
+
+    .error-message { font-size: 75% }
+  }
+
+  #sponsorship-info-container {
+    ul { margin-bottom: 0px; }
+  }
+
+  .helptext {
+    font-size: 85%;
+  }
+
+  #file_fields {
+    display: block;
+
+    .field_container {
+      display: inline-block;
+      width: 49%;
+    }
+
+    .form_field{
+      display: block;
+    }
+
+    .helptext {
+      display: block;
+    }
+  }
+
+  #new-application-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $link-color;
+  }
+
+  .sponsor-contacts-container {
+    table {
+      margin-bottom: 0;
+      table-layout: fixed;
+      width: 100%;
+      * {vertical-align: middle;}
+      th {
+        width: 25%;
+      }
+      td {
+        width: 75%;
+      }
+
+      .remove-contact-row {
+        display: none;
+      }
+
+      input { margin: 0 0.5em 0 0; }
+      br { display: none }
+    }
+
+    .formset-btn {
+      margin-top: 0.5em;
+      font-size: 65%;
+      border-color: $green;
+      color: $white !important;
+      @include vertical-gradient(lighten( $green, 20% ), $green);
+    }
+
+    .contact-form {
+        margin-bottom: 1em;
+    }
+  }
+
+  #submit-btn { margin-top: 1em; }
+
+  .remove {
+    font-size:75%;
+    label {
+      display: inline;
+      cursor: pointer;
+      text-decoration: underline;
+      color: $red !important;
+    }
+  }
+
+  .errorlist {
+    margin: 0;
+    font-size: 75%;
+  }
+}

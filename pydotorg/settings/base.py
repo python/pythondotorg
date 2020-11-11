@@ -152,6 +152,7 @@ INSTALLED_APPS = [
     'honeypot',
     'waffle',
     'ordered_model',
+    'widget_tweaks',
 
     'users',
     'boxes',

@@ -1,13 +1,28 @@
-from django.contrib import admin
 from ordered_model.admin import OrderedModelAdmin
 
-from .models import SponsorshipPackage, SponsorshipProgram, SponsorshipBenefit, Sponsor
+from django.urls import path, reverse
+from django.contrib import admin
+from django.utils.html import mark_safe
+from django.shortcuts import get_object_or_404, render
+
+from .models import (
+    SponsorshipPackage,
+    SponsorshipProgram,
+    SponsorshipBenefit,
+    Sponsor,
+    Sponsorship,
+    SponsorContact,
+)
 from cms.admin import ContentManageableModelAdmin
 
 
 @admin.register(SponsorshipProgram)
 class SponsorshipProgramAdmin(OrderedModelAdmin):
-    pass
+    ordering = ("order",)
+    list_display = [
+        "name",
+        "move_up_down_links",
+    ]
 
 
 @admin.register(SponsorshipBenefit)
@@ -58,14 +73,49 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     list_display = ["name", "move_up_down_links"]
 
 
+class SponsorContactInline(admin.TabularInline):
+    model = SponsorContact
+    extra = 0
+
+
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
-    raw_id_fields = ["company"]
+    inlines = [SponsorContactInline]
 
-    def get_list_filter(self, request):
-        fields = list(super().get_list_filter(request))
-        return fields + ["is_published"]
 
-    def get_list_display(self, request):
-        fields = list(super().get_list_display(request))
-        return fields + ["is_published"]
+@admin.register(Sponsorship)
+class SponsorshipAdmin(admin.ModelAdmin):
+    list_display = [
+        "sponsor",
+        "applied_on",
+        "approved_on",
+        "start_date",
+        "end_date",
+        "display_sponsorship_link",
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsor")
+
+    def display_sponsorship_link(self, obj):
+        url = reverse("admin:sponsors_sponsorship_preview", args=[obj.pk])
+        return mark_safe(f'<a href="{url}" target="_blank">Click to preview</a>')
+
+    display_sponsorship_link.short_description = "Preview sponsorship"
+
+    def preview_sponsorship_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+        ctx = {"sponsorship": sponsorship}
+        return render(request, "sponsors/admin/preview-sponsorship.html", context=ctx)
+
+    def get_urls(self, *args, **kwargs):
+        urls = super().get_urls(*args, **kwargs)
+        custom_urls = [
+            path(
+                "<int:pk>/preview",
+                self.admin_site.admin_view(self.preview_sponsorship_view),
+                name="sponsors_sponsorship_preview",
+            ),
+        ]
+        return custom_urls + urls

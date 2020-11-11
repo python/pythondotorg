@@ -2,8 +2,15 @@ from itertools import chain
 from django import forms
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
+from django.utils.functional import cached_property
 
-from sponsors.models import SponsorshipBenefit, SponsorshipPackage, SponsorshipProgram
+from sponsors.models import (
+    SponsorshipBenefit,
+    SponsorshipPackage,
+    SponsorshipProgram,
+    Sponsor,
+    SponsorContact,
+)
 
 
 class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
@@ -11,6 +18,23 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
         return obj.name
+
+
+class SponsorContactForm(forms.ModelForm):
+    class Meta:
+        model = SponsorContact
+        fields = ["name", "email", "phone", "primary"]
+
+
+SponsorContactFormSet = forms.formset_factory(
+    SponsorContactForm,
+    extra=0,
+    min_num=1,
+    validate_min=True,
+    can_delete=False,
+    can_order=False,
+    max_num=5,
+)
 
 
 class SponsorshiptBenefitsForm(forms.Form):
@@ -53,6 +77,9 @@ class SponsorshiptBenefitsForm(forms.Form):
         return list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
+
+    def get_package(self):
+        return self.cleaned_data.get("package")
 
     def _clean_benefits(self, cleaned_data):
         """
@@ -100,3 +127,130 @@ class SponsorshiptBenefitsForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         return self._clean_benefits(cleaned_data)
+
+
+class SponsorshipApplicationForm(forms.Form):
+    name = forms.CharField(
+        max_length=100,
+        label="Sponsor name",
+        help_text="Name of the sponsor, for public display.",
+        required=False,
+    )
+    description = forms.CharField(
+        label="Sponsor description",
+        help_text="Brief description of the sponsor for public display.",
+        required=False,
+        widget=forms.TextInput,
+    )
+    landing_page_url = forms.URLField(
+        label="Sponsor landing page",
+        help_text="Sponsor landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
+        required=False,
+    )
+    web_logo = forms.ImageField(
+        label="Sponsor web logo",
+        help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        required=False,
+    )
+    print_logo = forms.FileField(
+        label="Sponsor print logo",
+        help_text="For printed materials, signage, and projection. SVG or EPS",
+        required=False,
+    )
+
+    primary_phone = forms.CharField(
+        label="Sponsor Primary Phone", max_length=32, required=False,
+    )
+    mailing_address = forms.CharField(
+        label="Sponsor Mailing/Billing Address", widget=forms.TextInput, required=False,
+    )
+
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop("user", None)
+        super().__init__(*args, **kwargs)
+        qs = Sponsor.objects.none()
+        if self.user:
+            sponsor_ids = SponsorContact.objects.filter(user=self.user).values_list(
+                "sponsor", flat=True
+            )
+            qs = Sponsor.objects.filter(id__in=sponsor_ids)
+        self.fields["sponsor"] = forms.ModelChoiceField(queryset=qs, required=False)
+
+        formset_kwargs = {"prefix": "contact"}
+        if self.data:
+            self.contacts_formset = SponsorContactFormSet(self.data, **formset_kwargs)
+        else:
+            self.contacts_formset = SponsorContactFormSet(**formset_kwargs)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not self.contacts_formset.is_valid():
+            msg = "Errors with contact(s) information"
+            if not self.contacts_formset.errors:
+                msg = "You have to enter at least one contact"
+            raise forms.ValidationError(msg)
+        elif not sponsor:
+            has_primary_contact = any(
+                f.cleaned_data.get("primary") for f in self.contacts_formset.forms
+            )
+            if not has_primary_contact:
+                msg = "You have to mark at least one contact as the primary one."
+                raise forms.ValidationError(msg)
+
+    def clean_name(self):
+        name = self.cleaned_data.get("name", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not name:
+            raise forms.ValidationError("This field is required.")
+        return name.strip()
+
+    def clean_web_logo(self):
+        web_logo = self.cleaned_data.get("web_logo", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not web_logo:
+            raise forms.ValidationError("This field is required.")
+        return web_logo
+
+    def clean_primary_phone(self):
+        primary_phone = self.cleaned_data.get("primary_phone", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not primary_phone:
+            raise forms.ValidationError("This field is required.")
+        return primary_phone.strip()
+
+    def clean_mailing_address(self):
+        mailing_address = self.cleaned_data.get("mailing_address", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not mailing_address:
+            raise forms.ValidationError("This field is required.")
+        return mailing_address.strip()
+
+    def save(self):
+        selected_sponsor = self.cleaned_data.get("sponsor")
+        if selected_sponsor:
+            return selected_sponsor
+
+        sponsor = Sponsor.objects.create(
+            name=self.cleaned_data["name"],
+            web_logo=self.cleaned_data["web_logo"],
+            primary_phone=self.cleaned_data["primary_phone"],
+            mailing_address=self.cleaned_data["mailing_address"],
+            description=self.cleaned_data.get("description", ""),
+            landing_page_url=self.cleaned_data.get("landing_page_url", ""),
+            print_logo=self.cleaned_data.get("print_logo"),
+        )
+        contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
+        for contact in contacts:
+            if self.user and self.user.email.lower() == contact.email.lower():
+                contact.user = self.user
+            contact.sponsor = sponsor
+            contact.save()
+
+        return sponsor
+
+    @cached_property
+    def user_with_previous_sponsors(self):
+        if not self.user:
+            return False
+        return self.fields["sponsor"].queryset.exists()

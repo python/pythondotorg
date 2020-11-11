@@ -11,17 +11,10 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.RenameModel(
-            old_name="SponsorshipLevel",
-            new_name="SponsorshipPackage",
+            old_name="SponsorshipLevel", new_name="SponsorshipPackage",
         ),
-        migrations.RemoveField(
-            model_name="sponsorshipbenefit",
-            name="levels",
-        ),
-        migrations.RemoveField(
-            model_name="sponsorshipbenefit",
-            name="minimum_level",
-        ),
+        migrations.RemoveField(model_name="sponsorshipbenefit", name="levels",),
+        migrations.RemoveField(model_name="sponsorshipbenefit", name="minimum_level",),
         migrations.AddField(
             model_name="sponsorshipbenefit",
             name="new",
