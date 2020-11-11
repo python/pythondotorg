@@ -116,8 +116,13 @@ class NewSponsorshipApplicationView(FormView):
 
         sponsor = form.save()
 
-        uc = use_cases.CreateSponsorshipApplicationUseCase()
-        uc.execute(sponsor, benefits_form.get_benefits(), benefits_form.get_package())
+        uc = use_cases.CreateSponsorshipApplicationUseCase.build()
+        uc.execute(
+            self.request.user,
+            sponsor,
+            benefits_form.get_benefits(),
+            benefits_form.get_package(),
+        )
 
         response = super().form_valid(form)
         cookies.delete_sponsorship_selected_benefits(response)
