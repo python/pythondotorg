@@ -95,8 +95,7 @@ class NewSponsorshipApplicationView(FormView):
         benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
         price = None
 
-        # TODO: we have to consider the conflicts as well.
-        if package and set(benefits).issubset(set(package.benefits.all())):
+        if package and not package.has_user_customization(benefits):
             price = package.sponsorship_amount
 
         kwargs.update(

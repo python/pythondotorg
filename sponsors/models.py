@@ -1,3 +1,4 @@
+from itertools import chain
 from django.conf import settings
 from django.db import models
 from django.template.defaultfilters import truncatechars
@@ -22,6 +23,37 @@ class SponsorshipPackage(OrderedModel):
     class Meta(OrderedModel.Meta):
         pass
 
+    def has_user_customization(self, benefits):
+        """
+        Given a list of benefits this method checks if it exclusively matches the package benefits
+        """
+        pkg_benefits_with_conflicts = set(self.benefits.with_conflicts())
+
+        # check if all packages' benefits without conflict are present in benefits list
+        from_pkg_benefits = set(
+            [b for b in benefits if not b in pkg_benefits_with_conflicts]
+        )
+        if from_pkg_benefits != set(self.benefits.without_conflicts()):
+            return True
+
+        # check if at least one of the conflicting benefits is present
+        remaining_benefits = set(benefits) - from_pkg_benefits
+        if not remaining_benefits and pkg_benefits_with_conflicts:
+            return True
+
+        # create groups of conflicting benefits ids
+        conflicts_groups = []
+        for pkg_benefit in pkg_benefits_with_conflicts:
+            if pkg_benefit in chain(*conflicts_groups):
+                continue
+            grp = set([pkg_benefit] + list(pkg_benefit.conflicts.all()))
+            conflicts_groups.append(grp)
+
+        has_all_conflicts = all(
+            g.intersection(remaining_benefits) for g in conflicts_groups
+        )
+        return not has_all_conflicts
+
 
 class SponsorshipProgram(OrderedModel):
     name = models.CharField(max_length=64)
@@ -37,6 +69,9 @@ class SponsorshipProgram(OrderedModel):
 class SponsorshipBenefitManager(OrderedModelManager):
     def with_conflicts(self):
         return self.exclude(conflicts__isnull=True)
+
+    def without_conflicts(self):
+        return self.filter(conflicts__isnull=True)
 
 
 class SponsorshipBenefit(OrderedModel):
