@@ -37,7 +37,10 @@ class SponsorshipModelTests(TestCase):
 
         self.assertEqual(sponsorship.sponsor, sponsor)
         self.assertEqual(sponsorship.applied_on, date.today())
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
+        self.assertIsNone(sponsorship.rejected_on)
+        self.assertIsNone(sponsorship.finalized_on)
         self.assertIsNone(sponsorship.start_date)
         self.assertIsNone(sponsorship.end_date)
         self.assertEqual(sponsorship.level_name, "")
