@@ -216,11 +216,29 @@ class SponsorContact(models.Model):
 
 
 class Sponsorship(models.Model):
+    APPLIED = "applied"
+    REJECTED = "rejected"
+    APPROVED = "approved"
+    FINALIZED = "finalized"
+
+    STATUS_CHOICES = [
+        (APPLIED, "Applied"),
+        (REJECTED, "Rejected"),
+        (APPROVED, "Approved"),
+        (FINALIZED, "Finalized"),
+    ]
+
     sponsor = models.ForeignKey("Sponsor", null=True, on_delete=models.SET_NULL)
-    applied_on = models.DateField(auto_now_add=True)
-    approved_on = models.DateField(null=True, blank=True)
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=APPLIED, db_index=True
+    )
+
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
+    applied_on = models.DateField(auto_now_add=True)
+    approved_on = models.DateField(null=True, blank=True)
+    rejected_on = models.DateField(null=True, blank=True)
+    finalized_on = models.DateField(null=True, blank=True)
 
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
