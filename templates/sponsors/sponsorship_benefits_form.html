@@ -34,6 +34,7 @@
           <div id="benefits_container">
             <div id="benefits_icons_legend">
               <div>
+                <span><i class="fa fa-asterisk"></i> {{ benefit_model.NEW_MESSAGE }}</span>
                 <span><i class="fa fa-cubes"></i> {{ benefit_model.PACKAGE_ONLY_MESSAGE }}</span>
                 <span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>
               </div>
@@ -49,6 +50,7 @@
                     <label for="id_{{field.name}}_{{ forloop.counter0 }}" title="{{ benefit.unavailability_message }}">
                         <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %}>
                         {{ benefit.name }}
+                        {% if benefit.new %}<span class="fa fa-asterisk"></span>{% endif %}
                         {% if benefit.package_only %}<i class="fa fa-cubes"></i>{% endif %}
                         {% if not benefit.has_capacity %}<i class="fa fa-close"></i>{% endif %}
                     </label>

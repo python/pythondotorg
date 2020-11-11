@@ -150,6 +150,7 @@ class SponsorshipBenefit(OrderedModel):
         help_text="For benefits that conflict with one another,",
     )
 
+    NEW_MESSAGE = "New benefit this year!"
     PACKAGE_ONLY_MESSAGE = "This benefit is only available with packages"
     NO_CAPACITY_MESSAGE = "This benefit is currently at capacity"
 
