@@ -92,5 +92,9 @@
 
 {% block javascript %}
   {{ block.super }}
+  {% javascript 'sponsors' %}
+  {% comment %}
+  {# equivalent to: #}
   <script src="{{ STATIC_URL }}js/sponsors/applicationForm.js"></script>
+  {% endcomment %}
 {% endblock %}
