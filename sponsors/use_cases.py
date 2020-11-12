@@ -1,4 +1,5 @@
 from sponsors.models import Sponsorship
+from sponsors import notifications
 
 
 class CreateSponsorshipApplicationUseCase:
@@ -15,5 +16,8 @@ class CreateSponsorshipApplicationUseCase:
 
     @classmethod
     def build(cls):
-        notifications = []  # TODO: add notifications
-        return cls(notifications)
+        uc_notifications = [
+            notifications.AppliedSponsorshipNotificationToPSF(),
+            notifications.AppliedSponsorshipNotificationToSponsors(),
+        ]
+        return cls(uc_notifications)

@@ -4,6 +4,7 @@ from itertools import chain
 
 from django.contrib import messages
 from django.conf import settings
+from django.core import mail
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 from django.contrib.messages import get_messages
@@ -244,6 +245,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertEqual(
             r.client.cookies.get("sponsorship_selected_benefits").value, ""
         )
+        self.assertTrue(mail.outbox)
 
     def test_redirect_user_back_to_benefits_selection_if_post_without_valid_set_of_benefits(
         self,

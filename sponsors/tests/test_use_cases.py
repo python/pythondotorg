@@ -5,6 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from sponsors import use_cases
+from sponsors.notifications import *
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -34,3 +35,10 @@ class CreateSponsorshipApplicationUseCaseTests(TestCase):
 
         for n in self.notifications:
             n.notify.assert_called_once_with(sponsorship=sponsorship, user=self.user)
+
+    def test_build_use_case_with_correct_notifications(self):
+        uc = use_cases.CreateSponsorshipApplicationUseCase.build()
+
+        self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], AppliedSponsorshipNotificationToPSF)
+        self.assertIsInstance(uc.notifications[1], AppliedSponsorshipNotificationToSponsors)
