@@ -2399,6 +2399,10 @@ span.highlighted {
     display: block;
     text-align: center;
 
+    form {
+        margin-bottom: 0;
+    }
+
     #package_selection {
         display: inline-block;
         li {float: left;}
@@ -2438,6 +2442,9 @@ span.highlighted {
 
     #benefits_container{
         display: block;
+        width: 100vw;
+        position: relative;
+        left: calc(-50vw + 50%);
 
         .title {
             margin: 0 0 1em 0;
@@ -2458,7 +2465,7 @@ span.highlighted {
             margin-right: 0.5em;
             margin-top: 0.25em;
             margin-bottom: 0.5em;
-            width: 30%;
+            width: 24%;
 
             ul {
               text-align: left;
