@@ -1,0 +1,1 @@
+subject email psf-sponsors@python.org

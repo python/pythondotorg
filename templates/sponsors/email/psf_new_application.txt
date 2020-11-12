@@ -1,0 +1,3 @@
+content email psf-sponsors@python.org
+{{ user }}
+{{ sponsorship }}
