@@ -17,12 +17,17 @@ $(document).ready(function(){
 
       checkboxesContainer.find(':checkbox').each(function(){
           $(this).prop('checked', false);
+          let packageOnlyBenefit = $(this).attr("package_only");
+          if (packageOnlyBenefit) $(this).attr("disabled", true);
       });
 
       let packageInfo = $("#package_benefits_" + package);
       packageInfo.children().each(function(){
           let benefit = $(this).html()
-          checkboxesContainer.find(`[value=${benefit}]`).trigger("click");
+          let benefitInput = checkboxesContainer.find(`[value=${benefit}]`);
+          let packageOnlyBenefit = benefitInput.attr("package_only");
+          benefitInput.removeAttr("disabled");
+          benefitInput.trigger("click");
       });
 
       let url = $("#cost_container").attr("calculate_cost_url");
@@ -38,7 +43,12 @@ $(document).ready(function(){
       if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
 
       let active = checkboxesContainer.find(`[value=${benefit}]`).prop("checked");
-      if (!active) return;
+      if (!active) {
+          let packageOnlyBenefit = $(this).attr("package_only");
+          if (packageOnlyBenefit) $(this).attr("disabled", true);
+          return;
+      }
+
 
       $(`#conflicts_with_${benefit}`).children().each(function(){
           let conflictId = $(this).html();
