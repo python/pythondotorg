@@ -93,6 +93,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "end_date",
         "display_sponsorship_link",
     ]
+    readonly_fields = [
+        'sponsor',
+        'status',
+        'applied_on',
+        'rejected_on',
+        'approved_on',
+        'finalized_on',
+    ]
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
