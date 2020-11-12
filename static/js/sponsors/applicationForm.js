@@ -24,7 +24,7 @@ $(document).ready(function(){
       let packageInfo = $("#package_benefits_" + package);
       packageInfo.children().each(function(){
           let benefit = $(this).html()
-          let benefitInput = checkboxesContainer.find(`[value=${benefit}]`);
+          let benefitInput = checkboxesContainer.find('[value=' + benefit + ']');
           let packageOnlyBenefit = benefitInput.attr("package_only");
           benefitInput.removeAttr("disabled");
           benefitInput.trigger("click");
@@ -34,7 +34,7 @@ $(document).ready(function(){
       let data = $("form").serialize();
 
       let cost = packageInfo.attr("data-cost");
-      costLabel.html(`Sponsorship cost is $${cost}.00`)
+      costLabel.html('Sponsorship cost is $' + cost + '.00')
     });
 
     $("input[id^=id_benefits_]").change(function(){
@@ -42,7 +42,7 @@ $(document).ready(function(){
       if (benefit.length == 0) return;
       if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
 
-      let active = checkboxesContainer.find(`[value=${benefit}]`).prop("checked");
+      let active = checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
       if (!active) {
           let packageOnlyBenefit = $(this).attr("package_only");
           if (packageOnlyBenefit) $(this).attr("disabled", true);
@@ -50,9 +50,9 @@ $(document).ready(function(){
       }
 
 
-      $(`#conflicts_with_${benefit}`).children().each(function(){
+      $('#conflicts_with_' + benefit).children().each(function(){
           let conflictId = $(this).html();
-          let conflictCheckbox = checkboxesContainer.find(`[value=${conflictId}]`);
+          let conflictCheckbox = checkboxesContainer.find('[value=' + conflictId + ']');
           let checked = conflictCheckbox.prop("checked");
           if (checked){
             conflictCheckbox.trigger("click");
