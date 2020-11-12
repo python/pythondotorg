@@ -50,6 +50,12 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/main-min.js',
     },
+    'sponsors': {
+        'source_filenames': (
+            'js/sponsors/applicationForm.js',
+        ),
+        'output_filename': 'js/sponsors-min.js',
+    },
     'IE8': {
         'source_filenames': (
             'js/plugins/IE8.js',
