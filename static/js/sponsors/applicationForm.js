@@ -47,6 +47,8 @@ $(document).ready(function(){
           let packageOnlyBenefit = $(this).attr("package_only");
           if (packageOnlyBenefit) $(this).attr("disabled", true);
           return;
+      } else {
+          $('label[benefit_id=' + benefit + ']').addClass("active");
       }
 
 
