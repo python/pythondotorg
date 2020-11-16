@@ -35,7 +35,7 @@
             <div id="benefits_icons_legend">
               <div>
                 <span><i class="fa fa-cubes"></i> {{ benefit_model.PACKAGE_ONLY_MESSAGE }}</span>
-                <span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>
+                {% if capacities_met %}<span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>{% endif %}
               </div>
             </div>
 

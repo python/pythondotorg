@@ -11,7 +11,13 @@ from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect
 
-from .models import Sponsor, SponsorshipBenefit, SponsorshipPackage, Sponsorship
+from .models import (
+    Sponsor,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+    SponsorshipProgram,
+    Sponsorship,
+)
 
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors import cookies
@@ -23,10 +29,20 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
     template_name = "sponsors/sponsorship_benefits_form.html"
 
     def get_context_data(self, *args, **kwargs):
+        programs = SponsorshipProgram.objects.all()
+        packages = SponsorshipPackage.objects.all()
+        benefits_qs = SponsorshipBenefit.objects.select_related("program")
+        capacities_met = any(
+            [
+                any([not b.has_capacity for b in benefits_qs.filter(program=p)])
+                for p in programs
+            ]
+        )
         kwargs.update(
             {
                 "benefit_model": SponsorshipBenefit,
-                "sponsorship_packages": SponsorshipPackage.objects.all(),
+                "sponsorship_packages": packages,
+                "capacities_met": capacities_met,
             }
         )
         return super().get_context_data(*args, **kwargs)

@@ -112,6 +112,20 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
         self.assertEqual(initial, r.context["form"].initial)
 
+    def test_capacity_flag(self):
+        psf_package = baker.make("sponsors.SponsorshipPackage")
+        r = self.client.get(self.url)
+        self.assertEqual(False, r.context["capacities_met"])
+
+    def test_capacity_flag_when_needed(self):
+        at_capacity_benefit = baker.make(
+            SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
+        )
+        psf_package = baker.make("sponsors.SponsorshipPackage")
+
+        r = self.client.get(self.url)
+        self.assertEqual(True, r.context["capacities_met"])
+
 
 class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
