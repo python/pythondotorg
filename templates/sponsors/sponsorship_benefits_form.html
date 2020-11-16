@@ -10,7 +10,12 @@
 {% block content %}
 
     <article id="sponsorship_application_container" class="text">
-        <h1>Sponsorship Application</h1>
+
+        <div id="sponsorship-application-box">
+        {% box 'sponsorship-application' %}
+        </div>
+
+        <hr>
 
         <form id="application_form" action="" method="POST">
           {% csrf_token %}
@@ -24,7 +29,7 @@
           </div>
 
           <div id="cost_container">
-            <span id="cost_label">Select a package or customize the benefits</span>
+            <span id="cost_label"></span>
           </div>
 
           <div id="clear_form_btn">

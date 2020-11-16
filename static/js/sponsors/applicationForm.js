@@ -10,7 +10,7 @@ $(document).ready(function(){
         checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
         });
-        $("#cost_label").html("Select a package or customize the benefits");
+        $("#cost_label").html("");
     });
 
     $("input[name=package]").change(function(){
@@ -44,7 +44,7 @@ $(document).ready(function(){
     $("input[id^=id_benefits_]").change(function(){
       let benefit = this.value;
       if (benefit.length == 0) return;
-      if (costLabel.html() != "Updating cost...") costLabel.html("Submit your application and we'll get in touch...");
+      if (costLabel.html() != "Updating cost...") costLabel.html("Please submit your customized sponsorship package application and we'll contact you within 2 business days.");
 
       let active = checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
       if (!active) {
