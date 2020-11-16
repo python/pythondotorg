@@ -1,6 +1,7 @@
 from itertools import chain
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
@@ -276,6 +277,10 @@ class Sponsorship(models.Model):
             )
 
         return sponsorship
+
+    @property
+    def estimated_cost(self):
+        return self.benefits.aggregate(Sum('benefit_internal_value'))['benefit_internal_value__sum'] or 0
 
 
 class SponsorBenefit(models.Model):

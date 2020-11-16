@@ -80,6 +80,17 @@ class SponsorshipModelTests(TestCase):
         self.assertTrue(sponsorship.for_modified_package)
         self.assertEqual(sponsorship.benefits.count(), 2)
 
+    def test_estimated_cost_property(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        estimated_cost = sum([b.internal_value for b in self.benefits])
+
+        self.assertNotEqual(estimated_cost, 0)
+        self.assertEqual(estimated_cost, sponsorship.estimated_cost)
+
+        # estimated cost should not change even if original benefts get update
+        SponsorshipBenefit.objects.all().update(internal_value=0)
+        self.assertEqual(estimated_cost, sponsorship.estimated_cost)
+
 
 class SponsorshipPackageTests(TestCase):
     def setUp(self):

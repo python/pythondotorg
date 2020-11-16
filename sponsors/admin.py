@@ -2,6 +2,7 @@ from ordered_model.admin import OrderedModelAdmin
 
 from django.urls import path, reverse
 from django.contrib import admin
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.utils.html import mark_safe
 from django.shortcuts import get_object_or_404, render
 
@@ -94,10 +95,12 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "display_sponsorship_link",
     ]
     readonly_fields = [
+        'for_modified_package',
         'sponsor',
         'status',
         'applied_on',
         'rejected_on',
+        'get_estimated_cost',
         'approved_on',
         'finalized_on',
     ]
@@ -109,8 +112,18 @@ class SponsorshipAdmin(admin.ModelAdmin):
     def display_sponsorship_link(self, obj):
         url = reverse("admin:sponsors_sponsorship_preview", args=[obj.pk])
         return mark_safe(f'<a href="{url}" target="_blank">Click to preview</a>')
-
     display_sponsorship_link.short_description = "Preview sponsorship"
+
+    def get_estimated_cost(self, obj):
+        cost = None
+        msg = "This sponsorship has not customizations so there's no estimated cost"
+        html = f"<b>Important: </b> {msg}"
+        if obj.for_modified_package:
+            msg = "This sponsorship has customizations and this cost is a sum of all benefit's internal values from when this sponsorship was created"
+            cost = intcomma(obj.estimated_cost)
+            html = f"{cost} USD <br/><b>Important: </b> {msg}"
+        return mark_safe(html)
+    get_estimated_cost.short_description = "Estimated cost"
 
     def preview_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
