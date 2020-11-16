@@ -272,6 +272,7 @@ class Sponsorship(models.Model):
                 name=benefit.name,
                 description=benefit.description,
                 program=benefit.program,
+                benefit_internal_value=benefit.internal_value,
             )
 
         return sponsorship
@@ -306,6 +307,14 @@ class SponsorBenefit(models.Model):
         on_delete=models.SET_NULL,
         verbose_name="Sponsorship Program",
         help_text="Which sponsorship program the benefit is associated with.",
+    )
+    benefit_internal_value = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Benefit Internal Value",
+        help_text=(
+            "Benefit's internal value from when the Sponsorship gets created"
+        ),
     )
 
 
