@@ -6,6 +6,10 @@ $(document).ready(function(){
     $("#clear_form_btn").click(function(){
         $("#application_form").trigger("reset");
         $("#application_form [class=active]").removeClass("active");
+        $("input[name=package]").prop("checked", false);
+        checkboxesContainer.find(':checkbox').each(function(){
+            $(this).prop('checked', false);
+        });
         $("#cost_label").html("Select a package or customize the benefits");
     });
 
