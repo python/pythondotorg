@@ -241,6 +241,7 @@ class Sponsorship(models.Model):
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
 
+    for_modified_package = models.BooleanField(default=False)
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
@@ -250,10 +251,18 @@ class Sponsorship(models.Model):
         Creates a Sponsorship with a Sponsor and a list of SponsorshipBenefit.
         This will create SponsorBenefit copies from the benefits
         """
+        for_modified_package = False
+        if package and package.has_user_customization(benefits):
+            for_modified_package = True
+        elif not package:
+            for_modified_package = True
+
+
         sponsorship = cls.objects.create(
             sponsor=sponsor,
             level_name="" if not package else package.name,
             sponsorship_fee=None if not package else package.sponsorship_amount,
+            for_modified_package=for_modified_package,
         )
 
         for benefit in benefits:

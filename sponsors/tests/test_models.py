@@ -27,15 +27,22 @@ class SponsorshipBenefitModelTests(TestCase):
 
 
 class SponsorshipModelTests(TestCase):
-    def test_create_new_sponsorship(self):
-        benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
-        sponsor = baker.make("sponsors.Sponsor")
+    def setUp(self):
+        self.benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
+        self.package = baker.make(
+            "sponsors.SponsorshipPackage",
+            name="PSF Sponsorship Program",
+            sponsorship_amount=100,
+        )
+        self.package.benefits.add(*self.benefits)
+        self.sponsor = baker.make("sponsors.Sponsor")
 
-        sponsorship = Sponsorship.new(sponsor, benefits)
+    def test_create_new_sponsorship(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 
-        self.assertEqual(sponsorship.sponsor, sponsor)
+        self.assertEqual(sponsorship.sponsor, self.sponsor)
         self.assertEqual(sponsorship.applied_on, date.today())
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
@@ -45,29 +52,32 @@ class SponsorshipModelTests(TestCase):
         self.assertIsNone(sponsorship.end_date)
         self.assertEqual(sponsorship.level_name, "")
         self.assertIsNone(sponsorship.sponsorship_fee)
+        self.assertTrue(sponsorship.for_modified_package)
 
-        self.assertEqual(sponsorship.benefits.count(), len(benefits))
-        for benefit in benefits:
+        self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
+        for benefit in self.benefits:
             sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
             self.assertEqual(sponsor_benefit.name, benefit.name)
             self.assertEqual(sponsor_benefit.description, benefit.description)
             self.assertEqual(sponsor_benefit.program, benefit.program)
 
     def test_create_new_sponsorship_with_package(self):
-        benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
-        package = baker.make(
-            "sponsors.SponsorshipPackage",
-            name="PSF Sponsorship Program",
-            sponsorship_amount=100,
-        )
-        sponsor = baker.make("sponsors.Sponsor")
-
-        sponsorship = Sponsorship.new(sponsor, benefits, package=package)
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits, package=self.package)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 
         self.assertEqual(sponsorship.level_name, "PSF Sponsorship Program")
         self.assertEqual(sponsorship.sponsorship_fee, 100)
+        self.assertFalse(sponsorship.for_modified_package)
+
+    def test_create_new_sponsorship_with_package_modifications(self):
+        benefits = self.benefits[:2]
+        sponsorship = Sponsorship.new(self.sponsor, benefits, package=self.package)
+        self.assertTrue(sponsorship.pk)
+        sponsorship.refresh_from_db()
+
+        self.assertTrue(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.benefits.count(), 2)
 
 
 class SponsorshipPackageTests(TestCase):
