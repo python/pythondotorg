@@ -6,13 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sponsors', '0012_sponsorship_for_modified_package'),
+        ("sponsors", "0012_sponsorship_for_modified_package"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorbenefit',
-            name='benefit_internal_value',
-            field=models.PositiveIntegerField(blank=True, help_text="Benefit's internal value from when the Sponsorship gets created", null=True, verbose_name='Benefit Internal Value'),
+            model_name="sponsorbenefit",
+            name="benefit_internal_value",
+            field=models.PositiveIntegerField(
+                blank=True,
+                help_text="Benefit's internal value from when the Sponsorship gets created",
+                null=True,
+                verbose_name="Benefit Internal Value",
+            ),
         ),
     ]

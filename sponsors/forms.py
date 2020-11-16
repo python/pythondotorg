@@ -159,10 +159,14 @@ class SponsorshipApplicationForm(forms.Form):
     )
 
     primary_phone = forms.CharField(
-        label="Sponsor Primary Phone", max_length=32, required=False,
+        label="Sponsor Primary Phone",
+        max_length=32,
+        required=False,
     )
     mailing_address = forms.CharField(
-        label="Sponsor Mailing/Billing Address", widget=forms.TextInput, required=False,
+        label="Sponsor Mailing/Billing Address",
+        widget=forms.TextInput,
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):

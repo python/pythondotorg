@@ -5,24 +5,26 @@ from django.db.models import F
 
 
 def populate_sponsor_benefits_cost(apps, schema_editor):
-    SponsorBenefit = apps.get_model('sponsors', 'SponsorBenefit')
-    qs = SponsorBenefit.objects.select_related('sponsorship_benefit')
+    SponsorBenefit = apps.get_model("sponsors", "SponsorBenefit")
+    qs = SponsorBenefit.objects.select_related("sponsorship_benefit")
     for sp in qs:
         sp.benefit_internal_value = sp.sponsorship_benefit.internal_value
         sp.save()
 
 
 def reset_sponsor_benefits_cost(apps, schema_editor):
-    SponsorBenefit = apps.get_model('sponsors', 'SponsorBenefit')
+    SponsorBenefit = apps.get_model("sponsors", "SponsorBenefit")
     SponsorBenefit.objects.update(benefit_internal_value=None)
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sponsors', '0013_sponsorbenefit_benefit_internal_value'),
+        ("sponsors", "0013_sponsorbenefit_benefit_internal_value"),
     ]
 
     operations = [
-        migrations.RunPython(populate_sponsor_benefits_cost, reset_sponsor_benefits_cost)
+        migrations.RunPython(
+            populate_sponsor_benefits_cost, reset_sponsor_benefits_cost
+        )
     ]

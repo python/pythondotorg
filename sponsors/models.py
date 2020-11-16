@@ -258,7 +258,6 @@ class Sponsorship(models.Model):
         elif not package:
             for_modified_package = True
 
-
         sponsorship = cls.objects.create(
             sponsor=sponsor,
             level_name="" if not package else package.name,
@@ -280,7 +279,12 @@ class Sponsorship(models.Model):
 
     @property
     def estimated_cost(self):
-        return self.benefits.aggregate(Sum('benefit_internal_value'))['benefit_internal_value__sum'] or 0
+        return (
+            self.benefits.aggregate(Sum("benefit_internal_value"))[
+                "benefit_internal_value__sum"
+            ]
+            or 0
+        )
 
 
 class SponsorBenefit(models.Model):
@@ -317,9 +321,7 @@ class SponsorBenefit(models.Model):
         null=True,
         blank=True,
         verbose_name="Benefit Internal Value",
-        help_text=(
-            "Benefit's internal value from when the Sponsorship gets created"
-        ),
+        help_text=("Benefit's internal value from when the Sponsorship gets created"),
     )
 
 

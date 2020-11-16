@@ -41,4 +41,6 @@ class CreateSponsorshipApplicationUseCaseTests(TestCase):
 
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], AppliedSponsorshipNotificationToPSF)
-        self.assertIsInstance(uc.notifications[1], AppliedSponsorshipNotificationToSponsors)
+        self.assertIsInstance(
+            uc.notifications[1], AppliedSponsorshipNotificationToSponsors
+        )

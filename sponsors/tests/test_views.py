@@ -168,7 +168,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
     def test_return_package_as_none_if_not_previously_selected(self):
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
-            {"benefits_psf": [b.id for b in self.program_1_benefits],}
+            {
+                "benefits_psf": [b.id for b in self.program_1_benefits],
+            }
         )
         r = self.client.get(self.url)
         self.assertIsNone(r.context["sponsorship_package"])
@@ -178,7 +180,10 @@ class NewSponsorshipApplicationViewTests(TestCase):
         extra_benefit = baker.make(SponsorshipBenefit)
         benefits = self.program_1_benefits + [extra_benefit]
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
-            {"package": self.package.id, "benefits_psf": [b.id for b in benefits],}
+            {
+                "package": self.package.id,
+                "benefits_psf": [b.id for b in benefits],
+            }
         )
 
         r = self.client.get(self.url)

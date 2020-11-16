@@ -17,7 +17,7 @@ class AppliedSponsorshipNotification:
         raise NotImplementedError
 
     def notify(self, user, sponsorship):
-        context = {'user': user, 'sponsorship': sponsorship}
+        context = {"user": user, "sponsorship": sponsorship}
 
         send_mail(
             subject=self.get_subject(context),

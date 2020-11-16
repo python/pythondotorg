@@ -11,12 +11,30 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(model_name="sponsor", name="_content_rendered",),
-        migrations.RemoveField(model_name="sponsor", name="company",),
-        migrations.RemoveField(model_name="sponsor", name="content",),
-        migrations.RemoveField(model_name="sponsor", name="content_markup_type",),
-        migrations.RemoveField(model_name="sponsor", name="featured",),
-        migrations.RemoveField(model_name="sponsor", name="is_published",),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="_content_rendered",
+        ),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="company",
+        ),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="content",
+        ),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="content_markup_type",
+        ),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="featured",
+        ),
+        migrations.RemoveField(
+            model_name="sponsor",
+            name="is_published",
+        ),
         migrations.AlterField(
             model_name="sponsorcontact",
             name="sponsor",

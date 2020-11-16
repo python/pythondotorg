@@ -60,7 +60,9 @@ class SponsorshipModelTests(TestCase):
             self.assertEqual(sponsor_benefit.name, benefit.name)
             self.assertEqual(sponsor_benefit.description, benefit.description)
             self.assertEqual(sponsor_benefit.program, benefit.program)
-            self.assertEqual(sponsor_benefit.benefit_internal_value, benefit.internal_value)
+            self.assertEqual(
+                sponsor_benefit.benefit_internal_value, benefit.internal_value
+            )
 
     def test_create_new_sponsorship_with_package(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits, package=self.package)

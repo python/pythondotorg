@@ -12,12 +12,12 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.AppliedSponsorshipNotificationToPSF()
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.sponsorship = baker.make('sponsors.Sponsorship')
+        self.sponsorship = baker.make("sponsors.Sponsorship")
         self.subject_template = "sponsors/email/psf_new_application_subject.txt"
         self.content_template = "sponsors/email/psf_new_application.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {'user': self.user, 'sponsorship': self.sponsorship}
+        context = {"user": self.user, "sponsorship": self.sponsorship}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
@@ -35,12 +35,12 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.AppliedSponsorshipNotificationToSponsors()
         self.user = baker.make(settings.AUTH_USER_MODEL, email="foo@foo.com")
-        self.sponsorship = baker.make('sponsors.Sponsorship')
+        self.sponsorship = baker.make("sponsors.Sponsorship")
         self.subject_template = "sponsors/email/sponsor_new_application_subject.txt"
         self.content_template = "sponsors/email/sponsor_new_application.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {'user': self.user, 'sponsorship': self.sponsorship}
+        context = {"user": self.user, "sponsorship": self.sponsorship}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
