@@ -3,6 +3,7 @@ from model_bakery import baker
 from itertools import chain
 
 from django.contrib import messages
+from django.contrib.auth.models import Group
 from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
@@ -43,6 +44,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
         self.client.force_login(self.user)
 
+        self.group = Group(name="Sponsorship Preview")
+        self.group.save()
+
     def test_display_template_with_form_and_context(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
         extra_package = baker.make("sponsors.SponsorshipPackage")
@@ -73,7 +77,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
         self.assertRedirects(r, redirect_url)
 
-    def test_staff_required(self):
+    def test_not_staff_no_group_not_allowed(self):
         redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
         self.user.is_staff = False
         self.user.save()
@@ -82,6 +86,16 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_group_allowed(self):
+        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
+        self.user.groups.add(self.group)
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertEqual(r.status_code, 200, "user in group should have access")
 
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
         package = baker.make("sponsors.SponsorshipPackage")
@@ -111,6 +125,20 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertEqual(initial, r.context["form"].initial)
+
+    def test_capacity_flag(self):
+        psf_package = baker.make("sponsors.SponsorshipPackage")
+        r = self.client.get(self.url)
+        self.assertEqual(False, r.context["capacities_met"])
+
+    def test_capacity_flag_when_needed(self):
+        at_capacity_benefit = baker.make(
+            SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
+        )
+        psf_package = baker.make("sponsors.SponsorshipPackage")
+
+        r = self.client.get(self.url)
+        self.assertEqual(True, r.context["capacities_met"])
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
