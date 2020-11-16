@@ -1,5 +1,6 @@
 {% extends "psf/full-width.html" %}
 {% load boxes widget_tweaks %}
+{% load humanize %}
 
 
 {% block page_title %}Submit Sponsorship Information{% endblock %}
@@ -9,16 +10,17 @@
     <h1>Submit Sponsorship Information</h1>
 
     <div id="sponsorship-info-container" class="user-feedback level-general">
-      <p style="display: inline">We need more information to proceed with your sponsorship application.
+      <p style="display: inline">We need more information to proceed with your sponsorship application.</p>
+      <p>
       {% if sponsorship_package %}
-        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price }}.00 {% endif %}and the following benefits:
+        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
       {% else %}
         You selected the following benefits:
       {% endif %}
       </p>
       <ul>
         {% for benefit in sponsorship_benefits %}
-          <p>{{ benefit.name }}</p>
+          <li>{{ benefit.name }}</li>
         {% endfor %}
       </ul>
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>

@@ -34,7 +34,7 @@ $(document).ready(function(){
       let data = $("form").serialize();
 
       let cost = packageInfo.attr("data-cost");
-      costLabel.html('Sponsorship cost is $' + cost + '.00')
+      costLabel.html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
     });
 
     $("input[id^=id_benefits_]").change(function(){
