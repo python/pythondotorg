@@ -13,6 +13,7 @@ from .models import (
     Sponsor,
     Sponsorship,
     SponsorContact,
+    SponsorBenefit,
 )
 from cms.admin import ContentManageableModelAdmin
 
@@ -84,8 +85,17 @@ class SponsorAdmin(ContentManageableModelAdmin):
     inlines = [SponsorContactInline]
 
 
+class SponsorBenefitInline(admin.TabularInline):
+    model = SponsorBenefit
+    readonly_fields = ["name", "benefit_internal_value"]
+    fields = ["name", "benefit_internal_value"]
+    extra = 0
+    can_delete = False
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
         "applied_on",
