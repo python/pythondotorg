@@ -5,9 +5,10 @@ from django.conf import settings
 from allauth.account.admin import EmailAddress
 
 
-class AppliedSponsorshipNotification:
+class BaseEmailSponsorshipNotification:
     subject_template = None
     message_template = None
+    email_context_keys = None
 
     def get_subject(self, context):
         return render_to_string(self.subject_template, context).strip()
@@ -18,8 +19,8 @@ class AppliedSponsorshipNotification:
     def get_recipient_list(self, context):
         raise NotImplementedError
 
-    def notify(self, user, sponsorship):
-        context = {"user": user, "sponsorship": sponsorship}
+    def notify(self, **kwargs):
+        context = {k: kwargs[k] for k in self.email_context_keys}
 
         send_mail(
             subject=self.get_subject(context),
@@ -29,17 +30,19 @@ class AppliedSponsorshipNotification:
         )
 
 
-class AppliedSponsorshipNotificationToPSF(AppliedSponsorshipNotification):
+class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_new_application_subject.txt"
     message_template = "sponsors/email/psf_new_application.txt"
+    email_context_keys = ["sponsorship", "user"]
 
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
 
-class AppliedSponsorshipNotificationToSponsors(AppliedSponsorshipNotification):
+class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_new_application_subject.txt"
     message_template = "sponsors/email/sponsor_new_application.txt"
+    email_context_keys = ["sponsorship", "user"]
 
     def get_recipient_list(self, context):
         emails = [context["user"].email]

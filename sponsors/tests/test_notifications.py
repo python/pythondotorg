@@ -22,7 +22,7 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(self.user, self.sponsorship)
+        self.notification.notify(user=self.user, sponsorship=self.sponsorship)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -55,7 +55,7 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(self.user, self.sponsorship)
+        self.notification.notify(user=self.user, sponsorship=self.sponsorship)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
