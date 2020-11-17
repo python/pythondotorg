@@ -19,11 +19,11 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         self.content_template = "sponsors/email/psf_new_application.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"user": self.user, "sponsorship": self.sponsorship}
+        context = {"sponsorship": self.sponsorship}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(user=self.user, sponsorship=self.sponsorship)
+        self.notification.notify(sponsorship=self.sponsorship)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -47,16 +47,16 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
             baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
         ]
         self.sponsor = baker.make("sponsors.Sponsor", contacts=self.sponsor_contacts)
-        self.sponsorship = baker.make("sponsors.Sponsorship", sponsor=self.sponsor)
+        self.sponsorship = baker.make("sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user)
         self.subject_template = "sponsors/email/sponsor_new_application_subject.txt"
         self.content_template = "sponsors/email/sponsor_new_application.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"user": self.user, "sponsorship": self.sponsorship}
+        context = {"sponsorship": self.sponsorship}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(user=self.user, sponsorship=self.sponsorship)
+        self.notification.notify(sponsorship=self.sponsorship)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]

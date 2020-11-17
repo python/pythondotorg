@@ -33,7 +33,7 @@ class BaseEmailSponsorshipNotification:
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_new_application_subject.txt"
     message_template = "sponsors/email/psf_new_application.txt"
-    email_context_keys = ["sponsorship", "user"]
+    email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
@@ -42,10 +42,10 @@ class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
 class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_new_application_subject.txt"
     message_template = "sponsors/email/sponsor_new_application.txt"
-    email_context_keys = ["sponsorship", "user"]
+    email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        emails = [context["user"].email]
+        emails = [context["sponsorship"].submited_by.email]
         for contact in context["sponsorship"].sponsor.contacts.all():
             if EmailAddress.objects.filter(
                 email__iexact=contact.email, verified=True

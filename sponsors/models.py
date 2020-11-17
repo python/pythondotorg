@@ -231,6 +231,9 @@ class Sponsorship(models.Model):
         (FINALIZED, "Finalized"),
     ]
 
+    submited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
     sponsor = models.ForeignKey("Sponsor", null=True, on_delete=models.SET_NULL)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=APPLIED, db_index=True
@@ -251,7 +254,7 @@ class Sponsorship(models.Model):
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
     @classmethod
-    def new(cls, sponsor, benefits, package=None):
+    def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
         Creates a Sponsorship with a Sponsor and a list of SponsorshipBenefit.
         This will create SponsorBenefit copies from the benefits
@@ -263,6 +266,7 @@ class Sponsorship(models.Model):
             for_modified_package = True
 
         sponsorship = cls.objects.create(
+            submited_by=submited_by,
             sponsor=sponsor,
             level_name="" if not package else package.name,
             sponsorship_fee=None if not package else package.sponsorship_amount,

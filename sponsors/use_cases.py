@@ -7,10 +7,10 @@ class CreateSponsorshipApplicationUseCase:
         self.notifications = notifications
 
     def execute(self, user, sponsor, benefits, package=None):
-        sponsorship = Sponsorship.new(sponsor, benefits, package)
+        sponsorship = Sponsorship.new(sponsor, benefits, package, submited_by=user)
 
         for notification in self.notifications:
-            notification.notify(user=user, sponsorship=sponsorship)
+            notification.notify(sponsorship=sponsorship)
 
         return sponsorship
 

@@ -1,6 +1,7 @@
 from datetime import date
 from model_bakery import baker
 
+from django.conf import settings
 from django.test import TestCase
 
 from ..models import Sponsor, SponsorshipBenefit, Sponsorship
@@ -36,12 +37,16 @@ class SponsorshipModelTests(TestCase):
         )
         self.package.benefits.add(*self.benefits)
         self.sponsor = baker.make("sponsors.Sponsor")
+        self.user = baker.make(settings.AUTH_USER_MODEL)
 
     def test_create_new_sponsorship(self):
-        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship = Sponsorship.new(
+            self.sponsor, self.benefits, submited_by=self.user
+        )
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 
+        self.assertEqual(sponsorship.submited_by, self.user)
         self.assertEqual(sponsorship.sponsor, self.sponsor)
         self.assertEqual(sponsorship.applied_on, date.today())
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
