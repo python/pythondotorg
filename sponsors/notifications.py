@@ -70,3 +70,21 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
 
     def get_recipient_list(self, context):
         return [context["sponsorship"].submited_by.email]
+
+
+class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
+    message_template = "sponsors/email/psf_statement_of_work.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        return [settings.SPONSORS_TO_EMAIL]
+
+
+class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
+    message_template = "sponsors/email/sponsor_statement_of_work.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        return [context["sponsorship"].submited_by.email]
