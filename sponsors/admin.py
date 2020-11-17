@@ -1,10 +1,11 @@
 from ordered_model.admin import OrderedModelAdmin
 
+from django.contrib import messages
 from django.urls import path, reverse
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.utils.html import mark_safe
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .models import (
     SponsorshipPackage,
@@ -15,6 +16,7 @@ from .models import (
     SponsorContact,
     SponsorBenefit,
 )
+from sponsors import use_cases
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -266,3 +268,33 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "reject/<int:pk>/",
+                # TODO: maybe it would be better to create a specific
+                # group or permission to review sponsorship applications
+                self.admin_site.admin_view(self.reject_sponsorship_view),
+                name="sponsors_sponsorship_reject",
+            )
+        ]
+        return my_urls + urls
+
+    def reject_sponsorship_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
+            use_case.execute(sponsorship)
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            self.message_user(request, "Sponsorship was rejected!", messages.SUCCESS)
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request, "sponsors/admin/reject_application.html", context=context
+        )

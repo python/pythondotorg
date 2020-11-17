@@ -161,9 +161,7 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
             _fill_optional=["approved_on"],
             submited_by=self.user,
         )
-        self.subject_template = (
-            "sponsors/email/sponsor_statement_of_work_subject.txt"
-        )
+        self.subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/sponsor_statement_of_work.txt"
 
     def test_send_email_using_correct_templates(self):
