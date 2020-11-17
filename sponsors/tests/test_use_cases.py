@@ -70,3 +70,12 @@ class RejectSponsorshipApplicationUseCaseTests(TestCase):
 
         for n in self.notifications:
             n.notify.assert_called_once_with(sponsorship=self.sponsorship)
+
+    def test_build_use_case_with_correct_notifications(self):
+        uc = use_cases.RejectSponsorshipApplicationUseCase.build()
+
+        self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], RejectedSponsorshipNotificationToPSF)
+        self.assertIsInstance(
+            uc.notifications[1], RejectedSponsorshipNotificationToSponsors
+        )

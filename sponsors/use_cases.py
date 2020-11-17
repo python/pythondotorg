@@ -35,3 +35,11 @@ class RejectSponsorshipApplicationUseCase:
             notification.notify(sponsorship=sponsorship)
 
         return sponsorship
+
+    @classmethod
+    def build(cls):
+        uc_notifications = [
+            notifications.RejectedSponsorshipNotificationToPSF(),
+            notifications.RejectedSponsorshipNotificationToSponsors(),
+        ]
+        return cls(uc_notifications)
