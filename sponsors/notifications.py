@@ -69,5 +69,4 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
     email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        # TODO: retrieve user who submited sponsorship from sponsorship object
-        return ["foo@foo.com"]
+        return [context["sponsorship"].submited_by.email]

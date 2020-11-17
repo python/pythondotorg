@@ -100,8 +100,12 @@ class RejectedSponsorshipNotificationToPSFTests(TestCase):
 class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
     def setUp(self):
         self.notification = notifications.RejectedSponsorshipNotificationToSponsors()
+        self.user = baker.make(settings.AUTH_USER_MODEL, email="email@email.com")
         self.sponsorship = baker.make(
-            Sponsorship, status=Sponsorship.REJECTED, _fill_optional=["rejected_on"]
+            Sponsorship,
+            status=Sponsorship.REJECTED,
+            _fill_optional=["rejected_on"],
+            submited_by=self.user,
         )
         self.subject_template = (
             "sponsors/email/sponsor_rejected_sponsorship_subject.txt"
@@ -120,4 +124,4 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
-        self.assertEqual(["foo@foo.com"], email.to)
+        self.assertEqual([self.user.email], email.to)

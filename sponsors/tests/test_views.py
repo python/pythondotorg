@@ -248,6 +248,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
         self.assertTrue(sponsorship.level_name)
+        self.assertTrue(sponsorship.submited_by, self.user)
         self.assertEqual(
             r.client.cookies.get("sponsorship_selected_benefits").value, ""
         )
