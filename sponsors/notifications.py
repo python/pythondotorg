@@ -2,6 +2,8 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 
+from allauth.account.admin import EmailAddress
+
 
 class AppliedSponsorshipNotification:
     subject_template = None
@@ -40,4 +42,10 @@ class AppliedSponsorshipNotificationToSponsors(AppliedSponsorshipNotification):
     message_template = "sponsors/email/sponsor_new_application.txt"
 
     def get_recipient_list(self, context):
-        return [context["user"].email]
+        emails = [context["user"].email]
+        for contact in context["sponsorship"].sponsor.contacts.all():
+            if EmailAddress.objects.filter(
+                email__iexact=contact.email, verified=True
+            ).exists():
+                emails.append(contact.email)
+        return list(set({e.casefold(): e for e in emails}.values()))
