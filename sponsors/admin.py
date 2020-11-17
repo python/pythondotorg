@@ -278,7 +278,12 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 # group or permission to review sponsorship applications
                 self.admin_site.admin_view(self.reject_sponsorship_view),
                 name="sponsors_sponsorship_reject",
-            )
+            ),
+            path(
+                "approve/<int:pk>/",
+                self.admin_site.admin_view(self.approve_sponsorship_view),
+                name="sponsors_sponsorship_approve",
+            ),
         ]
         return my_urls + urls
 
@@ -297,4 +302,21 @@ class SponsorshipAdmin(admin.ModelAdmin):
         context = {"sponsorship": sponsorship}
         return render(
             request, "sponsors/admin/reject_application.html", context=context
+        )
+
+    def approve_sponsorship_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            sponsorship.approve()
+            sponsorship.save()
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            self.message_user(request, "Sponsorship was approved!", messages.SUCCESS)
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request, "sponsors/admin/approve_application.html", context=context
         )

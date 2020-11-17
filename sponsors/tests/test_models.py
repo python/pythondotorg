@@ -3,6 +3,7 @@ from model_bakery import baker
 
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 
 from ..models import Sponsor, SponsorshipBenefit, Sponsorship
 
@@ -97,6 +98,16 @@ class SponsorshipModelTests(TestCase):
         # estimated cost should not change even if original benefts get update
         SponsorshipBenefit.objects.all().update(internal_value=0)
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)
+
+    def test_approve_sponsorship(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertIsNone(sponsorship.approved_on)
+
+        sponsorship.approve()
+
+        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
+        self.assertEqual(sponsorship.approved_on, timezone.now().date())
 
 
 class SponsorshipPackageTests(TestCase):

@@ -298,6 +298,10 @@ class Sponsorship(models.Model):
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
+    def approve(self):
+        self.status = self.APPROVED
+        self.approved_on = timezone.now().date()
+
 
 class SponsorBenefit(models.Model):
     sponsorship = models.ForeignKey(

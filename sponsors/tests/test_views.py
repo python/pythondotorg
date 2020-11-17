@@ -362,3 +362,77 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class ApproveSponsorshipAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(Sponsorship)
+        self.url = reverse(
+            "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
+        )
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+    def test_approve_sponsorship_on_post(self):
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
+
+    def test_do_not_approve_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
