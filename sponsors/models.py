@@ -3,6 +3,7 @@ from django.conf import settings
 from django.db import models
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
+from django.utils import timezone
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
 
@@ -288,6 +289,10 @@ class Sponsorship(models.Model):
             ]
             or 0
         )
+
+    def reject(self):
+        self.status = self.REJECTED
+        self.rejected_on = timezone.now().date()
 
 
 class SponsorBenefit(models.Model):

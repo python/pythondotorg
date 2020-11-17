@@ -21,3 +21,17 @@ class CreateSponsorshipApplicationUseCase:
             notifications.AppliedSponsorshipNotificationToSponsors(),
         ]
         return cls(uc_notifications)
+
+
+class RejectSponsorshipApplicationUseCase:
+    def __init__(self, notifications):
+        self.notifications = notifications
+
+    def execute(self, sponsorship):
+        sponsorship.reject()
+        sponsorship.save()
+
+        for notification in self.notifications:
+            notification.notify(sponsorship=sponsorship)
+
+        return sponsorship

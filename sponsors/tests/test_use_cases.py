@@ -3,9 +3,11 @@ from model_bakery import baker
 
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 
 from sponsors import use_cases
 from sponsors.notifications import *
+from sponsors.models import Sponsorship
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -44,3 +46,27 @@ class CreateSponsorshipApplicationUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[1], AppliedSponsorshipNotificationToSponsors
         )
+
+
+class RejectSponsorshipApplicationUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock(), Mock()]
+        self.use_case = use_cases.RejectSponsorshipApplicationUseCase(
+            self.notifications
+        )
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.sponsorship = baker.make(Sponsorship)
+
+    def test_update_sponsorship_as_rejected(self):
+        self.use_case.execute(self.sponsorship)
+        self.sponsorship.refresh_from_db()
+
+        today = timezone.now().date()
+        self.assertEqual(self.sponsorship.rejected_on, today)
+        self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_send_notifications_using_sponsorship(self):
+        self.use_case.execute(self.sponsorship)
+
+        for n in self.notifications:
+            n.notify.assert_called_once_with(sponsorship=self.sponsorship)
