@@ -20,7 +20,7 @@ class BaseEmailSponsorshipNotification:
         raise NotImplementedError
 
     def notify(self, **kwargs):
-        context = {k: kwargs[k] for k in self.email_context_keys}
+        context = {k: kwargs.get(k) for k in self.email_context_keys}
 
         send_mail(
             subject=self.get_subject(context),
@@ -52,3 +52,22 @@ class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification)
             ).exists():
                 emails.append(contact.email)
         return list(set({e.casefold(): e for e in emails}.values()))
+
+
+class RejectedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/psf_rejected_sponsorship_subject.txt"
+    message_template = "sponsors/email/psf_rejected_sponsorship.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
+
+
+class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/sponsor_rejected_sponsorship_subject.txt"
+    message_template = "sponsors/email/sponsor_rejected_sponsorship.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        # TODO: retrieve user who submited sponsorship from sponsorship object
+        return ["foo@foo.com"]
