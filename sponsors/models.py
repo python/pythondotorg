@@ -242,7 +242,10 @@ class Sponsorship(models.Model):
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
 
-    for_modified_package = models.BooleanField(default=False)
+    for_modified_package = models.BooleanField(
+        default=False,
+        help_text="If true, it means the user customized the package's benefits.",
+    )
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 

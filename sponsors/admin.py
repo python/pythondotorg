@@ -100,9 +100,62 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "status",
         "applied_on",
         "rejected_on",
-        "get_estimated_cost",
         "approved_on",
         "finalized_on",
+        "get_estimated_cost",
+        "get_sponsor_name",
+        "get_sponsor_description",
+        "get_sponsor_landing_page_url",
+        "get_sponsor_web_logo",
+        "get_sponsor_print_logo",
+        "get_sponsor_primary_phone",
+        "get_sponsor_mailing_address",
+        "get_sponsor_contacts",
+    ]
+
+    fieldsets = [
+        (
+            "Sponsorship Data",
+            {
+                "fields": (
+                    "sponsor",
+                    "status",
+                    "for_modified_package",
+                    "level_name",
+                    "sponsorship_fee",
+                    "get_estimated_cost",
+                    "start_date",
+                    "end_date",
+                ),
+            },
+        ),
+        (
+            "Sponsor Detailed Information",
+            {
+                "fields": (
+                    "get_sponsor_name",
+                    "get_sponsor_description",
+                    "get_sponsor_landing_page_url",
+                    "get_sponsor_web_logo",
+                    "get_sponsor_print_logo",
+                    "get_sponsor_primary_phone",
+                    "get_sponsor_mailing_address",
+                    "get_sponsor_contacts",
+                ),
+            },
+        ),
+        (
+            "Events dates",
+            {
+                "fields": (
+                    "applied_on",
+                    "approved_on",
+                    "rejected_on",
+                    "finalized_on",
+                ),
+                "classes": ["collapse"],
+            },
+        ),
     ]
 
     def get_queryset(self, *args, **kwargs):
@@ -142,3 +195,64 @@ class SponsorshipAdmin(admin.ModelAdmin):
             ),
         ]
         return custom_urls + urls
+
+    def get_sponsor_name(self, obj):
+        return obj.sponsor.name
+
+    get_sponsor_name.short_description = "Name"
+
+    def get_sponsor_description(self, obj):
+        return obj.sponsor.description
+
+    get_sponsor_description.short_description = "Description"
+
+    def get_sponsor_landing_page_url(self, obj):
+        return obj.sponsor.landing_page_url
+
+    get_sponsor_landing_page_url.short_description = "Landing Page URL"
+
+    def get_sponsor_web_logo(self, obj):
+        html = f"<img src='{obj.sponsor.web_logo.url}'/>"
+        return mark_safe(html)
+
+    get_sponsor_web_logo.short_description = "Web Logo"
+
+    def get_sponsor_print_logo(self, obj):
+        img = obj.sponsor.print_logo
+        html = ""
+        if img:
+            html = f"<img src='{img.url}'/>"
+        return mark_safe(html) if html else "---"
+
+    get_sponsor_print_logo.short_description = "Print Logo"
+
+    def get_sponsor_primary_phone(self, obj):
+        return obj.sponsor.primary_phone
+
+    get_sponsor_primary_phone.short_description = "Primary Phone"
+
+    def get_sponsor_mailing_address(self, obj):
+        return obj.sponsor.mailing_address
+
+    get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
+
+    def get_sponsor_contacts(self, obj):
+        html = ""
+        contacts = obj.sponsor.contacts.all()
+        primary = [c for c in contacts if c.primary]
+        not_primary = [c for c in contacts if not c.primary]
+        if primary:
+            html = "<b>Primary contacts</b><ul>"
+            html += "".join(
+                [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in primary]
+            )
+            html += "</ul>"
+        if not_primary:
+            html = "<b>Other contacts</b><ul>"
+            html += "".join(
+                [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary]
+            )
+            html += "</ul>"
+        return mark_safe(html)
+
+    get_sponsor_contacts.short_description = "Contacts"
