@@ -3661,7 +3661,7 @@ span.highlighted {
     display: block;
     width: 100vw;
     position: relative;
-    left: calc(-50vw + 50%); }
+    left: calc(50% - 50vw); }
     #sponsorship_application_container #benefits_container .title {
       margin: 0 0 1em 0;
       padding: 0;
