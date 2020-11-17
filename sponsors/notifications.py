@@ -34,7 +34,7 @@ class AppliedSponsorshipNotificationToPSF(AppliedSponsorshipNotification):
     message_template = "sponsors/email/psf_new_application.txt"
 
     def get_recipient_list(self, context):
-        return [settings.SPONSORS_TO_EMAIL]
+        return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
 
 class AppliedSponsorshipNotificationToSponsors(AppliedSponsorshipNotification):

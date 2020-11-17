@@ -247,7 +247,9 @@ JOB_FROM_EMAIL = 'jobs@python.org'
 EVENTS_TO_EMAIL = 'events@python.org'
 
 # Sponsors
-SPONSORS_TO_EMAIL = 'psf-sponsors@python.org'
+SPONSORSHIP_NOTIFICATION_TO_EMAIL = os.environ.get(
+    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", "psf-sponsors@python.org"
+)
 
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'
