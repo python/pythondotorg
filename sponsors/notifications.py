@@ -31,7 +31,7 @@ class BaseEmailSponsorshipNotification:
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_new_application_subject.txt"
     message_template = "sponsors/email/psf_new_application.txt"
-    email_context_keys = ["sponsorship"]
+    email_context_keys = ["request", "sponsorship"]
 
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]

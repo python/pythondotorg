@@ -150,6 +150,7 @@ class NewSponsorshipApplicationView(FormView):
             sponsor,
             benefits_form.get_benefits(),
             benefits_form.get_package(),
+            request=self.request,
         )
         notified = uc.notifications[1].get_recipient_list(
             {"user": self.request.user, "sponsorship": sponsorship}

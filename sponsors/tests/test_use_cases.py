@@ -36,7 +36,7 @@ class CreateSponsorshipApplicationUseCaseTests(TestCase):
         )
 
         for n in self.notifications:
-            n.notify.assert_called_once_with(sponsorship=sponsorship)
+            n.notify.assert_called_once_with(request=None, sponsorship=sponsorship)
 
     def test_build_use_case_with_correct_notifications(self):
         uc = use_cases.CreateSponsorshipApplicationUseCase.build()
@@ -69,7 +69,7 @@ class RejectSponsorshipApplicationUseCaseTests(TestCase):
         self.use_case.execute(self.sponsorship)
 
         for n in self.notifications:
-            n.notify.assert_called_once_with(sponsorship=self.sponsorship)
+            n.notify.assert_called_once_with(request=None, sponsorship=self.sponsorship)
 
     def test_build_use_case_with_correct_notifications(self):
         uc = use_cases.RejectSponsorshipApplicationUseCase.build()

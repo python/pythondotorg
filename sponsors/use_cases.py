@@ -6,11 +6,11 @@ class CreateSponsorshipApplicationUseCase:
     def __init__(self, notifications):
         self.notifications = notifications
 
-    def execute(self, user, sponsor, benefits, package=None):
+    def execute(self, user, sponsor, benefits, package=None, request=None):
         sponsorship = Sponsorship.new(sponsor, benefits, package, submited_by=user)
 
         for notification in self.notifications:
-            notification.notify(sponsorship=sponsorship)
+            notification.notify(request=request, sponsorship=sponsorship)
 
         return sponsorship
 
@@ -27,12 +27,12 @@ class RejectSponsorshipApplicationUseCase:
     def __init__(self, notifications):
         self.notifications = notifications
 
-    def execute(self, sponsorship):
+    def execute(self, sponsorship, request=None):
         sponsorship.reject()
         sponsorship.save()
 
         for notification in self.notifications:
-            notification.notify(sponsorship=sponsorship)
+            notification.notify(request=request, sponsorship=sponsorship)
 
         return sponsorship
 
