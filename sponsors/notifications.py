@@ -24,7 +24,7 @@ class BaseEmailSponsorshipNotification:
             subject=self.get_subject(context),
             message=self.get_message(context),
             recipient_list=self.get_recipient_list(context),
-            from_email=settings.DEFAULT_FROM_EMAIL,
+            from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
         )
 
 
