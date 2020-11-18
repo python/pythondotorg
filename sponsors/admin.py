@@ -197,16 +197,28 @@ class SponsorshipAdmin(admin.ModelAdmin):
         ctx = {"sponsorship": sponsorship}
         return render(request, "sponsors/admin/preview-sponsorship.html", context=ctx)
 
-    def get_urls(self, *args, **kwargs):
-        urls = super().get_urls(*args, **kwargs)
-        custom_urls = [
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
             path(
                 "<int:pk>/preview",
                 self.admin_site.admin_view(self.preview_sponsorship_view),
                 name="sponsors_sponsorship_preview",
             ),
+            path(
+                "<int:pk>/reject",
+                # TODO: maybe it would be better to create a specific
+                # group or permission to review sponsorship applications
+                self.admin_site.admin_view(self.reject_sponsorship_view),
+                name="sponsors_sponsorship_reject",
+            ),
+            path(
+                "<int:pk>/approve",
+                self.admin_site.admin_view(self.approve_sponsorship_view),
+                name="sponsors_sponsorship_approve",
+            ),
         ]
-        return custom_urls + urls
+        return my_urls + urls
 
     def get_sponsor_name(self, obj):
         return obj.sponsor.name
@@ -268,24 +280,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
-
-    def get_urls(self):
-        urls = super().get_urls()
-        my_urls = [
-            path(
-                "reject/<int:pk>/",
-                # TODO: maybe it would be better to create a specific
-                # group or permission to review sponsorship applications
-                self.admin_site.admin_view(self.reject_sponsorship_view),
-                name="sponsors_sponsorship_reject",
-            ),
-            path(
-                "approve/<int:pk>/",
-                self.admin_site.admin_view(self.approve_sponsorship_view),
-                name="sponsors_sponsorship_approve",
-            ),
-        ]
-        return my_urls + urls
 
     def reject_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
