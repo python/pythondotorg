@@ -1,1 +1,7 @@
+{% load sponsors %}
+
+
 {% url 'admin:sponsors_sponsorship_change' object_id=sponsorship.pk %}
+
+
+{% full_sponsorship sponsorship %}

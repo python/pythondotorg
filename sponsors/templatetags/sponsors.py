@@ -17,3 +17,12 @@ def featured_sponsor_rotation():
     # this templated tag is used at https://www.python.org/psf-landing/ but since the prod
     # DB doesn't have any published sponsor, the default message is being print
     return {}
+
+
+@register.inclusion_tag("sponsors/email/partials/full_sponsorship.txt")
+def full_sponsorship(sponsorship):
+    return {
+        "sponsorship": sponsorship,
+        "sponsor": sponsorship.sponsor,
+        "benefits": list(sponsorship.benefits.all()),
+    }
