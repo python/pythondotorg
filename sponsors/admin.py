@@ -17,6 +17,7 @@ from .models import (
     SponsorBenefit,
 )
 from sponsors import use_cases
+from sponsors.forms import SponsorshipReviewAdminForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -97,6 +98,7 @@ class SponsorBenefitInline(admin.TabularInline):
 
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
@@ -182,8 +184,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_estimated_cost(self, obj):
         cost = None
-        msg = "This sponsorship has not customizations so there's no estimated cost"
-        html = f"<b>Important: </b> {msg}"
+        html = "This sponsorship has not customizations so there's no estimated cost"
         if obj.for_modified_package:
             msg = "This sponsorship has customizations and this cost is a sum of all benefit's internal values from when this sponsorship was created"
             cost = intcomma(obj.estimated_cost)

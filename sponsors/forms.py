@@ -10,6 +10,7 @@ from sponsors.models import (
     SponsorshipProgram,
     Sponsor,
     SponsorContact,
+    Sponsorship,
 )
 
 
@@ -258,3 +259,19 @@ class SponsorshipApplicationForm(forms.Form):
         if not self.user:
             return False
         return self.fields["sponsor"].queryset.exists()
+
+
+class SponsorshipReviewAdminForm(forms.ModelForm):
+    class Meta:
+        model = Sponsorship
+        fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+
+    def clean(self):
+        cleaned_data = super().clean()
+        start_date = cleaned_data.get("start_date")
+        end_date = cleaned_data.get("end_date")
+
+        if start_date and end_date and end_date <= start_date:
+            raise forms.ValidationError("End date must be greater than start date")
+
+        return cleaned_data
