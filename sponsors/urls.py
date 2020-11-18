@@ -11,13 +11,6 @@ urlpatterns = [
         name="new_sponsorship_application",
     ),
     url(
-        r"^application/finished/$",
-        TemplateView.as_view(
-            template_name="sponsors/sponsorship_application_finished.html"
-        ),
-        name="finish_sponsorship_application",
-    ),
-    url(
         r"^application/$",
         views.SelectSponsorshipApplicationBenefitsView.as_view(),
         name="select_sponsorship_application_benefits",

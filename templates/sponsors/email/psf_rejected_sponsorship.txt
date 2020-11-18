@@ -1,0 +1,5 @@
+content email psf-sponsors@python.org
+
+REJECTED SPONSORSHIP
+
+{{ sponsorship }}

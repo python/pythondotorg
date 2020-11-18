@@ -1,7 +1,9 @@
 from datetime import date
 from model_bakery import baker
 
+from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 
 from ..models import Sponsor, SponsorshipBenefit, Sponsorship
 
@@ -27,44 +29,85 @@ class SponsorshipBenefitModelTests(TestCase):
 
 
 class SponsorshipModelTests(TestCase):
-    def test_create_new_sponsorship(self):
-        benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
-        sponsor = baker.make("sponsors.Sponsor")
-
-        sponsorship = Sponsorship.new(sponsor, benefits)
-        self.assertTrue(sponsorship.pk)
-        sponsorship.refresh_from_db()
-
-        self.assertEqual(sponsorship.sponsor, sponsor)
-        self.assertEqual(sponsorship.applied_on, date.today())
-        self.assertIsNone(sponsorship.approved_on)
-        self.assertIsNone(sponsorship.start_date)
-        self.assertIsNone(sponsorship.end_date)
-        self.assertEqual(sponsorship.level_name, "")
-        self.assertIsNone(sponsorship.sponsorship_fee)
-
-        self.assertEqual(sponsorship.benefits.count(), len(benefits))
-        for benefit in benefits:
-            sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
-            self.assertEqual(sponsor_benefit.name, benefit.name)
-            self.assertEqual(sponsor_benefit.description, benefit.description)
-            self.assertEqual(sponsor_benefit.program, benefit.program)
-
-    def test_create_new_sponsorship_with_package(self):
-        benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
-        package = baker.make(
+    def setUp(self):
+        self.benefits = baker.make(SponsorshipBenefit, _quantity=5, _fill_optional=True)
+        self.package = baker.make(
             "sponsors.SponsorshipPackage",
             name="PSF Sponsorship Program",
             sponsorship_amount=100,
         )
-        sponsor = baker.make("sponsors.Sponsor")
+        self.package.benefits.add(*self.benefits)
+        self.sponsor = baker.make("sponsors.Sponsor")
+        self.user = baker.make(settings.AUTH_USER_MODEL)
 
-        sponsorship = Sponsorship.new(sponsor, benefits, package=package)
+    def test_create_new_sponsorship(self):
+        sponsorship = Sponsorship.new(
+            self.sponsor, self.benefits, submited_by=self.user
+        )
+        self.assertTrue(sponsorship.pk)
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(sponsorship.submited_by, self.user)
+        self.assertEqual(sponsorship.sponsor, self.sponsor)
+        self.assertEqual(sponsorship.applied_on, date.today())
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertIsNone(sponsorship.approved_on)
+        self.assertIsNone(sponsorship.rejected_on)
+        self.assertIsNone(sponsorship.finalized_on)
+        self.assertIsNone(sponsorship.start_date)
+        self.assertIsNone(sponsorship.end_date)
+        self.assertEqual(sponsorship.level_name, "")
+        self.assertIsNone(sponsorship.sponsorship_fee)
+        self.assertTrue(sponsorship.for_modified_package)
+
+        self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
+        for benefit in self.benefits:
+            sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
+            self.assertEqual(sponsor_benefit.name, benefit.name)
+            self.assertEqual(sponsor_benefit.description, benefit.description)
+            self.assertEqual(sponsor_benefit.program, benefit.program)
+            self.assertEqual(
+                sponsor_benefit.benefit_internal_value, benefit.internal_value
+            )
+
+    def test_create_new_sponsorship_with_package(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits, package=self.package)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
 
         self.assertEqual(sponsorship.level_name, "PSF Sponsorship Program")
         self.assertEqual(sponsorship.sponsorship_fee, 100)
+        self.assertFalse(sponsorship.for_modified_package)
+
+    def test_create_new_sponsorship_with_package_modifications(self):
+        benefits = self.benefits[:2]
+        sponsorship = Sponsorship.new(self.sponsor, benefits, package=self.package)
+        self.assertTrue(sponsorship.pk)
+        sponsorship.refresh_from_db()
+
+        self.assertTrue(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.benefits.count(), 2)
+
+    def test_estimated_cost_property(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        estimated_cost = sum([b.internal_value for b in self.benefits])
+
+        self.assertNotEqual(estimated_cost, 0)
+        self.assertEqual(estimated_cost, sponsorship.estimated_cost)
+
+        # estimated cost should not change even if original benefts get update
+        SponsorshipBenefit.objects.all().update(internal_value=0)
+        self.assertEqual(estimated_cost, sponsorship.estimated_cost)
+
+    def test_approve_sponsorship(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertIsNone(sponsorship.approved_on)
+
+        sponsorship.approve()
+
+        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
+        self.assertEqual(sponsorship.approved_on, timezone.now().date())
 
 
 class SponsorshipPackageTests(TestCase):

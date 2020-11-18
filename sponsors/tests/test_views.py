@@ -5,6 +5,7 @@ from itertools import chain
 from django.contrib import messages
 from django.contrib.auth.models import Group
 from django.conf import settings
+from django.core import mail
 from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 from django.contrib.messages import get_messages
@@ -195,7 +196,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
     def test_return_package_as_none_if_not_previously_selected(self):
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
-            {"benefits_psf": [b.id for b in self.program_1_benefits],}
+            {
+                "benefits_psf": [b.id for b in self.program_1_benefits],
+            }
         )
         r = self.client.get(self.url)
         self.assertIsNone(r.context["sponsorship_package"])
@@ -205,7 +208,10 @@ class NewSponsorshipApplicationViewTests(TestCase):
         extra_benefit = baker.make(SponsorshipBenefit)
         benefits = self.program_1_benefits + [extra_benefit]
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
-            {"package": self.package.id, "benefits_psf": [b.id for b in benefits],}
+            {
+                "package": self.package.id,
+                "benefits_psf": [b.id for b in benefits],
+            }
         )
 
         r = self.client.get(self.url)
@@ -258,7 +264,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertFalse(Sponsor.objects.exists())
 
         r = self.client.post(self.url, data=self.data)
-        self.assertRedirects(r, reverse("finish_sponsorship_application"))
+        self.assertEqual(r.context["sponsorship"].sponsor.name, "CompanyX")
+        self.assertEqual(r.context["notified"], ["bernardo@companyemail.com"])
 
         self.assertTrue(Sponsor.objects.filter(name="CompanyX").exists())
         self.assertTrue(
@@ -269,9 +276,11 @@ class NewSponsorshipApplicationViewTests(TestCase):
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
         self.assertTrue(sponsorship.level_name)
+        self.assertTrue(sponsorship.submited_by, self.user)
         self.assertEqual(
             r.client.cookies.get("sponsorship_selected_benefits").value, ""
         )
+        self.assertTrue(mail.outbox)
 
     def test_redirect_user_back_to_benefits_selection_if_post_without_valid_set_of_benefits(
         self,
@@ -306,3 +315,152 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.client.cookies["sponsorship_selected_benefits"] = "invalid"
         r = self.client.post(self.url, data=self.data)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
+
+
+class RejectedSponsorshipAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(Sponsorship, submited_by=self.user)
+        self.url = reverse(
+            "admin:sponsors_sponsorship_reject", args=[self.sponsorship.pk]
+        )
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(response, "sponsors/admin/reject_application.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.REJECTED
+        )  # did not update
+
+    def test_reject_sponsorship_on_post(self):
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertTrue(mail.outbox)
+        self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Sponsorship was rejected!", messages.SUCCESS)
+
+    def test_do_not_reject_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/reject_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.REJECTED
+        )  # did not update
+
+        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/reject_application.html")
+        self.assertNotEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class ApproveSponsorshipAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(Sponsorship)
+        self.url = reverse(
+            "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
+        )
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+    def test_approve_sponsorship_on_post(self):
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
+
+    def test_do_not_approve_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)

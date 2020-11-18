@@ -1,9 +1,11 @@
 from ordered_model.admin import OrderedModelAdmin
 
+from django.contrib import messages
 from django.urls import path, reverse
 from django.contrib import admin
+from django.contrib.humanize.templatetags.humanize import intcomma
 from django.utils.html import mark_safe
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 
 from .models import (
     SponsorshipPackage,
@@ -12,7 +14,10 @@ from .models import (
     Sponsor,
     Sponsorship,
     SponsorContact,
+    SponsorBenefit,
 )
+from sponsors import use_cases
+from sponsors.forms import SponsorshipReviewAdminForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -84,8 +89,18 @@ class SponsorAdmin(ContentManageableModelAdmin):
     inlines = [SponsorContactInline]
 
 
+class SponsorBenefitInline(admin.TabularInline):
+    model = SponsorBenefit
+    readonly_fields = ["name", "benefit_internal_value"]
+    fields = ["name", "benefit_internal_value"]
+    extra = 0
+    can_delete = False
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    form = SponsorshipReviewAdminForm
+    inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
         "applied_on",
@@ -93,6 +108,69 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
         "display_sponsorship_link",
+    ]
+    readonly_fields = [
+        "for_modified_package",
+        "sponsor",
+        "status",
+        "applied_on",
+        "rejected_on",
+        "approved_on",
+        "finalized_on",
+        "get_estimated_cost",
+        "get_sponsor_name",
+        "get_sponsor_description",
+        "get_sponsor_landing_page_url",
+        "get_sponsor_web_logo",
+        "get_sponsor_print_logo",
+        "get_sponsor_primary_phone",
+        "get_sponsor_mailing_address",
+        "get_sponsor_contacts",
+    ]
+
+    fieldsets = [
+        (
+            "Sponsorship Data",
+            {
+                "fields": (
+                    "sponsor",
+                    "status",
+                    "for_modified_package",
+                    "level_name",
+                    "sponsorship_fee",
+                    "get_estimated_cost",
+                    "start_date",
+                    "end_date",
+                ),
+            },
+        ),
+        (
+            "Sponsor Detailed Information",
+            {
+                "fields": (
+                    "get_sponsor_name",
+                    "get_sponsor_description",
+                    "get_sponsor_landing_page_url",
+                    "get_sponsor_web_logo",
+                    "get_sponsor_print_logo",
+                    "get_sponsor_primary_phone",
+                    "get_sponsor_mailing_address",
+                    "get_sponsor_contacts",
+                ),
+            },
+        ),
+        (
+            "Events dates",
+            {
+                "fields": (
+                    "applied_on",
+                    "approved_on",
+                    "rejected_on",
+                    "finalized_on",
+                ),
+                "classes": ["collapse"],
+            },
+        ),
     ]
 
     def get_queryset(self, *args, **kwargs):
@@ -105,18 +183,136 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     display_sponsorship_link.short_description = "Preview sponsorship"
 
+    def get_estimated_cost(self, obj):
+        cost = None
+        html = "This sponsorship has not customizations so there's no estimated cost"
+        if obj.for_modified_package:
+            msg = "This sponsorship has customizations and this cost is a sum of all benefit's internal values from when this sponsorship was created"
+            cost = intcomma(obj.estimated_cost)
+            html = f"{cost} USD <br/><b>Important: </b> {msg}"
+        return mark_safe(html)
+
+    get_estimated_cost.short_description = "Estimated cost"
+
     def preview_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
         ctx = {"sponsorship": sponsorship}
         return render(request, "sponsors/admin/preview-sponsorship.html", context=ctx)
 
-    def get_urls(self, *args, **kwargs):
-        urls = super().get_urls(*args, **kwargs)
-        custom_urls = [
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
             path(
                 "<int:pk>/preview",
                 self.admin_site.admin_view(self.preview_sponsorship_view),
                 name="sponsors_sponsorship_preview",
             ),
+            path(
+                "<int:pk>/reject",
+                # TODO: maybe it would be better to create a specific
+                # group or permission to review sponsorship applications
+                self.admin_site.admin_view(self.reject_sponsorship_view),
+                name="sponsors_sponsorship_reject",
+            ),
+            path(
+                "<int:pk>/approve",
+                self.admin_site.admin_view(self.approve_sponsorship_view),
+                name="sponsors_sponsorship_approve",
+            ),
         ]
-        return custom_urls + urls
+        return my_urls + urls
+
+    def get_sponsor_name(self, obj):
+        return obj.sponsor.name
+
+    get_sponsor_name.short_description = "Name"
+
+    def get_sponsor_description(self, obj):
+        return obj.sponsor.description
+
+    get_sponsor_description.short_description = "Description"
+
+    def get_sponsor_landing_page_url(self, obj):
+        return obj.sponsor.landing_page_url
+
+    get_sponsor_landing_page_url.short_description = "Landing Page URL"
+
+    def get_sponsor_web_logo(self, obj):
+        html = f"<img src='{obj.sponsor.web_logo.url}'/>"
+        return mark_safe(html)
+
+    get_sponsor_web_logo.short_description = "Web Logo"
+
+    def get_sponsor_print_logo(self, obj):
+        img = obj.sponsor.print_logo
+        html = ""
+        if img:
+            html = f"<img src='{img.url}'/>"
+        return mark_safe(html) if html else "---"
+
+    get_sponsor_print_logo.short_description = "Print Logo"
+
+    def get_sponsor_primary_phone(self, obj):
+        return obj.sponsor.primary_phone
+
+    get_sponsor_primary_phone.short_description = "Primary Phone"
+
+    def get_sponsor_mailing_address(self, obj):
+        return obj.sponsor.mailing_address
+
+    get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
+
+    def get_sponsor_contacts(self, obj):
+        html = ""
+        contacts = obj.sponsor.contacts.all()
+        primary = [c for c in contacts if c.primary]
+        not_primary = [c for c in contacts if not c.primary]
+        if primary:
+            html = "<b>Primary contacts</b><ul>"
+            html += "".join(
+                [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in primary]
+            )
+            html += "</ul>"
+        if not_primary:
+            html = "<b>Other contacts</b><ul>"
+            html += "".join(
+                [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary]
+            )
+            html += "</ul>"
+        return mark_safe(html)
+
+    get_sponsor_contacts.short_description = "Contacts"
+
+    def reject_sponsorship_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
+            use_case.execute(sponsorship)
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            self.message_user(request, "Sponsorship was rejected!", messages.SUCCESS)
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request, "sponsors/admin/reject_application.html", context=context
+        )
+
+    def approve_sponsorship_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            sponsorship.approve()
+            sponsorship.save()
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            self.message_user(request, "Sponsorship was approved!", messages.SUCCESS)
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request, "sponsors/admin/approve_application.html", context=context
+        )
