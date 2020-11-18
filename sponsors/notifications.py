@@ -2,8 +2,6 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.conf import settings
 
-from allauth.account.admin import EmailAddress
-
 
 class BaseEmailSponsorshipNotification:
     subject_template = None
@@ -45,13 +43,7 @@ class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification)
     email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        emails = [context["sponsorship"].submited_by.email]
-        for contact in context["sponsorship"].sponsor.contacts.all():
-            if EmailAddress.objects.filter(
-                email__iexact=contact.email, verified=True
-            ).exists():
-                emails.append(contact.email)
-        return list(set({e.casefold(): e for e in emails}.values()))
+        return context["sponsorship"].verified_emails
 
 
 class RejectedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
@@ -69,7 +61,7 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
     email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        return [context["sponsorship"].submited_by.email]
+        return context["sponsorship"].verified_emails
 
 
 class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
@@ -87,4 +79,4 @@ class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
     email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        return [context["sponsorship"].submited_by.email]
+        return context["sponsorship"].verified_emails

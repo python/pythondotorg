@@ -6,6 +6,7 @@ from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
+from allauth.account.admin import EmailAddress
 
 from cms.models import ContentManageable
 from companies.models import Company
@@ -302,6 +303,13 @@ class Sponsorship(models.Model):
         self.status = self.APPROVED
         self.approved_on = timezone.now().date()
 
+    @property
+    def verified_emails(self):
+        emails = [self.submited_by.email]
+        if self.sponsor:
+            emails += self.sponsor.verified_emails
+        return emails
+
 
 class SponsorBenefit(models.Model):
     sponsorship = models.ForeignKey(
@@ -378,6 +386,16 @@ class Sponsor(ContentManageable):
     class Meta:
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
+
+    @property
+    def verified_emails(self):
+        emails = []
+        for contact in self.contacts.all():
+            if EmailAddress.objects.filter(
+                email__iexact=contact.email, verified=True
+            ).exists():
+                emails.append(contact.email)
+        return list(set({e.casefold(): e for e in emails}.values()))
 
     def __str__(self):
         return f"{self.name}"

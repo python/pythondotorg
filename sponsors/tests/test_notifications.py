@@ -47,7 +47,9 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
             baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
         ]
         self.sponsor = baker.make("sponsors.Sponsor", contacts=self.sponsor_contacts)
-        self.sponsorship = baker.make("sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user)
+        self.sponsorship = baker.make(
+            "sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user
+        )
         self.subject_template = "sponsors/email/sponsor_new_application_subject.txt"
         self.content_template = "sponsors/email/sponsor_new_application.txt"
 
