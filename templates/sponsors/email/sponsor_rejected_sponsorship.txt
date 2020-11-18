@@ -1,0 +1,5 @@
+content email sponsors
+
+REJECTED SPONSORSHIP
+
+{{ sponsorship }}

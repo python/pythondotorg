@@ -213,7 +213,9 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(contact.phone, "+1999999999")
         self.assertIsNone(contact.user)
 
-    def test_create_sponsor_with_valid_data_for_non_required_inputs(self,):
+    def test_create_sponsor_with_valid_data_for_non_required_inputs(
+        self,
+    ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
         self.files["print_logo"] = get_static_image_file_as_upload(

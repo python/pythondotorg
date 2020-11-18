@@ -1,9 +1,13 @@
 from itertools import chain
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
+from django.utils import timezone
+from django.urls import reverse
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
+from allauth.account.admin import EmailAddress
 
 from cms.models import ContentManageable
 from companies.models import Company
@@ -229,6 +233,9 @@ class Sponsorship(models.Model):
         (FINALIZED, "Finalized"),
     ]
 
+    submited_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
+    )
     sponsor = models.ForeignKey("Sponsor", null=True, on_delete=models.SET_NULL)
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=APPLIED, db_index=True
@@ -241,19 +248,31 @@ class Sponsorship(models.Model):
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
 
+    for_modified_package = models.BooleanField(
+        default=False,
+        help_text="If true, it means the user customized the package's benefits.",
+    )
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
     @classmethod
-    def new(cls, sponsor, benefits, package=None):
+    def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
         Creates a Sponsorship with a Sponsor and a list of SponsorshipBenefit.
         This will create SponsorBenefit copies from the benefits
         """
+        for_modified_package = False
+        if package and package.has_user_customization(benefits):
+            for_modified_package = True
+        elif not package:
+            for_modified_package = True
+
         sponsorship = cls.objects.create(
+            submited_by=submited_by,
             sponsor=sponsor,
             level_name="" if not package else package.name,
             sponsorship_fee=None if not package else package.sponsorship_amount,
+            for_modified_package=for_modified_package,
         )
 
         for benefit in benefits:
@@ -263,9 +282,38 @@ class Sponsorship(models.Model):
                 name=benefit.name,
                 description=benefit.description,
                 program=benefit.program,
+                benefit_internal_value=benefit.internal_value,
             )
 
         return sponsorship
+
+    @property
+    def estimated_cost(self):
+        return (
+            self.benefits.aggregate(Sum("benefit_internal_value"))[
+                "benefit_internal_value__sum"
+            ]
+            or 0
+        )
+
+    def reject(self):
+        self.status = self.REJECTED
+        self.rejected_on = timezone.now().date()
+
+    def approve(self):
+        self.status = self.APPROVED
+        self.approved_on = timezone.now().date()
+
+    @property
+    def verified_emails(self):
+        emails = [self.submited_by.email]
+        if self.sponsor:
+            emails = self.sponsor.verified_emails(initial_emails=emails)
+        return emails
+
+    @property
+    def admin_url(self):
+        return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
 
 class SponsorBenefit(models.Model):
@@ -297,6 +345,12 @@ class SponsorBenefit(models.Model):
         on_delete=models.SET_NULL,
         verbose_name="Sponsorship Program",
         help_text="Which sponsorship program the benefit is associated with.",
+    )
+    benefit_internal_value = models.PositiveIntegerField(
+        null=True,
+        blank=True,
+        verbose_name="Benefit Internal Value",
+        help_text=("Benefit's internal value from when the Sponsorship gets created"),
     )
 
 
@@ -337,6 +391,15 @@ class Sponsor(ContentManageable):
     class Meta:
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
+
+    def verified_emails(self, initial_emails=None):
+        emails = initial_emails if initial_emails is not None else []
+        for contact in self.contacts.all():
+            if EmailAddress.objects.filter(
+                email__iexact=contact.email, verified=True
+            ).exists():
+                emails.append(contact.email)
+        return list(set({e.casefold(): e for e in emails}.values()))
 
     def __str__(self):
         return f"{self.name}"

@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.generic import ListView, FormView
 from django.urls import reverse_lazy, reverse
-from django.shortcuts import redirect
+from django.shortcuts import redirect, render
 
 from .models import (
     Sponsor,
@@ -19,8 +19,9 @@ from .models import (
     Sponsorship,
 )
 
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 from sponsors import cookies
+from sponsors import use_cases
+from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(UserPassesTestMixin, FormView):
@@ -92,7 +93,6 @@ class SelectSponsorshipApplicationBenefitsView(UserPassesTestMixin, FormView):
 class NewSponsorshipApplicationView(FormView):
     form_class = SponsorshipApplicationForm
     template_name = "sponsors/new_sponsorship_application_form.html"
-    success_url = reverse_lazy("finish_sponsorship_application")
 
     def _redirect_back_to_benefits(self):
         msg = "You have to select sponsorship package and benefits before."
@@ -143,10 +143,23 @@ class NewSponsorshipApplicationView(FormView):
             return self._redirect_back_to_benefits()
 
         sponsor = form.save()
-        Sponsorship.new(
-            sponsor, benefits_form.get_benefits(), benefits_form.get_package()
+
+        uc = use_cases.CreateSponsorshipApplicationUseCase.build()
+        sponsorship = uc.execute(
+            self.request.user,
+            sponsor,
+            benefits_form.get_benefits(),
+            benefits_form.get_package(),
+            request=self.request,
+        )
+        notified = uc.notifications[1].get_recipient_list(
+            {"user": self.request.user, "sponsorship": sponsorship}
         )
 
-        response = super().form_valid(form)
+        response = render(
+            self.request,
+            "sponsors/sponsorship_application_finished.html",
+            context={"sponsorship": sponsorship, "notified": notified},
+        )
         cookies.delete_sponsorship_selected_benefits(response)
         return response

@@ -91,7 +91,10 @@ class Migration(migrations.Migration):
                     ),
                 ),
             ],
-            options={"verbose_name": "sponsor", "verbose_name_plural": "sponsors",},
+            options={
+                "verbose_name": "sponsor",
+                "verbose_name_plural": "sponsors",
+            },
             bases=(models.Model,),
         ),
     ]
