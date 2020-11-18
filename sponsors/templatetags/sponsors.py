@@ -19,7 +19,7 @@ def featured_sponsor_rotation():
     return {}
 
 
-@register.inclusion_tag("sponsors/email/partials/full_sponsorship.txt")
+@register.inclusion_tag("sponsors/partials/full_sponsorship.txt")
 def full_sponsorship(sponsorship):
     return {
         "sponsorship": sponsorship,

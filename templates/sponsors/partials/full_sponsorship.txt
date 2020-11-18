@@ -1,0 +1,17 @@
+{% load humanize %}
+# Sponsor Information
+  * Name		{{ sponsor.name }}
+  * Description		{{ sponsor.description }}
+  * Landing Page URL	{{ sponsor.landing_page_url }}
+  * Primary Phone	{{ sponsor.primary_phone }}
+  * Mailing Address	{{ sponsor.mailing_address }}
+  * Contacts
+{% for contact in sponsor.contacts.all %}        - {{ contact.name }}, {{ contact.email }}, {{ contact.phone }}{% if contact.primary %} - *Primary*{%endif %}
+{% endfor %}
+# Sponsorship Information
+  * Status		{{ sponsorship.status }}
+{% if sponsorship.level_name %}  * Level		{{ sponsorship.level_name }}{% else %}  * Level			Custom Package{% endif %}
+{% if for_modified_package %}  * Sponsorship Fee	To be determined{% else %}  * Sponsorship Fee	${{ sponsorship.sponsorship_fee|intcomma }} USD{% endif %}
+  * Benefits
+{% for benefit in  benefits %}    - {{ benefit.program.name }} - {{ benefit.name }}
+{% endfor %}
