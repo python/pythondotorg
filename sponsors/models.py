@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
+from django.urls import reverse
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
 from allauth.account.admin import EmailAddress
@@ -309,6 +310,10 @@ class Sponsorship(models.Model):
         if self.sponsor:
             emails += self.sponsor.verified_emails
         return emails
+
+    @property
+    def admin_url(self):
+        return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
 
 class SponsorBenefit(models.Model):

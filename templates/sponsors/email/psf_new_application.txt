@@ -1,7 +1,7 @@
 {% load sponsors %}
 
 
-{% url 'admin:sponsors_sponsorship_change' object_id=sponsorship.pk %}
+https://python.org{{ sponsorship.admin_url }}
 
 
 {% full_sponsorship sponsorship %}
