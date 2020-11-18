@@ -308,7 +308,7 @@ class Sponsorship(models.Model):
     def verified_emails(self):
         emails = [self.submited_by.email]
         if self.sponsor:
-            emails += self.sponsor.verified_emails
+            emails = self.sponsor.verified_emails(initial_emails=emails)
         return emails
 
     @property
@@ -392,9 +392,8 @@ class Sponsor(ContentManageable):
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
 
-    @property
-    def verified_emails(self):
-        emails = []
+    def verified_emails(self, initial_emails=None):
+        emails = initial_emails if initial_emails is not None else []
         for contact in self.contacts.all():
             if EmailAddress.objects.filter(
                 email__iexact=contact.email, verified=True
