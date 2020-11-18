@@ -148,7 +148,7 @@ class StatementOfWorkNotificationToPSFTests(TestCase):
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
-        self.assertEqual([settings.SPONSORS_TO_EMAIL], email.to)
+        self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
 class StatementOfWorkNotificationToSponsorsTests(TestCase):

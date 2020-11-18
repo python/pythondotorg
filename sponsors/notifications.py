@@ -78,7 +78,7 @@ class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
     email_context_keys = ["sponsorship"]
 
     def get_recipient_list(self, context):
-        return [settings.SPONSORS_TO_EMAIL]
+        return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
 
 class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
