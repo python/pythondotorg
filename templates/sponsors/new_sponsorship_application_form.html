@@ -1,5 +1,6 @@
 {% extends "psf/full-width.html" %}
 {% load boxes widget_tweaks %}
+{% load humanize %}
 
 
 {% block page_title %}Submit Sponsorship Information{% endblock %}
@@ -9,18 +10,19 @@
     <h1>Submit Sponsorship Information</h1>
 
     <div id="sponsorship-info-container" class="user-feedback level-general">
-      <p style="display: inline">We need more information to proceed with your sponsorship application.
+      <p>
       {% if sponsorship_package %}
-        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price }}.00 {% endif %}and the following benefits:
+        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
       {% else %}
         You selected the following benefits:
       {% endif %}
       </p>
       <ul>
         {% for benefit in sponsorship_benefits %}
-          <p>{{ benefit.name }}</p>
+          <li>{{ benefit.name }}</li>
         {% endfor %}
       </ul>
+      <p><i>Please complete the form below.</i></p>
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
     </div>
 
@@ -37,7 +39,7 @@
         <label>{{ form.sponsor.label }}</label>
         {% render_field form.sponsor %}
         <br/>
-        <span class="helptext">You have already filled previous sponsorship application forms. Select an existing sponsor or <span id="new-application-link">create a new one</span>.
+        <span class="helptext">Your user account is already associated with existing PSF Sponsors. Select an existing sponsor to submit this application on their behalf or <span id="new-application-link">create a new one</span>.
       </p>
       {% endif %}
 

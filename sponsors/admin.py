@@ -80,6 +80,7 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
 
 class SponsorContactInline(admin.TabularInline):
     model = SponsorContact
+    raw_id_fields = ["user"]
     extra = 0
 
 

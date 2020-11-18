@@ -6,12 +6,10 @@
 {% block content %}
   <article class="text">
     <h1>Application submited!</h1>
-
     <hr>
-
+    <p><i>Thank you for submitting your application to sponsor the PSF ecosystem.</i></p>
     <p>A confirmation has been emailed to {% for item in notified %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{item}}{% endfor %}.</p>
-    <p>Our team has been notified and we'll be in contact with you soon!</p>
+    <p>Our team has been notified and will contact you within 2 business days to discuss next steps.</p>
     <p>- The Python Software Foundation Sponsorship Team</p>
   </article>
-
 {% endblock content %}
