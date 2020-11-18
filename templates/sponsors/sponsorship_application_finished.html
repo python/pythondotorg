@@ -6,6 +6,12 @@
 {% block content %}
   <article class="text">
     <h1>Application submited!</h1>
+
+    <hr>
+
+    <p>A confirmation has been emailed to {% for item in notified %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{item}}{% endfor %}.</p>
+    <p>Our team has been notified and we'll be in contact with you soon!</p>
+    <p>- The Python Software Foundation Sponsorship Team</p>
   </article>
 
 {% endblock content %}

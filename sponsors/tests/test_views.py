@@ -236,7 +236,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertFalse(Sponsor.objects.exists())
 
         r = self.client.post(self.url, data=self.data)
-        self.assertRedirects(r, reverse("finish_sponsorship_application"))
+        self.assertEqual(r.context["sponsorship"].sponsor.name, "CompanyX")
+        self.assertEqual(r.context["notified"], ["bernardo@companyemail.com"])
 
         self.assertTrue(Sponsor.objects.filter(name="CompanyX").exists())
         self.assertTrue(

@@ -1,1 +1,1 @@
-subject email user + sponsor primary contacts
+Thank you for applying to sponsor the Python Software Foundation

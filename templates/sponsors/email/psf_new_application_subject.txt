@@ -1,1 +1,1 @@
-subject email psf-sponsors@python.org
+New sponsorship application from {{ sponsorship.sponsor.name }}
