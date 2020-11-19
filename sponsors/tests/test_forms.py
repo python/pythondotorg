@@ -155,7 +155,12 @@ class SponsorshipApplicationFormTests(TestCase):
         self.data = {
             "name": "CompanyX",
             "primary_phone": "+14141413131",
-            "mailing_address": "4th street",
+            "mailing_address_line_1": "4th street",
+            "mailing_address_line_2": "424",
+            "city": "New York",
+            "state": "NY",
+            "postal_code": "10212",
+            "country": "US",
             "contact-0-name": "Bernardo",
             "contact-0-email": "bernardo@companyemail.com",
             "contact-0-phone": "+1999999999",
@@ -174,7 +179,10 @@ class SponsorshipApplicationFormTests(TestCase):
             "name",
             "web_logo",
             "primary_phone",
-            "mailing_address",
+            "mailing_address_line_1",
+            "city",
+            "postal_code",
+            "country",
             "__all__",
         ]
 
@@ -203,7 +211,13 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(sponsor.name, "CompanyX")
         self.assertTrue(sponsor.web_logo)
         self.assertEqual(sponsor.primary_phone, "+14141413131")
-        self.assertEqual(sponsor.mailing_address, "4th street")
+        self.assertEqual(sponsor.mailing_address_line_1, "4th street")
+        self.assertEqual(sponsor.mailing_address_line_2, "424")
+        self.assertEqual(sponsor.city, "New York")
+        self.assertEqual(sponsor.state, "NY")
+        self.assertEqual(sponsor.postal_code, "10212")
+        self.assertEqual(sponsor.country, "US")
+        self.assertEqual(sponsor.country.name, "United States of America")
         self.assertEqual(sponsor.description, "")
         self.assertIsNone(sponsor.print_logo.name)
         self.assertEqual(sponsor.landing_page_url, "")

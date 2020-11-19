@@ -154,6 +154,7 @@ INSTALLED_APPS = [
     'waffle',
     'ordered_model',
     'widget_tweaks',
+    'django_countries',
 
     'users',
     'boxes',
