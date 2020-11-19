@@ -72,8 +72,90 @@
           {% endif %}
         </p>
 
-        <div id="file_fields">
-          <div class="field_container">
+        <p class="form_field">
+          <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}{{ form.country.errors.as_text }}</span>{% endif %}</label>
+          {% render_field form.country %}
+          {% if form.country.help_text %}
+          <br/>
+          <span class="helptext">{{ form.country.help_text }}</span>
+          {% endif %}
+        </p>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.mailing_address_line_1.label }} <span class="error-message">{% if form.mailing_address_line_1.errors %}{{ form.mailing_address_line_1.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.mailing_address_line_1 %}
+              {% if form.mailing_address_line_1.help_text %}
+              <br/>
+              <span class="helptext">{{ form.mailing_address_line_1.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.mailing_address_line_2.label }} <span class="error-message">{% if form.mailing_address_line_2.errors %}{{ form.mailing_address_line_2.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.mailing_address_line_2 %}
+              {% if form.mailing_address_line_2.help_text %}
+              <br/>
+              <span class="helptext">{{ form.mailing_address_line_2.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.city.label }} <span class="error-message">{% if form.city.errors %}{{ form.city.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.city %}
+              {% if form.city.help_text %}
+              <br/>
+              <span class="helptext">{{ form.city.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.state.label }} <span class="error-message">{% if form.state.errors %}{{ form.state.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.state %}
+              {% if form.state.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.postal_code.label }} <span class="error-message">{% if form.postal_code.errors %}{{ form.postal_code.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.postal_code %}
+              {% if form.postal_code.help_text %}
+              <br/>
+              <span class="helptext">{{ form.postal_code.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.primary_phone %}
+              {% if form.primary_phone.help_text %}
+              <br/>
+              <span class="helptext">{{ form.primary_phone.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="inline_fields">
+          <div>
           <p class="form_field">
           <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.web_logo %}
@@ -84,7 +166,7 @@
           </p>
           </div>
 
-          <div class="field_container">
+          <div>
           <p class="form_field">
             <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.print_logo %}
@@ -95,24 +177,6 @@
           </p>
           </div>
         </div>
-
-        <p class="form_field">
-          <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
-          {% render_field form.primary_phone %}
-          {% if form.primary_phone.help_text %}
-          <br/>
-          <span class="helptext">{{ form.primary_phone.help_text }}</span>
-          {% endif %}
-        </p>
-
-        <p class="form_field">
-          <label>{{ form.mailing_address.label }} <span class="error-message">{% if form.mailing_address.errors %}{{ form.mailing_address.errors.as_text }}</span>{% endif %}</label>
-          {% render_field form.mailing_address %}
-          {% if form.mailing_address.help_text %}
-          <br/>
-          <span class="helptext">{{ form.mailing_address.help_text }}</span>
-          {% endif %}
-        </p>
 
         <h1>Contacts</h1>
           {{ form.contacts_formset.management_form }}
