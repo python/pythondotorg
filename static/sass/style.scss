@@ -2505,10 +2505,10 @@ span.highlighted {
     font-size: 85%;
   }
 
-  #file_fields {
+  .inline_fields {
     display: block;
 
-    .field_container {
+    div {
       display: inline-block;
       width: 49%;
     }

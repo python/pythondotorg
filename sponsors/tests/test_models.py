@@ -6,6 +6,7 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..models import Sponsor, SponsorshipBenefit, Sponsorship
+from ..exceptions import SponsorWithExistingApplicationException
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -108,6 +109,26 @@ class SponsorshipModelTests(TestCase):
 
         self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
         self.assertEqual(sponsorship.approved_on, timezone.now().date())
+
+    def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        finalized_status = [Sponsorship.REJECTED, Sponsorship.FINALIZED]
+        for status in finalized_status:
+            sponsorship.status = status
+            sponsorship.save()
+
+            new_sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+            new_sponsorship.refresh_from_db()
+            self.assertTrue(new_sponsorship.pk)
+            new_sponsorship.delete()
+
+        pending_status = [Sponsorship.APPLIED, Sponsorship.APPROVED]
+        for status in pending_status:
+            sponsorship.status = status
+            sponsorship.save()
+
+            with self.assertRaises(SponsorWithExistingApplicationException):
+                Sponsorship.new(self.sponsor, self.benefits)
 
 
 class SponsorshipPackageTests(TestCase):

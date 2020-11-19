@@ -166,7 +166,10 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.data = {
             "name": "CompanyX",
             "primary_phone": "+14141413131",
-            "mailing_address": "4th street",
+            "mailing_address_line_1": "4th street",
+            "city": "New York",
+            "postal_code": "10212",
+            "country": "US",
             "contact-0-name": "Bernardo",
             "contact-0-email": self.user.email,
             "contact-0-phone": "+1999999999",

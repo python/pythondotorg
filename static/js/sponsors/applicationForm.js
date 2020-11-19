@@ -9,6 +9,7 @@ $(document).ready(function(){
         $("input[name=package]").prop("checked", false);
         checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
+            if ($(this).attr("package_only")) $(this).attr("disabled", true);
         });
         $("#cost_label").html("");
     });
@@ -48,8 +49,6 @@ $(document).ready(function(){
 
       let active = checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
       if (!active) {
-          let packageOnlyBenefit = $(this).attr("package_only");
-          if (packageOnlyBenefit) $(this).attr("disabled", true);
           return;
       } else {
           $('label[benefit_id=' + benefit + ']').addClass("active");

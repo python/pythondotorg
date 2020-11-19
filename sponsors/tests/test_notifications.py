@@ -29,7 +29,7 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
@@ -64,7 +64,7 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
 
     def test_send_email_to_correct_recipients(self):
@@ -95,7 +95,7 @@ class RejectedSponsorshipNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
@@ -125,7 +125,7 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)
 
 
@@ -149,7 +149,7 @@ class StatementOfWorkNotificationToPSFTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
 
@@ -177,5 +177,5 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
         email = mail.outbox[0]
         self.assertEqual(expected_subject, email.subject)
         self.assertEqual(expected_content, email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)

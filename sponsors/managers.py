@@ -1,12 +1,7 @@
 from django.db.models.query import QuerySet
 
 
-class SponsorQuerySet(QuerySet):
-    def draft(self):
-        return self.filter(is_published=False)
-
-    def published(self):
-        return self.filter(is_published=True)
-
-    def featured(self):
-        return self.published().filter(featured=True)
+class SponsorshipQuerySet(QuerySet):
+    def in_progress(self):
+        status = [self.model.APPLIED, self.model.APPROVED]
+        return self.filter(status__in=status)

@@ -8,11 +8,13 @@ from django.urls import reverse
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
 from allauth.account.admin import EmailAddress
+from django_countries.fields import CountryField
 
 from cms.models import ContentManageable
 from companies.models import Company
 
-from .managers import SponsorQuerySet
+from .managers import SponsorshipQuerySet
+from .exceptions import SponsorWithExistingApplicationException
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -233,6 +235,8 @@ class Sponsorship(models.Model):
         (FINALIZED, "Finalized"),
     ]
 
+    objects = SponsorshipQuerySet.as_manager()
+
     submited_by = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL
     )
@@ -266,6 +270,9 @@ class Sponsorship(models.Model):
             for_modified_package = True
         elif not package:
             for_modified_package = True
+
+        if cls.objects.in_progress().filter(sponsor=sponsor).exists():
+            raise SponsorWithExistingApplicationException(f"Sponsor pk: {sponsor.pk}")
 
         sponsorship = cls.objects.create(
             submited_by=submited_by,
@@ -384,9 +391,20 @@ class Sponsor(ContentManageable):
     )
 
     primary_phone = models.CharField("Sponsor Primary Phone", max_length=32)
-    mailing_address = models.TextField("Sponsor Mailing/Billing Address")
-
-    objects = SponsorQuerySet.as_manager()
+    mailing_address_line_1 = models.CharField(
+        verbose_name="Mailing Address line 1", max_length=128, default=""
+    )
+    mailing_address_line_2 = models.CharField(
+        verbose_name="Mailing Address line 2", max_length=128, blank=True, default=""
+    )
+    city = models.CharField(verbose_name="City", max_length=64, default="")
+    state = models.CharField(
+        verbose_name="State/Province/Region", max_length=64, blank=True, default=""
+    )
+    postal_code = models.CharField(
+        verbose_name="Zip/Postal Code", max_length=64, default=""
+    )
+    country = CountryField(default="")
 
     class Meta:
         verbose_name = "sponsor"
