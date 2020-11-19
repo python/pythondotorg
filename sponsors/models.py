@@ -12,7 +12,6 @@ from allauth.account.admin import EmailAddress
 from cms.models import ContentManageable
 from companies.models import Company
 
-from .managers import SponsorQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -385,8 +384,6 @@ class Sponsor(ContentManageable):
 
     primary_phone = models.CharField("Sponsor Primary Phone", max_length=32)
     mailing_address = models.TextField("Sponsor Mailing/Billing Address")
-
-    objects = SponsorQuerySet.as_manager()
 
     class Meta:
         verbose_name = "sponsor"
