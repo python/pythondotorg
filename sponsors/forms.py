@@ -1,8 +1,10 @@
 from itertools import chain
+from django_countries.fields import CountryField
 from django import forms
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import cached_property
+from django.conf import settings
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -164,11 +166,25 @@ class SponsorshipApplicationForm(forms.Form):
         max_length=32,
         required=False,
     )
-    mailing_address = forms.CharField(
-        label="Sponsor Mailing/Billing Address",
+    mailing_address_line_1 = forms.CharField(
+        label="Mailing Address line 1",
         widget=forms.TextInput,
         required=False,
     )
+    mailing_address_line_2 = forms.CharField(
+        label="Mailing Address line 2",
+        widget=forms.TextInput,
+        required=False,
+    )
+
+    city = forms.CharField(max_length=64, required=False)
+    state = forms.CharField(
+        label="State/Province/Region", max_length=64, required=False
+    )
+    postal_code = forms.CharField(
+        label="Zip/Postal Code", max_length=64, required=False
+    )
+    country = CountryField().formfield(required=False)
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -203,6 +219,20 @@ class SponsorshipApplicationForm(forms.Form):
                 msg = "You have to mark at least one contact as the primary one."
                 raise forms.ValidationError(msg)
 
+    def clean_sponsor(self):
+        sponsor = self.cleaned_data.get("sponsor")
+        if not sponsor:
+            return
+
+        if Sponsorship.objects.in_progress().filter(sponsor=sponsor).exists():
+            msg = f"The sponsor {sponsor.name} already have open Sponsorship applications. "
+            msg += f"Get in contact with {settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL} to discuss."
+            raise forms.ValidationError(msg)
+
+        return sponsor
+
+    # Required fields are being manually validated because if the form
+    # data has a Sponsor they shouldn't be required
     def clean_name(self):
         name = self.cleaned_data.get("name", "")
         sponsor = self.data.get("sponsor")
@@ -224,12 +254,33 @@ class SponsorshipApplicationForm(forms.Form):
             raise forms.ValidationError("This field is required.")
         return primary_phone.strip()
 
-    def clean_mailing_address(self):
-        mailing_address = self.cleaned_data.get("mailing_address", "")
+    def clean_mailing_address_line_1(self):
+        mailing_address_line_1 = self.cleaned_data.get("mailing_address_line_1", "")
         sponsor = self.data.get("sponsor")
-        if not sponsor and not mailing_address:
+        if not sponsor and not mailing_address_line_1:
             raise forms.ValidationError("This field is required.")
-        return mailing_address.strip()
+        return mailing_address_line_1.strip()
+
+    def clean_city(self):
+        city = self.cleaned_data.get("city", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not city:
+            raise forms.ValidationError("This field is required.")
+        return city.strip()
+
+    def clean_postal_code(self):
+        postal_code = self.cleaned_data.get("postal_code", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not postal_code:
+            raise forms.ValidationError("This field is required.")
+        return postal_code.strip()
+
+    def clean_country(self):
+        country = self.cleaned_data.get("country", "")
+        sponsor = self.data.get("sponsor")
+        if not sponsor and not country:
+            raise forms.ValidationError("This field is required.")
+        return country.strip()
 
     def save(self):
         selected_sponsor = self.cleaned_data.get("sponsor")
@@ -240,7 +291,12 @@ class SponsorshipApplicationForm(forms.Form):
             name=self.cleaned_data["name"],
             web_logo=self.cleaned_data["web_logo"],
             primary_phone=self.cleaned_data["primary_phone"],
-            mailing_address=self.cleaned_data["mailing_address"],
+            mailing_address_line_1=self.cleaned_data["mailing_address_line_1"],
+            mailing_address_line_2=self.cleaned_data.get("mailing_address_line_2", ""),
+            city=self.cleaned_data["city"],
+            state=self.cleaned_data.get("state", ""),
+            postal_code=self.cleaned_data["postal_code"],
+            country=self.cleaned_data["country"],
             description=self.cleaned_data.get("description", ""),
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             print_logo=self.cleaned_data.get("print_logo"),

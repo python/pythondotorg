@@ -3702,14 +3702,14 @@ span.highlighted {
   margin-bottom: 0px; }
 #new_sponsorship_application_container .helptext {
   font-size: 85%; }
-#new_sponsorship_application_container #file_fields {
+#new_sponsorship_application_container .inline_fields {
   display: block; }
-  #new_sponsorship_application_container #file_fields .field_container {
+  #new_sponsorship_application_container .inline_fields div {
     display: inline-block;
     width: 49%; }
-  #new_sponsorship_application_container #file_fields .form_field {
+  #new_sponsorship_application_container .inline_fields .form_field {
     display: block; }
-  #new_sponsorship_application_container #file_fields .helptext {
+  #new_sponsorship_application_container .inline_fields .helptext {
     display: block; }
 #new_sponsorship_application_container #new-application-link {
   cursor: pointer;
