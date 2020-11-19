@@ -3,6 +3,7 @@ from django import forms
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import cached_property
+from django.conf import settings
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -202,6 +203,18 @@ class SponsorshipApplicationForm(forms.Form):
             if not has_primary_contact:
                 msg = "You have to mark at least one contact as the primary one."
                 raise forms.ValidationError(msg)
+
+    def clean_sponsor(self):
+        sponsor = self.cleaned_data.get("sponsor")
+        if not sponsor:
+            return
+
+        if Sponsorship.objects.in_progress().filter(sponsor=sponsor).exists():
+            msg = f"The sponsor {sponsor.name} already have open Sponsorship applications. "
+            msg += f"Get in contact with {settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL} to discuss."
+            raise forms.ValidationError(msg)
+
+        return sponsor
 
     def clean_name(self):
         name = self.cleaned_data.get("name", "")

@@ -257,6 +257,20 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertIn("sponsor", form.errors)
         self.assertEqual(1, len(form.errors))
 
+    def test_invalidate_form_if_sponsor_with_sponsorships(self):
+        contact = baker.make(SponsorContact, user__email="foo@foo.com")
+        self.data = {"sponsor": contact.sponsor.id}
+
+        prev_sponsorship = baker.make("sponsors.Sponsorship", sponsor=contact.sponsor)
+        form = SponsorshipApplicationForm(self.data, self.files, user=contact.user)
+        self.assertFalse(form.is_valid())
+        self.assertIn("sponsor", form.errors)
+
+        prev_sponsorship.status = prev_sponsorship.FINALIZED
+        prev_sponsorship.save()
+        form = SponsorshipApplicationForm(self.data, self.files, user=contact.user)
+        self.assertTrue(form.is_valid())
+
     def test_create_multiple_contacts_and_user_contact(self):
         user_email = "secondary@companyemail.com"
         self.data.update(
