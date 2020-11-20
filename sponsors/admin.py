@@ -40,7 +40,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program"]
+    list_filter = ["program", "package_only"]
     search_fields = ["name"]
 
     fieldsets = [
