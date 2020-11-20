@@ -105,12 +105,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
     inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
+        "status",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
         "display_sponsorship_link",
     ]
+    list_filter = ['status']
     readonly_fields = [
         "for_modified_package",
         "sponsor",
