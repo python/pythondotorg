@@ -263,6 +263,9 @@ class Sponsorship(models.Model):
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
+    def __str__(self):
+        return f'{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}'
+
     @classmethod
     def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
