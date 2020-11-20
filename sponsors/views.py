@@ -122,15 +122,29 @@ class NewSponsorshipApplicationView(FormView):
             *[self.benefits_data[k] for k in self.benefits_data if k != "package"]
         )
         benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
-        price = None
 
+        # sponsorship benefits holds selected package's benefits
+        # added benefits holds holds extra benefits added by users
+        added_benefits, sponsorship_benefits = [], benefits
+        price = None
         if package and not package.has_user_customization(benefits):
             price = package.sponsorship_amount
+        elif package:
+            sponsorship_benefits = []
+            package_benefits = package.benefits.all()
+            for benefit in benefits:
+                if benefit in package_benefits:
+                    sponsorship_benefits.append(benefit)
+                else:
+                    added_benefits.append(benefit)
+        else:
+            added_benefits, sponsorship_benefits = sponsorship_benefits, []
 
         kwargs.update(
             {
                 "sponsorship_package": package,
-                "sponsorship_benefits": benefits,
+                "sponsorship_benefits": sponsorship_benefits,
+                "added_benefits": added_benefits,
                 "sponsorship_price": price,
             }
         )

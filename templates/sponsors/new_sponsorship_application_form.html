@@ -10,18 +10,25 @@
     <h1>Submit Sponsorship Information</h1>
 
     <div id="sponsorship-info-container" class="user-feedback level-general">
-      <p>
       {% if sponsorship_package %}
+      <p>
         You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
-      {% else %}
-        You selected the following benefits:
-      {% endif %}
       </p>
       <ul>
         {% for benefit in sponsorship_benefits %}
           <li>{{ benefit.name }}</li>
         {% endfor %}
       </ul>
+      {% endif %}
+
+      {% if added_benefits %}
+      <p>Added benefits:</p>
+      <ul>
+        {% for benefit in added_benefits %}
+          <li>{{ benefit.name }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
       <p><i>Please complete the form below.</i></p>
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
     </div>
