@@ -336,6 +336,16 @@ class Sponsorship(models.Model):
     def added_benefits(self):
         return self.benefits.filter(added_by_user=True)
 
+    @property
+    def next_status(self):
+        states_map = {
+            self.APPLIED: [self.APPROVED, self.REJECTED],
+            self.APPROVED: [self.FINALIZED],
+            self.REJECTED: [],
+            self.FINALIZED: [],
+        }
+        return states_map[self.status]
+
 
 class SponsorBenefit(models.Model):
     sponsorship = models.ForeignKey(

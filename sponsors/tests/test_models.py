@@ -41,6 +41,17 @@ class SponsorshipModelTests(TestCase):
         self.sponsor = baker.make("sponsors.Sponsor")
         self.user = baker.make(settings.AUTH_USER_MODEL)
 
+    def test_control_sponsorship_next_status(self):
+        states_map = {
+            Sponsorship.APPLIED: [Sponsorship.APPROVED, Sponsorship.REJECTED],
+            Sponsorship.APPROVED: [Sponsorship.FINALIZED],
+            Sponsorship.REJECTED: [],
+            Sponsorship.FINALIZED: [],
+        }
+        for status, exepcted in states_map.items():
+            sponsorship = baker.prepare(Sponsorship, status=status)
+            self.assertEqual(sponsorship.next_status, exepcted)
+
     def test_create_new_sponsorship(self):
         sponsorship = Sponsorship.new(
             self.sponsor, self.benefits, submited_by=self.user
