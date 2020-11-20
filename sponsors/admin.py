@@ -100,6 +100,7 @@ class SponsorBenefitInline(admin.TabularInline):
 
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
     list_display = [
