@@ -105,8 +105,10 @@ class SponsorshipModelTests(TestCase):
         for benefit in self.benefits:
             sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
             self.assertFalse(sponsor_benefit.added_by_user)
+            self.assertIn(sponsor_benefit, sponsorship.package_benefits)
         sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=extra_benefit)
         self.assertTrue(sponsor_benefit.added_by_user)
+        self.assertEqual([sponsor_benefit], list(sponsorship.added_benefits))
 
     def test_estimated_cost_property(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)

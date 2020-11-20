@@ -328,6 +328,14 @@ class Sponsorship(models.Model):
     def admin_url(self):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
+    @cached_property
+    def package_benefits(self):
+        return self.benefits.filter(added_by_user=False)
+
+    @cached_property
+    def added_benefits(self):
+        return self.benefits.filter(added_by_user=True)
+
 
 class SponsorBenefit(models.Model):
     sponsorship = models.ForeignKey(
