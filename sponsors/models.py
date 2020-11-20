@@ -4,6 +4,7 @@ from django.db import models
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.urls import reverse
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel, OrderedModelManager
@@ -266,7 +267,9 @@ class Sponsorship(models.Model):
         This will create SponsorBenefit copies from the benefits
         """
         for_modified_package = False
+        package_benefits = []
         if package and package.has_user_customization(benefits):
+            package_benefits = package.benefits.all()
             for_modified_package = True
         elif not package:
             for_modified_package = True
@@ -283,6 +286,8 @@ class Sponsorship(models.Model):
         )
 
         for benefit in benefits:
+            added_by_user = for_modified_package and benefit not in package_benefits
+
             SponsorBenefit.objects.create(
                 sponsorship=sponsorship,
                 sponsorship_benefit=benefit,
@@ -290,6 +295,7 @@ class Sponsorship(models.Model):
                 description=benefit.description,
                 program=benefit.program,
                 benefit_internal_value=benefit.internal_value,
+                added_by_user=added_by_user,
             )
 
         return sponsorship
@@ -358,6 +364,9 @@ class SponsorBenefit(models.Model):
         blank=True,
         verbose_name="Benefit Internal Value",
         help_text=("Benefit's internal value from when the Sponsorship gets created"),
+    )
+    added_by_user = models.BooleanField(
+        blank=True, default=False, verbose_name="Added by user?"
     )
 
 

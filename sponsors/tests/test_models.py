@@ -64,6 +64,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
         for benefit in self.benefits:
             sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
+            self.assertTrue(sponsor_benefit.added_by_user)
             self.assertEqual(sponsor_benefit.name, benefit.name)
             self.assertEqual(sponsor_benefit.description, benefit.description)
             self.assertEqual(sponsor_benefit.program, benefit.program)
@@ -79,6 +80,8 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.level_name, "PSF Sponsorship Program")
         self.assertEqual(sponsorship.sponsorship_fee, 100)
         self.assertFalse(sponsorship.for_modified_package)
+        for benefit in sponsorship.benefits.all():
+            self.assertFalse(benefit.added_by_user)
 
     def test_create_new_sponsorship_with_package_modifications(self):
         benefits = self.benefits[:2]
@@ -88,6 +91,22 @@ class SponsorshipModelTests(TestCase):
 
         self.assertTrue(sponsorship.for_modified_package)
         self.assertEqual(sponsorship.benefits.count(), 2)
+        for benefit in sponsorship.benefits.all():
+            self.assertFalse(benefit.added_by_user)
+
+    def test_create_new_sponsorship_with_package_added_benefit(self):
+        extra_benefit = baker.make(SponsorshipBenefit)
+        benefits = self.benefits + [extra_benefit]
+        sponsorship = Sponsorship.new(self.sponsor, benefits, package=self.package)
+        sponsorship.refresh_from_db()
+
+        self.assertTrue(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.benefits.count(), 6)
+        for benefit in self.benefits:
+            sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=benefit)
+            self.assertFalse(sponsor_benefit.added_by_user)
+        sponsor_benefit = sponsorship.benefits.get(sponsorship_benefit=extra_benefit)
+        self.assertTrue(sponsor_benefit.added_by_user)
 
     def test_estimated_cost_property(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
