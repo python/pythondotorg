@@ -191,6 +191,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertEqual(
             len(r.context["sponsorship_benefits"]), len(self.program_1_benefits)
         )
+        self.assertEqual(len(r.context["added_benefits"]), 0)
         self.assertEqual(
             r.context["sponsorship_price"], self.package.sponsorship_amount
         )
@@ -206,6 +207,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         r = self.client.get(self.url)
         self.assertIsNone(r.context["sponsorship_package"])
         self.assertIsNone(r.context["sponsorship_price"])
+        self.assertEqual(len(r.context["added_benefits"]), len(self.program_1_benefits))
+        self.assertEqual(len(r.context["sponsorship_benefits"]), 0)
 
     def test_no_sponsorship_price_if_customized_benefits(self):
         extra_benefit = baker.make(SponsorshipBenefit)
@@ -221,8 +224,9 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
         self.assertEqual(r.context["sponsorship_package"], self.package)
         self.assertIsNone(r.context["sponsorship_price"])
-        for benefit in benefits:
+        for benefit in self.program_1_benefits:
             self.assertIn(benefit, r.context["sponsorship_benefits"])
+        self.assertIn(extra_benefit, r.context["added_benefits"])
 
     def test_display_form_with_errors_if_invalid_post(self):
         r = self.client.post(self.url, {})
