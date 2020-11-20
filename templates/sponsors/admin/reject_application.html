@@ -20,7 +20,7 @@
 <form action="" method="post" id="new_psf_board_meeting_form">
 {% csrf_token %}
 
-<pre>{% full_sponsorship sponsorship %}</pre>
+<pre>{% full_sponsorship sponsorship display_fee=True %}</pre>
 
 <input name="confirm" value="yes" style="display:none">
 
