@@ -18,6 +18,7 @@ from .models import (
 )
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.exceptions import SponsorshipInvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -287,12 +288,18 @@ class SponsorshipAdmin(admin.ModelAdmin):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
-            use_case.execute(sponsorship)
+            try:
+                use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
+                use_case.execute(sponsorship)
+                self.message_user(
+                    request, "Sponsorship was rejected!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was rejected!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}
@@ -304,12 +311,18 @@ class SponsorshipAdmin(admin.ModelAdmin):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            sponsorship.approve()
-            sponsorship.save()
+            try:
+                sponsorship.approve()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship was approved!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was approved!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}

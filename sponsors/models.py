@@ -15,7 +15,10 @@ from cms.models import ContentManageable
 from companies.models import Company
 
 from .managers import SponsorshipQuerySet
-from .exceptions import SponsorWithExistingApplicationException
+from .exceptions import (
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidStatusException,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -310,10 +313,16 @@ class Sponsorship(models.Model):
         )
 
     def reject(self):
+        if self.REJECTED not in self.next_status:
+            msg = f"Can't reject a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
     def approve(self):
+        if self.APPROVED not in self.next_status:
+            msg = f"Can't approve a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.APPROVED
         self.approved_on = timezone.now().date()
 
