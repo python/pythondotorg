@@ -3,7 +3,7 @@ from itertools import chain
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
@@ -24,23 +24,9 @@ from sponsors import use_cases
 from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
 
 
-class SelectSponsorshipApplicationBenefitsView(UserPassesTestMixin, FormView):
+class SelectSponsorshipApplicationBenefitsView(FormView):
     form_class = SponsorshiptBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"
-
-    # TODO: Remove UserPassesTestMixin when launched, also remove following methods
-    def test_func(self):
-        return (
-            self.request.user.is_staff
-            or self.request.user.groups.filter(name="Sponsorship Preview").exists()
-        )
-
-    def permission_denied_message(self):
-        msg = "New Sponsorship Application is not yet generally available, check back soon!"
-        messages.add_message(self.request, messages.INFO, msg)
-        return msg
-
-    # END TODO
 
     def get_context_data(self, *args, **kwargs):
         programs = SponsorshipProgram.objects.all()
@@ -65,8 +51,7 @@ class SelectSponsorshipApplicationBenefitsView(UserPassesTestMixin, FormView):
         if self.request.user.is_authenticated:
             return reverse_lazy("new_sponsorship_application")
         else:
-            # TODO unit test this scenario after removing UserPassesTestMixin
-            return settings.LOGIN_URL
+            return f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
 
     def get_initial(self):
         return cookies.get_sponsorship_selected_benefits(self.request)
