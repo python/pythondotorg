@@ -5,8 +5,8 @@
   * Landing Page URL	{{ sponsor.landing_page_url }}
   * Primary Phone	{{ sponsor.primary_phone }}
   * City		{{ sponsor.city }}{% if sponsor.state %} - {{ sponsor.state }}{% endif %} - {{ sponsor.get_country_display}} ({{ sponsor.country}})
-  * Mailing Address	{{ sponsor.mailing_address_line_1 }}{% if sponsor.mailing_address_line_1 %} - {{ sponsor.mailing_address_line_2 }}{% endif %}
   * Zip/Postal Code	{{ sponsor.postal_code }}
+  * Mailing Address	{{ sponsor.mailing_address_line_1 }}{% if sponsor.mailing_address_line_1 %} - {{ sponsor.mailing_address_line_2 }}{% endif %}
   * Contacts
 {% for contact in sponsor.contacts.all %}        - {{ contact.name }}, {{ contact.email }}, {{ contact.phone }}{% if contact.primary %} - *Primary*{%endif %}
 {% endfor %}
