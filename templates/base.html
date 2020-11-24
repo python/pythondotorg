@@ -9,6 +9,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js">
 
     <meta name="application-name" content="{{ SITE_INFO.site_name }}">
     <meta name="msapplication-tooltip" content="{{ SITE_INFO.site_descript }}">
@@ -37,6 +38,7 @@
     {# equivalent to: #}
     {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
     <![endif]-->
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
     <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico">
@@ -327,6 +329,8 @@
     {% block javascript %}
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
+    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-ui-1.12.1.min.js"><\/script>')</script>
 
     <script src="{{ STATIC_URL }}js/libs/masonry.pkgd.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/html-includes.js"></script>

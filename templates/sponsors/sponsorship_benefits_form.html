@@ -41,6 +41,8 @@
               <div>
                 <span><i class="fa fa-cubes"></i> {{ benefit_model.PACKAGE_ONLY_MESSAGE }}</span>
                 {% if capacities_met %}<span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>{% endif %}
+                <br/>
+                <span><i class="fa fa-info"></i> Hover over benefit for details</span>
               </div>
             </div>
 
@@ -53,7 +55,8 @@
                 <li class="{% cycle '' 'highlight' %}">
                     <label for="id_{{field.name}}_{{ forloop.counter0 }}" benefit_id="{{ benefit.id }}">
                         <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
-                        <span {% if benefit.description %}title="{{ benefit.description }}"{% endif %}>{{ benefit.name }}</span>
+                        <span {% if benefit.package_only %} class='package_only_label'{% endif %}>{{ benefit.name }}</span>
+                        {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i>{% endif %}
                         {% if benefit.package_only %}<i class="fa fa-cubes"  title="{{ benefit_model.PACKAGE_ONLY_MESSAGE }}"></i>{% endif %}
                         {% if not benefit.has_capacity %}<i class="fa fa-close"  title="{{ benefit_model.NO_CAPACITY_MESSAGE }}"></i>{% endif %}
                     </label>

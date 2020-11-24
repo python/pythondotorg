@@ -3618,6 +3618,9 @@ span.highlighted {
   font-style: italic; }
 
 /* ! ===== SPONSORSHIP APP ===== */
+.ui-tooltip-content {
+  font-size: 75%; }
+
 #sponsorship_application_container {
   display: block;
   text-align: center;
@@ -3625,6 +3628,8 @@ span.highlighted {
   text-align: center; }
   #sponsorship_application_container form {
     margin-bottom: 0; }
+    #sponsorship_application_container form .package_only_label {
+      color: #666666; }
   #sponsorship_application_container #package_selection {
     display: inline-block; }
     #sponsorship_application_container #package_selection li {

@@ -32,7 +32,7 @@ class SponsorshipPackage(OrderedModel):
 
     def has_user_customization(self, benefits):
         """
-        Given a list of benefits this method checks if it exclusively matches the package benefits
+        Given a list of benefits this method checks if it exclusively matches the sponsor package benefits
         """
         pkg_benefits_with_conflicts = set(self.benefits.with_conflicts())
 
@@ -113,7 +113,7 @@ class SponsorshipBenefit(OrderedModel):
     )
     package_only = models.BooleanField(
         default=False,
-        verbose_name="Package Only Benefit",
+        verbose_name="Sponsor Package Only Benefit",
         help_text="If a benefit is only available via a sponsorship package, select this option.",
     )
     new = models.BooleanField(
@@ -158,7 +158,7 @@ class SponsorshipBenefit(OrderedModel):
     )
 
     NEW_MESSAGE = "New benefit this year!"
-    PACKAGE_ONLY_MESSAGE = "This benefit is only available with packages"
+    PACKAGE_ONLY_MESSAGE = "Benefit only available as part of a sponsor package"
     NO_CAPACITY_MESSAGE = "This benefit is currently at capacity"
 
     @property

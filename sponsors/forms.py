@@ -110,13 +110,13 @@ class SponsorshiptBenefitsForm(forms.Form):
                 if not package:
                     raise forms.ValidationError(
                         _(
-                            "The application has 1 or more package only benefits and no package."
+                            "The application has 1 or more package only benefits and no sponsor package."
                         )
                     )
                 elif not benefit.packages.filter(id=package.id).exists():
                     raise forms.ValidationError(
                         _(
-                            "The application has 1 or more package only benefits but wrong package."
+                            "The application has 1 or more package only benefits but wrong sponsor package."
                         )
                     )
 

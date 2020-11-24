@@ -2395,12 +2395,21 @@ span.highlighted {
 @import "fonts";
 
 /* ! ===== SPONSORSHIP APP ===== */
+.ui-tooltip-content {
+    font-size: 75%;
+}
+
 #sponsorship_application_container {
+
     display: block;
     text-align: center;
 
     form {
         margin-bottom: 0;
+
+        .package_only_label {
+            color: $grey;
+        }
     }
 
     #package_selection {
