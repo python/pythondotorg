@@ -70,34 +70,6 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertIsInstance(form, SponsorshiptBenefitsForm)
         self.assertTrue(form.errors)
 
-    def test_login_required(self):
-        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
-        self.client.logout()
-
-        r = self.client.get(self.url)
-
-        self.assertRedirects(r, redirect_url)
-
-    def test_not_staff_no_group_not_allowed(self):
-        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
-        self.user.is_staff = False
-        self.user.save()
-        self.client.force_login(self.user)
-
-        r = self.client.get(self.url)
-
-        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
-
-    def test_group_allowed(self):
-        redirect_url = f"{settings.LOGIN_URL}?next={self.url}"
-        self.user.groups.add(self.group)
-        self.user.save()
-        self.client.force_login(self.user)
-
-        r = self.client.get(self.url)
-
-        self.assertEqual(r.status_code, 200, "user in group should have access")
-
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
         package = baker.make("sponsors.SponsorshipPackage")
         for benefit in self.program_1_benefits:
@@ -140,6 +112,24 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
         r = self.client.get(self.url)
         self.assertEqual(True, r.context["capacities_met"])
+
+    def test_redirect_to_login(self):
+        redirect_url = (
+            f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
+        )
+        package = baker.make("sponsors.SponsorshipPackage")
+        for benefit in self.program_1_benefits:
+            benefit.packages.add(package)
+
+        data = {
+            "benefits_psf": [b.id for b in self.program_1_benefits],
+            "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "package": package.id,
+        }
+        self.client.logout()
+        response = self.client.post(self.url, data=data)
+
+        self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
