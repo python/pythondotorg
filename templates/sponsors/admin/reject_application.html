@@ -3,6 +3,8 @@
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
 
+{% block title %}Reject {{ sponsorship }} | python.org{% endblock %}
+
 {% block breadcrumbs %}
 <div class="breadcrumbs">
   <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
