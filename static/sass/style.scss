@@ -2410,6 +2410,9 @@ span.highlighted {
         .package_only_label {
             color: $grey;
         }
+        .active {
+            color: $blue;
+        }
     }
 
     #package_selection {

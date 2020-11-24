@@ -3628,8 +3628,9 @@ span.highlighted {
   text-align: center; }
   #sponsorship_application_container form {
     margin-bottom: 0; }
-    #sponsorship_application_container form .package_only_label {
-      color: #666666; }
+    #sponsorship_application_container form {
+      .package_only_label { color: #666666; }
+      .active { color: #3776ab; } }
   #sponsorship_application_container #package_selection {
     display: inline-block; }
     #sponsorship_application_container #package_selection li {
