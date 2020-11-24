@@ -2406,6 +2406,10 @@ span.highlighted {
 
     form {
         margin-bottom: 0;
+
+        .package_only_label {
+            color: $grey;
+        }
     }
 
     #package_selection {
