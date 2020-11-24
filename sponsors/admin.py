@@ -290,7 +290,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         if not_primary:
-            html = "<b>Other contacts</b><ul>"
+            html += "<b>Other contacts</b><ul>"
             html += "".join(
                 [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary]
             )
