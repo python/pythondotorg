@@ -65,4 +65,9 @@ $(document).ready(function(){
           }
       });
     });
+
+  $(document).tooltip({
+    show: { effect: "blind", duration: 0 },
+    hide: false
+  });
 });

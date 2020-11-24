@@ -101,7 +101,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
         form = SponsorshiptBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn(
-            "The application has 1 or more package only benefits and no package.",
+            "The application has 1 or more package only benefits and no sponsor package.",
             form.errors["__all__"],
         )
 
@@ -118,7 +118,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
         form = SponsorshiptBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn(
-            "The application has 1 or more package only benefits but wrong package.",
+            "The application has 1 or more package only benefits but wrong sponsor package.",
             form.errors["__all__"],
         )
 
