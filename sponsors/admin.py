@@ -263,9 +263,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_sponsor_mailing_address(self, obj):
         sponsor = obj.sponsor
-        city_row = f'{sponsor.city} - {sponsor.get_country_display()} (sponsor.country)'
+        city_row = f'{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})'
         if sponsor.state:
-            city_row = f'{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} (sponsor.country)'
+            city_row = f'{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})'
 
         mail_row = sponsor.mailing_address_line_1
         if sponsor.mailing_address_line_2:
