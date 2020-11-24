@@ -330,7 +330,12 @@ class RejectedSponsorshipAdminViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship, submited_by=self.user)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            submited_by=self.user,
+            _fill_optional=True,
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_reject", args=[self.sponsorship.pk]
         )
@@ -420,7 +425,9 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship)
+        self.sponsorship = baker.make(
+            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )

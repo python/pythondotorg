@@ -14,7 +14,7 @@ class AppliedSponsorshipNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.AppliedSponsorshipNotificationToPSF()
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.sponsorship = baker.make("sponsors.Sponsorship")
+        self.sponsorship = baker.make("sponsors.Sponsorship", sponsor__name="foo")
         self.subject_template = "sponsors/email/psf_new_application_subject.txt"
         self.content_template = "sponsors/email/psf_new_application.txt"
 
@@ -41,7 +41,10 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         self.unverified_email = baker.make(EmailAddress, verified=False)
         self.sponsor_contacts = [
             baker.make(
-                "sponsors.SponsorContact", email="foo@example.com", primary=True
+                "sponsors.SponsorContact",
+                email="foo@example.com",
+                primary=True,
+                sponsor__name="foo",
             ),
             baker.make("sponsors.SponsorContact", email=self.verified_email.email),
             baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
@@ -79,7 +82,9 @@ class RejectedSponsorshipNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.RejectedSponsorshipNotificationToPSF()
         self.sponsorship = baker.make(
-            Sponsorship, status=Sponsorship.REJECTED, _fill_optional=["rejected_on"]
+            Sponsorship,
+            status=Sponsorship.REJECTED,
+            _fill_optional=["rejected_on", "sponsor"],
         )
         self.subject_template = "sponsors/email/psf_rejected_sponsorship_subject.txt"
         self.content_template = "sponsors/email/psf_rejected_sponsorship.txt"
@@ -106,7 +111,7 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         self.sponsorship = baker.make(
             Sponsorship,
             status=Sponsorship.REJECTED,
-            _fill_optional=["rejected_on"],
+            _fill_optional=["rejected_on", "sponsor"],
             submited_by=self.user,
         )
         self.subject_template = (
@@ -133,7 +138,9 @@ class StatementOfWorkNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.StatementOfWorkNotificationToPSF()
         self.sponsorship = baker.make(
-            Sponsorship, status=Sponsorship.APPROVED, _fill_optional=["approved_on"]
+            Sponsorship,
+            status=Sponsorship.APPROVED,
+            _fill_optional=["approved_on", "sponsor"],
         )
         self.subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/psf_statement_of_work.txt"
@@ -160,7 +167,7 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
         self.sponsorship = baker.make(
             Sponsorship,
             status=Sponsorship.APPROVED,
-            _fill_optional=["approved_on"],
+            _fill_optional=["approved_on", "sponsor"],
             submited_by=self.user,
         )
         self.subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"

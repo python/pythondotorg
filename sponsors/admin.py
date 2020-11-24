@@ -112,7 +112,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "end_date",
         "display_sponsorship_link",
     ]
-    list_filter = ['status']
+    list_filter = ["status"]
     readonly_fields = [
         "for_modified_package",
         "sponsor",
