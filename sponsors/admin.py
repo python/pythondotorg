@@ -262,7 +262,19 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
-        return obj.sponsor.mailing_address
+        sponsor = obj.sponsor
+        city_row = f'{sponsor.city} - {sponsor.get_country_display()} (sponsor.country)'
+        if sponsor.state:
+            city_row = f'{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} (sponsor.country)'
+
+        mail_row = sponsor.mailing_address_line_1
+        if sponsor.mailing_address_line_2:
+            mail_row += f' - {sponsor.mailing_address_line_2}'
+
+        html = f'<p>{city_row}</p>'
+        html += f'<p>{mail_row}</p>'
+        html += f'<p>{sponsor.postal_code}</p>'
+        return mark_safe(html)
 
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
