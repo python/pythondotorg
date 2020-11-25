@@ -13,8 +13,12 @@ $(document).ready(function(){
         getBenefitConflicts: (benefitId) => $('#conflicts_with_' + benefitId).children(),
     }
 
+    displayPackageCost = (packageId) => {
+      let packageInfo = SELECTORS.getPackageInfo(packageId);
+      let cost = packageInfo.attr("data-cost");
+      SELECTORS.costLabel().html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
+    }
 
-    let cost = 0;
 
 
     SELECTORS.clearFormBtn().click(function(){
@@ -40,7 +44,6 @@ $(document).ready(function(){
           if (packageOnlyBenefit) $(this).attr("disabled", true);
       });
 
-      let packageInfo = SELECTORS.getPackageInfo(package);
       SELECTORS.getPackageBenefits(package).each(function(){
           let benefit = $(this).html()
           let benefitInput = SELECTORS.getBenefitInput(benefit);
@@ -48,9 +51,7 @@ $(document).ready(function(){
           benefitInput.removeAttr("disabled");
           benefitInput.trigger("click");
       });
-
-      let cost = packageInfo.attr("data-cost");
-      SELECTORS.costLabel.html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
+      displayPackageCost(package);
     });
 
     SELECTORS.benefitsInputs().change(function(){
