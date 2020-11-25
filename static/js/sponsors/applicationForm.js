@@ -1,39 +1,40 @@
 $(document).ready(function(){
     const SELECTORS = {
-        checkboxesContainer: $('#benefits_container'),
-        costLabel: $("#cost_label"),
-        clearFormBtn: $("#clear_form_btn"),
-        packageInput: $("input[name=package]"),
-        applicationForm: $("#application_form"),
+        checkboxesContainer: () => $('#benefits_container'),
+        costLabel:  () => $("#cost_label"),
+        clearFormBtn:  () => $("#clear_form_btn"),
+        packageInput:  () => $("input[name=package]"),
+        applicationForm:  () => $("#application_form"),
         getPackageInfo: (packageId) => $("#package_benefits_" + packageId),
         getPackageBenefits: (packageId) => SELECTORS.getPackageInfo(packageId).children(),
-        benefitsInputs: $("input[id^=id_benefits_]"),
+        benefitsInputs: () => $("input[id^=id_benefits_]"),
         getBenefitLabel: (benefitId) => $('label[benefit_id=' + benefitId + ']'),
-        getBenefitInput: (benefitId) => SELECTORS.benefitsInputs.filter('[value=' + benefitId + ']'),
+        getBenefitInput: (benefitId) => SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'),
         getBenefitConflicts: (benefitId) => $('#conflicts_with_' + benefitId).children(),
     }
 
 
     let cost = 0;
 
-    SELECTORS.clearFormBtn.click(function(){
-        SELECTORS.applicationForm.trigger("reset");
-        SELECTORS.applicationForm.find("[class=active]").removeClass("active");
-        SELECTORS.packageInput.prop("checked", false);
-        SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
+
+    SELECTORS.clearFormBtn().click(function(){
+        SELECTORS.applicationForm().trigger("reset");
+        SELECTORS.applicationForm().find("[class=active]").removeClass("active");
+        SELECTORS.packageInput().prop("checked", false);
+        SELECTORS.checkboxesContainer().find(':checkbox').each(function(){
             $(this).prop('checked', false);
             if ($(this).attr("package_only")) $(this).attr("disabled", true);
         });
-        SELECTORS.costLabel.html("");
+        SELECTORS.costLabel().html("");
     });
 
-    SELECTORS.packageInput.change(function(){
+    SELECTORS.packageInput().change(function(){
       let package = this.value;
       if (package.length == 0) return;
 
-      SELECTORS.costLabel.html("Updating cost...")
+      SELECTORS.costLabel().html("Updating cost...")
 
-      SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
+      SELECTORS.checkboxesContainer().find(':checkbox').each(function(){
           $(this).prop('checked', false);
           let packageOnlyBenefit = $(this).attr("package_only");
           if (packageOnlyBenefit) $(this).attr("disabled", true);
@@ -52,7 +53,7 @@ $(document).ready(function(){
       SELECTORS.costLabel.html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
     });
 
-    SELECTORS.benefitsInputs.change(function(){
+    SELECTORS.benefitsInputs().change(function(){
       let benefit = this.value;
       if (benefit.length == 0) return;
       if (SELECTORS.costLabel.html() != "Updating cost...") {
