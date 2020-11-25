@@ -4,7 +4,9 @@ $(document).ready(function(){
         costLabel: $("#cost_label"),
         clearFormBtn: $("#clear_form_btn"),
         packageInput: $("input[name=package]"),
-        applicationForm: $("#application_form")
+        applicationForm: $("#application_form"),
+        getPackageInfo: (packageId) => $("#package_benefits_" + packageId),
+        getPackageBenefits: (packageId) => SELECTORS.getPackageInfo(packageId).children(),
     }
 
 
@@ -33,8 +35,8 @@ $(document).ready(function(){
           if (packageOnlyBenefit) $(this).attr("disabled", true);
       });
 
-      let packageInfo = $("#package_benefits_" + package);
-      packageInfo.children().each(function(){
+      let packageInfo = SELECTORS.getPackageInfo(package);
+      SELECTORS.getPackageBenefits(package).each(function(){
           let benefit = $(this).html()
           let benefitInput = SELECTORS.checkboxesContainer.find('[value=' + benefit + ']');
           let packageOnlyBenefit = benefitInput.attr("package_only");
