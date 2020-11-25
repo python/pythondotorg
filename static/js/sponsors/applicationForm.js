@@ -1,20 +1,20 @@
 $(document).ready(function(){
     const SELECTORS = {
-        checkboxesContainer: () => $('#benefits_container'),
-        costLabel:  () => $("#cost_label"),
-        clearFormBtn:  () => $("#clear_form_btn"),
-        packageInput:  () => $("input[name=package]"),
-        applicationForm:  () => $("#application_form"),
-        getPackageInfo: (packageId) => $("#package_benefits_" + packageId),
-        getPackageBenefits: (packageId) => SELECTORS.getPackageInfo(packageId).children(),
-        benefitsInputs: () => $("input[id^=id_benefits_]"),
-        getBenefitLabel: (benefitId) => $('label[benefit_id=' + benefitId + ']'),
-        getBenefitInput: (benefitId) => SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'),
-        getBenefitConflicts: (benefitId) => $('#conflicts_with_' + benefitId).children(),
-        getSelectedBenefits: () => SELECTORS.benefitsInputs().filter(":checked"),
+        checkboxesContainer: function() { return $("#benefits_container"); },
+        costLabel:  function() { return $("#cost_label"); },
+        clearFormBtn:  function() { return $("#clear_form_btn"); },
+        packageInput:  function() { return $("input[name=package]"); },
+        applicationForm:  function() { return $("#application_form"); },
+        getPackageInfo: function(packageId) { return $("#package_benefits_" + packageId); },
+        getPackageBenefits: function(packageId) { return SELECTORS.getPackageInfo(packageId).children(); },
+        benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
+        getBenefitLabel: function(benefitId) { return $('label[benefit_id=' + benefitId + ']'); },
+        getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
+        getBenefitConflicts: function(benefitId) { return $('#conflicts_with_' + benefitId).children(); },
+        getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
     }
 
-    displayPackageCost = (packageId) => {
+    displayPackageCost = function(packageId) {
       let packageInfo = SELECTORS.getPackageInfo(packageId);
       let cost = packageInfo.attr("data-cost");
       SELECTORS.costLabel().html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
@@ -63,10 +63,10 @@ $(document).ready(function(){
       let isChangeFromPackageChange = SELECTORS.costLabel().html() == "Updating cost..."
       if (!isChangeFromPackageChange) {
         let selectedBenefits = SELECTORS.getSelectedBenefits();
-        selectedBenefits = $.map(selectedBenefits, (b) => $(b).val()).sort();
+        selectedBenefits = $.map(selectedBenefits, function(b) { return $(b).val() }).sort();
         let selectedPackageId = SELECTORS.packageInput().filter(":checked").val()
         let packageBenefits = SELECTORS.getPackageBenefits(selectedPackageId);
-        packageBenefits = $.map(packageBenefits, (b) => $(b).text()).sort();
+        packageBenefits = $.map(packageBenefits, function(b) { return $(b).text() }).sort();
 
         // check same num of benefits and join with string. if same string, both lists have the same benefits
         if (packageBenefits.length == selectedBenefits.length && packageBenefits.join(',') === selectedBenefits.join(',')){
