@@ -2407,8 +2407,11 @@ span.highlighted {
     form {
         margin-bottom: 0;
 
-        .package_only_label {
+        .package_only {
             color: $grey;
+        }
+        .package_only.active {
+            color: $blue;
         }
         .active {
             color: $blue;
