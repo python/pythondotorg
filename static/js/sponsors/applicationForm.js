@@ -1,5 +1,9 @@
 $(document).ready(function(){
-    let checkboxesContainer = $('#benefits_container');
+    const SELECTORS = {
+        checkboxesContainer: $('#benefits_container'),
+    }
+
+
     let costLabel = $("#cost_label");
     let cost = 0;
 
@@ -7,7 +11,7 @@ $(document).ready(function(){
         $("#application_form").trigger("reset");
         $("#application_form [class=active]").removeClass("active");
         $("input[name=package]").prop("checked", false);
-        checkboxesContainer.find(':checkbox').each(function(){
+        SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
             if ($(this).attr("package_only")) $(this).attr("disabled", true);
         });
@@ -20,7 +24,7 @@ $(document).ready(function(){
 
       costLabel.html("Updating cost...")
 
-      checkboxesContainer.find(':checkbox').each(function(){
+      SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
           $(this).prop('checked', false);
           let packageOnlyBenefit = $(this).attr("package_only");
           if (packageOnlyBenefit) $(this).attr("disabled", true);
@@ -29,7 +33,7 @@ $(document).ready(function(){
       let packageInfo = $("#package_benefits_" + package);
       packageInfo.children().each(function(){
           let benefit = $(this).html()
-          let benefitInput = checkboxesContainer.find('[value=' + benefit + ']');
+          let benefitInput = SELECTORS.checkboxesContainer.find('[value=' + benefit + ']');
           let packageOnlyBenefit = benefitInput.attr("package_only");
           benefitInput.removeAttr("disabled");
           benefitInput.trigger("click");
@@ -47,7 +51,7 @@ $(document).ready(function(){
       if (benefit.length == 0) return;
       if (costLabel.html() != "Updating cost...") costLabel.html("Please submit your customized sponsorship package application and we'll contact you within 2 business days.");
 
-      let active = checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
+      let active = SELECTORS.checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
       if (!active) {
           return;
       } else {
@@ -57,7 +61,7 @@ $(document).ready(function(){
 
       $('#conflicts_with_' + benefit).children().each(function(){
           let conflictId = $(this).html();
-          let conflictCheckbox = checkboxesContainer.find('[value=' + conflictId + ']');
+          let conflictCheckbox = SELECTORS.checkboxesContainer.find('[value=' + conflictId + ']');
           let checked = conflictCheckbox.prop("checked");
           if (checked){
             conflictCheckbox.trigger("click");
