@@ -3,6 +3,7 @@ $(document).ready(function(){
         checkboxesContainer: $('#benefits_container'),
         costLabel: $("#cost_label"),
         clearFormBtn: $("#clear_form_btn"),
+        packageInput: $("input[name=package]"),
     }
 
 
@@ -11,7 +12,7 @@ $(document).ready(function(){
     SELECTORS.clearFormBtn.click(function(){
         $("#application_form").trigger("reset");
         $("#application_form [class=active]").removeClass("active");
-        $("input[name=package]").prop("checked", false);
+        SELECTORS.packageInput.prop("checked", false);
         SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
             if ($(this).attr("package_only")) $(this).attr("disabled", true);
@@ -19,7 +20,7 @@ $(document).ready(function(){
         SELECTORS.costLabel.html("");
     });
 
-    $("input[name=package]").change(function(){
+    SELECTORS.packageInput.change(function(){
       let package = this.value;
       if (package.length == 0) return;
 
