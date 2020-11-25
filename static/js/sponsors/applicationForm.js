@@ -7,6 +7,10 @@ $(document).ready(function(){
         applicationForm: $("#application_form"),
         getPackageInfo: (packageId) => $("#package_benefits_" + packageId),
         getPackageBenefits: (packageId) => SELECTORS.getPackageInfo(packageId).children(),
+        benefitsInputs: $("input[id^=id_benefits_]"),
+        getBenefitLabel: (benefitId) => $('label[benefit_id=' + benefitId + ']'),
+        getBenefitInput: (benefitId) => SELECTORS.benefitsInputs.filter('[value=' + benefitId + ']'),
+        getBenefitConflicts: (benefitId) => $('#conflicts_with_' + benefitId).children(),
     }
 
 
@@ -38,7 +42,7 @@ $(document).ready(function(){
       let packageInfo = SELECTORS.getPackageInfo(package);
       SELECTORS.getPackageBenefits(package).each(function(){
           let benefit = $(this).html()
-          let benefitInput = SELECTORS.checkboxesContainer.find('[value=' + benefit + ']');
+          let benefitInput = SELECTORS.getBenefitInput(benefit);
           let packageOnlyBenefit = benefitInput.attr("package_only");
           benefitInput.removeAttr("disabled");
           benefitInput.trigger("click");
@@ -48,7 +52,7 @@ $(document).ready(function(){
       SELECTORS.costLabel.html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
     });
 
-    $("input[id^=id_benefits_]").change(function(){
+    SELECTORS.benefitsInputs.change(function(){
       let benefit = this.value;
       if (benefit.length == 0) return;
       if (SELECTORS.costLabel.html() != "Updating cost...") {
@@ -56,18 +60,17 @@ $(document).ready(function(){
         SELECTORS.costLabel.html(msg);
       }
 
-      let active = SELECTORS.checkboxesContainer.find('[value=' + benefit + ']').prop("checked");
+      let active = SELECTORS.getBenefitInput(benefit).prop("checked");
       if (!active) {
           return;
       } else {
-          $('label[benefit_id=' + benefit + ']').addClass("active");
+          SELECTORS.getBenefitLabel(benefit).addClass("active");
       }
 
 
-      $('#conflicts_with_' + benefit).children().each(function(){
+      SELECTORS.getBenefitConflicts(benefit).each(function(){
           let conflictId = $(this).html();
-          let conflictCheckbox = SELECTORS.checkboxesContainer.find('[value=' + conflictId + ']');
-          let checked = conflictCheckbox.prop("checked");
+          let checked = SELECTORS.getBenefitInput(conflictId).prop("checked");
           if (checked){
             conflictCheckbox.trigger("click");
             conflictCheckbox.parent().removeClass("active");
