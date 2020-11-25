@@ -42,9 +42,6 @@ $(document).ready(function(){
           benefitInput.trigger("click");
       });
 
-      let url = $("#cost_container").attr("calculate_cost_url");
-      let data = $("form").serialize();
-
       let cost = packageInfo.attr("data-cost");
       SELECTORS.costLabel.html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
     });
