@@ -11,6 +11,7 @@ $(document).ready(function(){
         getBenefitLabel: (benefitId) => $('label[benefit_id=' + benefitId + ']'),
         getBenefitInput: (benefitId) => SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'),
         getBenefitConflicts: (benefitId) => $('#conflicts_with_' + benefitId).children(),
+        getSelectedBenefits: () => SELECTORS.benefitsInputs().filter(":checked"),
     }
 
     displayPackageCost = (packageId) => {
@@ -57,11 +58,26 @@ $(document).ready(function(){
     SELECTORS.benefitsInputs().change(function(){
       let benefit = this.value;
       if (benefit.length == 0) return;
-      if (SELECTORS.costLabel.html() != "Updating cost...") {
-        let msg = "Please submit your customized sponsorship package application and we'll contact you within 2 business days."
-        SELECTORS.costLabel.html(msg);
+
+      // display package cost if custom benefit change result matches with package's benefits list
+      let isChangeFromPackageChange = SELECTORS.costLabel().html() == "Updating cost..."
+      if (!isChangeFromPackageChange) {
+        let selectedBenefits = SELECTORS.getSelectedBenefits();
+        selectedBenefits = $.map(selectedBenefits, (b) => $(b).val()).sort();
+        let selectedPackageId = SELECTORS.packageInput().filter(":checked").val()
+        let packageBenefits = SELECTORS.getPackageBenefits(selectedPackageId);
+        packageBenefits = $.map(packageBenefits, (b) => $(b).text()).sort();
+
+        // check same num of benefits and join with string. if same string, both lists have the same benefits
+        if (packageBenefits.length == selectedBenefits.length && packageBenefits.join(',') === selectedBenefits.join(',')){
+            displayPackageCost(selectedPackageId);
+        } else {
+            let msg = "Please submit your customized sponsorship package application and we'll contact you within 2 business days.";
+            SELECTORS.costLabel().html(msg);
+        }
       }
 
+      // updates the input to be active if needed
       let active = SELECTORS.getBenefitInput(benefit).prop("checked");
       if (!active) {
           return;
@@ -69,7 +85,7 @@ $(document).ready(function(){
           SELECTORS.getBenefitLabel(benefit).addClass("active");
       }
 
-
+      // check and ensure conflicts constraints between checked benefits
       SELECTORS.getBenefitConflicts(benefit).each(function(){
           let conflictId = $(this).html();
           let checked = SELECTORS.getBenefitInput(conflictId).prop("checked");
