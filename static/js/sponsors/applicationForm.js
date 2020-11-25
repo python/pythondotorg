@@ -4,14 +4,15 @@ $(document).ready(function(){
         costLabel: $("#cost_label"),
         clearFormBtn: $("#clear_form_btn"),
         packageInput: $("input[name=package]"),
+        applicationForm: $("#application_form")
     }
 
 
     let cost = 0;
 
     SELECTORS.clearFormBtn.click(function(){
-        $("#application_form").trigger("reset");
-        $("#application_form [class=active]").removeClass("active");
+        SELECTORS.applicationForm.trigger("reset");
+        SELECTORS.applicationForm.find("[class=active]").removeClass("active");
         SELECTORS.packageInput.prop("checked", false);
         SELECTORS.checkboxesContainer.find(':checkbox').each(function(){
             $(this).prop('checked', false);
