@@ -2,12 +2,13 @@ $(document).ready(function(){
     const SELECTORS = {
         checkboxesContainer: $('#benefits_container'),
         costLabel: $("#cost_label"),
+        clearFormBtn: $("#clear_form_btn"),
     }
 
 
     let cost = 0;
 
-    $("#clear_form_btn").click(function(){
+    SELECTORS.clearFormBtn.click(function(){
         $("#application_form").trigger("reset");
         $("#application_form [class=active]").removeClass("active");
         $("input[name=package]").prop("checked", false);
