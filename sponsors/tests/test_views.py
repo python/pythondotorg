@@ -2,13 +2,14 @@ import json
 from model_bakery import baker
 from itertools import chain
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from django.conf import settings
-from django.core import mail
-from django.urls import reverse, reverse_lazy
-from django.test import TestCase
 from django.contrib.messages import get_messages
+from django.contrib.sessions.backends.base import SessionBase
+from django.core import mail
+from django.test import TestCase
+from django.urls import reverse, reverse_lazy
 
 from .utils import get_static_image_file_as_upload
 from ..models import (
@@ -56,6 +57,11 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
             "package": self.package.id,
         }
 
+    def populate_test_cookie(self):
+        session = self.client.session
+        session[SessionBase.TEST_COOKIE_NAME] = SessionBase.TEST_COOKIE_VALUE
+        session.save()
+
     def test_display_template_with_form_and_context(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
         extra_package = baker.make("sponsors.SponsorshipPackage")
@@ -70,8 +76,13 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertEqual(3, packages.count())
         self.assertIn(psf_package, packages)
         self.assertIn(extra_package, packages)
+        self.assertEqual(
+            r.client.session[SessionBase.TEST_COOKIE_NAME],
+            SessionBase.TEST_COOKIE_VALUE,
+        )
 
     def test_display_form_with_errors_if_invalid_post(self):
+        self.populate_test_cookie()
         r = self.client.post(self.url, {})
         form = r.context["form"]
 
@@ -79,6 +90,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTrue(form.errors)
 
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
+        self.populate_test_cookie()
         response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, reverse("new_sponsorship_application"))
@@ -112,9 +124,19 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         )
 
         self.client.logout()
+        self.populate_test_cookie()
         response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_invalidate_post_even_if_valid_data_but_user_does_not_allow_cookies(self):
+        # do not set Django's test cookie
+        r = self.client.post(self.url, data=self.data)
+        form = r.context["form"]
+
+        self.assertIsInstance(form, SponsorshiptBenefitsForm)
+        msg = "You have to allow python.org to use cookies to proceed."
+        self.assertEqual(form.non_field_errors(), [msg])
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
