@@ -135,7 +135,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         form = r.context["form"]
 
         self.assertIsInstance(form, SponsorshiptBenefitsForm)
-        msg = "You have to allow python.org to use cookies to proceed."
+        msg = "You must allow cookies from python.org to proceed."
         self.assertEqual(form.non_field_errors(), [msg])
 
 
