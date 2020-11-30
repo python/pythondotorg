@@ -4,13 +4,7 @@ from django.test import TestCase
 from companies.models import Company
 
 from ..models import Sponsor
-from ..templatetags.sponsors import featured_sponsor_rotation, full_sponsorship
-
-
-class SponsorTemplatetagTests(TestCase):
-    def test_templatetag(self):
-        sponsors_context = featured_sponsor_rotation()
-        self.assertEqual({}, sponsors_context)
+from ..templatetags.sponsors import full_sponsorship
 
 
 class FullSponsorshipTemplatetagTests(TestCase):
