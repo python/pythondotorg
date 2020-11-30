@@ -42,11 +42,19 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
+        self.package = baker.make("sponsors.SponsorshipPackage")
+        for benefit in self.program_1_benefits:
+            benefit.packages.add(self.package)
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
         self.client.force_login(self.user)
 
         self.group = Group(name="Sponsorship Preview")
         self.group.save()
+        self.data = {
+            "benefits_psf": [b.id for b in self.program_1_benefits],
+            "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "package": self.package.id,
+        }
 
     def test_display_template_with_form_and_context(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
@@ -59,7 +67,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTemplateUsed(r, "sponsors/sponsorship_benefits_form.html")
         self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
         self.assertEqual(r.context["benefit_model"], SponsorshipBenefit)
-        self.assertEqual(2, packages.count())
+        self.assertEqual(3, packages.count())
         self.assertIn(psf_package, packages)
         self.assertIn(extra_package, packages)
 
@@ -71,33 +79,18 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTrue(form.errors)
 
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
-        package = baker.make("sponsors.SponsorshipPackage")
-        for benefit in self.program_1_benefits:
-            benefit.packages.add(package)
-
-        data = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": package.id,
-        }
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, reverse("new_sponsorship_application"))
         cookie_value = json.loads(
             response.client.cookies["sponsorship_selected_benefits"].value
         )
-        self.assertEqual(data, cookie_value)
+        self.assertEqual(self.data, cookie_value)
 
     def test_populate_form_initial_with_values_from_cookie(self):
-        initial = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": "",
-        }
-        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(initial)
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(self.data)
         r = self.client.get(self.url)
-
-        self.assertEqual(initial, r.context["form"].initial)
+        self.assertEqual(self.data, r.context["form"].initial)
 
     def test_capacity_flag(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
@@ -117,17 +110,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         redirect_url = (
             f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
         )
-        package = baker.make("sponsors.SponsorshipPackage")
-        for benefit in self.program_1_benefits:
-            benefit.packages.add(package)
 
-        data = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": package.id,
-        }
         self.client.logout()
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
 
