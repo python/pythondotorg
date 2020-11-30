@@ -60,7 +60,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
     def form_valid(self, form):
         if not self.request.session.test_cookie_worked():
             error = ErrorList()
-            error.append("You have to allow python.org to use cookies to proceed.")
+            error.append("You must allow cookies from python.org to proceed.")
             form._errors.setdefault("__all__", error)
             return self.form_invalid(form)
 
