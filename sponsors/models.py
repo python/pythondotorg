@@ -123,6 +123,13 @@ class SponsorshipBenefit(OrderedModel):
     )
 
     # Internal
+    legal_clauses = models.ManyToManyField(
+        "LegalClause",
+        related_name="benefits",
+        verbose_name="Legal Clauses",
+        help_text="Legal clauses to be displayed in the statement of work",
+        blank=True,
+    )
     internal_description = models.TextField(
         null=True,
         blank=True,
@@ -438,3 +445,26 @@ class Sponsor(ContentManageable):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class LegalClause(OrderedModel):
+    internal_name = models.CharField(
+        max_length=1024,
+        verbose_name="Internal Name",
+        help_text="Friendly name used internally by PSF to reference this clause",
+        blank=False,
+    )
+    clause = models.TextField(
+        verbose_name="Clause",
+        help_text="Legal clause text to be added to statement of work",
+        blank=False,
+    )
+    notes = models.TextField(
+        verbose_name="Notes", help_text="PSF staff notes", blank=True, default=""
+    )
+
+    def __str__(self):
+        return f"Clause: {self.internal_name}"
+
+    class Meta(OrderedModel.Meta):
+        pass
