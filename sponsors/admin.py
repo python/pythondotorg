@@ -15,6 +15,7 @@ from .models import (
     Sponsorship,
     SponsorContact,
     SponsorBenefit,
+    LegalClause,
 )
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm
@@ -65,6 +66,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
                     "internal_value",
                     "capacity",
                     "soft_capacity",
+                    "legal_clauses",
                     "conflicts",
                 )
             },
@@ -316,3 +318,8 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return render(
             request, "sponsors/admin/approve_application.html", context=context
         )
+
+
+@admin.register(LegalClause)
+class LegalClauseModelAdmin(OrderedModelAdmin):
+    list_display = ["internal_name"]
