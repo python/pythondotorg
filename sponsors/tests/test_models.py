@@ -12,6 +12,7 @@ from ..models import (
     StatementOfWork,
     SponsorContact,
     SponsorBenefit,
+    LegalClause,
 )
 from ..exceptions import SponsorWithExistingApplicationException
 
@@ -253,8 +254,9 @@ class StatementOfWorkModelTests(TestCase):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
         self.sponsorship_benefits = baker.make(
             SponsorshipBenefit,
-            program__name='PSF',
+            program__name="PSF",
             name=seq("benefit"),
+            order=seq(1),
             _quantity=3,
         )
 
@@ -329,4 +331,33 @@ class StatementOfWorkModelTests(TestCase):
   - PSF - {b3.name}"""
 
         self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
-        self.assertEqual(statement.benefits_list.markup_type, 'markdown')
+        self.assertEqual(statement.benefits_list.markup_type, "markdown")
+
+    def test_format_benefits_with_legal_clauses(self):
+        baker.make(LegalClause, _quantity=len(self.sponsorship_benefits))
+        legal_clauses = list(LegalClause.objects.all())
+
+        for i, benefit in enumerate(self.sponsorship_benefits):
+            clause = legal_clauses[i]
+            benefit.legal_clauses.add(clause)
+            SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
+        self.sponsorship_benefits[0].legal_clauses.add(
+            clause
+        )  # first benefit with 2 legal clauses
+
+        statement = StatementOfWork.new(self.sponsorship)
+
+        c1, c2, c3 = legal_clauses
+        expected_legal_clauses = f""" [^1]: {c1.clause}
+ [^2]: {c2.clause}
+ [^3]: {c3.clause}"""
+        self.assertEqual(statement.legal_clauses.raw, expected_legal_clauses)
+        self.assertEqual(statement.legal_clauses.markup_type, "markdown")
+
+        b1, b2, b3 = self.sponsorship.benefits.all()
+        expected_benefits_list = f"""  - PSF - {b1.name} [^1][^3]
+  - PSF - {b2.name} [^2]
+  - PSF - {b3.name} [^3]"""
+
+        self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(statement.benefits_list.markup_type, "markdown")

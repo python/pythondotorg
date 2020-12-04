@@ -418,6 +418,10 @@ class SponsorBenefit(models.Model):
             **kwargs,
         )
 
+    @property
+    def legal_clauses(self):
+        return self.sponsorship_benefit.legal_clauses.all()
+
 
 class Sponsor(ContentManageable):
     name = models.CharField(
@@ -604,13 +608,30 @@ class StatementOfWork(models.Model):
             sponsor_contact = f"Contacts {sponsor.primary_phone}"
 
         benefits = sponsorship.benefits.all()
-        benefits_list = "\n".join([f"  - {b.program.name} - {b.name}" for b in benefits])
+        # must query for Legal Clauses again to respect model's ordering
+        clauses_ids = [c.id for c in chain(*[b.legal_clauses for b in benefits])]
+        legal_clauses = list(LegalClause.objects.filter(id__in=clauses_ids))
 
+        benefits_list = []
+        for benefit in benefits:
+            item = f"  - {benefit.program.name} - {benefit.name}"
+            index_str = ""
+            for legal_clause in benefit.legal_clauses:
+                index = legal_clauses.index(legal_clause) + 1
+                index_str += f"[^{index}]"
+            if index_str:
+                item += f" {index_str}"
+            benefits_list.append(item)
+
+        legal_clauses_text = "\n".join(
+            [f" [^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
+        )
         return cls.objects.create(
             sponsorship=sponsorship,
             sponsor_info=sponsor_info,
             sponsor_contact=sponsor_contact,
-            benefits_list=benefits_list,
+            benefits_list="\n".join([b for b in benefits_list]),
+            legal_clauses=legal_clauses_text,
         )
 
     @property
