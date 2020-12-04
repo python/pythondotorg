@@ -571,7 +571,7 @@ class StatementOfWork(models.Model):
     #   - PyCon - PyCon website Listing [^1][^2]
     #   - PyPI - Social media promotion of your sponsorship
     # """
-    benefits_list = MarkupField(default_markup_type="markdown")
+    benefits_list = MarkupField(markup_type="markdown")
     # legal_clauses = """
     # [^1]: Here's one with multiple paragraphs and code.
     #    Indent paragraphs to include them in the footnote.
@@ -582,7 +582,7 @@ class StatementOfWork(models.Model):
     #    `{ my code }`
     #    Add as many paragraphs as you like.
     # """
-    legal_clauses = MarkupField(default_markup_type="markdown")
+    legal_clauses = MarkupField(markup_type="markdown")
 
     # Activity control fields
     created_on = models.DateField(auto_now_add=True)
@@ -592,6 +592,9 @@ class StatementOfWork(models.Model):
     class Meta:
         verbose_name = "Statement of Work"
         verbose_name_plural = "Statements of Work"
+
+    def __str__(self):
+        return f"Statement of work: {self.sponsorship}"
 
     @classmethod
     def new(cls, sponsorship):

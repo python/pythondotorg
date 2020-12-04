@@ -16,6 +16,7 @@ from .models import (
     SponsorContact,
     SponsorBenefit,
     LegalClause,
+    StatementOfWork,
 )
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm
@@ -351,3 +352,73 @@ class SponsorshipAdmin(admin.ModelAdmin):
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
     list_display = ["internal_name"]
+
+
+@admin.register(StatementOfWork)
+class StatementOfWorkModelAdmin(admin.ModelAdmin):
+    readonly_fields = [
+        "status",
+        "created_on",
+        "last_update",
+        "sent_on",
+        "sponsorship",
+        "revision",
+        "document",
+    ]
+    list_display = [
+        "id",
+        "sponsorship",
+        "created_on",
+        "last_update",
+        "status",
+        "get_revision",
+    ]
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsorship__sponsor")
+
+    def get_revision(self, obj):
+        return obj.revision if obj.is_draft else "Final"
+
+    get_revision.short_description = "Revision"
+
+    fieldsets = [
+        (
+            "Info",
+            {
+                "fields": ("sponsorship", "status", "revision"),
+            },
+        ),
+        (
+            "Editable",
+            {
+                "fields": (
+                    "sponsor_info",
+                    "sponsor_contact",
+                    "benefits_list",
+                    "legal_clauses",
+                ),
+            },
+        ),
+        (
+            "Files",
+            {
+                "fields": (
+                    "document",
+                    "signed_document",
+                )
+            },
+        ),
+        (
+            "Activities log",
+            {
+                "fields": (
+                    "created_on",
+                    "last_update",
+                    "sent_on",
+                ),
+                "classes": ["collapse"],
+            },
+        ),
+    ]
