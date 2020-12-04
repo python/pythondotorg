@@ -603,10 +603,14 @@ class StatementOfWork(models.Model):
         else:
             sponsor_contact = f"Contacts {sponsor.primary_phone}"
 
+        benefits = sponsorship.benefits.all()
+        benefits_list = "\n".join([f"  - {b.program.name} - {b.name}" for b in benefits])
+
         return cls.objects.create(
             sponsorship=sponsorship,
             sponsor_info=sponsor_info,
             sponsor_contact=sponsor_contact,
+            benefits_list=benefits_list,
         )
 
     @property

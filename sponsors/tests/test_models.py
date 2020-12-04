@@ -1,5 +1,5 @@
 from datetime import date
-from model_bakery import baker
+from model_bakery import baker, seq
 
 from django.conf import settings
 from django.test import TestCase
@@ -11,6 +11,7 @@ from ..models import (
     Sponsorship,
     StatementOfWork,
     SponsorContact,
+    SponsorBenefit,
 )
 from ..exceptions import SponsorWithExistingApplicationException
 
@@ -250,6 +251,12 @@ class SponsorContactModelTests(TestCase):
 class StatementOfWorkModelTests(TestCase):
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
+        self.sponsorship_benefits = baker.make(
+            SponsorshipBenefit,
+            program__name='PSF',
+            name=seq("benefit"),
+            _quantity=3,
+        )
 
     def test_auto_increment_draft_revision_on_save(self):
         statement = baker.make_recipe("sponsors.tests.empty_sow")
@@ -306,3 +313,20 @@ class StatementOfWorkModelTests(TestCase):
         )
 
         self.assertEqual(statement.sponsor_contact, expected_contact)
+
+    def test_format_benefits_without_legal_clauses(self):
+        for benefit in self.sponsorship_benefits:
+            SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
+
+        statement = StatementOfWork.new(self.sponsorship)
+
+        self.assertEqual(statement.legal_clauses.raw, "")
+        self.assertEqual(statement.legal_clauses.markup_type, "markdown")
+
+        b1, b2, b3 = self.sponsorship.benefits.all()
+        expected_benefits_list = f"""  - PSF - {b1.name}
+  - PSF - {b2.name}
+  - PSF - {b3.name}"""
+
+        self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(statement.benefits_list.markup_type, 'markdown')
