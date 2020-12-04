@@ -1,4 +1,4 @@
-from sponsors.models import Sponsorship
+from sponsors.models import Sponsorship, StatementOfWork
 from sponsors import notifications
 
 
@@ -42,4 +42,28 @@ class RejectSponsorshipApplicationUseCase:
             notifications.RejectedSponsorshipNotificationToPSF(),
             notifications.RejectedSponsorshipNotificationToSponsors(),
         ]
+        return cls(uc_notifications)
+
+
+class ApproveSponsorshipApplicationUseCase:
+    def __init__(self, notifications):
+        self.notifications = notifications
+
+    def execute(self, sponsorship, request=None):
+        sponsorship.approve()
+        sponsorship.save()
+        statement_of_work = StatementOfWork.new(sponsorship)
+
+        for notification in self.notifications:
+            notification.notify(
+                request=request,
+                sponsorship=sponsorship,
+                statement_of_work=statement_of_work,
+            )
+
+        return sponsorship
+
+    @classmethod
+    def build(cls):
+        uc_notifications = []
         return cls(uc_notifications)

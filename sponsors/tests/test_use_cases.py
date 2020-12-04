@@ -79,3 +79,36 @@ class RejectSponsorshipApplicationUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[1], RejectedSponsorshipNotificationToSponsors
         )
+
+
+class ApproveSponsorshipApplicationUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock(), Mock()]
+        self.use_case = use_cases.ApproveSponsorshipApplicationUseCase(
+            self.notifications
+        )
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
+
+    def test_update_sponsorship_as_approved_and_create_statement_of_work(self):
+        self.use_case.execute(self.sponsorship)
+        self.sponsorship.refresh_from_db()
+
+        today = timezone.now().date()
+        self.assertEqual(self.sponsorship.approved_on, today)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
+        self.assertTrue(self.sponsorship.statement_of_work.pk)
+
+    def test_send_notifications_using_sponsorship(self):
+        self.use_case.execute(self.sponsorship)
+
+        for n in self.notifications:
+            n.notify.assert_called_once_with(
+                request=None,
+                sponsorship=self.sponsorship,
+                statement_of_work=self.sponsorship.statement_of_work,
+            )
+
+    def test_build_use_case_without_notificationss(self):
+        uc = use_cases.ApproveSponsorshipApplicationUseCase.build()
+        self.assertEqual(len(uc.notifications), 0)

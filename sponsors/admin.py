@@ -329,8 +329,8 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
             try:
-                sponsorship.approve()
-                sponsorship.save()
+                use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
+                use_case.execute(sponsorship)
                 self.message_user(
                     request, "Sponsorship was approved!", messages.SUCCESS
                 )
