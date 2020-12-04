@@ -113,7 +113,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "approved_on",
         "start_date",
         "end_date",
-        "display_sponsorship_link",
     ]
     list_filter = ["status"]
     readonly_fields = [
@@ -184,12 +183,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         qs = super().get_queryset(*args, **kwargs)
         return qs.select_related("sponsor")
 
-    def display_sponsorship_link(self, obj):
-        url = reverse("admin:sponsors_sponsorship_preview", args=[obj.pk])
-        return mark_safe(f'<a href="{url}" target="_blank">Click to preview</a>')
-
-    display_sponsorship_link.short_description = "Preview sponsorship"
-
     def get_estimated_cost(self, obj):
         cost = None
         html = "This sponsorship has not customizations so there's no estimated cost"
@@ -201,19 +194,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     get_estimated_cost.short_description = "Estimated cost"
 
-    def preview_sponsorship_view(self, request, pk):
-        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
-        ctx = {"sponsorship": sponsorship}
-        return render(request, "sponsors/admin/preview-sponsorship.html", context=ctx)
-
     def get_urls(self):
         urls = super().get_urls()
         my_urls = [
-            path(
-                "<int:pk>/preview",
-                self.admin_site.admin_view(self.preview_sponsorship_view),
-                name="sponsors_sponsorship_preview",
-            ),
             path(
                 "<int:pk>/reject",
                 # TODO: maybe it would be better to create a specific
@@ -372,6 +355,7 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
         "last_update",
         "status",
         "get_revision",
+        "document_link",
     ]
 
     def get_queryset(self, *args, **kwargs):
@@ -422,3 +406,38 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def document_link(self, obj):
+        html, url, msg = "---", "", ""
+
+        if obj.is_draft:
+            url = reverse("admin:sponsors_statementofwork_preview", args=[obj.pk])
+            msg = "Preview document"
+        elif obj.document:
+            url = obj.document.url
+            msg = "Download Contract"
+        elif obj.signed_document:
+            url = obj.signed_document.url
+            msg = "Download Signed Contract"
+
+        if url and msg:
+            html = f'<a href="{url}" target="_blank">{msg}</a>'
+        return mark_safe(html)
+
+    document_link.short_description = "Contract document"
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "<int:pk>/preview",
+                self.admin_site.admin_view(self.preview_statement_of_work_view),
+                name="sponsors_statementofwork_preview",
+            ),
+        ]
+        return my_urls + urls
+
+    def preview_statement_of_work_view(self, request, pk):
+        statement_of_work = get_object_or_404(self.get_queryset(request), pk=pk)
+        ctx = {"sow": statement_of_work}
+        return render(request, "sponsors/admin/preview-statement-of-work.html", context=ctx)
