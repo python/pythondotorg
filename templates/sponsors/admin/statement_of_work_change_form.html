@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% with original as sow %}
+
+    {% if sow.is_draft %}
+    <li>
+        <a href="{{ sow.preview_url }}"  style="background: #417690">Review Statement of Work</a>
+    </li>
+    {% endif %}
+
+  {% endwith %}
+
+  {{ block.super }}
+{% endblock %}

@@ -649,6 +649,10 @@ class StatementOfWork(models.Model):
     def is_draft(self):
         return self.status == self.DRAFT
 
+    @property
+    def preview_url(self):
+        return reverse("admin:sponsors_statementofwork_preview", args=[self.pk])
+
     def save(self, **kwargs):
         commit = kwargs.get("commit", True)
         if all([commit, self.pk, self.is_draft]):

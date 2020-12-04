@@ -341,6 +341,7 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
 
 @admin.register(StatementOfWork)
 class StatementOfWorkModelAdmin(admin.ModelAdmin):
+    change_form_template = "sponsors/admin/statement_of_work_change_form.html"
     readonly_fields = [
         "status",
         "created_on",
@@ -413,7 +414,7 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
         html, url, msg = "---", "", ""
 
         if obj.is_draft:
-            url = reverse("admin:sponsors_statementofwork_preview", args=[obj.pk])
+            url = obj.preview_url
             msg = "Preview document"
         elif obj.document:
             url = obj.document.url
