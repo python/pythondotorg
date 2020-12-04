@@ -16,6 +16,12 @@
     </li>
     {% endif %}
 
+    {% if sp.FINALIZED in sp.next_status %}
+    <li>
+        <a href="{{ sp.sow_admin_url }}"  style="background: #417690">Review Statement of Work</a>
+    </li>
+    {% endif %}
+
   {% endwith %}
 
   {{ block.super }}

@@ -348,6 +348,14 @@ class Sponsorship(models.Model):
     def admin_url(self):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
+    @property
+    def sow_admin_url(self):
+        if not self.statement_of_work:
+            return ""
+        return reverse(
+            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+        )
+
     @cached_property
     def package_benefits(self):
         return self.benefits.filter(added_by_user=False)
