@@ -14,7 +14,7 @@ from django_countries.fields import CountryField
 from cms.models import ContentManageable
 from companies.models import Company
 
-from .managers import SponsorshipQuerySet
+from .managers import SponsorshipQuerySet, SponsorContactQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidStatusException,
@@ -206,6 +206,8 @@ class SponsorshipBenefit(OrderedModel):
 
 
 class SponsorContact(models.Model):
+    objects = SponsorContactQuerySet.as_manager()
+
     sponsor = models.ForeignKey(
         "Sponsor", on_delete=models.CASCADE, related_name="contacts"
     )
@@ -474,6 +476,20 @@ class Sponsor(ContentManageable):
     def __str__(self):
         return f"{self.name}"
 
+    @property
+    def full_address(self):
+        addr = self.mailing_address_line_1
+        if self.mailing_address_line_2:
+            addr += f" {self.mailing_address_line_2}"
+        return f"{addr}, {self.city}, {self.state}, {self.country}"
+
+    @property
+    def primary_contact(self):
+        try:
+            return SponsorContact.objects.get_primary_contact(self)
+        except SponsorContact.DoesNotExist:
+            return None
+
 
 class LegalClause(OrderedModel):
     internal_name = models.CharField(
@@ -568,6 +584,26 @@ class StatementOfWork(models.Model):
     class Meta:
         verbose_name = "Statement of Work"
         verbose_name_plural = "Statements of Work"
+
+    @classmethod
+    def new(cls, sponsorship):
+        """
+        Factory method to create a new Statement of Work from a Sponsorship
+        """
+        sponsor = sponsorship.sponsor
+        primary_contact = sponsor.primary_contact
+
+        sponsor_info = f"{sponsor.name} with address {sponsor.full_address}"
+        if primary_contact:
+            sponsor_contact = f"Contacts {sponsor.primary_phone} - {primary_contact.name}, {primary_contact.phone}"
+        else:
+            sponsor_contact = f"Contacts {sponsor.primary_phone}"
+
+        return cls.objects.create(
+            sponsorship=sponsorship,
+            sponsor_info=sponsor_info,
+            sponsor_contact=sponsor_contact,
+        )
 
     @property
     def is_draft(self):

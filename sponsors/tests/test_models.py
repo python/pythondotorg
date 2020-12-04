@@ -5,7 +5,13 @@ from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Sponsor, SponsorshipBenefit, Sponsorship, StatementOfWork
+from ..models import (
+    Sponsor,
+    SponsorshipBenefit,
+    Sponsorship,
+    StatementOfWork,
+    SponsorContact,
+)
 from ..exceptions import SponsorWithExistingApplicationException
 
 
@@ -223,7 +229,27 @@ class SponsorshipPackageTests(TestCase):
         self.assertTrue(customization)
 
 
+class SponsorContactModelTests(TestCase):
+    def test_get_primary_contact_for_sponsor(self):
+        sponsor = baker.make(Sponsor)
+        baker.make(SponsorContact, sponsor=sponsor, primary=False, _quantity=5)
+        baker.make(SponsorContact, primary=True)  # from other sponsor
+
+        self.assertEqual(5, SponsorContact.objects.filter(sponsor=sponsor).count())
+        with self.assertRaises(SponsorContact.DoesNotExist):
+            SponsorContact.objects.get_primary_contact(sponsor)
+        self.assertIsNone(sponsor.primary_contact)
+
+        primary_contact = baker.make(SponsorContact, primary=True, sponsor=sponsor)
+        self.assertEqual(
+            SponsorContact.objects.get_primary_contact(sponsor), primary_contact
+        )
+        self.assertEqual(sponsor.primary_contact, primary_contact)
+
+
 class StatementOfWorkModelTests(TestCase):
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
 
     def test_auto_increment_draft_revision_on_save(self):
         statement = baker.make_recipe("sponsors.tests.empty_sow")
@@ -251,3 +277,32 @@ class StatementOfWorkModelTests(TestCase):
             statement.save()  # perform extra save
             statement.refresh_from_db()
             self.assertEqual(statement.revision, 10)
+
+    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_info_and_contact(
+        self,
+    ):
+        statement = StatementOfWork.new(self.sponsorship)
+        statement.refresh_from_db()
+
+        sponsor = self.sponsorship.sponsor
+        expected_info = f"{sponsor.name} with address {sponsor.full_address}"
+        expected_contact = f"Contacts {sponsor.primary_phone}"
+
+        self.assertEqual(statement.sponsorship, self.sponsorship)
+        self.assertEqual(statement.sponsor_info, expected_info)
+        self.assertEqual(statement.sponsor_contact, expected_contact)
+
+    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_contact_and_primary(
+        self,
+    ):
+        sponsor = self.sponsorship.sponsor
+        contact = baker.make(
+            SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
+        )
+
+        statement = StatementOfWork.new(self.sponsorship)
+        expected_contact = (
+            f"Contacts {sponsor.primary_phone} - {contact.name}, {contact.phone}"
+        )
+
+        self.assertEqual(statement.sponsor_contact, expected_contact)
