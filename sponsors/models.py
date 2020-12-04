@@ -308,15 +308,8 @@ class Sponsorship(models.Model):
 
         for benefit in benefits:
             added_by_user = for_modified_package and benefit not in package_benefits
-
-            SponsorBenefit.objects.create(
-                sponsorship=sponsorship,
-                sponsorship_benefit=benefit,
-                name=benefit.name,
-                description=benefit.description,
-                program=benefit.program,
-                benefit_internal_value=benefit.internal_value,
-                added_by_user=added_by_user,
+            SponsorBenefit.new_copy(
+                benefit, sponsorship=sponsorship, added_by_user=added_by_user
             )
 
         return sponsorship
@@ -413,6 +406,17 @@ class SponsorBenefit(models.Model):
     added_by_user = models.BooleanField(
         blank=True, default=False, verbose_name="Added by user?"
     )
+
+    @classmethod
+    def new_copy(cls, benefit, **kwargs):
+        return cls.objects.create(
+            sponsorship_benefit=benefit,
+            name=benefit.name,
+            description=benefit.description,
+            program=benefit.program,
+            benefit_internal_value=benefit.internal_value,
+            **kwargs,
+        )
 
 
 class Sponsor(ContentManageable):
