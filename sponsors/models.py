@@ -568,3 +568,13 @@ class StatementOfWork(models.Model):
     class Meta:
         verbose_name = "Statement of Work"
         verbose_name_plural = "Statements of Work"
+
+    @property
+    def is_draft(self):
+        return self.status == self.DRAFT
+
+    def save(self, **kwargs):
+        commit = kwargs.get("commit", True)
+        if all([commit, self.pk, self.is_draft]):
+            self.revision += 1
+        return super().save(**kwargs)

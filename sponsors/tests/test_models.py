@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Sponsor, SponsorshipBenefit, Sponsorship
+from ..models import Sponsor, SponsorshipBenefit, Sponsorship, StatementOfWork
 from ..exceptions import SponsorWithExistingApplicationException
 
 
@@ -221,3 +221,33 @@ class SponsorshipPackageTests(TestCase):
         ]  # missing benefits with index 2 or 3
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
+
+
+class StatementOfWorkModelTests(TestCase):
+
+    def test_auto_increment_draft_revision_on_save(self):
+        statement = baker.make_recipe("sponsors.tests.empty_sow")
+        self.assertEqual(statement.status, StatementOfWork.DRAFT)
+        self.assertEqual(statement.revision, 0)
+
+        num_updates = 5
+        for i in range(num_updates):
+            statement.save()
+            statement.refresh_from_db()
+
+        self.assertEqual(statement.revision, num_updates)
+
+    def test_does_not_auto_increment_draft_revision_on_save_if_other_states(self):
+        statement = baker.make_recipe("sponsors.tests.empty_sow", revision=10)
+
+        choices = StatementOfWork.STATUS_CHOICES
+        other_status = [c[0] for c in choices if c[0] != StatementOfWork.DRAFT]
+        for status in other_status:
+            statement.status = status
+            statement.save()
+            statement.refresh_from_db()
+            self.assertEqual(statement.status, status)
+            self.assertEqual(statement.revision, 10)
+            statement.save()  # perform extra save
+            statement.refresh_from_db()
+            self.assertEqual(statement.revision, 10)
