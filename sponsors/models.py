@@ -496,3 +496,75 @@ class LegalClause(OrderedModel):
 
     class Meta(OrderedModel.Meta):
         pass
+
+
+class StatementOfWork(models.Model):
+    DRAFT = "draft"
+    OUTDATED = "outdated"
+    APPROVED_REVIEW = "approved review"
+    AWAITING_SIGNATURE = "awaiting signature"
+    EXECUTED = "executed"
+    NULLIFIED = "nullified"
+
+    STATUS_CHOICES = [
+        (DRAFT, "Draft"),
+        (OUTDATED, "Outdated"),
+        (APPROVED_REVIEW, "Approved by reviewer"),
+        (AWAITING_SIGNATURE, "Awaiting signature"),
+        (EXECUTED, "Executed"),
+        (NULLIFIED, "Nullified"),
+    ]
+
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
+    )
+    revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
+    document = models.FileField(
+        upload_to="sponsors/statements_of_work/",
+        blank=True,
+        verbose_name="Unsigned PDF",
+    )
+    signed_document = models.FileField(
+        upload_to="sponsors/statmentes_of_work/signed/",
+        blank=True,
+        verbose_name="Signed PDF",
+    )
+
+    # Statement of Work information gets populated during object's creation.
+    # The sponsorship FK ís just a reference to keep track of related objects.
+    # It shouldn't be used to fetch for any of the sponsorship's data.
+    sponsorship = models.OneToOneField(
+        Sponsorship,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="statement_of_work",
+    )
+    sponsor_info = models.TextField(verbose_name="Sponsor information")
+    sponsor_contact = models.TextField(verbose_name="Sponsor contact")
+
+    # benefits_list = """
+    #   - Foundation - Promotion of Python case study [^1]
+    #   - PyCon - PyCon website Listing [^1][^2]
+    #   - PyPI - Social media promotion of your sponsorship
+    # """
+    benefits_list = MarkupField(default_markup_type="markdown")
+    # legal_clauses = """
+    # [^1]: Here's one with multiple paragraphs and code.
+    #    Indent paragraphs to include them in the footnote.
+    #    `{ my code }`
+    #    Add as many paragraphs as you like.
+    # [^2]: Here's one with multiple paragraphs and code.
+    #    Indent paragraphs to include them in the footnote.
+    #    `{ my code }`
+    #    Add as many paragraphs as you like.
+    # """
+    legal_clauses = MarkupField(default_markup_type="markdown")
+
+    # Activity control fields
+    created_on = models.DateField(auto_now_add=True)
+    last_update = models.DateField(auto_now=True)
+    sent_on = models.DateField(null=True)
+
+    class Meta:
+        verbose_name = "Statement of Work"
+        verbose_name_plural = "Statements of Work"
