@@ -294,12 +294,11 @@ class StatementOfWorkModelTests(TestCase):
         statement.refresh_from_db()
 
         sponsor = self.sponsorship.sponsor
-        expected_info = f"{sponsor.name} with address {sponsor.full_address}"
-        expected_contact = f"Contacts {sponsor.primary_phone}"
+        expected_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
 
         self.assertEqual(statement.sponsorship, self.sponsorship)
         self.assertEqual(statement.sponsor_info, expected_info)
-        self.assertEqual(statement.sponsor_contact, expected_contact)
+        self.assertEqual(statement.sponsor_contact, "")
 
     def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_contact_and_primary(
         self,
@@ -311,7 +310,7 @@ class StatementOfWorkModelTests(TestCase):
 
         statement = StatementOfWork.new(self.sponsorship)
         expected_contact = (
-            f"Contacts {sponsor.primary_phone} - {contact.name}, {contact.phone}"
+            f"{contact.name} - {contact.phone} | {contact.email}"
         )
 
         self.assertEqual(statement.sponsor_contact, expected_contact)

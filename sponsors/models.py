@@ -612,11 +612,10 @@ class StatementOfWork(models.Model):
         sponsor = sponsorship.sponsor
         primary_contact = sponsor.primary_contact
 
-        sponsor_info = f"{sponsor.name} with address {sponsor.full_address}"
+        sponsor_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
+        sponsor_contact = ""
         if primary_contact:
-            sponsor_contact = f"Contacts {sponsor.primary_phone} - {primary_contact.name}, {primary_contact.phone}"
-        else:
-            sponsor_contact = f"Contacts {sponsor.primary_phone}"
+            sponsor_contact = f"{primary_contact.name} - {primary_contact.phone} | {primary_contact.email}"
 
         benefits = sponsorship.benefits.all()
         # must query for Legal Clauses again to respect model's ordering
