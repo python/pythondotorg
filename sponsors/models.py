@@ -264,7 +264,13 @@ class Sponsorship(models.Model):
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
     def __str__(self):
-        return f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        if self.start_date and self.end_date:
+            fmt = "%m/%d/%Y"
+            start = self.start_date.strftime(fmt)
+            end = self.end_date.strftime(fmt)
+            repr += f" [{start} - {end}]"
+        return repr
 
     @classmethod
     def new(cls, sponsor, benefits, package=None, submited_by=None):
