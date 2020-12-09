@@ -14,7 +14,7 @@ from django_countries.fields import CountryField
 from cms.models import ContentManageable
 from companies.models import Company
 
-from .managers import SponsorContactQuerySet, SponsorContactQuerySet
+from .managers import SponsorContactQuerySet, SponsorshipQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidStatusException,
