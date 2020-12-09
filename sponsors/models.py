@@ -630,7 +630,7 @@ class StatementOfWork(models.Model):
 
         benefits_list = []
         for benefit in benefits:
-            item = f"  - {benefit.program.name} - {benefit.name}"
+            item = f"- {benefit.program.name} - {benefit.name}"
             index_str = ""
             for legal_clause in benefit.legal_clauses:
                 index = legal_clauses.index(legal_clause) + 1
@@ -640,7 +640,7 @@ class StatementOfWork(models.Model):
             benefits_list.append(item)
 
         legal_clauses_text = "\n".join(
-            [f" [^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
+            [f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
         )
         return cls.objects.create(
             sponsorship=sponsorship,

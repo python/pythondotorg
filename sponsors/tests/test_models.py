@@ -339,9 +339,9 @@ class StatementOfWorkModelTests(TestCase):
         self.assertEqual(statement.legal_clauses.markup_type, "markdown")
 
         b1, b2, b3 = self.sponsorship.benefits.all()
-        expected_benefits_list = f"""  - PSF - {b1.name}
-  - PSF - {b2.name}
-  - PSF - {b3.name}"""
+        expected_benefits_list = f"""- PSF - {b1.name}
+- PSF - {b2.name}
+- PSF - {b3.name}"""
 
         self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
         self.assertEqual(statement.benefits_list.markup_type, "markdown")
@@ -361,16 +361,16 @@ class StatementOfWorkModelTests(TestCase):
         statement = StatementOfWork.new(self.sponsorship)
 
         c1, c2, c3 = legal_clauses
-        expected_legal_clauses = f""" [^1]: {c1.clause}
- [^2]: {c2.clause}
- [^3]: {c3.clause}"""
+        expected_legal_clauses = f"""[^1]: {c1.clause}
+[^2]: {c2.clause}
+[^3]: {c3.clause}"""
         self.assertEqual(statement.legal_clauses.raw, expected_legal_clauses)
         self.assertEqual(statement.legal_clauses.markup_type, "markdown")
 
         b1, b2, b3 = self.sponsorship.benefits.all()
-        expected_benefits_list = f"""  - PSF - {b1.name} [^1][^3]
-  - PSF - {b2.name} [^2]
-  - PSF - {b3.name} [^3]"""
+        expected_benefits_list = f"""- PSF - {b1.name} [^1][^3]
+- PSF - {b2.name} [^2]
+- PSF - {b3.name} [^3]"""
 
         self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
         self.assertEqual(statement.benefits_list.markup_type, "markdown")
