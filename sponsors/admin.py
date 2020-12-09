@@ -1,4 +1,5 @@
 from ordered_model.admin import OrderedModelAdmin
+from markupfield_helpers.helpers import render_md
 
 from django.contrib import messages
 from django.urls import path, reverse
@@ -462,8 +463,11 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
         return my_urls + urls
 
     def preview_statement_of_work_view(self, request, pk):
-        statement_of_work = get_object_or_404(self.get_queryset(request), pk=pk)
-        ctx = {"sow": statement_of_work}
+        sow = get_object_or_404(self.get_queryset(request), pk=pk)
+        # footnotes only work if in same markdown text as the references
+        text = f"{sow.benefits_list.raw}\n\n**Legal Clauses**\n{sow.legal_clauses.raw}"
+        html = render_md(text)
+        ctx = {"sow": sow, "benefits_and_clauses": mark_safe(html)}
         return render(
             request, "sponsors/admin/preview-statement-of-work.html", context=ctx
         )
