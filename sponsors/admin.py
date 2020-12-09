@@ -312,23 +312,35 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def approve_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+        initial = {
+            "level_name": sponsorship.level_name,
+            "start_date": sponsorship.start_date,
+            "end_date": sponsorship.end_date,
+            "sponsorship_fee": sponsorship.sponsorship_fee,
+        }
+        
+        form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            try:
-                use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
-                use_case.execute(sponsorship)
-                self.message_user(
-                    request, "Sponsorship was approved!", messages.SUCCESS
+            form = SponsorshipReviewAdminForm(data=request.POST)
+            if form.is_valid():
+                kwargs = form.cleaned_data
+                kwargs["request"] = request
+                try:
+                    use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
+                    use_case.execute(sponsorship, **kwargs)
+                    self.message_user(
+                        request, "Sponsorship was approved!", messages.SUCCESS
+                    )
+                except SponsorshipInvalidStatusException as e:
+                    self.message_user(request, str(e), messages.ERROR)
+
+                redirect_url = reverse(
+                    "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
                 )
-            except SponsorshipInvalidStatusException as e:
-                self.message_user(request, str(e), messages.ERROR)
+                return redirect(redirect_url)
 
-            redirect_url = reverse(
-                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
-            )
-            return redirect(redirect_url)
-
-        context = {"sponsorship": sponsorship}
+        context = {"sponsorship": sponsorship, "form": form}
         return render(
             request, "sponsors/admin/approve_application.html", context=context
         )

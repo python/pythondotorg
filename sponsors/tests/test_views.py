@@ -1,6 +1,7 @@
 import json
 from model_bakery import baker
 from itertools import chain
+from datetime import date, timedelta
 
 from django.conf import settings
 from django.contrib import messages
@@ -20,8 +21,7 @@ from ..models import (
     SponsorContact,
     Sponsorship,
 )
-
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm, SponsorshipReviewAdminForm
 
 
 def assertMessage(msg, expected_content, expected_level):
@@ -428,21 +428,34 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.url = reverse(
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
+        today = date.today()
+        self.data = {
+            "confirm": "yes",
+            "start_date": today,
+            "end_date": today + timedelta(days=100),
+            "level_name": 'Level',
+        }
 
     def test_display_confirmation_form_on_get(self):
         response = self.client.get(self.url)
         context = response.context
+        form = context['form']
         self.sponsorship.refresh_from_db()
 
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertIsInstance(form, SponsorshipReviewAdminForm)
+        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
+        self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
+        self.assertEqual(form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee)
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
         )  # did not update
 
     def test_approve_sponsorship_on_post(self):
-        data = {"confirm": "yes"}
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
+        
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
@@ -453,18 +466,30 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
 
-    def test_do_not_approve_if_invalid_post(self):
-        response = self.client.post(self.url, data={})
+    def test_do_not_approve_if_no_confirmation_in_the_post(self):
+        self.data.pop('confirm')
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
         )  # did not update
 
-        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)
+
+    def test_do_not_approve_if_form_with_invalid_data(self):
+        self.data = {"confirm": 'yes'}
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+        self.assertTrue(response.context['form'].errors)
 
     def test_404_if_sponsorship_does_not_exist(self):
         self.sponsorship.delete()
@@ -494,8 +519,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
     def test_message_user_if_approving_invalid_sponsorship(self):
         self.sponsorship.status = Sponsorship.FINALIZED
         self.sponsorship.save()
-        data = {"confirm": "yes"}
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
