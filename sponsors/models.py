@@ -18,6 +18,7 @@ from .managers import SponsorContactQuerySet, SponsorContactQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidStatusException,
+    SponsorshipInvalidDateRangeException,
 )
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
@@ -330,11 +331,16 @@ class Sponsorship(models.Model):
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
-    def approve(self):
+    def approve(self, start_date, end_date):
         if self.APPROVED not in self.next_status:
             msg = f"Can't approve a {self.get_status_display()} sponsorship."
             raise SponsorshipInvalidStatusException(msg)
+        if start_date >= end_date:
+            msg = f"Start date greater or equal than end date"
+            raise SponsorshipInvalidDateRangeException(msg)
         self.status = self.APPROVED
+        self.start_date = start_date
+        self.end_date = end_date
         self.approved_on = timezone.now().date()
 
     @property

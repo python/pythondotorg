@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, timedelta
 from model_bakery import baker, seq
 
 from django.conf import settings
@@ -14,7 +14,7 @@ from ..models import (
     SponsorBenefit,
     LegalClause,
 )
-from ..exceptions import SponsorWithExistingApplicationException
+from ..exceptions import SponsorWithExistingApplicationException, SponsorshipInvalidDateRangeException
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -141,14 +141,27 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)
 
     def test_approve_sponsorship(self):
+        start = date.today()
+        end = start + timedelta(days=10)
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
 
-        sponsorship.approve()
+        sponsorship.approve(start, end)
 
-        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
         self.assertEqual(sponsorship.approved_on, timezone.now().date())
+        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
+        self.assertTrue(sponsorship.start_date, start)
+        self.assertTrue(sponsorship.end_date, end)
+
+    def test_exception_if_invalid_date_range_when_approving(self):
+        start = date.today()
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertIsNone(sponsorship.approved_on)
+
+        with self.assertRaises(SponsorshipInvalidDateRangeException):
+            sponsorship.approve(start, start)
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
