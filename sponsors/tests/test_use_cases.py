@@ -110,7 +110,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertTrue(self.sponsorship.start_date)
         self.assertTrue(self.sponsorship.end_date)
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
-        self.assertEqual(self.sponsorship.level_name, 'level')
+        self.assertEqual(self.sponsorship.level_name, "level")
 
     def test_send_notifications_using_sponsorship(self):
         self.use_case.execute(self.sponsorship, **self.data)

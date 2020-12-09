@@ -14,7 +14,10 @@ from ..models import (
     SponsorBenefit,
     LegalClause,
 )
-from ..exceptions import SponsorWithExistingApplicationException, SponsorshipInvalidDateRangeException
+from ..exceptions import (
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidDateRangeException,
+)
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -322,9 +325,7 @@ class StatementOfWorkModelTests(TestCase):
         )
 
         statement = StatementOfWork.new(self.sponsorship)
-        expected_contact = (
-            f"{contact.name} - {contact.phone} | {contact.email}"
-        )
+        expected_contact = f"{contact.name} - {contact.phone} | {contact.email}"
 
         self.assertEqual(statement.sponsor_contact, expected_contact)
 

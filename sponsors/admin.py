@@ -161,7 +161,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             },
         ),
     ]
-    
+
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
             "for_modified_package",
@@ -181,11 +181,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_sponsor_mailing_address",
             "get_sponsor_contacts",
         ]
-        
+
         if obj and obj.status != Sponsorship.APPLIED:
             extra = ["start_date", "end_date", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
-        
+
         return readonly_fields
 
     def get_queryset(self, *args, **kwargs):
@@ -327,7 +327,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "end_date": sponsorship.end_date,
             "sponsorship_fee": sponsorship.sponsorship_fee,
         }
-        
+
         form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
@@ -464,4 +464,6 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
     def preview_statement_of_work_view(self, request, pk):
         statement_of_work = get_object_or_404(self.get_queryset(request), pk=pk)
         ctx = {"sow": statement_of_work}
-        return render(request, "sponsors/admin/preview-statement-of-work.html", context=ctx)
+        return render(
+            request, "sponsors/admin/preview-statement-of-work.html", context=ctx
+        )

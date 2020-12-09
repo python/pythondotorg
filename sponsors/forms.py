@@ -321,14 +321,14 @@ class SponsorshipApplicationForm(forms.Form):
 class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
-    
+
     def __init__(self, *args, **kwargs):
-        force_required = kwargs.pop('force_required', False)
+        force_required = kwargs.pop("force_required", False)
         super().__init__(*args, **kwargs)
         if force_required:
             for field_name in self.fields:
                 self.fields[field_name].required = True
-    
+
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]
