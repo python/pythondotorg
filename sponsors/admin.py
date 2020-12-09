@@ -99,6 +99,7 @@ class SponsorBenefitInline(admin.TabularInline):
     fields = ["name", "benefit_internal_value"]
     extra = 0
     can_delete = False
+    can_add = False
 
 
 @admin.register(Sponsorship)
@@ -115,24 +116,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "end_date",
     ]
     list_filter = ["status"]
-    readonly_fields = [
-        "for_modified_package",
-        "sponsor",
-        "status",
-        "applied_on",
-        "rejected_on",
-        "approved_on",
-        "finalized_on",
-        "get_estimated_cost",
-        "get_sponsor_name",
-        "get_sponsor_description",
-        "get_sponsor_landing_page_url",
-        "get_sponsor_web_logo",
-        "get_sponsor_print_logo",
-        "get_sponsor_primary_phone",
-        "get_sponsor_mailing_address",
-        "get_sponsor_contacts",
-    ]
 
     fieldsets = [
         (
@@ -178,6 +161,32 @@ class SponsorshipAdmin(admin.ModelAdmin):
             },
         ),
     ]
+    
+    def get_readonly_fields(self, request, obj):
+        readonly_fields = [
+            "for_modified_package",
+            "sponsor",
+            "status",
+            "applied_on",
+            "rejected_on",
+            "approved_on",
+            "finalized_on",
+            "get_estimated_cost",
+            "get_sponsor_name",
+            "get_sponsor_description",
+            "get_sponsor_landing_page_url",
+            "get_sponsor_web_logo",
+            "get_sponsor_print_logo",
+            "get_sponsor_primary_phone",
+            "get_sponsor_mailing_address",
+            "get_sponsor_contacts",
+        ]
+        
+        if obj and obj.status != Sponsorship.APPLIED:
+            extra = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+            readonly_fields.extend(extra)
+        
+        return readonly_fields
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
