@@ -1,5 +1,6 @@
 from unittest.mock import Mock
 from model_bakery import baker
+from datetime import timedelta, date
 
 from django.conf import settings
 from django.test import TestCase
@@ -90,17 +91,29 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
 
+        today = date.today()
+        self.data = {
+            "sponsorship_fee": 100,
+            "level_name": "level",
+            "start_date": today,
+            "end_date": today + timedelta(days=10),
+        }
+
     def test_update_sponsorship_as_approved_and_create_statement_of_work(self):
-        self.use_case.execute(self.sponsorship)
+        self.use_case.execute(self.sponsorship, **self.data)
         self.sponsorship.refresh_from_db()
 
         today = timezone.now().date()
         self.assertEqual(self.sponsorship.approved_on, today)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
         self.assertTrue(self.sponsorship.statement_of_work.pk)
+        self.assertTrue(self.sponsorship.start_date)
+        self.assertTrue(self.sponsorship.end_date)
+        self.assertEqual(self.sponsorship.sponsorship_fee, 100)
+        self.assertEqual(self.sponsorship.level_name, 'level')
 
     def test_send_notifications_using_sponsorship(self):
-        self.use_case.execute(self.sponsorship)
+        self.use_case.execute(self.sponsorship, **self.data)
 
         for n in self.notifications:
             n.notify.assert_called_once_with(

@@ -1,5 +1,5 @@
-from sponsors.models import Sponsorship, StatementOfWork
 from sponsors import notifications
+from sponsors.models import Sponsorship, StatementOfWork
 
 
 class BaseUseCaseWithNotifications:
@@ -43,13 +43,20 @@ class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
 
 class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
-    def execute(self, sponsorship, request=None):
-        sponsorship.approve()
+    def execute(self, sponsorship, start_date, end_date, **kwargs):
+        sponsorship.approve(start_date, end_date)
+        level_name = kwargs.get('level_name')
+        fee = kwargs.get('sponsorship_fee')
+        if level_name:
+            sponsorship.level_name = level_name
+        if fee:
+            sponsorship.sponsorship_fee = fee
+        
         sponsorship.save()
         statement_of_work = StatementOfWork.new(sponsorship)
 
         self.notify(
-            request=request,
+            request=kwargs.get("request"),
             sponsorship=sponsorship,
             statement_of_work=statement_of_work,
         )
