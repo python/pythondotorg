@@ -19,6 +19,7 @@ from .models import (
 )
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.exceptions import SponsorshipInvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -101,16 +102,19 @@ class SponsorBenefitInline(admin.TabularInline):
 
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
+        "status",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
         "display_sponsorship_link",
     ]
+    list_filter = ["status"]
     readonly_fields = [
         "for_modified_package",
         "sponsor",
@@ -260,7 +264,19 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
-        return obj.sponsor.mailing_address
+        sponsor = obj.sponsor
+        city_row = f'{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})'
+        if sponsor.state:
+            city_row = f'{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})'
+
+        mail_row = sponsor.mailing_address_line_1
+        if sponsor.mailing_address_line_2:
+            mail_row += f' - {sponsor.mailing_address_line_2}'
+
+        html = f'<p>{city_row}</p>'
+        html += f'<p>{mail_row}</p>'
+        html += f'<p>{sponsor.postal_code}</p>'
+        return mark_safe(html)
 
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
@@ -276,7 +292,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         if not_primary:
-            html = "<b>Other contacts</b><ul>"
+            html += "<b>Other contacts</b><ul>"
             html += "".join(
                 [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary]
             )
@@ -289,12 +305,18 @@ class SponsorshipAdmin(admin.ModelAdmin):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
-            use_case.execute(sponsorship)
+            try:
+                use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
+                use_case.execute(sponsorship)
+                self.message_user(
+                    request, "Sponsorship was rejected!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was rejected!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}
@@ -306,12 +328,18 @@ class SponsorshipAdmin(admin.ModelAdmin):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            sponsorship.approve()
-            sponsorship.save()
+            try:
+                sponsorship.approve()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship was approved!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was approved!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}

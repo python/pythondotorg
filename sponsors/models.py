@@ -15,7 +15,10 @@ from cms.models import ContentManageable
 from companies.models import Company
 
 from .managers import SponsorshipQuerySet
-from .exceptions import SponsorWithExistingApplicationException
+from .exceptions import (
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidStatusException,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -267,6 +270,15 @@ class Sponsorship(models.Model):
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
+    def __str__(self):
+        repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        if self.start_date and self.end_date:
+            fmt = "%m/%d/%Y"
+            start = self.start_date.strftime(fmt)
+            end = self.end_date.strftime(fmt)
+            repr += f" [{start} - {end}]"
+        return repr
+
     @classmethod
     def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
@@ -317,10 +329,16 @@ class Sponsorship(models.Model):
         )
 
     def reject(self):
+        if self.REJECTED not in self.next_status:
+            msg = f"Can't reject a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
     def approve(self):
+        if self.APPROVED not in self.next_status:
+            msg = f"Can't approve a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.APPROVED
         self.approved_on = timezone.now().date()
 
@@ -342,6 +360,16 @@ class Sponsorship(models.Model):
     @cached_property
     def added_benefits(self):
         return self.benefits.filter(added_by_user=True)
+
+    @property
+    def next_status(self):
+        states_map = {
+            self.APPLIED: [self.APPROVED, self.REJECTED],
+            self.APPROVED: [self.FINALIZED],
+            self.REJECTED: [],
+            self.FINALIZED: [],
+        }
+        return states_map[self.status]
 
 
 class SponsorBenefit(models.Model):

@@ -327,7 +327,12 @@ class RejectedSponsorshipAdminViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship, submited_by=self.user)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            submited_by=self.user,
+            _fill_optional=True,
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_reject", args=[self.sponsorship.pk]
         )
@@ -395,6 +400,21 @@ class RejectedSponsorshipAdminViewTests(TestCase):
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
 
+    def test_message_user_if_rejecting_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
+
 
 class ApproveSponsorshipAdminViewTests(TestCase):
     def setUp(self):
@@ -402,7 +422,9 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship)
+        self.sponsorship = baker.make(
+            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
@@ -468,3 +490,18 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_message_user_if_approving_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
