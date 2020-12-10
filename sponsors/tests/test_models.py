@@ -268,13 +268,14 @@ class SponsorContactModelTests(TestCase):
 class StatementOfWorkModelTests(TestCase):
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
-        self.sponsorship_benefits = baker.make(
+        baker.make(
             SponsorshipBenefit,
             program__name="PSF",
             name=seq("benefit"),
             order=seq(1),
             _quantity=3,
         )
+        self.sponsorship_benefits = SponsorshipBenefit.objects.all()
 
     def test_auto_increment_draft_revision_on_save(self):
         statement = baker.make_recipe("sponsors.tests.empty_sow")
@@ -354,7 +355,7 @@ class StatementOfWorkModelTests(TestCase):
             clause = legal_clauses[i]
             benefit.legal_clauses.add(clause)
             SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
-        self.sponsorship_benefits[0].legal_clauses.add(
+        self.sponsorship_benefits.first().legal_clauses.add(
             clause
         )  # first benefit with 2 legal clauses
 

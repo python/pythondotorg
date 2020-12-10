@@ -381,7 +381,7 @@ class Sponsorship(models.Model):
         return states_map[self.status]
 
 
-class SponsorBenefit(models.Model):
+class SponsorBenefit(OrderedModel):
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -435,6 +435,9 @@ class SponsorBenefit(models.Model):
     @property
     def legal_clauses(self):
         return self.sponsorship_benefit.legal_clauses.all()
+
+    class Meta(OrderedModel.Meta):
+        pass
 
 
 class Sponsor(ContentManageable):
