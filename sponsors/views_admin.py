@@ -1,4 +1,5 @@
 from markupfield_helpers.helpers import render_md
+from easy_pdf.rendering import render_to_pdf_response
 
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
@@ -15,8 +16,9 @@ def preview_statement_of_work_view(ModelAdmin, request, pk):
     # footnotes only work if in same markdown text as the references
     text = f"{sow.benefits_list.raw}\n\n**Legal Clauses**\n{sow.legal_clauses.raw}"
     html = render_md(text)
-    ctx = {"sow": sow, "benefits_and_clauses": mark_safe(html)}
-    return render(request, "sponsors/admin/preview-statement-of-work.html", context=ctx)
+    context = {"sow": sow, "benefits_and_clauses": mark_safe(html)}
+    template = "sponsors/admin/preview-statement-of-work.html"
+    return render_to_pdf_response(request, template, context)
 
 
 def reject_sponsorship_view(ModelAdmin, request, pk):

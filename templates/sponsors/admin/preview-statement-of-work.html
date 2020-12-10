@@ -1,18 +1,43 @@
-<html>
-<head>
-</head>
-<body>
+{% extends "easy_pdf/base.html" %}
 
+{% block extra_style %}
+    <style type="text/css">
+        .dynamic {
+            background-color: #dddddd;
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
 <h1>Statement of Work Terms</h1>
 
+<p>This is a initial draf of the final contract. All the information with a <span class='dynamic'>grey</span> background color is dynamic and comes from our database.</p>
+
+<p>This document is an HTML file that is being converted to this PDF.</p>
+
+<h1>Header 1</h1>
+<h2>Header 2</h2>
+<h3>Header 3</h3>
+<h4>Header 4</h4>
+<h5>Header 5</h5>
+<h6>Header 6</h6>
+
+<ul>
+<li>this</li>
+<li>is</li>
+<li>how</li>
+<li>a list</li>
+<li>looks</li>
+</ul>
+
+<p>We can have text with <a href="https://python.org/" target="_blank">external references</a>, underline <u>important contant</u> or use italic <i>just because we want to</i>.</p>
+
 <b>Info</b>
-<p>{{ sow.sponsor_info }}</p>
+<p class="dynamic">{{ sow.sponsor_info }}</p>
 
 <b>Contact</b>
-<p>{{ sow.sponsor_contact }}</p>
+<p class="dynamic">{{ sow.sponsor_contact }}</p>
 
 <b>Content</b>
-<p>{{ benefits_and_clauses }}</p>
-
-</body>
-</html>
+<div class="dynamic">{{ benefits_and_clauses }}</div>
+{% endblock %}
