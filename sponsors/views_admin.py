@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm
-from sponsors.exceptions import SponsorshipInvalidStatusException
+from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_sow_to_pdf_response
 
 
@@ -23,7 +23,7 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
             ModelAdmin.message_user(
                 request, "Sponsorship was rejected!", messages.SUCCESS
             )
-        except SponsorshipInvalidStatusException as e:
+        except InvalidStatusException as e:
             ModelAdmin.message_user(request, str(e), messages.ERROR)
 
         redirect_url = reverse(
@@ -57,7 +57,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
                 ModelAdmin.message_user(
                     request, "Sponsorship was approved!", messages.SUCCESS
                 )
-            except SponsorshipInvalidStatusException as e:
+            except InvalidStatusException as e:
                 ModelAdmin.message_user(request, str(e), messages.ERROR)
 
             redirect_url = reverse(

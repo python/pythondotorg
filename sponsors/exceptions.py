@@ -5,7 +5,7 @@ class SponsorWithExistingApplicationException(Exception):
     """
 
 
-class SponsorshipInvalidStatusException(Exception):
+class InvalidStatusException(Exception):
     """
     Raised when user tries to change the Sponsorship's status
     to a new one but from an invalid current status

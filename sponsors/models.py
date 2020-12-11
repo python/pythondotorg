@@ -17,7 +17,7 @@ from companies.models import Company
 from .managers import SponsorContactQuerySet, SponsorshipQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
-    SponsorshipInvalidStatusException,
+    InvalidStatusException,
     SponsorshipInvalidDateRangeException,
 )
 
@@ -327,14 +327,14 @@ class Sponsorship(models.Model):
     def reject(self):
         if self.REJECTED not in self.next_status:
             msg = f"Can't reject a {self.get_status_display()} sponsorship."
-            raise SponsorshipInvalidStatusException(msg)
+            raise InvalidStatusException(msg)
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
     def approve(self, start_date, end_date):
         if self.APPROVED not in self.next_status:
             msg = f"Can't approve a {self.get_status_display()} sponsorship."
-            raise SponsorshipInvalidStatusException(msg)
+            raise InvalidStatusException(msg)
         if start_date >= end_date:
             msg = f"Start date greater or equal than end date"
             raise SponsorshipInvalidDateRangeException(msg)
