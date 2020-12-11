@@ -662,6 +662,17 @@ class StatementOfWork(models.Model):
     def preview_url(self):
         return reverse("admin:sponsors_statementofwork_preview", args=[self.pk])
 
+    @property
+    def next_status(self):
+        states_map = {
+            self.DRAFT: [self.AWAITING_SIGNATURE],
+            self.OUTDATED: [],
+            self.AWAITING_SIGNATURE: [self.EXECUTED, self.NULLIFIED],
+            self.EXECUTED: [],
+            self.NULLIFIED: [self.DRAFT],
+        }
+        return states_map[self.status]
+
     def save(self, **kwargs):
         commit = kwargs.get("commit", True)
         if all([commit, self.pk, self.is_draft]):

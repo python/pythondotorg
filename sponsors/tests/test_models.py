@@ -375,3 +375,20 @@ class StatementOfWorkModelTests(TestCase):
 
         self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
         self.assertEqual(statement.benefits_list.markup_type, "markdown")
+
+    def test_control_statement_of_work_next_status(self):
+        SOW = StatementOfWork
+        states_map = {
+            SOW.DRAFT: [SOW.AWAITING_SIGNATURE],
+            SOW.OUTDATED: [],
+            SOW.AWAITING_SIGNATURE: [SOW.EXECUTED, SOW.NULLIFIED],
+            SOW.EXECUTED: [],
+            SOW.NULLIFIED: [SOW.DRAFT],
+        }
+        for status, exepcted in states_map.items():
+            statement = baker.prepare_recipe(
+                "sponsors.tests.empty_sow", 
+                sponsorship__sponsor__name="foo",
+                status=status,
+            )
+            self.assertEqual(statement.next_status, exepcted)
