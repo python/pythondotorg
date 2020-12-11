@@ -17,6 +17,7 @@ from ..models import (
 from ..exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
+    InvalidStatusException,
 )
 
 
@@ -392,3 +393,24 @@ class StatementOfWorkModelTests(TestCase):
                 status=status,
             )
             self.assertEqual(statement.next_status, exepcted)
+
+    def test_set_final_document_version(self):
+        statement = baker.make_recipe(
+            "sponsors.tests.empty_sow", sponsorship__sponsor__name="foo"
+        )
+        content = b"pdf binary content"
+        self.assertFalse(statement.document.name)
+
+        statement.set_final_version(content)
+        statement.refresh_from_db()
+
+        self.assertTrue(statement.document.name)
+        self.assertEqual(statement.status, StatementOfWork.AWAITING_SIGNATURE)
+
+    def test_raise_invalid_status_exception_if_not_draft(self):
+        statement = baker.make_recipe(
+            "sponsors.tests.empty_sow", status=StatementOfWork.AWAITING_SIGNATURE
+        )
+
+        with self.assertRaises(InvalidStatusException):
+            statement.set_final_version(b'content')

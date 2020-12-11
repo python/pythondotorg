@@ -1,5 +1,7 @@
+from pathlib import Path
 from itertools import chain
 from django.conf import settings
+from django.core.files.storage import default_storage
 from django.db import models
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
@@ -678,3 +680,31 @@ class StatementOfWork(models.Model):
         if all([commit, self.pk, self.is_draft]):
             self.revision += 1
         return super().save(**kwargs)
+
+    def set_final_version(self, pdf_file):
+        if self.AWAITING_SIGNATURE not in self.next_status:
+            msg = f"Can't send a {self.get_status_display()} statement of work."
+            raise InvalidStatusException(msg)
+    
+        path = f"{self.FINAL_VERSION_PDF_DIR}"
+        sponsor = self.sponsorship.sponsor.name.upper()
+        filename = f"{path}SoW: {sponsor}.pdf"
+
+        mode = "wb"
+        try:
+            # if using S3 Storage the file will always exist
+            file = default_storage.open(filename, mode)
+        except FileNotFoundError as e:
+            # local env, not using S3
+            path = Path(e.filename).parent
+            if not path.exists():
+                path.mkdir(parents=True)
+            Path(e.filename).touch()
+            file = default_storage.open(filename, mode)
+
+        file.write(pdf_file)
+        file.close()
+
+        self.document = filename
+        self.status = self.AWAITING_SIGNATURE
+        self.save()
