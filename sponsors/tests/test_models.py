@@ -388,7 +388,7 @@ class StatementOfWorkModelTests(TestCase):
         }
         for status, exepcted in states_map.items():
             statement = baker.prepare_recipe(
-                "sponsors.tests.empty_sow", 
+                "sponsors.tests.empty_sow",
                 sponsorship__sponsor__name="foo",
                 status=status,
             )
@@ -413,4 +413,4 @@ class StatementOfWorkModelTests(TestCase):
         )
 
         with self.assertRaises(InvalidStatusException):
-            statement.set_final_version(b'content')
+            statement.set_final_version(b"content")

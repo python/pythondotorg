@@ -1,5 +1,6 @@
 from sponsors import notifications
 from sponsors.models import Sponsorship, StatementOfWork
+from sponsors.pdf import render_sow_to_pdf_file
 
 
 class BaseUseCaseWithNotifications:
@@ -62,3 +63,18 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         )
 
         return sponsorship
+
+
+class SendStatementOfWorkUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.StatementOfWorkNotificationToPSF(),
+        notifications.StatementOfWorkNotificationToSponsors(),
+    ]
+
+    def execute(self, statement_of_work, **kwargs):
+        pdf_file = render_sow_to_pdf_file(statement_of_work)
+        statement_of_work.set_final_version(pdf_file)
+        self.notify(
+            request=kwargs.get("request"),
+            statement_of_work=statement_of_work,
+        )

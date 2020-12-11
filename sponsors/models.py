@@ -665,6 +665,10 @@ class StatementOfWork(models.Model):
         return reverse("admin:sponsors_statementofwork_preview", args=[self.pk])
 
     @property
+    def awaiting_signature(self):
+        return self.status == self.AWAITING_SIGNATURE
+
+    @property
     def next_status(self):
         states_map = {
             self.DRAFT: [self.AWAITING_SIGNATURE],
@@ -685,7 +689,7 @@ class StatementOfWork(models.Model):
         if self.AWAITING_SIGNATURE not in self.next_status:
             msg = f"Can't send a {self.get_status_display()} statement of work."
             raise InvalidStatusException(msg)
-    
+
         path = f"{self.FINAL_VERSION_PDF_DIR}"
         sponsor = self.sponsorship.sponsor.name.upper()
         filename = f"{path}SoW: {sponsor}.pdf"

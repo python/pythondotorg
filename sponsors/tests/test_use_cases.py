@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship
+from sponsors.models import Sponsorship, StatementOfWork
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -125,3 +125,31 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
     def test_build_use_case_without_notificationss(self):
         uc = use_cases.ApproveSponsorshipApplicationUseCase.build()
         self.assertEqual(len(uc.notifications), 0)
+
+
+class SendStatementOfWorkUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock(), Mock()]
+        self.use_case = use_cases.SendStatementOfWorkUseCase(self.notifications)
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.statement = baker.make_recipe("sponsors.tests.empty_sow")
+
+    def test_send_and_update_statement_of_work_with_document(self):
+        self.use_case.execute(self.statement)
+        self.statement.refresh_from_db()
+
+        self.assertTrue(self.statement.document.name)
+        self.assertTrue(self.statement.awaiting_signature)
+        for n in self.notifications:
+            n.notify.assert_called_once_with(
+                request=None,
+                statement_of_work=self.statement,
+            )
+
+    def test_build_use_case_without_notificationss(self):
+        uc = use_cases.SendStatementOfWorkUseCase.build()
+        self.assertEqual(len(uc.notifications), 2)
+        self.assertIsInstance(uc.notifications[0], StatementOfWorkNotificationToPSF)
+        self.assertIsInstance(
+            uc.notifications[1], StatementOfWorkNotificationToSponsors
+        )
