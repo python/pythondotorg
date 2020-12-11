@@ -542,7 +542,6 @@ class LegalClause(OrderedModel):
 class StatementOfWork(models.Model):
     DRAFT = "draft"
     OUTDATED = "outdated"
-    APPROVED_REVIEW = "approved review"
     AWAITING_SIGNATURE = "awaiting signature"
     EXECUTED = "executed"
     NULLIFIED = "nullified"
@@ -550,23 +549,25 @@ class StatementOfWork(models.Model):
     STATUS_CHOICES = [
         (DRAFT, "Draft"),
         (OUTDATED, "Outdated"),
-        (APPROVED_REVIEW, "Approved by reviewer"),
         (AWAITING_SIGNATURE, "Awaiting signature"),
         (EXECUTED, "Executed"),
         (NULLIFIED, "Nullified"),
     ]
+
+    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
     )
     revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
     document = models.FileField(
-        upload_to="sponsors/statements_of_work/",
+        upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
         verbose_name="Unsigned PDF",
     )
     signed_document = models.FileField(
-        upload_to="sponsors/statmentes_of_work/signed/",
+        upload_to=SIGNED_PDF_DIR,
         blank=True,
         verbose_name="Signed PDF",
     )
