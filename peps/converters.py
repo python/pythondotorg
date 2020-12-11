@@ -157,14 +157,15 @@ def convert_pep_page(pep_number, content):
         div = pep_content.new_tag('div')
         div['class'] = ['highlight']
         cb.wrap(div)
-    # Highlight existing pure-Python PEPs
-    if int(pep_number) in PURE_PYTHON_PEPS:
-        literal_blocks = pep_content.find_all('pre', class_='literal-block')
-        for lb in literal_blocks:
-            block = lb.string
-            if block:
-                highlighted = highlight(block, PythonLexer(), HtmlFormatter())
-                lb.replace_with(BeautifulSoup(highlighted).html.body.div)
+
+    # Default to Python highlighting for '::' code blocks.
+    # Other languages can be set like '.. code-block:: c'.
+    literal_blocks = pep_content.find_all('pre', class_='literal-block')
+    for lb in literal_blocks:
+        block = lb.string
+        if block:
+            highlighted = highlight(block, PythonLexer(), HtmlFormatter())
+            lb.replace_with(BeautifulSoup(highlighted, 'lxml').html.body.div)
 
     pep_href_re = re.compile(r'pep-(\d+)\.html')
 
