@@ -137,20 +137,16 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
 class StatementOfWorkNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.StatementOfWorkNotificationToPSF()
-        self.sponsorship = baker.make(
-            Sponsorship,
-            status=Sponsorship.APPROVED,
-            _fill_optional=["approved_on", "sponsor"],
-        )
+        self.sow = baker.make_recipe("sponsors.tests.empty_sow")
         self.subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/psf_statement_of_work.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"sponsorship": self.sponsorship}
+        context = {"statement_of_work": self.sow}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(sponsorship=self.sponsorship)
+        self.notification.notify(statement_of_work=self.sow)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -164,21 +160,24 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
     def setUp(self):
         self.notification = notifications.StatementOfWorkNotificationToSponsors()
         self.user = baker.make(settings.AUTH_USER_MODEL, email="email@email.com")
-        self.sponsorship = baker.make(
+        sponsorship = baker.make(
             Sponsorship,
             status=Sponsorship.APPROVED,
             _fill_optional=["approved_on", "sponsor"],
             submited_by=self.user,
         )
+        self.sow = baker.make_recipe(
+            "sponsors.tests.empty_sow", sponsorship=sponsorship
+        )
         self.subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/sponsor_statement_of_work.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"sponsorship": self.sponsorship}
+        context = {"statement_of_work": self.sow}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(sponsorship=self.sponsorship)
+        self.notification.notify(statement_of_work=self.sow)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]

@@ -64,19 +64,21 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
         return context["sponsorship"].verified_emails
 
 
+# TODO add PDF attachment
 class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
     message_template = "sponsors/email/psf_statement_of_work.txt"
-    email_context_keys = ["sponsorship"]
+    email_context_keys = ["statement_of_work"]
 
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
 
+# TODO add PDF attachment
 class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
     message_template = "sponsors/email/sponsor_statement_of_work.txt"
-    email_context_keys = ["sponsorship"]
+    email_context_keys = ["statement_of_work"]
 
     def get_recipient_list(self, context):
-        return context["sponsorship"].verified_emails
+        return context["statement_of_work"].sponsorship.verified_emails
