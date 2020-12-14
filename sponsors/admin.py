@@ -403,8 +403,16 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.preview_statement_of_work_view),
                 name="sponsors_statementofwork_preview",
             ),
+            path(
+                "<int:pk>/send",
+                self.admin_site.admin_view(self.send_statement_of_work_view),
+                name="sponsors_statementofwork_send",
+            ),
         ]
         return my_urls + urls
 
     def preview_statement_of_work_view(self, request, pk):
         return views_admin.preview_statement_of_work_view(self, request, pk)
+
+    def send_statement_of_work_view(self, request, pk):
+        return views_admin.send_statement_of_work_view(self, request, pk)

@@ -1,7 +1,7 @@
 import json
 from model_bakery import baker
-from itertools import chain
 from datetime import date, timedelta
+from unittest.mock import patch, PropertyMock
 
 from django.conf import settings
 from django.contrib import messages
@@ -15,11 +15,10 @@ from django.urls import reverse, reverse_lazy
 from .utils import get_static_image_file_as_upload
 from ..models import (
     Sponsor,
-    SponsorshipProgram,
     SponsorshipBenefit,
-    Sponsor,
     SponsorContact,
     Sponsorship,
+    StatementOfWork,
 )
 from sponsors.forms import (
     SponsorshiptBenefitsForm,
@@ -535,3 +534,101 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+
+
+class SendStatementOfWorkView(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.statement_of_work = baker.make_recipe("sponsors.tests.empty_sow")
+        self.url = reverse(
+            "admin:sponsors_statementofwork_send", args=[self.statement_of_work.pk]
+        )
+        self.data = {
+            "confirm": "yes",
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertEqual(context["statement_of_work"], self.statement_of_work)
+
+    @patch.object(
+        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+    )
+    def test_approve_sponsorship_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+        expected_url = reverse(
+            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+        )
+        self.statement_of_work.refresh_from_db()
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertTrue(self.statement_of_work.document.name)
+        self.assertEqual(2, len(mail.outbox))
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Statement of Work was sent!", messages.SUCCESS)
+
+    @patch.object(
+        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+    )
+    def test_display_error_message_to_user_if_invalid_status(self):
+        self.statement_of_work.status = StatementOfWork.AWAITING_SIGNATURE
+        self.statement_of_work.save()
+        expected_url = reverse(
+            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+        )
+
+        response = self.client.post(self.url, data=self.data)
+        self.statement_of_work.refresh_from_db()
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(0, len(mail.outbox))
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(
+            msg,
+            "Statement of work with status Awaiting Signature can't be sent.",
+            messages.ERROR,
+        )
+
+    def test_do_not_send_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.statement_of_work.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertFalse(self.statement_of_work.document.name)
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertFalse(self.statement_of_work.document.name)
+        self.assertEqual(0, len(mail.outbox))
+
+    def test_404_if_sow_does_not_exist(self):
+        self.statement_of_work.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)

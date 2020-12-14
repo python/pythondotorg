@@ -67,3 +67,29 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
 
     context = {"sponsorship": sponsorship, "form": form}
     return render(request, "sponsors/admin/approve_application.html", context=context)
+
+
+def send_statement_of_work_view(ModelAdmin, request, pk):
+    sow = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+
+        use_case = use_cases.SendStatementOfWorkUseCase.build()
+        try:
+            use_case.execute(sow, request=request)
+            ModelAdmin.message_user(
+                request, "Statement of Work was sent!", messages.SUCCESS
+            )
+        except InvalidStatusException:
+            status = sow.get_status_display().title()
+            ModelAdmin.message_user(
+                request,
+                f"Statement of work with status {status} can't be sent.",
+                messages.ERROR,
+            )
+
+        redirect_url = reverse("admin:sponsors_statementofwork_change", args=[sow.pk])
+        return redirect(redirect_url)
+
+    context = {"statement_of_work": sow}
+    return render(request, "sponsors/admin/send_sow.html", context=context)
