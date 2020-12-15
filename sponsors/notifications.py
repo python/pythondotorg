@@ -17,6 +17,12 @@ class BaseEmailSponsorshipNotification:
     def get_recipient_list(self, context):
         raise NotImplementedError
 
+    def get_attachments(self, context):
+        """
+        Returns list with attachments tuples (filename, content, mime type)
+        """
+        return []
+
     def notify(self, **kwargs):
         context = {k: kwargs.get(k) for k in self.email_context_keys}
 
@@ -26,6 +32,9 @@ class BaseEmailSponsorshipNotification:
             to=self.get_recipient_list(context),
             from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
         )
+        for attachment in self.get_attachments(context):
+            email.attach(*attachment)
+
         email.send()
 
 
@@ -74,6 +83,12 @@ class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
+    def get_attachments(self, context):
+        document = context["statement_of_work"].document
+        with document.open("rb") as fd:
+            content = fd.read()
+        return [("StatementOfWork.pdf", content, "application/pdf")]
+
 
 # TODO add PDF attachment
 class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
@@ -83,3 +98,9 @@ class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
 
     def get_recipient_list(self, context):
         return context["statement_of_work"].sponsorship.verified_emails
+
+    def get_attachments(self, context):
+        document = context["statement_of_work"].document
+        with document.open("rb") as fd:
+            content = fd.read()
+        return [("StatementOfWork.pdf", content, "application/pdf")]

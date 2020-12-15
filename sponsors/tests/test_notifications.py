@@ -137,7 +137,11 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
 class StatementOfWorkNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.StatementOfWorkNotificationToPSF()
-        self.sow = baker.make_recipe("sponsors.tests.empty_sow")
+        self.sow = baker.make_recipe(
+            "sponsors.tests.awaiting_signature_sow",
+            _fill_optional=["document"],
+            _create_files=True,
+        )
         self.subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/psf_statement_of_work.txt"
 
@@ -155,6 +159,22 @@ class StatementOfWorkNotificationToPSFTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
+    def test_attach_statement_of_work_pdf(self):
+        self.assertTrue(self.sow.document.name)
+        with self.sow.document.open("rb") as fd:
+            expected_content = fd.read()
+        self.assertTrue(expected_content)
+
+        self.sow.refresh_from_db()
+        self.notification.notify(statement_of_work=self.sow)
+        email = mail.outbox[0]
+
+        self.assertEqual(len(email.attachments), 1)
+        name, content, mime = email.attachments[0]
+        self.assertEqual(name, "StatementOfWork.pdf")
+        self.assertEqual(mime, "application/pdf")
+        self.assertEqual(content, expected_content)
+
 
 class StatementOfWorkNotificationToSponsorsTests(TestCase):
     def setUp(self):
@@ -167,7 +187,10 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
             submited_by=self.user,
         )
         self.sow = baker.make_recipe(
-            "sponsors.tests.empty_sow", sponsorship=sponsorship
+            "sponsors.tests.awaiting_signature_sow",
+            sponsorship=sponsorship,
+            _fill_optional=["document"],
+            _create_files=True,
         )
         self.subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
         self.content_template = "sponsors/email/sponsor_statement_of_work.txt"
@@ -185,3 +208,19 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
         self.assertEqual(expected_content, email.body)
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)
+
+    def test_attach_statement_of_work_pdf(self):
+        self.assertTrue(self.sow.document.name)
+        with self.sow.document.open("rb") as fd:
+            expected_content = fd.read()
+        self.assertTrue(expected_content)
+
+        self.sow.refresh_from_db()
+        self.notification.notify(statement_of_work=self.sow)
+        email = mail.outbox[0]
+
+        self.assertEqual(len(email.attachments), 1)
+        name, content, mime = email.attachments[0]
+        self.assertEqual(name, "StatementOfWork.pdf")
+        self.assertEqual(mime, "application/pdf")
+        self.assertEqual(content, expected_content)
