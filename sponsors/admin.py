@@ -308,15 +308,6 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
 @admin.register(StatementOfWork)
 class StatementOfWorkModelAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/statement_of_work_change_form.html"
-    readonly_fields = [
-        "status",
-        "created_on",
-        "last_update",
-        "sent_on",
-        "sponsorship",
-        "revision",
-        "document",
-    ]
     list_display = [
         "id",
         "sponsorship",
@@ -375,6 +366,28 @@ class StatementOfWorkModelAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def get_readonly_fields(self, request, obj):
+        readonly_fields = [
+            "status",
+            "created_on",
+            "last_update",
+            "sent_on",
+            "sponsorship",
+            "revision",
+            "document",
+        ]
+
+        if obj and not obj.is_draft:
+            extra = [
+                "sponsor_info",
+                "sponsor_contact",
+                "benefits_list",
+                "legal_clauses",
+            ]
+            readonly_fields.extend(extra)
+
+        return readonly_fields
 
     def document_link(self, obj):
         html, url, msg = "---", "", ""
