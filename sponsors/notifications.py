@@ -1,4 +1,4 @@
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
 
@@ -20,12 +20,13 @@ class BaseEmailSponsorshipNotification:
     def notify(self, **kwargs):
         context = {k: kwargs.get(k) for k in self.email_context_keys}
 
-        send_mail(
+        email = EmailMessage(
             subject=self.get_subject(context),
-            message=self.get_message(context),
-            recipient_list=self.get_recipient_list(context),
+            body=self.get_message(context),
+            to=self.get_recipient_list(context),
             from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
         )
+        email.send()
 
 
 class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
