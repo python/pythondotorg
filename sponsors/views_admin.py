@@ -10,7 +10,9 @@ from sponsors.pdf import render_sow_to_pdf_response
 
 def preview_statement_of_work_view(ModelAdmin, request, pk):
     sow = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
-    return render_sow_to_pdf_response(request, sow)
+    response = render_sow_to_pdf_response(request, sow)
+    response["X-Frame-Options"] = "SAMEORIGIN"
+    return response
 
 
 def reject_sponsorship_view(ModelAdmin, request, pk):

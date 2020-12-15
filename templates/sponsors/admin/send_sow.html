@@ -17,8 +17,14 @@
 
 {% block content %}
 <h1>Send Statement of Work</h1>
-<p>Statement of Work summary and emails later...</p>
+
+
+<div style="display: block">
+<iframe src="{{ statement_of_work.preview_url }}" title="document" style="width: 100%; height: 900px"></iframe>
+</div>
+
 <div id="content-main">
+<p><b>Help: </b>If you can't see the document's content above this texxt, please turn off your webbrowser's extensions which blocks HTML iframes (ad-blocker, ghostery, etc)</p>
 <form action="" method="post" id="new_psf_board_meeting_form">
 {% csrf_token %}
 
