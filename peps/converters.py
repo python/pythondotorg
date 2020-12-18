@@ -19,13 +19,6 @@ from pages.models import Page, Image
 PEP_TEMPLATE = 'pages/pep-page.html'
 pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
 
-# To simplify syntax highlighting, all literal blocks (those produced by ::)
-# in the following PEPs will be automatically highlighted using Python lexer.
-# PEP editors/authors could make simple PRs extending this list.
-# This will be not needed when PEPs are moved to RtD and all code blocks are
-# formatted using .. code:: language.
-PURE_PYTHON_PEPS = [483, 484, 526]
-
 def get_peps_last_updated():
     last_update = Page.objects.filter(
         path__startswith='dev/peps',
