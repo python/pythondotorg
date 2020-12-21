@@ -1,0 +1,11 @@
+source "http://rubygems.org"
+
+gem "middleman", "~> 3.0.2"
+gem "sass", "~> 3.2.1"
+gem "compass", :git => "git://github.com/chriseppstein/compass.git", :branch => "master"
+gem "susy", :path => "../"
+
+gem "modular-scale", "~> 1.0.2"
+gem "redcarpet"
+gem "rack-codehighlighter", :git => "git://github.com/wbzyl/rack-codehighlighter.git"
+gem "pygments.rb"

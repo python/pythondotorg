@@ -1,0 +1,8 @@
+susy-*.gem
+*~
+*.DS_Store
+.sass-cache
+.rvmrc
+pkg/
+*.sublime-*
+build/

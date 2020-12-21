@@ -1,0 +1,4 @@
+bin
+vendor
+output
+vendor/ruby
