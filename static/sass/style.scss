@@ -2319,7 +2319,7 @@ div.warning {
 }
 
 form.deletion-form {
-    @extend div.warning;
+    @extend div, .warning;
 
     border-radius: px2em( 10px );
     padding: px2em( 15px );

@@ -266,7 +266,7 @@
         $bordertop: lighten( $this-color, 38% );
 
         .#{nth($names, $i)}-navigation {
-            @include vertical-gradient( $this-color, adjust-lightness( $this-color, -8 ), 30%, 95% );
+            @include vertical-gradient( $this-color, adjust-color( $this-color, $lightness: -8 ), 30%, 95% );
             border-top: 1px solid lighten($this-color, 15%);
             border-bottom: 1px solid darken($this-color, 25%);
 
@@ -816,7 +816,7 @@
                 //float: left;
                 //margin-top: .5em;
             }
-            /* ! This is done the wrong way with SASS. Should be something like \#{$form-text-inputs} with $form-text-inputs as a variable */
+            /* ! This is done the wrong way with SASS. Should be something like \#{\$form-text-inputs} with \$form-text-inputs as a variable */
             @include input_text_types() {
                 width: 75%;
                 display: inline-block;
