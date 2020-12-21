@@ -220,6 +220,9 @@ class SponsorContact(models.Model):
     primary = models.BooleanField(
         default=False, help_text="If this is the primary contact for the sponsor"
     )
+    administrative = models.BooleanField(
+        default=False, help_text="If this is an administrative contact for the sponsor"
+    )
     manager = models.BooleanField(
         default=False,
         help_text="If this contact can manage sponsorship information on python.org",
