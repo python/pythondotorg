@@ -362,6 +362,10 @@ class Sponsorship(models.Model):
         return self.benefits.filter(added_by_user=True)
 
     @property
+    def open_for_editing(self):
+        return self.status == self.APPLIED
+
+    @property
     def next_status(self):
         states_map = {
             self.APPLIED: [self.APPROVED, self.REJECTED],

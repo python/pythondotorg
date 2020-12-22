@@ -97,7 +97,26 @@ class SponsorBenefitInline(admin.TabularInline):
     form = SponsorBenefitAdminInlineForm
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
-    can_delete = False
+
+    def has_add_permission(self, request):
+        # this work around is necessary because the `obj` parameter was added to
+        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
+        has_add_permission = super().has_add_permission(request)
+        match = request.resolver_match
+        if match.url_name == "sponsors_sponsorship_change":
+            sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+            has_add_permission = has_add_permission and sponsorship.open_for_editing
+        return has_add_permission
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.open_for_editing:
+            return ["sponsorship_benefit", "benefit_internal_value"]
+        return []
+
+    def has_delete_permission(self, request, obj=None):
+        if not obj:
+            return True
+        return obj.open_for_editing
 
 
 @admin.register(Sponsorship)
