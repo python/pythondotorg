@@ -18,7 +18,7 @@ from .models import (
     LegalClause,
 )
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
 from sponsors.exceptions import SponsorshipInvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
@@ -94,8 +94,8 @@ class SponsorAdmin(ContentManageableModelAdmin):
 
 class SponsorBenefitInline(admin.TabularInline):
     model = SponsorBenefit
-    readonly_fields = ["name", "benefit_internal_value"]
-    fields = ["name", "benefit_internal_value"]
+    form = SponsorBenefitAdminInlineForm
+    fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
     can_delete = False
 
