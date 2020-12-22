@@ -18,7 +18,7 @@ from .models import (
     LegalClause,
 )
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
 from sponsors.exceptions import SponsorshipInvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
@@ -94,10 +94,29 @@ class SponsorAdmin(ContentManageableModelAdmin):
 
 class SponsorBenefitInline(admin.TabularInline):
     model = SponsorBenefit
-    readonly_fields = ["name", "benefit_internal_value"]
-    fields = ["name", "benefit_internal_value"]
+    form = SponsorBenefitAdminInlineForm
+    fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
-    can_delete = False
+
+    def has_add_permission(self, request):
+        # this work around is necessary because the `obj` parameter was added to
+        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
+        has_add_permission = super().has_add_permission(request)
+        match = request.resolver_match
+        if match.url_name == "sponsors_sponsorship_change":
+            sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+            has_add_permission = has_add_permission and sponsorship.open_for_editing
+        return has_add_permission
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.open_for_editing:
+            return ["sponsorship_benefit", "benefit_internal_value"]
+        return []
+
+    def has_delete_permission(self, request, obj=None):
+        if not obj:
+            return True
+        return obj.open_for_editing
 
 
 @admin.register(Sponsorship)
@@ -265,17 +284,19 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_sponsor_mailing_address(self, obj):
         sponsor = obj.sponsor
-        city_row = f'{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})'
+        city_row = (
+            f"{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})"
+        )
         if sponsor.state:
-            city_row = f'{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})'
+            city_row = f"{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})"
 
         mail_row = sponsor.mailing_address_line_1
         if sponsor.mailing_address_line_2:
-            mail_row += f' - {sponsor.mailing_address_line_2}'
+            mail_row += f" - {sponsor.mailing_address_line_2}"
 
-        html = f'<p>{city_row}</p>'
-        html += f'<p>{mail_row}</p>'
-        html += f'<p>{sponsor.postal_code}</p>'
+        html = f"<p>{city_row}</p>"
+        html += f"<p>{mail_row}</p>"
+        html += f"<p>{sponsor.postal_code}</p>"
         return mark_safe(html)
 
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
