@@ -95,3 +95,29 @@ def send_statement_of_work_view(ModelAdmin, request, pk):
 
     context = {"statement_of_work": sow}
     return render(request, "sponsors/admin/send_sow.html", context=context)
+
+
+def rollback_to_editing_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        try:
+            sponsorship.rollback_to_editing()
+            sponsorship.save()
+            ModelAdmin.message_user(
+                request, "Sponsorship is now editable!", messages.SUCCESS
+            )
+        except InvalidStatusException as e:
+            ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+        redirect_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+        )
+        return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship}
+    return render(
+        request,
+        "sponsors/admin/rollback_sponsorship_to_editing.html",
+        context=context,
+    )

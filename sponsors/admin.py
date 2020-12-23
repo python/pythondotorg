@@ -18,7 +18,6 @@ from .models import (
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
-from sponsors.exceptions import InvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -318,29 +317,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_contacts.short_description = "Contacts"
 
     def rollback_to_editing_view(self, request, pk):
-        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
-
-        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            try:
-                sponsorship.rollback_to_editing()
-                sponsorship.save()
-                self.message_user(
-                    request, "Sponsorship is now editable!", messages.SUCCESS
-                )
-            except InvalidStatusException as e:
-                self.message_user(request, str(e), messages.ERROR)
-
-            redirect_url = reverse(
-                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
-            )
-            return redirect(redirect_url)
-
-        context = {"sponsorship": sponsorship}
-        return render(
-            request,
-            "sponsors/admin/rollback_sponsorship_to_editing.html",
-            context=context,
-        )
+        return views_admin.rollback_to_editing_view(self, request, pk)
 
     def reject_sponsorship_view(self, request, pk):
         return views_admin.reject_sponsorship_view(self, request, pk)
