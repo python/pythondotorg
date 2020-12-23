@@ -2,6 +2,7 @@ from pathlib import Path
 from itertools import chain
 from django.conf import settings
 from django.core.files.storage import default_storage
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
@@ -353,6 +354,16 @@ class Sponsorship(models.Model):
         if self.status not in accepts_rollback:
             msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
             raise InvalidStatusException(msg)
+
+        try:
+            if not self.statement_of_work.is_draft:
+                status = self.statement_of_work.get_status_display()
+                msg = f"Can't rollback to edit a sponsorship with a { status } Statement of Work."
+                raise InvalidStatusException(msg)
+            self.statement_of_work.delete()
+        except ObjectDoesNotExist:
+            pass
+
         self.status = self.APPLIED
         self.approved_on = None
         self.rejected_on = None

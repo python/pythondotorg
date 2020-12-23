@@ -13,6 +13,7 @@ from ..models import (
     SponsorContact,
     SponsorBenefit,
     LegalClause,
+    StatementOfWork
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -190,6 +191,30 @@ class SponsorshipModelTests(TestCase):
         sponsorship.refresh_from_db()
         with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
+
+    def test_rollback_approved_sponsorship_with_statement_of_work_should_delete_it(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.status = Sponsorship.APPROVED
+        sponsorship.save()
+        baker.make_recipe('sponsors.tests.empty_sow', sponsorship=sponsorship)
+
+        sponsorship.rollback_to_editing()
+        sponsorship.save()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertEqual(0, StatementOfWork.objects.count())
+
+    def test_can_not_rollback_sponsorship_to_edit_if_sow_was_sent(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.status = Sponsorship.APPROVED
+        sponsorship.save()
+        baker.make_recipe('sponsors.tests.awaiting_signature_sow', sponsorship=sponsorship)
+
+        with self.assertRaises(InvalidStatusException):
+            sponsorship.rollback_to_editing()
+
+        self.assertEqual(1, StatementOfWork.objects.count())
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
