@@ -46,7 +46,7 @@ Pages are individual entire pages of markup content.  They are require ``Title``
 :Is Published: Controls whether or not the page is visible on the site.
 :Template Name: By default Pages use the template ``templates/pages/default.html`` to use a different template enter the template path here.
 
-.. note:: Pages are automatically purge from Fastly.com upon save.
+.. note:: Pages are automatically purged from Fastly.com upon save.
 
 .. _boxes:
 
