@@ -16,6 +16,12 @@
     </li>
     {% endif %}
 
+    {% if sp.status != sp.FINALIZED and sp.status != sp.APPLIED %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_rollback_to_edit' sp.pk %}">Rollback to Edit</a>
+    </li>
+    {% endif %}
+
   {% endwith %}
 
   {{ block.super }}
