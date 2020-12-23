@@ -15,8 +15,6 @@ from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
 
 from cms.models import ContentManageable
-from companies.models import Company
-
 from .managers import SponsorContactQuerySet, SponsorshipQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
@@ -45,7 +43,7 @@ class SponsorshipPackage(OrderedModel):
 
         # check if all packages' benefits without conflict are present in benefits list
         from_pkg_benefits = set(
-            [b for b in benefits if not b in pkg_benefits_with_conflicts]
+            [b for b in benefits if b not in pkg_benefits_with_conflicts]
         )
         if from_pkg_benefits != set(self.benefits.without_conflicts()):
             return True
