@@ -17,7 +17,8 @@ from .models import (
     StatementOfWork,
 )
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
+from sponsors.exceptions import InvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -92,11 +93,29 @@ class SponsorAdmin(ContentManageableModelAdmin):
 
 class SponsorBenefitInline(admin.TabularInline):
     model = SponsorBenefit
-    readonly_fields = ["name", "benefit_internal_value"]
-    fields = ["name", "benefit_internal_value"]
+    form = SponsorBenefitAdminInlineForm
+    fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
-    can_delete = False
-    can_add = False
+
+    def has_add_permission(self, request):
+        # this work around is necessary because the `obj` parameter was added to
+        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
+        has_add_permission = super().has_add_permission(request)
+        match = request.resolver_match
+        if match.url_name == "sponsors_sponsorship_change":
+            sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+            has_add_permission = has_add_permission and sponsorship.open_for_editing
+        return has_add_permission
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.open_for_editing:
+            return ["sponsorship_benefit", "benefit_internal_value"]
+        return []
+
+    def has_delete_permission(self, request, obj=None):
+        if not obj:
+            return True
+        return obj.open_for_editing
 
 
 @admin.register(Sponsorship)
@@ -215,6 +234,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.approve_sponsorship_view),
                 name="sponsors_sponsorship_approve",
             ),
+            path(
+                "<int:pk>/enable-edit",
+                self.admin_site.admin_view(self.rollback_to_editing_view),
+                name="sponsors_sponsorship_rollback_to_edit",
+            ),
         ]
         return my_urls + urls
 
@@ -292,6 +316,31 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
+
+    def rollback_to_editing_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            try:
+                sponsorship.rollback_to_editing()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship is now editable!", messages.SUCCESS
+                )
+            except InvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
+            context=context,
+        )
 
     def reject_sponsorship_view(self, request, pk):
         return views_admin.reject_sponsorship_view(self, request, pk)

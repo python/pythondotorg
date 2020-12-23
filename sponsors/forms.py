@@ -14,6 +14,7 @@ from sponsors.models import (
     Sponsor,
     SponsorContact,
     Sponsorship,
+    SponsorBenefit,
 )
 
 
@@ -342,3 +343,40 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             raise forms.ValidationError("End date must be greater than start date")
 
         return cleaned_data
+
+
+class SponsorBenefitAdminInlineForm(forms.ModelForm):
+    sponsorship_benefit = forms.ModelChoiceField(
+        queryset=SponsorshipBenefit.objects.select_related("program"),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "benefit_internal_value" in self.fields:
+            self.fields["benefit_internal_value"].required = True
+
+    class Meta:
+        model = SponsorBenefit
+        fields = ["sponsorship_benefit", "sponsorship", "benefit_internal_value"]
+
+    def save(self, commit=True):
+        sponsorship = self.cleaned_data["sponsorship"]
+        benefit = self.cleaned_data["sponsorship_benefit"]
+        value = self.cleaned_data["benefit_internal_value"]
+
+        if not (self.instance and self.instance.pk):  # new benefit
+            self.instance = SponsorBenefit(sponsorship=sponsorship)
+        else:
+            self.instance.refresh_from_db()
+
+        self.instance.benefit_internal_value = value
+        if benefit.pk != self.instance.sponsorship_benefit_id:
+            self.instance.sponsorship_benefit = benefit
+            self.instance.name = benefit.name
+            self.instance.description = benefit.description
+            self.instance.program = benefit.program
+
+        if commit:
+            self.instance.save()
+
+        return self.instance

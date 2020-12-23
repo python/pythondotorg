@@ -167,6 +167,30 @@ class SponsorshipModelTests(TestCase):
         with self.assertRaises(SponsorshipInvalidDateRangeException):
             sponsorship.approve(start, start)
 
+    def test_rollback_sponsorship_to_edit(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        can_rollback_from = [
+            Sponsorship.APPLIED,
+            Sponsorship.APPROVED,
+            Sponsorship.REJECTED,
+        ]
+        for status in can_rollback_from:
+            sponsorship.status = status
+            sponsorship.save()
+            sponsorship.refresh_from_db()
+
+            sponsorship.rollback_to_editing()
+
+            self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+            self.assertIsNone(sponsorship.approved_on)
+            self.assertIsNone(sponsorship.rejected_on)
+
+        sponsorship.status = Sponsorship.FINALIZED
+        sponsorship.save()
+        sponsorship.refresh_from_db()
+        with self.assertRaises(InvalidStatusException):
+            sponsorship.rollback_to_editing()
+
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         finalized_status = [Sponsorship.REJECTED, Sponsorship.FINALIZED]
