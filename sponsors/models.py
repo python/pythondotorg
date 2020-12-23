@@ -342,6 +342,15 @@ class Sponsorship(models.Model):
         self.status = self.APPROVED
         self.approved_on = timezone.now().date()
 
+    def rollback_to_editing(self):
+        accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
+        if self.status not in accepts_rollback:
+            msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
+        self.status = self.APPLIED
+        self.approved_on = None
+        self.rejected_on = None
+
     @property
     def verified_emails(self):
         emails = [self.submited_by.email]
