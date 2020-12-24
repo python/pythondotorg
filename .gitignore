@@ -17,3 +17,8 @@ static/stylesheets/no-mq.css
 static/stylesheets/style.css
 __pycache__
 *.db
+
+
+# Ignore Microsoft Visual Studio Code's and Jetbrain's Pycharm Files
+.vscode/
+.idea/
