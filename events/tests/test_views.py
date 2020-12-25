@@ -6,7 +6,7 @@ from django.urls import reverse, reverse_lazy
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRule
+from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRule, OccurringRule
 from ..templatetags.events import get_events_upcoming
 from users.factories import UserFactory
 
@@ -18,6 +18,11 @@ class EventsViewsTests(TestCase):
         cls.calendar = Calendar.objects.create(creator=cls.user, slug="test-calendar")
         cls.event = Event.objects.create(creator=cls.user, calendar=cls.calendar)
         cls.event_past = Event.objects.create(title='Past Event', creator=cls.user, calendar=cls.calendar)
+        cls.event_single_day = Event.objects.create(title="Single Day Event", creator=cls.user, calendar=cls.calendar)
+        cls.event_future_start_following_year = Event.objects.create(title='Event Starts Following Year',
+                                                                     creator=cls.user, calendar=cls.calendar)
+        cls.event_future_end_following_year = Event.objects.create(title='Event Ends Following Year',
+                                                                   creator=cls.user, calendar=cls.calendar)
 
         cls.now = timezone.now()
 
@@ -34,12 +39,27 @@ class EventsViewsTests(TestCase):
             begin=cls.now - datetime.timedelta(days=2),
             finish=cls.now - datetime.timedelta(days=1),
         )
-
+        cls.rule_single_day = OccurringRule.objects.create(
+            event=cls.event_single_day,
+            dt_start=recurring_time_dtstart,
+            dt_end=recurring_time_dtstart
+        )
+        cls.rule_future_start_year = OccurringRule.objects.create(
+            event=cls.event_future_start_following_year,
+            dt_start=recurring_time_dtstart + datetime.timedelta(weeks=52),
+            dt_end=recurring_time_dtstart + datetime.timedelta(weeks=53),
+        )
+        cls.rule_future_end_year = OccurringRule.objects.create(
+            event=cls.event_future_end_following_year,
+            dt_start=recurring_time_dtstart,
+            dt_end=recurring_time_dtend + datetime.timedelta(weeks=52)
+        )
     def test_events_homepage(self):
         url = reverse('events:events')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 4)
+        self.assertIn(Event.objects.last().title, response.content.decode())
 
     def test_calendar_list(self):
         calendars_count = Calendar.objects.count()
@@ -54,7 +74,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 1)
+        self.assertEqual(len(response.context['object_list']), 4)
 
         url = reverse('events:event_list_past', kwargs={"calendar_slug": 'unexisting'})
         response = self.client.get(url)
@@ -114,7 +134,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['object'], dt.date())
-        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertEqual(len(response.context['object_list']), 5)
 
     def test_eventlocation_list(self):
         venue = EventLocation.objects.create(
@@ -150,12 +170,12 @@ class EventsViewsTests(TestCase):
         self.assertEqual(self.event, response.context['object'])
 
     def test_upcoming_tag(self):
-        self.assertEqual(len(get_events_upcoming()), 1)
+        self.assertEqual(len(get_events_upcoming()), 4)
         self.assertEqual(len(get_events_upcoming(only_featured=True)), 0)
         self.rule.begin = self.now - datetime.timedelta(days=3)
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
-        self.assertEqual(len(get_events_upcoming()), 0)
+        self.assertEqual(len(get_events_upcoming()), 3)
 
 
 class EventSubmitTests(TestCase):
