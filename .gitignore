@@ -22,3 +22,4 @@ __pycache__
 # Ignore Microsoft Visual Studio Code's and Jetbrain's Pycharm Files
 .vscode/
 .idea/
+sass/
