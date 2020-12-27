@@ -1,10 +1,10 @@
 {% if next_time.single_day %}
-    <time id="{{ object.id }}" datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}
-        <span {% if scheduled_start_this_year %}class="say-no-more"{% endif %}>
+    <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}
+        <span id="start-{{ object.id }}"{% if scheduled_start_this_year %} class="say-no-more"{% endif %}>
             {{ next_time.dt_start|date:"Y" }}
         </span>
 
-        <span {% if scheduled_end_this_year %}class="say-no-more"{% endif %}>
+        <span id="start-{{ object.id }}"{% if scheduled_end_this_year %} class="say-no-more"{% endif %}>
             {{ next_time.dt_start|date:"Y" }}
         </span>
 
@@ -16,8 +16,8 @@
         {% endif %}
     </time>
 {% else %}
-    <time id="{{ object.id }}" datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}
-        <span {% if scheduled_start_this_year %}class="say-no-more"{% endif %}>
+    <time datetime="{{ next_time.dt_start|date:'c' }}">{{ next_time.dt_start|date:"d N" }}
+        <span id="start-{{ object.id }}"{% if scheduled_start_this_year %} class="say-no-more"{% endif %}>
             {{ next_time.dt_start|date:"Y" }}
         </span>
 
@@ -25,7 +25,7 @@
             {{ next_time.dt_end|date:"d N" }}
         {% endif %}
 
-        <span {% if scheduled_end_this_year %}class="say-no-more"{% endif %}>
+        <span id="end-{{ object.id }}"{% if scheduled_end_this_year %} class="say-no-more"{% endif %}>
             {{ next_time.dt_end|date:"Y" }}
         </span>
     </time>

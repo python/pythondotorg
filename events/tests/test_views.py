@@ -19,6 +19,10 @@ class EventsViewsTests(TestCase):
         cls.event = Event.objects.create(creator=cls.user, calendar=cls.calendar)
         cls.event_past = Event.objects.create(title='Past Event', creator=cls.user, calendar=cls.calendar)
         cls.event_single_day = Event.objects.create(title="Single Day Event", creator=cls.user, calendar=cls.calendar)
+        cls.event_starts_at_future_year = Event.objects.create(title='Event Starts Following Year',
+                                                               creator=cls.user, calendar=cls.calendar)
+        cls.event_ends_at_future_year = Event.objects.create(title='Event Ends Following Year',
+                                                             creator=cls.user, calendar=cls.calendar)
 
         cls.now = timezone.now()
 
@@ -40,12 +44,26 @@ class EventsViewsTests(TestCase):
             dt_start=recurring_time_dtstart,
             dt_end=recurring_time_dtstart
         )
+        cls.rule_future_start_year = OccurringRule.objects.create(
+            event=cls.event_starts_at_future_year,
+            dt_start=recurring_time_dtstart + datetime.timedelta(weeks=52),
+            dt_end=recurring_time_dtstart + datetime.timedelta(weeks=53),
+        )
+        cls.rule_future_end_year = OccurringRule.objects.create(
+            event=cls.event_ends_at_future_year,
+            dt_start=recurring_time_dtstart,
+            dt_end=recurring_time_dtend + datetime.timedelta(weeks=52)
+        )
+
+    def tearDown(self) -> None:
+        from django.core.cache import cache
+        cache.clear()
 
     def test_events_homepage(self):
         url = reverse('events:events')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertEqual(len(response.context['object_list']), 4)
         self.assertIn(Event.objects.last().title, response.content.decode())
 
     def test_calendar_list(self):
@@ -61,7 +79,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 2)
+        self.assertEqual(len(response.context['object_list']), 4)
 
         url = reverse('events:event_list_past', kwargs={"calendar_slug": 'unexisting'})
         response = self.client.get(url)
@@ -121,7 +139,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['object'], dt.date())
-        self.assertEqual(len(response.context['object_list']), 3)
+        self.assertEqual(len(response.context['object_list']), 5)
 
     def test_eventlocation_list(self):
         venue = EventLocation.objects.create(
@@ -157,13 +175,39 @@ class EventsViewsTests(TestCase):
         self.assertEqual(self.event, response.context['object'])
 
     def test_upcoming_tag(self):
-        self.assertEqual(len(get_events_upcoming()), 2)
+        self.assertEqual(len(get_events_upcoming()), 4)
         self.assertEqual(len(get_events_upcoming(only_featured=True)), 0)
         self.rule.begin = self.now - datetime.timedelta(days=3)
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
-        self.assertEqual(len(get_events_upcoming()), 1)
+        self.assertEqual(len(get_events_upcoming()), 3)
 
+    def test_event_starting_future_year_displays_relevant_year(self):
+        event = self.event_starts_at_future_year
+        url = reverse('events:events')
+        response = self.client.get(url)
+        self.assertIn(
+            f'<span id="start-{event.id}">',
+            response.content.decode()
+        )
+
+    def test_event_ending_future_year_displays_relevant_year(self):
+        event = self.event_ends_at_future_year
+        url = reverse('events:events')
+        response = self.client.get(url)
+        self.assertIn(
+            f'<span id="end-{event.id}">',
+            response.content.decode()
+        )
+
+    def test_events_scheduled_current_year_does_not_display_current_year(self):
+        event = self.event_single_day
+        url = reverse('events:events')
+        response = self.client.get(url)
+        self.assertIn(  # start date
+            f'<span id="start-{event.id}" class="say-no-more">',
+            response.content.decode()
+        )
 
 class EventSubmitTests(TestCase):
     event_submit_url = reverse_lazy('events:event_submit')
