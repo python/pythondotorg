@@ -54,9 +54,9 @@ class EventsPageFunctionalTests(LiveServerTestCase):
     def test_event_starting_and_ending_future_year_displays_year(self):
         event = self.event_future_start_following_year
         self.browser.get(self.live_server_url + '/events/')
-        future_event_span_value = self.browser.find_element_by_id(str(event.id))
+        future_event_span_value = self.browser.find_element_by_id("start-"+str(event.id))
         self.assertIn(str(event.next_time.dt_start.year), future_event_span_value.text)
 
         event_2 = Event.objects.get(title="Event Ends Following Year")
-        future_event_span_value = self.browser.find_element_by_id(str(event_2.id))
+        future_event_span_value = self.browser.find_element_by_id("end-"+str(event_2.id))
         self.assertIn(str(event_2.next_time.dt_end.year), future_event_span_value.text)
