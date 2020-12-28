@@ -244,6 +244,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.approve_sponsorship_view),
                 name="sponsors_sponsorship_approve",
             ),
+            path(
+                "<int:pk>/enable-edit",
+                self.admin_site.admin_view(self.rollback_to_editing_view),
+                name="sponsors_sponsorship_rollback_to_edit",
+            ),
         ]
         return my_urls + urls
 
@@ -321,6 +326,31 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
+
+    def rollback_to_editing_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            try:
+                sponsorship.rollback_to_editing()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship is now editable!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
+            context=context,
+        )
 
     def reject_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
