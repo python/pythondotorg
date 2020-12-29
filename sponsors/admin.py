@@ -15,9 +15,11 @@ from .models import (
     Sponsorship,
     SponsorContact,
     SponsorBenefit,
+    LegalClause,
 )
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
+from sponsors.exceptions import SponsorshipInvalidStatusException
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -65,6 +67,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
                     "internal_value",
                     "capacity",
                     "soft_capacity",
+                    "legal_clauses",
                     "conflicts",
                 )
             },
@@ -91,24 +94,46 @@ class SponsorAdmin(ContentManageableModelAdmin):
 
 class SponsorBenefitInline(admin.TabularInline):
     model = SponsorBenefit
-    readonly_fields = ["name", "benefit_internal_value"]
-    fields = ["name", "benefit_internal_value"]
+    form = SponsorBenefitAdminInlineForm
+    fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
-    can_delete = False
+
+    def has_add_permission(self, request):
+        # this work around is necessary because the `obj` parameter was added to
+        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
+        has_add_permission = super().has_add_permission(request)
+        match = request.resolver_match
+        if match.url_name == "sponsors_sponsorship_change":
+            sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+            has_add_permission = has_add_permission and sponsorship.open_for_editing
+        return has_add_permission
+
+    def get_readonly_fields(self, request, obj=None):
+        if obj and not obj.open_for_editing:
+            return ["sponsorship_benefit", "benefit_internal_value"]
+        return []
+
+    def has_delete_permission(self, request, obj=None):
+        if not obj:
+            return True
+        return obj.open_for_editing
 
 
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
+    change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
     list_display = [
         "sponsor",
+        "status",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
         "display_sponsorship_link",
     ]
+    list_filter = ["status"]
     readonly_fields = [
         "for_modified_package",
         "sponsor",
@@ -219,6 +244,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.approve_sponsorship_view),
                 name="sponsors_sponsorship_approve",
             ),
+            path(
+                "<int:pk>/enable-edit",
+                self.admin_site.admin_view(self.rollback_to_editing_view),
+                name="sponsors_sponsorship_rollback_to_edit",
+            ),
         ]
         return my_urls + urls
 
@@ -258,7 +288,21 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
-        return obj.sponsor.mailing_address
+        sponsor = obj.sponsor
+        city_row = (
+            f"{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})"
+        )
+        if sponsor.state:
+            city_row = f"{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})"
+
+        mail_row = sponsor.mailing_address_line_1
+        if sponsor.mailing_address_line_2:
+            mail_row += f" - {sponsor.mailing_address_line_2}"
+
+        html = f"<p>{city_row}</p>"
+        html += f"<p>{mail_row}</p>"
+        html += f"<p>{sponsor.postal_code}</p>"
+        return mark_safe(html)
 
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
@@ -274,7 +318,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         if not_primary:
-            html = "<b>Other contacts</b><ul>"
+            html += "<b>Other contacts</b><ul>"
             html += "".join(
                 [f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary]
             )
@@ -283,16 +327,47 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     get_sponsor_contacts.short_description = "Contacts"
 
+    def rollback_to_editing_view(self, request, pk):
+        sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
+
+        if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+            try:
+                sponsorship.rollback_to_editing()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship is now editable!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            return redirect(redirect_url)
+
+        context = {"sponsorship": sponsorship}
+        return render(
+            request,
+            "sponsors/admin/rollback_sponsorship_to_editing.html",
+            context=context,
+        )
+
     def reject_sponsorship_view(self, request, pk):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
-            use_case.execute(sponsorship)
+            try:
+                use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
+                use_case.execute(sponsorship)
+                self.message_user(
+                    request, "Sponsorship was rejected!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was rejected!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}
@@ -304,15 +379,26 @@ class SponsorshipAdmin(admin.ModelAdmin):
         sponsorship = get_object_or_404(self.get_queryset(request), pk=pk)
 
         if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-            sponsorship.approve()
-            sponsorship.save()
+            try:
+                sponsorship.approve()
+                sponsorship.save()
+                self.message_user(
+                    request, "Sponsorship was approved!", messages.SUCCESS
+                )
+            except SponsorshipInvalidStatusException as e:
+                self.message_user(request, str(e), messages.ERROR)
+
             redirect_url = reverse(
                 "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
             )
-            self.message_user(request, "Sponsorship was approved!", messages.SUCCESS)
             return redirect(redirect_url)
 
         context = {"sponsorship": sponsorship}
         return render(
             request, "sponsors/admin/approve_application.html", context=context
         )
+
+
+@admin.register(LegalClause)
+class LegalClauseModelAdmin(OrderedModelAdmin):
+    list_display = ["internal_name"]

@@ -2,13 +2,14 @@ import json
 from model_bakery import baker
 from itertools import chain
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.models import Group
-from django.conf import settings
-from django.core import mail
-from django.urls import reverse, reverse_lazy
-from django.test import TestCase
 from django.contrib.messages import get_messages
+from django.contrib.sessions.backends.base import SessionBase
+from django.core import mail
+from django.test import TestCase
+from django.urls import reverse, reverse_lazy
 
 from .utils import get_static_image_file_as_upload
 from ..models import (
@@ -42,11 +43,24 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
+        self.package = baker.make("sponsors.SponsorshipPackage")
+        for benefit in self.program_1_benefits:
+            benefit.packages.add(self.package)
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
         self.client.force_login(self.user)
 
         self.group = Group(name="Sponsorship Preview")
         self.group.save()
+        self.data = {
+            "benefits_psf": [b.id for b in self.program_1_benefits],
+            "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "package": self.package.id,
+        }
+
+    def populate_test_cookie(self):
+        session = self.client.session
+        session[SessionBase.TEST_COOKIE_NAME] = SessionBase.TEST_COOKIE_VALUE
+        session.save()
 
     def test_display_template_with_form_and_context(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
@@ -59,11 +73,16 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTemplateUsed(r, "sponsors/sponsorship_benefits_form.html")
         self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
         self.assertEqual(r.context["benefit_model"], SponsorshipBenefit)
-        self.assertEqual(2, packages.count())
+        self.assertEqual(3, packages.count())
         self.assertIn(psf_package, packages)
         self.assertIn(extra_package, packages)
+        self.assertEqual(
+            r.client.session[SessionBase.TEST_COOKIE_NAME],
+            SessionBase.TEST_COOKIE_VALUE,
+        )
 
     def test_display_form_with_errors_if_invalid_post(self):
+        self.populate_test_cookie()
         r = self.client.post(self.url, {})
         form = r.context["form"]
 
@@ -71,33 +90,19 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTrue(form.errors)
 
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
-        package = baker.make("sponsors.SponsorshipPackage")
-        for benefit in self.program_1_benefits:
-            benefit.packages.add(package)
-
-        data = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": package.id,
-        }
-        response = self.client.post(self.url, data=data)
+        self.populate_test_cookie()
+        response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, reverse("new_sponsorship_application"))
         cookie_value = json.loads(
             response.client.cookies["sponsorship_selected_benefits"].value
         )
-        self.assertEqual(data, cookie_value)
+        self.assertEqual(self.data, cookie_value)
 
     def test_populate_form_initial_with_values_from_cookie(self):
-        initial = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": "",
-        }
-        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(initial)
+        self.client.cookies["sponsorship_selected_benefits"] = json.dumps(self.data)
         r = self.client.get(self.url)
-
-        self.assertEqual(initial, r.context["form"].initial)
+        self.assertEqual(self.data, r.context["form"].initial)
 
     def test_capacity_flag(self):
         psf_package = baker.make("sponsors.SponsorshipPackage")
@@ -117,19 +122,21 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         redirect_url = (
             f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
         )
-        package = baker.make("sponsors.SponsorshipPackage")
-        for benefit in self.program_1_benefits:
-            benefit.packages.add(package)
 
-        data = {
-            "benefits_psf": [b.id for b in self.program_1_benefits],
-            "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "package": package.id,
-        }
         self.client.logout()
-        response = self.client.post(self.url, data=data)
+        self.populate_test_cookie()
+        response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, redirect_url, fetch_redirect_response=False)
+
+    def test_invalidate_post_even_if_valid_data_but_user_does_not_allow_cookies(self):
+        # do not set Django's test cookie
+        r = self.client.post(self.url, data=self.data)
+        form = r.context["form"]
+
+        self.assertIsInstance(form, SponsorshiptBenefitsForm)
+        msg = "You must allow cookies from python.org to proceed."
+        self.assertEqual(form.non_field_errors(), [msg])
 
 
 class NewSponsorshipApplicationViewTests(TestCase):
@@ -314,13 +321,120 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
 
+class RollbackSponsorshipToEditingAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPROVED,
+            submited_by=self.user,
+            _fill_optional=True,
+        )
+        self.url = reverse(
+            "admin:sponsors_sponsorship_rollback_to_edit", args=[self.sponsorship.pk]
+        )
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(
+            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+        )
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPLIED
+        )  # did not update
+
+    def test_rollback_sponsorship_to_applied_on_post(self):
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Sponsorship is now editable!", messages.SUCCESS)
+
+    def test_do_not_rollback_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(
+            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+        )
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPLIED
+        )  # did not update
+
+        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(
+            response, "sponsors/admin/rollback_sponsorship_to_editing.html"
+        )
+        self.assertNotEqual(self.sponsorship.status, Sponsorship.APPLIED)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_message_user_if_rejecting_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(
+            msg, "Can't rollback to edit a Finalized sponsorship.", messages.ERROR
+        )
+
+
 class RejectedSponsorshipAdminViewTests(TestCase):
     def setUp(self):
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship, submited_by=self.user)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            submited_by=self.user,
+            _fill_optional=True,
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_reject", args=[self.sponsorship.pk]
         )
@@ -388,6 +502,21 @@ class RejectedSponsorshipAdminViewTests(TestCase):
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
 
+    def test_message_user_if_rejecting_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
+
 
 class ApproveSponsorshipAdminViewTests(TestCase):
     def setUp(self):
@@ -395,7 +524,9 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.sponsorship = baker.make(Sponsorship)
+        self.sponsorship = baker.make(
+            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+        )
         self.url = reverse(
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
@@ -461,3 +592,18 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_message_user_if_approving_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)

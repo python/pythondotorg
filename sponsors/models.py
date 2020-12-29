@@ -15,7 +15,10 @@ from cms.models import ContentManageable
 from companies.models import Company
 
 from .managers import SponsorshipQuerySet
-from .exceptions import SponsorWithExistingApplicationException
+from .exceptions import (
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidStatusException,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -123,6 +126,13 @@ class SponsorshipBenefit(OrderedModel):
     )
 
     # Internal
+    legal_clauses = models.ManyToManyField(
+        "LegalClause",
+        related_name="benefits",
+        verbose_name="Legal Clauses",
+        help_text="Legal clauses to be displayed in the statement of work",
+        blank=True,
+    )
     internal_description = models.TextField(
         null=True,
         blank=True,
@@ -260,6 +270,15 @@ class Sponsorship(models.Model):
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
+    def __str__(self):
+        repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        if self.start_date and self.end_date:
+            fmt = "%m/%d/%Y"
+            start = self.start_date.strftime(fmt)
+            end = self.end_date.strftime(fmt)
+            repr += f" [{start} - {end}]"
+        return repr
+
     @classmethod
     def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
@@ -310,12 +329,27 @@ class Sponsorship(models.Model):
         )
 
     def reject(self):
+        if self.REJECTED not in self.next_status:
+            msg = f"Can't reject a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
     def approve(self):
+        if self.APPROVED not in self.next_status:
+            msg = f"Can't approve a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
         self.status = self.APPROVED
         self.approved_on = timezone.now().date()
+
+    def rollback_to_editing(self):
+        accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
+        if self.status not in accepts_rollback:
+            msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
+            raise SponsorshipInvalidStatusException(msg)
+        self.status = self.APPLIED
+        self.approved_on = None
+        self.rejected_on = None
 
     @property
     def verified_emails(self):
@@ -335,6 +369,20 @@ class Sponsorship(models.Model):
     @cached_property
     def added_benefits(self):
         return self.benefits.filter(added_by_user=True)
+
+    @property
+    def open_for_editing(self):
+        return self.status == self.APPLIED
+
+    @property
+    def next_status(self):
+        states_map = {
+            self.APPLIED: [self.APPROVED, self.REJECTED],
+            self.APPROVED: [self.FINALIZED],
+            self.REJECTED: [],
+            self.FINALIZED: [],
+        }
+        return states_map[self.status]
 
 
 class SponsorBenefit(models.Model):
@@ -438,3 +486,26 @@ class Sponsor(ContentManageable):
 
     def __str__(self):
         return f"{self.name}"
+
+
+class LegalClause(OrderedModel):
+    internal_name = models.CharField(
+        max_length=1024,
+        verbose_name="Internal Name",
+        help_text="Friendly name used internally by PSF to reference this clause",
+        blank=False,
+    )
+    clause = models.TextField(
+        verbose_name="Clause",
+        help_text="Legal clause text to be added to statement of work",
+        blank=False,
+    )
+    notes = models.TextField(
+        verbose_name="Notes", help_text="PSF staff notes", blank=True, default=""
+    )
+
+    def __str__(self):
+        return f"Clause: {self.internal_name}"
+
+    class Meta(OrderedModel.Meta):
+        pass

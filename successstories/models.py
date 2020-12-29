@@ -153,7 +153,7 @@ Review URL: {admin_url}
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
-                admin_url='https://www.{}{}'.format(
+                admin_url='https://{}{}'.format(
                     Site.objects.get_current(), instance.get_admin_url()
                 ),
             ).strip(),

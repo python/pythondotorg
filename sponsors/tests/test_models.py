@@ -6,7 +6,10 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..models import Sponsor, SponsorshipBenefit, Sponsorship
-from ..exceptions import SponsorWithExistingApplicationException
+from ..exceptions import (
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidStatusException,
+)
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -40,6 +43,17 @@ class SponsorshipModelTests(TestCase):
         self.package.benefits.add(*self.benefits)
         self.sponsor = baker.make("sponsors.Sponsor")
         self.user = baker.make(settings.AUTH_USER_MODEL)
+
+    def test_control_sponsorship_next_status(self):
+        states_map = {
+            Sponsorship.APPLIED: [Sponsorship.APPROVED, Sponsorship.REJECTED],
+            Sponsorship.APPROVED: [Sponsorship.FINALIZED],
+            Sponsorship.REJECTED: [],
+            Sponsorship.FINALIZED: [],
+        }
+        for status, exepcted in states_map.items():
+            sponsorship = baker.prepare(Sponsorship, status=status)
+            self.assertEqual(sponsorship.next_status, exepcted)
 
     def test_create_new_sponsorship(self):
         sponsorship = Sponsorship.new(
@@ -130,6 +144,30 @@ class SponsorshipModelTests(TestCase):
 
         self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
         self.assertEqual(sponsorship.approved_on, timezone.now().date())
+
+    def test_rollback_sponsorship_to_edit(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        can_rollback_from = [
+            Sponsorship.APPLIED,
+            Sponsorship.APPROVED,
+            Sponsorship.REJECTED,
+        ]
+        for status in can_rollback_from:
+            sponsorship.status = status
+            sponsorship.save()
+            sponsorship.refresh_from_db()
+
+            sponsorship.rollback_to_editing()
+
+            self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+            self.assertIsNone(sponsorship.approved_on)
+            self.assertIsNone(sponsorship.rejected_on)
+
+        sponsorship.status = Sponsorship.FINALIZED
+        sponsorship.save()
+        sponsorship.refresh_from_db()
+        with self.assertRaises(SponsorshipInvalidStatusException):
+            sponsorship.rollback_to_editing()
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)

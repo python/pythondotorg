@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
+from django.forms.utils import ErrorList
 from django.utils.decorators import method_decorator
 from django.http import JsonResponse
 from django.views.generic import ListView, FormView
@@ -57,12 +58,21 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return cookies.get_sponsorship_selected_benefits(self.request)
 
     def form_valid(self, form):
+        if not self.request.session.test_cookie_worked():
+            error = ErrorList()
+            error.append("You must allow cookies from python.org to proceed.")
+            form._errors.setdefault("__all__", error)
+            return self.form_invalid(form)
+
         response = super().form_valid(form)
         self._set_form_data_cookie(form, response)
         return response
 
+    def get(self, request, *args, **kwargs):
+        request.session.set_test_cookie()
+        return super().get(request, *args, **kwargs)
+
     def _set_form_data_cookie(self, form, response):
-        # TODO: make sure user accepts cookies with set_test_cookie
         data = {
             "package": "" if not form.get_package() else form.get_package().id,
         }

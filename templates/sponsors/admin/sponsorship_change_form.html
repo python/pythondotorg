@@ -1,0 +1,28 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% with original as sp %}
+
+    {% if sp.APPROVED in sp.next_status %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_approve' sp.pk %}" style="background: #70bf2b">Approve</a>
+    </li>
+    {% endif %}
+
+    {% if sp.REJECTED in sp.next_status %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_reject' sp.pk %}"  style="background: #ba2121">Reject</a>
+    </li>
+    {% endif %}
+
+    {% if sp.status != sp.FINALIZED and sp.status != sp.APPLIED %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_rollback_to_edit' sp.pk %}">Rollback to Edit</a>
+    </li>
+    {% endif %}
+
+  {% endwith %}
+
+  {{ block.super }}
+{% endblock %}
