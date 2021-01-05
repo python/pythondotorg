@@ -9,11 +9,11 @@ from ..models import (
     Sponsor,
     SponsorshipBenefit,
     Sponsorship,
-    StatementOfWork,
+    Contract,
     SponsorContact,
     SponsorBenefit,
     LegalClause,
-    StatementOfWork
+    Contract,
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -192,29 +192,31 @@ class SponsorshipModelTests(TestCase):
         with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
 
-    def test_rollback_approved_sponsorship_with_statement_of_work_should_delete_it(self):
+    def test_rollback_approved_sponsorship_with_contract_should_delete_it(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.empty_sow', sponsorship=sponsorship)
+        baker.make_recipe("sponsors.tests.empty_contract", sponsorship=sponsorship)
 
         sponsorship.rollback_to_editing()
         sponsorship.save()
         sponsorship.refresh_from_db()
 
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
-        self.assertEqual(0, StatementOfWork.objects.count())
+        self.assertEqual(0, Contract.objects.count())
 
-    def test_can_not_rollback_sponsorship_to_edit_if_sow_was_sent(self):
+    def test_can_not_rollback_sponsorship_to_edit_if_contract_was_sent(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.awaiting_signature_sow', sponsorship=sponsorship)
+        baker.make_recipe(
+            "sponsors.tests.awaiting_signature_contract", sponsorship=sponsorship
+        )
 
         with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
 
-        self.assertEqual(1, StatementOfWork.objects.count())
+        self.assertEqual(1, Contract.objects.count())
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
@@ -315,7 +317,7 @@ class SponsorContactModelTests(TestCase):
         self.assertEqual(sponsor.primary_contact, primary_contact)
 
 
-class StatementOfWorkModelTests(TestCase):
+class ContractModelTests(TestCase):
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
         baker.make(
@@ -328,46 +330,46 @@ class StatementOfWorkModelTests(TestCase):
         self.sponsorship_benefits = SponsorshipBenefit.objects.all()
 
     def test_auto_increment_draft_revision_on_save(self):
-        statement = baker.make_recipe("sponsors.tests.empty_sow")
-        self.assertEqual(statement.status, StatementOfWork.DRAFT)
-        self.assertEqual(statement.revision, 0)
+        contract = baker.make_recipe("sponsors.tests.empty_contract")
+        self.assertEqual(contract.status, Contract.DRAFT)
+        self.assertEqual(contract.revision, 0)
 
         num_updates = 5
         for i in range(num_updates):
-            statement.save()
-            statement.refresh_from_db()
+            contract.save()
+            contract.refresh_from_db()
 
-        self.assertEqual(statement.revision, num_updates)
+        self.assertEqual(contract.revision, num_updates)
 
     def test_does_not_auto_increment_draft_revision_on_save_if_other_states(self):
-        statement = baker.make_recipe("sponsors.tests.empty_sow", revision=10)
+        contract = baker.make_recipe("sponsors.tests.empty_contract", revision=10)
 
-        choices = StatementOfWork.STATUS_CHOICES
-        other_status = [c[0] for c in choices if c[0] != StatementOfWork.DRAFT]
+        choices = Contract.STATUS_CHOICES
+        other_status = [c[0] for c in choices if c[0] != Contract.DRAFT]
         for status in other_status:
-            statement.status = status
-            statement.save()
-            statement.refresh_from_db()
-            self.assertEqual(statement.status, status)
-            self.assertEqual(statement.revision, 10)
-            statement.save()  # perform extra save
-            statement.refresh_from_db()
-            self.assertEqual(statement.revision, 10)
+            contract.status = status
+            contract.save()
+            contract.refresh_from_db()
+            self.assertEqual(contract.status, status)
+            self.assertEqual(contract.revision, 10)
+            contract.save()  # perform extra save
+            contract.refresh_from_db()
+            self.assertEqual(contract.revision, 10)
 
-    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_info_and_contact(
+    def test_create_new_contract_from_sponsorship_sets_sponsor_info_and_contact(
         self,
     ):
-        statement = StatementOfWork.new(self.sponsorship)
-        statement.refresh_from_db()
+        contract = Contract.new(self.sponsorship)
+        contract.refresh_from_db()
 
         sponsor = self.sponsorship.sponsor
         expected_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
 
-        self.assertEqual(statement.sponsorship, self.sponsorship)
-        self.assertEqual(statement.sponsor_info, expected_info)
-        self.assertEqual(statement.sponsor_contact, "")
+        self.assertEqual(contract.sponsorship, self.sponsorship)
+        self.assertEqual(contract.sponsor_info, expected_info)
+        self.assertEqual(contract.sponsor_contact, "")
 
-    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_contact_and_primary(
+    def test_create_new_contract_from_sponsorship_sets_sponsor_contact_and_primary(
         self,
     ):
         sponsor = self.sponsorship.sponsor
@@ -375,27 +377,27 @@ class StatementOfWorkModelTests(TestCase):
             SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
         )
 
-        statement = StatementOfWork.new(self.sponsorship)
+        contract = Contract.new(self.sponsorship)
         expected_contact = f"{contact.name} - {contact.phone} | {contact.email}"
 
-        self.assertEqual(statement.sponsor_contact, expected_contact)
+        self.assertEqual(contract.sponsor_contact, expected_contact)
 
     def test_format_benefits_without_legal_clauses(self):
         for benefit in self.sponsorship_benefits:
             SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
 
-        statement = StatementOfWork.new(self.sponsorship)
+        contract = Contract.new(self.sponsorship)
 
-        self.assertEqual(statement.legal_clauses.raw, "")
-        self.assertEqual(statement.legal_clauses.markup_type, "markdown")
+        self.assertEqual(contract.legal_clauses.raw, "")
+        self.assertEqual(contract.legal_clauses.markup_type, "markdown")
 
         b1, b2, b3 = self.sponsorship.benefits.all()
         expected_benefits_list = f"""- PSF - {b1.name}
 - PSF - {b2.name}
 - PSF - {b3.name}"""
 
-        self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
-        self.assertEqual(statement.benefits_list.markup_type, "markdown")
+        self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(contract.benefits_list.markup_type, "markdown")
 
     def test_format_benefits_with_legal_clauses(self):
         baker.make(LegalClause, _quantity=len(self.sponsorship_benefits))
@@ -409,25 +411,25 @@ class StatementOfWorkModelTests(TestCase):
             clause
         )  # first benefit with 2 legal clauses
 
-        statement = StatementOfWork.new(self.sponsorship)
+        contract = Contract.new(self.sponsorship)
 
         c1, c2, c3 = legal_clauses
         expected_legal_clauses = f"""[^1]: {c1.clause}
 [^2]: {c2.clause}
 [^3]: {c3.clause}"""
-        self.assertEqual(statement.legal_clauses.raw, expected_legal_clauses)
-        self.assertEqual(statement.legal_clauses.markup_type, "markdown")
+        self.assertEqual(contract.legal_clauses.raw, expected_legal_clauses)
+        self.assertEqual(contract.legal_clauses.markup_type, "markdown")
 
         b1, b2, b3 = self.sponsorship.benefits.all()
         expected_benefits_list = f"""- PSF - {b1.name} [^1][^3]
 - PSF - {b2.name} [^2]
 - PSF - {b3.name} [^3]"""
 
-        self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
-        self.assertEqual(statement.benefits_list.markup_type, "markdown")
+        self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(contract.benefits_list.markup_type, "markdown")
 
-    def test_control_statement_of_work_next_status(self):
-        SOW = StatementOfWork
+    def test_control_contract_next_status(self):
+        SOW = Contract
         states_map = {
             SOW.DRAFT: [SOW.AWAITING_SIGNATURE],
             SOW.OUTDATED: [],
@@ -436,30 +438,30 @@ class StatementOfWorkModelTests(TestCase):
             SOW.NULLIFIED: [SOW.DRAFT],
         }
         for status, exepcted in states_map.items():
-            statement = baker.prepare_recipe(
-                "sponsors.tests.empty_sow",
+            contract = baker.prepare_recipe(
+                "sponsors.tests.empty_contract",
                 sponsorship__sponsor__name="foo",
                 status=status,
             )
-            self.assertEqual(statement.next_status, exepcted)
+            self.assertEqual(contract.next_status, exepcted)
 
     def test_set_final_document_version(self):
-        statement = baker.make_recipe(
-            "sponsors.tests.empty_sow", sponsorship__sponsor__name="foo"
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
         )
         content = b"pdf binary content"
-        self.assertFalse(statement.document.name)
+        self.assertFalse(contract.document.name)
 
-        statement.set_final_version(content)
-        statement.refresh_from_db()
+        contract.set_final_version(content)
+        contract.refresh_from_db()
 
-        self.assertTrue(statement.document.name)
-        self.assertEqual(statement.status, StatementOfWork.AWAITING_SIGNATURE)
+        self.assertTrue(contract.document.name)
+        self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
     def test_raise_invalid_status_exception_if_not_draft(self):
-        statement = baker.make_recipe(
-            "sponsors.tests.empty_sow", status=StatementOfWork.AWAITING_SIGNATURE
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
         )
 
         with self.assertRaises(InvalidStatusException):
-            statement.set_final_version(b"content")
+            contract.set_final_version(b"content")

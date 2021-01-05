@@ -75,32 +75,32 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
 
 
 # TODO add PDF attachment
-class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
-    subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
-    message_template = "sponsors/email/psf_statement_of_work.txt"
-    email_context_keys = ["statement_of_work"]
+class ContractNotificationToPSF(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/psf_contract_subject.txt"
+    message_template = "sponsors/email/psf_contract.txt"
+    email_context_keys = ["contract"]
 
     def get_recipient_list(self, context):
         return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
 
     def get_attachments(self, context):
-        document = context["statement_of_work"].document
+        document = context["contract"].document
         with document.open("rb") as fd:
             content = fd.read()
-        return [("StatementOfWork.pdf", content, "application/pdf")]
+        return [("Contract.pdf", content, "application/pdf")]
 
 
 # TODO add PDF attachment
-class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
-    subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
-    message_template = "sponsors/email/sponsor_statement_of_work.txt"
-    email_context_keys = ["statement_of_work"]
+class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/sponsor_contract_subject.txt"
+    message_template = "sponsors/email/sponsor_contract.txt"
+    email_context_keys = ["contract"]
 
     def get_recipient_list(self, context):
-        return context["statement_of_work"].sponsorship.verified_emails
+        return context["contract"].sponsorship.verified_emails
 
     def get_attachments(self, context):
-        document = context["statement_of_work"].document
+        document = context["contract"].document
         with document.open("rb") as fd:
             content = fd.read()
-        return [("StatementOfWork.pdf", content, "application/pdf")]
+        return [("Contract.pdf", content, "application/pdf")]

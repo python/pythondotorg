@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship, StatementOfWork
+from sponsors.models import Sponsorship, Contract
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -99,14 +99,14 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
             "end_date": today + timedelta(days=10),
         }
 
-    def test_update_sponsorship_as_approved_and_create_statement_of_work(self):
+    def test_update_sponsorship_as_approved_and_create_contract(self):
         self.use_case.execute(self.sponsorship, **self.data)
         self.sponsorship.refresh_from_db()
 
         today = timezone.now().date()
         self.assertEqual(self.sponsorship.approved_on, today)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
-        self.assertTrue(self.sponsorship.statement_of_work.pk)
+        self.assertTrue(self.sponsorship.contract.pk)
         self.assertTrue(self.sponsorship.start_date)
         self.assertTrue(self.sponsorship.end_date)
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
@@ -119,7 +119,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
             n.notify.assert_called_once_with(
                 request=None,
                 sponsorship=self.sponsorship,
-                statement_of_work=self.sponsorship.statement_of_work,
+                contract=self.sponsorship.contract,
             )
 
     def test_build_use_case_without_notificationss(self):
@@ -127,29 +127,27 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 0)
 
 
-class SendStatementOfWorkUseCaseTests(TestCase):
+class SendContractUseCaseTests(TestCase):
     def setUp(self):
         self.notifications = [Mock(), Mock()]
-        self.use_case = use_cases.SendStatementOfWorkUseCase(self.notifications)
+        self.use_case = use_cases.SendContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.statement = baker.make_recipe("sponsors.tests.empty_sow")
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
 
-    def test_send_and_update_statement_of_work_with_document(self):
-        self.use_case.execute(self.statement)
-        self.statement.refresh_from_db()
+    def test_send_and_update_contract_with_document(self):
+        self.use_case.execute(self.contract)
+        self.contract.refresh_from_db()
 
-        self.assertTrue(self.statement.document.name)
-        self.assertTrue(self.statement.awaiting_signature)
+        self.assertTrue(self.contract.document.name)
+        self.assertTrue(self.contract.awaiting_signature)
         for n in self.notifications:
             n.notify.assert_called_once_with(
                 request=None,
-                statement_of_work=self.statement,
+                contract=self.contract,
             )
 
     def test_build_use_case_without_notificationss(self):
-        uc = use_cases.SendStatementOfWorkUseCase.build()
+        uc = use_cases.SendContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
-        self.assertIsInstance(uc.notifications[0], StatementOfWorkNotificationToPSF)
-        self.assertIsInstance(
-            uc.notifications[1], StatementOfWorkNotificationToSponsors
-        )
+        self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
+        self.assertIsInstance(uc.notifications[1], ContractNotificationToSponsors)

@@ -93,7 +93,7 @@ class SponsorshipBenefit(OrderedModel):
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the application form, statement of work, and sponsor dashboard.",
+        help_text="For display in the application form, contract, and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
@@ -132,7 +132,7 @@ class SponsorshipBenefit(OrderedModel):
         "LegalClause",
         related_name="benefits",
         verbose_name="Legal Clauses",
-        help_text="Legal clauses to be displayed in the statement of work",
+        help_text="Legal clauses to be displayed in the contract",
         blank=True,
     )
     internal_description = models.TextField(
@@ -354,11 +354,13 @@ class Sponsorship(models.Model):
             raise InvalidStatusException(msg)
 
         try:
-            if not self.statement_of_work.is_draft:
-                status = self.statement_of_work.get_status_display()
-                msg = f"Can't rollback to edit a sponsorship with a { status } Statement of Work."
+            if not self.contract.is_draft:
+                status = self.contract.get_status_display()
+                msg = (
+                    f"Can't rollback to edit a sponsorship with a { status } Contract."
+                )
                 raise InvalidStatusException(msg)
-            self.statement_of_work.delete()
+            self.contract.delete()
         except ObjectDoesNotExist:
             pass
 
@@ -378,12 +380,10 @@ class Sponsorship(models.Model):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
     @property
-    def sow_admin_url(self):
-        if not self.statement_of_work:
+    def contract_admin_url(self):
+        if not self.contract:
             return ""
-        return reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
-        )
+        return reverse("admin:sponsors_contract_change", args=[self.contract.pk])
 
     @cached_property
     def package_benefits(self):
@@ -422,13 +422,13 @@ class SponsorBenefit(OrderedModel):
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
         blank=True,
         verbose_name="Benefit Description",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     program = models.ForeignKey(
         SponsorshipProgram,
@@ -552,7 +552,7 @@ class LegalClause(OrderedModel):
     )
     clause = models.TextField(
         verbose_name="Clause",
-        help_text="Legal clause text to be added to statement of work",
+        help_text="Legal clause text to be added to contract",
         blank=False,
     )
     notes = models.TextField(
@@ -566,7 +566,7 @@ class LegalClause(OrderedModel):
         pass
 
 
-class StatementOfWork(models.Model):
+class Contract(models.Model):
     DRAFT = "draft"
     OUTDATED = "outdated"
     AWAITING_SIGNATURE = "awaiting signature"
@@ -581,7 +581,7 @@ class StatementOfWork(models.Model):
         (NULLIFIED, "Nullified"),
     ]
 
-    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    FINAL_VERSION_PDF_DIR = "sponsors/contracts/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
@@ -599,14 +599,14 @@ class StatementOfWork(models.Model):
         verbose_name="Signed PDF",
     )
 
-    # Statement of Work information gets populated during object's creation.
+    # Contract information gets populated during object's creation.
     # The sponsorship FK ís just a reference to keep track of related objects.
     # It shouldn't be used to fetch for any of the sponsorship's data.
     sponsorship = models.OneToOneField(
         Sponsorship,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="statement_of_work",
+        related_name="contract",
     )
     sponsor_info = models.TextField(verbose_name="Sponsor information")
     sponsor_contact = models.TextField(verbose_name="Sponsor contact")
@@ -635,16 +635,16 @@ class StatementOfWork(models.Model):
     sent_on = models.DateField(null=True)
 
     class Meta:
-        verbose_name = "Statement of Work"
-        verbose_name_plural = "Statements of Work"
+        verbose_name = "Contract"
+        verbose_name_plural = "Contracts"
 
     def __str__(self):
-        return f"Statement of work: {self.sponsorship}"
+        return f"Contract: {self.sponsorship}"
 
     @classmethod
     def new(cls, sponsorship):
         """
-        Factory method to create a new Statement of Work from a Sponsorship
+        Factory method to create a new Contract from a Sponsorship
         """
         sponsor = sponsorship.sponsor
         primary_contact = sponsor.primary_contact
@@ -687,7 +687,7 @@ class StatementOfWork(models.Model):
 
     @property
     def preview_url(self):
-        return reverse("admin:sponsors_statementofwork_preview", args=[self.pk])
+        return reverse("admin:sponsors_contract_preview", args=[self.pk])
 
     @property
     def awaiting_signature(self):
@@ -712,12 +712,12 @@ class StatementOfWork(models.Model):
 
     def set_final_version(self, pdf_file):
         if self.AWAITING_SIGNATURE not in self.next_status:
-            msg = f"Can't send a {self.get_status_display()} statement of work."
+            msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
         path = f"{self.FINAL_VERSION_PDF_DIR}"
         sponsor = self.sponsorship.sponsor.name.upper()
-        filename = f"{path}SoW: {sponsor}.pdf"
+        filename = f"{path}Contract: {sponsor}.pdf"
 
         mode = "wb"
         try:

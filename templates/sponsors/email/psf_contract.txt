@@ -1,5 +1,5 @@
 content email psf-sponsors@python.org
 
-STATEMENT OF WORK
+CONTRACT
 
 {{ sponsorship }}

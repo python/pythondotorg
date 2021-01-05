@@ -18,7 +18,7 @@ from ..models import (
     SponsorshipBenefit,
     SponsorContact,
     Sponsorship,
-    StatementOfWork,
+    Contract,
 )
 from sponsors.forms import (
     SponsorshiptBenefitsForm,
@@ -638,16 +638,14 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
 
 
-class SendStatementOfWorkView(TestCase):
+class SendContractView(TestCase):
     def setUp(self):
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.statement_of_work = baker.make_recipe("sponsors.tests.empty_sow")
-        self.url = reverse(
-            "admin:sponsors_statementofwork_send", args=[self.statement_of_work.pk]
-        )
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
+        self.url = reverse("admin:sponsors_contract_send", args=[self.contract.pk])
         self.data = {
             "confirm": "yes",
         }
@@ -656,8 +654,8 @@ class SendStatementOfWorkView(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
-        self.assertEqual(context["statement_of_work"], self.statement_of_work)
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertEqual(context["contract"], self.contract)
 
     @patch.object(
         Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
@@ -665,53 +663,53 @@ class SendStatementOfWorkView(TestCase):
     def test_approve_sponsorship_on_post(self):
         response = self.client.post(self.url, data=self.data)
         expected_url = reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.contract.pk]
         )
-        self.statement_of_work.refresh_from_db()
+        self.contract.refresh_from_db()
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
-        self.assertTrue(self.statement_of_work.document.name)
+        self.assertTrue(self.contract.document.name)
         self.assertEqual(2, len(mail.outbox))
         msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Statement of Work was sent!", messages.SUCCESS)
+        assertMessage(msg, "Contract was sent!", messages.SUCCESS)
 
     @patch.object(
         Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
     )
     def test_display_error_message_to_user_if_invalid_status(self):
-        self.statement_of_work.status = StatementOfWork.AWAITING_SIGNATURE
-        self.statement_of_work.save()
+        self.contract.status = Contract.AWAITING_SIGNATURE
+        self.contract.save()
         expected_url = reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.contract.pk]
         )
 
         response = self.client.post(self.url, data=self.data)
-        self.statement_of_work.refresh_from_db()
+        self.contract.refresh_from_db()
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(0, len(mail.outbox))
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(
             msg,
-            "Statement of work with status Awaiting Signature can't be sent.",
+            "Contract with status Awaiting Signature can't be sent.",
             messages.ERROR,
         )
 
     def test_do_not_send_if_no_confirmation_in_the_post(self):
         self.data.pop("confirm")
         response = self.client.post(self.url, data=self.data)
-        self.statement_of_work.refresh_from_db()
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
-        self.assertFalse(self.statement_of_work.document.name)
+        self.contract.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertFalse(self.contract.document.name)
 
         self.data["confirm"] = "invalid"
         response = self.client.post(self.url, data=self.data)
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
-        self.assertFalse(self.statement_of_work.document.name)
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertFalse(self.contract.document.name)
         self.assertEqual(0, len(mail.outbox))
 
-    def test_404_if_sow_does_not_exist(self):
-        self.statement_of_work.delete()
+    def test_404_if_contract_does_not_exist(self):
+        self.contract.delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
