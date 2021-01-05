@@ -6,14 +6,15 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..models import (
-    Sponsor,
-    SponsorshipBenefit,
-    Sponsorship,
     Contract,
-    SponsorContact,
-    SponsorBenefit,
+    Contract,
     LegalClause,
-    Contract,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipProgram,
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -320,9 +321,10 @@ class SponsorContactModelTests(TestCase):
 class ContractModelTests(TestCase):
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
+        self.psf = baker.make(SponsorshipProgram, name="PSF")
         baker.make(
             SponsorshipBenefit,
-            program__name="PSF",
+            program=self.psf,
             name=seq("benefit"),
             order=seq(1),
             _quantity=3,
@@ -424,6 +426,37 @@ class ContractModelTests(TestCase):
         expected_benefits_list = f"""- PSF - {b1.name} [^1][^3]
 - PSF - {b2.name} [^2]
 - PSF - {b3.name} [^3]"""
+
+        self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(contract.benefits_list.markup_type, "markdown")
+
+    def test_format_legal_clauses_considering_benefints_and_program(self):
+        duplicated_clause = baker.make(LegalClause, order=1)
+        benefit_clause = baker.make(LegalClause, order=2)
+        program_clause = baker.make(LegalClause, order=3)
+
+        benefit = self.sponsorship_benefits[0]
+        benefit.legal_clauses.add(benefit_clause)
+        benefit.legal_clauses.add(duplicated_clause)
+        self.psf.legal_clauses.add(duplicated_clause)  # avoid repetitions
+        self.psf.legal_clauses.add(program_clause)
+
+        SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
+        SponsorBenefit.new_copy(
+            self.sponsorship_benefits[1], sponsorship=self.sponsorship
+        )
+        contract = Contract.new(self.sponsorship)
+
+        c1, c2, c3 = LegalClause.objects.all()
+        expected_legal_clauses = f"""[^1]: {c1.clause}
+[^2]: {c2.clause}
+[^3]: {c3.clause}"""
+        self.assertEqual(contract.legal_clauses.raw, expected_legal_clauses)
+        self.assertEqual(contract.legal_clauses.markup_type, "markdown")
+
+        b1, b2 = self.sponsorship.benefits.all()
+        expected_benefits_list = f"""- PSF - {b1.name} [^1][^2][^3]
+- PSF - {b2.name} [^1][^3]"""
 
         self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
         self.assertEqual(contract.benefits_list.markup_type, "markdown")

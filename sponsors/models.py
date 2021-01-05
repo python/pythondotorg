@@ -70,6 +70,13 @@ class SponsorshipPackage(OrderedModel):
 class SponsorshipProgram(OrderedModel):
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
+    legal_clauses = models.ManyToManyField(
+        "LegalClause",
+        related_name="programs",
+        verbose_name="Legal Clauses",
+        help_text="Legal clauses to be displayed in the contract",
+        blank=True,
+    )
 
     def __str__(self):
         return self.name
@@ -461,7 +468,10 @@ class SponsorBenefit(OrderedModel):
 
     @property
     def legal_clauses(self):
-        return self.sponsorship_benefit.legal_clauses.all()
+        clauses = list(self.sponsorship_benefit.legal_clauses.all())
+        if self.program:
+            clauses.extend(self.program.legal_clauses.all())
+        return sorted(set(clauses), key=lambda lc: lc.order)
 
     class Meta(OrderedModel.Meta):
         pass
