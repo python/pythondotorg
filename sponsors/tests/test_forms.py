@@ -235,6 +235,7 @@ class SponsorshipApplicationFormTests(TestCase):
     ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
+        self.data["twitter_handle"] = "@companyx"
         self.files["print_logo"] = get_static_image_file_as_upload(
             "psf-logo_print.png", "logo_print.png"
         )
@@ -248,6 +249,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertTrue(sponsor.print_logo)
         self.assertFalse(form.user_with_previous_sponsors)
         self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
+        self.assertEqual(sponsor.twitter_handle, "@companyx")
 
     def test_use_previous_user_sponsor(self):
         contact = baker.make(SponsorContact, user__email="foo@foo.com")
