@@ -148,7 +148,13 @@ class SponsorshipApplicationForm(forms.Form):
     )
     landing_page_url = forms.URLField(
         label="Sponsor landing page",
-        help_text="Sponsor landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
+        help_text="Landing page URL. The linked page may not contain any sales or marketing information.",
+        required=False,
+    )
+    twitter_handle = forms.CharField(
+        max_length=32,
+        label="Twitter handle",
+        help_text="For promotion of your sponsorship on social media.",
         required=False,
     )
     web_logo = forms.ImageField(
@@ -300,6 +306,7 @@ class SponsorshipApplicationForm(forms.Form):
             country=self.cleaned_data["country"],
             description=self.cleaned_data.get("description", ""),
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
+            twitter_handle=self.cleaned_data["twitter_handle"],
             print_logo=self.cleaned_data.get("print_logo"),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
