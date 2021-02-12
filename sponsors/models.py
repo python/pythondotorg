@@ -442,6 +442,12 @@ class Sponsor(ContentManageable):
         verbose_name="Sponsor landing page",
         help_text="Sponsor landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
     )
+    twitter_handle = models.CharField(
+        max_length=32,  # Actual limit set by twitter is 15 characters, but that may change?
+        blank=True,
+        null=True,
+        verbose_name="Sponsor twitter hanlde",
+    )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
         verbose_name="Sponsor web logo",
