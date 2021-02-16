@@ -50,6 +50,10 @@ class TemplateProcessorsTestCase(TestCase):
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
                     {"url": reverse("users:user_membership_create"), "label": "Become a PSF member"},
                 ],
+            },
+            "sponsorships": {
+                "label": "Sponsorships",
+                "urls": [],
             }
         }
 
@@ -78,12 +82,34 @@ class TemplateProcessorsTestCase(TestCase):
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
                     {"url": reverse("users:user_membership_edit"), "label": "Edit PSF membership"},
                 ],
+            },
+            "sponsorships": {
+                "label": "Sponsorships",
+                "urls": [],
             }
         }
 
         self.assertEqual(
             {"USER_NAV_BAR": expected_nav},
             context_processors.user_nav_bar_links(request)
+        )
+
+    def test_user_nav_bar_sponsorship_links(self):
+        request = self.factory.get('/about/')
+        request.user = baker.make(settings.AUTH_USER_MODEL, username='foo')
+        sponsorships = baker.make("sponsors.Sponsorship", submited_by=request.user, _quantity=2, _fill_optional=True)
+
+        expected_sponsorships = {
+            "label": "Sponsorships",
+            "urls": [
+                {"url": sp.detail_url, "label": f"{sp.sponsor.name}'s sponsorship"}
+                for sp in request.user.sponsorships
+            ]
+        }
+
+        self.assertEqual(
+            expected_sponsorships,
+            context_processors.user_nav_bar_links(request)['USER_NAV_BAR']['sponsorships']
         )
 
     def test_user_nav_bar_links_for_anonymous_user(self):

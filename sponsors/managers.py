@@ -13,4 +13,4 @@ class SponsorshipQuerySet(QuerySet):
         return self.filter(
             Q(submited_by=user) | Q(sponsor_id__in=Subquery(contacts)),
             status__in=status,
-        )
+        ).select_related('sponsor')

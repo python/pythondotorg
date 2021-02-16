@@ -362,6 +362,10 @@ class Sponsorship(models.Model):
     def admin_url(self):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
+    @property
+    def detail_url(self):
+        return reverse("sponsorship_application_detail", args=[self.pk])
+
     @cached_property
     def package_benefits(self):
         return self.benefits.filter(added_by_user=False)
