@@ -2883,17 +2883,34 @@ p.quote-by-organization {
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-  border-bottom: 1px solid #caccce;
   margin-bottom: 2em; }
-  .user-profile-controls li {
-    display: -moz-inline-stack;
-    display: inline-block;
-    vertical-align: baseline;
-    margin-right: .75em; }
-    .lt-ie8 .user-profile-controls li {
-      vertical-align: auto;
-      zoom: 1;
+  .user-profile-controls .menu, .user-profile-controls form ul, form .user-profile-controls ul, .user-profile-controls .errorlist, .user-profile-controls .text form label + ul, .text form .user-profile-controls label + ul,
+  .user-profile-controls .sidebar-widget form label + ul,
+  .sidebar-widget form .user-profile-controls label + ul {
+    display: flex;
+    width: 100%; }
+  .user-profile-controls div.section {
+    padding: 0.25em 1em; }
+    .user-profile-controls div.section:hover .section-links {
       display: inline; }
+  .user-profile-controls div.section-links {
+    display: none; }
+    .user-profile-controls div.section-links ul {
+      margin-left: 0;
+      list-style: none;
+      padding-top: 0.15em; }
+      .user-profile-controls div.section-links ul li {
+        margin-bottom: 0;
+        padding: 0.25em 0.25em; }
+        .user-profile-controls div.section-links ul li:hover {
+          background-color: #bcc2c7;
+          *zoom: 1;
+          filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
+          background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
+          background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -moz-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -o-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: linear-gradient(#e6e8ea 10%, #bcc2c7 90%); }
   .user-profile-controls + .return-link {
     margin-top: -1.3125em; }
 
