@@ -70,14 +70,29 @@
           {% endif %}
         </p>
 
-        <p class="form_field">
-          <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}{{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
-          {% render_field form.landing_page_url %}
-          {% if form.landing_page_url.help_text %}
-          <br/>
-          <span class="helptext">{{ form.landing_page_url.help_text }}</span>
-          {% endif %}
-        </p>
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}{{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.landing_page_url %}
+              {% if form.landing_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.landing_page_url.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.twitter_handle.label }} <span class="error-message">{% if form.twitter_handle.errors %}{{ form.twitter_handle.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.twitter_handle %}
+              {% if form.twitter_handle.help_text %}
+              <br/>
+              <span class="helptext">{{ form.twitter_handle.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
 
         <p class="form_field">
           <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}{{ form.country.errors.as_text }}</span>{% endif %}</label>
@@ -203,7 +218,7 @@
 
       </div>
 
-      <input id="submit-btn" type="submit" value="Submit">
+      <input id="submit-btn" type="submit" value="Apply">
     </form>
   </article>
 

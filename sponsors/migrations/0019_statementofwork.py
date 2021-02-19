@@ -8,7 +8,7 @@ import markupfield.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("sponsors", "0018_auto_20201201_1659"),
+        ("sponsors", "0019_sponsor_twitter_handle"),
     ]
 
     operations = [

@@ -14,23 +14,18 @@
 
 
 {% block content %}
-
-    {% if request.user.is_authenticated %}
+  {% if USER_NAV_BAR %}
     <div class="user-profile-controls">
         <ul class="menu">
-            <li>Manage your Information: </li>
-            <li><a href="{% url 'users:user_detail' slug=request.user.username %}">View profile</a></li>
-            <li><a href="{% url 'users:user_nominations_view' %}">Nominations</a></li>
-            <li><a href="{% url 'users:user_profile_edit' %}">Edit profile</a></li>
-            {% if request.user.has_membership %}
-            <li><a href="{% url 'users:user_membership_edit' %}">Edit PSF membership</a></li>
-            {% else %}
-            <li><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
-            {% endif %}
-            <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
+          <li>Manage your Information: </li>
+          {% for section in USER_NAV_BAR.values %}
+            {% for url in section.urls %}
+            <li><a href="{{ url.url }}">{{ url.label }}</a></li>
+            {% endfor %}
+          {% endfor %}
         </ul>
     </div>
-    {% endif %}
     {% block user_content %}{% endblock %}
+  {% endif %}
 
 {% endblock %}

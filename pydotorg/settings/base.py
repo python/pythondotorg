@@ -103,6 +103,7 @@ TEMPLATES = [
                 'pydotorg.context_processors.url_name',
                 'pydotorg.context_processors.get_host_with_scheme',
                 'pydotorg.context_processors.blog_url',
+                'pydotorg.context_processors.user_nav_bar_links',
             ],
         },
     },
