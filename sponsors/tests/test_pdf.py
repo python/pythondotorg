@@ -15,7 +15,12 @@ class TestRenderStatementOfWorkToPDF(TestCase):
         self.sow = baker.make_recipe("sponsors.tests.empty_sow")
         text = f"{self.sow.benefits_list.raw}\n\n**Legal Clauses**\n{self.sow.legal_clauses.raw}"
         html = render_md(text)
-        self.context = {"sow": self.sow, "benefits_and_clauses": mark_safe(html)}
+        self.context = {
+            "sow": self.sow,
+            "benefits_and_clauses": mark_safe(html),
+            "start_date": self.sow.sponsorship.start_date,
+            "sponsor": self.sow.sponsorship.sponsor,
+        }
         self.template = "sponsors/admin/preview-statement-of-work.html"
 
     @patch("sponsors.pdf.render_to_pdf")

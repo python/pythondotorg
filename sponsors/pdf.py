@@ -15,6 +15,8 @@ def _sow_context(sow, **context):
         {
             "sow": sow,
             "benefits_and_clauses": mark_safe(html),
+            "start_date": sow.sponsorship.start_date,
+            "sponsor": sow.sponsorship.sponsor,
         }
     )
     return context
