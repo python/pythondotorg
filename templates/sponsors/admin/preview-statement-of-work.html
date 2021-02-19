@@ -5,18 +5,48 @@
         .dynamic {
             background-color: #dddddd;
         }
+
+        .center {
+            text-align: center;
+        }
+
+        .paragraph {
+            text-align: justify;
+            text-justify: inter-word;
+            text-indent: 50px;
+        }
+
+        body {
+            font-family: "Times New Roman";
+        }
+
+        @media print {
+          .pb {page-break-after: always;} /* page break */
+        }
     </style>
 {% endblock %}
 
 {% block content %}
-<h1>SPONSORSHIP AGREEMENT</h1>
+<h1 class='center'>SPONSORSHIP AGREEMENT</h1>
 
-<p><b>THIS SPONSORSHIP AGREEMENT</b> (the <b>“Agreement”</b>) is entered into and made
+<p class='paragraph'><b>THIS SPONSORSHIP AGREEMENT</b> (the <b>“Agreement”</b>) is entered into and made
 effective as of the {{ start_date|date:"dS" }} day of {{ start_date|date:"F, Y"}} (the <b>“Effective Date”</b>), by and between
 Python Software Foundation (the <b>“PSF”</b>), a Delaware nonprofit corporation, and <b>{{ sponsor.name|upper }}</b> (<b>“Sponsor”</b>), a {{ sponsor.state }} corporation. Each of the PSF and Sponsor are
-hereinafter sometimes individually referred to as a <b>“Party”</b> and collectively as the <b>“Parties.”</b></p>
+hereinafter sometimes individually referred to as a <b>“Party”</b> and collectively as the <b>“Parties”</b>.</p>
 
-<p>This document is an HTML file that is being converted to this PDF.</p>
+<h1 class='center'>RECITALS</h1>
+
+<p class='paragraph'><b>WHEREAS</b>, the PSF is a tax-exempt charitable organization (EIN 04-3594598) whose
+mission is to promote, protect, and advance the Python programming language, and to support
+and facilitate the growth of a diverse and international community of Python programmers (the
+<b>“Programs”</b>);</p>
+
+<p class='paragraph'><b>WHEREAS</b>, Sponsor is {{ sponsor.description }}; and</p>
+
+<p class='paragraph'><b>WHEREAS</b>, Sponsor wishes to support the Programs by making a contribution to the
+PSF.</p>
+
+<h1 class='center'>AGREEMENT</h1>
 
 <h1>Header 1</h1>
 <h2>Header 2</h2>
