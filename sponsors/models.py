@@ -1,5 +1,6 @@
 from pathlib import Path
 from itertools import chain
+from num2words import num2words
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
@@ -327,6 +328,10 @@ class Sponsorship(models.Model):
             ]
             or 0
         )
+
+    @property
+    def verbose_sponsorship_fee(self):
+        return num2words(self.sponsorship_fee)
 
     def reject(self):
         if self.REJECTED not in self.next_status:

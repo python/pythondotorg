@@ -1,4 +1,5 @@
 {% extends "easy_pdf/base.html" %}
+{% load humanize %}
 
 {% block extra_style %}
     <style type="text/css">
@@ -39,6 +40,26 @@
 
         #mailing-info * {
             margin: 0;
+        }
+
+        #signatures-section {
+            margin-left: 250px;
+        }
+
+        #signatures-section p, #signatures-section span {
+            margin: 0;
+        }
+
+        #signatures-section .legend {
+            text-indent: 20px;
+        }
+
+        #exhibit-list {
+            padding-left: 25px;
+        }
+
+        #exhibit-list ol {
+            padding-left: 100px;
         }
 
         body {
@@ -181,12 +202,83 @@ which are hereby acknowledged, the Parties hereto agree as follows:</p>
   <li><span class="item-title">Entire Agreement</span>.  This Agreement (including the Exhibits) sets forth the entire agreement of the Parties and supersedes all prior oral or written agreements or understandings between the Parties as to the subject matter of this Agreement.  Except as otherwise expressly provided herein, neither Party is relying upon any warranties, representations, assurances, or inducements of the other Party.</li>
 </ol>
 
-<b>Info</b>
-<p class="dynamic">{{ sow.sponsor_info }}</p>
+<p class='center'><b>[Signature Page Follows]</b></p>
+<div class="pb"></div>
 
-<b>Contact</b>
-<p class="dynamic">{{ sow.sponsor_contact }}</p>
+<h1 class='center'>SPONSORSHIP AGREEMENT</h1>
 
-<b>Content</b>
-<div class="dynamic">{{ benefits_and_clauses }}</div>
+
+<p><b>IN WITNESS WHEREOF</b>, the Parties hereto have duly executed this __________________ Agreement as of the Effective Date.</p>
+
+<div id="signatures-section">
+  <p><b>PSF:</b></p>
+  <p><b>PYTHON SOFTWARE FOUNDATION</b>,</p>
+  <p>a Delaware nonprofit corporation</p>
+
+  <br/>
+  <br/>
+
+  <p><span>By: </span>
+  <span>___________________________________</span></p>
+  <div class='legend'>
+    <p>Ewa Jodlowska</p>
+    <p>Executive Director</p>
+  </div>
+
+  <br/>
+  <br/>
+
+  <p><b>SPONSOR</b>:</p>
+  <p>______________________________________,</p>
+  <p>a {{ sponsor.state }} entity.</p>
+  <br/>
+  <p>By:    ___________________________________</p>
+
+</div>
+<div class="pb"></div>
+
+<h1 class='center'>SPONSORSHIP AGREEMENT</h1>
+
+<h1 class='center'>EXHIBIT A</h1>
+
+
+<p class='paragraph'><b>alignment reference</b>
+
+<ol id="exhibit-list" class="items-list">
+  <li><span class="item-title">Sponsorship</span>.  During the Term of this Agreement, in return for the Sponsorship Payment, the PSF agrees to identify and acknowledge Sponsor as a {{ start_date|date:'Y' }} {{ sponsorship.level_name }} Sponsor of the Programs and of the PSF, in accordance with the United States Internal Revenue Service guidance applicable to qualified sponsorship payments.</li>
+
+  <p>Acknowledgments of appreciation for the Sponsorship Payment may identify and briefly describe Sponsor and its products or product lines in neutral terms and may include Sponsor’s name, logo, well-established slogan, locations, telephone numbers, or website addresses, but such acknowledgments shall not include (a) comparative or qualitative descriptions of Sponsor’s products, services, or facilities; (b) price information or other indications of savings or value associated with Sponsor’s products or services; (c) a call to action; (d) an endorsement; or (e) an inducement to buy, sell, or use Sponsor’s products or services.  Any such acknowledgments will be created, or subject to prior review and approval, by the PSF.</p>
+
+  <p>The PSF’s acknowledgment may include the following:</p>
+
+  <ol>
+      <li>Display of Logo. The PSF will display Sponsor’s logo and other agreed-upon identifying information on www.python.org, and on any marketing and promotional media made by the PSF in connection with the Programs, solely for the purpose of acknowledging Sponsor as a sponsor of the Programs in a manner (placement, form, content, etc.) reasonably determined by the PSF in its sole discretion.  Sponsor agrees to provide all the necessary content and materials for use in connection with such display.</li>
+
+      <li>[Other use or Acknowledgement.]</li>
+   </ol>
+
+  <li><span class="item-title">Sponsorship Payment</span>.  The amount of Sponsorship Payment shall be {{ sponsorship.verbose_sponsorship_fee|title }} USD ($ {{ sponsorship.sponsorship_fee|intcomma }}).  The Sponsorship Payment is due within thirty (30) days of the Effective Date. To the extent that any portion of a payment under this section would not (if made as a Separate payment) be deemed a qualified sponsorship payment under IRC § 513(i), such portion shall be deemed and treated as separate from the qualified sponsorship payment.</li>
+
+  <li><span class="item-title">Receipt of Payment</span>.  Sponsor must submit full payment in order to secure Sponsor Benefits.</li>
+
+  <li><span class="item-title">Refunds</span>.  The PSF does not offer refunds for sponsorships.  The PSF may cancel the event(s) or any part thereof.  In that event, the PSF shall determine and refund to Sponsor the proportionate share of the balance of the aggregate Sponsorship fees applicable to event(s) received which remain after deducting all expenses incurred by the PSF.</li>
+
+  <li><span class="item-title">Sponsor Benefits</span>.  Sponsor Benefits per the Agreement are:</li>
+
+  <ol>
+    <li>Acknowledgement as described under “Sponsorship” above.</li>
+    {% for benefit in benefits %}
+    <li>{{ benefit }}</li>
+    {% endfor %}
+   </ol>
+
+   <li><span class="item-title">Legal Clauses</span>:</li>
+
+  <ol style="list-style-type: none">
+    {% for clause in legal_clauses %}
+    <li>{{ clause }}</li>
+    {% endfor %}
+  </ol>
+</ol>
+
 {% endblock %}
