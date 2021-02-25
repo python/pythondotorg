@@ -54,7 +54,7 @@
             {% for benefit in field.field.queryset %}
                 <li class="{% cycle '' 'highlight' %}">
                     <label for="id_{{field.name}}_{{ forloop.counter0 }}" {% if benefit.package_only %} class='package_only'{% endif %} benefit_id="{{ benefit.id }}">
-                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
+                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
                         <span>{{ benefit.name }}</span>
                         {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i>{% endif %}
                         {% if benefit.package_only %}<i class="fa fa-cubes"  title="{{ benefit_model.PACKAGE_ONLY_MESSAGE }}"></i>{% endif %}
