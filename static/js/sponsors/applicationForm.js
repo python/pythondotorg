@@ -24,7 +24,7 @@ $(document).ready(function(){
 
     SELECTORS.clearFormBtn().click(function(){
         SELECTORS.applicationForm().trigger("reset");
-        SELECTORS.applicationForm().find("[class=active]").removeClass("active");
+        SELECTORS.applicationForm().find(".active").removeClass("active");
         SELECTORS.packageInput().prop("checked", false);
         SELECTORS.checkboxesContainer().find(':checkbox').each(function(){
             $(this).prop('checked', false);
