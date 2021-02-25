@@ -127,6 +127,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     list_display = [
         "sponsor",
         "status",
+        "level_name",
         "applied_on",
         "approved_on",
         "start_date",
