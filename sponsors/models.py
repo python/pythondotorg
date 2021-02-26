@@ -124,6 +124,11 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="New Benefit",
         help_text='If selected, display a "New This Year" badge along side the benefit.',
     )
+    unavailable = models.BooleanField(
+        default=False,
+        verbose_name="Benefit is unavailable",
+        help_text="If selected, this benefit will not be available to applicants.",
+    )
 
     # Internal
     legal_clauses = models.ManyToManyField(
@@ -181,6 +186,8 @@ class SponsorshipBenefit(OrderedModel):
 
     @property
     def has_capacity(self):
+        if self.unavailable:
+            return False
         return not (
             self.remaining_capacity is not None
             and self.remaining_capacity <= 0
