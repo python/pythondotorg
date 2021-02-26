@@ -56,6 +56,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
                     "packages",
                     "package_only",
                     "new",
+                    "unavailable",
                 ),
             },
         ),
