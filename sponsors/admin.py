@@ -119,6 +119,21 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
+class LevelNameFilter(admin.SimpleListFilter):
+    title = "level name"
+    parameter_name = "level"
+
+    def lookups(self, request, model_admin):
+        qs = SponsorshipPackage.objects.all()
+        return list(set([(program.name, program.name) for program in qs]))
+
+    def queryset(self, request, queryset):
+        if self.value() == "all":
+            return queryset
+        if self.value():
+            return queryset.filter(level_name=self.value())
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -127,13 +142,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
     list_display = [
         "sponsor",
         "status",
+        "level_name",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
         "display_sponsorship_link",
     ]
-    list_filter = ["status"]
+    list_filter = ["status", LevelNameFilter]
     readonly_fields = [
         "for_modified_package",
         "sponsor",
