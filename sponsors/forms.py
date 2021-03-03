@@ -62,7 +62,7 @@ class SponsorshiptBenefitsForm(forms.Form):
             self.fields[f"benefits_{slug}"] = PickSponsorshipBenefitsField(
                 queryset=benefits_qs.filter(program=program),
                 required=False,
-                label=_(f"{program.name} Sponsorship Benefits"),
+                label=_(f"{program.name} Benefits"),
             )
 
     @property
