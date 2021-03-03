@@ -5,6 +5,7 @@ from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
 from django.utils.functional import cached_property
 from django.conf import settings
+from django.db.models import Count
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -51,7 +52,11 @@ class SponsorshiptBenefitsForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.select_related("program")
+        benefits_qs = (
+            SponsorshipBenefit.objects.select_related("program")
+            .annotate(num_packages=Count("packages"))
+            .order_by("-num_packages")
+        )
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")
             self.fields[f"benefits_{slug}"] = PickSponsorshipBenefitsField(
