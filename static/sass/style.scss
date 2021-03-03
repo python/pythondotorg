@@ -2598,6 +2598,10 @@ span.highlighted {
 #select_sponsorship_benefits_container {
 
   #benefitsTable {
+    width: 90vw;
+    position: relative;
+    left: calc(50% - 45vw);
+
     .row {
       display: flex;
       flex-flow: row nowrap;
