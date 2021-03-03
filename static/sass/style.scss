@@ -2594,3 +2594,24 @@ span.highlighted {
     font-size: 75%;
   }
 }
+
+#select_sponsorship_benefits_container {
+
+  #benefitsTable {
+    .row, .row ul {
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
+      align-items: baseline;
+      align-content: center;
+    }
+
+    .separator {
+      flex-shrink: 0;
+      justify-content: flex-start;
+      border-bottom: 1px solid black;
+    }
+
+  }
+
+}

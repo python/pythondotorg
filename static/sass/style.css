@@ -3764,3 +3764,14 @@ span.highlighted {
 #new_sponsorship_application_container .errorlist {
   margin: 0;
   font-size: 75%; }
+
+#select_sponsorship_benefits_container #benefitsTable .row, #select_sponsorship_benefits_container #benefitsTable .row ul {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: baseline;
+  align-content: center; }
+#select_sponsorship_benefits_container #benefitsTable .separator {
+  flex-shrink: 0;
+  justify-content: flex-start;
+  border-bottom: 1px solid black; }

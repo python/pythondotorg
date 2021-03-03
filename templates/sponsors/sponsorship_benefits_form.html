@@ -8,12 +8,38 @@
 {% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block content %}
+    <div id="select_sponsorship_benefits_container">
+      <div id="benefitsTable">
+        <div class="row">
+          <span></span>
+          {{ form.package }}
+        </div>
+
+        {% for field in form.benefits_programs %}
+        <div class="row separator">
+          <span>{{ field.label }}</span>
+        </div>
+
+        {% for benefit in field.field.queryset %}
+        <div class="row">
+          <span>{{ benefit.name }}</span>
+          {% for package in form.fields.package.queryset %}
+            {% if forloop.counter <= benefit.num_packages %}
+              <span>{{ forloop.counter }}</span>
+            {% else %}
+              <span></span>
+            {% endif %}
+          {% endfor %}
+        </div>
+        {% endfor %}
+
+        {% endfor %}
+      </div>
+
+    </div>
+
 
     <article id="sponsorship_application_container" class="text">
-
-        <div id="sponsorship-application-box">
-        {% box 'sponsorship-application' %}
-        </div>
 
         <hr>
 
