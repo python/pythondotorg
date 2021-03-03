@@ -1,5 +1,6 @@
 {% extends "psf/full-width.html" %}
-{% load pipeline boxes %}
+{% load pipeline boxes humanize %}
+
 
 {% block head %}
   {% stylesheet 'font-awesome' %}
@@ -11,23 +12,32 @@
     <div id="select_sponsorship_benefits_container">
       <div id="benefitsTable">
         <div class="row">
-          <span></span>
-          {{ form.package }}
+           <span class="col"></span>
+           {% for package in form.fields.package.queryset %}
+           <div class="package_input col">
+             <label>{{ package.name }}</label>
+             <span>${{ package.sponsorship_amount|intcomma }}</span>
+             <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}"/>
+           </div>
+           {% endfor %}
         </div>
 
         {% for field in form.benefits_programs %}
         <div class="row separator">
-          <span>{{ field.label }}</span>
+          <label>{{ field.label }}</label>
         </div>
 
         {% for benefit in field.field.queryset %}
         <div class="row">
-          <span>{{ benefit.name }}</span>
+          <div class="col">
+            <label>{{ benefit.name }}</label>
+            <small>{{ benefit.description }}</small>
+          </div>
           {% for package in form.fields.package.queryset %}
             {% if forloop.counter <= benefit.num_packages %}
-              <span>{{ forloop.counter }}</span>
+              <span class="col">tick</span>
             {% else %}
-              <span></span>
+              <span class="col"></span>
             {% endif %}
           {% endfor %}
         </div>
