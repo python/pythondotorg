@@ -37,7 +37,12 @@
             {% if forloop.counter <= benefit.num_packages %}
               <span class="col">tick</span>
             {% else %}
-              <span class="col"></span>
+              <span class="col">
+                {% if not benefit.package_only %}
+                <input type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %}>
+                <p><small>Potential add-on</small></p>
+                {% endif %}
+              </span>
             {% endif %}
           {% endfor %}
         </div>
