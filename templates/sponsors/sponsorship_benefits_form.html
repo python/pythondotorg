@@ -17,12 +17,14 @@
       <h4 class="section-title"><span class="session-enum">1</span> Select a Sponsorship Package</h4>
 
       <div id="benefitsTable">
-        <div class="row">
+        <div class="row no-border">
            <span class="col"></span>
            {% for package in form.fields.package.queryset %}
            <div class="col col-items">
-             <label>{{ package.name }}</label>
+             <h4>{{ package.name|upper }}</h4>
              <span>${{ package.sponsorship_amount|intcomma }}</span>
+             <span></span>
+             <span></span>
              <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}"/>
            </div>
            {% endfor %}
@@ -30,14 +32,14 @@
 
         {% for field in form.benefits_programs %}
         <div class="row separator">
-          <label>{{ field.label }}</label>
+          <h4>{{ field.label }}</h4>
         </div>
 
         {% for benefit in field.field.queryset %}
-        <div class="row">
-          <div class="col">
-            <label>{{ benefit.name }}</label>
-            <small>{{ benefit.description }}</small>
+        <div class="row {% if forloop.last %}no-border{% endif %}">
+          <div class="col benefit">
+            <h4 class="title">{{ benefit.name }}</h4>
+            <span class="description">{{ benefit.description }}</span>
           </div>
           {% for package in form.fields.package.queryset %}
             {% if forloop.counter <= benefit.num_packages %}

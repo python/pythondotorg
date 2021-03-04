@@ -2660,7 +2660,29 @@ span.highlighted {
     left: calc(50% - 45vw);
     margin: 2em 0;
 
+    h4 {
+      margin-top: 0;
+    }
+
+    .benefit {
+       display: block;
+
+      .title {
+        display: inline-block;
+        font-size: 16px;
+        line-height: 18px;
+      }
+
+      .description {
+        display: inline-block;
+        line-height: 10px;
+        font-size: 12px;
+      }
+    }
+
     .row {
+      border-bottom: 1px solid #E6E8EA;
+
       .col:not(first-child) {
         width: 10%;
         padding: 0 1em;
@@ -2676,9 +2698,17 @@ span.highlighted {
     .separator {
       flex-shrink: 0;
       justify-content: flex-start;
-      border-bottom: 1px solid black;
+      border-bottom: 3px solid #FFD343;
+
+      h4 {
+        font-size: 23px;
+        line-height: 29px;
+        font-weight: 700;
+      }
     }
 
+    .no-border {
+      border-bottom: none;
+    }
   }
-
 }
