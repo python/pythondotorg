@@ -10,6 +10,11 @@
 
 {% block content %}
     <div id="select_sponsorship_benefits_container">
+      <h1>Sponsor the PSF</h1>
+      <p>Select a sponsorship package or customize the benefits that make the most sense for your business.</p>
+
+      <h2><span class="session-enum">1</span> Select a Sponsorship Package</h2>
+
       <div id="benefitsTable">
         <div class="row">
            <span class="col"></span>
@@ -51,6 +56,8 @@
         {% endfor %}
       </div>
 
+      <h2><span class="session-enum">2</span> Select add-on benefits</h2>
+      <span>Available at any level of sponsorship</span>
 
       <div class="row">
         {% for benefit in form.fields.add_ons_benefits.queryset %}
@@ -61,6 +68,10 @@
         </div>
         {% endfor %}
       </div>
+
+      <h2><span class="session-enum">3</span> Submit your contact information</h2>
+
+      <h2><span class="session-enum">4</span> PSF staff will reach out to confirm and finalize</h2>
 
     </div>
 
