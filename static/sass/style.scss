@@ -2628,6 +2628,14 @@ span.highlighted {
       color: #444444;
     }
 
+    .section-title {
+      font-size: 20px;
+      line-height: 25.14px;
+      font-weight: 700;
+      padding: 0;
+      margin: 0;
+    }
+
   .row {
     display: flex;
     flex-flow: row nowrap;
@@ -2650,6 +2658,7 @@ span.highlighted {
     width: 90vw;
     position: relative;
     left: calc(50% - 45vw);
+    margin: 2em 0;
 
     .row {
       .col:not(first-child) {
