@@ -2597,6 +2597,37 @@ span.highlighted {
 
 #select_sponsorship_benefits_container {
 
+    h1 { /* Page header */
+      font-size: 26px;
+      line-height: 37px;
+      color: #3776ab;
+    }
+
+    h2 { /* Page title */
+      font-size: 23px;
+      line-height: 37px;
+      color: #999999;
+    }
+
+    h3 { /* column headings, blue */
+      font-size: 20px;
+      line-height: 24px;
+      color: #3776AB;
+    }
+
+    h4 { /* column headings, blue */
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+      margin-top: 1em;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+    }
+
   .row {
     display: flex;
     flex-flow: row nowrap;
