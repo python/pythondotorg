@@ -2597,18 +2597,30 @@ span.highlighted {
 
 #select_sponsorship_benefits_container {
 
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    .col {
+        text-align: center;
+    }
+
+    .col-items {
+      padding: 0 0;
+      display: flex;
+      flex-flow: column wrap;
+    }
+  }
+
   #benefitsTable {
     width: 90vw;
     position: relative;
     left: calc(50% - 45vw);
 
     .row {
-      display: flex;
-      flex-flow: row nowrap;
-      justify-content: space-between;
-      align-items: center;
-      align-content: center;
-
       .col:not(first-child) {
         width: 10%;
         padding: 0 1em;
@@ -2618,12 +2630,6 @@ span.highlighted {
       .col:first-child {
         width: 20%;
         text-align: left;
-      }
-
-      .package_input {
-        padding: 0 0;
-        display: flex;
-        flex-flow: column wrap;
       }
     }
 

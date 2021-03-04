@@ -14,7 +14,7 @@
         <div class="row">
            <span class="col"></span>
            {% for package in form.fields.package.queryset %}
-           <div class="package_input col">
+           <div class="col col-items">
              <label>{{ package.name }}</label>
              <span>${{ package.sponsorship_amount|intcomma }}</span>
              <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}"/>
@@ -48,6 +48,17 @@
         </div>
         {% endfor %}
 
+        {% endfor %}
+      </div>
+
+
+      <div class="row">
+        {% for benefit in form.fields.add_ons_benefits.queryset %}
+        <div class="col col-items">
+          <input type="checkbox" name="package" value="{{ benefit.id }}"/>
+          <label>{{ benefit.name }}</label>
+          <span>{{ benefit.description }}</span>
+        </div>
         {% endfor %}
       </div>
 
