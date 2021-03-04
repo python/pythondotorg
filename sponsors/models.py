@@ -1,7 +1,7 @@
 from itertools import chain
 from django.conf import settings
 from django.db import models
-from django.db.models import Sum
+from django.db.models import Sum, Count
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -82,6 +82,12 @@ class SponsorshipBenefitManager(OrderedModelManager):
 
     def without_conflicts(self):
         return self.filter(conflicts__isnull=True)
+
+    def add_ons(self):
+        return self.annotate(num_packages=Count("packages")).filter(num_packages=0)
+
+    def with_packages(self):
+        return self.annotate(num_packages=Count("packages")).exclude(num_packages=0).order_by('-num_packages')
 
 
 class SponsorshipBenefit(OrderedModel):
