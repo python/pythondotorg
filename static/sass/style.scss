@@ -2629,11 +2629,30 @@ span.highlighted {
     }
 
     .section-title {
-      font-size: 20px;
-      line-height: 25.14px;
-      font-weight: 700;
-      padding: 0;
-      margin: 0;
+      justify-content: flex-start !important;
+
+      h4{
+        margin: 0;
+        font-size: 20px;
+        line-height: 25.14px;
+        font-weight: 700;
+      }
+
+      img {
+        height: 47px;
+      }
+
+      .col:not(:first-child) {
+        padding-top: 1px;
+        padding-left: 0.5em;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: baseline;
+      }
+
+      .with-description {
+        padding-top: 28px !important;
+      }
     }
 
   .row {
