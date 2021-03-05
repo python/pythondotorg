@@ -36,8 +36,8 @@
         {% for benefit in field.field.queryset %}
         <div class="row {% if forloop.last %}no-border{% endif %}">
           <div class="col benefit">
-            <h4 class="title">{{ benefit.name }}</h4>
-            <span class="description">{{ benefit.description }}</span>
+            <h4 class="benefit-title">{{ benefit.name }}</h4>
+            <span class="benefit-description">{{ benefit.description }}</span>
           </div>
           {% for package in form.fields.package.queryset %}
             {% if forloop.counter <= benefit.num_packages %}
@@ -60,14 +60,18 @@
       <h4 class="section-title"><span class="session-enum">2</span> Select add-on benefits</h4>
       <p>Available at any level of sponsorship</p>
 
-      <div class="row">
-        {% for benefit in form.fields.add_ons_benefits.queryset %}
-        <div class="col col-items">
-          <input type="checkbox" name="package" value="{{ benefit.id }}"/>
-          <label>{{ benefit.name }}</label>
-          <span>{{ benefit.description }}</span>
+      <div id="add-on-benefits">
+        <div class="row">
+          {% for benefit in form.fields.add_ons_benefits.queryset %}
+          <div class="col col-items">
+            <input type="checkbox" name="package" value="{{ benefit.id }}"/>
+            <div class="add-on-description">
+              <span class="benefit-title">{{ benefit.name }}</span>
+              <span class="benefit-description">{{ benefit.description }}</span>
+            </div>
+          </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
 
       <h4 class="section-title"><span class="session-enum">3</span> Submit your contact information</h4>

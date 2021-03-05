@@ -2654,15 +2654,21 @@ span.highlighted {
     }
   }
 
+  .benefit-description {
+    display: inline-block;
+    line-height: 10px;
+    font-size: 12px;
+  }
+
+  .benefit-title {
+    margin-top: 0;
+  }
+
   #benefitsTable {
     width: 90vw;
     position: relative;
     left: calc(50% - 45vw);
     margin: 2em 0;
-
-    h4 {
-      margin-top: 0;
-    }
 
     .benefit {
        display: block;
@@ -2671,12 +2677,6 @@ span.highlighted {
         display: inline-block;
         font-size: 16px;
         line-height: 18px;
-      }
-
-      .description {
-        display: inline-block;
-        line-height: 10px;
-        font-size: 12px;
       }
     }
 
@@ -2720,6 +2720,30 @@ span.highlighted {
         margin: 0;
         padding: 0;
       }
+    }
+  }
+
+  #add-on-benefits {
+    margin: 2em 0;
+    padding: 0 2em;
+
+    input {
+      margin-bottom: 0.5em;
+    }
+
+    .col-items {
+      min-height: 137px;
+      background-color: #C4C4C4;
+      margin: 0em 0.5em;
+      padding: 1em 0.5em;
+      width: 23%;
+      color: #000000;
+    }
+
+    .benefit-title {
+      color: #000000;
+      margin: 0;
+      padding: 0;
     }
   }
 }
