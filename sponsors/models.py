@@ -87,7 +87,11 @@ class SponsorshipBenefitManager(OrderedModelManager):
         return self.annotate(num_packages=Count("packages")).filter(num_packages=0)
 
     def with_packages(self):
-        return self.annotate(num_packages=Count("packages")).exclude(num_packages=0).order_by('-num_packages')
+        return (
+            self.annotate(num_packages=Count("packages"))
+            .exclude(num_packages=0)
+            .order_by("-num_packages")
+        )
 
 
 class SponsorshipBenefit(OrderedModel):

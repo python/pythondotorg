@@ -51,12 +51,14 @@ class SponsorshiptBenefitsForm(forms.Form):
     )
     add_ons_benefits = PickSponsorshipBenefitsField(
         required=False,
-        queryset=SponsorshipBenefit.objects.add_ons().select_related("program")
+        queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related("program")
+        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related(
+            "program"
+        )
 
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")

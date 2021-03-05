@@ -36,7 +36,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
     def test_benefits_organized_by_program(self):
         form = SponsorshiptBenefitsForm()
 
-        choices = list(form.fields['add_ons_benefits'].choices)
+        choices = list(form.fields["add_ons_benefits"].choices)
 
         self.assertEqual(len(self.add_ons), len(choices))
         for benefit in self.add_ons:
