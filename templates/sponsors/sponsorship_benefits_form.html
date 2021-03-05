@@ -1,5 +1,5 @@
 {% extends "psf/full-width.html" %}
-{% load pipeline boxes humanize %}
+{% load pipeline boxes humanize staticfiles %}
 
 
 {% block head %}
@@ -20,11 +20,9 @@
         <div class="row no-border">
            <span class="col"></span>
            {% for package in form.fields.package.queryset %}
-           <div class="col col-items">
+           <div class="col col-items package-input">
              <h4>{{ package.name|upper }}</h4>
              <span>${{ package.sponsorship_amount|intcomma }}</span>
-             <span></span>
-             <span></span>
              <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}"/>
            </div>
            {% endfor %}
@@ -43,14 +41,14 @@
           </div>
           {% for package in form.fields.package.queryset %}
             {% if forloop.counter <= benefit.num_packages %}
-              <span class="col">tick</span>
+              <div class="col"><img src="{% static 'img/sponsors/tick.png' %}"/></div>
             {% else %}
-              <span class="col">
+              <div class="col col-items potential-add-on">
                 {% if not benefit.package_only %}
                 <input type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %}>
-                <p><small>Potential add-on</small></p>
+                <small>Potential add-on</small>
                 {% endif %}
-              </span>
+              </div>
             {% endif %}
           {% endfor %}
         </div>

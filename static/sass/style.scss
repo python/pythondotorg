@@ -2710,5 +2710,16 @@ span.highlighted {
     .no-border {
       border-bottom: none;
     }
+
+    .package-input {
+      span {padding-bottom: 0.5em;}
+    }
+
+    .potential-add-on {
+      * {
+        margin: 0;
+        padding: 0;
+      }
+    }
   }
 }
