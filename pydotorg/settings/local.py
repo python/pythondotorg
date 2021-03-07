@@ -1,4 +1,5 @@
 from .base import *
+import os
 
 DEBUG = True
 
@@ -26,7 +27,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Set the local pep repository path to fetch PEPs from,
 # or none to fallback to the tarball specified by PEP_ARTIFACT_URL.
-PEP_REPO_PATH = None  # directory path or None
+PEP_REPO_PATH = os.environ.get('PEP_REPO_PATH', None)  # directory path or None
 
 # Set the path to where to fetch PEP artifacts from.
 # The value can be a local path or a remote URL.
