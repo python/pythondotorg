@@ -2653,6 +2653,7 @@ span.highlighted {
       .with-description {
         padding-top: 28px !important;
       }
+
     }
 
   .row {
@@ -2786,4 +2787,18 @@ span.highlighted {
     }
   }
 
+}
+
+#thank-you-container {
+  background: #417DAF;
+  text-align: center;
+  padding: 2em 0;
+  * {
+    color: #FCFCFC;
+    padding: 1em 0;
+  }
+
+  span {
+    font-size: 28px
+  }
 }
