@@ -22,6 +22,8 @@
       </div>
 
       <div id="benefitsTable">
+
+        <!-- Package selection --!>
         <div class="row no-border">
            <span class="col"></span>
            {% for package in form.fields.package.queryset %}
@@ -38,18 +40,20 @@
           <h4>{{ field.label }}</h4>
         </div>
 
+        <!-- Benefits listing (as rows) --!>
         {% for benefit in field.field.queryset %}
         <div class="row {% if forloop.last %}no-border{% endif %}">
           <div class="col benefit">
             <h4 class="benefit-title">{{ benefit.name }}</h4>
             <span class="benefit-description">{{ benefit.description }}</span>
           </div>
+          <!-- Packages information (as columns) --!>
           {% for package in form.fields.package.queryset %}
             {% if forloop.counter <= benefit.num_packages %}
-              <div class="col"><img src="{% static 'img/sponsors/tick.png' %}"/></div>
             {% else %}
               <div class="col col-items potential-add-on">
                 {% if not benefit.package_only %}
+              <img src="{% static 'img/sponsors/tick.svg' %}"/>
                 <input type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %}>
                 <small>Potential add-on</small>
                 {% endif %}
