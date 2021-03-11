@@ -2639,6 +2639,12 @@ span.highlighted {
         padding: 0;
       }
     }
+
+    .selected {
+      background-color: lighten($blue, 50%);
+      border-radius: 15px;
+      padding: 0.5em 1em !important;
+    }
   }
 
   #add-on-benefits {
@@ -2684,7 +2690,6 @@ span.highlighted {
       }
     }
   }
-
 }
 
 #thank-you-container {

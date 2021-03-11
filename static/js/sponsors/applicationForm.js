@@ -16,10 +16,12 @@ $(document).ready(function(){
       $(this).prop('checked', false);
     });
 
+    $(".selected").removeClass("selected");
     SELECTORS.getPackageBenefits(package).each(function(){
       let benefit = $(this).html()
       let benefitInput = SELECTORS.getBenefitInput(benefit);
       benefitInput.prop("checked", true);
+      $(`#benefit-${benefit}-package-${package}`).addClass("selected");
     });
   });
 });
