@@ -30,7 +30,7 @@
            <div class="col col-items package-input">
              <h4>{{ package.name|upper }}</h4>
              <span>${{ package.sponsorship_amount|intcomma }}</span>
-             <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}"/>
+             <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} />
            </div>
            {% endfor %}
         </div>
@@ -49,16 +49,18 @@
           </div>
           <!-- Packages information (as columns) --!>
           {% for package in form.fields.package.queryset %}
-            {% if forloop.counter <= benefit.num_packages %}
-            {% else %}
-              <div class="col col-items potential-add-on">
-                {% if not benefit.package_only %}
+
+            <div class="col {% if form.initial.package == package.id and forloop.counter <= benefit.num_packages %}selected{% endif %}" id="benefit-{{ benefit.id }}-package-{{ package.id }}">
+              {% if forloop.counter <= benefit.num_packages %}
               <img src="{% static 'img/sponsors/tick.svg' %}"/>
+              {% elif not benefit.package_only %}
+              <div class="potential-add-on">
                 <input type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %}>
-                <small>Potential add-on</small>
-                {% endif %}
+                <small><p>Potential add-on</p></small>
               </div>
-            {% endif %}
+              {% endif %}
+            </div>
+
           {% endfor %}
           <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
         </div>
