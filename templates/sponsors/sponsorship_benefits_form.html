@@ -61,7 +61,7 @@
             </div>
 
           {% endfor %}
-          <input data-benefit-id={{ benefit.id }} id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
+          <input class="hidden" data-benefit-id={{ benefit.id }} id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
         </div>
         {% endfor %}
 
