@@ -6,12 +6,14 @@ $(document).ready(function(){
     benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
+    potentialAddOnInputs:  function() { return $(".potential-add-on"); },
   }
 
   SELECTORS.packageInput().change(function(){
     let package = this.value;
     if (package.length == 0) return;
 
+    SELECTORS.potentialAddOnInputs().prop("checked", false);
     SELECTORS.getSelectedBenefits().each(function(){
       $(this).prop('checked', false);
     });
