@@ -25,7 +25,21 @@
 
         <!-- Package selection --!>
         <div class="row no-border">
-           <span class="col"></span>
+           <span class="col">
+             {% if form.errors %}
+               <strong>Errors within the form</strong>
+               <ul class="errorlist">
+                 {% for field in form %}
+                   {% for error in field.errors %}
+                     <li>{{field.name}}: {{ error|escape }}</li>
+                   {% endfor %}
+                 {% endfor %}
+                 {% for error in form.non_field_errors %}
+                   <li>{{ error|escape }}</li>
+                 {% endfor %}
+               </ul>
+             {% endif %}
+           </span>
            {% for package in form.fields.package.queryset %}
            <div class="col col-items package-input">
              <h4>{{ package.name|upper }}</h4>
