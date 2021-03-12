@@ -6,24 +6,44 @@ $(document).ready(function(){
     benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
-    potentialAddOnInputs:  function() { return $(".potential-add-on"); },
+    potentialAddOnInputs:  function() { return $(".potential-add-on input"); },
   }
 
   SELECTORS.packageInput().change(function(){
     let package = this.value;
     if (package.length == 0) return;
 
+    // clear potential add-on inputs and previous form selection
     SELECTORS.potentialAddOnInputs().prop("checked", false);
+    SELECTORS.potentialAddOnInputs().prop("disabled", true);
+    $(".selected").removeClass("selected");
+
+    // clear hidden form inputs
     SELECTORS.getSelectedBenefits().each(function(){
       $(this).prop('checked', false);
     });
 
-    $(".selected").removeClass("selected");
+    // update package benefits display
+    $(`.package-${package}-benefit`).addClass("selected");
+    $(`.package-${package}-benefit input`).prop("disabled", false);
+
+    // populate hidden inputs according to package's benefits
     SELECTORS.getPackageBenefits(package).each(function(){
       let benefit = $(this).html()
       let benefitInput = SELECTORS.getBenefitInput(benefit);
       benefitInput.prop("checked", true);
-      $(`#benefit-${benefit}-package-${package}`).addClass("selected");
     });
   });
 });
+
+
+// For some unknown reason I couldn't make this logic work with jQuery.
+// To don't block the development process, I pulled it off using the classic
+// onclick attribute. Refactorings are welcome =]
+function potentialAddOnUpdate(benefitId, packageId) {
+  const benefitsInputs = Array(...document.querySelectorAll('[data-benefit-id]'));
+  const hiddenInput = benefitsInputs.filter((b) => b.getAttribute('data-benefit-id') == benefitId)[0];
+  const clickedInput = document.getElementById(`add-on-${ benefitId }-package-${ packageId }`);
+
+  hiddenInput.checked = clickedInput.checked;
+};
