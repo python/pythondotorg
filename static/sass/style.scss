@@ -2632,7 +2632,11 @@ $breakpoint-desktop: 1024px;
     }
 
     .package-input {
-      span {padding-bottom: 0.5em;}
+      span {
+        padding-bottom: 0.5em;
+      }
+
+      cursor: pointer;
     }
 
     .potential-add-on {

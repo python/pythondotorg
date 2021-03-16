@@ -29,7 +29,7 @@ $(document).ready(function(){
 
     // populate hidden inputs according to package's benefits
     SELECTORS.getPackageBenefits(package).each(function(){
-      let benefit = $(this).html()
+      let benefit = $(this).html();
       let benefitInput = SELECTORS.getBenefitInput(benefit);
       benefitInput.prop("checked", true);
     });
@@ -47,3 +47,9 @@ function potentialAddOnUpdate(benefitId, packageId) {
 
   hiddenInput.checked = clickedInput.checked;
 };
+
+
+function updatePackageInput(packageId){
+  const packageInput = document.getElementById(`id_package_${ packageId }`);
+  packageInput.click();
+}
