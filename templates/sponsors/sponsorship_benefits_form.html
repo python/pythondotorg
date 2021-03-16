@@ -24,29 +24,31 @@
       <div id="benefitsTable">
 
         <!-- Package selection --!>
-        <div class="row no-border">
-           <span class="col">
-             {% if form.errors %}
-               <strong>Errors within the form</strong>
-               <ul class="errorlist">
-                 {% for field in form %}
-                   {% for error in field.errors %}
-                     <li>{{field.name}}: {{ error|escape }}</li>
+        <div id="package-selection">
+          <div class="row no-border">
+             <span class="col">
+               {% if form.errors %}
+                 <strong>Errors within the form</strong>
+                 <ul class="errorlist">
+                   {% for field in form %}
+                     {% for error in field.errors %}
+                       <li>{{field.name}}: {{ error|escape }}</li>
+                     {% endfor %}
                    {% endfor %}
-                 {% endfor %}
-                 {% for error in form.non_field_errors %}
-                   <li>{{ error|escape }}</li>
-                 {% endfor %}
-               </ul>
-             {% endif %}
-           </span>
-           {% for package in form.fields.package.queryset %}
-           <div class="col col-items package-input">
-             <h4>{{ package.name|upper }}</h4>
-             <span>${{ package.sponsorship_amount|intcomma }}</span>
-             <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
-           </div>
-           {% endfor %}
+                   {% for error in form.non_field_errors %}
+                     <li>{{ error|escape }}</li>
+                   {% endfor %}
+                 </ul>
+               {% endif %}
+             </span>
+             {% for package in form.fields.package.queryset %}
+             <div class="col col-items package-input" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
+               <h4>{{ package.name|upper }}</h4>
+               <span>${{ package.sponsorship_amount|intcomma }}</span>
+               <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
+             </div>
+             {% endfor %}
+          </div>
         </div>
 
         {% for field in form.benefits_programs %}
