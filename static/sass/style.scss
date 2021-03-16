@@ -2399,6 +2399,8 @@ span.highlighted {
     font-size: 75%;
 }
 
+$breakpoint-phone: 640px;
+$breakpoint-desktop: 1024px;
 
 #new_sponsorship_application_container {
   .form_field {
@@ -2687,6 +2689,53 @@ span.highlighted {
       &:hover, &:focus {
         background: lighten($yellow, 5%);
         text-shadow: 0 0 5px rgba( $yellow, 0.2);
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-desktop) {
+    #package-selection {
+      .row {
+        /* Mobile's layout lists the package selection as a single column instead of multiple
+           ones as in the desktop version. That's why this strange flex-flow change is being
+           made for both row and col classes so they can switch logic. Classes' name should be
+           changed at some time to avoid this confusion.
+         */
+        flex-flow: column wrap !important;
+
+        .col:not(first-child) {
+          width: 50%;
+
+          @media (max-width: $breakpoint-phone) {
+            width: 80%;
+          }
+        }
+
+        .col:first-child {
+          width: 20%;
+        }
+      }
+
+      .col, .col-items {
+        flex-flow: row nowrap !important;
+        align-items: baseline;
+        justify-content: space-between;
+        align-content: flex-start;
+      }
+
+      .package-input {
+         /* The internal disposition of the package name, price and checkbox for the mobile version differs
+          from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
+          items are being displayed using the order property.*/
+         h4 { // package name
+           order: 2;
+         }
+         span { // package fee
+           order: 3;
+         }
+         input { // input
+           order: 1;
+         }
       }
     }
   }
