@@ -10,8 +10,8 @@ $(document).ready(function(){
   }
 
 
-  const initialPackage = SELECTORS.packageInput().val();
-  if (initialPackage.length > 0) mobileUpdate(initialPackage);
+  const initialPackage = $("input[name=package]:checked").val();
+  if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
 
   SELECTORS.packageInput().click(function(){
     let package = this.value;
