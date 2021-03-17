@@ -47,6 +47,10 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.package.benefits.add(*self.program_1_benefits)
         package_2 = baker.make("sponsors.SponsorshipPackage")
         package_2.benefits.add(*self.program_2_benefits)
+        self.add_on_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2
+        )
+
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
         self.client.force_login(self.user)
 
@@ -55,6 +59,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.data = {
             "benefits_psf": [b.id for b in self.program_1_benefits],
             "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "add_ons_benefits": [b.id for b in self.add_on_benefits],
             "package": self.package.id,
         }
 

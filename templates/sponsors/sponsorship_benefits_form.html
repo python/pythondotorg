@@ -96,7 +96,7 @@
         <div class="row">
           {% for benefit in form.fields.add_ons_benefits.queryset %}
           <div class="col col-items">
-            <input type="checkbox" name="package" value="{{ benefit.id }}"/>
+            <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}"/>
             <div class="add-on-description">
               <span class="benefit-title">{{ benefit.name }}</span>
               <span class="benefit-description">{{ benefit.description }}</span>
