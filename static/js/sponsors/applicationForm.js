@@ -33,6 +33,14 @@ $(document).ready(function(){
       let benefitInput = SELECTORS.getBenefitInput(benefit);
       benefitInput.prop("checked", true);
     });
+
+    // Mobile version lists a single column to controle the selected
+    // benefits and potential add-ons. So, this part of the code
+    // controls this logic.
+    const mobileVersion = $(".benefit-within-package:hidden").length > 0;
+    if (!mobileVersion) return;
+    $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
+    $(`div[data-package-reference=${package}]`).show()  // display only package's ones
   });
 });
 

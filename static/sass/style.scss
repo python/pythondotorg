@@ -2607,11 +2607,15 @@ $breakpoint-desktop: 1024px;
         width: 10%;
         padding: 0 1em;
         text-align: center;
+
+        @media (max-width: $breakpoint-desktop) {width: 30%};
       }
 
       .col:first-child {
         width: 20%;
         text-align: left;
+
+        @media (max-width: $breakpoint-desktop) {width: 70%};
       }
     }
 
@@ -2651,6 +2655,12 @@ $breakpoint-desktop: 1024px;
       border-radius: 15px;
       padding: 0.5em 1em !important;
     }
+
+
+    @media (max-width: $breakpoint-desktop) {
+      .benefit-within-package {display: none;}
+      .selected {background-color: transparent;}
+    };
   }
 
   #add-on-benefits {
