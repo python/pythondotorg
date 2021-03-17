@@ -9,8 +9,13 @@ $(document).ready(function(){
     potentialAddOnInputs:  function() { return $(".potential-add-on input"); },
   }
 
-  SELECTORS.packageInput().change(function(){
+
+  const initialPackage = SELECTORS.packageInput().val();
+  if (initialPackage.length > 0) mobileUpdate(initialPackage);
+
+  SELECTORS.packageInput().click(function(){
     let package = this.value;
+    console.log(package);
     if (package.length == 0) return;
 
     // clear potential add-on inputs and previous form selection
@@ -34,15 +39,22 @@ $(document).ready(function(){
       benefitInput.prop("checked", true);
     });
 
-    // Mobile version lists a single column to controle the selected
-    // benefits and potential add-ons. So, this part of the code
-    // controls this logic.
-    const mobileVersion = $(".benefit-within-package:hidden").length > 0;
-    if (!mobileVersion) return;
-    $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
-    $(`div[data-package-reference=${package}]`).show()  // display only package's ones
+    mobileUpdate(package);
   });
 });
+
+
+function mobileUpdate(packageId) {
+  // Mobile version lists a single column to controle the selected
+  // benefits and potential add-ons. So, this part of the code
+  // controls this logic.
+  console.log(packageId);
+  console.log(`div[data-package-reference=${packageId}]`);
+  const mobileVersion = $(".benefit-within-package:hidden").length > 0;
+  if (!mobileVersion) return;
+  $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
+  $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
+}
 
 
 // For some unknown reason I couldn't make this logic work with jQuery.
