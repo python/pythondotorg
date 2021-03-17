@@ -2724,6 +2724,17 @@ $breakpoint-desktop: 1024px;
         text-shadow: 0 0 5px rgba( $yellow, 0.2);
       }
     }
+
+    @media (max-width: $breakpoint-desktop) {
+      flex-flow: column nowrap !important;
+      width: 100%;
+      padding: 0;
+
+
+      .btn {
+        margin: 1em;
+      }
+    }
   }
 
   @media (max-width: $breakpoint-desktop) {
