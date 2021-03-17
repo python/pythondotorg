@@ -2675,6 +2675,35 @@ $breakpoint-desktop: 1024px;
       margin: 0;
       padding: 0;
     }
+
+    @media (max-width: $breakpoint-desktop) {
+      margin: 0;
+      padding: 1em;
+
+      input {
+        margin-right: 1em;
+      }
+
+      .row {
+        flex-flow: column wrap !important;
+        width: 100%;
+      }
+
+      .col-items{
+        background-color: transparent;
+        flex-flow: row nowrap !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: initial;
+        align-items: baseline;
+      }
+
+      .add-on-description {
+        text-align: left;
+        padding-right: 1em;
+      }
+    }
   }
 
   .submit-row {
