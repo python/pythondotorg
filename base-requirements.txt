@@ -34,7 +34,7 @@ django-allauth==0.41.0
 
 django-waffle==0.14
 
-djangorestframework==3.8.2
+djangorestframework==3.11.2
 django-filter==1.1.0
 django-ordered-model==3.4.1
 django-widget-tweaks==1.4.8
