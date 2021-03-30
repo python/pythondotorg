@@ -6,21 +6,22 @@ $(document).ready(function(){
     benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
-    potentialAddOnInputs:  function() { return $(".potential-add-on input"); },
+    tickImages: function() { return $(`.benefit-within-package img`) },
   }
-
 
   const initialPackage = $("input[name=package]:checked").val();
   if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
 
   SELECTORS.packageInput().click(function(){
     let package = this.value;
-    console.log(package);
     if (package.length == 0) return;
 
     // clear potential add-on inputs and previous form selection
-    SELECTORS.potentialAddOnInputs().prop("checked", false);
-    SELECTORS.potentialAddOnInputs().prop("disabled", true);
+    SELECTORS.tickImages().each((i, img) => {
+      if (img.getAttribute('data-initial-state')) {
+        img.setAttribute('src', img.getAttribute('data-initial-state'));
+      }
+    });
     $(".selected").removeClass("selected");
 
     // clear hidden form inputs
@@ -48,8 +49,6 @@ function mobileUpdate(packageId) {
   // Mobile version lists a single column to controle the selected
   // benefits and potential add-ons. So, this part of the code
   // controls this logic.
-  console.log(packageId);
-  console.log(`div[data-package-reference=${packageId}]`);
   const mobileVersion = $(".benefit-within-package:hidden").length > 0;
   if (!mobileVersion) return;
   $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs

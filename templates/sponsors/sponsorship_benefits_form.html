@@ -69,7 +69,7 @@
               {% if forloop.counter <= benefit.num_packages %}
               <img src="{% static 'img/sponsors/tick.svg' %}"/>
               {% elif not benefit.package_only %}
-              <img id="benefit-{{ benefit.id }}-package-{{ package.id }}" onclick="potentialAddOnUpdate({{ benefit.id }}, {{ package.id }})" src="{% static 'img/sponsors/tick-placeholder.png' %}" data-next-state="{% static 'img/sponsors/tick.svg' %}" />
+              <img id="benefit-{{ benefit.id }}-package-{{ package.id }}" onclick="potentialAddOnUpdate({{ benefit.id }}, {{ package.id }})" src="{% static 'img/sponsors/tick-placeholder.png' %}" data-next-state="{% static 'img/sponsors/tick.svg' %}" data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}" />
               <br/>
               <small>Potential add-on</small>
               {% endif %}
