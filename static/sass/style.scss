@@ -2643,17 +2643,14 @@ $breakpoint-desktop: 1024px;
       cursor: pointer;
     }
 
-    .potential-add-on {
-      * {
-        margin: 0;
-        padding: 0;
-      }
-    }
-
     .selected {
       background-color: lighten($blue, 50%);
       border-radius: 15px;
       padding: 0.5em 1em !important;
+
+      img {
+        cursor: pointer;
+      }
     }
 
 

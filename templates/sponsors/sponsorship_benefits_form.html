@@ -69,10 +69,9 @@
               {% if forloop.counter <= benefit.num_packages %}
               <img src="{% static 'img/sponsors/tick.svg' %}"/>
               {% elif not benefit.package_only %}
-              <div class="potential-add-on">
-                <input id="add-on-{{ benefit.id }}-package-{{ package.id }}" type="checkbox" value="{{ benefit.id }}" {% if package.id != form.initial.package or benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial and package.id == form.initial.package %}checked{% endif %} onclick="potentialAddOnUpdate({{ benefit.id }}, {{ package.id }})">
-                <small><p>Potential add-on</p></small>
-              </div>
+              <img id="benefit-{{ benefit.id }}-package-{{ package.id }}" onclick="potentialAddOnUpdate({{ benefit.id }}, {{ package.id }})" src="{% static 'img/sponsors/tick-placeholder.png' %}" data-next-state="{% static 'img/sponsors/tick.svg' %}" />
+              <br/>
+              <small>Potential add-on</small>
               {% endif %}
             </div>
 

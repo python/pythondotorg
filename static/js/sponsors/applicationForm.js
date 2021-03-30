@@ -57,15 +57,25 @@ function mobileUpdate(packageId) {
 }
 
 
-// For some unknown reason I couldn't make this logic work with jQuery.
+// For an unknown reason I couldn't make this logic work with jQuery.
 // To don't block the development process, I pulled it off using the classic
 // onclick attribute. Refactorings are welcome =]
 function potentialAddOnUpdate(benefitId, packageId) {
+  // Change tick image for the benefit. Can't directly change the url for the image
+  // due to our current static files storage.
+  const clickedImg = document.getElementById(`benefit-${ benefitId }-package-${ packageId }`);
+
+  // Img container must have "selected" to class to be editable
+  if (!clickedImg.parentElement.classList.contains('selected')) return;
+
+  const newSrc = clickedImg.getAttribute("data-next-state");
+  clickedImg.setAttribute("data-next-state", clickedImg.src);
+
+  // Update benefit's hidden input (can't rely on click event though)
   const benefitsInputs = Array(...document.querySelectorAll('[data-benefit-id]'));
   const hiddenInput = benefitsInputs.filter((b) => b.getAttribute('data-benefit-id') == benefitId)[0];
-  const clickedInput = document.getElementById(`add-on-${ benefitId }-package-${ packageId }`);
-
-  hiddenInput.checked = clickedInput.checked;
+  hiddenInput.checked = !hiddenInput.checked;
+  clickedImg.src = newSrc;
 };
 
 
