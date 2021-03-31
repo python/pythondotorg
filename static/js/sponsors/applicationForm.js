@@ -59,7 +59,7 @@ function mobileUpdate(packageId) {
 // For an unknown reason I couldn't make this logic work with jQuery.
 // To don't block the development process, I pulled it off using the classic
 // onclick attribute. Refactorings are welcome =]
-function potentialAddOnUpdate(benefitId, packageId) {
+function benefitUpdate(benefitId, packageId) {
   // Change tick image for the benefit. Can't directly change the url for the image
   // due to our current static files storage.
   const clickedImg = document.getElementById(`benefit-${ benefitId }-package-${ packageId }`);
