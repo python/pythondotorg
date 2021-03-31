@@ -2400,7 +2400,7 @@ span.highlighted {
 }
 
 $breakpoint-phone: 640px;
-$breakpoint-desktop: 1024px;
+$breakpoint-desktop: 1200px;
 
 #new_sponsorship_application_container {
   .form_field {
@@ -2638,6 +2638,10 @@ $breakpoint-desktop: 1024px;
     .package-input {
       span {
         padding-bottom: 0.5em;
+      }
+
+      h4 {
+        transform: rotateY(35deg);
       }
 
       cursor: pointer;
