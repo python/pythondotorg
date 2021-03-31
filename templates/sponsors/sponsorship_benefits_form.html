@@ -70,9 +70,23 @@
               {% if forloop.counter <= benefit.num_packages %}
                 <img
                     id="benefit-{{ benefit.id }}-package-{{ package.id }}"
-                    src="{% static 'img/sponsors/tick.svg' %}"
-                    data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
-                    data-initial-state="{% static 'img/sponsors/tick.svg' %}" onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                    onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                    {% if form.initial %}
+                      {% if benefit.id in field.initial and package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% elif package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                      {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% endif %}
+                    {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% endif %}
+                    data-initial-state="{% static 'img/sponsors/tick.svg' %}"
                 />
               {% elif not benefit.package_only %}
                 <img

@@ -16,11 +16,16 @@ $(document).ready(function(){
     let package = this.value;
     if (package.length == 0) return;
 
-    // clear potential add-on inputs and previous form selection
+    // clear previous customizations
     SELECTORS.tickImages().each((i, img) => {
-      if (img.getAttribute('data-initial-state')) {
-        img.setAttribute('src', img.getAttribute('data-initial-state'));
+      const initImg = img.getAttribute('data-initial-state');
+      const src = img.getAttribute('src');
+
+      if (src !== initImg) {
+        img.setAttribute('data-next-state', src);
       }
+
+      img.setAttribute('src', initImg);
     });
     $(".selected").removeClass("selected");
 
