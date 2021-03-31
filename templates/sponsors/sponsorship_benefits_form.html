@@ -92,8 +92,22 @@
                 <img
                   id="benefit-{{ benefit.id }}-package-{{ package.id }}"
                   onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                  {% if form.initial %}
+                    {% if benefit.id in field.initial and package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick.svg' %}"
+                    data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% elif package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% else %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% endif %}
+                  {% else %}
                   src="{% static 'img/sponsors/tick-placeholder.png' %}"
-                  data-next-state="{% static 'img/sponsors/tick.svg' %}" data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                  data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                  {% endif %}
+                  data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}"
                 />
                 <br/>
                 <small>Potential add-on</small>
