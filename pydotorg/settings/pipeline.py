@@ -73,6 +73,7 @@ PIPELINE_JS = {
 PIPELINE = {
     'STYLESHEETS': PIPELINE_CSS,
     'JAVASCRIPT': PIPELINE_JS,
+    'DISABLE_WRAPPER': True,
     # TODO: ruby-sass is not installed on the server since
     # https://github.com/python/psf-salt/commit/044c38773ced4b8bbe8df2c4266ef3a295102785
     # and we pre-compile SASS files and commit them into codebase so we
