@@ -80,8 +80,8 @@ PIPELINE = {
     # 'COMPILERS': (
     #     'pipeline.compilers.sass.SASSCompiler',
     # ),
-    'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
-    'JS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    #'CSS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
+    #'JS_COMPRESSOR': 'pipeline.compressors.yuglify.YuglifyCompressor',
     # 'SASS_BINARY': 'cd %s && exec /usr/bin/env sass'  % os.path.join(BASE, 'static'),
     # 'SASS_ARGUMENTS': '--quiet --compass --scss -I $(dirname $(dirname $(gem which susy)))/sass'
 }
