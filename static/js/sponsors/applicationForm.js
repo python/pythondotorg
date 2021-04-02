@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  console.log('loading applicationForm.js');
   const SELECTORS = {
     packageInput:  function() { return $("input[name=package]"); },
     getPackageInfo: function(packageId) { return $("#package_benefits_" + packageId); },
