@@ -136,6 +136,7 @@
           <div class="col col-items">
             <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
             <div class="add-on-description">
+              <span class="benefit-program">{{ benefit.program }}</span> -
               <span class="benefit-title">{{ benefit.name }}</span>
               <span class="benefit-description">{{ benefit.description }}</span>
             </div>

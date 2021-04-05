@@ -3751,6 +3751,8 @@ span.highlighted {
   font-size: 12px; }
 #select_sponsorship_benefits_container .benefit-title {
   margin-top: 0; }
+#select_sponsorship_benefits_container .benefit-program {
+  font-weight: bold; }
 #select_sponsorship_benefits_container #benefitsTable {
   width: 90vw;
   position: relative;
