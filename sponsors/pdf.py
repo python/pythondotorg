@@ -7,27 +7,23 @@ from markupfield_helpers.helpers import render_md
 from django.utils.html import mark_safe
 
 
-def _sow_context(sow, **context):
-    # footnotes only work if in same markdown text as the references
-    text = f"{sow.benefits_list.raw}\n\n**Legal Clauses**\n{sow.legal_clauses.raw}"
-    benefits = [b.replace('-', '').strip() for b in sow.benefits_list.raw.split('\n')]
-    legal_clauses = [
-        l.replace('-', '').strip()
-        for l in sow.legal_clauses.raw.split('\n')
-        if l.replace('-', '').strip()
+def _clean_split(text, separator='\n'):
+    return [
+        t.replace('-', '').strip()
+        for t in text.split('\n')
+        if t.replace('-', '').strip()
     ]
-    html = render_md(text)
-    context.update(
-        {
-            "sow": sow,
-            "benefits_and_clauses": mark_safe(html),
-            "start_date": sow.sponsorship.start_date,
-            "sponsor": sow.sponsorship.sponsor,
-            "sponsorship": sow.sponsorship,
-            "benefits": benefits,
-            "legal_clauses": legal_clauses,
-        }
-    )
+
+
+def _sow_context(sow, **context):
+    context.update({
+        "sow": sow,
+        "start_date": sow.sponsorship.start_date,
+        "sponsor": sow.sponsorship.sponsor,
+        "sponsorship": sow.sponsorship,
+        "benefits": _clean_split(sow.benefits_list.raw),
+        "legal_clauses": _clean_split(sow.legal_clauses.raw),
+    })
     return context
 
 

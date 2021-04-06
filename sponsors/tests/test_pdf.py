@@ -17,9 +17,11 @@ class TestRenderStatementOfWorkToPDF(TestCase):
         html = render_md(text)
         self.context = {
             "sow": self.sow,
-            "benefits_and_clauses": mark_safe(html),
             "start_date": self.sow.sponsorship.start_date,
             "sponsor": self.sow.sponsorship.sponsor,
+            "sponsorship": self.sow.sponsorship,
+            "benefits": [],
+            "legal_clauses": [],
         }
         self.template = "sponsors/admin/preview-statement-of-work.html"
 
