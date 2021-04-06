@@ -44,8 +44,13 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
         self.package = baker.make("sponsors.SponsorshipPackage")
-        for benefit in self.program_1_benefits:
-            benefit.packages.add(self.package)
+        self.package.benefits.add(*self.program_1_benefits)
+        package_2 = baker.make("sponsors.SponsorshipPackage")
+        package_2.benefits.add(*self.program_2_benefits)
+        self.add_on_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2
+        )
+
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
         self.client.force_login(self.user)
 
@@ -54,6 +59,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.data = {
             "benefits_psf": [b.id for b in self.program_1_benefits],
             "benefits_working_group": [b.id for b in self.program_2_benefits],
+            "add_ons_benefits": [b.id for b in self.add_on_benefits],
             "package": self.package.id,
         }
 
@@ -73,7 +79,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertTemplateUsed(r, "sponsors/sponsorship_benefits_form.html")
         self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
         self.assertEqual(r.context["benefit_model"], SponsorshipBenefit)
-        self.assertEqual(3, packages.count())
+        self.assertEqual(4, packages.count())
         self.assertIn(psf_package, packages)
         self.assertIn(extra_package, packages)
         self.assertEqual(

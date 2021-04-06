@@ -77,7 +77,9 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
             "package": "" if not form.get_package() else form.get_package().id,
         }
         for fname, benefits in [
-            (f, v) for f, v in form.cleaned_data.items() if f.startswith("benefits_")
+            (f, v)
+            for f, v in form.cleaned_data.items()
+            if f.startswith("benefits_") or f == 'add_ons_benefits'
         ]:
             data[fname] = sorted([b.id for b in benefits])
 
