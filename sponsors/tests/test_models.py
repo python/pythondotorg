@@ -40,6 +40,10 @@ class SponsorshipBenefitModelTests(TestCase):
         self.assertFalse(benefit.has_capacity)
         benefit.soft_capacity = True
         self.assertTrue(benefit.has_capacity)
+        benefit.capacity = 10
+        benefit.soft_capacity = False
+        benefit.unavailable = True
+        self.assertFalse(benefit.has_capacity)
 
 
 class SponsorshipModelTests(TestCase):

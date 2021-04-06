@@ -40,7 +40,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "package_only"]
+    list_filter = ["program", "package_only", "packages"]
     search_fields = ["name"]
 
     fieldsets = [
@@ -54,6 +54,7 @@ class SponsorshipBenefitAdmin(OrderedModelAdmin):
                     "packages",
                     "package_only",
                     "new",
+                    "unavailable",
                 ),
             },
         ),
@@ -117,6 +118,21 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
+class LevelNameFilter(admin.SimpleListFilter):
+    title = "level name"
+    parameter_name = "level"
+
+    def lookups(self, request, model_admin):
+        qs = SponsorshipPackage.objects.all()
+        return list(set([(program.name, program.name) for program in qs]))
+
+    def queryset(self, request, queryset):
+        if self.value() == "all":
+            return queryset
+        if self.value():
+            return queryset.filter(level_name=self.value())
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -125,12 +141,31 @@ class SponsorshipAdmin(admin.ModelAdmin):
     list_display = [
         "sponsor",
         "status",
+        "level_name",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
     ]
-    list_filter = ["status"]
+    list_filter = ["status", LevelNameFilter]
+    readonly_fields = [
+        "for_modified_package",
+        "sponsor",
+        "status",
+        "applied_on",
+        "rejected_on",
+        "approved_on",
+        "finalized_on",
+        "get_estimated_cost",
+        "get_sponsor_name",
+        "get_sponsor_description",
+        "get_sponsor_landing_page_url",
+        "get_sponsor_web_logo",
+        "get_sponsor_print_logo",
+        "get_sponsor_primary_phone",
+        "get_sponsor_mailing_address",
+        "get_sponsor_contacts",
+    ]
 
     fieldsets = [
         (
