@@ -348,6 +348,8 @@ class Sponsorship(models.Model):
 
     @property
     def verbose_sponsorship_fee(self):
+        if self.sponsorship_fee is None:
+          return 0
         return num2words(self.sponsorship_fee)
 
     def reject(self):
