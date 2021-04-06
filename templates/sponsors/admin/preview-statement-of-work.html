@@ -270,15 +270,17 @@ which are hereby acknowledged, the Parties hereto agree as follows:</p>
     {% for benefit in benefits %}
     <li>{{ benefit }}</li>
     {% endfor %}
-   </ol>
+  </ol>
 
-   <li><span class="item-title">Legal Clauses</span>:</li>
 
+  {% if legal_clauses %}
+  <li><span class="item-title">Legal Clauses</span>:</li>
   <ol style="list-style-type: none">
     {% for clause in legal_clauses %}
     <li>{{ clause }}</li>
     {% endfor %}
   </ol>
+  {% endif %}
 </ol>
 
 {% endblock %}

@@ -11,7 +11,11 @@ def _sow_context(sow, **context):
     # footnotes only work if in same markdown text as the references
     text = f"{sow.benefits_list.raw}\n\n**Legal Clauses**\n{sow.legal_clauses.raw}"
     benefits = [b.replace('-', '').strip() for b in sow.benefits_list.raw.split('\n')]
-    legal_clauses = [l.replace('-', '').strip() for l in sow.legal_clauses.raw.split('\n')]
+    legal_clauses = [
+        l.replace('-', '').strip()
+        for l in sow.legal_clauses.raw.split('\n')
+        if l.replace('-', '').strip()
+    ]
     html = render_md(text)
     context.update(
         {
