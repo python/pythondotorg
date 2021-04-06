@@ -51,16 +51,19 @@ class Command(BaseCommand):
         verbose("== Starting PEP page generation")
 
         with ExitStack() as stack:
-            verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            temp_file = self.get_artifact_tarball(stack)
-            if not temp_file:
-                verbose("== No update to artifacts, we're done here!")
-                return
-            temp_dir = stack.enter_context(TemporaryDirectory())
-            tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
-            tar_ball.extractall(path=temp_dir, numeric_owner=False)
+            if settings.PEP_REPO_PATH is not None:
+                artifacts_path = settings.PEP_REPO_PATH
+            else:
+                verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
+                temp_file = self.get_artifact_tarball(stack)
+                if not temp_file:
+                    verbose("== No update to artifacts, we're done here!")
+                    return
+                temp_dir = stack.enter_context(TemporaryDirectory())
+                tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
+                tar_ball.extractall(path=temp_dir, numeric_owner=False)
 
-            artifacts_path = os.path.join(temp_dir, 'peps')
+                artifacts_path = os.path.join(temp_dir, 'peps')
 
             verbose("Generating RSS Feed")
             peps_rss = get_peps_rss(artifacts_path)
