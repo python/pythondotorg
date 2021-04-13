@@ -237,6 +237,7 @@ PYTHON_BLOG_URL = "https://blog.python.org"
 MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
 ### PEP Repo Location
+PEP_REPO_PATH = None
 PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 ### Fastly ###
