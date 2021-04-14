@@ -24,7 +24,9 @@
 </div>
 
 <div id="content-main">
-<p><b>Help: </b>If you can't see the document's content above this texxt, please turn off your webbrowser's extensions which blocks HTML iframes (ad-blocker, ghostery, etc)</p>
+<p><b>Help: </b>If you can't see the document's content above this text, please turn off your webbrowser's extensions which blocks HTML iframes (ad-blocker, ghostery, etc) and reload this page.</p>
+<p>Or you can also open the PDF <a href="{{ statement_of_work.preview_url }}" target="_blank">here</a>.</p>
+
 <form action="" method="post" id="new_psf_board_meeting_form">
 {% csrf_token %}
 
@@ -35,5 +37,4 @@
 </div>
 
 </form>
-<div>
 </div>{% endblock %}
