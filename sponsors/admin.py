@@ -475,12 +475,12 @@ class ContractModelAdmin(admin.ModelAdmin):
             path(
                 "<int:pk>/preview",
                 self.admin_site.admin_view(self.preview_statement_of_work_view),
-                name="sponsors_statementofwork_preview",
+                name="sponsors_contract_preview",
             ),
             path(
                 "<int:pk>/send",
                 self.admin_site.admin_view(self.send_statement_of_work_view),
-                name="sponsors_statementofwork_send",
+                name="sponsors_contract_send",
             ),
         ]
         return my_urls + urls

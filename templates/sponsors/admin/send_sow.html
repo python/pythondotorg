@@ -9,14 +9,14 @@
 <div class="breadcrumbs">
   <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
   <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
-  <a href="{% url 'admin:sponsors_statementofwork_changelist' %}">{% trans 'Sponsorship' %}</a> &gt
-  <a href="{% url 'admin:sponsors_statementofwork_change' statement_of_work.pk %}">{{ statement_of_work }}</a> &gt
-  {% trans 'Send Statement of Work' %}
+  <a href="{% url 'admin:sponsors_contract_changelist' %}">{% trans 'Sponsorship' %}</a> &gt
+  <a href="{% url 'admin:sponsors_contract_change' statement_of_work.pk %}">{{ statement_of_work }}</a> &gt
+  {% trans 'Send Contract' %}
 </div>
 {% endblock %}
 
 {% block content %}
-<h1>Send Statement of Work</h1>
+<h1>Send Contract</h1>
 
 
 <div style="display: block">

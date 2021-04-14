@@ -652,7 +652,7 @@ class SendContractView(TestCase):
         self.client.force_login(self.user)
         self.statement_of_work = baker.make_recipe("sponsors.tests.empty_sow")
         self.url = reverse(
-            "admin:sponsors_statementofwork_send", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_send", args=[self.statement_of_work.pk]
         )
         self.data = {
             "confirm": "yes",
@@ -671,7 +671,7 @@ class SendContractView(TestCase):
     def test_approve_sponsorship_on_post(self):
         response = self.client.post(self.url, data=self.data)
         expected_url = reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.statement_of_work.pk]
         )
         self.statement_of_work.refresh_from_db()
 
@@ -688,7 +688,7 @@ class SendContractView(TestCase):
         self.statement_of_work.status = Contract.AWAITING_SIGNATURE
         self.statement_of_work.save()
         expected_url = reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.statement_of_work.pk]
         )
 
         response = self.client.post(self.url, data=self.data)

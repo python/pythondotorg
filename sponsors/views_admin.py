@@ -90,7 +90,7 @@ def send_statement_of_work_view(ModelAdmin, request, pk):
                 messages.ERROR,
             )
 
-        redirect_url = reverse("admin:sponsors_statementofwork_change", args=[sow.pk])
+        redirect_url = reverse("admin:sponsors_contract_change", args=[sow.pk])
         return redirect(redirect_url)
 
     context = {"statement_of_work": sow}

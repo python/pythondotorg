@@ -406,7 +406,7 @@ class Sponsorship(models.Model):
         if not self.statement_of_work:
             return ""
         return reverse(
-            "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.statement_of_work.pk]
         )
 
     @cached_property
@@ -717,7 +717,7 @@ class Contract(models.Model):
 
     @property
     def preview_url(self):
-        return reverse("admin:sponsors_statementofwork_preview", args=[self.pk])
+        return reverse("admin:sponsors_contract_preview", args=[self.pk])
 
     @property
     def awaiting_signature(self):
