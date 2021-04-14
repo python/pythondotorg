@@ -380,7 +380,7 @@ class Sponsorship(models.Model):
         try:
             if not self.statement_of_work.is_draft:
                 status = self.statement_of_work.get_status_display()
-                msg = f"Can't rollback to edit a sponsorship with a { status } Statement of Work."
+                msg = f"Can't rollback to edit a sponsorship with a { status } Contract."
                 raise InvalidStatusException(msg)
             self.statement_of_work.delete()
         except ObjectDoesNotExist:
@@ -596,7 +596,7 @@ class LegalClause(OrderedModel):
         pass
 
 
-class StatementOfWork(models.Model):
+class Contract(models.Model):
     DRAFT = "draft"
     OUTDATED = "outdated"
     AWAITING_SIGNATURE = "awaiting signature"
@@ -629,7 +629,7 @@ class StatementOfWork(models.Model):
         verbose_name="Signed PDF",
     )
 
-    # Statement of Work information gets populated during object's creation.
+    # Contract information gets populated during object's creation.
     # The sponsorship FK ís just a reference to keep track of related objects.
     # It shouldn't be used to fetch for any of the sponsorship's data.
     sponsorship = models.OneToOneField(
@@ -665,16 +665,16 @@ class StatementOfWork(models.Model):
     sent_on = models.DateField(null=True)
 
     class Meta:
-        verbose_name = "Statement of Work"
-        verbose_name_plural = "Statements of Work"
+        verbose_name = "Contract"
+        verbose_name_plural = "Contracts"
 
     def __str__(self):
-        return f"Statement of work: {self.sponsorship}"
+        return f"Contract: {self.sponsorship}"
 
     @classmethod
     def new(cls, sponsorship):
         """
-        Factory method to create a new Statement of Work from a Sponsorship
+        Factory method to create a new Contract from a Sponsorship
         """
         sponsor = sponsorship.sponsor
         primary_contact = sponsor.primary_contact

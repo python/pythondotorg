@@ -76,17 +76,17 @@ def send_statement_of_work_view(ModelAdmin, request, pk):
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
 
-        use_case = use_cases.SendStatementOfWorkUseCase.build()
+        use_case = use_cases.SendContractUseCase.build()
         try:
             use_case.execute(sow, request=request)
             ModelAdmin.message_user(
-                request, "Statement of Work was sent!", messages.SUCCESS
+                request, "Contract was sent!", messages.SUCCESS
             )
         except InvalidStatusException:
             status = sow.get_status_display().title()
             ModelAdmin.message_user(
                 request,
-                f"Statement of work with status {status} can't be sent.",
+                f"Contract with status {status} can't be sent.",
                 messages.ERROR,
             )
 

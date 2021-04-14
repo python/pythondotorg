@@ -10,7 +10,7 @@ from django.utils.html import mark_safe
 from sponsors.pdf import render_sow_to_pdf_file, render_sow_to_pdf_response
 
 
-class TestRenderStatementOfWorkToPDF(TestCase):
+class TestRenderContractToPDF(TestCase):
     def setUp(self):
         self.sow = baker.make_recipe("sponsors.tests.empty_sow")
         text = f"{self.sow.benefits_list.raw}\n\n**Legal Clauses**\n{self.sow.legal_clauses.raw}"

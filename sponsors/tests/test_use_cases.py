@@ -8,7 +8,7 @@ from django.utils import timezone
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship, StatementOfWork
+from sponsors.models import Sponsorship, Contract
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -127,10 +127,10 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 0)
 
 
-class SendStatementOfWorkUseCaseTests(TestCase):
+class SendContractUseCaseTests(TestCase):
     def setUp(self):
         self.notifications = [Mock(), Mock()]
-        self.use_case = use_cases.SendStatementOfWorkUseCase(self.notifications)
+        self.use_case = use_cases.SendContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.statement = baker.make_recipe("sponsors.tests.empty_sow")
 
@@ -147,9 +147,9 @@ class SendStatementOfWorkUseCaseTests(TestCase):
             )
 
     def test_build_use_case_without_notificationss(self):
-        uc = use_cases.SendStatementOfWorkUseCase.build()
+        uc = use_cases.SendContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
-        self.assertIsInstance(uc.notifications[0], StatementOfWorkNotificationToPSF)
+        self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
         self.assertIsInstance(
-            uc.notifications[1], StatementOfWorkNotificationToSponsors
+            uc.notifications[1], ContractNotificationToSponsors
         )

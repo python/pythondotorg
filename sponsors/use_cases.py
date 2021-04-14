@@ -1,5 +1,5 @@
 from sponsors import notifications
-from sponsors.models import Sponsorship, StatementOfWork
+from sponsors.models import Sponsorship, Contract
 from sponsors.pdf import render_sow_to_pdf_file
 
 
@@ -54,7 +54,7 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
             sponsorship.sponsorship_fee = fee
 
         sponsorship.save()
-        statement_of_work = StatementOfWork.new(sponsorship)
+        statement_of_work = Contract.new(sponsorship)
 
         self.notify(
             request=kwargs.get("request"),
@@ -65,10 +65,10 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         return sponsorship
 
 
-class SendStatementOfWorkUseCase(BaseUseCaseWithNotifications):
+class SendContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
-        notifications.StatementOfWorkNotificationToPSF(),
-        notifications.StatementOfWorkNotificationToSponsors(),
+        notifications.ContractNotificationToPSF(),
+        notifications.ContractNotificationToSponsors(),
     ]
 
     def execute(self, statement_of_work, **kwargs):

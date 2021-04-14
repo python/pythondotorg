@@ -14,7 +14,7 @@ from .models import (
     SponsorContact,
     SponsorBenefit,
     LegalClause,
-    StatementOfWork,
+    Contract,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -366,8 +366,8 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
     list_display = ["internal_name"]
 
 
-@admin.register(StatementOfWork)
-class StatementOfWorkModelAdmin(admin.ModelAdmin):
+@admin.register(Contract)
+class ContractModelAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/statement_of_work_change_form.html"
     list_display = [
         "id",

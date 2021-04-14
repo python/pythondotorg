@@ -75,7 +75,7 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
 
 
 # TODO add PDF attachment
-class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
+class ContractNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
     message_template = "sponsors/email/psf_statement_of_work.txt"
     email_context_keys = ["statement_of_work"]
@@ -87,11 +87,11 @@ class StatementOfWorkNotificationToPSF(BaseEmailSponsorshipNotification):
         document = context["statement_of_work"].document
         with document.open("rb") as fd:
             content = fd.read()
-        return [("StatementOfWork.pdf", content, "application/pdf")]
+        return [("Contract.pdf", content, "application/pdf")]
 
 
 # TODO add PDF attachment
-class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
+class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
     message_template = "sponsors/email/sponsor_statement_of_work.txt"
     email_context_keys = ["statement_of_work"]
@@ -103,4 +103,4 @@ class StatementOfWorkNotificationToSponsors(BaseEmailSponsorshipNotification):
         document = context["statement_of_work"].document
         with document.open("rb") as fd:
             content = fd.read()
-        return [("StatementOfWork.pdf", content, "application/pdf")]
+        return [("Contract.pdf", content, "application/pdf")]

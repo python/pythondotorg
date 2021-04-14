@@ -134,9 +134,9 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
         self.assertEqual([self.user.email], email.to)
 
 
-class StatementOfWorkNotificationToPSFTests(TestCase):
+class ContractNotificationToPSFTests(TestCase):
     def setUp(self):
-        self.notification = notifications.StatementOfWorkNotificationToPSF()
+        self.notification = notifications.ContractNotificationToPSF()
         self.sow = baker.make_recipe(
             "sponsors.tests.awaiting_signature_sow",
             _fill_optional=["document"],
@@ -171,14 +171,14 @@ class StatementOfWorkNotificationToPSFTests(TestCase):
 
         self.assertEqual(len(email.attachments), 1)
         name, content, mime = email.attachments[0]
-        self.assertEqual(name, "StatementOfWork.pdf")
+        self.assertEqual(name, "Contract.pdf")
         self.assertEqual(mime, "application/pdf")
         self.assertEqual(content, expected_content)
 
 
-class StatementOfWorkNotificationToSponsorsTests(TestCase):
+class ContractNotificationToSponsorsTests(TestCase):
     def setUp(self):
-        self.notification = notifications.StatementOfWorkNotificationToSponsors()
+        self.notification = notifications.ContractNotificationToSponsors()
         self.user = baker.make(settings.AUTH_USER_MODEL, email="email@email.com")
         sponsorship = baker.make(
             Sponsorship,
@@ -221,6 +221,6 @@ class StatementOfWorkNotificationToSponsorsTests(TestCase):
 
         self.assertEqual(len(email.attachments), 1)
         name, content, mime = email.attachments[0]
-        self.assertEqual(name, "StatementOfWork.pdf")
+        self.assertEqual(name, "Contract.pdf")
         self.assertEqual(mime, "application/pdf")
         self.assertEqual(content, expected_content)

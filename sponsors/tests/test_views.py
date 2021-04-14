@@ -18,7 +18,7 @@ from ..models import (
     SponsorshipBenefit,
     SponsorContact,
     Sponsorship,
-    StatementOfWork,
+    Contract,
 )
 from sponsors.forms import (
     SponsorshiptBenefitsForm,
@@ -644,7 +644,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
 
 
-class SendStatementOfWorkView(TestCase):
+class SendContractView(TestCase):
     def setUp(self):
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
@@ -679,13 +679,13 @@ class SendStatementOfWorkView(TestCase):
         self.assertTrue(self.statement_of_work.document.name)
         self.assertEqual(2, len(mail.outbox))
         msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Statement of Work was sent!", messages.SUCCESS)
+        assertMessage(msg, "Contract was sent!", messages.SUCCESS)
 
     @patch.object(
         Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
     )
     def test_display_error_message_to_user_if_invalid_status(self):
-        self.statement_of_work.status = StatementOfWork.AWAITING_SIGNATURE
+        self.statement_of_work.status = Contract.AWAITING_SIGNATURE
         self.statement_of_work.save()
         expected_url = reverse(
             "admin:sponsors_statementofwork_change", args=[self.statement_of_work.pk]
@@ -699,7 +699,7 @@ class SendStatementOfWorkView(TestCase):
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(
             msg,
-            "Statement of work with status Awaiting Signature can't be sent.",
+            "Contract with status Awaiting Signature can't be sent.",
             messages.ERROR,
         )
 
