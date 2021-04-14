@@ -15,27 +15,27 @@ def _clean_split(text, separator='\n'):
     ]
 
 
-def _sow_context(sow, **context):
+def _contract_context(contract, **context):
     context.update({
-        "sow": sow,
-        "start_date": sow.sponsorship.start_date,
-        "sponsor": sow.sponsorship.sponsor,
-        "sponsorship": sow.sponsorship,
-        "benefits": _clean_split(sow.benefits_list.raw),
-        "legal_clauses": _clean_split(sow.legal_clauses.raw),
+        "contract": contract,
+        "start_date": contract.sponsorship.start_date,
+        "sponsor": contract.sponsorship.sponsor,
+        "sponsorship": contract.sponsorship,
+        "benefits": _clean_split(contract.benefits_list.raw),
+        "legal_clauses": _clean_split(contract.legal_clauses.raw),
     })
     return context
 
 
-def render_sow_to_pdf_response(request, sow, **context):
+def render_contract_to_pdf_response(request, contract, **context):
     template = "sponsors/admin/preview-statement-of-work.html"
-    context = _sow_context(sow, **context)
+    context = _contract_context(contract, **context)
     from django.shortcuts import render
     #return render(request, template, context)
     return render_to_pdf_response(request, template, context)
 
 
-def render_sow_to_pdf_file(sow, **context):
+def render_contract_to_pdf_file(contract, **context):
     template = "sponsors/admin/preview-statement-of-work.html"
-    context = _sow_context(sow, **context)
+    context = _contract_context(contract, **context)
     return render_to_pdf(template, context)

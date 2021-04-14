@@ -1,6 +1,6 @@
 from sponsors import notifications
 from sponsors.models import Sponsorship, Contract
-from sponsors.pdf import render_sow_to_pdf_file
+from sponsors.pdf import render_contract_to_pdf_file
 
 
 class BaseUseCaseWithNotifications:
@@ -72,7 +72,7 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
     ]
 
     def execute(self, statement_of_work, **kwargs):
-        pdf_file = render_sow_to_pdf_file(statement_of_work)
+        pdf_file = render_contract_to_pdf_file(statement_of_work)
         statement_of_work.set_final_version(pdf_file)
         self.notify(
             request=kwargs.get("request"),

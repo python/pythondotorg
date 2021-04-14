@@ -200,7 +200,7 @@ class SponsorshipModelTests(TestCase):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.empty_sow', sponsorship=sponsorship)
+        baker.make_recipe('sponsors.tests.empty_contract', sponsorship=sponsorship)
 
         sponsorship.rollback_to_editing()
         sponsorship.save()
@@ -209,11 +209,11 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertEqual(0, Contract.objects.count())
 
-    def test_can_not_rollback_sponsorship_to_edit_if_sow_was_sent(self):
+    def test_can_not_rollback_sponsorship_to_edit_if_contract_was_sent(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.awaiting_signature_sow', sponsorship=sponsorship)
+        baker.make_recipe('sponsors.tests.awaiting_signature_contract', sponsorship=sponsorship)
 
         with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
@@ -356,7 +356,7 @@ class ContractModelTests(TestCase):
         self.sponsorship_benefits = SponsorshipBenefit.objects.all()
 
     def test_auto_increment_draft_revision_on_save(self):
-        statement = baker.make_recipe("sponsors.tests.empty_sow")
+        statement = baker.make_recipe("sponsors.tests.empty_contract")
         self.assertEqual(statement.status, Contract.DRAFT)
         self.assertEqual(statement.revision, 0)
 
@@ -368,7 +368,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(statement.revision, num_updates)
 
     def test_does_not_auto_increment_draft_revision_on_save_if_other_states(self):
-        statement = baker.make_recipe("sponsors.tests.empty_sow", revision=10)
+        statement = baker.make_recipe("sponsors.tests.empty_contract", revision=10)
 
         choices = Contract.STATUS_CHOICES
         other_status = [c[0] for c in choices if c[0] != Contract.DRAFT]
@@ -465,7 +465,7 @@ class ContractModelTests(TestCase):
         }
         for status, exepcted in states_map.items():
             statement = baker.prepare_recipe(
-                "sponsors.tests.empty_sow",
+                "sponsors.tests.empty_contract",
                 sponsorship__sponsor__name="foo",
                 status=status,
             )
@@ -473,7 +473,7 @@ class ContractModelTests(TestCase):
 
     def test_set_final_document_version(self):
         statement = baker.make_recipe(
-            "sponsors.tests.empty_sow", sponsorship__sponsor__name="foo"
+            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
         )
         content = b"pdf binary content"
         self.assertFalse(statement.document.name)
@@ -486,7 +486,7 @@ class ContractModelTests(TestCase):
 
     def test_raise_invalid_status_exception_if_not_draft(self):
         statement = baker.make_recipe(
-            "sponsors.tests.empty_sow", status=Contract.AWAITING_SIGNATURE
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
         )
 
         with self.assertRaises(InvalidStatusException):

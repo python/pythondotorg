@@ -650,7 +650,7 @@ class SendContractView(TestCase):
             settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
         )
         self.client.force_login(self.user)
-        self.statement_of_work = baker.make_recipe("sponsors.tests.empty_sow")
+        self.statement_of_work = baker.make_recipe("sponsors.tests.empty_contract")
         self.url = reverse(
             "admin:sponsors_contract_send", args=[self.statement_of_work.pk]
         )
@@ -662,7 +662,7 @@ class SendContractView(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
         self.assertEqual(context["statement_of_work"], self.statement_of_work)
 
     @patch.object(
@@ -707,16 +707,16 @@ class SendContractView(TestCase):
         self.data.pop("confirm")
         response = self.client.post(self.url, data=self.data)
         self.statement_of_work.refresh_from_db()
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
         self.assertFalse(self.statement_of_work.document.name)
 
         self.data["confirm"] = "invalid"
         response = self.client.post(self.url, data=self.data)
-        self.assertTemplateUsed(response, "sponsors/admin/send_sow.html")
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
         self.assertFalse(self.statement_of_work.document.name)
         self.assertEqual(0, len(mail.outbox))
 
-    def test_404_if_sow_does_not_exist(self):
+    def test_404_if_contract_does_not_exist(self):
         self.statement_of_work.delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)

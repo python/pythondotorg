@@ -7,19 +7,19 @@ from django.template.loader import render_to_string
 from django.test import TestCase
 from django.utils.html import mark_safe
 
-from sponsors.pdf import render_sow_to_pdf_file, render_sow_to_pdf_response
+from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_pdf_response
 
 
 class TestRenderContractToPDF(TestCase):
     def setUp(self):
-        self.sow = baker.make_recipe("sponsors.tests.empty_sow")
-        text = f"{self.sow.benefits_list.raw}\n\n**Legal Clauses**\n{self.sow.legal_clauses.raw}"
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
+        text = f"{self.contract.benefits_list.raw}\n\n**Legal Clauses**\n{self.contract.legal_clauses.raw}"
         html = render_md(text)
         self.context = {
-            "sow": self.sow,
-            "start_date": self.sow.sponsorship.start_date,
-            "sponsor": self.sow.sponsorship.sponsor,
-            "sponsorship": self.sow.sponsorship,
+            "contract": self.contract,
+            "start_date": self.contract.sponsorship.start_date,
+            "sponsor": self.contract.sponsorship.sponsor,
+            "sponsorship": self.contract.sponsorship,
             "benefits": [],
             "legal_clauses": [],
         }
@@ -29,7 +29,7 @@ class TestRenderContractToPDF(TestCase):
     def test_render_pdf_using_django_easy_pdf(self, mock_render):
         mock_render.return_value = "pdf content"
 
-        content = render_sow_to_pdf_file(self.sow)
+        content = render_contract_to_pdf_file(self.contract)
 
         self.assertEqual(content, "pdf content")
         mock_render.assert_called_once_with(self.template, self.context)
@@ -40,7 +40,7 @@ class TestRenderContractToPDF(TestCase):
         mock_render.return_value = response
 
         request = Mock(HttpRequest)
-        content = render_sow_to_pdf_response(request, self.sow)
+        content = render_contract_to_pdf_response(request, self.contract)
 
         self.assertEqual(content, response)
         mock_render.assert_called_once_with(request, self.template, self.context)

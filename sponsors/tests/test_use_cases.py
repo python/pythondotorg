@@ -132,7 +132,7 @@ class SendContractUseCaseTests(TestCase):
         self.notifications = [Mock(), Mock()]
         self.use_case = use_cases.SendContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.statement = baker.make_recipe("sponsors.tests.empty_sow")
+        self.statement = baker.make_recipe("sponsors.tests.empty_contract")
 
     def test_send_and_update_statement_of_work_with_document(self):
         self.use_case.execute(self.statement)

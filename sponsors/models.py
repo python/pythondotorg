@@ -402,7 +402,7 @@ class Sponsorship(models.Model):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
 
     @property
-    def sow_admin_url(self):
+    def contract_admin_url(self):
         if not self.statement_of_work:
             return ""
         return reverse(

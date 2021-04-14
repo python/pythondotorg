@@ -137,8 +137,8 @@ class RejectedSponsorshipNotificationToSponsorsTests(TestCase):
 class ContractNotificationToPSFTests(TestCase):
     def setUp(self):
         self.notification = notifications.ContractNotificationToPSF()
-        self.sow = baker.make_recipe(
-            "sponsors.tests.awaiting_signature_sow",
+        self.contract = baker.make_recipe(
+            "sponsors.tests.awaiting_signature_contract",
             _fill_optional=["document"],
             _create_files=True,
         )
@@ -146,11 +146,11 @@ class ContractNotificationToPSFTests(TestCase):
         self.content_template = "sponsors/email/psf_statement_of_work.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"statement_of_work": self.sow}
+        context = {"statement_of_work": self.contract}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(statement_of_work=self.sow)
+        self.notification.notify(statement_of_work=self.contract)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -160,13 +160,13 @@ class ContractNotificationToPSFTests(TestCase):
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
     def test_attach_statement_of_work_pdf(self):
-        self.assertTrue(self.sow.document.name)
-        with self.sow.document.open("rb") as fd:
+        self.assertTrue(self.contract.document.name)
+        with self.contract.document.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
-        self.sow.refresh_from_db()
-        self.notification.notify(statement_of_work=self.sow)
+        self.contract.refresh_from_db()
+        self.notification.notify(statement_of_work=self.contract)
         email = mail.outbox[0]
 
         self.assertEqual(len(email.attachments), 1)
@@ -186,8 +186,8 @@ class ContractNotificationToSponsorsTests(TestCase):
             _fill_optional=["approved_on", "sponsor"],
             submited_by=self.user,
         )
-        self.sow = baker.make_recipe(
-            "sponsors.tests.awaiting_signature_sow",
+        self.contract = baker.make_recipe(
+            "sponsors.tests.awaiting_signature_contract",
             sponsorship=sponsorship,
             _fill_optional=["document"],
             _create_files=True,
@@ -196,11 +196,11 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.content_template = "sponsors/email/sponsor_statement_of_work.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"statement_of_work": self.sow}
+        context = {"statement_of_work": self.contract}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(statement_of_work=self.sow)
+        self.notification.notify(statement_of_work=self.contract)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -210,13 +210,13 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual([self.user.email], email.to)
 
     def test_attach_statement_of_work_pdf(self):
-        self.assertTrue(self.sow.document.name)
-        with self.sow.document.open("rb") as fd:
+        self.assertTrue(self.contract.document.name)
+        with self.contract.document.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
-        self.sow.refresh_from_db()
-        self.notification.notify(statement_of_work=self.sow)
+        self.contract.refresh_from_db()
+        self.notification.notify(statement_of_work=self.contract)
         email = mail.outbox[0]
 
         self.assertEqual(len(email.attachments), 1)
