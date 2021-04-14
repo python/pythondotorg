@@ -132,18 +132,18 @@ class SendContractUseCaseTests(TestCase):
         self.notifications = [Mock(), Mock()]
         self.use_case = use_cases.SendContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.statement = baker.make_recipe("sponsors.tests.empty_contract")
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
 
     def test_send_and_update_contract_with_document(self):
-        self.use_case.execute(self.statement)
-        self.statement.refresh_from_db()
+        self.use_case.execute(self.contract)
+        self.contract.refresh_from_db()
 
-        self.assertTrue(self.statement.document.name)
-        self.assertTrue(self.statement.awaiting_signature)
+        self.assertTrue(self.contract.document.name)
+        self.assertTrue(self.contract.awaiting_signature)
         for n in self.notifications:
             n.notify.assert_called_once_with(
                 request=None,
-                contract=self.statement,
+                contract=self.contract,
             )
 
     def test_build_use_case_without_notificationss(self):

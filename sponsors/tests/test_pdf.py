@@ -23,7 +23,7 @@ class TestRenderContractToPDF(TestCase):
             "benefits": [],
             "legal_clauses": [],
         }
-        self.template = "sponsors/admin/preview-statement-of-work.html"
+        self.template = "sponsors/admin/preview-contract.html"
 
     @patch("sponsors.pdf.render_to_pdf")
     def test_render_pdf_using_django_easy_pdf(self, mock_render):

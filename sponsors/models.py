@@ -104,7 +104,7 @@ class SponsorshipBenefit(OrderedModel):
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the application form, statement of work, and sponsor dashboard.",
+        help_text="For display in the application form, contract, and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
@@ -148,7 +148,7 @@ class SponsorshipBenefit(OrderedModel):
         "LegalClause",
         related_name="benefits",
         verbose_name="Legal Clauses",
-        help_text="Legal clauses to be displayed in the statement of work",
+        help_text="Legal clauses to be displayed in the contract",
         blank=True,
     )
     internal_description = models.TextField(
@@ -446,13 +446,13 @@ class SponsorBenefit(OrderedModel):
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
         blank=True,
         verbose_name="Benefit Description",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     program = models.ForeignKey(
         SponsorshipProgram,
@@ -582,7 +582,7 @@ class LegalClause(OrderedModel):
     )
     clause = models.TextField(
         verbose_name="Clause",
-        help_text="Legal clause text to be added to statement of work",
+        help_text="Legal clause text to be added to contract",
         blank=False,
     )
     notes = models.TextField(
@@ -742,7 +742,7 @@ class Contract(models.Model):
 
     def set_final_version(self, pdf_file):
         if self.AWAITING_SIGNATURE not in self.next_status:
-            msg = f"Can't send a {self.get_status_display()} statement of work."
+            msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
         path = f"{self.FINAL_VERSION_PDF_DIR}"
