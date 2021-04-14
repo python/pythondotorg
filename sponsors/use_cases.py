@@ -54,12 +54,12 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
             sponsorship.sponsorship_fee = fee
 
         sponsorship.save()
-        statement_of_work = Contract.new(sponsorship)
+        contract = Contract.new(sponsorship)
 
         self.notify(
             request=kwargs.get("request"),
             sponsorship=sponsorship,
-            statement_of_work=statement_of_work,
+            contract=contract,
         )
 
         return sponsorship
@@ -71,10 +71,10 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
         notifications.ContractNotificationToSponsors(),
     ]
 
-    def execute(self, statement_of_work, **kwargs):
-        pdf_file = render_contract_to_pdf_file(statement_of_work)
-        statement_of_work.set_final_version(pdf_file)
+    def execute(self, contract, **kwargs):
+        pdf_file = render_contract_to_pdf_file(contract)
+        contract.set_final_version(pdf_file)
         self.notify(
             request=kwargs.get("request"),
-            statement_of_work=statement_of_work,
+            contract=contract,
         )

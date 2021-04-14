@@ -196,7 +196,7 @@ class SponsorshipModelTests(TestCase):
         with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
 
-    def test_rollback_approved_sponsorship_with_statement_of_work_should_delete_it(self):
+    def test_rollback_approved_sponsorship_with_contract_should_delete_it(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
@@ -382,7 +382,7 @@ class ContractModelTests(TestCase):
             statement.refresh_from_db()
             self.assertEqual(statement.revision, 10)
 
-    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_info_and_contact(
+    def test_create_new_contract_from_sponsorship_sets_sponsor_info_and_contact(
         self,
     ):
         statement = Contract.new(self.sponsorship)
@@ -395,7 +395,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(statement.sponsor_info, expected_info)
         self.assertEqual(statement.sponsor_contact, "")
 
-    def test_create_new_statement_of_work_from_sponsorship_sets_sponsor_contact_and_primary(
+    def test_create_new_contract_from_sponsorship_sets_sponsor_contact_and_primary(
         self,
     ):
         sponsor = self.sponsorship.sponsor
@@ -454,7 +454,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(statement.benefits_list.raw, expected_benefits_list)
         self.assertEqual(statement.benefits_list.markup_type, "markdown")
 
-    def test_control_statement_of_work_next_status(self):
+    def test_control_contract_next_status(self):
         SOW = Contract
         states_map = {
             SOW.DRAFT: [SOW.AWAITING_SIGNATURE],

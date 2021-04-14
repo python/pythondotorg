@@ -99,14 +99,14 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
             "end_date": today + timedelta(days=10),
         }
 
-    def test_update_sponsorship_as_approved_and_create_statement_of_work(self):
+    def test_update_sponsorship_as_approved_and_create_contract(self):
         self.use_case.execute(self.sponsorship, **self.data)
         self.sponsorship.refresh_from_db()
 
         today = timezone.now().date()
         self.assertEqual(self.sponsorship.approved_on, today)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
-        self.assertTrue(self.sponsorship.statement_of_work.pk)
+        self.assertTrue(self.sponsorship.contract.pk)
         self.assertTrue(self.sponsorship.start_date)
         self.assertTrue(self.sponsorship.end_date)
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
@@ -119,7 +119,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
             n.notify.assert_called_once_with(
                 request=None,
                 sponsorship=self.sponsorship,
-                statement_of_work=self.sponsorship.statement_of_work,
+                contract=self.sponsorship.contract,
             )
 
     def test_build_use_case_without_notificationss(self):
@@ -134,7 +134,7 @@ class SendContractUseCaseTests(TestCase):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.statement = baker.make_recipe("sponsors.tests.empty_contract")
 
-    def test_send_and_update_statement_of_work_with_document(self):
+    def test_send_and_update_contract_with_document(self):
         self.use_case.execute(self.statement)
         self.statement.refresh_from_db()
 
@@ -143,7 +143,7 @@ class SendContractUseCaseTests(TestCase):
         for n in self.notifications:
             n.notify.assert_called_once_with(
                 request=None,
-                statement_of_work=self.statement,
+                contract=self.statement,
             )
 
     def test_build_use_case_without_notificationss(self):

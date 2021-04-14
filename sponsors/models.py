@@ -378,11 +378,11 @@ class Sponsorship(models.Model):
             raise InvalidStatusException(msg)
 
         try:
-            if not self.statement_of_work.is_draft:
-                status = self.statement_of_work.get_status_display()
+            if not self.contract.is_draft:
+                status = self.contract.get_status_display()
                 msg = f"Can't rollback to edit a sponsorship with a { status } Contract."
                 raise InvalidStatusException(msg)
-            self.statement_of_work.delete()
+            self.contract.delete()
         except ObjectDoesNotExist:
             pass
 
@@ -403,10 +403,10 @@ class Sponsorship(models.Model):
 
     @property
     def contract_admin_url(self):
-        if not self.statement_of_work:
+        if not self.contract:
             return ""
         return reverse(
-            "admin:sponsors_contract_change", args=[self.statement_of_work.pk]
+            "admin:sponsors_contract_change", args=[self.contract.pk]
         )
 
     @cached_property
@@ -636,7 +636,7 @@ class Contract(models.Model):
         Sponsorship,
         null=True,
         on_delete=models.SET_NULL,
-        related_name="statement_of_work",
+        related_name="contract",
     )
     sponsor_info = models.TextField(verbose_name="Sponsor information")
     sponsor_contact = models.TextField(verbose_name="Sponsor contact")

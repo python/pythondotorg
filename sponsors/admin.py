@@ -368,7 +368,7 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
 
 @admin.register(Contract)
 class ContractModelAdmin(admin.ModelAdmin):
-    change_form_template = "sponsors/admin/statement_of_work_change_form.html"
+    change_form_template = "sponsors/admin/contract_change_form.html"
     list_display = [
         "id",
         "sponsorship",
@@ -474,19 +474,19 @@ class ContractModelAdmin(admin.ModelAdmin):
         my_urls = [
             path(
                 "<int:pk>/preview",
-                self.admin_site.admin_view(self.preview_statement_of_work_view),
+                self.admin_site.admin_view(self.preview_contract_view),
                 name="sponsors_contract_preview",
             ),
             path(
                 "<int:pk>/send",
-                self.admin_site.admin_view(self.send_statement_of_work_view),
+                self.admin_site.admin_view(self.send_contract_view),
                 name="sponsors_contract_send",
             ),
         ]
         return my_urls + urls
 
-    def preview_statement_of_work_view(self, request, pk):
-        return views_admin.preview_statement_of_work_view(self, request, pk)
+    def preview_contract_view(self, request, pk):
+        return views_admin.preview_contract_view(self, request, pk)
 
-    def send_statement_of_work_view(self, request, pk):
-        return views_admin.send_statement_of_work_view(self, request, pk)
+    def send_contract_view(self, request, pk):
+        return views_admin.send_contract_view(self, request, pk)

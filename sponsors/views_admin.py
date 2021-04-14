@@ -8,7 +8,7 @@ from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response
 
 
-def preview_statement_of_work_view(ModelAdmin, request, pk):
+def preview_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     response = render_contract_to_pdf_response(request, contract)
     response["X-Frame-Options"] = "SAMEORIGIN"
@@ -71,7 +71,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 
-def send_statement_of_work_view(ModelAdmin, request, pk):
+def send_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
@@ -93,7 +93,7 @@ def send_statement_of_work_view(ModelAdmin, request, pk):
         redirect_url = reverse("admin:sponsors_contract_change", args=[contract.pk])
         return redirect(redirect_url)
 
-    context = {"statement_of_work": contract}
+    context = {"contract": contract}
     return render(request, "sponsors/admin/send_contract.html", context=context)
 
 

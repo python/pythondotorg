@@ -142,15 +142,15 @@ class ContractNotificationToPSFTests(TestCase):
             _fill_optional=["document"],
             _create_files=True,
         )
-        self.subject_template = "sponsors/email/psf_statement_of_work_subject.txt"
-        self.content_template = "sponsors/email/psf_statement_of_work.txt"
+        self.subject_template = "sponsors/email/psf_contract_subject.txt"
+        self.content_template = "sponsors/email/psf_contract.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"statement_of_work": self.contract}
+        context = {"contract": self.contract}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(statement_of_work=self.contract)
+        self.notification.notify(contract=self.contract)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -159,14 +159,14 @@ class ContractNotificationToPSFTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL], email.to)
 
-    def test_attach_statement_of_work_pdf(self):
+    def test_attach_contract_pdf(self):
         self.assertTrue(self.contract.document.name)
         with self.contract.document.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
         self.contract.refresh_from_db()
-        self.notification.notify(statement_of_work=self.contract)
+        self.notification.notify(contract=self.contract)
         email = mail.outbox[0]
 
         self.assertEqual(len(email.attachments), 1)
@@ -192,15 +192,15 @@ class ContractNotificationToSponsorsTests(TestCase):
             _fill_optional=["document"],
             _create_files=True,
         )
-        self.subject_template = "sponsors/email/sponsor_statement_of_work_subject.txt"
-        self.content_template = "sponsors/email/sponsor_statement_of_work.txt"
+        self.subject_template = "sponsors/email/sponsor_contract_subject.txt"
+        self.content_template = "sponsors/email/sponsor_contract.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"statement_of_work": self.contract}
+        context = {"contract": self.contract}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(statement_of_work=self.contract)
+        self.notification.notify(contract=self.contract)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -209,14 +209,14 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)
 
-    def test_attach_statement_of_work_pdf(self):
+    def test_attach_contract_pdf(self):
         self.assertTrue(self.contract.document.name)
         with self.contract.document.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
         self.contract.refresh_from_db()
-        self.notification.notify(statement_of_work=self.contract)
+        self.notification.notify(contract=self.contract)
         email = mail.outbox[0]
 
         self.assertEqual(len(email.attachments), 1)
