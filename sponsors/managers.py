@@ -6,6 +6,9 @@ class SponsorshipQuerySet(QuerySet):
         status = [self.model.APPLIED, self.model.APPROVED]
         return self.filter(status__in=status)
 
+    def approved(self):
+        return self.filter(status=self.model.APPROVED)
+
 
 class SponsorContactQuerySet(QuerySet):
     def get_primary_contact(self, sponsor):
