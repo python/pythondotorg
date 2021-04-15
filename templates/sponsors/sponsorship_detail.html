@@ -43,7 +43,7 @@
       <b>Level:</b> {{ sponsorship.level_name }}
     </li>
     <li>
-      <b>Agreed sponsorship fee:</b> ${{ sponsorship.sponsorship_fee|intcomma }}
+      <b>Agreed sponsorship fee:</b> {% if not sponsorship.for_modified_package %}${{ sponsorship.sponsorship_fee|intcomma }}{% else %}To be determined{% endif %}
     </li>
   </ul>
 
