@@ -345,6 +345,12 @@ class Sponsorship(models.Model):
             or 0
         )
 
+    @property
+    def agreed_fee(self):
+        valid_status = [Sponsorship.APPROVED, Sponsorship.FINALIZED]
+        if self.status in valid_status or not self.has_user_customization:
+            return self.sponsorship_fee
+
     def reject(self):
         if self.REJECTED not in self.next_status:
             msg = f"Can't reject a {self.get_status_display()} sponsorship."
