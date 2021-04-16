@@ -9,7 +9,7 @@ responses==0.10.5
 
 # Extra stuff required for local dev
 
-django-debug-toolbar==1.9.1
+django-debug-toolbar==1.11.1
 coverage
 ddt
 model-bakery==1.2.0
