@@ -657,7 +657,7 @@ class Contract(models.Model):
     #    `{ my code }`
     #    Add as many paragraphs as you like.
     # """
-    legal_clauses = MarkupField(markup_type="markdown")
+    legal_clauses = MarkupField(markup_type="markdown", default="", blank=True)
 
     # Activity control fields
     created_on = models.DateField(auto_now_add=True)
