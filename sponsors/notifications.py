@@ -78,7 +78,6 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
         return context["sponsorship"].verified_emails
 
 
-# TODO add PDF attachment
 class ContractNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_contract_subject.txt"
     message_template = "sponsors/email/psf_contract.txt"
@@ -94,7 +93,6 @@ class ContractNotificationToPSF(BaseEmailSponsorshipNotification):
         return [("Contract.pdf", content, "application/pdf")]
 
 
-# TODO add PDF attachment
 class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_contract_subject.txt"
     message_template = "sponsors/email/sponsor_contract.txt"
