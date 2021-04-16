@@ -4,10 +4,11 @@ from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
+from django.contrib.admin.models import LogEntry, CHANGE
 
 from sponsors import notifications
-from sponsors.models import Sponsorship
+from sponsors.models import Sponsorship, Contract
 
 
 class AppliedSponsorshipNotificationToPSFTests(TestCase):
@@ -224,3 +225,29 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(name, "Contract.pdf")
         self.assertEqual(mime, "application/pdf")
         self.assertEqual(content, expected_content)
+
+
+class SponsorshipApprovalLoggerTests(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get('/')
+        self.request.user = baker.make(settings.AUTH_USER_MODEL)
+        self.sponsorship = baker.make(Sponsorship, status=Sponsorship.APPROVED, sponsor__name='foo', _fill_optional=True)
+        self.kwargs = {
+            "request": self.request,
+            "sponsorship": self.sponsorship,
+        }
+        self.logger = notifications.SponsorshipApprovalLogger()
+
+    def test_create_log_entry_for_change_operation_with_approval_message(self):
+        self.assertEqual(LogEntry.objects.count(), 0)
+
+        self.logger.notify(**self.kwargs)
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.sponsorship.pk))
+        self.assertIn(str(self.sponsorship), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, CHANGE)
+        self.assertEqual(log_entry.change_message, "Sponsorship Approval")

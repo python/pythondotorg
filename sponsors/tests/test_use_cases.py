@@ -124,7 +124,8 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
 
     def test_build_use_case_without_notificationss(self):
         uc = use_cases.ApproveSponsorshipApplicationUseCase.build()
-        self.assertEqual(len(uc.notifications), 0)
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(uc.notifications[0], SponsorshipApprovalLogger)
 
 
 class SendContractUseCaseTests(TestCase):

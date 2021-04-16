@@ -1,6 +1,10 @@
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
+from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.contenttypes.models import ContentType
+
+from sponsors.models import Sponsorship
 
 
 class BaseEmailSponsorshipNotification:
@@ -104,3 +108,16 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
         with document.open("rb") as fd:
             content = fd.read()
         return [("Contract.pdf", content, "application/pdf")]
+
+
+class SponsorshipApprovalLogger():
+
+    def notify(self, request, sponsorship, **kwargs):
+        LogEntry.objects.log_action(
+            user_id=request.user.id,
+            content_type_id=ContentType.objects.get_for_model(Sponsorship).pk,
+            object_id=sponsorship.pk,
+            object_repr=str(sponsorship),
+            action_flag=CHANGE,
+            change_message="Sponsorship Approval"
+        )

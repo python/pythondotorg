@@ -44,6 +44,10 @@ class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
 
 class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.SponsorshipApprovalLogger(),
+    ]
+
     def execute(self, sponsorship, start_date, end_date, **kwargs):
         sponsorship.approve(start_date, end_date)
         level_name = kwargs.get("level_name")
