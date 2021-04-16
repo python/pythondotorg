@@ -73,6 +73,7 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.ContractNotificationToPSF(),
         notifications.ContractNotificationToSponsors(),
+        notifications.SentContractLogger(),
     ]
 
     def execute(self, contract, **kwargs):

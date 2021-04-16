@@ -248,6 +248,32 @@ class SponsorshipApprovalLoggerTests(TestCase):
         log_entry = LogEntry.objects.get()
         self.assertEqual(log_entry.user, self.request.user)
         self.assertEqual(log_entry.object_id, str(self.sponsorship.pk))
-        self.assertIn(str(self.sponsorship), log_entry.object_repr)
+        self.assertEqual(str(self.sponsorship), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
         self.assertEqual(log_entry.change_message, "Sponsorship Approval")
+
+
+class SentContractLoggerTests(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get('/')
+        self.request.user = baker.make(settings.AUTH_USER_MODEL)
+        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.kwargs = {
+            "request": self.request,
+            "contract": self.contract,
+        }
+        self.logger = notifications.SentContractLogger()
+
+    def test_create_log_entry_for_change_operation_with_approval_message(self):
+        self.assertEqual(LogEntry.objects.count(), 0)
+
+        self.logger.notify(**self.kwargs)
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.contract.pk))
+        self.assertEqual(str(self.contract), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, CHANGE)
+        self.assertEqual(log_entry.change_message, "Contract Sent")

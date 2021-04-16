@@ -149,8 +149,11 @@ class SendContractUseCaseTests(TestCase):
 
     def test_build_use_case_without_notificationss(self):
         uc = use_cases.SendContractUseCase.build()
-        self.assertEqual(len(uc.notifications), 2)
+        self.assertEqual(len(uc.notifications), 3)
         self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
         self.assertIsInstance(
             uc.notifications[1], ContractNotificationToSponsors
+        )
+        self.assertIsInstance(
+            uc.notifications[2], SentContractLogger
         )
