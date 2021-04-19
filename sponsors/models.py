@@ -304,6 +304,7 @@ class Sponsorship(models.Model):
         """
         for_modified_package = False
         package_benefits = []
+
         if package and package.has_user_customization(benefits):
             package_benefits = package.benefits.all()
             for_modified_package = True
@@ -348,8 +349,16 @@ class Sponsorship(models.Model):
     @property
     def agreed_fee(self):
         valid_status = [Sponsorship.APPROVED, Sponsorship.FINALIZED]
-        if self.status in valid_status or not self.has_user_customization:
+        if self.status in valid_status:
             return self.sponsorship_fee
+        try:
+            package = SponsorshipPackage.objects.get(name=self.level_name)
+            benefits = [sb.sponsorship_benefit for sb in self.package_benefits.all().select_related('sponsorship_benefit')]
+            if package and not package.has_user_customization(benefits):
+                return self.sponsorship_fee
+        except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
+            return None
+
 
     def reject(self):
         if self.REJECTED not in self.next_status:
