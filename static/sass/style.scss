@@ -2055,12 +2055,45 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $default-border-color;
     margin-bottom: 2em;
 
-    li {
-        @include pe-inline-block();
-        margin-right: .75em;
+    .menu {
+      display: flex;
+      width: 100%;
+    }
+
+    div.section {
+      padding: 0.25em 1em;
+
+      &:hover {
+          .section-links {
+              display: inline;
+          }
+      }
+
+      span {
+        @extend %button-style-yellow;
+      }
+    }
+
+    div.section-links {
+      display: none;
+
+      ul {
+        margin-left: 0;
+        list-style: none;
+        padding-top:0.15em;
+
+        li {
+          @extend %grey-colorbox;
+          margin-bottom: 0;
+          padding: 0.25em 0.25em;
+
+          &:hover {
+            @include vertical-gradient( $grey-lightest, darken($grey-lightest, 15%) );
+          }
+        };
+      };
     }
 
     & + .return-link {
