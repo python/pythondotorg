@@ -2673,8 +2673,13 @@ $breakpoint-desktop: 1200px;
     }
 
     .package-input {
-      span {
+      .package-price {
         padding-bottom: 0.5em;
+      }
+
+      .custom-fee {
+        font-size: 75%;
+        display: none;
       }
 
       h4 {

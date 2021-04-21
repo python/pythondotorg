@@ -3808,8 +3808,11 @@ span.highlighted {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {
     cursor: pointer; }
-    #select_sponsorship_benefits_container #benefitsTable .package-input span {
+    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
       padding-bottom: 0.5em; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
+      font-size: 75%;
+      display: none; }
     #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
       transform: rotateY(35deg); }
   #select_sponsorship_benefits_container #benefitsTable .selected {

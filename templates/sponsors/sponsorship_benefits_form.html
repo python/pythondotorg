@@ -14,6 +14,7 @@
     <div id="select_sponsorship_benefits_container">
       <h1>Sponsor the PSF</h1>
       <p>Select a sponsorship package or customize the benefits that make the most sense for your business.</p>
+      <p><small>Obs: the listed fees are only valid if no changes were made to Sponsorship Package's default benefits.</small></p>
       <br/>
 
       <div class="row section-title">
@@ -44,8 +45,9 @@
              {% for package in form.fields.package.queryset %}
              <div class="col col-items package-input" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
                <h4>{{ package.name|upper }}</h4>
-               <span>${{ package.sponsorship_amount|intcomma }}</span>
+               <span class="package-price">${{ package.sponsorship_amount|intcomma }}</span>
                <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
+               <span id="custom-fee-{{ package.id }}" class="custom-fee">Fee can change</span>
              </div>
              {% endfor %}
           </div>

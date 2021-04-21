@@ -45,6 +45,9 @@ $(document).ready(function(){
       benefitInput.prop("checked", true);
     });
 
+    // hide previous custom fee messages
+    $('.custom-fee').hide();
+
     mobileUpdate(package);
   });
 });
@@ -80,9 +83,22 @@ function benefitUpdate(benefitId, packageId) {
   const hiddenInput = benefitsInputs.filter((b) => b.getAttribute('data-benefit-id') == benefitId)[0];
   hiddenInput.checked = !hiddenInput.checked;
   clickedImg.src = newSrc;
+
+  // Check if there are any type of customization. If so, display custom-fee label.
+  let pkgBenefits = Array(...document.getElementById(`package_benefits_${packageId}`).children).map(div => div.textContent).sort();
+  let checkedBenefis = Array(...document.querySelectorAll('[data-benefit-id]')).filter(e => e.checked).map(input => input.value).sort();
+
+  const hasAllBenefts = pkgBenefits.reduce((sum, id) => sum && checkedBenefis.includes(id), true);
+  const sameBenefitsNum = pkgBenefits.length === checkedBenefis.length;
+
+  if (hasAllBenefts && sameBenefitsNum) {
+    document.getElementById(`custom-fee-${packageId}`).style.display = 'none';
+  } else {
+    document.getElementById(`custom-fee-${packageId}`).style.display = 'initial';
+  }
 };
 
-
+// Callback function when user selects a package;
 function updatePackageInput(packageId){
   const packageInput = document.getElementById(`id_package_${ packageId }`);
   packageInput.click();
