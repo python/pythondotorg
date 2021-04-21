@@ -3909,6 +3909,17 @@ span.highlighted {
     @media (max-width: 1200px) and (max-width: 640px) {
       #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
         width: 80%; } }
+@media (min-width: 1200px) {
+  #select_sponsorship_benefits_container {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */ }
+    #select_sponsorship_benefits_container .sticky {
+      position: -webkit-sticky;
+      /* for Safari */
+      position: sticky;
+      top: 0;
+      background-color: white; } }
 
 #thank-you-container {
   background: #417DAF;

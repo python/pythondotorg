@@ -2831,6 +2831,20 @@ $breakpoint-desktop: 1200px;
       }
     }
   }
+
+
+  @media (min-width: $breakpoint-desktop) {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */
+    .sticky {
+      position: -webkit-sticky; /* for Safari */
+      position: sticky;
+      top: 0;
+      background-color: $white;
+    }
+  }
+
 }
 
 #thank-you-container {
