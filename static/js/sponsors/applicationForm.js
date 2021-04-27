@@ -91,10 +91,11 @@ function benefitUpdate(benefitId, packageId) {
   const hasAllBenefts = pkgBenefits.reduce((sum, id) => sum && checkedBenefis.includes(id), true);
   const sameBenefitsNum = pkgBenefits.length === checkedBenefis.length;
 
+  const customFeeElems = Array(...document.getElementsByClassName(`custom-fee-${packageId}`));
   if (hasAllBenefts && sameBenefitsNum) {
-    document.getElementById(`custom-fee-${packageId}`).style.display = 'none';
+    customFeeElems.map(e => e.style.display = 'none');
   } else {
-    document.getElementById(`custom-fee-${packageId}`).style.display = 'initial';
+    customFeeElems.map(e => e.style.display = 'initial');
   }
 };
 
