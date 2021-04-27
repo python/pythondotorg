@@ -1,0 +1,13 @@
+#!/bin/bash
+
+EXIT_CODE=0
+
+PATH=$(npm bin):$PATH sass -I static/vendor/compass -I static/vendor/susy static/sass
+if git diff --quiet HEAD -- static; then
+    echo "SCSS is compiled!"
+else
+    echo "Committed CSS does not match result of compiling SCSS!"
+    EXIT_CODE=1;
+fi
+
+exit $EXIT_CODE

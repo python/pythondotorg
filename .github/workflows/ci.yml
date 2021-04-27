@@ -1,0 +1,82 @@
+name: CI
+on: [push, pull_request]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        include:
+          - name: Tests
+            command: bin/tests --postgresql-host localhost
+            needs-python: ${{ true }}
+            needs-node: ${{ false }}
+          - name: Lint
+            command: bin/scss-check
+            needs-python: ${{ false }}
+            needs-node: ${{ true }}
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.1
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    name: ${{ matrix.name }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install platform dependencies
+        run: |
+          sudo apt -y update
+          sudo apt -y install libcurl4-openssl-dev libssl-dev pkg-config
+      - uses: actions/setup-python@v2
+        if: ${{ matrix.needs-python }}
+        with:
+          python-version: 3.6.6
+      - name: Cache Python dependencies
+        if: ${{ matrix.needs-python }}
+        uses: actions/cache@v2
+        env:
+          cache-name: pythondotorg-cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('dev-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
+            ${{ runner.os }}-${{ github.job }}-
+            ${{ runner.os }}-
+      - name: Install Python dependencies
+        if: ${{ matrix.needs-python }}
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r dev-requirements.txt
+      - uses: actions/setup-node@v2
+        if: ${{ matrix.needs-node }}
+        with:
+          node-version: 14
+      - name: Cache Node dependencies
+        if: ${{ matrix.needs-node }}
+        uses: actions/cache@v2
+        env:
+          cache-name: warehouse-cache-npm
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-build-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ github.job }}-${{ env.cache-name }}-
+            ${{ runner.os }}-build-${{ github.job }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+      - name: Create DB
+        run: psql -h localhost -c 'create database "python.org";' -U postgres
+      - name: Install Node dependencies
+        if: ${{ matrix.needs-node }}
+        run: npm ci
+      - name: Run ${{ matrix.name }}
+        run: ${{ matrix.command }}
+        env:
+          DATABASE_URL: postgres://postgres:@127.0.0.1:5432/python.org
