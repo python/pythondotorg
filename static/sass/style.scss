@@ -2846,7 +2846,8 @@ $breakpoint-desktop: 1200px;
       position: -webkit-sticky; /* for Safari */
       position: sticky;
       top: 0;
-      background-color: $white;
+//background-color: #fcfcfc;  /* same as content-wrapper */
+      @include vertical-gradient(#f9f9f9, #fcfcfc);
     }
   }
 

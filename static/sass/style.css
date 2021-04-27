@@ -3922,7 +3922,14 @@ span.highlighted {
       /* for Safari */
       position: sticky;
       top: 0;
-      background-color: white; } }
+      background-color: #fcfcfc;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
+      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -o-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: linear-gradient(#f9f9f9 10%, #fcfcfc 90%); } }
 
 #thank-you-container {
   background: #417DAF;
