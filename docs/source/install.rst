@@ -121,16 +121,9 @@ Whichever database type you chose, now it's time to run migrations::
 
     $ ./manage.py migrate
 
-To compile and compress static media, you will need *compass* and
-*yui-compressor*::
+To compile SCSS, you will need *sass-dart*::
 
-    $ gem install bundler
-    $ bundle install
-
-.. note::
-
-   To install *yui-compressor*, use your OS's package manager or download it
-   directly then add the executable to your ``PATH``.
+    $ npm install
 
 To create initial data for the most used applications, run::
 
@@ -156,6 +149,16 @@ settings in ``pydotorg/settings/local.py`` to your local ElasticSearch server.
 .. _Elasticsearch: https://www.elastic.co/downloads/elasticsearch
 
 
+Compiling SCSS files to CSS
+---------------------------
+
+For frontend work, SCSS files should be compiled to CSS before committing.
+
+After installing *sass-dart* via NPM::
+
+    $ PATH=$(npm bin):$PATH sass -I static/vendor/compass -I static/vendor/susy static/sass
+
+
 Generating CSS files automatically
 ----------------------------------
 
@@ -163,8 +166,7 @@ Due to performance issues of django-pipeline_, we are using a dummy compiler
 ``pydotorg.compilers.DummySASSCompiler`` in development mode. To generate CSS
 files, use ``sass`` itself in a separate terminal window::
 
-    $ cd static
-    $ sass --compass --scss -I $(dirname $(dirname $(gem which susy))) --trace --watch sass/style.scss:sass/style.css
+    $ PATH=$(npm bin):$PATH sass -w -I static/vendor/compass -I static/vendor/susy static/sass
 
 .. _django-pipeline: https://github.com/cyberdelia/django-pipeline/issues/313
 
