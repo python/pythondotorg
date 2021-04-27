@@ -5,4 +5,4 @@ sass:
 	PATH=$(shell npm bin):$(shell echo $$PATH) sass -I static/vendor/compass -I static/vendor/susy static/sass
 
 sass-watch:
-	PATH=$(shell npm bin):$(shell echo $$PATH) sass -I -w static/vendor/compass -I static/vendor/susy static/sass
+	PATH=$(shell npm bin):$(shell echo $$PATH) sass -w -I static/vendor/compass -I static/vendor/susy static/sass
