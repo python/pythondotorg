@@ -17,3 +17,4 @@ static/stylesheets/no-mq.css
 static/stylesheets/style.css
 __pycache__
 *.db
+node_modules/

@@ -1,4 +1,8 @@
 {
   "name": "pythondotorg",
-  "description": "Django App behind python.org"
+  "description": "Django App behind python.org",
+  "dependencies": {},
+  "devDependencies": {
+    "sass": "^1.32.11"
+  }
 }
