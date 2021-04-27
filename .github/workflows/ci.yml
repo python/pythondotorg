@@ -10,7 +10,7 @@ jobs:
             command: bin/tests --postgresql-host localhost
             needs-python: ${{ true }}
             needs-node: ${{ false }}
-          - name: Lint
+          - name: Check SCSS/CSS
             command: bin/scss-check
             needs-python: ${{ false }}
             needs-node: ${{ true }}
@@ -36,7 +36,7 @@ jobs:
       - uses: actions/setup-python@v2
         if: ${{ matrix.needs-python }}
         with:
-          python-version: 3.6.6
+          python-version: 3.6.13
       - name: Cache Python dependencies
         if: ${{ matrix.needs-python }}
         uses: actions/cache@v2
