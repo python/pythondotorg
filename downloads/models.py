@@ -124,9 +124,8 @@ class Release(ContentManageable, NameSlugModel):
             return version.group(1)
         return None
 
-    def is_version_at_least(self, min_version):
+    def is_version_at_least(self, min_version_tuple):
         v1 = []
-        v2 = []
         for b in self.get_version().split('.'):
             try:
                 v1.append(int(b))
@@ -139,9 +138,17 @@ class Release(ContentManageable, NameSlugModel):
                 break
         # If v1 (us) is shorter than v2 (the comparand), it will always fail.
         # Add zeros for the comparison.
-        while len(v2) > len(v1):
+        while len(min_version_tuple) > len(v1):
             v1.append(0)
-        return v1 >= v2
+        return tuple(v1) >= min_version_tuple
+
+    @property
+    def is_version_at_least_3_5(self):
+        return self.is_version_at_least((3, 5))
+
+    @property
+    def is_version_at_least_3_9(self):
+        return self.is_version_at_least((3, 9))
 
 
 def update_supernav():
