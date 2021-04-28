@@ -75,3 +75,15 @@ class DownloadModelTests(BaseDownloadTests):
                 release = Release.objects.create(name=name)
                 self.assertEqual(release.name, name)
                 self.assertIsNone(release.get_version())
+
+    def test_is_version_at_least(self):
+        self.assertFalse(self.release_275.is_version_at_least('3.0'))
+        self.assertFalse(self.release_275.is_version_at_least('2.7.6'))
+        self.assert_(self.release_275.is_version_at_least('2.7.5'))
+        self.assert_(self.release_275.is_version_at_least('2.7'))
+        self.assert_(self.release_275.is_version_at_least('2.0'))
+
+        release_310 = Release.objects.create(name='Python 3.10.0')
+        self.assert_(release_310.is_version_at_least('3.9'))
+        self.assert_(release_310.is_version_at_least('3.10'))
+        self.assertFalse(release_310.is_version_at_least('3.11'))

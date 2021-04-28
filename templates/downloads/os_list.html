@@ -39,9 +39,9 @@
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         {% if os.slug == 'windows' %}
-                            {% if r.name >= 'Python 3.9' %}
+                            {% if r.is_version_at_least('3.9') %}
                             <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows 7 or earlier.</strong></p>
-                            {% elif r.name >= 'Python 3.5' %}
+                            {% elif r.is_version_at_least('3.5') %}
                             <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows XP or earlier.</strong></p>
                             {% endif %}
                         {% endif %}

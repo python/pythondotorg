@@ -124,6 +124,25 @@ class Release(ContentManageable, NameSlugModel):
             return version.group(1)
         return None
 
+    def is_version_at_least(self, min_version):
+        v1 = []
+        v2 = []
+        for b in self.get_version().split('.'):
+            try:
+                v1.append(int(b))
+            except ValueError:
+                break
+        for b in min_version.split('.'):
+            try:
+                v2.append(int(b))
+            except ValueError:
+                break
+        # If v1 (us) is shorter than v2 (the comparand), it will always fail.
+        # Add zeros for the comparison.
+        while len(v2) > len(v1):
+            v1.append(0)
+        return v1 >= v2
+
 
 def update_supernav():
     latest_python3 = Release.objects.latest_python3()
