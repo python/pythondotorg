@@ -131,11 +131,6 @@ class Release(ContentManageable, NameSlugModel):
                 v1.append(int(b))
             except ValueError:
                 break
-        for b in min_version.split('.'):
-            try:
-                v2.append(int(b))
-            except ValueError:
-                break
         # If v1 (us) is shorter than v2 (the comparand), it will always fail.
         # Add zeros for the comparison.
         while len(min_version_tuple) > len(v1):
