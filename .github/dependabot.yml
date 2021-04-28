@@ -1,0 +1,21 @@
+version: 2
+updates:
+- package-ecosystem: pip
+  directory: "/"
+  schedule:
+    interval: daily
+  open-pull-requests-limit: 10
+  ignore:
+  - dependency-name: docutils
+    versions:
+    - "0.16"
+    - "0.17"
+  - dependency-name: responses
+    versions:
+    - 0.12.1
+    - 0.13.0
+    - 0.13.1
+    - 0.13.2
+  - dependency-name: lxml
+    versions:
+    - 4.6.2
