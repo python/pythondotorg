@@ -3808,8 +3808,11 @@ span.highlighted {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {
     cursor: pointer; }
-    #select_sponsorship_benefits_container #benefitsTable .package-input span {
+    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
       padding-bottom: 0.5em; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
+      font-size: 75%;
+      display: none; }
     #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
       transform: rotateY(35deg); }
   #select_sponsorship_benefits_container #benefitsTable .selected {
@@ -3909,6 +3912,24 @@ span.highlighted {
     @media (max-width: 1200px) and (max-width: 640px) {
       #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
         width: 80%; } }
+@media (min-width: 1200px) {
+  #select_sponsorship_benefits_container {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */ }
+    #select_sponsorship_benefits_container .sticky {
+      position: -webkit-sticky;
+      /* for Safari */
+      position: sticky;
+      top: 0;
+      background-color: #fcfcfc;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
+      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -o-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: linear-gradient(#f9f9f9 10%, #fcfcfc 90%); } }
 
 #thank-you-container {
   background: #417DAF;

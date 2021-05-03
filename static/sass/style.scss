@@ -2673,8 +2673,13 @@ $breakpoint-desktop: 1200px;
     }
 
     .package-input {
-      span {
+      .package-price {
         padding-bottom: 0.5em;
+      }
+
+      .custom-fee {
+        font-size: 75%;
+        display: none;
       }
 
       h4 {
@@ -2831,6 +2836,21 @@ $breakpoint-desktop: 1200px;
       }
     }
   }
+
+
+  @media (min-width: $breakpoint-desktop) {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */
+    .sticky {
+      position: -webkit-sticky; /* for Safari */
+      position: sticky;
+      top: 0;
+//background-color: #fcfcfc;  /* same as content-wrapper */
+      @include vertical-gradient(#f9f9f9, #fcfcfc);
+    }
+  }
+
 }
 
 #thank-you-container {
