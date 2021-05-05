@@ -3,6 +3,8 @@
 [![Build Status](https://travis-ci.org/python/pythondotorg.svg?branch=master)](https://travis-ci.org/python/pythondotorg)
 [![Documentation Status](https://readthedocs.org/projects/pythondotorg/badge/?version=latest)](https://pythondotorg.readthedocs.io/?badge=latest)
 
+This is the documentation of Python.org
+
 ### General information
 
 This is the repository and issue tracker for [python.org](https://www.python.org).
