@@ -33,7 +33,7 @@ def initial_data():
             >>> name = input('What is your name?\\n')
             <span class=\"output\">What is your name?
             Python</span>
-            >>> print('Hi, %s.' % name)
+            >>> print(f'Hi, {name}.')
             <span class=\"output\">Hi, Python.</span></code>
             </pre>
             """,
