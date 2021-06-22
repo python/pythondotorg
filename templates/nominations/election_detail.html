@@ -1,0 +1,41 @@
+{% extends "psf/default.html" %}
+{% load boxes %}
+{% load tz %}
+
+{% block page_title %}Elections | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+
+{% block content %}
+<h1>{{ election.name }}</h1>
+<div class="row">
+  <div style="margin-left: 1em;">{{ election.description }}</div>
+  <br>
+  <ul>
+  {% timezone "UTC" %}
+  {% if election.nominations_open %}
+    <li>Election begins: {{ election.date }}</li>
+    {% if election.nominations_open_at and election.nominations_close_at %}
+    <li><a href="{% url 'nominations:nomination_create' election=election.slug %}">Submit a nomination</a></li>
+    <li>Nominations Opened: {{ election.nominations_open_at|date:"r" }}</li>
+    <li>Nominations Close: {{ election.nominations_close_at|date:"r" }}</li>
+    {% endif %}
+  {% else %}
+    {% if election.status == "Commenced" %}
+      <li>Election began: {{ election.date }}</li>
+    {% elif election.nominations_complete %}
+      <li><a href="{% url 'nominations:nominees_list' election=election.slug %}">View nominations</a></li>
+      <li>Election began: {{ election.date }}</li>
+      <li>Nominations Opened: {{ election.nominations_open_at|date:"r" }}</li>
+      <li>Nominations Closed: {{ election.nominations_close_at|date:"r" }}</li>
+    {% else %}
+      <li>Election begins: {{ election.date }}</li>
+      <li>Nominations Open: {{ election.nominations_open_at|date:"r" }}</li>
+      <li>Nominations Close: {{ election.nominations_close_at|date:"r" }}</li>
+    {% endif %}
+  {% endif %}
+  </ul>
+  {% endtimezone %}
+</div>
+{% endblock content %}

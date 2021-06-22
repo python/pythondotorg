@@ -13,6 +13,22 @@ class ElectionsList(ListView):
     model = Election
 
 
+class ElectionDetail(DetailView):
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def get_object(self):
+        election = Election.objects.get(slug=self.kwargs["election"])
+        self.election = election
+        return election
+
+    def get_context_data(self, **kwargs):
+        context = {"election": self.election}
+        return context
+
+
 class NominationMixin:
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
