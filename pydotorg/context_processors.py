@@ -33,12 +33,16 @@ def blog_url(request):
 def user_nav_bar_links(request):
     nav = {}
     if request.user.is_authenticated:
-        user = request.user.username
+        user = request.user
+        sponsorship_urls = [
+            {"url": sp.detail_url, "label": f"{sp.sponsor.name}'s sponsorship"}
+            for sp in user.sponsorships
+        ]
         nav = {
             "account": {
                 "label": "Your Account",
                 "urls": [
-                    {"url": reverse("users:user_detail", args=[user]), "label": "View profile"},
+                    {"url": reverse("users:user_detail", args=[user.username]), "label": "View profile"},
                     {"url": reverse("users:user_profile_edit"), "label": "Edit profile"},
                     {"url": reverse("account_change_password"), "label": "Change password"},
                 ],
@@ -48,6 +52,10 @@ def user_nav_bar_links(request):
                 "urls": [
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
                 ],
+            },
+            "sponsorships": {
+                "label": "Sponsorships",
+                "urls": sponsorship_urls,
             }
         }
 

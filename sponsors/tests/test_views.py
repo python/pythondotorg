@@ -613,3 +613,42 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+
+
+class SponsorshipDetailViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.url = reverse(
+            "sponsorship_application_detail", args=[self.sponsorship.pk]
+        )
+
+    def test_display_template_with_sponsorship_info(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/sponsorship_detail.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = settings.LOGIN_URL
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_404_if_sponsorship_does_not_belong_to_user(self):
+        self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
