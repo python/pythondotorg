@@ -461,6 +461,11 @@ class SponsorBenefit(OrderedModel):
         on_delete=models.SET_NULL,
         help_text="Sponsorship Benefit this Sponsor Benefit came from",
     )
+    program_name = models.CharField(
+        max_length=1024,
+        verbose_name="Program Name",
+        help_text="For display in the contract and sponsor dashboard."
+    )
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
@@ -490,10 +495,17 @@ class SponsorBenefit(OrderedModel):
         blank=True, default=False, verbose_name="Added by user?"
     )
 
+    def __str__(self):
+        if self.program is not None:
+            return f"{self.program} > {self.name}"
+        return f"{self.program_name} > {self.name}"
+
+
     @classmethod
     def new_copy(cls, benefit, **kwargs):
         return cls.objects.create(
             sponsorship_benefit=benefit,
+            program_name=benefit.program.name,
             name=benefit.name,
             description=benefit.description,
             program=benefit.program,
@@ -503,7 +515,9 @@ class SponsorBenefit(OrderedModel):
 
     @property
     def legal_clauses(self):
-        return self.sponsorship_benefit.legal_clauses.all()
+        if self.sponsorship_benefit is not None:
+            return self.sponsorship_benefit.legal_clauses.all()
+        return []
 
     class Meta(OrderedModel.Meta):
         pass
@@ -709,7 +723,7 @@ class Contract(models.Model):
 
         benefits_list = []
         for benefit in benefits:
-            item = f"- {benefit.program.name} - {benefit.name}"
+            item = f"- {benefit.program_name} - {benefit.name}"
             index_str = ""
             for legal_clause in benefit.legal_clauses:
                 index = legal_clauses.index(legal_clause) + 1
