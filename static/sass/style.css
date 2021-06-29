@@ -134,7 +134,7 @@
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .more-by-location {
+.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -148,12 +148,12 @@
   -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
 
-.pep-widget, .most-recent-events .more-by-location {
+.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
   padding: 1.25em;
   *zoom: 1; }
-  .pep-widget:after, .most-recent-events .more-by-location:after {
+  .pep-widget:after, .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
     content: "";
     display: table;
     clear: both; }
@@ -183,7 +183,7 @@
     clear: both; }
 
 /* Buttons */
-.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, a.delete, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
+.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span, a.delete, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
 .sidebar-widget form button,
 .sidebar-widget form input[type=submit], input[type=submit], input[type=reset], button, a.button, .button {
   cursor: pointer;
@@ -213,11 +213,11 @@
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  .donate-button:hover, a.delete:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
+  .donate-button:hover, .header-banner .button:hover, .header-banner a.button:hover, .user-profile-controls div.section span:hover, a.delete:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
   .sidebar-widget form button:hover,
-  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .donate-button:focus, a.delete:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
+  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .donate-button:focus, .header-banner .button:focus, .header-banner a.button:focus, .user-profile-controls div.section span:focus, a.delete:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
   .sidebar-widget form button:focus,
-  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .donate-button:active, a.delete:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
+  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .donate-button:active, .header-banner .button:active, .header-banner a.button:active, .user-profile-controls div.section span:active, a.delete:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
   .sidebar-widget form button:active,
   .sidebar-widget form input[type=submit]:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
@@ -231,7 +231,7 @@
     background-image: -webkit-linear-gradient(#e6e6e6 10%, #d9d9d9 90%);
     background-image: linear-gradient(#e6e6e6 10%, #d9d9d9 90%); }
 
-.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button {
+.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span {
   background-color: #ffd343;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
@@ -245,7 +245,7 @@
   border-right: 1px solid #dca900;
   border-bottom: 1px solid #dca900;
   border-left: 1px solid #dca900; }
-  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active {
+  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .header-banner a.button:hover, .user-profile-controls div.section span:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active, .header-banner a.button:active, .user-profile-controls div.section span:active {
     background-color: inherit;
     background-color: #ffd343;
     *zoom: 1;
@@ -2883,17 +2883,34 @@ p.quote-by-organization {
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-  border-bottom: 1px solid #caccce;
   margin-bottom: 2em; }
-  .user-profile-controls li {
-    display: -moz-inline-stack;
-    display: inline-block;
-    vertical-align: baseline;
-    margin-right: .75em; }
-    .lt-ie8 .user-profile-controls li {
-      vertical-align: auto;
-      zoom: 1;
+  .user-profile-controls .menu, .user-profile-controls form ul, form .user-profile-controls ul, .user-profile-controls .errorlist, .user-profile-controls .text form label + ul, .text form .user-profile-controls label + ul,
+  .user-profile-controls .sidebar-widget form label + ul,
+  .sidebar-widget form .user-profile-controls label + ul {
+    display: flex;
+    width: 100%; }
+  .user-profile-controls div.section {
+    padding: 0.25em 1em; }
+    .user-profile-controls div.section:hover .section-links {
       display: inline; }
+  .user-profile-controls div.section-links {
+    display: none; }
+    .user-profile-controls div.section-links ul {
+      margin-left: 0;
+      list-style: none;
+      padding-top: 0.15em; }
+      .user-profile-controls div.section-links ul li {
+        margin-bottom: 0;
+        padding: 0.25em 0.25em; }
+        .user-profile-controls div.section-links ul li:hover {
+          background-color: #bcc2c7;
+          *zoom: 1;
+          filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
+          background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
+          background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -moz-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -o-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: linear-gradient(#e6e8ea 10%, #bcc2c7 90%); }
   .user-profile-controls + .return-link {
     margin-top: -1.3125em; }
 
@@ -3791,8 +3808,11 @@ span.highlighted {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {
     cursor: pointer; }
-    #select_sponsorship_benefits_container #benefitsTable .package-input span {
+    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
       padding-bottom: 0.5em; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
+      font-size: 75%;
+      display: none; }
     #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
       transform: rotateY(35deg); }
   #select_sponsorship_benefits_container #benefitsTable .selected {
@@ -3892,6 +3912,24 @@ span.highlighted {
     @media (max-width: 1200px) and (max-width: 640px) {
       #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
         width: 80%; } }
+@media (min-width: 1200px) {
+  #select_sponsorship_benefits_container {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */ }
+    #select_sponsorship_benefits_container .sticky {
+      position: -webkit-sticky;
+      /* for Safari */
+      position: sticky;
+      top: 0;
+      background-color: #fcfcfc;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
+      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -o-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: linear-gradient(#f9f9f9 10%, #fcfcfc 90%); } }
 
 #thank-you-container {
   background: #417DAF;

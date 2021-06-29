@@ -50,6 +50,12 @@ class User(AbstractUser):
         except Membership.DoesNotExist:
             return False
 
+    @property
+    def sponsorships(self):
+        from sponsors.models import Sponsorship
+        return Sponsorship.objects.visible_to(self)
+
+
 models.signals.post_save.connect(create_api_key, sender=User)
 
 

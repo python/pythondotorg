@@ -129,7 +129,7 @@
 {
     "fields": {
         "label": "community-irc-channels",
-        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-freenode\"></span>Internet Relay Chat</h2>\r\n<p><a href=\"http://freenode.net/\">Freenode IRC</a> hosts several channels. <a href=\"http://www.irchelp.org/\">Select an IRC client</a>, <a href=\"https://freenode.net/kb/answer/registration\">register your nickname with Freenode</a>, and you can be off and running!</p>\r\n    <h4>Freenode IRC General Channels</h4>\r\n    <ul class=\"menu\">\r\n        <li><strong>#python</strong> for general questions</li>\r\n        <li><strong>#python-dev</strong> for CPython developers</li>\r\n        <li><strong>#distutils</strong> for Python packaging discussion</li>\r\n    </ul>",
+        "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-freenode\"></span>Internet Relay Chat</h2>\r\n<p><a href=\"https://libera.chat/\">Libera.chat</a> hosts several channels. <a href=\"http://www.irchelp.org/\">Select an IRC client</a>, <a href=\"https://libera.chat/guides/registration\">register your nickname with Libera.chat</a>, and you can be off and running!</p>\r\n    <h4>Libera.chat IRC General Channels</h4>\r\n    <ul class=\"menu\">\r\n        <li><strong>#python</strong> for general questions</li>\r\n        <li><strong>#python-dev</strong> for CPython developers</li>\r\n        <li><strong>#distutils</strong> for Python packaging discussion</li>\r\n    </ul>",
         "content_markup_type": "html"
     }
 },

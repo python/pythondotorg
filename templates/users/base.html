@@ -16,15 +16,24 @@
 {% block content %}
   {% if USER_NAV_BAR %}
     <div class="user-profile-controls">
-        <ul class="menu">
-          <li>Manage your Information: </li>
-          {% for section in USER_NAV_BAR.values %}
-            {% for url in section.urls %}
-            <li><a href="{{ url.url }}">{{ url.label }}</a></li>
-            {% endfor %}
-          {% endfor %}
-        </ul>
+      <div class="menu">
+        {% for section in USER_NAV_BAR.values %}
+          {% if section.urls %}
+          <div class="section">
+            <span>{{ section.label }}</span>
+            <div class="section-links">
+              <ul>
+                {% for url in section.urls %}
+                <a href="{{ url.url }}"><li>{{ url.label }}</li></a>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
+
     {% block user_content %}{% endblock %}
   {% endif %}
 

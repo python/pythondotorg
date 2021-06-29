@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from django.views.generic.base import TemplateView
+from django.urls import path
 
 from . import views
 
@@ -14,5 +14,10 @@ urlpatterns = [
         r"^application/$",
         views.SelectSponsorshipApplicationBenefitsView.as_view(),
         name="select_sponsorship_application_benefits",
+    ),
+    path(
+        "application/<int:pk>/detail/",
+        views.SponsorshipDetailView.as_view(),
+        name="sponsorship_application_detail",
     ),
 ]

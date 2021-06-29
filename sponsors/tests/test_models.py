@@ -87,6 +87,7 @@ class SponsorshipModelTests(TestCase):
         self.assertIsNone(sponsorship.end_date)
         self.assertEqual(sponsorship.level_name, "")
         self.assertIsNone(sponsorship.sponsorship_fee)
+        self.assertIsNone(sponsorship.agreed_fee)
         self.assertTrue(sponsorship.for_modified_package)
 
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
@@ -107,6 +108,7 @@ class SponsorshipModelTests(TestCase):
 
         self.assertEqual(sponsorship.level_name, "PSF Sponsorship Program")
         self.assertEqual(sponsorship.sponsorship_fee, 100)
+        self.assertEqual(sponsorship.agreed_fee, 100)  # can display the price because there's not customizations
         self.assertFalse(sponsorship.for_modified_package)
         for benefit in sponsorship.benefits.all():
             self.assertFalse(benefit.added_by_user)
@@ -119,6 +121,7 @@ class SponsorshipModelTests(TestCase):
 
         self.assertTrue(sponsorship.for_modified_package)
         self.assertEqual(sponsorship.benefits.count(), 2)
+        self.assertIsNone(sponsorship.agreed_fee)  # can't display the price with customizations
         for benefit in sponsorship.benefits.all():
             self.assertFalse(benefit.added_by_user)
 
@@ -263,6 +266,19 @@ class SponsorshipModelTests(TestCase):
 
             with self.assertRaises(SponsorWithExistingApplicationException):
                 Sponsorship.new(self.sponsor, self.benefits)
+
+    def test_display_agreed_fee_for_approved_and_finalized_status(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.sponsorship_fee = 2000
+        sponsorship.save()
+
+        finalized_status = [Sponsorship.APPROVED, Sponsorship.FINALIZED]
+        for status in finalized_status:
+            sponsorship.status = status
+            sponsorship.save()
+
+            self.assertEqual(sponsorship.agreed_fee, 2000)
+
 
 
 class SponsorshipPackageTests(TestCase):
