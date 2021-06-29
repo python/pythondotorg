@@ -718,6 +718,28 @@ class SendContractView(TestCase):
 
     def test_404_if_contract_does_not_exist(self):
         self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
 
 
 class SponsorshipDetailViewTests(TestCase):
@@ -745,24 +767,13 @@ class SponsorshipDetailViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_login_required(self):
-        login_url = reverse("admin:login")
+        login_url = settings.LOGIN_URL
         redirect_url = f"{login_url}?next={self.url}"
         self.client.logout()
 
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url)
-
-    def test_staff_required(self):
-        login_url = reverse("admin:login")
-        redirect_url = f"{login_url}?next={self.url}"
-        self.user.is_staff = False
-        self.user.save()
-        self.client.force_login(self.user)
-
-        r = self.client.get(self.url)
-
-        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
 
     def test_404_if_sponsorship_does_not_belong_to_user(self):
         self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
