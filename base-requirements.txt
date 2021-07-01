@@ -5,7 +5,7 @@ Django==2.0.13
 docutils==0.12
 Markdown==2.5.2
 cmarkgfm==0.4.2
-Pillow==5.1.0
+Pillow==8.3.0
 psycopg2==2.7.3.2
 python3-openid==3.1.0
 # lxml used by BeautifulSoup.
