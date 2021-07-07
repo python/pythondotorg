@@ -114,9 +114,9 @@ class SponsorshipBenefit(OrderedModel):
     )
     program = models.ForeignKey(
         SponsorshipProgram,
-        null=True,
+        null=False,
         blank=False,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name="Sponsorship Program",
         help_text="Which sponsorship program the benefit is associated with.",
     )
