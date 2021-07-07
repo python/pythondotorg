@@ -72,7 +72,11 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 class SendContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.ContractNotificationToPSF(),
-        notifications.ContractNotificationToSponsors(),
+        # TODO: sponsor's notification will be enabled again once
+        # the generate contract file gets approved by PSF Board.
+        # After that, the line bellow can be uncommented to enable
+        # the desired behavior.
+        #notifications.ContractNotificationToSponsors(),
         notifications.SentContractLogger(),
     ]
 

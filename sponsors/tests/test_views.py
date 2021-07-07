@@ -677,7 +677,7 @@ class SendContractView(TestCase):
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertTrue(self.contract.document.name)
-        self.assertEqual(2, len(mail.outbox))
+        self.assertEqual(1, len(mail.outbox))
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Contract was sent!", messages.SUCCESS)
 
