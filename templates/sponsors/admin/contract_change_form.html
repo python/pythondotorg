@@ -15,6 +15,9 @@
     <li>
         <a href="{% url 'admin:sponsors_contract_execute' contract.pk %}" style="background: #70bf2b">Execute</a>
     </li>
+    <li>
+        <a href="{% url 'admin:sponsors_contract_nullify' contract.pk %}" style="background: #ba2121" >Nullify</a>
+    </li>
     {% endif %}
 
   {% endwith %}

@@ -487,6 +487,11 @@ class ContractModelAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.execute_contract_view),
                 name="sponsors_contract_execute",
             ),
+            path(
+                "<int:pk>/nullify",
+                self.admin_site.admin_view(self.nullify_contract_view),
+                name="sponsors_contract_nullify",
+            ),
         ]
         return my_urls + urls
 
@@ -498,3 +503,6 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def execute_contract_view(self, request, pk):
         return views_admin.execute_contract_view(self, request, pk)
+
+    def nullify_contract_view(self, request, pk):
+        return views_admin.nullify_contract_view(self, request, pk)

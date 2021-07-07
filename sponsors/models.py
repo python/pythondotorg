@@ -809,3 +809,13 @@ class Contract(models.Model):
         if commit:
             self.sponsorship.save()
             self.save()
+
+    def nullify(self, commit=True):
+        if self.NULLIFIED not in self.next_status:
+            msg = f"Can't nullify a {self.get_status_display()} contract."
+            raise InvalidStatusException(msg)
+
+        self.status = self.NULLIFIED
+        if commit:
+            self.sponsorship.save()
+            self.save()

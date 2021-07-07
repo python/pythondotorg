@@ -526,3 +526,21 @@ class ContractModelTests(TestCase):
 
         with self.assertRaises(InvalidStatusException):
             contract.execute()
+
+    def test_nullify_contract(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
+        )
+
+        contract.nullify()
+        contract.refresh_from_db()
+
+        self.assertEqual(contract.status, Contract.NULLIFIED)
+
+    def test_raise_invalid_status_when_trying_to_nullify_contract_if_not_awaiting_signature(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.DRAFT
+        )
+
+        with self.assertRaises(InvalidStatusException):
+            contract.nullify()

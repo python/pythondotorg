@@ -174,3 +174,23 @@ class ExecuteContractUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[0], ExecutedContractLogger
         )
+
+
+class NullifyContractUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock()]
+        self.use_case = use_cases.NullifyContractUseCase(self.notifications)
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+
+    def test_nullify_and_update_database_object(self):
+        self.use_case.execute(self.contract)
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.NULLIFIED)
+
+    def test_build_use_case_without_notificationss(self):
+        uc = use_cases.NullifyContractUseCase.build()
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(
+            uc.notifications[0], NullifiedContractLogger
+        )

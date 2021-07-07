@@ -870,3 +870,94 @@ class ExecuteContractView(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class NullifyContractView(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+        self.url = reverse(
+            "admin:sponsors_contract_nullify", args=[self.contract.pk]
+        )
+        self.data = {
+            "confirm": "yes",
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.assertEqual(context["contract"], self.contract)
+
+    def test_nullify_sponsorship_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.NULLIFIED)
+        assertMessage(msg, "Contract was nullified!", messages.SUCCESS)
+
+    def test_display_error_message_to_user_if_invalid_status(self):
+        self.contract.status = Contract.DRAFT
+        self.contract.save()
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.DRAFT)
+        assertMessage(
+            msg,
+            "Contract with status Draft can't be nullified.",
+            messages.ERROR,
+        )
+
+    def test_do_not_nullify_contract_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+    def test_404_if_contract_does_not_exist(self):
+        self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)

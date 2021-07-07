@@ -100,3 +100,16 @@ class ExecuteContractUseCase(BaseUseCaseWithNotifications):
             request=kwargs.get("request"),
             contract=contract,
         )
+
+
+class NullifyContractUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.NullifiedContractLogger(),
+    ]
+
+    def execute(self, contract, **kwargs):
+        contract.nullify()
+        self.notify(
+            request=kwargs.get("request"),
+            contract=contract,
+        )
