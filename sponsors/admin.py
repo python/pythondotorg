@@ -482,6 +482,11 @@ class ContractModelAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.send_contract_view),
                 name="sponsors_contract_send",
             ),
+            path(
+                "<int:pk>/execute",
+                self.admin_site.admin_view(self.execute_contract_view),
+                name="sponsors_contract_execute",
+            ),
         ]
         return my_urls + urls
 
@@ -490,3 +495,6 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def send_contract_view(self, request, pk):
         return views_admin.send_contract_view(self, request, pk)
+
+    def execute_contract_view(self, request, pk):
+        return views_admin.execute_contract_view(self, request, pk)

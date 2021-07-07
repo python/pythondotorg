@@ -11,6 +11,10 @@
     <li>
         <a href="{% url 'admin:sponsors_contract_send' contract.pk %}" style="background: #70bf2b">Send document</a>
     </li>
+    {% elif contract.status == contract.AWAITING_SIGNATURE %}
+    <li>
+        <a href="{% url 'admin:sponsors_contract_execute' contract.pk %}" style="background: #70bf2b">Execute</a>
+    </li>
     {% endif %}
 
   {% endwith %}

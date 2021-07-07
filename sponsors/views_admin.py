@@ -121,3 +121,29 @@ def rollback_to_editing_view(ModelAdmin, request, pk):
         "sponsors/admin/rollback_sponsorship_to_editing.html",
         context=context,
     )
+
+
+def execute_contract_view(ModelAdmin, request, pk):
+    contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+
+        use_case = use_cases.ExecuteContractUseCase.build()
+        try:
+            use_case.execute(contract, request=request)
+            ModelAdmin.message_user(
+                request, "Contract was executed!", messages.SUCCESS
+            )
+        except InvalidStatusException:
+            status = contract.get_status_display().title()
+            ModelAdmin.message_user(
+                request,
+                f"Contract with status {status} can't be executed.",
+                messages.ERROR,
+            )
+
+        redirect_url = reverse("admin:sponsors_contract_change", args=[contract.pk])
+        return redirect(redirect_url)
+
+    context = {"contract": contract}
+    return render(request, "sponsors/admin/execute_contract.html", context=context)

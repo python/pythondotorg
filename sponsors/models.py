@@ -767,8 +767,7 @@ class Contract(models.Model):
         return states_map[self.status]
 
     def save(self, **kwargs):
-        commit = kwargs.get("commit", True)
-        if all([commit, self.pk, self.is_draft]):
+        if all([self.pk, self.is_draft]):
             self.revision += 1
         return super().save(**kwargs)
 
@@ -799,3 +798,14 @@ class Contract(models.Model):
         self.document = filename
         self.status = self.AWAITING_SIGNATURE
         self.save()
+
+    def execute(self, commit=True):
+        if self.EXECUTED not in self.next_status:
+            msg = f"Can't execute a {self.get_status_display()} contract."
+            raise InvalidStatusException(msg)
+
+        self.status = self.EXECUTED
+        self.sponsorship.status = Sponsorship.FINALIZED
+        if commit:
+            self.sponsorship.save()
+            self.save()

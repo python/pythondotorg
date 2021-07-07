@@ -87,3 +87,16 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
             request=kwargs.get("request"),
             contract=contract,
         )
+
+
+class ExecuteContractUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.ExecutedContractLogger(),
+    ]
+
+    def execute(self, contract, **kwargs):
+        contract.execute()
+        self.notify(
+            request=kwargs.get("request"),
+            contract=contract,
+        )

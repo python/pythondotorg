@@ -132,3 +132,16 @@ class SentContractLogger():
             action_flag=CHANGE,
             change_message="Contract Sent"
         )
+
+
+class ExecutedContractLogger():
+
+    def notify(self, request, contract, **kwargs):
+        LogEntry.objects.log_action(
+            user_id=request.user.id,
+            content_type_id=ContentType.objects.get_for_model(Contract).pk,
+            object_id=contract.pk,
+            object_repr=str(contract),
+            action_flag=CHANGE,
+            change_message="Contract Executed"
+        )
