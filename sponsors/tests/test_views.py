@@ -1,6 +1,7 @@
 import json
 from model_bakery import baker
-from itertools import chain
+from datetime import date, timedelta
+from unittest.mock import patch, PropertyMock
 
 from django.conf import settings
 from django.contrib import messages
@@ -14,14 +15,16 @@ from django.urls import reverse, reverse_lazy
 from .utils import get_static_image_file_as_upload
 from ..models import (
     Sponsor,
-    SponsorshipProgram,
     SponsorshipBenefit,
-    Sponsor,
     SponsorContact,
     Sponsorship,
+    Contract,
 )
-
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+from sponsors.forms import (
+    SponsorshiptBenefitsForm,
+    SponsorshipApplicationForm,
+    SponsorshipReviewAdminForm,
+)
 
 
 def assertMessage(msg, expected_content, expected_level):
@@ -536,21 +539,36 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.url = reverse(
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
+        today = date.today()
+        self.data = {
+            "confirm": "yes",
+            "start_date": today,
+            "end_date": today + timedelta(days=100),
+            "level_name": "Level",
+        }
 
     def test_display_confirmation_form_on_get(self):
         response = self.client.get(self.url)
         context = response.context
+        form = context["form"]
         self.sponsorship.refresh_from_db()
 
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertIsInstance(form, SponsorshipReviewAdminForm)
+        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
+        self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
+        self.assertEqual(
+            form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee
+        )
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
         )  # did not update
 
     def test_approve_sponsorship_on_post(self):
-        data = {"confirm": "yes"}
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
+
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
@@ -561,18 +579,30 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
 
-    def test_do_not_approve_if_invalid_post(self):
-        response = self.client.post(self.url, data={})
+    def test_do_not_approve_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertNotEqual(
             self.sponsorship.status, Sponsorship.APPROVED
         )  # did not update
 
-        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)
+
+    def test_do_not_approve_if_form_with_invalid_data(self):
+        self.data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+        self.assertTrue(response.context["form"].errors)
 
     def test_404_if_sponsorship_does_not_exist(self):
         self.sponsorship.delete()
@@ -602,8 +632,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
     def test_message_user_if_approving_invalid_sponsorship(self):
         self.sponsorship.status = Sponsorship.FINALIZED
         self.sponsorship.save()
-        data = {"confirm": "yes"}
-        response = self.client.post(self.url, data=data)
+        response = self.client.post(self.url, data=self.data)
         self.sponsorship.refresh_from_db()
 
         expected_url = reverse(
@@ -613,6 +642,104 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+
+
+class SendContractView(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract")
+        self.url = reverse(
+            "admin:sponsors_contract_send", args=[self.contract.pk]
+        )
+        self.data = {
+            "confirm": "yes",
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertEqual(context["contract"], self.contract)
+
+    @patch.object(
+        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+    )
+    def test_approve_sponsorship_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+        self.contract.refresh_from_db()
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertTrue(self.contract.document.name)
+        self.assertEqual(1, len(mail.outbox))
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Contract was sent!", messages.SUCCESS)
+
+    @patch.object(
+        Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"])
+    )
+    def test_display_error_message_to_user_if_invalid_status(self):
+        self.contract.status = Contract.AWAITING_SIGNATURE
+        self.contract.save()
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(0, len(mail.outbox))
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(
+            msg,
+            "Contract with status Awaiting Signature can't be sent.",
+            messages.ERROR,
+        )
+
+    def test_do_not_send_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertFalse(self.contract.document.name)
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.assertTemplateUsed(response, "sponsors/admin/send_contract.html")
+        self.assertFalse(self.contract.document.name)
+        self.assertEqual(0, len(mail.outbox))
+
+    def test_404_if_contract_does_not_exist(self):
+        self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
 
 
 class SponsorshipDetailViewTests(TestCase):
@@ -652,3 +779,185 @@ class SponsorshipDetailViewTests(TestCase):
         self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
+
+
+class ExecuteContractView(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+        self.url = reverse(
+            "admin:sponsors_contract_execute", args=[self.contract.pk]
+        )
+        self.data = {
+            "confirm": "yes",
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/execute_contract.html")
+        self.assertEqual(context["contract"], self.contract)
+
+    def test_execute_sponsorship_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.EXECUTED)
+        assertMessage(msg, "Contract was executed!", messages.SUCCESS)
+
+    def test_display_error_message_to_user_if_invalid_status(self):
+        self.contract.status = Contract.DRAFT
+        self.contract.save()
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.DRAFT)
+        assertMessage(
+            msg,
+            "Contract with status Draft can't be executed.",
+            messages.ERROR,
+        )
+
+    def test_do_not_execute_contract_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/execute_contract.html")
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.assertTemplateUsed(response, "sponsors/admin/execute_contract.html")
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+    def test_404_if_contract_does_not_exist(self):
+        self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class NullifyContractView(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+        self.url = reverse(
+            "admin:sponsors_contract_nullify", args=[self.contract.pk]
+        )
+        self.data = {
+            "confirm": "yes",
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.assertEqual(context["contract"], self.contract)
+
+    def test_nullify_sponsorship_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.NULLIFIED)
+        assertMessage(msg, "Contract was nullified!", messages.SUCCESS)
+
+    def test_display_error_message_to_user_if_invalid_status(self):
+        self.contract.status = Contract.DRAFT
+        self.contract.save()
+        expected_url = reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
+
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        msg = list(get_messages(response.wsgi_request))[0]
+
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.contract.status, Contract.DRAFT)
+        assertMessage(
+            msg,
+            "Contract with status Draft can't be nullified.",
+            messages.ERROR,
+        )
+
+    def test_do_not_nullify_contract_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.contract.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.assertTemplateUsed(response, "sponsors/admin/nullify_contract.html")
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+    def test_404_if_contract_does_not_exist(self):
+        self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)

@@ -1,0 +1,34 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n admin_static sponsors %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Nullify {{ contract }} | python.org{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+  <a href="{% url 'admin:sponsors_contract_changelist' %}">{% trans 'Contracts' %}</a> &gt
+  <a href="{% url 'admin:sponsors_contract_change' contract.pk %}">{{ contract }}</a> &gt
+  {% trans 'Nullify Contract' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Nullify Contract</h1>
+
+<div id="content-main">
+<p>Please confirm if you want to proceed with this operation.</p>
+
+<form action="" method="post">
+{% csrf_token %}
+
+<input name="confirm" value="yes" style="display:none">
+
+<div class="submit-row">
+    <input type="submit" value="Nullify" class="default">
+</div>
+
+</form>
+</div>{% endblock %}

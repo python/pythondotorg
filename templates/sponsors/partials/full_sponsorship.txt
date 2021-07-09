@@ -15,7 +15,7 @@
 {% if sponsorship.level_name %}  * Level		{{ sponsorship.level_name }}{% else %}  * Level			Custom Package{% endif %}
 {% if not display_fee %}  * Sponsorship Fee	To be determined{% else %}  * Sponsorship Fee	${{ sponsorship.sponsorship_fee|intcomma }} USD{% endif %}
   {% if sponsorship.package_benefits %}* Package Benefits
-{% for benefit in  sponsorship.package_benefits %}    - {{ benefit.program.name }} - {{ benefit.name }}
+{% for benefit in  sponsorship.package_benefits %}    - {% if benefit.program %}{{ benefit.program.name }}{% else %}{{ benefit.program_name }}{% endif %} - {{ benefit.name }}
 {% endfor %}{% endif %}  {% if sponsorship.added_benefits %}* Added Benefits
 {% for benefit in  sponsorship.added_benefits %}    - {{ benefit.program.name }} - {{ benefit.name }}
 {% endfor %}{% endif %}
