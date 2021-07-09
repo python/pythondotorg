@@ -27,7 +27,7 @@ python-dateutil==2.6.1
 
 requests[security]>=2.20.0
 
-django-honeypot==0.6.0
+django-honeypot==0.9.0
 django-markupfield==1.4.3
 django-markupfield-helpers==0.1.1
 
