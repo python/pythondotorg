@@ -5,18 +5,18 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models import Sum, Count
+from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.urls import reverse
 from markupfield.fields import MarkupField
-from ordered_model.models import OrderedModel, OrderedModelManager
+from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
 
 from cms.models import ContentManageable
-from .managers import SponsorContactQuerySet, SponsorshipQuerySet
+from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
 from .exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
@@ -77,24 +77,6 @@ class SponsorshipProgram(OrderedModel):
 
     class Meta(OrderedModel.Meta):
         pass
-
-
-class SponsorshipBenefitManager(OrderedModelManager):
-    def with_conflicts(self):
-        return self.exclude(conflicts__isnull=True)
-
-    def without_conflicts(self):
-        return self.filter(conflicts__isnull=True)
-
-    def add_ons(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0)
-
-    def with_packages(self):
-        return (
-            self.annotate(num_packages=Count("packages"))
-            .exclude(num_packages=0)
-            .order_by("-num_packages")
-        )
 
 
 class SponsorshipBenefit(OrderedModel):
