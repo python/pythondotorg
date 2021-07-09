@@ -20,6 +20,9 @@ class SponsorshipQuerySet(QuerySet):
             status__in=status,
         ).select_related('sponsor')
 
+    def finalized(self):
+        return self.filter(status=self.model.FINALIZED)
+
 
 class SponsorContactQuerySet(QuerySet):
     def get_primary_contact(self, sponsor):
