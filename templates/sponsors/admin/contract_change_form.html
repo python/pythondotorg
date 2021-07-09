@@ -1,0 +1,26 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% with original as contract %}
+
+    {% if contract.is_draft %}
+    <li>
+        <a href="{{ contract.preview_url }}" target="_blank" style="background: #417690">Review</a>
+    </li>
+    <li>
+        <a href="{% url 'admin:sponsors_contract_send' contract.pk %}" style="background: #70bf2b">Send document</a>
+    </li>
+    {% elif contract.status == contract.AWAITING_SIGNATURE %}
+    <li>
+        <a href="{% url 'admin:sponsors_contract_execute' contract.pk %}" style="background: #70bf2b">Execute</a>
+    </li>
+    <li>
+        <a href="{% url 'admin:sponsors_contract_nullify' contract.pk %}" style="background: #ba2121" >Nullify</a>
+    </li>
+    {% endif %}
+
+  {% endwith %}
+
+  {{ block.super }}
+{% endblock %}

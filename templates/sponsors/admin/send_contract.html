@@ -1,0 +1,40 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n admin_static sponsors %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Send {{ contract }} | python.org{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+  <a href="{% url 'admin:sponsors_contract_changelist' %}">{% trans 'Contracts' %}</a> &gt
+  <a href="{% url 'admin:sponsors_contract_change' contract.pk %}">{{ contract }}</a> &gt
+  {% trans 'Send Contract' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Send Contract</h1>
+
+
+<div style="display: block">
+<iframe src="{{ contract.preview_url }}" title="document" style="width: 100%; height: 900px"></iframe>
+</div>
+
+<div id="content-main">
+<p><b>Help: </b>If you can't see the document's content above this text, please turn off your webbrowser's extensions which blocks HTML iframes (ad-blocker, ghostery, etc) and reload this page.</p>
+<p>Or you can also open the PDF <a href="{{ contract.preview_url }}" target="_blank">here</a>.</p>
+
+<form action="" method="post" id="new_psf_board_meeting_form">
+{% csrf_token %}
+
+<input name="confirm" value="yes" style="display:none">
+
+<div class="submit-row">
+    <input type="submit" value="Send" class="default">
+</div>
+
+</form>
+</div>{% endblock %}

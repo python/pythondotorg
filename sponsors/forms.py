@@ -1,11 +1,11 @@
 from itertools import chain
-from django_countries.fields import CountryField
 from django import forms
+from django.conf import settings
+from django.contrib.admin.widgets import AdminDateWidget
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.utils.functional import cached_property
-from django.conf import settings
-from django.db.models import Count
+from django_countries.fields import CountryField
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -28,7 +28,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary"]
+        fields = ["name", "email", "phone", "primary", "administrative"]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -334,6 +334,16 @@ class SponsorshipApplicationForm(forms.Form):
 
 
 class SponsorshipReviewAdminForm(forms.ModelForm):
+    start_date = forms.DateField(widget=AdminDateWidget(), required=False)
+    end_date = forms.DateField(widget=AdminDateWidget(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        force_required = kwargs.pop("force_required", False)
+        super().__init__(*args, **kwargs)
+        if force_required:
+            for field_name in self.fields:
+                self.fields[field_name].required = True
+
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]

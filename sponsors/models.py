@@ -1,5 +1,9 @@
+from pathlib import Path
 from itertools import chain
+from num2words import num2words
 from django.conf import settings
+from django.core.files.storage import default_storage
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models import Sum, Count
 from django.template.defaultfilters import truncatechars
@@ -12,12 +16,11 @@ from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
 
 from cms.models import ContentManageable
-from companies.models import Company
-
-from .managers import SponsorshipQuerySet
+from .managers import SponsorContactQuerySet, SponsorshipQuerySet
 from .exceptions import (
     SponsorWithExistingApplicationException,
-    SponsorshipInvalidStatusException,
+    InvalidStatusException,
+    SponsorshipInvalidDateRangeException,
 )
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
@@ -41,7 +44,7 @@ class SponsorshipPackage(OrderedModel):
 
         # check if all packages' benefits without conflict are present in benefits list
         from_pkg_benefits = set(
-            [b for b in benefits if not b in pkg_benefits_with_conflicts]
+            [b for b in benefits if b not in pkg_benefits_with_conflicts]
         )
         if from_pkg_benefits != set(self.benefits.without_conflicts()):
             return True
@@ -101,7 +104,7 @@ class SponsorshipBenefit(OrderedModel):
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the application form, statement of work, and sponsor dashboard.",
+        help_text="For display in the application form, contract, and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
@@ -111,9 +114,9 @@ class SponsorshipBenefit(OrderedModel):
     )
     program = models.ForeignKey(
         SponsorshipProgram,
-        null=True,
+        null=False,
         blank=False,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
         verbose_name="Sponsorship Program",
         help_text="Which sponsorship program the benefit is associated with.",
     )
@@ -145,7 +148,7 @@ class SponsorshipBenefit(OrderedModel):
         "LegalClause",
         related_name="benefits",
         verbose_name="Legal Clauses",
-        help_text="Legal clauses to be displayed in the statement of work",
+        help_text="Legal clauses to be displayed in the contract",
         blank=True,
     )
     internal_description = models.TextField(
@@ -223,6 +226,8 @@ class SponsorshipBenefit(OrderedModel):
 
 
 class SponsorContact(models.Model):
+    objects = SponsorContactQuerySet.as_manager()
+
     sponsor = models.ForeignKey(
         "Sponsor", on_delete=models.CASCADE, related_name="contacts"
     )
@@ -231,6 +236,9 @@ class SponsorContact(models.Model):
     )  # Optionally related to a User! (This needs discussion)
     primary = models.BooleanField(
         default=False, help_text="If this is the primary contact for the sponsor"
+    )
+    administrative = models.BooleanField(
+        default=False, help_text="If this is an administrative contact for the sponsor"
     )
     manager = models.BooleanField(
         default=False,
@@ -324,15 +332,8 @@ class Sponsorship(models.Model):
 
         for benefit in benefits:
             added_by_user = for_modified_package and benefit not in package_benefits
-
-            SponsorBenefit.objects.create(
-                sponsorship=sponsorship,
-                sponsorship_benefit=benefit,
-                name=benefit.name,
-                description=benefit.description,
-                program=benefit.program,
-                benefit_internal_value=benefit.internal_value,
-                added_by_user=added_by_user,
+            SponsorBenefit.new_copy(
+                benefit, sponsorship=sponsorship, added_by_user=added_by_user
             )
 
         return sponsorship
@@ -347,6 +348,12 @@ class Sponsorship(models.Model):
         )
 
     @property
+    def verbose_sponsorship_fee(self):
+        if self.sponsorship_fee is None:
+          return 0
+        return num2words(self.sponsorship_fee)
+
+    @property
     def agreed_fee(self):
         valid_status = [Sponsorship.APPROVED, Sponsorship.FINALIZED]
         if self.status in valid_status:
@@ -359,26 +366,40 @@ class Sponsorship(models.Model):
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
 
-
     def reject(self):
         if self.REJECTED not in self.next_status:
             msg = f"Can't reject a {self.get_status_display()} sponsorship."
-            raise SponsorshipInvalidStatusException(msg)
+            raise InvalidStatusException(msg)
         self.status = self.REJECTED
         self.rejected_on = timezone.now().date()
 
-    def approve(self):
+    def approve(self, start_date, end_date):
         if self.APPROVED not in self.next_status:
             msg = f"Can't approve a {self.get_status_display()} sponsorship."
-            raise SponsorshipInvalidStatusException(msg)
+            raise InvalidStatusException(msg)
+        if start_date >= end_date:
+            msg = f"Start date greater or equal than end date"
+            raise SponsorshipInvalidDateRangeException(msg)
         self.status = self.APPROVED
+        self.start_date = start_date
+        self.end_date = end_date
         self.approved_on = timezone.now().date()
 
     def rollback_to_editing(self):
         accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
         if self.status not in accepts_rollback:
             msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
-            raise SponsorshipInvalidStatusException(msg)
+            raise InvalidStatusException(msg)
+
+        try:
+            if not self.contract.is_draft:
+                status = self.contract.get_status_display()
+                msg = f"Can't rollback to edit a sponsorship with a { status } Contract."
+                raise InvalidStatusException(msg)
+            self.contract.delete()
+        except ObjectDoesNotExist:
+            pass
+
         self.status = self.APPLIED
         self.approved_on = None
         self.rejected_on = None
@@ -393,6 +414,14 @@ class Sponsorship(models.Model):
     @property
     def admin_url(self):
         return reverse("admin:sponsors_sponsorship_change", args=[self.pk])
+
+    @property
+    def contract_admin_url(self):
+        if not self.contract:
+            return ""
+        return reverse(
+            "admin:sponsors_contract_change", args=[self.contract.pk]
+        )
 
     @property
     def detail_url(self):
@@ -421,7 +450,7 @@ class Sponsorship(models.Model):
         return states_map[self.status]
 
 
-class SponsorBenefit(models.Model):
+class SponsorBenefit(OrderedModel):
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -432,16 +461,21 @@ class SponsorBenefit(models.Model):
         on_delete=models.SET_NULL,
         help_text="Sponsorship Benefit this Sponsor Benefit came from",
     )
+    program_name = models.CharField(
+        max_length=1024,
+        verbose_name="Program Name",
+        help_text="For display in the contract and sponsor dashboard."
+    )
     name = models.CharField(
         max_length=1024,
         verbose_name="Benefit Name",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     description = models.TextField(
         null=True,
         blank=True,
         verbose_name="Benefit Description",
-        help_text="For display in the statement of work and sponsor dashboard.",
+        help_text="For display in the contract and sponsor dashboard.",
     )
     program = models.ForeignKey(
         SponsorshipProgram,
@@ -460,6 +494,33 @@ class SponsorBenefit(models.Model):
     added_by_user = models.BooleanField(
         blank=True, default=False, verbose_name="Added by user?"
     )
+
+    def __str__(self):
+        if self.program is not None:
+            return f"{self.program} > {self.name}"
+        return f"{self.program_name} > {self.name}"
+
+
+    @classmethod
+    def new_copy(cls, benefit, **kwargs):
+        return cls.objects.create(
+            sponsorship_benefit=benefit,
+            program_name=benefit.program.name,
+            name=benefit.name,
+            description=benefit.description,
+            program=benefit.program,
+            benefit_internal_value=benefit.internal_value,
+            **kwargs,
+        )
+
+    @property
+    def legal_clauses(self):
+        if self.sponsorship_benefit is not None:
+            return self.sponsorship_benefit.legal_clauses.all()
+        return []
+
+    class Meta(OrderedModel.Meta):
+        pass
 
 
 class Sponsor(ContentManageable):
@@ -529,6 +590,20 @@ class Sponsor(ContentManageable):
     def __str__(self):
         return f"{self.name}"
 
+    @property
+    def full_address(self):
+        addr = self.mailing_address_line_1
+        if self.mailing_address_line_2:
+            addr += f" {self.mailing_address_line_2}"
+        return f"{addr}, {self.city}, {self.state}, {self.country}"
+
+    @property
+    def primary_contact(self):
+        try:
+            return SponsorContact.objects.get_primary_contact(self)
+        except SponsorContact.DoesNotExist:
+            return None
+
 
 class LegalClause(OrderedModel):
     internal_name = models.CharField(
@@ -539,7 +614,7 @@ class LegalClause(OrderedModel):
     )
     clause = models.TextField(
         verbose_name="Clause",
-        help_text="Legal clause text to be added to statement of work",
+        help_text="Legal clause text to be added to contract",
         blank=False,
     )
     notes = models.TextField(
@@ -551,3 +626,196 @@ class LegalClause(OrderedModel):
 
     class Meta(OrderedModel.Meta):
         pass
+
+
+class Contract(models.Model):
+    DRAFT = "draft"
+    OUTDATED = "outdated"
+    AWAITING_SIGNATURE = "awaiting signature"
+    EXECUTED = "executed"
+    NULLIFIED = "nullified"
+
+    STATUS_CHOICES = [
+        (DRAFT, "Draft"),
+        (OUTDATED, "Outdated"),
+        (AWAITING_SIGNATURE, "Awaiting signature"),
+        (EXECUTED, "Executed"),
+        (NULLIFIED, "Nullified"),
+    ]
+
+    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
+
+    status = models.CharField(
+        max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
+    )
+    revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
+    document = models.FileField(
+        upload_to=FINAL_VERSION_PDF_DIR,
+        blank=True,
+        verbose_name="Unsigned PDF",
+    )
+    signed_document = models.FileField(
+        upload_to=SIGNED_PDF_DIR,
+        blank=True,
+        verbose_name="Signed PDF",
+    )
+
+    # Contract information gets populated during object's creation.
+    # The sponsorship FK ís just a reference to keep track of related objects.
+    # It shouldn't be used to fetch for any of the sponsorship's data.
+    sponsorship = models.OneToOneField(
+        Sponsorship,
+        null=True,
+        on_delete=models.SET_NULL,
+        related_name="contract",
+    )
+    sponsor_info = models.TextField(verbose_name="Sponsor information")
+    sponsor_contact = models.TextField(verbose_name="Sponsor contact")
+
+    # benefits_list = """
+    #   - Foundation - Promotion of Python case study [^1]
+    #   - PyCon - PyCon website Listing [^1][^2]
+    #   - PyPI - Social media promotion of your sponsorship
+    # """
+    benefits_list = MarkupField(markup_type="markdown")
+    # legal_clauses = """
+    # [^1]: Here's one with multiple paragraphs and code.
+    #    Indent paragraphs to include them in the footnote.
+    #    `{ my code }`
+    #    Add as many paragraphs as you like.
+    # [^2]: Here's one with multiple paragraphs and code.
+    #    Indent paragraphs to include them in the footnote.
+    #    `{ my code }`
+    #    Add as many paragraphs as you like.
+    # """
+    legal_clauses = MarkupField(markup_type="markdown", default="", blank=True)
+
+    # Activity control fields
+    created_on = models.DateField(auto_now_add=True)
+    last_update = models.DateField(auto_now=True)
+    sent_on = models.DateField(null=True)
+
+    class Meta:
+        verbose_name = "Contract"
+        verbose_name_plural = "Contracts"
+
+    def __str__(self):
+        return f"Contract: {self.sponsorship}"
+
+    @classmethod
+    def new(cls, sponsorship):
+        """
+        Factory method to create a new Contract from a Sponsorship
+        """
+        sponsor = sponsorship.sponsor
+        primary_contact = sponsor.primary_contact
+
+        sponsor_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
+        sponsor_contact = ""
+        if primary_contact:
+            sponsor_contact = f"{primary_contact.name} - {primary_contact.phone} | {primary_contact.email}"
+
+        benefits = sponsorship.benefits.all()
+        # must query for Legal Clauses again to respect model's ordering
+        clauses_ids = [c.id for c in chain(*[b.legal_clauses for b in benefits])]
+        legal_clauses = list(LegalClause.objects.filter(id__in=clauses_ids))
+
+        benefits_list = []
+        for benefit in benefits:
+            item = f"- {benefit.program_name} - {benefit.name}"
+            index_str = ""
+            for legal_clause in benefit.legal_clauses:
+                index = legal_clauses.index(legal_clause) + 1
+                index_str += f"[^{index}]"
+            if index_str:
+                item += f" {index_str}"
+            benefits_list.append(item)
+
+        legal_clauses_text = "\n".join(
+            [f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
+        )
+        return cls.objects.create(
+            sponsorship=sponsorship,
+            sponsor_info=sponsor_info,
+            sponsor_contact=sponsor_contact,
+            benefits_list="\n".join([b for b in benefits_list]),
+            legal_clauses=legal_clauses_text,
+        )
+
+    @property
+    def is_draft(self):
+        return self.status == self.DRAFT
+
+    @property
+    def preview_url(self):
+        return reverse("admin:sponsors_contract_preview", args=[self.pk])
+
+    @property
+    def awaiting_signature(self):
+        return self.status == self.AWAITING_SIGNATURE
+
+    @property
+    def next_status(self):
+        states_map = {
+            self.DRAFT: [self.AWAITING_SIGNATURE],
+            self.OUTDATED: [],
+            self.AWAITING_SIGNATURE: [self.EXECUTED, self.NULLIFIED],
+            self.EXECUTED: [],
+            self.NULLIFIED: [self.DRAFT],
+        }
+        return states_map[self.status]
+
+    def save(self, **kwargs):
+        if all([self.pk, self.is_draft]):
+            self.revision += 1
+        return super().save(**kwargs)
+
+    def set_final_version(self, pdf_file):
+        if self.AWAITING_SIGNATURE not in self.next_status:
+            msg = f"Can't send a {self.get_status_display()} contract."
+            raise InvalidStatusException(msg)
+
+        path = f"{self.FINAL_VERSION_PDF_DIR}"
+        sponsor = self.sponsorship.sponsor.name.upper()
+        filename = f"{path}SoW: {sponsor}.pdf"
+
+        mode = "wb"
+        try:
+            # if using S3 Storage the file will always exist
+            file = default_storage.open(filename, mode)
+        except FileNotFoundError as e:
+            # local env, not using S3
+            path = Path(e.filename).parent
+            if not path.exists():
+                path.mkdir(parents=True)
+            Path(e.filename).touch()
+            file = default_storage.open(filename, mode)
+
+        file.write(pdf_file)
+        file.close()
+
+        self.document = filename
+        self.status = self.AWAITING_SIGNATURE
+        self.save()
+
+    def execute(self, commit=True):
+        if self.EXECUTED not in self.next_status:
+            msg = f"Can't execute a {self.get_status_display()} contract."
+            raise InvalidStatusException(msg)
+
+        self.status = self.EXECUTED
+        self.sponsorship.status = Sponsorship.FINALIZED
+        if commit:
+            self.sponsorship.save()
+            self.save()
+
+    def nullify(self, commit=True):
+        if self.NULLIFIED not in self.next_status:
+            msg = f"Can't nullify a {self.get_status_display()} contract."
+            raise InvalidStatusException(msg)
+
+        self.status = self.NULLIFIED
+        if commit:
+            self.sponsorship.save()
+            self.save()

@@ -1,14 +1,24 @@
-from datetime import date
-from model_bakery import baker
+from datetime import date, timedelta
+from model_bakery import baker, seq
 
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Sponsor, SponsorshipBenefit, Sponsorship
+from ..models import (
+    Sponsor,
+    SponsorshipBenefit,
+    Sponsorship,
+    Contract,
+    SponsorContact,
+    SponsorBenefit,
+    LegalClause,
+    Contract
+)
 from ..exceptions import (
     SponsorWithExistingApplicationException,
-    SponsorshipInvalidStatusException,
+    SponsorshipInvalidDateRangeException,
+    InvalidStatusException,
 )
 
 
@@ -143,14 +153,27 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)
 
     def test_approve_sponsorship(self):
+        start = date.today()
+        end = start + timedelta(days=10)
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
 
-        sponsorship.approve()
+        sponsorship.approve(start, end)
 
-        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
         self.assertEqual(sponsorship.approved_on, timezone.now().date())
+        self.assertEqual(sponsorship.status, Sponsorship.APPROVED)
+        self.assertTrue(sponsorship.start_date, start)
+        self.assertTrue(sponsorship.end_date, end)
+
+    def test_exception_if_invalid_date_range_when_approving(self):
+        start = date.today()
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertIsNone(sponsorship.approved_on)
+
+        with self.assertRaises(SponsorshipInvalidDateRangeException):
+            sponsorship.approve(start, start)
 
     def test_rollback_sponsorship_to_edit(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
@@ -173,7 +196,55 @@ class SponsorshipModelTests(TestCase):
         sponsorship.status = Sponsorship.FINALIZED
         sponsorship.save()
         sponsorship.refresh_from_db()
-        with self.assertRaises(SponsorshipInvalidStatusException):
+        with self.assertRaises(InvalidStatusException):
+            sponsorship.rollback_to_editing()
+
+    def test_rollback_approved_sponsorship_with_contract_should_delete_it(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.status = Sponsorship.APPROVED
+        sponsorship.save()
+        baker.make_recipe('sponsors.tests.empty_contract', sponsorship=sponsorship)
+
+        sponsorship.rollback_to_editing()
+        sponsorship.save()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+        self.assertEqual(0, Contract.objects.count())
+
+    def test_can_not_rollback_sponsorship_to_edit_if_contract_was_sent(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.status = Sponsorship.APPROVED
+        sponsorship.save()
+        baker.make_recipe('sponsors.tests.awaiting_signature_contract', sponsorship=sponsorship)
+
+        with self.assertRaises(InvalidStatusException):
+            sponsorship.rollback_to_editing()
+
+        self.assertEqual(1, Contract.objects.count())
+
+    def test_rollback_sponsorship_to_edit(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        can_rollback_from = [
+            Sponsorship.APPLIED,
+            Sponsorship.APPROVED,
+            Sponsorship.REJECTED,
+        ]
+        for status in can_rollback_from:
+            sponsorship.status = status
+            sponsorship.save()
+            sponsorship.refresh_from_db()
+
+            sponsorship.rollback_to_editing()
+
+            self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
+            self.assertIsNone(sponsorship.approved_on)
+            self.assertIsNone(sponsorship.rejected_on)
+
+        sponsorship.status = Sponsorship.FINALIZED
+        sponsorship.save()
+        sponsorship.refresh_from_db()
+        with self.assertRaises(InvalidStatusException):
             sponsorship.rollback_to_editing()
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
@@ -268,3 +339,208 @@ class SponsorshipPackageTests(TestCase):
         ]  # missing benefits with index 2 or 3
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
+
+
+class SponsorContactModelTests(TestCase):
+    def test_get_primary_contact_for_sponsor(self):
+        sponsor = baker.make(Sponsor)
+        baker.make(SponsorContact, sponsor=sponsor, primary=False, _quantity=5)
+        baker.make(SponsorContact, primary=True)  # from other sponsor
+
+        self.assertEqual(5, SponsorContact.objects.filter(sponsor=sponsor).count())
+        with self.assertRaises(SponsorContact.DoesNotExist):
+            SponsorContact.objects.get_primary_contact(sponsor)
+        self.assertIsNone(sponsor.primary_contact)
+
+        primary_contact = baker.make(SponsorContact, primary=True, sponsor=sponsor)
+        self.assertEqual(
+            SponsorContact.objects.get_primary_contact(sponsor), primary_contact
+        )
+        self.assertEqual(sponsor.primary_contact, primary_contact)
+
+
+class ContractModelTests(TestCase):
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
+        baker.make(
+            SponsorshipBenefit,
+            program__name="PSF",
+            name=seq("benefit"),
+            order=seq(1),
+            _quantity=3,
+        )
+        self.sponsorship_benefits = SponsorshipBenefit.objects.all()
+
+    def test_auto_increment_draft_revision_on_save(self):
+        contract = baker.make_recipe("sponsors.tests.empty_contract")
+        self.assertEqual(contract.status, Contract.DRAFT)
+        self.assertEqual(contract.revision, 0)
+
+        num_updates = 5
+        for i in range(num_updates):
+            contract.save()
+            contract.refresh_from_db()
+
+        self.assertEqual(contract.revision, num_updates)
+
+    def test_does_not_auto_increment_draft_revision_on_save_if_other_states(self):
+        contract = baker.make_recipe("sponsors.tests.empty_contract", revision=10)
+
+        choices = Contract.STATUS_CHOICES
+        other_status = [c[0] for c in choices if c[0] != Contract.DRAFT]
+        for status in other_status:
+            contract.status = status
+            contract.save()
+            contract.refresh_from_db()
+            self.assertEqual(contract.status, status)
+            self.assertEqual(contract.revision, 10)
+            contract.save()  # perform extra save
+            contract.refresh_from_db()
+            self.assertEqual(contract.revision, 10)
+
+    def test_create_new_contract_from_sponsorship_sets_sponsor_info_and_contact(
+        self,
+    ):
+        contract = Contract.new(self.sponsorship)
+        contract.refresh_from_db()
+
+        sponsor = self.sponsorship.sponsor
+        expected_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
+
+        self.assertEqual(contract.sponsorship, self.sponsorship)
+        self.assertEqual(contract.sponsor_info, expected_info)
+        self.assertEqual(contract.sponsor_contact, "")
+
+    def test_create_new_contract_from_sponsorship_sets_sponsor_contact_and_primary(
+        self,
+    ):
+        sponsor = self.sponsorship.sponsor
+        contact = baker.make(
+            SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
+        )
+
+        contract = Contract.new(self.sponsorship)
+        expected_contact = f"{contact.name} - {contact.phone} | {contact.email}"
+
+        self.assertEqual(contract.sponsor_contact, expected_contact)
+
+    def test_format_benefits_without_legal_clauses(self):
+        for benefit in self.sponsorship_benefits:
+            SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
+
+        contract = Contract.new(self.sponsorship)
+
+        self.assertEqual(contract.legal_clauses.raw, "")
+        self.assertEqual(contract.legal_clauses.markup_type, "markdown")
+
+        b1, b2, b3 = self.sponsorship.benefits.all()
+        expected_benefits_list = f"""- PSF - {b1.name}
+- PSF - {b2.name}
+- PSF - {b3.name}"""
+
+        self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(contract.benefits_list.markup_type, "markdown")
+
+    def test_format_benefits_with_legal_clauses(self):
+        baker.make(LegalClause, _quantity=len(self.sponsorship_benefits))
+        legal_clauses = list(LegalClause.objects.all())
+
+        for i, benefit in enumerate(self.sponsorship_benefits):
+            clause = legal_clauses[i]
+            benefit.legal_clauses.add(clause)
+            SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
+        self.sponsorship_benefits.first().legal_clauses.add(
+            clause
+        )  # first benefit with 2 legal clauses
+
+        contract = Contract.new(self.sponsorship)
+
+        c1, c2, c3 = legal_clauses
+        expected_legal_clauses = f"""[^1]: {c1.clause}
+[^2]: {c2.clause}
+[^3]: {c3.clause}"""
+        self.assertEqual(contract.legal_clauses.raw, expected_legal_clauses)
+        self.assertEqual(contract.legal_clauses.markup_type, "markdown")
+
+        b1, b2, b3 = self.sponsorship.benefits.all()
+        expected_benefits_list = f"""- PSF - {b1.name} [^1][^3]
+- PSF - {b2.name} [^2]
+- PSF - {b3.name} [^3]"""
+
+        self.assertEqual(contract.benefits_list.raw, expected_benefits_list)
+        self.assertEqual(contract.benefits_list.markup_type, "markdown")
+
+    def test_control_contract_next_status(self):
+        SOW = Contract
+        states_map = {
+            SOW.DRAFT: [SOW.AWAITING_SIGNATURE],
+            SOW.OUTDATED: [],
+            SOW.AWAITING_SIGNATURE: [SOW.EXECUTED, SOW.NULLIFIED],
+            SOW.EXECUTED: [],
+            SOW.NULLIFIED: [SOW.DRAFT],
+        }
+        for status, exepcted in states_map.items():
+            contract = baker.prepare_recipe(
+                "sponsors.tests.empty_contract",
+                sponsorship__sponsor__name="foo",
+                status=status,
+            )
+            self.assertEqual(contract.next_status, exepcted)
+
+    def test_set_final_document_version(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
+        )
+        content = b"pdf binary content"
+        self.assertFalse(contract.document.name)
+
+        contract.set_final_version(content)
+        contract.refresh_from_db()
+
+        self.assertTrue(contract.document.name)
+        self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
+
+    def test_raise_invalid_status_exception_if_not_draft(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
+        )
+
+        with self.assertRaises(InvalidStatusException):
+            contract.set_final_version(b"content")
+
+    def test_execute_contract(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
+        )
+
+        contract.execute()
+        contract.refresh_from_db()
+
+        self.assertEqual(contract.status, Contract.EXECUTED)
+        self.assertEqual(contract.sponsorship.status, Sponsorship.FINALIZED)
+
+    def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.DRAFT
+        )
+
+        with self.assertRaises(InvalidStatusException):
+            contract.execute()
+
+    def test_nullify_contract(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
+        )
+
+        contract.nullify()
+        contract.refresh_from_db()
+
+        self.assertEqual(contract.status, Contract.NULLIFIED)
+
+    def test_raise_invalid_status_when_trying_to_nullify_contract_if_not_awaiting_signature(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", status=Contract.DRAFT
+        )
+
+        with self.assertRaises(InvalidStatusException):
+            contract.nullify()

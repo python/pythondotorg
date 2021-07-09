@@ -1,5 +1,5 @@
 
-{% extends 'admin/base_site.html' %}
+{% extends 'admin/change_form.html' %}
 {% load i18n admin_static sponsors %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
@@ -25,6 +25,9 @@
 
 <pre>{% full_sponsorship sponsorship display_fee=True %}</pre>
 
+{{ form.media }}
+{{ form.as_p }}
+
 <input name="confirm" value="yes" style="display:none">
 
 <div class="submit-row">
@@ -33,4 +36,7 @@
 
 </form>
 <div>
-</div>{% endblock %}
+</div>
+
+<script type="text/javascript" src="{% static 'admin/js/core.js' %}"></script>
+{% endblock %}
