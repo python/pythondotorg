@@ -27,6 +27,9 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 
 
 class SponsorshipPackage(OrderedModel):
+    """
+    Represent default packages of benefits (visionary, sustainability etc)
+    """
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
 
@@ -69,6 +72,9 @@ class SponsorshipPackage(OrderedModel):
 
 
 class SponsorshipProgram(OrderedModel):
+    """
+    Possible programs that a benefit belongs to (Foundation, Pypi, etc)
+    """
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
@@ -80,6 +86,10 @@ class SponsorshipProgram(OrderedModel):
 
 
 class SponsorshipBenefit(OrderedModel):
+    """
+    Benefit that sponsors can pick which are organized under
+    package and program.
+    """
     objects = SponsorshipBenefitManager()
 
     # Public facing
@@ -208,6 +218,10 @@ class SponsorshipBenefit(OrderedModel):
 
 
 class SponsorContact(models.Model):
+    """
+    Sponsor contact information
+    """
+
     objects = SponsorContactQuerySet.as_manager()
 
     sponsor = models.ForeignKey(
@@ -241,6 +255,12 @@ class SponsorContact(models.Model):
 
 
 class Sponsorship(models.Model):
+    """
+    Represente a sponsorship application by a sponsor.
+    It's responsible to group the set of selected benefits and
+    link it to sponsor
+    """
+
     APPLIED = "applied"
     REJECTED = "rejected"
     APPROVED = "approved"
@@ -433,6 +453,10 @@ class Sponsorship(models.Model):
 
 
 class SponsorBenefit(OrderedModel):
+    """
+    Link a benefit to a sponsorship application.
+    Created after a new sponsorship
+    """
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -506,6 +530,10 @@ class SponsorBenefit(OrderedModel):
 
 
 class Sponsor(ContentManageable):
+    """
+    Group all of the sponsor information, logo and contacts
+    """
+
     name = models.CharField(
         max_length=100,
         verbose_name="Sponsor name",
@@ -588,6 +616,10 @@ class Sponsor(ContentManageable):
 
 
 class LegalClause(OrderedModel):
+    """
+    Legal clauses applied to benefits
+    """
+
     internal_name = models.CharField(
         max_length=1024,
         verbose_name="Internal Name",
@@ -611,6 +643,10 @@ class LegalClause(OrderedModel):
 
 
 class Contract(models.Model):
+    """
+    Contract model to oficialize a Sponsorship
+    """
+
     DRAFT = "draft"
     OUTDATED = "outdated"
     AWAITING_SIGNATURE = "awaiting signature"
