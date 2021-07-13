@@ -14,8 +14,10 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
+from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
+from .enums import LogoPlacementChoices, PublisherChoices
 from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
 from .exceptions import (
     SponsorWithExistingApplicationException,
@@ -837,3 +839,33 @@ class Contract(models.Model):
         if commit:
             self.sponsorship.save()
             self.save()
+
+
+class BenefitFeature(PolymorphicModel):
+    benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Benefit Feature"
+        verbose_name_plural = "Benefit Features"
+
+
+class SponsorLogoPlacement(BenefitFeature):
+    publisher = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
+        verbose_name="Publisher",
+        help_text="On which site should the logo be displayed?"
+    )
+    logo_place = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
+        verbose_name="Logo Placement",
+        help_text="Where the logo should be placed?"
+    )
+
+    class Meta:
+        verbose_name = "Sponsor Logo Placement"
+        verbose_name_plural = "Sponsor Logo Placements"
+
+    def __str__(self):
+        return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
