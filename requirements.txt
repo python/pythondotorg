@@ -1,2 +1,3 @@
 -r base-requirements.txt
 -r prod-requirements.txt
+django-polymorphic==3.0.0
