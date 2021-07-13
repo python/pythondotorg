@@ -46,9 +46,7 @@ class Command(BaseCommand):
                     "jobs.python.org support": "jobs",  #
                     "Logo listed on PSF blog": "blogspot",  # TODO: QUESTION: both jobs and blogspot landing url shold point to python.org/sponsors right?
                     # Pycon
-                    "PyCon website Listing": "sponsor",
-                    "Virtual Booth": "virtual-booth",
-                    "Session track naming rights": "track",  # TODO: we shouldn't need these at the server, right?
+                    "PyCon website Listing": "sponsors",
                     # Pypi
                     "Logo on the PyPI sponsors page": "sponsors",
                     "Logo in a prominent position on the PyPI project detail page": "sidebar",
