@@ -1,5 +1,6 @@
 import csv
 from django.core.management import BaseCommand
+from django.template.defaultfilters import slugify
 
 from sponsors.models import Sponsorship, Contract
 
@@ -20,14 +21,11 @@ class Command(BaseCommand):
             print("There's no finalized Sponsorship.")
             return
 
-        #Each site can be a publishers;
-        #Flight can be the sponsorship level with all the sponsors;
-
         rows = []
         for sponsorship in qs.iterator():
             base_row = {
                 "sponsor": sponsorship.sponsor.name,
-                "sponsor": sponsorship.sponsor.description,
+                "description": sponsorship.sponsor.description,
                 "logo": sponsorship.sponsor.web_logo.url,
                 "sponsor_url": sponsorship.sponsor.landing_page_url,
                 "start_date": sponsorship.start_date.isoformat(),
@@ -42,15 +40,15 @@ class Command(BaseCommand):
                 # - use the flight to determine the placement (footer/sidebar/sponsor etc)
                 flight_mapping = {
                     # Foundation
-                    "Logo on python.org": "sponsors",
+                    "Logo on python.org": "sponsors",  # redirect to sponsor landing url
                     "jobs.python.org support": "jobs",  #
-                    "Logo listed on PSF blog": "blogspot",  # TODO: QUESTION: both jobs and blogspot landing url shold point to python.org/sponsors right?
+                    "Logo listed on PSF blog": "blogspot",  # TODO: QUESTION: both jobs and blogspot landing url shold point to python.org/sponsors right? yes
                     # Pycon
                     "PyCon website Listing": "sponsors",
                     # Pypi
                     "Logo on the PyPI sponsors page": "sponsors",
                     "Logo in a prominent position on the PyPI project detail page": "sidebar",
-                    "Logo on the PyPI footer": "footer",  # TODO: should we use the print logo here instead of the colored one?
+                    "Logo on the PyPI footer": "footer",
                     # Core dev
                     "docs.python.org recognition": "docs",
                     "Logo on python.org/downloads/": "docs-download",
@@ -61,10 +59,17 @@ class Command(BaseCommand):
                 flight = flight_mapping.get(benefit.name)
                 if publisher and flight:
                     row = base_row.copy()
-                    row["publisher"] = publisher
-                    row["flight"] = flight
-                    rows.append(row)
 
+                    if not sponsorship.sponsor.web_logo:
+                        print(f"WARNING: sponsor {sponsorship.sponsor} without logo")
+                        continue
+
+                    if publisher == "Foundation" and flight in ["jobs", "blogspot"]:
+                        row["sponsor_url"] = "https://www.python.org/psf/sponsorship/sponsors/"
+
+                    row["publisher"] = publisher
+                    row["flight"] = slugify(publisher) + '-' + flight
+                    rows.append(row)
 
         columns = [
             "publisher",
@@ -76,7 +81,7 @@ class Command(BaseCommand):
             "end_date",
             "sponsor_url",
         ]
-        with open('output.csv', 'w') as fd:
+        with open('sponsors.csv', 'w') as fd:
             writer = csv.DictWriter(fd, fieldnames=columns)
             writer.writeheader()
             writer.writerows(rows)
