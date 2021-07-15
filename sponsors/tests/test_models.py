@@ -566,3 +566,24 @@ class LogoPlacementConfigurationModelTests(TestCase):
         # can't save object without related sponsor benefit
         self.assertIsNone(benefit_feature.pk)
         self.assertIsNone(benefit_feature.sponsor_benefit_id)
+
+
+class SponsorBenefitModelTests(TestCase):
+
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship)
+        self.sponsorship_benefit = baker.make(SponsorshipBenefit)
+
+    def test_new_copy_also_add_benefit_feature_when_creating_sponsor_benefit(self):
+        benefit_config = baker.make(LogoPlacementConfiguration, benefit=self.sponsorship_benefit)
+        self.assertEqual(0, LogoPlacement.objects.count())
+
+        sponsor_benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        self.assertEqual(1, LogoPlacement.objects.count())
+        benefit_feature = sponsor_benefit.features.get()
+        self.assertIsInstance(benefit_feature, LogoPlacement)
+        self.assertEqual(benefit_feature.publisher, benefit_config.publisher)
+        self.assertEqual(benefit_feature.logo_place, benefit_config.logo_place)

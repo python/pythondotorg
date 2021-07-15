@@ -1,3 +1,4 @@
+from abc import ABC
 from pathlib import Path
 from itertools import chain
 from num2words import num2words
@@ -205,6 +206,10 @@ class SponsorshipBenefit(OrderedModel):
     def remaining_capacity(self):
         # TODO implement logic to compute
         return self.capacity
+
+    @property
+    def features_config(self):
+        return self.benefitfeatureconfiguration_set
 
     def __str__(self):
         return f"{self.program} > {self.name}"
@@ -508,10 +513,13 @@ class SponsorBenefit(OrderedModel):
             return f"{self.program} > {self.name}"
         return f"{self.program_name} > {self.name}"
 
+    @property
+    def features(self):
+        return self.benefitfeature_set
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
-        return cls.objects.create(
+        sponsor_benefit = cls.objects.create(
             sponsorship_benefit=benefit,
             program_name=benefit.program.name,
             name=benefit.name,
@@ -520,6 +528,13 @@ class SponsorBenefit(OrderedModel):
             benefit_internal_value=benefit.internal_value,
             **kwargs,
         )
+
+        # generate benefit features from benefit features configurations
+        for feature_config in benefit.features_config.all():
+            feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
+            feature.save()
+
+        return sponsor_benefit
 
     @property
     def legal_clauses(self):
@@ -841,9 +856,8 @@ class Contract(models.Model):
             self.save()
 
 
+########################################
 ##### Benefit features abstract classes
-
-
 class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
@@ -862,8 +876,8 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
+######################################################
 ##### SponsorshipBenefit features configuration models
-
 class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
@@ -882,7 +896,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature(self):
+    def get_benefit_feature(self, **kwargs):
         """
         Returns an instance of a configured type of BenefitFeature
         """
@@ -891,7 +905,6 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         # Get only the fields from the abstract base feature model
         benefit_fields = set(self._meta.get_fields()) - base_fields
         # Configure the related benefit feature using values from the configuration
-        kwargs = {}
         for field in benefit_fields:
             # Skip the OneToOne rel from the base class to BenefitFeatureConfiguration base class
             # since this field only exists in child models
@@ -919,8 +932,8 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
+####################################
 ##### SponsorBenefit features models
-
 class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
