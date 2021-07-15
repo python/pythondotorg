@@ -40,9 +40,9 @@ class Command(BaseCommand):
                 # - use the flight to determine the placement (footer/sidebar/sponsor etc)
                 flight_mapping = {
                     # Foundation
-                    "Logo on python.org": "sponsors",  # redirect to sponsor landing url
-                    "jobs.python.org support": "jobs",  #
-                    "Logo listed on PSF blog": "blogspot",  # TODO: QUESTION: both jobs and blogspot landing url shold point to python.org/sponsors right? yes
+                    "Logo on python.org": "sponsors",
+                    "jobs.python.org support": "jobs",
+                    "Logo listed on PSF blog": "blogspot",
                     # Pycon
                     "PyCon website Listing": "sponsors",
                     # Pypi
