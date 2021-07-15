@@ -5,7 +5,7 @@ from num2words import num2words
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
@@ -314,6 +314,7 @@ class Sponsorship(models.Model):
         return repr
 
     @classmethod
+    @transaction.atomic
     def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
         Creates a Sponsorship with a Sponsor and a list of SponsorshipBenefit.
