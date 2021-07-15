@@ -841,24 +841,10 @@ class Contract(models.Model):
             self.save()
 
 
-##### SponsorshipBenefit features configuration models
-
-class BenefitFeatureConfiguration(PolymorphicModel):
-    """
-    Base class for sponsorship benefits configuration.
-    """
-
-    benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = "Benefit Feature Configuration"
-        verbose_name_plural = "Benefit Feature Configurations"
+##### Benefit features abstract classes
 
 
-class LogoPlacementConfiguration(BenefitFeatureConfiguration):
-    """
-    Configuration to control how sponsor logo should be placed
-    """
+class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
@@ -873,8 +859,57 @@ class LogoPlacementConfiguration(BenefitFeatureConfiguration):
     )
 
     class Meta:
+        abstract = True
+
+
+##### SponsorshipBenefit features configuration models
+
+class BenefitFeatureConfiguration(PolymorphicModel):
+    """
+    Base class for sponsorship benefits configuration.
+    """
+
+    benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Benefit Feature Configuration"
+        verbose_name_plural = "Benefit Feature Configurations"
+
+
+class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
+    """
+    Configuration to control how sponsor logo should be placed
+    """
+
+    class Meta(BaseLogoPlacement.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Logo Placement Configuration"
         verbose_name_plural = "Logo Placement Configurations"
+
+    def __str__(self):
+        return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+
+
+##### SponsorBenefit features models
+
+class BenefitFeature(PolymorphicModel):
+    """
+    Base class for sponsor benefits features.
+    """
+    sponsor_benefit = models.ForeignKey(SponsorBenefit, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Benefit Feature"
+        verbose_name_plural = "Benefit Features"
+
+
+class LogoPlacement(BaseLogoPlacement, BenefitFeature):
+    """
+    Logo Placement feature for sponsor benefits
+    """
+
+    class Meta(BaseLogoPlacement.Meta, BenefitFeature.Meta):
+        verbose_name = "Logo Placement"
+        verbose_name_plural = "Logo Placement"
 
     def __str__(self):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
