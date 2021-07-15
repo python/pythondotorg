@@ -868,12 +868,38 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
     """
-
     benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Benefit Feature Configuration"
         verbose_name_plural = "Benefit Feature Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        """
+        Return a subclass of BenefitFeature related to this configuration.
+        Every configuration subclass must implement this property
+        """
+        raise NotImplementedError
+
+    def get_benefit_feature(self):
+        """
+        Returns an instance of a configured type of BenefitFeature
+        """
+        # Get all fields from benefit feature configuration base model
+        base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
+        # Get only the fields from the abstract base feature model
+        benefit_fields = set(self._meta.get_fields()) - base_fields
+        # Configure the related benefit feature using values from the configuration
+        kwargs = {}
+        for field in benefit_fields:
+            # Skip the OneToOne rel from the base class to BenefitFeatureConfiguration base class
+            # since this field only exists in child models
+            if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
+                continue
+            kwargs[field.name] = getattr(self, field.name)
+        BenefitFeatureClass = self.benefit_feature_class
+        return BenefitFeatureClass(**kwargs)
 
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
@@ -884,6 +910,10 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
     class Meta(BaseLogoPlacement.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Logo Placement Configuration"
         verbose_name_plural = "Logo Placement Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return LogoPlacement
 
     def __str__(self):
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"

@@ -13,13 +13,16 @@ from ..models import (
     SponsorContact,
     SponsorBenefit,
     LegalClause,
-    Contract
+    Contract,
+    LogoPlacementConfiguration,
+    LogoPlacement,
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
     InvalidStatusException,
 )
+from ..enums import PublisherChoices, LogoPlacementChoices
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -544,3 +547,22 @@ class ContractModelTests(TestCase):
 
         with self.assertRaises(InvalidStatusException):
             contract.nullify()
+
+
+class LogoPlacementConfigurationModelTests(TestCase):
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        config = baker.make(
+            LogoPlacementConfiguration,
+            publisher=PublisherChoices.FOUNDATION,
+            logo_place=LogoPlacementChoices.FOOTER,
+        )
+
+        benefit_feature = config.get_benefit_feature()
+
+        self.assertIsInstance(benefit_feature, LogoPlacement)
+        self.assertEqual(benefit_feature.publisher, PublisherChoices.FOUNDATION)
+        self.assertEqual(benefit_feature.logo_place, LogoPlacementChoices.FOOTER)
+        # can't save object without related sponsor benefit
+        self.assertIsNone(benefit_feature.pk)
+        self.assertIsNone(benefit_feature.sponsor_benefit_id)
