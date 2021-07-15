@@ -16,8 +16,8 @@ from .models import (
     SponsorBenefit,
     LegalClause,
     Contract,
-    BenefitFeature,
-    SponsorLogoPlacement,
+    BenefitFeatureConfiguration,
+    LogoPlacementConfiguration,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -33,19 +33,19 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
     ]
 
 
-class BenefitFeatureInline(StackedPolymorphicInline):
-    class SponsorLogoPlacementInline(StackedPolymorphicInline.Child):
-        model = SponsorLogoPlacement
+class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
+    class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
+        model = LogoPlacementConfiguration
 
-    model = BenefitFeature
+    model = BenefitFeatureConfiguration
     child_inlines = [
-        SponsorLogoPlacementInline
+        LogoPlacementConfigurationInline
     ]
 
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
-    inlines = [BenefitFeatureInline]
+    inlines = [BenefitFeatureConfigurationInline]
     ordering = ("program", "order")
     list_display = [
         "program",

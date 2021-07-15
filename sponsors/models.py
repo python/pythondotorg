@@ -841,15 +841,24 @@ class Contract(models.Model):
             self.save()
 
 
-class BenefitFeature(PolymorphicModel):
+##### SponsorshipBenefit features configuration models
+
+class BenefitFeatureConfiguration(PolymorphicModel):
+    """
+    Base class for sponsorship benefits configuration.
+    """
+
     benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name = "Benefit Feature"
-        verbose_name_plural = "Benefit Features"
+        verbose_name = "Benefit Feature Configuration"
+        verbose_name_plural = "Benefit Feature Configurations"
 
 
-class SponsorLogoPlacement(BenefitFeature):
+class LogoPlacementConfiguration(BenefitFeatureConfiguration):
+    """
+    Configuration to control how sponsor logo should be placed
+    """
     publisher = models.CharField(
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
@@ -864,8 +873,8 @@ class SponsorLogoPlacement(BenefitFeature):
     )
 
     class Meta:
-        verbose_name = "Sponsor Logo Placement"
-        verbose_name_plural = "Sponsor Logo Placements"
+        verbose_name = "Logo Placement Configuration"
+        verbose_name_plural = "Logo Placement Configurations"
 
     def __str__(self):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
