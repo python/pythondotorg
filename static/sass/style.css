@@ -353,6 +353,10 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
   border: 1px solid #caccce;
   background-color: transparent; }
 
+a.search-button {
+  display: inline-block !important;
+}
+
 form, .header-banner, .success-stories-widget .quote-from {
   *zoom: 1; }
   form:after, .header-banner:after, .success-stories-widget .quote-from:after {
