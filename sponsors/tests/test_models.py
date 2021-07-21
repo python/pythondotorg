@@ -521,6 +521,7 @@ class ContractModelTests(TestCase):
 
         self.assertEqual(contract.status, Contract.EXECUTED)
         self.assertEqual(contract.sponsorship.status, Sponsorship.FINALIZED)
+        self.assertEqual(contract.sponsorship.finalized_on, date.today())
 
     def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
         contract = baker.make_recipe(

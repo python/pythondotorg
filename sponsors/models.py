@@ -842,6 +842,7 @@ class Contract(models.Model):
 
         self.status = self.EXECUTED
         self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.finalized_on = timezone.now().date()
         if commit:
             self.sponsorship.save()
             self.save()
