@@ -1,6 +1,7 @@
 from model_bakery.recipe import Recipe
 
-from sponsors.models import Contract
+from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorBenefit
+from sponsors.enums import LogoPlacementChoices, PublisherChoices
 
 
 empty_contract = Recipe(
@@ -16,4 +17,22 @@ awaiting_signature_contract = Recipe(
     benefits_list="- benefit 1",
     legal_clauses="",
     status=Contract.AWAITING_SIGNATURE,
+)
+
+finalized_sponsorship = Recipe(
+    Sponsorship,
+    sponsor__name="Sponsor Name",
+    status=Sponsorship.FINALIZED,
+)
+
+logo_at_download_feature = Recipe(
+    LogoPlacement,
+    publisher=PublisherChoices.FOUNDATION.value,
+    logo_place=LogoPlacementChoices.DOWNLOAD_PAGE.value,
+)
+
+logo_at_sponsors_feature = Recipe(
+    LogoPlacement,
+    publisher=PublisherChoices.FOUNDATION.value,
+    logo_place=LogoPlacementChoices.SPONSORS_PAGE.value,
 )
