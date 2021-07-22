@@ -1,22 +1,25 @@
+from abc import ABC
 from pathlib import Path
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
-from django.db import models
-from django.db.models import Sum, Count
+from django.db import models, transaction
+from django.db.models import Sum
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.urls import reverse
 from markupfield.fields import MarkupField
-from ordered_model.models import OrderedModel, OrderedModelManager
+from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
+from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
-from .managers import SponsorContactQuerySet, SponsorshipQuerySet
+from .enums import LogoPlacementChoices, PublisherChoices
+from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
 from .exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
@@ -27,6 +30,9 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 
 
 class SponsorshipPackage(OrderedModel):
+    """
+    Represent default packages of benefits (visionary, sustainability etc)
+    """
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
 
@@ -69,6 +75,9 @@ class SponsorshipPackage(OrderedModel):
 
 
 class SponsorshipProgram(OrderedModel):
+    """
+    Possible programs that a benefit belongs to (Foundation, Pypi, etc)
+    """
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
@@ -79,25 +88,11 @@ class SponsorshipProgram(OrderedModel):
         pass
 
 
-class SponsorshipBenefitManager(OrderedModelManager):
-    def with_conflicts(self):
-        return self.exclude(conflicts__isnull=True)
-
-    def without_conflicts(self):
-        return self.filter(conflicts__isnull=True)
-
-    def add_ons(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0)
-
-    def with_packages(self):
-        return (
-            self.annotate(num_packages=Count("packages"))
-            .exclude(num_packages=0)
-            .order_by("-num_packages")
-        )
-
-
 class SponsorshipBenefit(OrderedModel):
+    """
+    Benefit that sponsors can pick which are organized under
+    package and program.
+    """
     objects = SponsorshipBenefitManager()
 
     # Public facing
@@ -212,6 +207,10 @@ class SponsorshipBenefit(OrderedModel):
         # TODO implement logic to compute
         return self.capacity
 
+    @property
+    def features_config(self):
+        return self.benefitfeatureconfiguration_set
+
     def __str__(self):
         return f"{self.program} > {self.name}"
 
@@ -226,6 +225,10 @@ class SponsorshipBenefit(OrderedModel):
 
 
 class SponsorContact(models.Model):
+    """
+    Sponsor contact information
+    """
+
     objects = SponsorContactQuerySet.as_manager()
 
     sponsor = models.ForeignKey(
@@ -259,6 +262,12 @@ class SponsorContact(models.Model):
 
 
 class Sponsorship(models.Model):
+    """
+    Represente a sponsorship application by a sponsor.
+    It's responsible to group the set of selected benefits and
+    link it to sponsor
+    """
+
     APPLIED = "applied"
     REJECTED = "rejected"
     APPROVED = "approved"
@@ -305,6 +314,7 @@ class Sponsorship(models.Model):
         return repr
 
     @classmethod
+    @transaction.atomic
     def new(cls, sponsor, benefits, package=None, submited_by=None):
         """
         Creates a Sponsorship with a Sponsor and a list of SponsorshipBenefit.
@@ -451,6 +461,10 @@ class Sponsorship(models.Model):
 
 
 class SponsorBenefit(OrderedModel):
+    """
+    Link a benefit to a sponsorship application.
+    Created after a new sponsorship
+    """
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -500,10 +514,13 @@ class SponsorBenefit(OrderedModel):
             return f"{self.program} > {self.name}"
         return f"{self.program_name} > {self.name}"
 
+    @property
+    def features(self):
+        return self.benefitfeature_set
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
-        return cls.objects.create(
+        sponsor_benefit = cls.objects.create(
             sponsorship_benefit=benefit,
             program_name=benefit.program.name,
             name=benefit.name,
@@ -512,6 +529,13 @@ class SponsorBenefit(OrderedModel):
             benefit_internal_value=benefit.internal_value,
             **kwargs,
         )
+
+        # generate benefit features from benefit features configurations
+        for feature_config in benefit.features_config.all():
+            feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
+            feature.save()
+
+        return sponsor_benefit
 
     @property
     def legal_clauses(self):
@@ -524,6 +548,10 @@ class SponsorBenefit(OrderedModel):
 
 
 class Sponsor(ContentManageable):
+    """
+    Group all of the sponsor information, logo and contacts
+    """
+
     name = models.CharField(
         max_length=100,
         verbose_name="Sponsor name",
@@ -606,6 +634,10 @@ class Sponsor(ContentManageable):
 
 
 class LegalClause(OrderedModel):
+    """
+    Legal clauses applied to benefits
+    """
+
     internal_name = models.CharField(
         max_length=1024,
         verbose_name="Internal Name",
@@ -629,6 +661,10 @@ class LegalClause(OrderedModel):
 
 
 class Contract(models.Model):
+    """
+    Contract model to oficialize a Sponsorship
+    """
+
     DRAFT = "draft"
     OUTDATED = "outdated"
     AWAITING_SIGNATURE = "awaiting signature"
@@ -806,6 +842,7 @@ class Contract(models.Model):
 
         self.status = self.EXECUTED
         self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.finalized_on = timezone.now().date()
         if commit:
             self.sponsorship.save()
             self.save()
@@ -819,3 +856,105 @@ class Contract(models.Model):
         if commit:
             self.sponsorship.save()
             self.save()
+
+
+########################################
+##### Benefit features abstract classes
+class BaseLogoPlacement(models.Model):
+    publisher = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
+        verbose_name="Publisher",
+        help_text="On which site should the logo be displayed?"
+    )
+    logo_place = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
+        verbose_name="Logo Placement",
+        help_text="Where the logo should be placed?"
+    )
+
+    class Meta:
+        abstract = True
+
+
+######################################################
+##### SponsorshipBenefit features configuration models
+class BenefitFeatureConfiguration(PolymorphicModel):
+    """
+    Base class for sponsorship benefits configuration.
+    """
+    benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Benefit Feature Configuration"
+        verbose_name_plural = "Benefit Feature Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        """
+        Return a subclass of BenefitFeature related to this configuration.
+        Every configuration subclass must implement this property
+        """
+        raise NotImplementedError
+
+    def get_benefit_feature(self, **kwargs):
+        """
+        Returns an instance of a configured type of BenefitFeature
+        """
+        # Get all fields from benefit feature configuration base model
+        base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
+        # Get only the fields from the abstract base feature model
+        benefit_fields = set(self._meta.get_fields()) - base_fields
+        # Configure the related benefit feature using values from the configuration
+        for field in benefit_fields:
+            # Skip the OneToOne rel from the base class to BenefitFeatureConfiguration base class
+            # since this field only exists in child models
+            if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
+                continue
+            kwargs[field.name] = getattr(self, field.name)
+        BenefitFeatureClass = self.benefit_feature_class
+        return BenefitFeatureClass(**kwargs)
+
+
+class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
+    """
+    Configuration to control how sponsor logo should be placed
+    """
+
+    class Meta(BaseLogoPlacement.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Logo Placement Configuration"
+        verbose_name_plural = "Logo Placement Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return LogoPlacement
+
+    def __str__(self):
+        return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+
+
+####################################
+##### SponsorBenefit features models
+class BenefitFeature(PolymorphicModel):
+    """
+    Base class for sponsor benefits features.
+    """
+    sponsor_benefit = models.ForeignKey(SponsorBenefit, on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = "Benefit Feature"
+        verbose_name_plural = "Benefit Features"
+
+
+class LogoPlacement(BaseLogoPlacement, BenefitFeature):
+    """
+    Logo Placement feature for sponsor benefits
+    """
+
+    class Meta(BaseLogoPlacement.Meta, BenefitFeature.Meta):
+        verbose_name = "Logo Placement"
+        verbose_name_plural = "Logo Placement"
+
+    def __str__(self):
+        return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
