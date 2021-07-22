@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 {% load banners %}
+{% load sponsors %}
 
 {% block page_title %}Download Python | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}Download Python{% endblock %}
@@ -75,7 +76,7 @@
 
                 <div class="row">
                     <div class="sidebar-widget download-widget">
-                    {% box 'download-sponsors' %}
+                    {% list_sponsors 'download' %}
                     </div>
                 </div>
 

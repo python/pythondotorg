@@ -1,11 +1,9 @@
 {% if logo_place == "download" %}
-<div class="sidebar-widget download-widget">
   <h2 class="widget-title">Sponsors</h2>
   <p>Visionary sponsors help to host Python downloads.</p>
   {% for sponsorship in sponsorships %}
-    <img src="{{ sponsorship.sponsor.web_logo.url }}" height="100px">
+  <img src="{{ sponsorship.sponsor.web_logo.url }}" height="100px">
   {% endfor %}
-</div>
 {% elif logo_place == "sponsors" %}
 <p>TODO: implement logo placement for Sponsors page </p>
 {% endif %}
