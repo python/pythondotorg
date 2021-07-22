@@ -2,6 +2,7 @@ from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
+from django.utils import timezone
 
 
 class SponsorshipQuerySet(QuerySet):
@@ -23,6 +24,11 @@ class SponsorshipQuerySet(QuerySet):
     def finalized(self):
         return self.filter(status=self.model.FINALIZED)
 
+    def enabled(self):
+        """Sponsorship which are finalized and enabled"""
+        today = timezone.now().date()
+        qs = self.finalized()
+        return qs.filter(start_date__lte=today, end_date__gte=today)
 
 class SponsorContactQuerySet(QuerySet):
     def get_primary_contact(self, sponsor):

@@ -27,3 +27,41 @@ class SponsorshipQuerySetTests(TestCase):
         for sp in visible:
             self.assertIn(sp, qs)
         self.assertEqual(list(qs), list(self.user.sponsorships))
+
+    def test_enabled_sponsorships(self):
+        # Sponorship that are enabled must have:
+        # - finalized status
+        # - start date less than today
+        # - end date greater than today
+        today = date.today()
+        two_days = timedelta(days=2)
+        enabled = baker.make(
+            Sponsorship,
+            status=Sponsorship.FINALIZED,
+            start_date=today - two_days,
+            end_date=today + two_days,
+        )
+        # group of still disabled sponsorships
+        baker.make(
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            start_date=today - two_days,
+            end_date=today + two_days
+        )
+        baker.make(
+            Sponsorship,
+            status=Sponsorship.FINALIZED,
+            start_date=today + two_days,
+            end_date=today + 2 * two_days
+        )
+        baker.make(
+            Sponsorship,
+            status=Sponsorship.FINALIZED,
+            start_date=today - 2 * two_days,
+            end_date=today - two_days
+        )
+
+        qs = Sponsorship.objects.enabled()
+
+        self.assertEqual(1, qs.count())
+        self.assertIn(enabled, qs)
