@@ -4,6 +4,26 @@
   {% for sponsorship in sponsorships %}
   <img src="{{ sponsorship.sponsor.web_logo.url }}" height="100px">
   {% endfor %}
+
 {% elif logo_place == "sponsors" %}
-<p>TODO: implement logo placement for Sponsors page </p>
+
+  {% for package in packages %}
+  <div title="{{ package.name }} Sponsors" align="center">
+    <h1 style="font-size: 350%">{{ package.name }} Sponsors</h1>
+
+    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax(350px, 0fr)); grid-template-rows: repeat(1, minmax(350px, 0fr)); align-items: center; justify-content: center;">
+       {% for sponsorship in sponsorships %}
+       {% if sponsorship.level_name == package.name %}
+       <div>
+           <a href="{{ sponsorship.sponsor.landing_page_url }}">
+             <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:350px;max-width:350px;height:auto;width:auto;">
+           </a>
+           <p>{{ sponsorship.sponsor.name }}</p>
+       </div>
+       {% endif %}
+       {% endfor %}
+    </div>
+
+  </div>
+  {% endfor %}
 {% endif %}

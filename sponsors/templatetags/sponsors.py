@@ -1,6 +1,6 @@
 from django import template
 
-from ..models import Sponsorship
+from ..models import Sponsorship, SponsorshipPackage
 from ..enums import PublisherChoices
 
 
@@ -28,4 +28,5 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     return {
         'logo_place': logo_place,
         'sponsorships': sponsorships,
+        'packages': SponsorshipPackage.objects.all(),
     }
