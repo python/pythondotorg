@@ -10,10 +10,10 @@ General information
 :Issue tracker: https://github.com/python/pythondotorg/issues
 :Mailing list: pydotorg-www_
 :IRC: ``#pydotorg`` on Freenode
-:Staging site: https://staging.python.org/ (``master`` branch)
+:Staging site: https://staging.python.org/ (``main`` branch)
 :Production configuration: https://github.com/python/psf-salt
 :Travis:
-  .. image:: https://travis-ci.org/python/pythondotorg.svg?branch=master
+  .. image:: https://travis-ci.org/python/pythondotorg.svg?branch=main
        :target: https://travis-ci.org/python/pythondotorg
 :License: Apache License
 
