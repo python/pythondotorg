@@ -1,4 +1,5 @@
 from ordered_model.admin import OrderedModelAdmin
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
@@ -15,6 +16,8 @@ from .models import (
     SponsorBenefit,
     LegalClause,
     Contract,
+    BenefitFeatureConfiguration,
+    LogoPlacementConfiguration,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -30,8 +33,19 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
     ]
 
 
+class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
+    class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
+        model = LogoPlacementConfiguration
+
+    model = BenefitFeatureConfiguration
+    child_inlines = [
+        LogoPlacementConfigurationInline
+    ]
+
+
 @admin.register(SponsorshipBenefit)
-class SponsorshipBenefitAdmin(OrderedModelAdmin):
+class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
+    inlines = [BenefitFeatureConfigurationInline]
     ordering = ("program", "order")
     list_display = [
         "program",

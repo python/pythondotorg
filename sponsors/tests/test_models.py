@@ -13,13 +13,16 @@ from ..models import (
     SponsorContact,
     SponsorBenefit,
     LegalClause,
-    Contract
+    Contract,
+    LogoPlacementConfiguration,
+    LogoPlacement,
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
     InvalidStatusException,
 )
+from ..enums import PublisherChoices, LogoPlacementChoices
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -518,6 +521,7 @@ class ContractModelTests(TestCase):
 
         self.assertEqual(contract.status, Contract.EXECUTED)
         self.assertEqual(contract.sponsorship.status, Sponsorship.FINALIZED)
+        self.assertEqual(contract.sponsorship.finalized_on, date.today())
 
     def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
         contract = baker.make_recipe(
@@ -544,3 +548,43 @@ class ContractModelTests(TestCase):
 
         with self.assertRaises(InvalidStatusException):
             contract.nullify()
+
+
+class LogoPlacementConfigurationModelTests(TestCase):
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        config = baker.make(
+            LogoPlacementConfiguration,
+            publisher=PublisherChoices.FOUNDATION,
+            logo_place=LogoPlacementChoices.FOOTER,
+        )
+
+        benefit_feature = config.get_benefit_feature()
+
+        self.assertIsInstance(benefit_feature, LogoPlacement)
+        self.assertEqual(benefit_feature.publisher, PublisherChoices.FOUNDATION)
+        self.assertEqual(benefit_feature.logo_place, LogoPlacementChoices.FOOTER)
+        # can't save object without related sponsor benefit
+        self.assertIsNone(benefit_feature.pk)
+        self.assertIsNone(benefit_feature.sponsor_benefit_id)
+
+
+class SponsorBenefitModelTests(TestCase):
+
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship)
+        self.sponsorship_benefit = baker.make(SponsorshipBenefit)
+
+    def test_new_copy_also_add_benefit_feature_when_creating_sponsor_benefit(self):
+        benefit_config = baker.make(LogoPlacementConfiguration, benefit=self.sponsorship_benefit)
+        self.assertEqual(0, LogoPlacement.objects.count())
+
+        sponsor_benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        self.assertEqual(1, LogoPlacement.objects.count())
+        benefit_feature = sponsor_benefit.features.get()
+        self.assertIsInstance(benefit_feature, LogoPlacement)
+        self.assertEqual(benefit_feature.publisher, benefit_config.publisher)
+        self.assertEqual(benefit_feature.logo_place, benefit_config.logo_place)
