@@ -14,7 +14,7 @@
                     <h1 class="call-to-action">{{ latest_entry.title }}</h1>
 
                     <p class="date-posted"><time datetime="{{ latest_entry.pub_date|date:"Y-m-d H:i|s" }}">{{ latest_entry.pub_date }}</time></p>
-                    <p class="excerpt">{{ latest_entry.summary|striptags|truncatewords:50|safe }}
+                    <p class="excerpt">{{ latest_entry.excerpt|striptags|truncatewords:50|safe }}
                     <a class="readmore" href="{{ latest_entry.url }}">Read more</a></p>
                 </div>
 {% endblock header_content %}
