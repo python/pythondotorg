@@ -1,12 +1,11 @@
 from collections import OrderedDict
 from django import template
 
-from ..models import Sponsorship, SponsorshipPackage
+from ..models import Sponsorship, SponsorshipPackage, Sponsor, TieredQuantityConfiguration
 from ..enums import PublisherChoices, LogoPlacementChoices
 
 
 register = template.Library()
-
 
 @register.inclusion_tag("sponsors/partials/full_sponsorship.txt")
 def full_sponsorship(sponsorship, display_fee=False):
@@ -63,3 +62,13 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
             'sponsorships_by_package': sponsorships_by_package,
         })
     return context
+
+
+@register.simple_tag
+def benefit_quantity_for_package(benefit, package):
+    quantity_configuration = TieredQuantityConfiguration.objects.filter(
+        benefit=benefit, package=package
+    ).first()
+    if quantity_configuration is None:
+        return 0
+    return quantity_configuration.quantity

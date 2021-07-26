@@ -1,5 +1,5 @@
 {% extends "psf/full-width.html" %}
-{% load pipeline boxes humanize staticfiles %}
+{% load pipeline boxes humanize staticfiles sponsors %}
 
 
 {% block head %}
@@ -68,7 +68,9 @@
           <!-- Packages information (as columns) --!>
           {% for package in form.fields.package.queryset %}
             <div class="col benefit-within-package {% if forloop.counter <= benefit.num_packages or not benefit.package_only %}package-{{ package.id }}-benefit {% if form.initial.package == package.id %}selected{% endif %}{% endif %}" data-package-reference="{{ package.id }}">
-
+              {% if benefit.has_tiers %}
+                <div><p>{% benefit_quantity_for_package benefit package %}</p></div>
+              {% endif %}
               {% if forloop.counter <= benefit.num_packages %}
                 <img
                     id="benefit-{{ benefit.id }}-package-{{ package.id }}"

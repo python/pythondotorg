@@ -19,7 +19,11 @@ from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
 from .enums import LogoPlacementChoices, PublisherChoices
-from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
+from .managers import (
+    SponsorContactQuerySet,
+    SponsorshipQuerySet,
+    SponsorshipBenefitManager,
+)
 from .exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
@@ -33,6 +37,7 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
 
@@ -78,6 +83,7 @@ class SponsorshipProgram(OrderedModel):
     """
     Possible programs that a benefit belongs to (Foundation, Pypi, etc)
     """
+
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
@@ -93,6 +99,7 @@ class SponsorshipBenefit(OrderedModel):
     Benefit that sponsors can pick which are organized under
     package and program.
     """
+
     objects = SponsorshipBenefitManager()
 
     # Public facing
@@ -224,6 +231,10 @@ class SponsorshipBenefit(OrderedModel):
 
     _short_name.short_description = "Benefit Name"
     short_name = property(_short_name)
+
+    @property
+    def has_tiers(self):
+        return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
 
     class Meta(OrderedModel.Meta):
         pass
@@ -371,7 +382,7 @@ class Sponsorship(models.Model):
     @property
     def verbose_sponsorship_fee(self):
         if self.sponsorship_fee is None:
-          return 0
+            return 0
         return num2words(self.sponsorship_fee)
 
     @property
@@ -476,6 +487,7 @@ class SponsorBenefit(OrderedModel):
     Link a benefit to a sponsorship application.
     Created after a new sponsorship
     """
+
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -889,12 +901,21 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
+class BaseTieredQuantity(models.Model):
+    package = models.ForeignKey(SponsorshipPackage, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        abstract = True
+
+
 ######################################################
 ##### SponsorshipBenefit features configuration models
 class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
     """
+
     benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
 
     class Meta:
@@ -945,12 +966,23 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
+class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguration):
+    """
+    Configuration for tiered quantities among packages
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Tiered Benefit Configuration"
+        verbose_name_plural = "Tiered Benefit Configurations"
+
+
 ####################################
 ##### SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+
     sponsor_benefit = models.ForeignKey(SponsorBenefit, on_delete=models.CASCADE)
 
     class Meta:
@@ -969,3 +1001,16 @@ class LogoPlacement(BaseLogoPlacement, BenefitFeature):
 
     def __str__(self):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+
+
+class TieredQuantity(BaseTieredQuantity, BenefitFeature):
+    """
+    Tiered Quantity feature for sponsor benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+        verbose_name = "Tiered Quantity"
+        verbose_name_plural = "Tiered Quantities"
+
+    def __str__(self):
+        return f"{self.quantity} of {self.benefit} for {self.package}"
