@@ -2055,12 +2055,45 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $default-border-color;
     margin-bottom: 2em;
 
-    li {
-        @include pe-inline-block();
-        margin-right: .75em;
+    .menu {
+      display: flex;
+      width: 100%;
+    }
+
+    div.section {
+      padding: 0.25em 1em;
+
+      &:hover {
+          .section-links {
+              display: inline;
+          }
+      }
+
+      span {
+        @extend %button-style-yellow;
+      }
+    }
+
+    div.section-links {
+      display: none;
+
+      ul {
+        margin-left: 0;
+        list-style: none;
+        padding-top:0.15em;
+
+        li {
+          @extend %grey-colorbox;
+          margin-bottom: 0;
+          padding: 0.25em 0.25em;
+
+          &:hover {
+            @include vertical-gradient( $grey-lightest, darken($grey-lightest, 15%) );
+          }
+        };
+      };
     }
 
     & + .return-link {
@@ -2399,108 +2432,8 @@ span.highlighted {
     font-size: 75%;
 }
 
-#sponsorship_application_container {
-
-    display: block;
-    text-align: center;
-
-    form {
-        margin-bottom: 0;
-
-        .package_only {
-            color: $grey;
-        }
-        .package_only.active {
-            color: $blue;
-        }
-        .active {
-            color: $blue;
-        }
-    }
-
-    #package_selection {
-        display: inline-block;
-        li {float: left;}
-        label {margin-left: 1em;}
-    }
-    display: block;
-    text-align: center;
-
-    #cost_container{
-        display: block;
-    }
-
-    #clear_form_btn {
-        margin: 1em 0 1em 0;
-        display: inline-block;
-
-        button {
-            border-color: $grey-light;
-            color: $grey-darker !important;
-            @include vertical-gradient(lighten( $grey-light, 20% ), $grey-light);
-        }
-    }
-
-    #benefits_icons_legend {
-        font-size: 85%;
-
-        div {
-            border-radius: 5px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: $grey-lightest;
-            margin: auto;
-            display: inline-block;
-            padding: 0.25em;
-        }
-    }
-
-    #benefits_container{
-        display: block;
-        width: 100vw;
-        position: relative;
-        left: calc(50% - 50vw);
-
-        .title {
-            margin: 0 0 1em 0;
-            padding: 0;
-            color: $blue;
-            background-color: $grey-lightest;
-        }
-
-        .benefits_checkboxes {
-            overflow: auto;
-            vertical-align: top;
-            display: inline-block;
-            border-radius: 10px;
-            border-width: 2px;
-            border-style: solid;
-            border-color: $yellow;
-            padding: 1em;
-            margin-right: 0.5em;
-            margin-top: 0.25em;
-            margin-bottom: 0.5em;
-            width: 24%;
-
-            ul {
-              text-align: left;
-
-              li {
-                padding: 0.25em 0.5em 0 0.5em;
-              }
-
-              .highlight {
-                background-color: lighten($grey-lightest, 3%);
-              }
-
-              .fa {
-                margin-left: 0.25em;
-              }
-            }
-        }
-    }
-}
-
+$breakpoint-phone: 640px;
+$breakpoint-desktop: 1200px;
 
 #new_sponsorship_application_container {
   .form_field {
@@ -2593,4 +2526,347 @@ span.highlighted {
     margin: 0;
     font-size: 75%;
   }
+}
+
+#select_sponsorship_benefits_container {
+
+    h1 { /* Page header */
+      font-size: 26px;
+      line-height: 37px;
+      color: #3776ab;
+    }
+
+    h2 { /* Page title */
+      font-size: 23px;
+      line-height: 37px;
+      color: #999999;
+    }
+
+    h3 { /* column headings, blue */
+      font-size: 20px;
+      line-height: 24px;
+      color: #3776AB;
+    }
+
+    h4 { /* column headings, blue */
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+      margin-top: 1em;
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+    }
+
+    .section-title {
+      justify-content: flex-start !important;
+
+      h4{
+        margin: 0;
+        font-size: 20px;
+        line-height: 25.14px;
+        font-weight: 700;
+      }
+
+      img {
+        height: 47px;
+      }
+
+      .col:not(:first-child) {
+        padding-top: 1px;
+        padding-left: 0.5em;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: baseline;
+      }
+
+      .with-description {
+        padding-top: 28px !important;
+      }
+
+    }
+
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    .col {
+        text-align: center;
+    }
+
+    .col-items {
+      padding: 0 0;
+      display: flex;
+      flex-flow: column wrap;
+    }
+  }
+
+  .benefit-description {
+    display: inline-block;
+    line-height: 10px;
+    font-size: 12px;
+  }
+
+  .benefit-title {
+    margin-top: 0;
+  }
+
+  .benefit-program {
+    font-size: bold;
+  }
+
+  #benefitsTable {
+    width: 90vw;
+    position: relative;
+    left: calc(50% - 45vw);
+    margin: 2em 0;
+
+    .benefit {
+       display: block;
+
+      .title {
+        display: inline-block;
+        font-size: 16px;
+        line-height: 18px;
+      }
+    }
+
+    .row {
+      border-bottom: 1px solid #E6E8EA;
+
+      .col:not(first-child) {
+        width: 10%;
+        padding: 0 1em;
+        text-align: center;
+
+        @media (max-width: $breakpoint-desktop) {width: 30%};
+      }
+
+      .col:first-child {
+        width: 20%;
+        text-align: left;
+
+        @media (max-width: $breakpoint-desktop) {width: 70%};
+      }
+    }
+
+    .separator {
+      flex-shrink: 0;
+      justify-content: flex-start;
+      border-bottom: 3px solid #FFD343;
+
+      h4 {
+        font-size: 23px;
+        line-height: 29px;
+        font-weight: 700;
+      }
+    }
+
+    .no-border {
+      border-bottom: none;
+    }
+
+    .package-input {
+      .package-price {
+        padding-bottom: 0.5em;
+      }
+
+      .custom-fee {
+        font-size: 75%;
+        display: none;
+      }
+
+      h4 {
+        transform: rotateY(35deg);
+      }
+
+      cursor: pointer;
+    }
+
+    .selected {
+      background-color: lighten($blue, 50%);
+      border-radius: 15px;
+      padding: 0.5em 1em !important;
+
+      img {
+        cursor: pointer;
+      }
+    }
+
+
+    @media (max-width: $breakpoint-desktop) {
+      .benefit-within-package {display: none;}
+      .selected {background-color: transparent;}
+    };
+  }
+
+  #add-on-benefits {
+    margin: 2em 0;
+    padding: 0 2em;
+
+    input {
+      margin-bottom: 0.5em;
+    }
+
+    .col-items {
+      min-height: 137px;
+      background-color: #C4C4C4;
+      margin: 0em 0.5em;
+      padding: 1em 0.5em;
+      width: 23%;
+      color: #000000;
+    }
+
+    .benefit-title {
+      color: #000000;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: $breakpoint-desktop) {
+      margin: 0;
+      padding: 1em;
+
+      input {
+        margin-right: 1em;
+      }
+
+      .row {
+        flex-flow: column wrap !important;
+        width: 100%;
+      }
+
+      .col-items{
+        background-color: transparent;
+        flex-flow: row nowrap !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: initial;
+        align-items: baseline;
+      }
+
+      .add-on-description {
+        text-align: left;
+        padding-right: 1em;
+      }
+    }
+  }
+
+  .submit-row {
+    justify-content: space-between;
+    padding-left: 2em;
+
+    .btn {
+      width: 218px;
+      height: 47px;
+
+      background: $yellow;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 20px;
+      text-align: center;
+
+      &:hover, &:focus {
+        background: lighten($yellow, 5%);
+        text-shadow: 0 0 5px rgba( $yellow, 0.2);
+      }
+    }
+
+    @media (max-width: $breakpoint-desktop) {
+      flex-flow: column nowrap !important;
+      width: 100%;
+      padding: 0;
+
+
+      .btn {
+        margin: 1em;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-desktop) {
+    #package-selection {
+      .row {
+        /* Mobile's layout lists the package selection as a single column instead of multiple
+           ones as in the desktop version. That's why this strange flex-flow change is being
+           made for both row and col classes so they can switch logic. Classes' name should be
+           changed at some time to avoid this confusion.
+         */
+        flex-flow: column wrap !important;
+
+        .col:not(first-child) {
+          width: 50%;
+
+          @media (max-width: $breakpoint-phone) {
+            width: 80%;
+          }
+        }
+
+        .col:first-child {
+          width: 20%;
+        }
+      }
+
+      .col, .col-items {
+        flex-flow: row nowrap !important;
+        align-items: baseline;
+        justify-content: space-between;
+        align-content: flex-start;
+      }
+
+      .package-input {
+         /* The internal disposition of the package name, price and checkbox for the mobile version differs
+          from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
+          items are being displayed using the order property.*/
+         h4 { // package name
+           order: 2;
+         }
+         span { // package fee
+           order: 3;
+         }
+         input { // input
+           order: 1;
+         }
+      }
+    }
+  }
+
+
+  @media (min-width: $breakpoint-desktop) {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */
+    .sticky {
+      position: -webkit-sticky; /* for Safari */
+      position: sticky;
+      top: 0;
+//background-color: #fcfcfc;  /* same as content-wrapper */
+      @include vertical-gradient(#f9f9f9, #fcfcfc);
+    }
+  }
+
+}
+
+#thank-you-container {
+  background: #417DAF;
+  text-align: center;
+  padding: 2em 0;
+  * {
+    color: #FCFCFC;
+    padding: 1em 0;
+  }
+
+  span {
+    font-size: 28px
+  }
+}
+
+.hidden {
+  display: none;
 }

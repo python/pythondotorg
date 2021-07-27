@@ -1,10 +1,11 @@
 from itertools import chain
-from django_countries.fields import CountryField
 from django import forms
+from django.conf import settings
+from django.contrib.admin.widgets import AdminDateWidget
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 from django.utils.translation import ugettext_lazy as _
-from django.utils.functional import cached_property
-from django.conf import settings
+from django_countries.fields import CountryField
 
 from sponsors.models import (
     SponsorshipBenefit,
@@ -13,6 +14,7 @@ from sponsors.models import (
     Sponsor,
     SponsorContact,
     Sponsorship,
+    SponsorBenefit,
 )
 
 
@@ -26,7 +28,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary"]
+        fields = ["name", "email", "phone", "primary", "administrative"]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -47,16 +49,23 @@ class SponsorshiptBenefitsForm(forms.Form):
         required=False,
         empty_label=None,
     )
+    add_ons_benefits = PickSponsorshipBenefitsField(
+        required=False,
+        queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.select_related("program")
+        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related(
+            "program"
+        )
+
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")
             self.fields[f"benefits_{slug}"] = PickSponsorshipBenefitsField(
                 queryset=benefits_qs.filter(program=program),
                 required=False,
-                label=_(f"{program.name} Sponsorship Benefits"),
+                label=_("{program_name} Benefits").format(program_name=program.name),
             )
 
     @property
@@ -147,7 +156,13 @@ class SponsorshipApplicationForm(forms.Form):
     )
     landing_page_url = forms.URLField(
         label="Sponsor landing page",
-        help_text="Sponsor landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
+        help_text="Landing page URL. The linked page may not contain any sales or marketing information.",
+        required=False,
+    )
+    twitter_handle = forms.CharField(
+        max_length=32,
+        label="Twitter handle",
+        help_text="For promotion of your sponsorship on social media.",
         required=False,
     )
     web_logo = forms.ImageField(
@@ -299,6 +314,7 @@ class SponsorshipApplicationForm(forms.Form):
             country=self.cleaned_data["country"],
             description=self.cleaned_data.get("description", ""),
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
+            twitter_handle=self.cleaned_data["twitter_handle"],
             print_logo=self.cleaned_data.get("print_logo"),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
@@ -318,6 +334,16 @@ class SponsorshipApplicationForm(forms.Form):
 
 
 class SponsorshipReviewAdminForm(forms.ModelForm):
+    start_date = forms.DateField(widget=AdminDateWidget(), required=False)
+    end_date = forms.DateField(widget=AdminDateWidget(), required=False)
+
+    def __init__(self, *args, **kwargs):
+        force_required = kwargs.pop("force_required", False)
+        super().__init__(*args, **kwargs)
+        if force_required:
+            for field_name in self.fields:
+                self.fields[field_name].required = True
+
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]
@@ -331,3 +357,40 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             raise forms.ValidationError("End date must be greater than start date")
 
         return cleaned_data
+
+
+class SponsorBenefitAdminInlineForm(forms.ModelForm):
+    sponsorship_benefit = forms.ModelChoiceField(
+        queryset=SponsorshipBenefit.objects.select_related("program"),
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if "benefit_internal_value" in self.fields:
+            self.fields["benefit_internal_value"].required = True
+
+    class Meta:
+        model = SponsorBenefit
+        fields = ["sponsorship_benefit", "sponsorship", "benefit_internal_value"]
+
+    def save(self, commit=True):
+        sponsorship = self.cleaned_data["sponsorship"]
+        benefit = self.cleaned_data["sponsorship_benefit"]
+        value = self.cleaned_data["benefit_internal_value"]
+
+        if not (self.instance and self.instance.pk):  # new benefit
+            self.instance = SponsorBenefit(sponsorship=sponsorship)
+        else:
+            self.instance.refresh_from_db()
+
+        self.instance.benefit_internal_value = value
+        if benefit.pk != self.instance.sponsorship_benefit_id:
+            self.instance.sponsorship_benefit = benefit
+            self.instance.name = benefit.name
+            self.instance.description = benefit.description
+            self.instance.program = benefit.program
+
+        if commit:
+            self.instance.save()
+
+        return self.instance

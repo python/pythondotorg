@@ -5,6 +5,7 @@ from . import views
 app_name = "nominations"
 urlpatterns = [
     url(r"^elections/$", views.ElectionsList.as_view(), name="elections_list"),
+    url(r"^election/(?P<election>[-\w]+)/$", views.ElectionDetail.as_view(), name="election_detail"),
     url(
         r"^elections/(?P<election>[-\w]+)/nominees/$",
         views.NomineeList.as_view(),

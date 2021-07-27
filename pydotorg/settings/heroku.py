@@ -36,6 +36,7 @@ EMAIL_PORT = int(os.environ.get('EMAIL_PORT'))
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = os.environ.get('DEFAULT_FROM_EMAIL')
 
+PEP_REPO_PATH = None
 PEP_ARTIFACT_URL = os.environ.get('PEP_ARTIFACT_URL')
 
 # Fastly API Key

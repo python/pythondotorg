@@ -14,23 +14,27 @@
 
 
 {% block content %}
-
-    {% if request.user.is_authenticated %}
+  {% if USER_NAV_BAR %}
     <div class="user-profile-controls">
-        <ul class="menu">
-            <li>Manage your Information: </li>
-            <li><a href="{% url 'users:user_detail' slug=request.user.username %}">View profile</a></li>
-            <li><a href="{% url 'users:user_nominations_view' %}">Nominations</a></li>
-            <li><a href="{% url 'users:user_profile_edit' %}">Edit profile</a></li>
-            {% if request.user.has_membership %}
-            <li><a href="{% url 'users:user_membership_edit' %}">Edit PSF membership</a></li>
-            {% else %}
-            <li><a href="{% url 'users:user_membership_create' %}">Become a PSF member</a></li>
-            {% endif %}
-            <li><a href="{% url 'account_change_password' %}">Change Password</a></li>
-        </ul>
+      <div class="menu">
+        {% for section in USER_NAV_BAR.values %}
+          {% if section.urls %}
+          <div class="section">
+            <span>{{ section.label }}</span>
+            <div class="section-links">
+              <ul>
+                {% for url in section.urls %}
+                <a href="{{ url.url }}"><li>{{ url.label }}</li></a>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+          {% endif %}
+        {% endfor %}
+      </div>
     </div>
-    {% endif %}
+
     {% block user_content %}{% endblock %}
+  {% endif %}
 
 {% endblock %}

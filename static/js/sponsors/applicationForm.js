@@ -1,103 +1,106 @@
 $(document).ready(function(){
-    const SELECTORS = {
-        checkboxesContainer: function() { return $("#benefits_container"); },
-        costLabel:  function() { return $("#cost_label"); },
-        clearFormBtn:  function() { return $("#clear_form_btn"); },
-        packageInput:  function() { return $("input[name=package]"); },
-        applicationForm:  function() { return $("#application_form"); },
-        getPackageInfo: function(packageId) { return $("#package_benefits_" + packageId); },
-        getPackageBenefits: function(packageId) { return SELECTORS.getPackageInfo(packageId).children(); },
-        benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
-        getBenefitLabel: function(benefitId) { return $('label[benefit_id=' + benefitId + ']'); },
-        getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
-        getBenefitConflicts: function(benefitId) { return $('#conflicts_with_' + benefitId).children(); },
-        getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
-    }
+  const SELECTORS = {
+    packageInput:  function() { return $("input[name=package]"); },
+    getPackageInfo: function(packageId) { return $("#package_benefits_" + packageId); },
+    getPackageBenefits: function(packageId) { return SELECTORS.getPackageInfo(packageId).children(); },
+    benefitsInputs: function() { return $("input[id^=id_benefits_]"); },
+    getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
+    getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
+    tickImages: function() { return $(`.benefit-within-package img`) },
+  }
 
-    displayPackageCost = function(packageId) {
-      let packageInfo = SELECTORS.getPackageInfo(packageId);
-      let cost = packageInfo.attr("data-cost");
-      SELECTORS.costLabel().html('Sponsorship cost is $' + cost.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + ' USD')
-    }
+  const initialPackage = $("input[name=package]:checked").val();
+  if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
 
+  SELECTORS.packageInput().click(function(){
+    let package = this.value;
+    if (package.length == 0) return;
 
+    // clear previous customizations
+    SELECTORS.tickImages().each((i, img) => {
+      const initImg = img.getAttribute('data-initial-state');
+      const src = img.getAttribute('src');
 
-    SELECTORS.clearFormBtn().click(function(){
-        SELECTORS.applicationForm().trigger("reset");
-        SELECTORS.applicationForm().find("[class=active]").removeClass("active");
-        SELECTORS.packageInput().prop("checked", false);
-        SELECTORS.checkboxesContainer().find(':checkbox').each(function(){
-            $(this).prop('checked', false);
-            if ($(this).attr("package_only")) $(this).attr("disabled", true);
-        });
-        SELECTORS.costLabel().html("");
-    });
-
-    SELECTORS.packageInput().change(function(){
-      let package = this.value;
-      if (package.length == 0) return;
-
-      SELECTORS.costLabel().html("Updating cost...")
-
-      SELECTORS.checkboxesContainer().find(':checkbox').each(function(){
-          $(this).prop('checked', false);
-          let packageOnlyBenefit = $(this).attr("package_only");
-          if (packageOnlyBenefit) $(this).attr("disabled", true);
-      });
-
-      SELECTORS.getPackageBenefits(package).each(function(){
-          let benefit = $(this).html()
-          let benefitInput = SELECTORS.getBenefitInput(benefit);
-          let packageOnlyBenefit = benefitInput.attr("package_only");
-          benefitInput.removeAttr("disabled");
-          benefitInput.trigger("click");
-      });
-      displayPackageCost(package);
-    });
-
-    SELECTORS.benefitsInputs().change(function(){
-      let benefit = this.value;
-      if (benefit.length == 0) return;
-
-      // display package cost if custom benefit change result matches with package's benefits list
-      let isChangeFromPackageChange = SELECTORS.costLabel().html() == "Updating cost..."
-      if (!isChangeFromPackageChange) {
-        let selectedBenefits = SELECTORS.getSelectedBenefits();
-        selectedBenefits = $.map(selectedBenefits, function(b) { return $(b).val() }).sort();
-        let selectedPackageId = SELECTORS.packageInput().filter(":checked").val()
-        let packageBenefits = SELECTORS.getPackageBenefits(selectedPackageId);
-        packageBenefits = $.map(packageBenefits, function(b) { return $(b).text() }).sort();
-
-        // check same num of benefits and join with string. if same string, both lists have the same benefits
-        if (packageBenefits.length == selectedBenefits.length && packageBenefits.join(',') === selectedBenefits.join(',')){
-            displayPackageCost(selectedPackageId);
-        } else {
-            let msg = "Please submit your customized sponsorship package application and we'll contact you within 2 business days.";
-            SELECTORS.costLabel().html(msg);
-        }
+      if (src !== initImg) {
+        img.setAttribute('data-next-state', src);
       }
 
-      // updates the input to be active if needed
-      let active = SELECTORS.getBenefitInput(benefit).prop("checked");
-      if (!active) {
-          return;
-      } else {
-          SELECTORS.getBenefitLabel(benefit).addClass("active");
-      }
+      img.setAttribute('src', initImg);
+    });
+    $(".selected").removeClass("selected");
 
-      // check and ensure conflicts constraints between checked benefits
-      SELECTORS.getBenefitConflicts(benefit).each(function(){
-          let conflictId = $(this).html();
-          let checked = SELECTORS.getBenefitInput(conflictId).prop("checked");
-          if (checked){
-            conflictCheckbox.trigger("click");
-            conflictCheckbox.parent().removeClass("active");
-          }
-      });
+    // clear hidden form inputs
+    SELECTORS.getSelectedBenefits().each(function(){
+      $(this).prop('checked', false);
     });
 
-  $(document).tooltip({
-    show: { effect: "blind", duration: 0 },
-    hide: false
+    // update package benefits display
+    $(`.package-${package}-benefit`).addClass("selected");
+    $(`.package-${package}-benefit input`).prop("disabled", false);
+
+    // populate hidden inputs according to package's benefits
+    SELECTORS.getPackageBenefits(package).each(function(){
+      let benefit = $(this).html();
+      let benefitInput = SELECTORS.getBenefitInput(benefit);
+      benefitInput.prop("checked", true);
+    });
+
+    // hide previous custom fee messages
+    $('.custom-fee').hide();
+
+    mobileUpdate(package);
   });
 });
+
+
+function mobileUpdate(packageId) {
+  // Mobile version lists a single column to controle the selected
+  // benefits and potential add-ons. So, this part of the code
+  // controls this logic.
+  const mobileVersion = $(".benefit-within-package:hidden").length > 0;
+  if (!mobileVersion) return;
+  $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
+  $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
+}
+
+
+// For an unknown reason I couldn't make this logic work with jQuery.
+// To don't block the development process, I pulled it off using the classic
+// onclick attribute. Refactorings are welcome =]
+function benefitUpdate(benefitId, packageId) {
+  // Change tick image for the benefit. Can't directly change the url for the image
+  // due to our current static files storage.
+  const clickedImg = document.getElementById(`benefit-${ benefitId }-package-${ packageId }`);
+
+  // Img container must have "selected" to class to be editable
+  if (!clickedImg.parentElement.classList.contains('selected')) return;
+
+  const newSrc = clickedImg.getAttribute("data-next-state");
+  clickedImg.setAttribute("data-next-state", clickedImg.src);
+
+  // Update benefit's hidden input (can't rely on click event though)
+  const benefitsInputs = Array(...document.querySelectorAll('[data-benefit-id]'));
+  const hiddenInput = benefitsInputs.filter((b) => b.getAttribute('data-benefit-id') == benefitId)[0];
+  hiddenInput.checked = !hiddenInput.checked;
+  clickedImg.src = newSrc;
+
+  // Check if there are any type of customization. If so, display custom-fee label.
+  let pkgBenefits = Array(...document.getElementById(`package_benefits_${packageId}`).children).map(div => div.textContent).sort();
+  let checkedBenefis = Array(...document.querySelectorAll('[data-benefit-id]')).filter(e => e.checked).map(input => input.value).sort();
+
+  const hasAllBenefts = pkgBenefits.reduce((sum, id) => sum && checkedBenefis.includes(id), true);
+  const sameBenefitsNum = pkgBenefits.length === checkedBenefis.length;
+
+  const customFeeElems = Array(...document.getElementsByClassName(`custom-fee-${packageId}`));
+  if (hasAllBenefts && sameBenefitsNum) {
+    customFeeElems.map(e => e.style.display = 'none');
+  } else {
+    customFeeElems.map(e => e.style.display = 'initial');
+  }
+};
+
+// Callback function when user selects a package;
+function updatePackageInput(packageId){
+  const packageInput = document.getElementById(`id_package_${ packageId }`);
+  packageInput.click();
+}

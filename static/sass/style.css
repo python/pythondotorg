@@ -134,7 +134,7 @@
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .more-by-location {
+.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -148,12 +148,12 @@
   -webkit-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
 
-.pep-widget, .most-recent-events .more-by-location {
+.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
   padding: 1.25em;
   *zoom: 1; }
-  .pep-widget:after, .most-recent-events .more-by-location:after {
+  .pep-widget:after, .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
     content: "";
     display: table;
     clear: both; }
@@ -183,7 +183,7 @@
     clear: both; }
 
 /* Buttons */
-.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, a.delete, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
+.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span, a.delete, form.deletion-form button[type="submit"], button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .text form button, .text form input[type=submit],
 .sidebar-widget form button,
 .sidebar-widget form input[type=submit], input[type=submit], input[type=reset], button, a.button, .button {
   cursor: pointer;
@@ -213,11 +213,11 @@
   -moz-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   -webkit-box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5);
   box-shadow: 1px 1px 1px rgba(0, 0, 0, 0.05), inset 0 0 5px rgba(255, 255, 255, 0.5); }
-  .donate-button:hover, a.delete:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
+  .donate-button:hover, .header-banner .button:hover, .header-banner a.button:hover, .user-profile-controls div.section span:hover, a.delete:hover, form.deletion-form button[type="submit"]:hover, .search-button:hover, #dive-into-python .flex-control-paging a:hover, .text form button:hover, .text form input[type=submit]:hover,
   .sidebar-widget form button:hover,
-  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .donate-button:focus, a.delete:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
+  .sidebar-widget form input[type=submit]:hover, input[type=submit]:hover, input[type=reset]:hover, button:hover, .button:hover, .donate-button:focus, .header-banner .button:focus, .header-banner a.button:focus, .user-profile-controls div.section span:focus, a.delete:focus, form.deletion-form button[type="submit"]:focus, .search-button:focus, #dive-into-python .flex-control-paging a:focus, .text form button:focus, .text form input[type=submit]:focus,
   .sidebar-widget form button:focus,
-  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .donate-button:active, a.delete:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
+  .sidebar-widget form input[type=submit]:focus, input[type=submit]:focus, input[type=reset]:focus, button:focus, .button:focus, .donate-button:active, .header-banner .button:active, .header-banner a.button:active, .user-profile-controls div.section span:active, a.delete:active, form.deletion-form button[type="submit"]:active, .search-button:active, #dive-into-python .flex-control-paging a:active, .text form button:active, .text form input[type=submit]:active,
   .sidebar-widget form button:active,
   .sidebar-widget form input[type=submit]:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
@@ -231,7 +231,7 @@
     background-image: -webkit-linear-gradient(#e6e6e6 10%, #d9d9d9 90%);
     background-image: linear-gradient(#e6e6e6 10%, #d9d9d9 90%); }
 
-.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button {
+.psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span {
   background-color: #ffd343;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
@@ -245,7 +245,7 @@
   border-right: 1px solid #dca900;
   border-bottom: 1px solid #dca900;
   border-left: 1px solid #dca900; }
-  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active {
+  .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .header-banner a.button:hover, .user-profile-controls div.section span:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active, .header-banner a.button:active, .user-profile-controls div.section span:active {
     background-color: inherit;
     background-color: #ffd343;
     *zoom: 1;
@@ -2883,17 +2883,34 @@ p.quote-by-organization {
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-  border-bottom: 1px solid #caccce;
   margin-bottom: 2em; }
-  .user-profile-controls li {
-    display: -moz-inline-stack;
-    display: inline-block;
-    vertical-align: baseline;
-    margin-right: .75em; }
-    .lt-ie8 .user-profile-controls li {
-      vertical-align: auto;
-      zoom: 1;
+  .user-profile-controls .menu, .user-profile-controls form ul, form .user-profile-controls ul, .user-profile-controls .errorlist, .user-profile-controls .text form label + ul, .text form .user-profile-controls label + ul,
+  .user-profile-controls .sidebar-widget form label + ul,
+  .sidebar-widget form .user-profile-controls label + ul {
+    display: flex;
+    width: 100%; }
+  .user-profile-controls div.section {
+    padding: 0.25em 1em; }
+    .user-profile-controls div.section:hover .section-links {
       display: inline; }
+  .user-profile-controls div.section-links {
+    display: none; }
+    .user-profile-controls div.section-links ul {
+      margin-left: 0;
+      list-style: none;
+      padding-top: 0.15em; }
+      .user-profile-controls div.section-links ul li {
+        margin-bottom: 0;
+        padding: 0.25em 0.25em; }
+        .user-profile-controls div.section-links ul li:hover {
+          background-color: #bcc2c7;
+          *zoom: 1;
+          filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
+          background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
+          background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -moz-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -o-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: linear-gradient(#e6e8ea 10%, #bcc2c7 90%); }
   .user-profile-controls + .return-link {
     margin-top: -1.3125em; }
 
@@ -3621,80 +3638,6 @@ span.highlighted {
 .ui-tooltip-content {
   font-size: 75%; }
 
-#sponsorship_application_container {
-  display: block;
-  text-align: center;
-  display: block;
-  text-align: center; }
-  #sponsorship_application_container form {
-    margin-bottom: 0; }
-    #sponsorship_application_container form .package_only { color: #666666; }
-    #sponsorship_application_container form .package_only.active { color: #3776ab; }
-    #sponsorship_application_container form .active { color: #3776ab; }
-  #sponsorship_application_container #package_selection {
-    display: inline-block; }
-    #sponsorship_application_container #package_selection li {
-      float: left; }
-    #sponsorship_application_container #package_selection label {
-      margin-left: 1em; }
-  #sponsorship_application_container #cost_container {
-    display: block; }
-  #sponsorship_application_container #clear_form_btn {
-    margin: 1em 0 1em 0;
-    display: inline-block; }
-    #sponsorship_application_container #clear_form_btn button {
-      border-color: #999999;
-      color: #222222 !important;
-      background-color: #999999;
-      *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFCCCCCC', endColorstr='#FF999999');
-      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #cccccc), color-stop(90%, #999999));
-      background-image: -webkit-linear-gradient(#cccccc 10%, #999999 90%);
-      background-image: -moz-linear-gradient(#cccccc 10%, #999999 90%);
-      background-image: -o-linear-gradient(#cccccc 10%, #999999 90%);
-      background-image: linear-gradient(#cccccc 10%, #999999 90%); }
-  #sponsorship_application_container #benefits_icons_legend {
-    font-size: 85%; }
-    #sponsorship_application_container #benefits_icons_legend div {
-      border-radius: 5px;
-      border-width: 1px;
-      border-style: solid;
-      border-color: #e6e8ea;
-      margin: auto;
-      display: inline-block;
-      padding: 0.25em; }
-  #sponsorship_application_container #benefits_container {
-    display: block;
-    width: 100vw;
-    position: relative;
-    left: calc(50% - 50vw); }
-    #sponsorship_application_container #benefits_container .title {
-      margin: 0 0 1em 0;
-      padding: 0;
-      color: #3776ab;
-      background-color: #e6e8ea; }
-    #sponsorship_application_container #benefits_container .benefits_checkboxes {
-      overflow: auto;
-      vertical-align: top;
-      display: inline-block;
-      border-radius: 10px;
-      border-width: 2px;
-      border-style: solid;
-      border-color: #ffd343;
-      padding: 1em;
-      margin-right: 0.5em;
-      margin-top: 0.25em;
-      margin-bottom: 0.5em;
-      width: 24%; }
-      #sponsorship_application_container #benefits_container .benefits_checkboxes ul {
-        text-align: left; }
-        #sponsorship_application_container #benefits_container .benefits_checkboxes ul li {
-          padding: 0.25em 0.5em 0 0.5em; }
-        #sponsorship_application_container #benefits_container .benefits_checkboxes ul .highlight {
-          background-color: #eef0f1; }
-        #sponsorship_application_container #benefits_container .benefits_checkboxes ul .fa {
-          margin-left: 0.25em; }
-
 #new_sponsorship_application_container .form_field {
   margin-top: 1em;
   margin-bottom: 0; }
@@ -3764,3 +3707,239 @@ span.highlighted {
 #new_sponsorship_application_container .errorlist {
   margin: 0;
   font-size: 75%; }
+
+#select_sponsorship_benefits_container h1 {
+  /* Page header */
+  font-size: 26px;
+  line-height: 37px;
+  color: #3776ab; }
+#select_sponsorship_benefits_container h2 {
+  /* Page title */
+  font-size: 23px;
+  line-height: 37px;
+  color: #999999; }
+#select_sponsorship_benefits_container h3 {
+  /* column headings, blue */
+  font-size: 20px;
+  line-height: 24px;
+  color: #3776AB; }
+#select_sponsorship_benefits_container h4 {
+  /* column headings, blue */
+  font-size: 18px;
+  line-height: 28px;
+  color: #444444;
+  margin-top: 1em; }
+#select_sponsorship_benefits_container p {
+  font-size: 18px;
+  line-height: 28px;
+  color: #444444; }
+#select_sponsorship_benefits_container .section-title {
+  justify-content: flex-start !important; }
+  #select_sponsorship_benefits_container .section-title h4 {
+    margin: 0;
+    font-size: 20px;
+    line-height: 25.14px;
+    font-weight: 700; }
+  #select_sponsorship_benefits_container .section-title img {
+    height: 47px; }
+  #select_sponsorship_benefits_container .section-title .col:not(:first-child) {
+    padding-top: 1px;
+    padding-left: 0.5em;
+    display: flex;
+    flex-flow: column nowrap;
+    align-items: baseline; }
+  #select_sponsorship_benefits_container .section-title .with-description {
+    padding-top: 28px !important; }
+#select_sponsorship_benefits_container .row {
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content: space-between;
+  align-items: center;
+  align-content: center; }
+  #select_sponsorship_benefits_container .row .col {
+    text-align: center; }
+  #select_sponsorship_benefits_container .row .col-items {
+    padding: 0 0;
+    display: flex;
+    flex-flow: column wrap; }
+#select_sponsorship_benefits_container .benefit-description {
+  display: inline-block;
+  line-height: 10px;
+  font-size: 12px; }
+#select_sponsorship_benefits_container .benefit-title {
+  margin-top: 0; }
+#select_sponsorship_benefits_container .benefit-program {
+  font-weight: bold; }
+#select_sponsorship_benefits_container #benefitsTable {
+  width: 90vw;
+  position: relative;
+  left: calc(50% - 45vw);
+  margin: 2em 0; }
+  #select_sponsorship_benefits_container #benefitsTable .benefit {
+    display: block; }
+    #select_sponsorship_benefits_container #benefitsTable .benefit .title {
+      display: inline-block;
+      font-size: 16px;
+      line-height: 18px; }
+  #select_sponsorship_benefits_container #benefitsTable .row {
+    border-bottom: 1px solid #e6e8ea; }
+    #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
+      width: 10%;
+      padding: 0 1em;
+      text-align: center; }
+      @media (max-width: 1200px) {
+        #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
+          width: 30%; } }
+    #select_sponsorship_benefits_container #benefitsTable .row .col:first-child {
+      width: 20%;
+      text-align: left; }
+      @media (max-width: 1200px) {
+        #select_sponsorship_benefits_container #benefitsTable .row .col:first-child {
+          width: 70%; } }
+  #select_sponsorship_benefits_container #benefitsTable .separator {
+    flex-shrink: 0;
+    justify-content: flex-start;
+    border-bottom: 3px solid #ffd343; }
+    #select_sponsorship_benefits_container #benefitsTable .separator h4 {
+      font-size: 23px;
+      line-height: 29px;
+      font-weight: 700; }
+  #select_sponsorship_benefits_container #benefitsTable .no-border {
+    border-bottom: none; }
+  #select_sponsorship_benefits_container #benefitsTable .package-input {
+    cursor: pointer; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
+      padding-bottom: 0.5em; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
+      font-size: 75%;
+      display: none; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
+      transform: rotateY(35deg); }
+  #select_sponsorship_benefits_container #benefitsTable .selected {
+    background-color: #e9f1f8;
+    border-radius: 15px;
+    padding: 0.5em 1em !important; }
+    #select_sponsorship_benefits_container #benefitsTable .selected img {
+      cursor: pointer; }
+  @media (max-width: 1200px) {
+    #select_sponsorship_benefits_container #benefitsTable .benefit-within-package {
+      display: none; }
+    #select_sponsorship_benefits_container #benefitsTable .selected {
+      background-color: transparent; } }
+#select_sponsorship_benefits_container #add-on-benefits {
+  margin: 2em 0;
+  padding: 0 2em; }
+  #select_sponsorship_benefits_container #add-on-benefits input {
+    margin-bottom: 0.5em; }
+  #select_sponsorship_benefits_container #add-on-benefits .col-items {
+    min-height: 137px;
+    background-color: #C4C4C4;
+    margin: 0em 0.5em;
+    padding: 1em 0.5em;
+    width: 23%;
+    color: #000000; }
+  #select_sponsorship_benefits_container #add-on-benefits .benefit-title {
+    color: #000000;
+    margin: 0;
+    padding: 0; }
+  @media (max-width: 1200px) {
+    #select_sponsorship_benefits_container #add-on-benefits {
+      margin: 0;
+      padding: 1em; }
+      #select_sponsorship_benefits_container #add-on-benefits input {
+        margin-right: 1em; }
+      #select_sponsorship_benefits_container #add-on-benefits .row {
+        flex-flow: column wrap !important;
+        width: 100%; }
+      #select_sponsorship_benefits_container #add-on-benefits .col-items {
+        background-color: transparent;
+        flex-flow: row nowrap !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: initial;
+        align-items: baseline; }
+      #select_sponsorship_benefits_container #add-on-benefits .add-on-description {
+        text-align: left;
+        padding-right: 1em; } }
+#select_sponsorship_benefits_container .submit-row {
+  justify-content: space-between;
+  padding-left: 2em; }
+  #select_sponsorship_benefits_container .submit-row .btn {
+    width: 218px;
+    height: 47px;
+    background: #ffd343;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    border-radius: 20px;
+    text-align: center; }
+    #select_sponsorship_benefits_container .submit-row .btn:hover, #select_sponsorship_benefits_container .submit-row .btn:focus {
+      background: #ffd95c;
+      text-shadow: 0 0 5px rgba(255, 211, 67, 0.2); }
+  @media (max-width: 1200px) {
+    #select_sponsorship_benefits_container .submit-row {
+      flex-flow: column nowrap !important;
+      width: 100%;
+      padding: 0; }
+      #select_sponsorship_benefits_container .submit-row .btn {
+        margin: 1em; } }
+@media (max-width: 1200px) {
+  #select_sponsorship_benefits_container #package-selection .row {
+    /* Mobile's layout lists the package selection as a single column instead of multiple
+       ones as in the desktop version. That's why this strange flex-flow change is being
+       made for both row and col classes so they can switch logic. Classes' name should be
+       changed at some time to avoid this confusion.
+     */
+    flex-flow: column wrap !important; }
+    #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
+      width: 50%; }
+    #select_sponsorship_benefits_container #package-selection .row .col:first-child {
+      width: 20%; }
+  #select_sponsorship_benefits_container #package-selection .col, #select_sponsorship_benefits_container #package-selection .col-items {
+    flex-flow: row nowrap !important;
+    align-items: baseline;
+    justify-content: space-between;
+    align-content: flex-start; }
+  #select_sponsorship_benefits_container #package-selection .package-input {
+    /* The internal disposition of the package name, price and checkbox for the mobile version differs
+     from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
+     items are being displayed using the order property.*/ }
+    #select_sponsorship_benefits_container #package-selection .package-input h4 {
+      order: 2; }
+    #select_sponsorship_benefits_container #package-selection .package-input span {
+      order: 3; }
+    #select_sponsorship_benefits_container #package-selection .package-input input {
+      order: 1; } }
+    @media (max-width: 1200px) and (max-width: 640px) {
+      #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
+        width: 80%; } }
+@media (min-width: 1200px) {
+  #select_sponsorship_benefits_container {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */ }
+    #select_sponsorship_benefits_container .sticky {
+      position: -webkit-sticky;
+      /* for Safari */
+      position: sticky;
+      top: 0;
+      background-color: #fcfcfc;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
+      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -o-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: linear-gradient(#f9f9f9 10%, #fcfcfc 90%); } }
+
+#thank-you-container {
+  background: #417DAF;
+  text-align: center;
+  padding: 2em 0; }
+  #thank-you-container * {
+    color: #FCFCFC;
+    padding: 1em 0; }
+  #thank-you-container span {
+    font-size: 28px; }
+
+.hidden {
+  display: none; }

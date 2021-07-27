@@ -140,7 +140,7 @@
     <div id="touchnav-wrapper">
 
         <div id="nojs" class="do-not-print">
-            <p><strong>Notice:</strong> While Javascript is not essential for this website, your interaction with the content will be limited. Please turn Javascript on for the full experience. </p>
+            <p><strong>Notice:</strong> While JavaScript is not essential for this website, your interaction with the content will be limited. Please turn JavaScript on for the full experience. </p>
         </div>
 
         <!--[if lte IE 8]>
@@ -282,6 +282,7 @@
         </div><!-- end #content .content-wrapper -->
 
         <!-- Footer and social media list -->
+        {% block footer %}
         <footer id="site-map" class="main-footer" role="contentinfo">
             <div class="main-footer-links">
                 <div class="container">
@@ -323,6 +324,7 @@
             </div><!-- end .site-base -->
 
         </footer>
+        {% endblock %}
 
     </div><!-- end #touchnav-wrapper -->
 

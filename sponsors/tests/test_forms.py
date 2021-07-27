@@ -6,9 +6,11 @@ from django.test import TestCase
 from sponsors.forms import (
     SponsorshiptBenefitsForm,
     SponsorshipApplicationForm,
-    SponsorContact,
     Sponsor,
     SponsorContactFormSet,
+    SponsorBenefitAdminInlineForm,
+    SponsorBenefit,
+    Sponsorship,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact
 from .utils import get_static_image_file_as_upload
@@ -24,21 +26,36 @@ class SponsorshiptBenefitsFormTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
+        self.package = baker.make("sponsors.SponsorshipPackage")
+        self.package.benefits.add(*self.program_1_benefits)
+        self.package.benefits.add(*self.program_2_benefits)
+
+        # packages without associated packages
+        self.add_ons = baker.make(SponsorshipBenefit, program=self.psf, _quantity=2)
 
     def test_benefits_organized_by_program(self):
+        form = SponsorshiptBenefitsForm()
+
+        choices = list(form.fields["add_ons_benefits"].choices)
+
+        self.assertEqual(len(self.add_ons), len(choices))
+        for benefit in self.add_ons:
+            self.assertIn(benefit.id, [c[0] for c in choices])
+
+    def test_specific_field_to_select_add_ons(self):
         form = SponsorshiptBenefitsForm()
 
         field1, field2 = sorted(form.benefits_programs, key=lambda f: f.name)
 
         self.assertEqual("benefits_psf", field1.name)
-        self.assertEqual("PSF Sponsorship Benefits", field1.label)
+        self.assertEqual("PSF Benefits", field1.label)
         choices = list(field1.field.choices)
         self.assertEqual(len(self.program_1_benefits), len(choices))
         for benefit in self.program_1_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
         self.assertEqual("benefits_working_group", field2.name)
-        self.assertEqual("Working Group Sponsorship Benefits", field2.label)
+        self.assertEqual("Working Group Benefits", field2.label)
         choices = list(field2.field.choices)
         self.assertEqual(len(self.program_2_benefits), len(choices))
         for benefit in self.program_2_benefits:
@@ -80,6 +97,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
     def test_invalid_form_if_any_conflict(self):
         benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk)
         benefit_1.conflicts.add(*self.program_1_benefits)
+        self.package.benefits.add(benefit_1)
 
         data = {"benefits_psf": [b.id for b in self.program_1_benefits]}
         form = SponsorshiptBenefitsForm(data=data)
@@ -232,6 +250,7 @@ class SponsorshipApplicationFormTests(TestCase):
     ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
+        self.data["twitter_handle"] = "@companyx"
         self.files["print_logo"] = get_static_image_file_as_upload(
             "psf-logo_print.png", "logo_print.png"
         )
@@ -245,6 +264,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertTrue(sponsor.print_logo)
         self.assertFalse(form.user_with_previous_sponsors)
         self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
+        self.assertEqual(sponsor.twitter_handle, "@companyx")
 
     def test_use_previous_user_sponsor(self):
         contact = baker.make(SponsorContact, user__email="foo@foo.com")
@@ -355,3 +375,85 @@ class SponsorContactFormSetTests(TestCase):
         self.data["contact-TOTAL_FORMS"] = 0
         formset = SponsorContactFormSet(self.data, prefix="contact")
         self.assertFalse(formset.is_valid())
+
+
+class SponsorBenefitAdminInlineFormTests(TestCase):
+    def setUp(self):
+        self.benefit = baker.make(SponsorshipBenefit)
+        self.sponsorship = baker.make(Sponsorship)
+        self.data = {
+            "sponsorship_benefit": self.benefit.pk,
+            "sponsorship": self.sponsorship.pk,
+            "benefit_internal_value": 200,
+        }
+
+    def test_required_fields_for_new_sponsor_benefit(self):
+        required_fields = [
+            "sponsorship_benefit",
+            "sponsorship",
+            "benefit_internal_value",
+        ]
+
+        form = SponsorBenefitAdminInlineForm({})
+        self.assertFalse(form.is_valid())
+
+        for required in required_fields:
+            self.assertIn(required, form.errors)
+        self.assertEqual(len(required_fields), len(form.errors))
+
+    def test_create_new_sponsor_benefit_for_sponsorship(self):
+        form = SponsorBenefitAdminInlineForm(data=self.data)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        sponsor_benefit = form.save()
+        sponsor_benefit.refresh_from_db()
+
+        self.assertEqual(sponsor_benefit.sponsorship, self.sponsorship)
+        self.assertEqual(sponsor_benefit.sponsorship_benefit, self.benefit)
+        self.assertEqual(sponsor_benefit.name, self.benefit.name)
+        self.assertEqual(sponsor_benefit.description, self.benefit.description)
+        self.assertEqual(sponsor_benefit.program, self.benefit.program)
+        self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
+
+    def test_update_existing_sponsor_benefit(self):
+        sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship=self.sponsorship,
+            sponsorship_benefit=self.benefit,
+        )
+        new_benefit = baker.make(SponsorshipBenefit)
+        self.data["sponsorship_benefit"] = new_benefit.pk
+
+        form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        sponsor_benefit.refresh_from_db()
+
+        self.assertEqual(1, SponsorBenefit.objects.count())
+        self.assertEqual(sponsor_benefit.sponsorship, self.sponsorship)
+        self.assertEqual(sponsor_benefit.sponsorship_benefit, new_benefit)
+        self.assertEqual(sponsor_benefit.name, new_benefit.name)
+        self.assertEqual(sponsor_benefit.description, new_benefit.description)
+        self.assertEqual(sponsor_benefit.program, new_benefit.program)
+        self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
+
+    def test_do_not_update_sponsorship_if_it_doesn_change(self):
+        sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship=self.sponsorship,
+            sponsorship_benefit=self.benefit,
+        )
+        new_benefit = baker.make(SponsorshipBenefit)
+
+        form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        sponsor_benefit.refresh_from_db()
+        self.benefit.name = "new name"
+        self.benefit.save()
+
+        self.assertEqual(1, SponsorBenefit.objects.count())
+        self.assertEqual(sponsor_benefit.sponsorship, self.sponsorship)
+        self.assertEqual(sponsor_benefit.sponsorship_benefit, self.benefit)
+        self.assertNotEqual(sponsor_benefit.name, "new name")
+        self.assertEqual(sponsor_benefit.benefit_internal_value, 200)

@@ -6,11 +6,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.forms.utils import ErrorList
-from django.utils.decorators import method_decorator
 from django.http import JsonResponse
-from django.views.generic import ListView, FormView
-from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import ListView, FormView, DetailView
 
 from .models import (
     Sponsor,
@@ -77,7 +77,9 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
             "package": "" if not form.get_package() else form.get_package().id,
         }
         for fname, benefits in [
-            (f, v) for f, v in form.cleaned_data.items() if f.startswith("benefits_")
+            (f, v)
+            for f, v in form.cleaned_data.items()
+            if f.startswith("benefits_") or f == 'add_ons_benefits'
         ]:
             data[fname] = sorted([b.id for b in benefits])
 
@@ -172,3 +174,12 @@ class NewSponsorshipApplicationView(FormView):
         )
         cookies.delete_sponsorship_selected_benefits(response)
         return response
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class SponsorshipDetailView(DetailView):
+    context_object_name = 'sponsorship'
+    template_name = 'sponsors/sponsorship_detail.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships

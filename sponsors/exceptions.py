@@ -5,8 +5,15 @@ class SponsorWithExistingApplicationException(Exception):
     """
 
 
-class SponsorshipInvalidStatusException(Exception):
+class InvalidStatusException(Exception):
     """
     Raised when user tries to change the Sponsorship's status
     to a new one but from an invalid current status
+    """
+
+
+class SponsorshipInvalidDateRangeException(Exception):
+    """
+    Raised when user tries to approve a sponsorship with a start date
+    greater than the end date.
     """

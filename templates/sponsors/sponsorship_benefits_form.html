@@ -1,5 +1,6 @@
 {% extends "psf/full-width.html" %}
-{% load pipeline boxes %}
+{% load pipeline boxes humanize staticfiles %}
+
 
 {% block head %}
   {% stylesheet 'font-awesome' %}
@@ -8,77 +9,172 @@
 {% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block content %}
+  <form id="application_form" action="" method="POST">
+    {% csrf_token %}
+    <div id="select_sponsorship_benefits_container">
+      <h1>Sponsor the PSF</h1>
+      <p>Select a sponsorship package or customize the benefits that make the most sense for your business.</p>
+      <p><small>The listed sponsorship costs are subject to change if customization to selected benefits are made.</small></p>
+      <br/>
 
-    <article id="sponsorship_application_container" class="text">
+      <div class="row section-title">
+        <img class="col" src='{% static "img/sponsors/title-1.png" %}'/>
+        <h4 class="col">Select a Sponsorship Package</h4>
+      </div>
 
-        <div id="sponsorship-application-box">
-        {% box 'sponsorship-application' %}
+      <div id="benefitsTable">
+
+        <!-- Package selection --!>
+        <div id="package-selection" class="sticky">
+          <div class="row no-border">
+             <span class="col">
+               {% if form.errors %}
+                 <strong>Errors within the form</strong>
+                 <ul class="errorlist">
+                   {% for field in form %}
+                     {% for error in field.errors %}
+                       <li>{{field.name}}: {{ error|escape }}</li>
+                     {% endfor %}
+                   {% endfor %}
+                   {% for error in form.non_field_errors %}
+                     <li>{{ error|escape }}</li>
+                   {% endfor %}
+                 </ul>
+               {% endif %}
+             </span>
+             {% for package in form.fields.package.queryset %}
+             <div class="col col-items package-input" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
+               <h4>{{ package.name|upper }}</h4>
+               <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
+               <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
+               <span class="custom-fee-{{ package.id }} custom-fee">* Subject to change</span>
+             </div>
+             {% endfor %}
+          </div>
         </div>
 
-        <hr>
+        {% for field in form.benefits_programs %}
+        <div class="row separator">
+          <h4>{{ field.label }}</h4>
+        </div>
 
-        <form id="application_form" action="" method="POST">
-          {% csrf_token %}
-
-          {% if form.errors %}
-            {{ form.non_field_errors }}
-          {% endif %}
-
-          <div id="package_selection">
-          {{ form.package }}
+        <!-- Benefits listing (as rows) --!>
+        {% for benefit in field.field.queryset %}
+        <div class="row {% if forloop.last %}no-border{% endif %}">
+          <div class="col benefit">
+            <h4 class="benefit-title">{{ benefit.name }}</h4>
+            <span class="benefit-description">{{ benefit.description }}</span>
           </div>
+          <!-- Packages information (as columns) --!>
+          {% for package in form.fields.package.queryset %}
+            <div class="col benefit-within-package {% if forloop.counter <= benefit.num_packages or not benefit.package_only %}package-{{ package.id }}-benefit {% if form.initial.package == package.id %}selected{% endif %}{% endif %}" data-package-reference="{{ package.id }}">
 
-          <div id="cost_container">
-            <span id="cost_label"></span>
-          </div>
-
-          <div id="clear_form_btn">
-          <button type="button" name="clear">Clear Selections</button>
-          </div>
-
-          <div id="benefits_container">
-            <div id="benefits_icons_legend">
-              <div>
-                <span><i class="fa fa-cubes"></i> {{ benefit_model.PACKAGE_ONLY_MESSAGE }}</span>
-                {% if capacities_met %}<span><i class="fa fa-close"></i> {{ benefit_model.NO_CAPACITY_MESSAGE }}</span>{% endif %}
+              {% if forloop.counter <= benefit.num_packages %}
+                <img
+                    id="benefit-{{ benefit.id }}-package-{{ package.id }}"
+                    onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                    {% if form.initial %}
+                      {% if benefit.id in field.initial and package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% elif package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                      {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% endif %}
+                    {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% endif %}
+                    data-initial-state="{% static 'img/sponsors/tick.svg' %}"
+                />
+              {% elif not benefit.package_only %}
+                <img
+                  id="benefit-{{ benefit.id }}-package-{{ package.id }}"
+                  onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                  {% if form.initial %}
+                    {% if benefit.id in field.initial and package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick.svg' %}"
+                    data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% elif package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% else %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% endif %}
+                  {% else %}
+                  src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                  data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                  {% endif %}
+                  data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                />
                 <br/>
-                <span><i class="fa fa-info"></i> Hover over benefit for details</span>
-              </div>
+                <small>Potential add-on</small>
+              {% endif %}
             </div>
 
-          {% for field in form.benefits_programs %}
-            <div class="benefits_checkboxes">
-            <h3 class="title">{{ field.label }}</h3>
-
-            <ul id="id_{{ field.name }}">
-            {% for benefit in field.field.queryset %}
-                <li class="{% cycle '' 'highlight' %}">
-                    <label for="id_{{field.name}}_{{ forloop.counter0 }}" {% if benefit.package_only %} class='package_only'{% endif %} benefit_id="{{ benefit.id }}">
-                        <input id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
-                        <span>{{ benefit.name }}</span>
-                        {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i>{% endif %}
-                        {% if benefit.package_only %}<i class="fa fa-cubes"  title="{{ benefit_model.PACKAGE_ONLY_MESSAGE }}"></i>{% endif %}
-                        {% if not benefit.has_capacity %}<i class="fa fa-close"  title="{{ benefit_model.NO_CAPACITY_MESSAGE }}"></i>{% endif %}
-                    </label>
-                </li>
-            {% endfor %}
-            {% resetcycle %}
-            </ul>
-
-            </div>
           {% endfor %}
-          </div>
+          <input class="hidden" data-benefit-id={{ benefit.id }} id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
+        </div>
+        {% endfor %}
 
-          <input type="submit" value="Submit">
+        {% endfor %}
+      </div>
+
+      <div class="row section-title">
+        <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+        <div class="col with-description">
+          <h4>Select add-on benefits</h4>
+          <span>Available at any level of sponsorship</span>
+        </div>
+      </div>
+
+      <div id="add-on-benefits">
+        <div class="row">
+          {% for benefit in form.fields.add_ons_benefits.queryset %}
+          <div class="col col-items">
+            <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
+            <div class="add-on-description">
+              <span class="benefit-program">{{ benefit.program }}</span> -
+              <span class="benefit-title">{{ benefit.name }}</span>
+              <span class="benefit-description">{{ benefit.description }}</span>
+            </div>
           </div>
-        </form>
-    </article>
+          {% endfor %}
+        </div>
+      </div>
+
+      <div class="row section-title">
+        <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+        <h4 class="col">Submit your contact information</h4>
+      </div>
+
+      <div class="row submit-row">
+        <ol>
+          <li><p>Create an account or log-in</p></li>
+          <li><p>Submit your contact information</p></li>
+        </ol>
+        <div>
+          <input class="btn" type="submit" value="Submit">
+        </div>
+        <span></span>
+      </div>
+
+      <div class="row section-title">
+        <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+        <h4 class="col">PSF staff will reach out to confirm and finalize</h4>
+      </div>
+
+    </div>
 
     <div id="package_benefits" style="display: none">
     {% for package in sponsorship_packages %}
       <div id="package_benefits_{{ package.id }}" data-cost="{{ package.sponsorship_amount }}">
         {% for benefit in package.benefits.all %}
-          <div>{{ benefit.id }}</div>
+          {% if benefit.has_capacity %}<div>{{ benefit.id }}</div>{% endif %}
         {% endfor %}
       </div>
 
@@ -94,7 +190,17 @@
       </div>
     {% endfor %}
     </div>
+  </form>
+
 {% endblock content %}
+
+{% block footer %}
+  <div id="thank-you-container">
+    <span>If you would like us to walk you through the new program, email sponsors@python.org.</span>
+    <h1>Thank you for making a difference in the Python ecosystem!</h1>
+  </div>
+  {{ block.super }}
+{% endblock %}
 
 {% block javascript %}
   {{ block.super }}
