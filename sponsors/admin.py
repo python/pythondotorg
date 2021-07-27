@@ -103,6 +103,7 @@ class SponsorContactInline(admin.TabularInline):
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
     inlines = [SponsorContactInline]
+    search_fields = ["name"]
 
 
 class SponsorBenefitInline(admin.TabularInline):
@@ -152,6 +153,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
+    search_fields = ["sponsor__name"]
     list_display = [
         "sponsor",
         "status",
