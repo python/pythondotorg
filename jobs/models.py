@@ -11,6 +11,7 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
+from fastly import register_function
 from fastly.utils import purge_url
 
 from users.models import User
@@ -260,6 +261,12 @@ class JobReviewComment(ContentManageable):
         return '<Job #{}: {}>'.format(self.job.pk, self.comment.raw[:50])
 
 
+@register_function
+def _purge_jobs_pages():
+    purge_url(reverse('jobs:job_rss'))
+    purge_url(reverse('jobs:job_list'))
+
+
 @receiver(post_save, sender=Job)
 def purge_fastly_cache(sender, instance, **kwargs):
     """
@@ -272,5 +279,4 @@ def purge_fastly_cache(sender, instance, **kwargs):
 
     if instance.status == Job.STATUS_APPROVED:
         purge_url(reverse('jobs:job_detail', kwargs={'pk': instance.pk}))
-        purge_url(reverse('jobs:job_list'))
-        purge_url(reverse('jobs:job_rss'))
+        _purge_jobs_pages()
