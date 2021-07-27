@@ -66,7 +66,7 @@ class Election(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Election, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nominee(models.Model):
@@ -164,7 +164,7 @@ class Nominee(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Nominee, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nomination(models.Model):

@@ -259,7 +259,7 @@ class UsersViewsTestCase(TestCase):
             with self.subTest(i=i, username=username):
                 post_data.update({
                     'username': username,
-                    'email': 'foo{}@example.com'.format(i)
+                    'email': f'foo{i}@example.com'
                 })
                 response = self.client.post(url, post_data, follow=True)
                 self.assertEqual(response.status_code, 200)

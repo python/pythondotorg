@@ -81,7 +81,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
             for f, v in form.cleaned_data.items()
             if f.startswith("benefits_") or f == 'add_ons_benefits'
         ]:
-            data[fname] = sorted([b.id for b in benefits])
+            data[fname] = sorted(b.id for b in benefits)
 
         cookies.set_sponsorship_selected_benefits(response, data)
 
@@ -116,7 +116,7 @@ class NewSponsorshipApplicationView(FormView):
             None if not package_id else SponsorshipPackage.objects.get(id=package_id)
         )
         benefits_ids = chain(
-            *[self.benefits_data[k] for k in self.benefits_data if k != "package"]
+            *(self.benefits_data[k] for k in self.benefits_data if k != "package")
         )
         benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
 

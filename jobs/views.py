@@ -339,7 +339,7 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
             getattr(form.instance.job, action)(self.request.user)
             messages.add_message(
                 self.request, messages.SUCCESS,
-                "'{}' {}.".format(form.instance.job, action_status)
+                f"'{form.instance.job}' {action_status}."
             )
         else:
             messages.add_message(self.request, messages.SUCCESS,

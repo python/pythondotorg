@@ -76,7 +76,7 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     login_message = "Please login to make a nomination."
 
     def get_form_kwargs(self):
-        kwargs = super(NominationCreate, self).get_form_kwargs()
+        kwargs = super().get_form_kwargs()
         kwargs.update({"request": self.request})
         return kwargs
 

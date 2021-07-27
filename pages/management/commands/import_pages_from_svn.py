@@ -18,7 +18,7 @@ def fix_image_path(src):
         return src
     if not src.startswith('/'):
         src = '/' + src
-    url = '%spages%s' % (settings.MEDIA_URL, src)
+    url = f'{settings.MEDIA_URL}pages{src}'
     return url
 
 
@@ -92,7 +92,7 @@ class Command(BaseCommand):
             try:
                 data = parse_page(os.path.dirname(match))
             except Exception as e:
-                print("Unable to parse {}".format(match))
+                print(f"Unable to parse {match}")
                 traceback.print_exc()
                 continue
 
@@ -108,6 +108,6 @@ class Command(BaseCommand):
                 page_obj, _ = Page.objects.get_or_create(path=path, defaults=defaults)
                 self.save_images(path, page_obj)
             except Exception as e:
-                print("Unable to create Page object for {}".format(match))
+                print(f"Unable to create Page object for {match}")
                 traceback.print_exc()
                 continue

@@ -6,7 +6,7 @@ from django.core.exceptions import ImproperlyConfigured, PermissionDenied
 from django.http import Http404
 
 
-class FlagMixin(object):
+class FlagMixin:
     """
     Mixin to turn on/off views by a django-waffle flag. Return 404 if the flag
     is not active for the user.

@@ -349,7 +349,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            "Job Submitted for Approval: {}".format(job.display_name)
+            f"Job Submitted for Approval: {job.display_name}"
         )
 
         del mail.outbox[:]
@@ -430,15 +430,15 @@ class JobsViewTests(TestCase):
 
     def test_job_display_name(self):
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
         self.job.company_name = 'ABC'
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
         self.job.company_name = ''
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
     def test_job_display_about(self):
         self.job.company_description.raw = 'XYZ'
