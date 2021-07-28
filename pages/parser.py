@@ -18,13 +18,13 @@ def read_content_file(dirpath):
         raw_input = open(c_ht, 'rb').read()
         detection = chardet.detect(raw_input)
 
-        input = open(c_ht, 'r', encoding=detection['encoding'], errors='ignore')
+        input = open(c_ht, encoding=detection['encoding'], errors='ignore')
         msg = email.message_from_file(input)
 
         filename = c_ht
 
     elif os.path.exists(c_rst):
-        rst_text = open(c_rst, 'r').read()
+        rst_text = open(c_rst).read()
         rst_msg = """Content-type: text/x-rst
 
 %s""" % rst_text.lstrip()

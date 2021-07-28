@@ -49,7 +49,7 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
             return super().get_identifier(request)
         else:
             # returns a combination of IP address and hostname.
-            return "%s_%s" % (request.META.get('REMOTE_ADDR', 'noaddr'), request.META.get('REMOTE_HOST', 'nohost'))
+            return "{}_{}".format(request.META.get('REMOTE_ADDR', 'noaddr'), request.META.get('REMOTE_HOST', 'nohost'))
 
     def check_active(self, user):
         return True

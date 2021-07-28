@@ -138,7 +138,7 @@ class LevelNameFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         qs = SponsorshipPackage.objects.all()
-        return list(set([(program.name, program.name) for program in qs]))
+        return list({(program.name, program.name) for program in qs})
 
     def queryset(self, request, queryset):
         if self.value() == "all":

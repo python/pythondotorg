@@ -35,7 +35,7 @@ class Command(BaseCommand):
             app_list = apps.get_app_configs()
         for app in app_list:
             try:
-                factory_module = importlib.import_module('{}.factories'.format(app.name))
+                factory_module = importlib.import_module(f'{app.name}.factories')
             except ImportError:
                 continue
             else:
@@ -50,7 +50,7 @@ class Command(BaseCommand):
             if done:
                 self.stdout.write(self.style.SUCCESS('DONE'))
             else:
-                self.stdout.write('Creating initial data for {!r}... '.format(app_name), ending='')
+                self.stdout.write(f'Creating initial data for {app_name!r}... ', ending='')
         if verbosity >= 2 and result:
             pprint.pprint(result)
 
@@ -74,7 +74,7 @@ class Command(BaseCommand):
             try:
                 call_command('flush', verbosity=verbosity, interactive=False)
             except Exception as exc:
-                self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+                self.stdout.write(self.style.ERROR(f'{type(exc).__name__}: {exc}'))
         return confirm
 
     def handle(self, **options):
@@ -92,7 +92,7 @@ class Command(BaseCommand):
             try:
                 call_command('loaddata', 'sitetree_menus', '-v0')
             except Exception as exc:
-                self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+                self.stdout.write(self.style.ERROR(f'{type(exc).__name__}: {exc}'))
             else:
                 self.output('sitetree', verbosity, done=True)
 
@@ -106,7 +106,7 @@ class Command(BaseCommand):
             try:
                 result = function()
             except Exception as exc:
-                self.stdout.write(self.style.ERROR('{}: {}'.format(type(exc).__name__, exc)))
+                self.stdout.write(self.style.ERROR(f'{type(exc).__name__}: {exc}'))
                 continue
             else:
                 self.output(app_name, verbosity, done=True, result=result)

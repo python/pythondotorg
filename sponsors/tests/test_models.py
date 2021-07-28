@@ -146,7 +146,7 @@ class SponsorshipModelTests(TestCase):
 
     def test_estimated_cost_property(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
-        estimated_cost = sum([b.internal_value for b in self.benefits])
+        estimated_cost = sum(b.internal_value for b in self.benefits)
 
         self.assertNotEqual(estimated_cost, 0)
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)

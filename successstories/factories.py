@@ -39,7 +39,7 @@ class StoryFactory(factory.DjangoModelFactory):
         django_get_or_create = ('name',)
 
     category = factory.SubFactory(StoryCategoryFactory)
-    name = factory.LazyAttribute(lambda o: 'Success Story of {}'.format(o.company_name))
+    name = factory.LazyAttribute(lambda o: f'Success Story of {o.company_name}')
     company_name = factory.Faker('company')
     company_url = factory.Faker('url')
     author = factory.Faker('name')

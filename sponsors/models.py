@@ -49,9 +49,9 @@ class SponsorshipPackage(OrderedModel):
         pkg_benefits_with_conflicts = set(self.benefits.with_conflicts())
 
         # check if all packages' benefits without conflict are present in benefits list
-        from_pkg_benefits = set(
-            [b for b in benefits if b not in pkg_benefits_with_conflicts]
-        )
+        from_pkg_benefits = {
+            b for b in benefits if b not in pkg_benefits_with_conflicts
+        }
         if from_pkg_benefits != set(self.benefits.without_conflicts()):
             return True
 
@@ -754,7 +754,7 @@ class Contract(models.Model):
 
         benefits = sponsorship.benefits.all()
         # must query for Legal Clauses again to respect model's ordering
-        clauses_ids = [c.id for c in chain(*[b.legal_clauses for b in benefits])]
+        clauses_ids = [c.id for c in chain(*(b.legal_clauses for b in benefits))]
         legal_clauses = list(LegalClause.objects.filter(id__in=clauses_ids))
 
         benefits_list = []
