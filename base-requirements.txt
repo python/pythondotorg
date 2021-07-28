@@ -3,18 +3,18 @@ django-pipeline==1.6.14
 django-sitetree==1.10.0
 Django==2.0.13
 docutils==0.12
-Markdown==2.5.2
+Markdown==3.3.4
 cmarkgfm==0.4.2
-Pillow==5.1.0
-psycopg2==2.7.3.2
+Pillow==8.3.1
+psycopg2==2.8.6
 python3-openid==3.1.0
 # lxml used by BeautifulSoup.
-lxml==4.1.1
+lxml==4.6.3
 cssselect==0.9.1
-feedparser==5.2.1
+feedparser==6.0.8
 beautifulsoup4==4.6.0
 icalendar==3.8.4
-chardet2==2.0.3
+chardet==4.0.0
 # TODO: We may drop 'django-imagekit' completely.
 django-imagekit==4.0.2
 git+https://github.com/django-haystack/django-haystack.git@802b0f6f4b3b99314453261876a32bac2bbec94f
@@ -25,9 +25,9 @@ django-tastypie==0.14.1
 pytz==2017.2
 python-dateutil==2.8.1
 
-requests[security]>=2.20.0
+requests[security]>=2.26.0
 
-django-honeypot==0.6.0
+django-honeypot==1.0.1
 django-markupfield==1.4.3
 django-markupfield-helpers==0.1.1
 
