@@ -13,7 +13,7 @@ class DownloadMixin:
     def setUpClass(cls):
         super().setUpClass()
         cls.windows, _ = OS.objects.get_or_create(name='Windows')
-        cls.osx, _ = OS.objects.get_or_create(name='Mac OSX')
+        cls.osx, _ = OS.objects.get_or_create(name='macOS')
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 

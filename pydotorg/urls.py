@@ -27,7 +27,7 @@ urlpatterns = [
     # Redirect old download links to new downloads pages
     url(r'^download/$', RedirectView.as_view(url='https://www.python.org/downloads/', permanent=True)),
     url(r'^download/source/$', RedirectView.as_view(url='https://www.python.org/downloads/source/', permanent=True)),
-    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/mac-osx/', permanent=True)),
+    url(r'^download/mac/$', RedirectView.as_view(url='https://www.python.org/downloads/macos/', permanent=True)),
     url(r'^download/windows/$', RedirectView.as_view(url='https://www.python.org/downloads/windows/', permanent=True)),
 
     # duplicated downloads to getit to bypass China's firewall. See

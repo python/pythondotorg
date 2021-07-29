@@ -252,7 +252,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
-        purge_url('/downloads/mac-osx/')
+        purge_url('/downloads/macos/')
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
         if instance.get_version() is not None:
