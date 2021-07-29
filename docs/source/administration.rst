@@ -22,7 +22,7 @@ Here is an example of what that looks like on the site.
 .. image:: _images/supernav-example.png
     :alt: Example Supernav image
 
-The sub-nav items on the left are simply nested :ref:`navigation` links in SiteTree relative to the 'Download' item in the tree.  The larger *Download for Mac OSX* box however is what we refer to as the *supernav*.
+The sub-nav items on the left are simply nested :ref:`navigation` links in SiteTree relative to the 'Download' item in the tree.  The larger *Download for macOS* box however is what we refer to as the *supernav*.
 
 Most supernavs are updated automatically based on the underlying Django application content using signals.
 By convention the application will have a template named ``supernav.html``. For example, upon saving any published :ref:`Release <downloads>` a Django signal is fired to update the ``supernav-python-downloads`` box with the most current Python2 and Python3 releases.  In this case the markup is structured in a way to allow for the automatic OS detection Javascript to show the user the appropriate download links for the OS they are browsing with.
