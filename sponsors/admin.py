@@ -45,6 +45,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
+    change_form_template = "sponsors/admin/sponsorshipbenefit_change_form.html"
     inlines = [BenefitFeatureConfigurationInline]
     ordering = ("program", "order")
     list_display = [
@@ -86,6 +87,20 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
             },
         ),
     ]
+
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "<int:pk>/update-related-sponsorships",
+                self.admin_site.admin_view(self.update_related_sponsorships),
+                name="sponsors_sponsorshipbenefit_update_related",
+            ),
+        ]
+        return my_urls + urls
+
+    def update_related_sponsorships(self, *args, **kwargs):
+        return views_admin.update_related_sponsorships(self, *args, **kwargs)
 
 
 @admin.register(SponsorshipPackage)

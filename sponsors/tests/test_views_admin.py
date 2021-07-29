@@ -11,8 +11,8 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .utils import assertMessage
-from ..models import Sponsorship, Contract
-from sponsors.forms import SponsorshipReviewAdminForm
+from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -585,6 +585,121 @@ class NullifyContractViewTests(TestCase):
 
     def test_404_if_contract_does_not_exist(self):
         self.contract.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class UpdateRelatedSponsorshipsTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.benefit = baker.make(SponsorshipBenefit)
+        self.sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship_benefit=self.benefit,
+            sponsorship__sponsor__name="Foo",
+            added_by_user=True,  # to make sure we keep previous fields
+        )
+        self.url = reverse(
+            "admin:sponsors_sponsorshipbenefit_update_related", args=[self.benefit.pk]
+        )
+        self.data = {"sponsorships": [self.sponsor_benefit.sponsorship.pk]}
+
+    def test_display_form_from_benefit_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/update_related_sponsorships.html")
+        self.assertEqual(context["benefit"], self.benefit)
+        self.assertIsInstance(context["form"], SponsorshipsListForm)
+        self.assertEqual(context["form"].sponsorship_benefit, self.benefit)
+
+    def test_list_related_sponsorships_with_initial(self):
+        baker.make(Sponsorship)  # unrelated-sponsorship
+        other_sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship_benefit=self.benefit,
+            sponsorship__sponsor__name="Bar",
+        )
+
+        response = self.client.get(self.url)
+        initial = response.context["form"].initial
+
+        self.assertEqual(2, len(initial["sponsorships"]))
+        self.assertIn(self.sponsor_benefit.sponsorship.pk, initial["sponsorships"])
+        self.assertIn(other_sponsor_benefit.sponsorship.pk, initial["sponsorships"])
+
+    def test_bad_request_if_invalid_post_data(self):
+        self.data["sponsorships"] = []
+
+        response = self.client.post(self.url, data=self.data)
+
+        self.assertTrue(response.context["form"].errors)
+
+    def test_redirect_back_to_benefit_page_if_success(self):
+        redirect_url = reverse(
+            "admin:sponsors_sponsorshipbenefit_change", args=[self.benefit.pk]
+        )
+        response = self.client.post(self.url, data=self.data)
+
+        self.assertRedirects(response, redirect_url)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "1 related sponsorships updated!", messages.SUCCESS)
+
+    def test_update_selected_sponsorships_only(self):
+        other_sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship_benefit=self.benefit,
+            sponsorship__sponsor__name="Bar",
+            name=self.benefit.name,
+            description=self.benefit.description,
+        )
+        prev_name, prev_description = self.benefit.name, self.benefit.description
+        self.benefit.name = 'New name'
+        self.benefit.description = 'New description'
+        self.benefit.save()
+
+        response = self.client.post(self.url, data=self.data)
+
+        # delete existing sponsor benefit
+        self.assertFalse(SponsorBenefit.objects.filter(id=self.sponsor_benefit.id).exists())
+        # make sure a new one was created
+        new_sponsor_benefit = SponsorBenefit.objects.get(
+            sponsorship=self.sponsor_benefit.sponsorship,
+            sponsorship_benefit=self.benefit,
+        )
+        self.assertEqual(new_sponsor_benefit.name, "New name")
+        self.assertEqual(new_sponsor_benefit.description, "New description")
+        self.assertTrue(new_sponsor_benefit.added_by_user)
+        # make sure sponsor benefit from unselected sponsorships wasn't deleted
+        other_sponsor_benefit.refresh_from_db()
+        self.assertEqual(other_sponsor_benefit.name, prev_name)
+        self.assertEqual(other_sponsor_benefit.description, prev_description)
+
+    def test_404_if_benefit_does_not_exist(self):
+        self.benefit.delete()
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 

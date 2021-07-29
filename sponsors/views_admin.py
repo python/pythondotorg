@@ -1,11 +1,16 @@
+from django import forms
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils import timezone
+from django.db.models import Q
+from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response
+from sponsors.models import Sponsorship, SponsorBenefit
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -173,3 +178,41 @@ def nullify_contract_view(ModelAdmin, request, pk):
 
     context = {"contract": contract}
     return render(request, "sponsors/admin/nullify_contract.html", context=context)
+
+@transaction.atomic
+def update_related_sponsorships(ModelAdmin, request, pk):
+    """
+    Given a SponsorshipBeneefit, update all releated SponsorBenefit from
+    the Sponsorship listed in the post payload
+    """
+    benefit = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    initial = {"sponsorships": [sp.pk for sp in benefit.related_sponsorships]}
+    form = SponsorshipsListForm.with_benefit(benefit, initial=initial)
+
+    if request.method == "POST":
+        form = SponsorshipsListForm.with_benefit(benefit, data=request.POST)
+        if form.is_valid():
+            sponsorships = form.cleaned_data["sponsorships"]
+
+            related_benefits = benefit.sponsorbenefit_set.all()
+            for sp in sponsorships:
+                sponsor_benefit = related_benefits.get(sponsorship=sp)
+                sponsor_benefit.delete()
+
+                # recreate sponsor benefit considering updated benefit/feature configs
+                SponsorBenefit.new_copy(
+                    benefit,
+                    sponsorship=sp,
+                    added_by_user=sponsor_benefit.added_by_user
+                )
+
+            ModelAdmin.message_user(
+                request, f"{len(sponsorships)} related sponsorships updated!", messages.SUCCESS
+            )
+            redirect_url = reverse(
+                "admin:sponsors_sponsorshipbenefit_change", args=[benefit.pk]
+            )
+            return redirect(redirect_url)
+
+    context = {"benefit": benefit, "form": form}
+    return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
