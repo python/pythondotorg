@@ -25,6 +25,11 @@
 
   {{ form.as_p }}
 
+  <p>
+    <a onclick="selectAll()" href="#id_sponsorships">Select all</a> -
+    <a onclick="clearAll()" href="#id_sponsorships">Clear selected</a>
+  </p>
+
   <p>Expired or finalized affected sponsorships were ignored.</p>
   <div class="submit-row">
     <input type="submit" value="Update" class="default">
@@ -32,4 +37,23 @@
 
   </form>
 <div>
-</div>{% endblock %}
+</div>
+
+<script type="text/javascript">
+
+function selectAll() {
+  const checkboxes = document.getElementsByName('sponsorships');
+  for(checkbox of checkboxes) {
+    checkbox.checked = true;
+  }
+}
+
+function clearAll() {
+  const checkboxes = document.getElementsByName('sponsorships');
+  for(checkbox of checkboxes) {
+    checkbox.checked = false;
+  }
+}
+
+</script>
+{% endblock %}
