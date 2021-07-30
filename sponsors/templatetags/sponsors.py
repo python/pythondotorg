@@ -1,3 +1,4 @@
+from collections import OrderedDict
 from django import template
 
 from ..models import Sponsorship, SponsorshipPackage
@@ -24,9 +25,20 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     sponsorships = Sponsorship.objects.enabled().with_logo_placement(
         logo_place=logo_place, publisher=publisher
     ).select_related('sponsor')
+    packages = SponsorshipPackage.objects.all()
+
+    sponsorships_by_package = OrderedDict()
+    for pkg in packages:
+        key = pkg.name
+        sponsorships_by_package[key] = [
+            sp
+            for sp in sponsorships
+            if sp.level_name == key
+        ]
 
     return {
         'logo_place': logo_place,
         'sponsorships': sponsorships,
         'packages': SponsorshipPackage.objects.all(),
+        'sponsorships_by_package': sponsorships_by_package,
     }
