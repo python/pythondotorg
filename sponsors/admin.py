@@ -1,6 +1,7 @@
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
+from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.urls import path
@@ -323,7 +324,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
-        html = f"<img src='{obj.sponsor.web_logo.url}'/>"
+        html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        template = Template(html)
+        context = Context({'sponsor': obj.sponsor})
+        html = template.render(context)
         return mark_safe(html)
 
     get_sponsor_web_logo.short_description = "Web Logo"
@@ -332,7 +336,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
         img = obj.sponsor.print_logo
         html = ""
         if img:
-            html = f"<img src='{img.url}'/>"
+            html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+            template = Template(html)
+            context = Context({'img': img})
+            html = template.render(context)
         return mark_safe(html) if html else "---"
 
     get_sponsor_print_logo.short_description = "Print Logo"
