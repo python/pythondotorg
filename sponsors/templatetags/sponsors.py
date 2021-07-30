@@ -2,7 +2,7 @@ from collections import OrderedDict
 from django import template
 
 from ..models import Sponsorship, SponsorshipPackage
-from ..enums import PublisherChoices
+from ..enums import PublisherChoices, LogoPlacementChoices
 
 
 register = template.Library()
@@ -27,18 +27,39 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     ).select_related('sponsor')
     packages = SponsorshipPackage.objects.all()
 
-    sponsorships_by_package = OrderedDict()
-    for pkg in packages:
-        key = pkg.name
-        sponsorships_by_package[key] = [
-            sp
-            for sp in sponsorships
-            if sp.level_name == key
-        ]
-
-    return {
+    context = {
         'logo_place': logo_place,
         'sponsorships': sponsorships,
-        'packages': SponsorshipPackage.objects.all(),
-        'sponsorships_by_package': sponsorships_by_package,
     }
+
+    # organizes logo placement for sponsors page
+    # logos must be grouped by package and each package muse use
+    # specific dimensions to control the logos' grid
+    if logo_place == LogoPlacementChoices.SPONSORS_PAGE.value:
+        logo_dimensions = {
+            "Visionary": 350,
+            "Sustainability": 300,
+            "Maintaining": 300,
+            "Contributing": 275,
+            "Supporting": 250,
+            "Partner": 225,
+            "Participating": 225,
+            "Associate": 175,
+        }
+        sponsorships_by_package = OrderedDict()
+        for pkg in packages:
+            key = pkg.name
+            sponsorships_by_package[key] = {
+                "logo_dimension": logo_dimensions.get(key, 175),
+                "sponsorships": [
+                    sp
+                    for sp in sponsorships
+                    if sp.level_name == key
+                ]
+            }
+
+        context.update({
+            'packages': SponsorshipPackage.objects.all(),
+            'sponsorships_by_package': sponsorships_by_package,
+        })
+    return context

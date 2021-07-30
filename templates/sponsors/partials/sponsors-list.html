@@ -7,22 +7,25 @@
 
 {% elif logo_place == "sponsors" %}
 
-  {% for package, sponsorships in sponsorships_by_package.items %}
-  {% if sponsorships %}
+  {% for package, placement_info in sponsorships_by_package.items %}
+  {% if placement_info.sponsorships %}
   <div title="{{ package.name }} Sponsors" align="center">
-    <h1 style="font-size: 350%">{{ package }} Sponsors</h1>
+    {% with dimension=placement_info.logo_dimension %}
 
-    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax(350px, 0fr)); grid-template-rows: repeat(1, minmax(350px, 0fr)); align-items: center; justify-content: center;">
-       {% for sponsorship in sponsorships %}
+    <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ package }} Sponsors</h1>
+
+    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
+       {% for sponsorship in placement_info.sponsorships %}
        <div>
            <a href="{{ sponsorship.sponsor.landing_page_url }}">
-             <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:350px;max-width:350px;height:auto;width:auto;">
+             <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:{{ dimension }}px;max-width:{{ dimension }}px;height:auto;width:auto;">
            </a>
            <p>{{ sponsorship.sponsor.name }}</p>
        </div>
        {% endfor %}
     </div>
 
+    {% endwith %}
   </div>
   {% endif %}
   {% endfor %}
