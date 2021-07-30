@@ -41,7 +41,7 @@ urlpatterns = [
 
     # other section landing pages
     url(r'^psf-landing/$', TemplateView.as_view(template_name="psf/index.html"), name='psf-landing'),
-    url(r'^psf/sponsorship/sponsors/$', TemplateView.as_view(template_name="psf/sponsors-list.html"), name='psf-sponsors'),
+    url(r'^psf/sponsors/$', TemplateView.as_view(template_name="psf/sponsors-list.html"), name='psf-sponsors'),
     url(r'^docs-landing/$', TemplateView.as_view(template_name="docs/index.html"), name='docs-landing'),
     url(r'^pypl-landing/$', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     url(r'^shop-landing/$', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),
