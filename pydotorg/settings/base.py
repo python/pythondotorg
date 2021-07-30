@@ -157,6 +157,7 @@ INSTALLED_APPS = [
     'widget_tweaks',
     'django_countries',
     'easy_pdf',
+    'sorl.thumbnail',
 
     'users',
     'boxes',
