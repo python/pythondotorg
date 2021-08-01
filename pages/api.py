@@ -47,4 +47,4 @@ class PageViewSet(BaseReadOnlyAPIViewSet):
     serializer_class = PageSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_class = PageFilterSet
+    filterset_class = PageFilterSet

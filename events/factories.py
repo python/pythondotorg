@@ -1,9 +1,10 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from .models import Calendar
 
 
-class CalendarFactory(factory.DjangoModelFactory):
+class CalendarFactory(DjangoModelFactory):
 
     class Meta:
         model = Calendar

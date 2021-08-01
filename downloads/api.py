@@ -87,7 +87,7 @@ class OSViewSet(viewsets.ModelViewSet):
     serializer_class = OSSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_fields = ('name', 'slug')
+    filterset_fields = ('name', 'slug')
 
 
 class ReleaseViewSet(BaseAPIViewSet):
@@ -95,7 +95,7 @@ class ReleaseViewSet(BaseAPIViewSet):
     serializer_class = ReleaseSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_fields = (
+    filterset_fields = (
         'name',
         'slug',
         'is_published',
@@ -123,7 +123,7 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     serializer_class = ReleaseFileSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_class = ReleaseFileFilter
+    filterset_class = ReleaseFileFilter
 
     @action(detail=False, methods=['delete'])
     def delete_by_release(self, request):

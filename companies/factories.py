@@ -1,9 +1,10 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from .models import Company
 
 
-class CompanyFactory(factory.DjangoModelFactory):
+class CompanyFactory(DjangoModelFactory):
 
     class Meta:
         model = Company

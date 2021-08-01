@@ -6,7 +6,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from sponsors.models import (

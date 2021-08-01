@@ -1,11 +1,10 @@
-from django.conf.urls import url
-
 from . import views
+from django.urls import path
 
 
 urlpatterns = [
-    url(r'^$', views.StoryList.as_view(), name='success_story_list'),
-    url(r'^create/$', views.StoryCreate.as_view(), name='success_story_create'),
-    url(r'^(?P<slug>[-_\w]+)/$', views.StoryDetail.as_view(), name='success_story_detail'),
-    url(r'^category/(?P<slug>[-_\w]+)/$', views.StoryListCategory.as_view(), name='success_story_list_category'),
+    path('', views.StoryList.as_view(), name='success_story_list'),
+    path('create/', views.StoryCreate.as_view(), name='success_story_create'),
+    path('<slug:slug>/', views.StoryDetail.as_view(), name='success_story_detail'),
+    path('category/<slug:slug>/', views.StoryListCategory.as_view(), name='success_story_list_category'),
 ]

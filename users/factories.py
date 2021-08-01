@@ -1,9 +1,10 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from .models import User, Membership
 
 
-class UserFactory(factory.DjangoModelFactory):
+class UserFactory(DjangoModelFactory):
 
     class Meta:
         model = User
@@ -32,7 +33,7 @@ class UserFactory(factory.DjangoModelFactory):
                 self.groups.add(group)
 
 
-class MembershipFactory(factory.DjangoModelFactory):
+class MembershipFactory(DjangoModelFactory):
 
     class Meta:
         model = Membership
