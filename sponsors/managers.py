@@ -2,6 +2,9 @@ from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
+from django.utils import timezone
+
+from .enums import PublisherChoices
 
 
 class SponsorshipQuerySet(QuerySet):
@@ -22,6 +25,22 @@ class SponsorshipQuerySet(QuerySet):
 
     def finalized(self):
         return self.filter(status=self.model.FINALIZED)
+
+    def enabled(self):
+        """Sponsorship which are finalized and enabled"""
+        today = timezone.now().date()
+        qs = self.finalized()
+        return qs.filter(start_date__lte=today, end_date__gte=today)
+
+    def with_logo_placement(self, logo_place=None, publisher=None):
+        from sponsors.models import LogoPlacement, SponsorBenefit
+        feature_qs = LogoPlacement.objects.all()
+        if logo_place:
+            feature_qs = feature_qs.filter(logo_place=logo_place)
+        if publisher:
+            feature_qs = feature_qs.filter(publisher=publisher)
+        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
+        return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
 
 class SponsorContactQuerySet(QuerySet):

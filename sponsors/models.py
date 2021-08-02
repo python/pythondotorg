@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import Sum
+from django.db.models import Sum, Subquery
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -210,6 +210,11 @@ class SponsorshipBenefit(OrderedModel):
     @property
     def features_config(self):
         return self.benefitfeatureconfiguration_set
+
+    @property
+    def related_sponsorships(self):
+        ids_qs = self.sponsorbenefit_set.values_list("sponsorship__pk", flat=True)
+        return Sponsorship.objects.filter(id__in=Subquery(ids_qs))
 
     def __str__(self):
         return f"{self.program} > {self.name}"

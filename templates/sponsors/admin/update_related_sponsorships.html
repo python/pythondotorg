@@ -1,0 +1,59 @@
+{% extends 'admin/base_site.html' %}
+{% load i18n admin_static %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Update sponsorships with {{ benefit }} benefit | python.org{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+  <a href="{% url 'admin:sponsors_sponsorshipbenefit_changelist' %}">{% trans 'Sponsorship benefits' %}</a> &gt
+  <a href="{% url 'admin:sponsors_sponsorshipbenefit_change' benefit.pk %}">{{ benefit }}</a> &gt
+  {% trans 'Update related sponsorships' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Update related sponsorships</h1>
+<p>By confirming this action, {{ sponsorships.count }} sponsorships will have their related benefit updated accordingly to new data and/or features configuration. They are:</p>
+<div id="content-main">
+
+  <form action="" method="post" id="new_psf_board_meeting_form">
+  {% csrf_token %}
+
+  {{ form.as_p }}
+
+  <p>
+    <a onclick="selectAll()" href="#id_sponsorships">Select all</a> -
+    <a onclick="clearAll()" href="#id_sponsorships">Clear selected</a>
+  </p>
+
+  <p>Expired or finalized affected sponsorships were ignored.</p>
+  <div class="submit-row">
+    <input type="submit" value="Update" class="default">
+  </div>
+
+  </form>
+<div>
+</div>
+
+<script type="text/javascript">
+
+function selectAll() {
+  const checkboxes = document.getElementsByName('sponsorships');
+  for(checkbox of checkboxes) {
+    checkbox.checked = true;
+  }
+}
+
+function clearAll() {
+  const checkboxes = document.getElementsByName('sponsorships');
+  for(checkbox of checkboxes) {
+    checkbox.checked = false;
+  }
+}
+
+</script>
+{% endblock %}

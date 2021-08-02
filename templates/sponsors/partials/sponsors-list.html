@@ -1,0 +1,41 @@
+{% load thumbnail %}
+
+{% if logo_place == "download" %}
+  <h2 class="widget-title">Sponsors</h2>
+  <p>Visionary sponsors help to host Python downloads.</p>
+  {% for sponsorship in sponsorships %}
+  {% thumbnail sponsorship.sponsor.web_logo "x100" format="PNG" quality=100 as im %}
+    <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" height="100px">
+  {% endthumbnail %}
+  {% endfor %}
+
+{% elif logo_place == "sponsors" %}
+
+  {% for package, placement_info in sponsorships_by_package.items %}
+  {% if placement_info.sponsorships %}
+  <div title="{{ package.name }} Sponsors" align="center">
+    {% with dimension=placement_info.logo_dimension %}
+    {% with thumbnail_res=dimension|add:"x"|add:dimension %}
+
+    <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ package }} Sponsors</h1>
+
+    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
+      {% for sponsorship in placement_info.sponsorships %}
+      <div>
+        <a href="{{ sponsorship.sponsor.landing_page_url }}">
+         {% thumbnail sponsorship.sponsor.web_logo thumbnail_res format="PNG" quality=100 as im %}
+             <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:{{ im.height }}px;max-width:{{ im.width }}px;height:auto;width:auto;">
+         {% endthumbnail %}
+        </a>
+
+        <p>{{ sponsorship.sponsor.name }}</p>
+      </div>
+      {% endfor %}
+    </div>
+
+    {% endwith %}
+    {% endwith %}
+  </div>
+  {% endif %}
+  {% endfor %}
+{% endif %}

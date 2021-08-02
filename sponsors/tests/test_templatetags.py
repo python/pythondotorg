@@ -3,8 +3,8 @@ from django.test import TestCase
 
 from companies.models import Company
 
-from ..models import Sponsor
-from ..templatetags.sponsors import full_sponsorship
+from ..models import Sponsor, SponsorBenefit
+from ..templatetags.sponsors import full_sponsorship, list_sponsors
 
 
 class FullSponsorshipTemplatetagTests(TestCase):
@@ -34,3 +34,19 @@ class FullSponsorshipTemplatetagTests(TestCase):
         )
         context = full_sponsorship(sponsorship, display_fee=True)
         self.assertTrue(context["display_fee"])
+
+
+class ListSponsorsTemplateTag(TestCase):
+
+    def test_filter_sponsorship_with_logo_placement_benefits(self):
+        sponsorship = baker.make_recipe('sponsors.tests.finalized_sponsorship')
+        baker.make_recipe(
+            'sponsors.tests.logo_at_download_feature',
+            sponsor_benefit__sponsorship=sponsorship
+        )
+
+        context = list_sponsors("download")
+
+        self.assertEqual("download", context["logo_place"])
+        self.assertEqual(1, len(context["sponsorships"]))
+        self.assertIn(sponsorship, context["sponsorships"])
