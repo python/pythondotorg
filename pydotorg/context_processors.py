@@ -14,7 +14,7 @@ def url_name(request):
     else:
         namespace, url_name  = match.namespace, match.url_name
         if namespace:
-            url_name = "%s:%s" % (namespace, url_name)
+            url_name = f"{namespace}:{url_name}"
         return {'URL_NAMESPACE': namespace, 'URL_NAME': url_name}
 
 

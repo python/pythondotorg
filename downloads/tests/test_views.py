@@ -103,7 +103,7 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
         )
         self.staff_key = self.staff_user.api_key.key
         self.token_header = 'ApiKey'
-        self.Authorization = '%s %s:%s' % (
+        self.Authorization = '{} {}:{}'.format(
             self.token_header, self.staff_user.username, self.staff_key,
         )
         self.Authorization_invalid = '%s invalid:token' % self.token_header
@@ -446,14 +446,14 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         super().setUp()
         self.staff_key = self.staff_user.auth_token.key
         self.token_header = 'Token'
-        self.Authorization = '%s %s' % (self.token_header, self.staff_key)
+        self.Authorization = f'{self.token_header} {self.staff_key}'
         self.Authorization_invalid = '%s invalidtoken' % self.token_header
         self.normal_user = UserFactory(
             username='normaluser',
             password='password',
         )
         self.normal_user_key = self.normal_user.auth_token.key
-        self.Authorization_normal = '%s %s' % (
+        self.Authorization_normal = '{} {}'.format(
             self.token_header, self.normal_user_key,
         )
 

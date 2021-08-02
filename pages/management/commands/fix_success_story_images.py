@@ -26,12 +26,12 @@ class Command(BaseCommand):
         return new_url.replace('//', '/')
 
     def fix_image(self, path, page):
-        url = 'http://legacy.python.org{}'.format(path)
+        url = f'http://legacy.python.org{path}'
         # Retrieve the image
         r = requests.get(url)
 
         if r.status_code != 200:
-            print("ERROR Couldn't load {}".format(url))
+            print(f"ERROR Couldn't load {url}")
             return
 
         # Create new associated image and generate ultimate path
@@ -62,7 +62,7 @@ class Command(BaseCommand):
         content = page.content.raw
         paths = set(re.findall(r'(/files/success.*)\b', content))
         if paths:
-            print("Found {} matches in {}".format(len(paths), page.path))
+            print(f"Found {len(paths)} matches in {page.path}")
 
         return paths
 
@@ -72,7 +72,7 @@ class Command(BaseCommand):
 
         for path in image_paths:
             new_url = self.fix_image(path, page)
-            print("    Fixing {} -> {}".format(path, new_url))
+            print(f"    Fixing {path} -> {new_url}")
             content = page.content.raw
             new_content = content.replace(path, new_url)
             page.content = new_content
@@ -81,7 +81,7 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.pages = self.get_success_pages()
 
-        print("Found {} success pages".format(len(self.pages)))
+        print(f"Found {len(self.pages)} success pages")
 
         for p in self.pages:
             self.process_success_story(p)

@@ -84,10 +84,10 @@ class SponsorshiptBenefitsFormTests(TestCase):
             2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map)
         )
         self.assertEqual(
-            sorted(map[benefit_1.id]), sorted([b.id for b in self.program_1_benefits])
+            sorted(map[benefit_1.id]), sorted(b.id for b in self.program_1_benefits)
         )
         self.assertEqual(
-            sorted(map[benefit_2.id]), sorted([b.id for b in self.program_2_benefits])
+            sorted(map[benefit_2.id]), sorted(b.id for b in self.program_2_benefits)
         )
         for b in self.program_1_benefits:
             self.assertEqual(map[b.id], [benefit_1.id])

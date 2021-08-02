@@ -252,11 +252,11 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
-        purge_url('/downloads/mac-osx/')
+        purge_url('/downloads/macos/')
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
         if instance.get_version() is not None:
-            purge_url('/ftp/python/{}/'.format(instance.get_version()))
+            purge_url(f'/ftp/python/{instance.get_version()}/')
         # See issue #584 for details
         purge_url('/box/supernav-python-downloads/')
         purge_url('/box/homepage-downloads/')

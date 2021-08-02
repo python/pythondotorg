@@ -89,7 +89,7 @@ function on_resize_orientationchange() {
                     }
                     if (navigator.appVersion.indexOf("Mac")!=-1) {
                         $('.download-unknown').hide();
-                        $('.download-os-mac-osx').show();
+                        $('.download-os-macos').show();
                     }
                     if (navigator.appVersion.indexOf("X11")!=-1) {
                         $('.download-unknown').hide();

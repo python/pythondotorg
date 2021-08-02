@@ -9,7 +9,7 @@ class CalendarFactory(factory.DjangoModelFactory):
         model = Calendar
         django_get_or_create = ('slug',)
 
-    name = factory.Sequence(lambda n: 'Calendar {}'.format(n))
+    name = factory.Sequence(lambda n: f'Calendar {n}')
 
 
 def initial_data():
