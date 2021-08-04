@@ -70,5 +70,5 @@ def benefit_quantity_for_package(benefit, package):
         benefit=benefit, package=package
     ).first()
     if quantity_configuration is None:
-        return 0
+        return ""
     return quantity_configuration.quantity
