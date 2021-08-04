@@ -556,7 +556,8 @@ class SponsorBenefit(OrderedModel):
         # generate benefit features from benefit features configurations
         for feature_config in benefit.features_config.all():
             feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
-            feature.save()
+            if feature is not None:
+                feature.save()
 
         return sponsor_benefit
 
@@ -931,6 +932,9 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         raise NotImplementedError
 
     def get_benefit_feature(self, **kwargs):
+        return self.build_benefit_feature(**kwargs)
+
+    def build_benefit_feature(self, **kwargs):
         """
         Returns an instance of a configured type of BenefitFeature
         """
@@ -974,6 +978,18 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
     class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Tiered Benefit Configuration"
         verbose_name_plural = "Tiered Benefit Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return TieredQuantity
+
+    def get_benefit_feature(self, **kwargs):
+        if kwargs["sponsor_benefit"].sponsorship.level_name == self.package.name:
+            return super().build_benefit_feature(**kwargs)
+        return None
+
+    def __str__(self):
+        return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
 
 
 ####################################
