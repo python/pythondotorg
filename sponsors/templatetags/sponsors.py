@@ -72,3 +72,8 @@ def benefit_quantity_for_package(benefit, package):
     if quantity_configuration is None:
         return ""
     return quantity_configuration.quantity
+
+
+@register.simple_tag
+def benefit_name_for_display(benefit, package):
+    return benefit.name_for_display(package=package)

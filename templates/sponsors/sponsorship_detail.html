@@ -51,7 +51,7 @@
   <ul style="list-style-type:none; margin-left: 0.5em">
     {% for benefit in sponsorship.benefits.all %}
     <li>
-      {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i> - {% endif %} {{ benefit.name }}
+      {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i> - {% endif %} {{ benefit.name_for_display }}
     </li>
     {% endfor %}
   </ul>
