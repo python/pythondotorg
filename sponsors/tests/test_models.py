@@ -48,6 +48,19 @@ class SponsorshipBenefitModelTests(TestCase):
         benefit.unavailable = True
         self.assertFalse(benefit.has_capacity)
 
+    def test_list_related_sponsorships(self):
+        benefit = baker.make(SponsorshipBenefit)
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship_benefit=benefit)
+        other_benefit = baker.make(SponsorshipBenefit)
+        baker.make(SponsorBenefit, sponsorship_benefit=other_benefit)
+
+        with self.assertNumQueries(1):
+            sponsorships = list(benefit.related_sponsorships)
+
+        self.assertEqual(2, Sponsorship.objects.count())
+        self.assertEqual(1, len(sponsorships))
+        self.assertIn(sponsor_benefit.sponsorship, sponsorships)
+
 
 class SponsorshipModelTests(TestCase):
     def setUp(self):
