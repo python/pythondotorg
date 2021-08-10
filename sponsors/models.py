@@ -250,6 +250,10 @@ class SponsorContact(models.Model):
         default=False,
         help_text="Administrative contacts will only be notified regarding contracts."
     )
+    accounting = models.BooleanField(
+        default=False,
+        help_text="Accounting contacts will only be notified regarding invoices and payments."
+    )
     manager = models.BooleanField(
         default=False,
         help_text="If this contact can manage sponsorship information on python.org",
