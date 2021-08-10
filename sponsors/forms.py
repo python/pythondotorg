@@ -364,6 +364,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
         queryset=SponsorshipBenefit.objects.select_related("program"),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
