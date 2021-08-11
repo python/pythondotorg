@@ -945,12 +945,10 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature(self, **kwargs):
-        return self.build_benefit_feature(**kwargs)
-
-    def build_benefit_feature(self, **kwargs):
+    def get_benefit_feature_kwargs(self, **kwargs):
         """
-        Returns an instance of a configured type of BenefitFeature
+        Return kwargs dict to initialize the benefit feature.
+        If the benefit should not be created, return None instead.
         """
         # Get all fields from benefit feature configuration base model
         base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
@@ -963,7 +961,16 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
                 continue
             kwargs[field.name] = getattr(self, field.name)
+        return kwargs
+
+    def get_benefit_feature(self, **kwargs):
+        """
+        Returns an instance of a configured type of BenefitFeature
+        """
         BenefitFeatureClass = self.benefit_feature_class
+        kwargs = self.get_benefit_feature_kwargs(**kwargs)
+        if kwargs is None:
+            return None
         return BenefitFeatureClass(**kwargs)
 
     def display_modifier(self, name):
@@ -1000,9 +1007,9 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
     def benefit_feature_class(self):
         return TieredQuantity
 
-    def get_benefit_feature(self, **kwargs):
+    def get_benefit_feature_kwargs(self, **kwargs):
         if kwargs["sponsor_benefit"].sponsorship.level_name == self.package.name:
-            return super().build_benefit_feature(**kwargs)
+            return super().get_benefit_feature_kwargs(**kwargs)
         return None
 
     def __str__(self):

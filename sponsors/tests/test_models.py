@@ -6,16 +6,19 @@ from django.test import TestCase
 from django.utils import timezone
 
 from ..models import (
-    Sponsor,
-    SponsorshipBenefit,
-    Sponsorship,
     Contract,
-    SponsorContact,
-    SponsorBenefit,
+    Contract,
     LegalClause,
-    Contract,
-    LogoPlacementConfiguration,
     LogoPlacement,
+    LogoPlacementConfiguration,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+    TieredQuantity,
+    TieredQuantityConfiguration
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -563,25 +566,6 @@ class ContractModelTests(TestCase):
             contract.nullify()
 
 
-class LogoPlacementConfigurationModelTests(TestCase):
-
-    def test_get_benefit_feature_respecting_configuration(self):
-        config = baker.make(
-            LogoPlacementConfiguration,
-            publisher=PublisherChoices.FOUNDATION,
-            logo_place=LogoPlacementChoices.FOOTER,
-        )
-
-        benefit_feature = config.get_benefit_feature()
-
-        self.assertIsInstance(benefit_feature, LogoPlacement)
-        self.assertEqual(benefit_feature.publisher, PublisherChoices.FOUNDATION)
-        self.assertEqual(benefit_feature.logo_place, LogoPlacementChoices.FOOTER)
-        # can't save object without related sponsor benefit
-        self.assertIsNone(benefit_feature.pk)
-        self.assertIsNone(benefit_feature.sponsor_benefit_id)
-
-
 class SponsorBenefitModelTests(TestCase):
 
     def setUp(self):
@@ -601,3 +585,70 @@ class SponsorBenefitModelTests(TestCase):
         self.assertIsInstance(benefit_feature, LogoPlacement)
         self.assertEqual(benefit_feature.publisher, benefit_config.publisher)
         self.assertEqual(benefit_feature.logo_place, benefit_config.logo_place)
+
+    def test_new_copy_do_not_save_unexisting_features(self):
+        benefit_config = baker.make(
+            TieredQuantityConfiguration,
+            package__name='Another package',
+            benefit=self.sponsorship_benefit,
+        )
+        self.assertEqual(0, TieredQuantity.objects.count())
+
+        sponsor_benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        self.assertEqual(0, TieredQuantity.objects.count())
+        self.assertFalse(sponsor_benefit.features.exists())
+
+
+####### Benefit features/configuration tests
+
+
+class LogoPlacementConfigurationModelTests(TestCase):
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        config = baker.make(
+            LogoPlacementConfiguration,
+            publisher=PublisherChoices.FOUNDATION,
+            logo_place=LogoPlacementChoices.FOOTER,
+        )
+
+        benefit_feature = config.get_benefit_feature()
+
+        self.assertIsInstance(benefit_feature, LogoPlacement)
+        self.assertEqual(benefit_feature.publisher, PublisherChoices.FOUNDATION)
+        self.assertEqual(benefit_feature.logo_place, LogoPlacementChoices.FOOTER)
+        # can't save object without related sponsor benefit
+        self.assertIsNone(benefit_feature.pk)
+        self.assertIsNone(benefit_feature.sponsor_benefit_id)
+
+
+class TieredQuantityConfigurationModelTests(TestCase):
+
+    def setUp(self):
+        self.package = baker.make(SponsorshipPackage)
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        config = baker.make(
+            TieredQuantityConfiguration,
+            package=self.package,
+        )
+
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name=self.package.name)
+        benefit_feature = config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
+
+        self.assertIsInstance(benefit_feature, TieredQuantity)
+        self.assertEqual(benefit_feature.package, self.package)
+        self.assertEqual(benefit_feature.quantity, config.quantity)
+
+    def test_do_not_return_feature_if_benefit_from_other_package(self):
+        config = baker.make(
+            TieredQuantityConfiguration,
+            package=self.package,
+        )
+
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name='Other')
+        benefit_feature = config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
+
+        self.assertIsNone(benefit_feature)
