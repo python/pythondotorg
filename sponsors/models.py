@@ -1033,7 +1033,7 @@ class BenefitFeature(PolymorphicModel):
         verbose_name = "Benefit Feature"
         verbose_name_plural = "Benefit Features"
 
-    def display_modifier(self, name):
+    def display_modifier(self, name, **kwargs):
         return name
 
 
@@ -1059,7 +1059,7 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
         verbose_name = "Tiered Quantity"
         verbose_name_plural = "Tiered Quantities"
 
-    def display_modifier(self, name):
+    def display_modifier(self, name, **kwargs):
         return f"{name} ({self.quantity})"
 
     def __str__(self):

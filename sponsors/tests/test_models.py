@@ -593,7 +593,7 @@ class SponsorBenefitModelTests(TestCase):
 
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship)
-        self.sponsorship_benefit = baker.make(SponsorshipBenefit)
+        self.sponsorship_benefit = baker.make(SponsorshipBenefit, name='Benefit')
 
     def test_new_copy_also_add_benefit_feature_when_creating_sponsor_benefit(self):
         benefit_config = baker.make(LogoPlacementConfiguration, benefit=self.sponsorship_benefit)
@@ -623,6 +623,19 @@ class SponsorBenefitModelTests(TestCase):
 
         self.assertEqual(0, TieredQuantity.objects.count())
         self.assertFalse(sponsor_benefit.features.exists())
+
+    def test_sponsor_benefit_name_for_display(self):
+        name = "Benefit"
+        sponsor_benefit = baker.make(SponsorBenefit, name=name)
+        # benefit name if no features
+        self.assertEqual(sponsor_benefit.name_for_display, name)
+        # apply display modifier from features
+        benefit_config = baker.make(
+            TieredQuantity,
+            sponsor_benefit=sponsor_benefit,
+            quantity=10
+        )
+        self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
 ###########
 ####### Benefit features/configuration tests
@@ -688,3 +701,19 @@ class TieredQuantityConfigurationModelTests(TestCase):
         # for a package different from the config's one
         modified_name = self.config.display_modifier(name, package=other_package)
         self.assertEqual(modified_name, name)
+
+
+class LogoPlacementTests(TestCase):
+
+    def test_display_modifier_does_not_change_the_name(self):
+        placement = baker.make(LogoPlacement)
+        name = 'Benefit'
+        self.assertEqual(placement.display_modifier(name), name)
+
+
+class TieredQuantityTests(TestCase):
+
+    def test_display_modifier_adds_quantity_to_the_name(self):
+        placement = baker.make(TieredQuantity, quantity=10)
+        name = 'Benefit'
+        self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
