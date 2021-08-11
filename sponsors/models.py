@@ -232,8 +232,7 @@ class SponsorshipBenefit(OrderedModel):
     def name_for_display(self, package=None):
         name = self.name
         for feature in self.features_config.all():
-            if isinstance(feature, TieredQuantityConfiguration) and feature.package == package:
-                name = feature.display_modifier(name)
+            name = feature.display_modifier(name, package=package)
         return name
 
     _short_name.short_description = "Benefit Name"
@@ -973,7 +972,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             return None
         return BenefitFeatureClass(**kwargs)
 
-    def display_modifier(self, name):
+    def display_modifier(self, name, **kwargs):
         return name
 
 
@@ -1015,7 +1014,9 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
     def __str__(self):
         return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
 
-    def display_modifier(self, name):
+    def display_modifier(self, name, **kwargs):
+        if kwargs.get("package") != self.package:
+            return name
         return f"{name} ({self.quantity})"
 
 
