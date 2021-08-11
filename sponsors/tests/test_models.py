@@ -73,6 +73,7 @@ class SponsorshipBenefitModelTests(TestCase):
         )
 
         self.assertEqual(benefit.name_for_display(), self.sponsorship_benefit.name)
+        self.assertFalse(benefit.has_tiers)
 
     def test_name_for_display_without_specifying_package(self):
         benefit = baker.make(SponsorshipBenefit, name='Benefit')
@@ -86,6 +87,7 @@ class SponsorshipBenefitModelTests(TestCase):
         expected_name = f"Benefit (10)"
         name = benefit.name_for_display(package=benefit_config.package)
         self.assertEqual(name, expected_name)
+        self.assertTrue(benefit.has_tiers)
 
 
 class SponsorshipModelTests(TestCase):

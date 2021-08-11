@@ -238,7 +238,7 @@ class SponsorshipBenefit(OrderedModel):
     _short_name.short_description = "Benefit Name"
     short_name = property(_short_name)
 
-    @property
+    @cached_property
     def has_tiers(self):
         return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
 
