@@ -5,6 +5,7 @@ from datetime import timedelta, date
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
 from sponsors.notifications import *
@@ -173,6 +174,28 @@ class ExecuteContractUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(
             uc.notifications[0], ExecutedContractLogger
+        )
+
+
+class ExecuteExistingContractUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock()]
+        self.use_case = use_cases.ExecuteExistingContractUseCase(self.notifications)
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.file = SimpleUploadedFile("contract.txt", b"Contract content")
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
+
+    def test_execute_and_update_database_object(self):
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.EXECUTED)
+        self.assertEqual(b"Contract content", self.contract.signed_document.read())
+
+    def test_build_use_case_with_default_notificationss(self):
+        uc = use_cases.ExecuteExistingContractUseCase.build()
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(
+            uc.notifications[0], ExecutedExistingContractLogger
         )
 
 

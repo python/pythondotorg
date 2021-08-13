@@ -840,8 +840,8 @@ class Contract(models.Model):
         self.status = self.AWAITING_SIGNATURE
         self.save()
 
-    def execute(self, commit=True):
-        if self.EXECUTED not in self.next_status:
+    def execute(self, commit=True, force=False):
+        if not force and self.EXECUTED not in self.next_status:
             msg = f"Can't execute a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
