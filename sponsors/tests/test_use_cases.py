@@ -122,7 +122,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
                 contract=self.sponsorship.contract,
             )
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ApproveSponsorshipApplicationUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(uc.notifications[0], SponsorshipApprovalLogger)
@@ -147,7 +147,7 @@ class SendContractUseCaseTests(TestCase):
                 contract=self.contract,
             )
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.SendContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
@@ -168,7 +168,7 @@ class ExecuteContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteContractUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(
@@ -188,7 +188,7 @@ class NullifyContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.NULLIFIED)
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.NullifyContractUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(
