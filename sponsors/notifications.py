@@ -1,7 +1,7 @@
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
 from django.conf import settings
-from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
 from django.contrib.contenttypes.models import ContentType
 
 from sponsors.models import Sponsorship, Contract
@@ -110,7 +110,7 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
 
 class SponsorshipApprovalLogger():
 
-    def notify(self, request, sponsorship, **kwargs):
+    def notify(self, request, sponsorship, contract, **kwargs):
         LogEntry.objects.log_action(
             user_id=request.user.id,
             content_type_id=ContentType.objects.get_for_model(Sponsorship).pk,
@@ -118,6 +118,14 @@ class SponsorshipApprovalLogger():
             object_repr=str(sponsorship),
             action_flag=CHANGE,
             change_message="Sponsorship Approval"
+        )
+        LogEntry.objects.log_action(
+            user_id=request.user.id,
+            content_type_id=ContentType.objects.get_for_model(Contract).pk,
+            object_id=contract.pk,
+            object_repr=str(contract),
+            action_flag=ADDITION,
+            change_message="Created After Sponsorship Approval"
         )
 
 
