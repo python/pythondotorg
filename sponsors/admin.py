@@ -19,6 +19,7 @@ from .models import (
     Contract,
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
+    TieredQuantityConfiguration,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -38,9 +39,13 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
+    class TieredQuantityConfigurationInline(StackedPolymorphicInline.Child):
+        model = TieredQuantityConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
-        LogoPlacementConfigurationInline
+        LogoPlacementConfigurationInline,
+        TieredQuantityConfigurationInline,
     ]
 
 

@@ -19,7 +19,11 @@ from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
 from .enums import LogoPlacementChoices, PublisherChoices
-from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
+from .managers import (
+    SponsorContactQuerySet,
+    SponsorshipQuerySet,
+    SponsorshipBenefitManager,
+)
 from .exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
@@ -33,6 +37,7 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
 
@@ -78,6 +83,7 @@ class SponsorshipProgram(OrderedModel):
     """
     Possible programs that a benefit belongs to (Foundation, Pypi, etc)
     """
+
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
@@ -93,6 +99,7 @@ class SponsorshipBenefit(OrderedModel):
     Benefit that sponsors can pick which are organized under
     package and program.
     """
+
     objects = SponsorshipBenefitManager()
 
     # Public facing
@@ -222,8 +229,18 @@ class SponsorshipBenefit(OrderedModel):
     def _short_name(self):
         return truncatechars(self.name, 42)
 
+    def name_for_display(self, package=None):
+        name = self.name
+        for feature in self.features_config.all():
+            name = feature.display_modifier(name, package=package)
+        return name
+
     _short_name.short_description = "Benefit Name"
     short_name = property(_short_name)
+
+    @cached_property
+    def has_tiers(self):
+        return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
 
     class Meta(OrderedModel.Meta):
         pass
@@ -371,7 +388,7 @@ class Sponsorship(models.Model):
     @property
     def verbose_sponsorship_fee(self):
         if self.sponsorship_fee is None:
-          return 0
+            return 0
         return num2words(self.sponsorship_fee)
 
     @property
@@ -476,6 +493,7 @@ class SponsorBenefit(OrderedModel):
     Link a benefit to a sponsorship application.
     Created after a new sponsorship
     """
+
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -544,7 +562,8 @@ class SponsorBenefit(OrderedModel):
         # generate benefit features from benefit features configurations
         for feature_config in benefit.features_config.all():
             feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
-            feature.save()
+            if feature is not None:
+                feature.save()
 
         return sponsor_benefit
 
@@ -553,6 +572,13 @@ class SponsorBenefit(OrderedModel):
         if self.sponsorship_benefit is not None:
             return self.sponsorship_benefit.legal_clauses.all()
         return []
+
+    @property
+    def name_for_display(self):
+        name = self.name
+        for feature in self.features.all():
+            name = feature.display_modifier(name)
+        return name
 
     class Meta(OrderedModel.Meta):
         pass
@@ -770,7 +796,7 @@ class Contract(models.Model):
 
         benefits_list = []
         for benefit in benefits:
-            item = f"- {benefit.program_name} - {benefit.name}"
+            item = f"- {benefit.program_name} - {benefit.name_for_display}"
             index_str = ""
             for legal_clause in benefit.legal_clauses:
                 index = legal_clauses.index(legal_clause) + 1
@@ -889,12 +915,21 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
+class BaseTieredQuantity(models.Model):
+    package = models.ForeignKey(SponsorshipPackage, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        abstract = True
+
+
 ######################################################
 ##### SponsorshipBenefit features configuration models
 class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
     """
+
     benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
 
     class Meta:
@@ -909,9 +944,10 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature(self, **kwargs):
+    def get_benefit_feature_kwargs(self, **kwargs):
         """
-        Returns an instance of a configured type of BenefitFeature
+        Return kwargs dict to initialize the benefit feature.
+        If the benefit should not be created, return None instead.
         """
         # Get all fields from benefit feature configuration base model
         base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
@@ -924,8 +960,20 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
                 continue
             kwargs[field.name] = getattr(self, field.name)
+        return kwargs
+
+    def get_benefit_feature(self, **kwargs):
+        """
+        Returns an instance of a configured type of BenefitFeature
+        """
         BenefitFeatureClass = self.benefit_feature_class
+        kwargs = self.get_benefit_feature_kwargs(**kwargs)
+        if kwargs is None:
+            return None
         return BenefitFeatureClass(**kwargs)
+
+    def display_modifier(self, name, **kwargs):
+        return name
 
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
@@ -945,17 +993,48 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
+class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguration):
+    """
+    Configuration for tiered quantities among packages
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Tiered Benefit Configuration"
+        verbose_name_plural = "Tiered Benefit Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return TieredQuantity
+
+    def get_benefit_feature_kwargs(self, **kwargs):
+        if kwargs["sponsor_benefit"].sponsorship.level_name == self.package.name:
+            return super().get_benefit_feature_kwargs(**kwargs)
+        return None
+
+    def __str__(self):
+        return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
+
+    def display_modifier(self, name, **kwargs):
+        if kwargs.get("package") != self.package:
+            return name
+        return f"{name} ({self.quantity})"
+
+
 ####################################
 ##### SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+
     sponsor_benefit = models.ForeignKey(SponsorBenefit, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Benefit Feature"
         verbose_name_plural = "Benefit Features"
+
+    def display_modifier(self, name, **kwargs):
+        return name
 
 
 class LogoPlacement(BaseLogoPlacement, BenefitFeature):
@@ -969,3 +1048,19 @@ class LogoPlacement(BaseLogoPlacement, BenefitFeature):
 
     def __str__(self):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+
+
+class TieredQuantity(BaseTieredQuantity, BenefitFeature):
+    """
+    Tiered Quantity feature for sponsor benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+        verbose_name = "Tiered Quantity"
+        verbose_name_plural = "Tiered Quantities"
+
+    def display_modifier(self, name, **kwargs):
+        return f"{name} ({self.quantity})"
+
+    def __str__(self):
+        return f"{self.quantity} of {self.benefit} for {self.package}"
