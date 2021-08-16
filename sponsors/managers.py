@@ -65,5 +65,5 @@ class SponsorshipBenefitManager(OrderedModelManager):
         return (
             self.annotate(num_packages=Count("packages"))
             .exclude(num_packages=0)
-            .order_by("-num_packages")
+            .order_by("-num_packages", "order")
         )
