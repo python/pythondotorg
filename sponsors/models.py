@@ -243,10 +243,16 @@ class SponsorContact(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
     )  # Optionally related to a User! (This needs discussion)
     primary = models.BooleanField(
-        default=False, help_text="If this is the primary contact for the sponsor"
+        default=False,
+        help_text="The primary contact for a sponsorship will be responsible for managing deliverables we need to fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship."
     )
     administrative = models.BooleanField(
-        default=False, help_text="If this is an administrative contact for the sponsor"
+        default=False,
+        help_text="Administrative contacts will only be notified regarding contracts."
+    )
+    accounting = models.BooleanField(
+        default=False,
+        help_text="Accounting contacts will only be notified regarding invoices and payments."
     )
     manager = models.BooleanField(
         default=False,

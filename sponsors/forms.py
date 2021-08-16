@@ -30,7 +30,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary", "administrative"]
+        fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
 
 
 SponsorContactFormSet = forms.formset_factory(
