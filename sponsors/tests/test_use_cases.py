@@ -1,4 +1,4 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from model_bakery import baker
 from datetime import timedelta, date
 
@@ -185,11 +185,13 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.file = SimpleUploadedFile("contract.txt", b"Contract content")
         self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
 
+    @patch("sponsors.models.uuid.uuid4", Mock(return_value="1234"))
     def test_execute_and_update_database_object(self):
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
         self.assertEqual(b"Contract content", self.contract.signed_document.read())
+        self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()
