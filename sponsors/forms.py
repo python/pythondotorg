@@ -365,7 +365,7 @@ class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
     """
     Form to approve sponsorships that already have a signed contract
     """
-    signed_contract = forms.FileField(help_text="File for the signed contract")
+    signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract.")
 
 
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
