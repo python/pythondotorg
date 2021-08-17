@@ -361,6 +361,13 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
         return cleaned_data
 
 
+class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
+    """
+    Form to approve sponsorships that already have a signed contract
+    """
+    signed_contract = forms.FileField(help_text="File for the signed contract")
+
+
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
         queryset=SponsorshipBenefit.objects.select_related("program"),

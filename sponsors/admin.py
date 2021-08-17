@@ -296,6 +296,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 name="sponsors_sponsorship_reject",
             ),
             path(
+                "<int:pk>/approve-existing",
+                self.admin_site.admin_view(self.approve_signed_sponsorship_view),
+                name="sponsors_sponsorship_approve_existing_contract",
+            ),
+            path(
                 "<int:pk>/approve",
                 self.admin_site.admin_view(self.approve_sponsorship_view),
                 name="sponsors_sponsorship_approve",
@@ -397,6 +402,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def approve_sponsorship_view(self, request, pk):
         return views_admin.approve_sponsorship_view(self, request, pk)
+
+    def approve_signed_sponsorship_view(self, request, pk):
+        return views_admin.approve_signed_sponsorship_view(self, request, pk)
 
 
 @admin.register(LegalClause)
