@@ -4,7 +4,7 @@ from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicI
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.urls import path
+from django.urls import path, reverse
 from django.utils.html import mark_safe
 
 from .models import (
@@ -212,6 +212,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
                     "get_estimated_cost",
                     "start_date",
                     "end_date",
+                    "get_contract"
                 ),
             },
         ),
@@ -262,6 +263,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_sponsor_primary_phone",
             "get_sponsor_mailing_address",
             "get_sponsor_contacts",
+            "get_contract",
         ]
 
         if obj and obj.status != Sponsorship.APPLIED:
@@ -282,8 +284,15 @@ class SponsorshipAdmin(admin.ModelAdmin):
             cost = intcomma(obj.estimated_cost)
             html = f"{cost} USD <br/><b>Important: </b> {msg}"
         return mark_safe(html)
-
     get_estimated_cost.short_description = "Estimated cost"
+
+    def get_contract(self, obj):
+        if not obj.contract:
+            return "---"
+        url = reverse("admin:sponsors_contract_change", args=[obj.contract.pk])
+        html = f"<a href='{url}' target='_blank'>{obj.contract}</a>"
+        return mark_safe(html)
+    get_contract.short_description = "Contract"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -438,7 +447,7 @@ class ContractModelAdmin(admin.ModelAdmin):
         (
             "Info",
             {
-                "fields": ("sponsorship", "status", "revision"),
+                "fields": ("get_sponsorship_url", "status", "revision"),
             },
         ),
         (
@@ -483,6 +492,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             "sponsorship",
             "revision",
             "document",
+            "get_sponsorship_url",
         ]
 
         if obj and not obj.is_draft:
@@ -512,8 +522,16 @@ class ContractModelAdmin(admin.ModelAdmin):
         if url and msg:
             html = f'<a href="{url}" target="_blank">{msg}</a>'
         return mark_safe(html)
-
     document_link.short_description = "Contract document"
+
+
+    def get_sponsorship_url(self, obj):
+        if not obj.sponsorship:
+            return "---"
+        url = reverse("admin:sponsors_sponsorship_change", args=[obj.sponsorship.pk])
+        html = f"<a href='{url}' target='_blank'>{obj.sponsorship}</a>"
+        return mark_safe(html)
+    get_sponsorship_url.short_description = "Sponsorship"
 
     def get_urls(self):
         urls = super().get_urls()
