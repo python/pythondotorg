@@ -43,6 +43,9 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
 
 
 def approve_sponsorship_view(ModelAdmin, request, pk):
+    """
+    Approves a sponsorship and create an empty contract
+    """
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     initial = {
         "level_name": sponsorship.level_name,
@@ -54,7 +57,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
     form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-        form = SponsorshipReviewAdminForm(data=request.POST)
+        form = SponsorshipReviewAdminForm(data=request.POST, force_required=True)
         if form.is_valid():
             kwargs = form.cleaned_data
             kwargs["request"] = request

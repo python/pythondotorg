@@ -230,6 +230,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             "start_date": today,
             "end_date": today + timedelta(days=100),
             "level_name": "Level",
+            "sponsorship_fee": 500,
         }
 
     def test_display_confirmation_form_on_get(self):
