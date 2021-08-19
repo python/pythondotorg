@@ -7,6 +7,8 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core import mail
+from django.core.handlers.wsgi import WSGIRequest
+from django.http import HttpResponse
 from django.test import TestCase
 from django.urls import reverse
 
@@ -722,3 +724,43 @@ class UpdateRelatedSponsorshipsTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class PreviewContractViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__start_date=date.today()
+        )
+        self.url = reverse(
+            "admin:sponsors_contract_preview", args=[self.contract.pk]
+        )
+
+    @patch("sponsors.views_admin.render_contract_to_pdf_response")
+    def test_render_pdf_by_default(self, mocked_render):
+        response = HttpResponse()
+        mocked_render.return_value = response
+
+        r = self.client.get(self.url)
+
+        self.assertEqual(r, response)
+        self.assertEqual(r.get("X-Frame-Options"), "SAMEORIGIN")
+        self.assertEqual(mocked_render.call_count, 1)
+        self.assertEqual(mocked_render.call_args[0][1], self.contract)
+        self.assertIsInstance(mocked_render.call_args[0][0], WSGIRequest)
+
+    @patch("sponsors.views_admin.render_contract_to_docx_response")
+    def test_render_docx_if_specified_in_the_querystring(self, mocked_render):
+        response = HttpResponse()
+        mocked_render.return_value = response
+
+        r = self.client.get(self.url + "?format=docx")
+
+        self.assertEqual(r, response)
+        self.assertEqual(r.get("X-Frame-Options"), "SAMEORIGIN")
+        self.assertEqual(mocked_render.call_count, 1)
+        self.assertEqual(mocked_render.call_args[0][1], self.contract)
+        self.assertIsInstance(mocked_render.call_args[0][0], WSGIRequest)
