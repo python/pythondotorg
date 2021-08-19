@@ -82,11 +82,12 @@ ACCOUNT_USERNAME_VALIDATORS = 'users.validators.username_validators'
 
 ### Templates
 
+TEMPLATES_DIR = os.path.join(BASE, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE, 'templates'),
+            TEMPLATES_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
