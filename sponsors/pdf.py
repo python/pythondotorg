@@ -30,8 +30,6 @@ def _contract_context(contract, **context):
 def render_contract_to_pdf_response(request, contract, **context):
     template = "sponsors/admin/preview-contract.html"
     context = _contract_context(contract, **context)
-    from django.shortcuts import render
-    #return render(request, template, context)
     return render_to_pdf_response(request, template, context)
 
 
