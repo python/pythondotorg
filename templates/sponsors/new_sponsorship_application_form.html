@@ -1,6 +1,7 @@
 {% extends "psf/full-width.html" %}
 {% load boxes widget_tweaks %}
 {% load humanize %}
+{% load sponsors %}
 
 
 {% block page_title %}Submit Sponsorship Information{% endblock %}
@@ -16,7 +17,7 @@
       </p>
       <ul>
         {% for benefit in sponsorship_benefits %}
-          <li>{{ benefit.name }}</li>
+          <li>{% benefit_name_for_display benefit sponsorship_package %}</li>
         {% endfor %}
       </ul>
       {% endif %}
@@ -25,7 +26,7 @@
       <p>Added benefits:</p>
       <ul>
         {% for benefit in added_benefits %}
-          <li>{{ benefit.name }}</li>
+          <li>{% benefit_name_for_display benefit sponsorship_package %}</li>
         {% endfor %}
       </ul>
       {% endif %}

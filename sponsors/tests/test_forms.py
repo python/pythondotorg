@@ -7,6 +7,7 @@ from sponsors.forms import (
     SponsorshiptBenefitsForm,
     SponsorshipApplicationForm,
     Sponsor,
+    SponsorContactForm,
     SponsorContactFormSet,
     SponsorBenefitAdminInlineForm,
     SponsorBenefit,
@@ -390,7 +391,6 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
 
     def test_required_fields_for_new_sponsor_benefit(self):
         required_fields = [
-            "sponsorship_benefit",
             "sponsorship",
             "benefit_internal_value",
         ]
@@ -486,3 +486,12 @@ class SponsorshipsFormTestCase(TestCase):
         self.assertEqual(1, len(qs))
         self.assertIn(sponsor_benefit.sponsorship, qs)
         self.assertEqual(benefit, form.sponsorship_benefit)
+
+
+class SponsorContactFormTests(TestCase):
+
+    def test_ensure_model_form_configuration(self):
+        expected_fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
+        meta = SponsorContactForm._meta
+        self.assertEqual(set(expected_fields), set(meta.fields))
+        self.assertEqual(SponsorContact, meta.model)

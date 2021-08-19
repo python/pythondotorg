@@ -30,7 +30,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary", "administrative"]
+        fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -364,6 +364,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
         queryset=SponsorshipBenefit.objects.select_related("program"),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
