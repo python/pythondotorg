@@ -717,6 +717,7 @@ class Contract(models.Model):
     ]
 
     FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
@@ -727,6 +728,11 @@ class Contract(models.Model):
         upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
         verbose_name="Unsigned PDF",
+    )
+    document_docx = models.FileField(
+        upload_to=FINAL_VERSION_DOCX_DIR,
+        blank=True,
+        verbose_name="Unsigned Docx",
     )
     signed_document = models.FileField(
         upload_to=SIGNED_PDF_DIR,
