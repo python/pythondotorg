@@ -1,6 +1,6 @@
 from sponsors import notifications
 from sponsors.models import Sponsorship, Contract
-from sponsors.pdf import render_contract_to_pdf_file
+from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
 
 
 class BaseUseCaseWithNotifications:
@@ -82,7 +82,8 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, contract, **kwargs):
         pdf_file = render_contract_to_pdf_file(contract)
-        contract.set_final_version(pdf_file)
+        docx_file = render_contract_to_docx_file(contract)
+        contract.set_final_version(pdf_file, docx_file)
         self.notify(
             request=kwargs.get("request"),
             contract=contract,

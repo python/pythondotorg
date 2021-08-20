@@ -849,21 +849,30 @@ class Contract(models.Model):
             self.revision += 1
         return super().save(**kwargs)
 
-    def set_final_version(self, pdf_file):
+    def set_final_version(self, pdf_file, docx_file=None):
         if self.AWAITING_SIGNATURE not in self.next_status:
             msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
-        path = f"{self.FINAL_VERSION_PDF_DIR}"
         sponsor = self.sponsorship.sponsor.name.upper()
-        filename = f"{path}SoW: {sponsor}.pdf"
 
-
+        # save contract as PDF file
+        path = f"{self.FINAL_VERSION_PDF_DIR}"
+        pdf_filename = f"{path}SoW: {sponsor}.pdf"
         file = file_from_storage(pdf_filename, mode="wb")
         file.write(pdf_file)
         file.close()
+        self.document = pdf_filename
 
-        self.document = filename
+        # save contract as docx file
+        if docx_file:
+            path = f"{self.FINAL_VERSION_DOCX_DIR}"
+            docx_filename = f"{path}SoW: {sponsor}.docx"
+            file = file_from_storage(docx_filename, mode="wb")
+            file.write(docx_file)
+            file.close()
+            self.document_docx = docx_filename
+
         self.status = self.AWAITING_SIGNATURE
         self.save()
 

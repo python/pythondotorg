@@ -1,6 +1,7 @@
 """
 This module is a wrapper around django-easy-pdf so we can reuse code
 """
+import io
 import os
 from django.conf import settings
 from django.http import HttpResponse
@@ -26,7 +27,7 @@ def _contract_context(contract, **context):
     context.update({
         "contract": contract,
         "start_date": start_date,
-        "start_day_english_suffix": "" if not start_date else format(start_date, "S"),
+        "start_day_english_suffix": format(start_date, "S"),
         "sponsor": contract.sponsorship.sponsor,
         "sponsorship": contract.sponsorship,
         "benefits": _clean_split(contract.benefits_list.raw),
@@ -47,14 +48,23 @@ def render_contract_to_pdf_file(contract, **context):
     return render_to_pdf(template, context)
 
 
-def render_contract_to_docx_response(request, contract, **context):
-    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-    response['Content-Disposition'] = 'attachment; filename=contract.docx'
-
+def _gen_docx_contract(output, contract, **context):
     template = os.path.join(settings.TEMPLATES_DIR, "sponsors", "admin", "contract-template.docx")
     doc = DocxTemplate(template)
     context = _contract_context(contract, **context)
     doc.render(context)
-    doc.save(response)
+    doc.save(output)
+    return output
 
-    return response
+
+def render_contract_to_docx_response(request, contract, **context):
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+    response['Content-Disposition'] = 'attachment; filename=contract.docx'
+    return _gen_docx_contract(output=response, contract=contract, **context)
+
+
+def render_contract_to_docx_file(contract, **context):
+    fp = io.BytesIO()
+    fp = _gen_docx_contract(output=fp, contract=contract, **context)
+    fp.seek(0)
+    return fp.read()

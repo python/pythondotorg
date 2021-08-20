@@ -140,6 +140,7 @@ class SendContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
 
         self.assertTrue(self.contract.document.name)
+        self.assertTrue(self.contract.document_docx.name)
         self.assertTrue(self.contract.awaiting_signature)
         for n in self.notifications:
             n.notify.assert_called_once_with(
