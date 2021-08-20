@@ -454,6 +454,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "document",
+                    "document_docx",
                     "signed_document",
                 )
             },
@@ -480,6 +481,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             "sponsorship",
             "revision",
             "document",
+            "document_docx",
         ]
 
         if obj and not obj.is_draft:
