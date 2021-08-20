@@ -1,9 +1,7 @@
 from abc import ABC
-from pathlib import Path
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Sum, Subquery
@@ -29,6 +27,7 @@ from .exceptions import (
     InvalidStatusException,
     SponsorshipInvalidDateRangeException,
 )
+from .utils import file_from_storage
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -859,18 +858,8 @@ class Contract(models.Model):
         sponsor = self.sponsorship.sponsor.name.upper()
         filename = f"{path}SoW: {sponsor}.pdf"
 
-        mode = "wb"
-        try:
-            # if using S3 Storage the file will always exist
-            file = default_storage.open(filename, mode)
-        except FileNotFoundError as e:
-            # local env, not using S3
-            path = Path(e.filename).parent
-            if not path.exists():
-                path.mkdir(parents=True)
-            Path(e.filename).touch()
-            file = default_storage.open(filename, mode)
 
+        file = file_from_storage(pdf_filename, mode="wb")
         file.write(pdf_file)
         file.close()
 
