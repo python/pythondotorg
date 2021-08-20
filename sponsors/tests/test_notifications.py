@@ -190,7 +190,7 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.contract = baker.make_recipe(
             "sponsors.tests.awaiting_signature_contract",
             sponsorship=sponsorship,
-            _fill_optional=["document"],
+            _fill_optional=["document", "document_docx"],
             _create_files=True,
         )
         self.subject_template = "sponsors/email/sponsor_contract_subject.txt"
@@ -210,9 +210,27 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)
 
-    def test_attach_contract_pdf(self):
+    def test_attach_contract_pdf_by_default(self):
         self.assertTrue(self.contract.document.name)
         with self.contract.document.open("rb") as fd:
+            expected_content = fd.read()
+        self.assertTrue(expected_content)
+
+        self.contract.document_docx = None
+        self.contract.save()
+        self.contract.refresh_from_db()
+        self.notification.notify(contract=self.contract)
+        email = mail.outbox[0]
+
+        self.assertEqual(len(email.attachments), 1)
+        name, content, mime = email.attachments[0]
+        self.assertEqual(name, "Contract.pdf")
+        self.assertEqual(mime, "application/pdf")
+        self.assertEqual(content, expected_content)
+
+    def test_attach_contract_docx_if_it_exists(self):
+        self.assertTrue(self.contract.document_docx.name)
+        with self.contract.document_docx.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
@@ -222,8 +240,8 @@ class ContractNotificationToSponsorsTests(TestCase):
 
         self.assertEqual(len(email.attachments), 1)
         name, content, mime = email.attachments[0]
-        self.assertEqual(name, "Contract.pdf")
-        self.assertEqual(mime, "application/pdf")
+        self.assertEqual(name, "Contract.docx")
+        self.assertEqual(mime, "application/msword")
         self.assertEqual(content, expected_content)
 
 
