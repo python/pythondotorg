@@ -32,6 +32,8 @@ jobs:
       - name: Run Tests
         run: |
           python -Wd -m coverage run manage.py test -v2
+        env:
+          DATABASE_URL: postgres://postgres:@127.0.0.1:5432/python.org
       - name: Coverage
         run: |
           coverage report -m --fail-under=75
