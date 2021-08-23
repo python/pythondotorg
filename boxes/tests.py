@@ -27,4 +27,5 @@ class ViewTests(BaseTestCase):
     @override_settings(ROOT_URLCONF='boxes.urls')
     def test_box_view(self):
         r = self.client.get('/test/')
+        self.assertEqual(True, False)
         self.assertContains(r, self.box.content.rendered)
