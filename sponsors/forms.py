@@ -363,7 +363,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
-        queryset=SponsorshipBenefit.objects.select_related("program"),
+        queryset=SponsorshipBenefit.objects.order_by('program', 'order').select_related("program"),
         required=False,
     )
 
