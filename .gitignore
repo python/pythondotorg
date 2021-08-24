@@ -18,3 +18,4 @@ static/stylesheets/style.css
 __pycache__
 *.db
 .vscode
+.~lock.*
