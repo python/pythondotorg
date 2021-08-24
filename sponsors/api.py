@@ -1,5 +1,7 @@
 import csv
 
+from django.conf import settings
+
 from rest_framework import serializers
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -26,7 +28,7 @@ class LogoPlacementeAPIList(APIView):
     def get(self, request, *args, **kwargs):
         placements = []
 
-        with open("pypi-sponsors.csv", "r") as fd:
+        with open(settings.PYPI_SPONSORS_CSV, "r") as fd:
             for row in csv.DictReader(fd):
                 if row["is_active"] != "t":
                     continue
