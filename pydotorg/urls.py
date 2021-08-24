@@ -11,6 +11,9 @@ from users.views import HoneypotSignupView, CustomPasswordChangeView
 from . import views
 from .urls_api import v1_api, router
 
+
+from sponsors.api import LogoPlacementeAPIList
+
 handler404 = custom_404
 
 urlpatterns = [
@@ -73,6 +76,7 @@ urlpatterns = [
     # api
     url(r'^api/', include(v1_api.urls)),
     url(r'^api/v2/', include(router.urls)),
+    url(r'^api/v2/sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="foo"),
 
     # storage migration
     url(r'^m/(?P<url>.*)/$', views.MediaMigrationView.as_view(prefix='media'), name='media_migration_view'),
