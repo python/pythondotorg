@@ -8,11 +8,7 @@ from django.conf import settings
 from cms.views import custom_404
 from users.views import HoneypotSignupView, CustomPasswordChangeView
 
-from . import views
-from .urls_api import v1_api, router
-
-
-from sponsors.api import LogoPlacementeAPIList
+from . import views, urls_api
 
 handler404 = custom_404
 
@@ -74,9 +70,9 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
 
     # api
-    url(r'^api/', include(v1_api.urls)),
-    url(r'^api/v2/', include(router.urls)),
-    url(r'^api/v2/sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="foo"),
+    url(r'^api/', include(urls_api.v1_api.urls)),
+    url(r'^api/v2/', include(urls_api.router.urls)),
+    url(r'^api/v2/', include(urls_api)),
 
     # storage migration
     url(r'^m/(?P<url>.*)/$', views.MediaMigrationView.as_view(prefix='media'), name='media_migration_view'),
