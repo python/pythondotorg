@@ -29,6 +29,11 @@ jobs:
         run: |
           pip install -U pip setuptools wheel
           pip install -r dev-requirements.txt
+      - name: Check for missing migrations
+        run: |
+          python manage.py makemigrations --dry-run --check
+        env:
+          DATABASE_URL: postgres://postgres:@127.0.0.1:5432/python.org
       - name: Run Tests
         run: |
           python -Wd -m coverage run manage.py test -v2
