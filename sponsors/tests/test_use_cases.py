@@ -1,10 +1,11 @@
-from unittest.mock import Mock
+from unittest.mock import Mock, patch
 from model_bakery import baker
 from datetime import timedelta, date
 
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
+from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
 from sponsors.notifications import *
@@ -122,7 +123,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
                 contract=self.sponsorship.contract,
             )
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ApproveSponsorshipApplicationUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(uc.notifications[0], SponsorshipApprovalLogger)
@@ -147,7 +148,7 @@ class SendContractUseCaseTests(TestCase):
                 contract=self.contract,
             )
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.SendContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(uc.notifications[0], ContractNotificationToPSF)
@@ -168,11 +169,35 @@ class ExecuteContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteContractUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(
             uc.notifications[0], ExecutedContractLogger
+        )
+
+
+class ExecuteExistingContractUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock()]
+        self.use_case = use_cases.ExecuteExistingContractUseCase(self.notifications)
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.file = SimpleUploadedFile("contract.txt", b"Contract content")
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
+
+    @patch("sponsors.models.uuid.uuid4", Mock(return_value="1234"))
+    def test_execute_and_update_database_object(self):
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.EXECUTED)
+        self.assertEqual(b"Contract content", self.contract.signed_document.read())
+        self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
+
+    def test_build_use_case_with_default_notificationss(self):
+        uc = use_cases.ExecuteExistingContractUseCase.build()
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(
+            uc.notifications[0], ExecutedExistingContractLogger
         )
 
 
@@ -188,7 +213,7 @@ class NullifyContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.NULLIFIED)
 
-    def test_build_use_case_without_notificationss(self):
+    def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.NullifyContractUseCase.build()
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(

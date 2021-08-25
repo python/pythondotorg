@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response
 from sponsors.models import Sponsorship, SponsorBenefit
@@ -43,6 +43,9 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
 
 
 def approve_sponsorship_view(ModelAdmin, request, pk):
+    """
+    Approves a sponsorship and create an empty contract
+    """
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     initial = {
         "level_name": sponsorship.level_name,
@@ -54,7 +57,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
     form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-        form = SponsorshipReviewAdminForm(data=request.POST)
+        form = SponsorshipReviewAdminForm(data=request.POST, force_required=True)
         if form.is_valid():
             kwargs = form.cleaned_data
             kwargs["request"] = request
@@ -63,6 +66,47 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
                 use_case.execute(sponsorship, **kwargs)
                 ModelAdmin.message_user(
                     request, "Sponsorship was approved!", messages.SUCCESS
+                )
+            except InvalidStatusException as e:
+                ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship, "form": form}
+    return render(request, "sponsors/admin/approve_application.html", context=context)
+
+
+def approve_signed_sponsorship_view(ModelAdmin, request, pk):
+    """
+    Approves a sponsorship and execute contract for existing file
+    """
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    initial = {
+        "level_name": sponsorship.level_name,
+        "start_date": sponsorship.start_date,
+        "end_date": sponsorship.end_date,
+        "sponsorship_fee": sponsorship.sponsorship_fee,
+    }
+
+    form = SignedSponsorshipReviewAdminForm(initial=initial, force_required=True)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        form = SignedSponsorshipReviewAdminForm(request.POST, request.FILES, force_required=True)
+        if form.is_valid():
+            kwargs = form.cleaned_data
+            kwargs["request"] = request
+            try:
+                # create the sponsorship + contract
+                use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
+                sponsorship = use_case.execute(sponsorship, **kwargs)
+                # execute it using existing contract
+                use_case = use_cases.ExecuteExistingContractUseCase.build()
+                use_case.execute(sponsorship.contract, kwargs["signed_contract"], request=request)
+                ModelAdmin.message_user(
+                    request, "Signed sponsorship was approved!", messages.SUCCESS
                 )
             except InvalidStatusException as e:
                 ModelAdmin.message_user(request, str(e), messages.ERROR)
