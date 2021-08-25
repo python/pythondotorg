@@ -715,7 +715,7 @@ class Contract(models.Model):
         (NULLIFIED, "Nullified"),
     ]
 
-    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    FINAL_VERSION_PDF_DIR = "sponsors/contracts/"
     FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
