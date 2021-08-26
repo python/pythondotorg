@@ -3,6 +3,7 @@ import csv
 from django.conf import settings
 
 from rest_framework import serializers
+from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from sponsors.enums import LogoPlacementChoices, PublisherChoices
@@ -23,6 +24,7 @@ class LogoPlacementSerializer(serializers.Serializer):
 # Once we have all sponsorship data input into pydotorg, we should be
 # able to change this view to fetch data from the database instead.
 class LogoPlacementeAPIList(APIView):
+    authentication_classes = [TokenAuthentication]
     serializer_class = LogoPlacementSerializer
 
     def get(self, request, *args, **kwargs):
