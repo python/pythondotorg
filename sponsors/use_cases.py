@@ -103,6 +103,20 @@ class ExecuteContractUseCase(BaseUseCaseWithNotifications):
         )
 
 
+class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.ExecutedExistingContractLogger(),
+    ]
+
+    def execute(self, contract, contract_file, **kwargs):
+        contract.signed_document = contract_file
+        contract.execute(force=True)
+        self.notify(
+            request=kwargs.get("request"),
+            contract=contract,
+        )
+
+
 class NullifyContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.NullifiedContractLogger(),

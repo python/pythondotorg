@@ -1,0 +1,39 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.1
+        ports:
+          - 5432:5432
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.6
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: pythondotorg-cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
+            ${{ runner.os }}-${{ github.job }}-
+            ${{ runner.os }}-
+      - name: Install Python dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r dev-requirements.txt
+      - name: Run Tests
+        run: |
+          python -Wd -m coverage run manage.py test -v2
+        env:
+          DATABASE_URL: postgres://postgres:@127.0.0.1:5432/python.org
+      - name: Coverage
+        run: |
+          coverage report -m --fail-under=75

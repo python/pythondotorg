@@ -1,3 +1,4 @@
+import uuid
 from abc import ABC
 from itertools import chain
 from num2words import num2words
@@ -696,6 +697,16 @@ class LegalClause(OrderedModel):
         pass
 
 
+def signed_contract_random_path(instance, filename):
+    """
+    Use random UUID to name signed contracts
+    """
+    dir = instance.SIGNED_PDF_DIR
+    ext = "".join(Path(filename).suffixes)
+    name = uuid.uuid4()
+    return f"{dir}{name}{ext}"
+
+
 class Contract(models.Model):
     """
     Contract model to oficialize a Sponsorship
@@ -734,7 +745,7 @@ class Contract(models.Model):
         verbose_name="Unsigned Docx",
     )
     signed_document = models.FileField(
-        upload_to=SIGNED_PDF_DIR,
+        upload_to=signed_contract_random_path,
         blank=True,
         verbose_name="Signed PDF",
     )
@@ -876,8 +887,8 @@ class Contract(models.Model):
         self.status = self.AWAITING_SIGNATURE
         self.save()
 
-    def execute(self, commit=True):
-        if self.EXECUTED not in self.next_status:
+    def execute(self, commit=True, force=False):
+        if not force and self.EXECUTED not in self.next_status:
             msg = f"Can't execute a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 

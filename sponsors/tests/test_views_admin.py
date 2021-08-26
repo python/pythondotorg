@@ -1,3 +1,4 @@
+import io
 import json
 from model_bakery import baker
 from datetime import date, timedelta
@@ -14,7 +15,7 @@ from django.urls import reverse
 
 from .utils import assertMessage
 from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -232,6 +233,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             "start_date": today,
             "end_date": today + timedelta(days=100),
             "level_name": "Level",
+            "sponsorship_fee": 500,
         }
 
     def test_display_confirmation_form_on_get(self):
@@ -265,6 +267,128 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
         msg = list(get_messages(response.wsgi_request))[0]
         assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
+
+    def test_do_not_approve_if_no_confirmation_in_the_post(self):
+        self.data.pop("confirm")
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+        self.data["confirm"] = "invalid"
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)
+
+    def test_do_not_approve_if_form_with_invalid_data(self):
+        self.data = {"confirm": "yes"}
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+        self.assertTrue(response.context["form"].errors)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_message_user_if_approving_invalid_sponsorship(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save()
+        response = self.client.post(self.url, data=self.data)
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+
+
+class ApproveSignedSponsorshipAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.url = reverse(
+            "admin:sponsors_sponsorship_approve_existing_contract", args=[self.sponsorship.pk]
+        )
+        today = date.today()
+        self.data = {
+            "confirm": "yes",
+            "start_date": today,
+            "end_date": today + timedelta(days=100),
+            "level_name": "Level",
+            "sponsorship_fee": 500,
+            "signed_contract": io.BytesIO(b"Signed contract")
+        }
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        context = response.context
+        form = context["form"]
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+        self.assertIsInstance(form, SignedSponsorshipReviewAdminForm)
+        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
+        self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
+        self.assertEqual(
+            form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee
+        )
+        self.assertNotEqual(
+            self.sponsorship.status, Sponsorship.APPROVED
+        )  # did not update
+
+    def test_approve_sponsorship_and_execute_contract_on_post(self):
+        response = self.client.post(self.url, data=self.data)
+
+        self.sponsorship.refresh_from_db()
+        contract = self.sponsorship.contract
+
+        expected_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[self.sponsorship.pk]
+        )
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        self.assertEqual(contract.status, Contract.EXECUTED)
+        self.assertEqual(contract.signed_document.read(), b"Signed contract")
+        msg = list(get_messages(response.wsgi_request))[0]
+        assertMessage(msg, "Signed sponsorship was approved!", messages.SUCCESS)
 
     def test_do_not_approve_if_no_confirmation_in_the_post(self):
         self.data.pop("confirm")
