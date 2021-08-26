@@ -1,10 +1,8 @@
 import uuid
 from abc import ABC
-from pathlib import Path
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Sum, Subquery
@@ -16,6 +14,7 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
+from pathlib import Path
 from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
@@ -30,6 +29,7 @@ from .exceptions import (
     InvalidStatusException,
     SponsorshipInvalidDateRangeException,
 )
+from .utils import file_from_storage
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -727,7 +727,8 @@ class Contract(models.Model):
         (NULLIFIED, "Nullified"),
     ]
 
-    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    FINAL_VERSION_PDF_DIR = "sponsors/contracts/"
+    FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
@@ -738,6 +739,11 @@ class Contract(models.Model):
         upload_to=FINAL_VERSION_PDF_DIR,
         blank=True,
         verbose_name="Unsigned PDF",
+    )
+    document_docx = models.FileField(
+        upload_to=FINAL_VERSION_DOCX_DIR,
+        blank=True,
+        verbose_name="Unsigned Docx",
     )
     signed_document = models.FileField(
         upload_to=signed_contract_random_path,
@@ -855,31 +861,30 @@ class Contract(models.Model):
             self.revision += 1
         return super().save(**kwargs)
 
-    def set_final_version(self, pdf_file):
+    def set_final_version(self, pdf_file, docx_file=None):
         if self.AWAITING_SIGNATURE not in self.next_status:
             msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
-        path = f"{self.FINAL_VERSION_PDF_DIR}"
         sponsor = self.sponsorship.sponsor.name.upper()
-        filename = f"{path}SoW: {sponsor}.pdf"
 
-        mode = "wb"
-        try:
-            # if using S3 Storage the file will always exist
-            file = default_storage.open(filename, mode)
-        except FileNotFoundError as e:
-            # local env, not using S3
-            path = Path(e.filename).parent
-            if not path.exists():
-                path.mkdir(parents=True)
-            Path(e.filename).touch()
-            file = default_storage.open(filename, mode)
-
+        # save contract as PDF file
+        path = f"{self.FINAL_VERSION_PDF_DIR}"
+        pdf_filename = f"{path}SoW: {sponsor}.pdf"
+        file = file_from_storage(pdf_filename, mode="wb")
         file.write(pdf_file)
         file.close()
+        self.document = pdf_filename
 
-        self.document = filename
+        # save contract as docx file
+        if docx_file:
+            path = f"{self.FINAL_VERSION_DOCX_DIR}"
+            docx_filename = f"{path}SoW: {sponsor}.docx"
+            file = file_from_storage(docx_filename, mode="wb")
+            file.write(docx_file)
+            file.close()
+            self.document_docx = docx_filename
+
         self.status = self.AWAITING_SIGNATURE
         self.save()
 

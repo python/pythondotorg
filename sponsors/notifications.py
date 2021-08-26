@@ -102,10 +102,18 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
         return context["contract"].sponsorship.verified_emails
 
     def get_attachments(self, context):
+        contract = context["contract"]
+        if contract.document_docx:
+            document = contract.document_docx
+            ext, app_type = "docx", "msword"
+        else:  # fallback to PDF for existing contracts
+            document = contract.document
+            ext, app_type = "pdf", "pdf"
+
         document = context["contract"].document
         with document.open("rb") as fd:
             content = fd.read()
-        return [("Contract.pdf", content, "application/pdf")]
+        return [(f"Contract.{ext}", content, f"application/{app_type}")]
 
 
 class SponsorshipApprovalLogger():

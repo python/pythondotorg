@@ -11,6 +11,7 @@ two_days = timedelta(days=2)
 empty_contract = Recipe(
     Contract,
     sponsorship__sponsor__name="Sponsor",
+    sponsorship__start_date=today,
     benefits_list="",
     legal_clauses="",
 )
@@ -18,6 +19,7 @@ empty_contract = Recipe(
 awaiting_signature_contract = Recipe(
     Contract,
     sponsorship__sponsor__name="Awaiting Sponsor",
+    sponsorship__start_date=today,
     benefits_list="- benefit 1",
     legal_clauses="",
     status=Contract.AWAITING_SIGNATURE,

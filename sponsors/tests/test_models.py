@@ -544,6 +544,19 @@ class ContractModelTests(TestCase):
         self.assertTrue(contract.document.name)
         self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
+    def test_set_final_document_version_saves_docx_document_too(self):
+        contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
+        )
+        content = b"pdf binary content"
+        docx_content = b"pdf binary content"
+
+        contract.set_final_version(content, docx_content)
+        contract.refresh_from_db()
+
+        self.assertTrue(contract.document_docx.name)
+        self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
+
     def test_raise_invalid_status_exception_if_not_draft(self):
         contract = baker.make_recipe(
             "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
