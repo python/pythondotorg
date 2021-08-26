@@ -14,6 +14,7 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
+from pathlib import Path
 from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
