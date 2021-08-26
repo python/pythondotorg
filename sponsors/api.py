@@ -2,6 +2,7 @@ import csv
 
 from django.conf import settings
 
+from rest_framework import permissions
 from rest_framework import serializers
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
@@ -20,11 +21,23 @@ class LogoPlacementSerializer(serializers.Serializer):
     sponsor_url = serializers.URLField()
 
 
+
+class SponsorPublisherPermission(permissions.BasePermission):
+    message = 'Must have publisher permission.'
+
+    def has_permission(self, request, view):
+        user = request.user
+        if request.user.is_superuser or request.user.is_staff:
+            return True
+        return user.has_perm("sponsors.sponsor_publisher")
+
+
 # TODO Currently this endpoint only lists sponsors from pypi sponsors CSV.
 # Once we have all sponsorship data input into pydotorg, we should be
 # able to change this view to fetch data from the database instead.
 class LogoPlacementeAPIList(APIView):
     authentication_classes = [TokenAuthentication]
+    permission_classes = [SponsorPublisherPermission]
     serializer_class = LogoPlacementSerializer
 
     def get(self, request, *args, **kwargs):
