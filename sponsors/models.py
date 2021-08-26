@@ -333,6 +333,11 @@ class Sponsorship(models.Model):
     level_name = models.CharField(max_length=64, default="")
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
+    class Meta:
+        permissions = [
+            ("sponsor_publisher", "Can access sponsor placement API"),
+        ]
+
     def __str__(self):
         repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
         if self.start_date and self.end_date:
