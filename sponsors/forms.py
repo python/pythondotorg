@@ -348,7 +348,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 
     class Meta:
         model = Sponsorship
-        fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+        fields = ["start_date", "end_date", "package", "sponsorship_fee"]
 
     def clean(self):
         cleaned_data = super().clean()

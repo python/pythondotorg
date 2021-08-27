@@ -330,7 +330,7 @@ class Sponsorship(models.Model):
         default=False,
         help_text="If true, it means the user customized the package's benefits.",
     )
-    level_name = models.CharField(max_length=64, default="")
+    level_name = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed after manual data sanity check.")
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 

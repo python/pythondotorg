@@ -228,11 +228,12 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
         today = date.today()
+        self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
             "start_date": today,
             "end_date": today + timedelta(days=100),
-            "level_name": "Level",
+            "package": self.package.pk,
             "sponsorship_fee": 500,
         }
 
@@ -346,11 +347,12 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
             "admin:sponsors_sponsorship_approve_existing_contract", args=[self.sponsorship.pk]
         )
         today = date.today()
+        self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
             "start_date": today,
             "end_date": today + timedelta(days=100),
-            "level_name": "Level",
+            "package": self.package.pk,
             "sponsorship_fee": 500,
             "signed_contract": io.BytesIO(b"Signed contract")
         }
