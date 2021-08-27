@@ -331,6 +331,7 @@ class Sponsorship(models.Model):
         help_text="If true, it means the user customized the package's benefits.",
     )
     level_name = models.CharField(max_length=64, default="")
+    package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
