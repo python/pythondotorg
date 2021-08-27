@@ -50,10 +50,11 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, sponsorship, start_date, end_date, **kwargs):
         sponsorship.approve(start_date, end_date)
-        level_name = kwargs.get("level_name")
+        package = kwargs.get("package")
         fee = kwargs.get("sponsorship_fee")
-        if level_name:
-            sponsorship.level_name = level_name
+        if package:
+            sponsorship.package = package
+            sponsorship.level_name = package.name
         if fee:
             sponsorship.sponsorship_fee = fee
 
