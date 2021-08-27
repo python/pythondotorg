@@ -331,7 +331,7 @@ class Sponsorship(models.Model):
         default=False,
         help_text="If true, it means the user customized the package's benefits.",
     )
-    level_name = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed after manual data sanity check.")
+    level_name_old = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed after manual data sanity check.", verbose_name="Level name")
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
@@ -339,6 +339,14 @@ class Sponsorship(models.Model):
         permissions = [
             ("sponsor_publisher", "Can access sponsor placement API"),
         ]
+
+    @property
+    def level_name(self):
+        return self.package.name if self.package else self.level_name_old
+
+    @level_name.setter
+    def level_name(self, value):
+        self.level_name_old = value
 
     def __str__(self):
         repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
