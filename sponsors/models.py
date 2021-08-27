@@ -41,6 +41,7 @@ class SponsorshipPackage(OrderedModel):
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
+    logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control logos dimensions at sponsors page")
 
     def __str__(self):
         return self.name

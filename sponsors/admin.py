@@ -114,6 +114,11 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
     list_display = ["name", "move_up_down_links"]
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        return ["logo_dimension"]
+
 
 class SponsorContactInline(admin.TabularInline):
     model = SponsorContact
