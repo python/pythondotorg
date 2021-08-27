@@ -261,6 +261,7 @@ SPONSORSHIP_NOTIFICATION_FROM_EMAIL = os.environ.get(
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = os.environ.get(
     "SPONSORSHIP_NOTIFICATION_TO_EMAIL", "psf-sponsors@python.org"
 )
+PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'
