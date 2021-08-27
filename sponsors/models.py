@@ -1030,7 +1030,7 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return TieredQuantity
 
     def get_benefit_feature_kwargs(self, **kwargs):
-        if kwargs["sponsor_benefit"].sponsorship.level_name == self.package.name:
+        if kwargs["sponsor_benefit"].sponsorship.package == self.package:
             return super().get_benefit_feature_kwargs(**kwargs)
         return None
 

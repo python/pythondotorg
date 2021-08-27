@@ -692,7 +692,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
         )
 
     def test_get_benefit_feature_respecting_configuration(self):
-        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name=self.package.name)
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package=self.package)
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
@@ -701,7 +701,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
         self.assertEqual(benefit_feature.quantity, self.config.quantity)
 
     def test_do_not_return_feature_if_benefit_from_other_package(self):
-        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name='Other')
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name='Other')
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
