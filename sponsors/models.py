@@ -406,9 +406,8 @@ class Sponsorship(models.Model):
         if self.status in valid_status:
             return self.sponsorship_fee
         try:
-            package = SponsorshipPackage.objects.get(name=self.level_name)
             benefits = [sb.sponsorship_benefit for sb in self.package_benefits.all().select_related('sponsorship_benefit')]
-            if package and not package.has_user_customization(benefits):
+            if self.package and not self.package.has_user_customization(benefits):
                 return self.sponsorship_fee
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
