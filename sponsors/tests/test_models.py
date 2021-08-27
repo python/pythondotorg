@@ -132,6 +132,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.level_name, "")
         self.assertIsNone(sponsorship.sponsorship_fee)
         self.assertIsNone(sponsorship.agreed_fee)
+        self.assertIsNone(sponsorship.package)
         self.assertTrue(sponsorship.for_modified_package)
 
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
@@ -154,6 +155,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.sponsorship_fee, 100)
         self.assertEqual(sponsorship.agreed_fee, 100)  # can display the price because there's not customizations
         self.assertFalse(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.package, self.package)
         for benefit in sponsorship.benefits.all():
             self.assertFalse(benefit.added_by_user)
 

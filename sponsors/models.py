@@ -371,6 +371,7 @@ class Sponsorship(models.Model):
             submited_by=submited_by,
             sponsor=sponsor,
             level_name="" if not package else package.name,
+            package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
         )
