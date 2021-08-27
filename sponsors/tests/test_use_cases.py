@@ -1,6 +1,8 @@
+import os
 from unittest.mock import Mock, patch
 from model_bakery import baker
 from datetime import timedelta, date
+from pathlib import Path
 
 from django.conf import settings
 from django.test import TestCase
@@ -141,6 +143,7 @@ class SendContractUseCaseTests(TestCase):
         self.contract.refresh_from_db()
 
         self.assertTrue(self.contract.document.name)
+        self.assertTrue(self.contract.document_docx.name)
         self.assertTrue(self.contract.awaiting_signature)
         for n in self.notifications:
             n.notify.assert_called_once_with(
@@ -184,6 +187,14 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.file = SimpleUploadedFile("contract.txt", b"Contract content")
         self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
+
+    def tearDown(self):
+        try:
+            signed_file = Path(self.contract.signed_document.path)
+            if signed_file.exists():
+                os.remove(str(signed_file.resolve()))
+        except ValueError:
+            pass
 
     @patch("sponsors.models.uuid.uuid4", Mock(return_value="1234"))
     def test_execute_and_update_database_object(self):

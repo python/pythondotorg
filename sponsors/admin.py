@@ -471,6 +471,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "document",
+                    "document_docx",
                     "signed_document",
                 )
             },
@@ -497,6 +498,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             "sponsorship",
             "revision",
             "document",
+            "document_docx",
             "get_sponsorship_url",
         ]
 

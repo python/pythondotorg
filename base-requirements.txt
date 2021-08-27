@@ -45,3 +45,4 @@ django-easy-pdf==0.1.1
 num2words==0.5.10
 django-polymorphic==2.1.2
 sorl-thumbnail==12.7.0
+docxtpl==0.12.0

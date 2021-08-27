@@ -9,13 +9,17 @@ from django.db import transaction
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response
+from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
 from sponsors.models import Sponsorship, SponsorBenefit
 
 
 def preview_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
-    response = render_contract_to_pdf_response(request, contract)
+    format = request.GET.get('format', 'pdf')
+    if format == 'docx':
+        response = render_contract_to_docx_response(request, contract)
+    else:
+        response = render_contract_to_pdf_response(request, contract)
     response["X-Frame-Options"] = "SAMEORIGIN"
     return response
 

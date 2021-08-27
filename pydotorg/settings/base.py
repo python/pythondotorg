@@ -82,11 +82,12 @@ ACCOUNT_USERNAME_VALIDATORS = 'users.validators.username_validators'
 
 ### Templates
 
+TEMPLATES_DIR = os.path.join(BASE, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE, 'templates'),
+            TEMPLATES_DIR,
         ],
         'APP_DIRS': True,
         'OPTIONS': {
@@ -260,6 +261,7 @@ SPONSORSHIP_NOTIFICATION_FROM_EMAIL = os.environ.get(
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = os.environ.get(
     "SPONSORSHIP_NOTIFICATION_TO_EMAIL", "psf-sponsors@python.org"
 )
+PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'
