@@ -246,7 +246,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
         self.assertIsInstance(form, SponsorshipReviewAdminForm)
-        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["package"], self.sponsorship.package)
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
@@ -366,7 +366,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
         self.assertIsInstance(form, SignedSponsorshipReviewAdminForm)
-        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["package"], self.sponsorship.package)
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
