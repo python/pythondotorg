@@ -435,6 +435,15 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
 class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
     api_version = 'v1'
 
+    def setUp(self):
+        super().setUp()
+        self.staff_key = self.staff_user.api_key.key
+        self.token_header = 'ApiKey'
+        self.Authorization = '{} {}:{}'.format(
+            self.token_header, self.staff_user.username, self.staff_key,
+        )
+        self.Authorization_invalid = '%s invalid:token' % self.token_header
+
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):
     api_version = 'v2'
