@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
+from rest_framework.authtoken.models import Token
 
 from .managers import UserManager
 
@@ -54,6 +55,13 @@ class User(AbstractUser):
     def sponsorships(self):
         from sponsors.models import Sponsorship
         return Sponsorship.objects.visible_to(self)
+
+    @property
+    def api_v2_token(self):
+        try:
+            return Token.objects.get(user=self).key
+        except Token.DoesNotExist:
+            return ""
 
 
 models.signals.post_save.connect(create_api_key, sender=User)
