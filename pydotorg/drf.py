@@ -65,6 +65,10 @@ class BaseFilterSet(filters.FilterSet):
 
 
 class BaseAPITestCase:
+    """
+    This is mixin base class to be combined with a real Django's TestCase or
+    DRF's APITestCase implementation in order to run the tests.
+    """
 
     api_version = 'v2'
     app_label = None
