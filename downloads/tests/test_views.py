@@ -90,7 +90,7 @@ class RegressionTests(DownloadMixin, TestCase):
         self.assertEqual(len(response.context['python_files']), 3)
 
 
-class BaseDownloadApiViewsTest(BaseAPITestCase):
+class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
     # This API used by add-to-pydotorg.py in python/release-tools.
     app_label = 'downloads'
 
