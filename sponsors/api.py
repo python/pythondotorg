@@ -32,9 +32,6 @@ class SponsorPublisherPermission(permissions.BasePermission):
         return user.has_perm("sponsors.sponsor_publisher")
 
 
-# TODO Currently this endpoint only lists sponsors from pypi sponsors CSV.
-# Once we have all sponsorship data input into pydotorg, we should be
-# able to change this view to fetch data from the database instead.
 class LogoPlacementeAPIList(APIView):
     authentication_classes = [TokenAuthentication]
     permission_classes = [SponsorPublisherPermission]
