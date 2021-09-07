@@ -52,7 +52,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
     """
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     initial = {
-        "level_name": sponsorship.level_name,
+        "package": sponsorship.package,
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
@@ -89,7 +89,7 @@ def approve_signed_sponsorship_view(ModelAdmin, request, pk):
     """
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     initial = {
-        "level_name": sponsorship.level_name,
+        "package": sponsorship.package,
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,

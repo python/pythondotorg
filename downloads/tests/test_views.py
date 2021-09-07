@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase, override_settings
 
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from .base import BaseDownloadTests, DownloadMixin
@@ -90,7 +91,7 @@ class RegressionTests(DownloadMixin, TestCase):
         self.assertEqual(len(response.context['python_files']), 3)
 
 
-class BaseDownloadApiViewsTest(BaseAPITestCase):
+class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
     # This API used by add-to-pydotorg.py in python/release-tools.
     app_label = 'downloads'
 
@@ -101,12 +102,8 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
             password='passworduser',
             is_staff=True,
         )
-        self.staff_key = self.staff_user.api_key.key
-        self.token_header = 'ApiKey'
-        self.Authorization = '{} {}:{}'.format(
-            self.token_header, self.staff_user.username, self.staff_key,
-        )
-        self.Authorization_invalid = '%s invalid:token' % self.token_header
+        self.Authorization = f'Token {self.staff_user.api_v2_token}'
+        self.Authorization_invalid = 'Token invalid-token'
 
     def get_json(self, response):
         json_response = response.json()
@@ -437,6 +434,15 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
 
 class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
     api_version = 'v1'
+
+    def setUp(self):
+        super().setUp()
+        self.staff_key = self.staff_user.api_key.key
+        self.token_header = 'ApiKey'
+        self.Authorization = '{} {}:{}'.format(
+            self.token_header, self.staff_user.username, self.staff_key,
+        )
+        self.Authorization_invalid = '%s invalid:token' % self.token_header
 
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):

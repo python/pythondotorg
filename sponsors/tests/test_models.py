@@ -132,6 +132,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.level_name, "")
         self.assertIsNone(sponsorship.sponsorship_fee)
         self.assertIsNone(sponsorship.agreed_fee)
+        self.assertIsNone(sponsorship.package)
         self.assertTrue(sponsorship.for_modified_package)
 
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
@@ -154,6 +155,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(sponsorship.sponsorship_fee, 100)
         self.assertEqual(sponsorship.agreed_fee, 100)  # can display the price because there's not customizations
         self.assertFalse(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.package, self.package)
         for benefit in sponsorship.benefits.all():
             self.assertFalse(benefit.added_by_user)
 
@@ -690,7 +692,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
         )
 
     def test_get_benefit_feature_respecting_configuration(self):
-        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name=self.package.name)
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package=self.package)
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
@@ -699,7 +701,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
         self.assertEqual(benefit_feature.quantity, self.config.quantity)
 
     def test_do_not_return_feature_if_benefit_from_other_package(self):
-        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__level_name='Other')
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name='Other')
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 

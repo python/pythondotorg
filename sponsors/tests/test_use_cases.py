@@ -93,11 +93,12 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         )
         self.user = baker.make(settings.AUTH_USER_MODEL)
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
+        self.package = baker.make("sponsors.SponsorshipPackage")
 
         today = date.today()
         self.data = {
             "sponsorship_fee": 100,
-            "level_name": "level",
+            "package": self.package,
             "start_date": today,
             "end_date": today + timedelta(days=10),
         }
@@ -113,7 +114,8 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertTrue(self.sponsorship.start_date)
         self.assertTrue(self.sponsorship.end_date)
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
-        self.assertEqual(self.sponsorship.level_name, "level")
+        self.assertEqual(self.sponsorship.package, self.package)
+        self.assertEqual(self.sponsorship.level_name, self.package.name)
 
     def test_send_notifications_using_sponsorship(self):
         self.use_case.execute(self.sponsorship, **self.data)
