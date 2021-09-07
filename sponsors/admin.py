@@ -114,6 +114,11 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
     list_display = ["name", "move_up_down_links"]
 
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        return ["logo_dimension"]
+
 
 class SponsorContactInline(admin.TabularInline):
     model = SponsorContact
@@ -154,21 +159,6 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
-class LevelNameFilter(admin.SimpleListFilter):
-    title = "level name"
-    parameter_name = "level"
-
-    def lookups(self, request, model_admin):
-        qs = SponsorshipPackage.objects.all()
-        return list({(program.name, program.name) for program in qs})
-
-    def queryset(self, request, queryset):
-        if self.value() == "all":
-            return queryset
-        if self.value():
-            return queryset.filter(level_name=self.value())
-
-
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -178,31 +168,13 @@ class SponsorshipAdmin(admin.ModelAdmin):
     list_display = [
         "sponsor",
         "status",
-        "level_name",
+        "package",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", LevelNameFilter]
-    readonly_fields = [
-        "for_modified_package",
-        "sponsor",
-        "status",
-        "applied_on",
-        "rejected_on",
-        "approved_on",
-        "finalized_on",
-        "get_estimated_cost",
-        "get_sponsor_name",
-        "get_sponsor_description",
-        "get_sponsor_landing_page_url",
-        "get_sponsor_web_logo",
-        "get_sponsor_print_logo",
-        "get_sponsor_primary_phone",
-        "get_sponsor_mailing_address",
-        "get_sponsor_contacts",
-    ]
+    list_filter = ["status", "package"]
 
     fieldsets = [
         (
@@ -211,13 +183,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 "fields": (
                     "sponsor",
                     "status",
+                    "package",
                     "for_modified_package",
-                    "level_name",
                     "sponsorship_fee",
                     "get_estimated_cost",
                     "start_date",
                     "end_date",
-                    "get_contract"
+                    "get_contract",
+                    "level_name",
                 ),
             },
         ),
@@ -259,6 +232,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "rejected_on",
             "approved_on",
             "finalized_on",
+            "level_name",
             "get_estimated_cost",
             "get_sponsor_name",
             "get_sponsor_description",
@@ -272,7 +246,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         ]
 
         if obj and obj.status != Sponsorship.APPLIED:
-            extra = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+            extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
         return readonly_fields

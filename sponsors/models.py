@@ -41,6 +41,7 @@ class SponsorshipPackage(OrderedModel):
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
+    logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control logos dimensions at sponsors page")
 
     def __str__(self):
         return self.name
@@ -330,13 +331,22 @@ class Sponsorship(models.Model):
         default=False,
         help_text="If true, it means the user customized the package's benefits.",
     )
-    level_name = models.CharField(max_length=64, default="")
+    level_name_old = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed after manual data sanity check.", verbose_name="Level name")
+    package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
 
     class Meta:
         permissions = [
             ("sponsor_publisher", "Can access sponsor placement API"),
         ]
+
+    @property
+    def level_name(self):
+        return self.package.name if self.package else self.level_name_old
+
+    @level_name.setter
+    def level_name(self, value):
+        self.level_name_old = value
 
     def __str__(self):
         repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
@@ -370,6 +380,7 @@ class Sponsorship(models.Model):
             submited_by=submited_by,
             sponsor=sponsor,
             level_name="" if not package else package.name,
+            package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
         )
@@ -403,9 +414,8 @@ class Sponsorship(models.Model):
         if self.status in valid_status:
             return self.sponsorship_fee
         try:
-            package = SponsorshipPackage.objects.get(name=self.level_name)
             benefits = [sb.sponsorship_benefit for sb in self.package_benefits.all().select_related('sponsorship_benefit')]
-            if package and not package.has_user_customization(benefits):
+            if self.package and not self.package.has_user_customization(benefits):
                 return self.sponsorship_fee
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
@@ -1028,7 +1038,7 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return TieredQuantity
 
     def get_benefit_feature_kwargs(self, **kwargs):
-        if kwargs["sponsor_benefit"].sponsorship.level_name == self.package.name:
+        if kwargs["sponsor_benefit"].sponsorship.package == self.package:
             return super().get_benefit_feature_kwargs(**kwargs)
         return None
 

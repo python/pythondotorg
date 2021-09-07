@@ -228,11 +228,12 @@ class ApproveSponsorshipAdminViewTests(TestCase):
             "admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk]
         )
         today = date.today()
+        self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
             "start_date": today,
             "end_date": today + timedelta(days=100),
-            "level_name": "Level",
+            "package": self.package.pk,
             "sponsorship_fee": 500,
         }
 
@@ -245,7 +246,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
         self.assertIsInstance(form, SponsorshipReviewAdminForm)
-        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["package"], self.sponsorship.package)
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
@@ -346,11 +347,12 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
             "admin:sponsors_sponsorship_approve_existing_contract", args=[self.sponsorship.pk]
         )
         today = date.today()
+        self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
             "start_date": today,
             "end_date": today + timedelta(days=100),
-            "level_name": "Level",
+            "package": self.package.pk,
             "sponsorship_fee": 500,
             "signed_contract": io.BytesIO(b"Signed contract")
         }
@@ -364,7 +366,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertTemplateUsed(response, "sponsors/admin/approve_application.html")
         self.assertEqual(context["sponsorship"], self.sponsorship)
         self.assertIsInstance(form, SignedSponsorshipReviewAdminForm)
-        self.assertEqual(form.initial["level_name"], self.sponsorship.level_name)
+        self.assertEqual(form.initial["package"], self.sponsorship.package)
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(
