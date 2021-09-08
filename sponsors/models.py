@@ -23,6 +23,7 @@ from .managers import (
     SponsorContactQuerySet,
     SponsorshipQuerySet,
     SponsorshipBenefitManager,
+    SponsorshipPackageManager
 )
 from .exceptions import (
     SponsorWithExistingApplicationException,
@@ -38,6 +39,7 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+    objects = SponsorshipPackageManager()
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()

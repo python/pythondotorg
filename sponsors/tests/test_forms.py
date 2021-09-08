@@ -28,7 +28,7 @@ class SponsorshiptBenefitsFormTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
-        self.package = baker.make("sponsors.SponsorshipPackage")
+        self.package = baker.make("sponsors.SponsorshipPackage", advertisable=True)
         self.package.benefits.add(*self.program_1_benefits)
         self.package.benefits.add(*self.program_2_benefits)
 
@@ -62,6 +62,15 @@ class SponsorshiptBenefitsFormTests(TestCase):
         self.assertEqual(len(self.program_2_benefits), len(choices))
         for benefit in self.program_2_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
+
+    def test_package_list_only_advertisable_ones(self):
+        ads_pkgs = baker.make('SponsorshipPackage', advertisable=True, _quantity=2)
+        baker.make('SponsorshipPackage', advertisable=False)
+
+        form = SponsorshiptBenefitsForm()
+        field = form.fields.get("package")
+
+        self.assertEqual(3, field.queryset.count())
 
     def test_invalidate_form_without_benefits(self):
         form = SponsorshiptBenefitsForm(data={})
@@ -127,19 +136,19 @@ class SponsorshiptBenefitsFormTests(TestCase):
 
     def test_package_only_benefit_with_wrong_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)
-        package = baker.make("sponsors.SponsorshipPackage")
+        package = baker.make("sponsors.SponsorshipPackage", advertisable=True)
         package.benefits.add(*SponsorshipBenefit.objects.all())
 
         data = {
             "benefits_psf": [self.program_1_benefits[0]],
-            "package": baker.make("sponsors.SponsorshipPackage").id,  # other package
+            "package": baker.make("sponsors.SponsorshipPackage", advertisable=True).id,  # other package
         }
 
         form = SponsorshiptBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn(
             "The application has 1 or more package only benefits but wrong sponsor package.",
-            form.errors["__all__"],
+            form.errors["__all__"][0],
         )
 
         data = {
