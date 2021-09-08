@@ -1,13 +1,14 @@
 import textwrap
 
 import factory
+from factory.django import DjangoModelFactory
 
 from .models import CodeSample
 
 from users.factories import UserFactory
 
 
-class CodeSampleFactory(factory.DjangoModelFactory):
+class CodeSampleFactory(DjangoModelFactory):
 
     class Meta:
         model = CodeSample

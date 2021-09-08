@@ -16,9 +16,9 @@ v1_api.register(ReleaseResource())
 v1_api.register(ReleaseFileResource())
 
 router = routers.DefaultRouter()
-router.register(r'pages/page', PageViewSet, base_name='page')
+router.register(r'pages/page', PageViewSet, basename='page')
 router.register(r'downloads/os', OSViewSet)
-router.register(r'downloads/release', ReleaseViewSet, base_name='release')
+router.register(r'downloads/release', ReleaseViewSet, basename='release')
 router.register(r'downloads/release_file', ReleaseFileViewSet)
 
 urlpatterns = [

@@ -12,13 +12,22 @@ INTERNAL_IPS = ['127.0.0.1']
 PYTHON_ORG_CONTENT_SVN_PATH = ''
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres:///pythondotorg')
+    'default': config(
+        'DATABASE_URL',
+        default='postgres:///pythondotorg',
+        cast=dj_database_url_parser
+    )
 }
+
+HAYSTACK_SEARCHBOX_SSL_URL = config(
+    'SEARCHBOX_SSL_URL',
+    default='http://127.0.0.1:9200/'
+)
 
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
-        'URL': 'http://127.0.0.1:9200/',
+        'URL': HAYSTACK_SEARCHBOX_SSL_URL,
         'INDEX_NAME': 'haystack',
     },
 }
@@ -27,7 +36,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Set the local pep repository path to fetch PEPs from,
 # or none to fallback to the tarball specified by PEP_ARTIFACT_URL.
-PEP_REPO_PATH = os.environ.get('PEP_REPO_PATH', None)  # directory path or None
+PEP_REPO_PATH = config('PEP_REPO_PATH', default=None)  # directory path or None
 
 # Set the path to where to fetch PEP artifacts from.
 # The value can be a local path or a remote URL.

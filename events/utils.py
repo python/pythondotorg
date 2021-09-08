@@ -3,7 +3,7 @@ import re
 
 import pytz
 
-from django.utils.timezone import make_aware, is_aware
+from django.utils.timezone import is_aware, make_aware
 
 
 def seconds_resolution(dt):

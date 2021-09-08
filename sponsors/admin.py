@@ -138,10 +138,8 @@ class SponsorBenefitInline(admin.TabularInline):
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
 
-    def has_add_permission(self, request):
-        # this work around is necessary because the `obj` parameter was added to
-        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
-        has_add_permission = super().has_add_permission(request)
+    def has_add_permission(self, request, obj=None):
+        has_add_permission = super().has_add_permission(request, obj=obj)
         match = request.resolver_match
         if match.url_name == "sponsors_sponsorship_change":
             sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])

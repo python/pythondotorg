@@ -1,9 +1,8 @@
-from django.conf.urls import url
-
 from . import views
+from django.urls import path
 
 app_name = 'community'
 urlpatterns = [
-    url(r'^$', views.PostList.as_view(), name='post_list'),
-    url(r'^(?P<pk>\d+)/$', views.PostDetail.as_view(), name='post_detail'),
+    path('', views.PostList.as_view(), name='post_list'),
+    path('<int:pk>/', views.PostDetail.as_view(), name='post_detail'),
 ]
