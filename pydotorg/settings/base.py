@@ -1,5 +1,6 @@
 import os
-import dj_database_url
+from dj_database_url import parse as dj_database_url_parser
+from decouple import config
 
 from django.contrib.messages import constants
 
@@ -23,7 +24,11 @@ SITE_VARIABLES = {
 ### Databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres:///python.org')
+    'default': config(
+        'DATABASE_URL',
+        default='postgres:///python.org',
+        cast=dj_database_url_parser
+    )
 }
 
 ### Locale settings
@@ -109,6 +114,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.DjangoTemplates'
 
 ### URLs, WSGI, middleware, etc.
 
@@ -255,11 +262,11 @@ JOB_FROM_EMAIL = 'jobs@python.org'
 EVENTS_TO_EMAIL = 'events@python.org'
 
 # Sponsors
-SPONSORSHIP_NOTIFICATION_FROM_EMAIL = os.environ.get(
-    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL", "sponsors@python.org"
+SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config(
+    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org"
 )
-SPONSORSHIP_NOTIFICATION_TO_EMAIL = os.environ.get(
-    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", "psf-sponsors@python.org"
+SPONSORSHIP_NOTIFICATION_TO_EMAIL = config(
+    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org"
 )
 PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
