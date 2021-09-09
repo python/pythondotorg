@@ -2,9 +2,11 @@ from itertools import chain
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
+from django.db.models import Q
+from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.text import slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from sponsors.models import (
@@ -28,7 +30,7 @@ class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
 class SponsorContactForm(forms.ModelForm):
     class Meta:
         model = SponsorContact
-        fields = ["name", "email", "phone", "primary", "administrative"]
+        fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
 
 
 SponsorContactFormSet = forms.formset_factory(
@@ -346,7 +348,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
 
     class Meta:
         model = Sponsorship
-        fields = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+        fields = ["start_date", "end_date", "package", "sponsorship_fee"]
 
     def clean(self):
         cleaned_data = super().clean()
@@ -359,9 +361,17 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
         return cleaned_data
 
 
+class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
+    """
+    Form to approve sponsorships that already have a signed contract
+    """
+    signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract.")
+
+
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
     sponsorship_benefit = forms.ModelChoiceField(
-        queryset=SponsorshipBenefit.objects.select_related("program"),
+        queryset=SponsorshipBenefit.objects.order_by('program', 'order').select_related("program"),
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
@@ -394,3 +404,27 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
             self.instance.save()
 
         return self.instance
+
+
+class SponsorshipsListForm(forms.Form):
+    sponsorships = forms.ModelMultipleChoiceField(
+        required=True,
+        queryset=Sponsorship.objects.select_related("sponsor"),
+        widget=forms.CheckboxSelectMultiple,
+    )
+
+    @classmethod
+    def with_benefit(cls, sponsorship_benefit, *args, **kwargs):
+        """
+        Queryset considering only valid sponsorships which have the benefit
+        """
+        today = timezone.now().date()
+        queryset = sponsorship_benefit.related_sponsorships.exclude(
+            Q(end_date__lt=today) | Q(status=Sponsorship.REJECTED)
+        ).select_related("sponsor")
+
+        form = cls(*args, **kwargs)
+        form.fields["sponsorships"].queryset = queryset
+        form.sponsorship_benefit = sponsorship_benefit
+
+        return form

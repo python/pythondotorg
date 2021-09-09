@@ -9,6 +9,9 @@
         <a href="{{ contract.preview_url }}" target="_blank" style="background: #417690">Review</a>
     </li>
     <li>
+        <a href="{{ contract.preview_url }}?format=docx" target="_blank" style="background: #417690">Download docx</a>
+    </li>
+    <li>
         <a href="{% url 'admin:sponsors_contract_send' contract.pk %}" style="background: #70bf2b">Send document</a>
     </li>
     {% elif contract.status == contract.AWAITING_SIGNATURE %}

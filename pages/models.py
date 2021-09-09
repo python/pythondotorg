@@ -93,7 +93,7 @@ class Page(ContentManageable):
         return self.title
 
     def get_absolute_url(self):
-        return "/{}/".format(self.path)
+        return f"/{self.path}/"
 
 
 @receiver(post_save, sender=Page)
@@ -102,7 +102,7 @@ def purge_fastly_cache(sender, instance, **kwargs):
     Purge fastly.com cache if in production and the page is published.
     Requires settings.FASTLY_API_KEY being set
     """
-    purge_url('/{}'.format(instance.path))
+    purge_url(f'/{instance.path}')
 
 
 def page_image_path(instance, filename):

@@ -8,6 +8,7 @@ from django.utils import timezone
 
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
+from rest_framework.authtoken.models import Token
 
 from .managers import UserManager
 
@@ -55,6 +56,13 @@ class User(AbstractUser):
         from sponsors.models import Sponsorship
         return Sponsorship.objects.visible_to(self)
 
+    @property
+    def api_v2_token(self):
+        try:
+            return Token.objects.get(user=self).key
+        except Token.DoesNotExist:
+            return ""
+
 
 models.signals.post_save.connect(create_api_key, sender=User)
 
@@ -86,8 +94,8 @@ class Membership(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
 
     # PSF fields
-    psf_code_of_conduct = models.NullBooleanField('I agree to the PSF Code of Conduct', blank=True)
-    psf_announcements = models.NullBooleanField('I would like to receive occasional PSF email announcements', blank=True)
+    psf_code_of_conduct = models.BooleanField('I agree to the PSF Code of Conduct', blank=True, null=True)
+    psf_announcements = models.BooleanField('I would like to receive occasional PSF email announcements', blank=True, null=True)
 
     # Voting
     votes = models.BooleanField("I would like to be a PSF Voting Member", default=False)

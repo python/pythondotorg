@@ -12,10 +12,10 @@ def url_name(request):
     except Resolver404:
         return {}
     else:
-        namespace, url_name  = match.namespace, match.url_name
+        namespace, url_name_ = match.namespace, match.url_name
         if namespace:
-            url_name = "%s:%s" % (namespace, url_name)
-        return {'URL_NAMESPACE': namespace, 'URL_NAME': url_name}
+            url_name_ = f"{namespace}:{url_name_}"
+        return {'URL_NAMESPACE': namespace, 'URL_NAME': url_name_}
 
 
 def get_host_with_scheme(request):

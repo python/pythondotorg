@@ -1,6 +1,6 @@
 
 {% extends 'admin/change_form.html' %}
-{% load i18n admin_static sponsors %}
+{% load i18n static sponsors %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
 
@@ -17,10 +17,15 @@
 {% endblock %}
 
 {% block content %}
-<h1>Approve Sponsorship</h1>
+{% if form.fields.signed_contract %}
+<h1>Upload Finalized Contract</h1>
+{% else %}
+<h1>Generate Contract for Signing</h1>
+{% endif %}
 <p>Please review the sponsorship application and click in the Approve button if you want to proceed.</p>
 <div id="content-main">
-<form action="" method="post" id="new_psf_board_meeting_form">
+
+<form action="" method="post" id="new_psf_board_meeting_form" enctype="multipart/form-data">
 {% csrf_token %}
 
 <pre>{% full_sponsorship sponsorship display_fee=True %}</pre>

@@ -7,10 +7,12 @@ from sponsors.forms import (
     SponsorshiptBenefitsForm,
     SponsorshipApplicationForm,
     Sponsor,
+    SponsorContactForm,
     SponsorContactFormSet,
     SponsorBenefitAdminInlineForm,
     SponsorBenefit,
     Sponsorship,
+    SponsorshipsListForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact
 from .utils import get_static_image_file_as_upload
@@ -84,10 +86,10 @@ class SponsorshiptBenefitsFormTests(TestCase):
             2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map)
         )
         self.assertEqual(
-            sorted(map[benefit_1.id]), sorted([b.id for b in self.program_1_benefits])
+            sorted(map[benefit_1.id]), sorted(b.id for b in self.program_1_benefits)
         )
         self.assertEqual(
-            sorted(map[benefit_2.id]), sorted([b.id for b in self.program_2_benefits])
+            sorted(map[benefit_2.id]), sorted(b.id for b in self.program_2_benefits)
         )
         for b in self.program_1_benefits:
             self.assertEqual(map[b.id], [benefit_1.id])
@@ -389,7 +391,6 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
 
     def test_required_fields_for_new_sponsor_benefit(self):
         required_fields = [
-            "sponsorship_benefit",
             "sponsorship",
             "benefit_internal_value",
         ]
@@ -457,3 +458,40 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
         self.assertEqual(sponsor_benefit.sponsorship_benefit, self.benefit)
         self.assertNotEqual(sponsor_benefit.name, "new name")
         self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
+
+
+class SponsorshipsFormTestCase(TestCase):
+
+    def test_list_all_sponsorships_as_choices_by_default(self):
+        sponsorships = baker.make(Sponsorship, _quantity=3)
+
+        form = SponsorshipsListForm()
+        qs = form.fields["sponsorships"].queryset
+
+        self.assertEqual(3, qs.count())
+        for sponsorship in sponsorships:
+            self.assertIn(sponsorship, qs)
+
+    def test_init_form_from_sponsorship_benefit(self):
+        benefit = baker.make(SponsorshipBenefit)
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship_benefit=benefit)
+        other_benefit = baker.make(SponsorshipBenefit)
+        baker.make(SponsorBenefit, sponsorship_benefit=other_benefit)
+
+        form = SponsorshipsListForm.with_benefit(benefit)
+
+        with self.assertNumQueries(1):
+            qs = list(form.fields["sponsorships"].queryset)
+
+        self.assertEqual(1, len(qs))
+        self.assertIn(sponsor_benefit.sponsorship, qs)
+        self.assertEqual(benefit, form.sponsorship_benefit)
+
+
+class SponsorContactFormTests(TestCase):
+
+    def test_ensure_model_form_configuration(self):
+        expected_fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
+        meta = SponsorContactForm._meta
+        self.assertEqual(set(expected_fields), set(meta.fields))
+        self.assertEqual(SponsorContact, meta.model)

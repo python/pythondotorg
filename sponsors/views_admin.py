@@ -1,16 +1,25 @@
+from django import forms
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
+from django.utils import timezone
+from django.db.models import Q
+from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response
+from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
+from sponsors.models import Sponsorship, SponsorBenefit
 
 
 def preview_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
-    response = render_contract_to_pdf_response(request, contract)
+    format = request.GET.get('format', 'pdf')
+    if format == 'docx':
+        response = render_contract_to_docx_response(request, contract)
+    else:
+        response = render_contract_to_pdf_response(request, contract)
     response["X-Frame-Options"] = "SAMEORIGIN"
     return response
 
@@ -38,9 +47,12 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
 
 
 def approve_sponsorship_view(ModelAdmin, request, pk):
+    """
+    Approves a sponsorship and create an empty contract
+    """
     sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
     initial = {
-        "level_name": sponsorship.level_name,
+        "package": sponsorship.package,
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
@@ -49,7 +61,7 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
     form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
 
     if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
-        form = SponsorshipReviewAdminForm(data=request.POST)
+        form = SponsorshipReviewAdminForm(data=request.POST, force_required=True)
         if form.is_valid():
             kwargs = form.cleaned_data
             kwargs["request"] = request
@@ -58,6 +70,47 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
                 use_case.execute(sponsorship, **kwargs)
                 ModelAdmin.message_user(
                     request, "Sponsorship was approved!", messages.SUCCESS
+                )
+            except InvalidStatusException as e:
+                ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+            redirect_url = reverse(
+                "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+            )
+            return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship, "form": form}
+    return render(request, "sponsors/admin/approve_application.html", context=context)
+
+
+def approve_signed_sponsorship_view(ModelAdmin, request, pk):
+    """
+    Approves a sponsorship and execute contract for existing file
+    """
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    initial = {
+        "package": sponsorship.package,
+        "start_date": sponsorship.start_date,
+        "end_date": sponsorship.end_date,
+        "sponsorship_fee": sponsorship.sponsorship_fee,
+    }
+
+    form = SignedSponsorshipReviewAdminForm(initial=initial, force_required=True)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        form = SignedSponsorshipReviewAdminForm(request.POST, request.FILES, force_required=True)
+        if form.is_valid():
+            kwargs = form.cleaned_data
+            kwargs["request"] = request
+            try:
+                # create the sponsorship + contract
+                use_case = use_cases.ApproveSponsorshipApplicationUseCase.build()
+                sponsorship = use_case.execute(sponsorship, **kwargs)
+                # execute it using existing contract
+                use_case = use_cases.ExecuteExistingContractUseCase.build()
+                use_case.execute(sponsorship.contract, kwargs["signed_contract"], request=request)
+                ModelAdmin.message_user(
+                    request, "Signed sponsorship was approved!", messages.SUCCESS
                 )
             except InvalidStatusException as e:
                 ModelAdmin.message_user(request, str(e), messages.ERROR)
@@ -173,3 +226,41 @@ def nullify_contract_view(ModelAdmin, request, pk):
 
     context = {"contract": contract}
     return render(request, "sponsors/admin/nullify_contract.html", context=context)
+
+@transaction.atomic
+def update_related_sponsorships(ModelAdmin, request, pk):
+    """
+    Given a SponsorshipBeneefit, update all releated SponsorBenefit from
+    the Sponsorship listed in the post payload
+    """
+    benefit = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    initial = {"sponsorships": [sp.pk for sp in benefit.related_sponsorships]}
+    form = SponsorshipsListForm.with_benefit(benefit, initial=initial)
+
+    if request.method == "POST":
+        form = SponsorshipsListForm.with_benefit(benefit, data=request.POST)
+        if form.is_valid():
+            sponsorships = form.cleaned_data["sponsorships"]
+
+            related_benefits = benefit.sponsorbenefit_set.all()
+            for sp in sponsorships:
+                sponsor_benefit = related_benefits.get(sponsorship=sp)
+                sponsor_benefit.delete()
+
+                # recreate sponsor benefit considering updated benefit/feature configs
+                SponsorBenefit.new_copy(
+                    benefit,
+                    sponsorship=sp,
+                    added_by_user=sponsor_benefit.added_by_user
+                )
+
+            ModelAdmin.message_user(
+                request, f"{len(sponsorships)} related sponsorships updated!", messages.SUCCESS
+            )
+            redirect_url = reverse(
+                "admin:sponsors_sponsorshipbenefit_change", args=[benefit.pk]
+            )
+            return redirect(redirect_url)
+
+    context = {"benefit": benefit, "form": form}
+    return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)

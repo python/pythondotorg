@@ -1,5 +1,5 @@
 {% extends 'admin/base_site.html' %}
-{% load i18n admin_static sponsors %}
+{% load i18n static sponsors %}
 
 {% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
 
@@ -25,7 +25,7 @@
 
 <div id="content-main">
 <p><b>Help: </b>If you can't see the document's content above this text, please turn off your webbrowser's extensions which blocks HTML iframes (ad-blocker, ghostery, etc) and reload this page.</p>
-<p>Or you can also open the PDF <a href="{{ contract.preview_url }}" target="_blank">here</a>.</p>
+<p>You can <a href="{{ contract.preview_url }}" target="_blank">open the PDF version</a> or also <a href="{{ contract.preview_url }}?format=docx">download the docx version</a>.</p>
 
 <form action="" method="post" id="new_psf_board_meeting_form">
 {% csrf_token %}

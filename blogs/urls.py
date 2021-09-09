@@ -1,7 +1,6 @@
-from django.conf.urls import url
-
 from . import views
+from django.urls import path
 
 urlpatterns = [
-    url(r'^$', views.BlogHome.as_view(), name='blog'),
+    path('', views.BlogHome.as_view(), name='blog'),
 ]

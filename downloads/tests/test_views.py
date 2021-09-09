@@ -5,6 +5,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase, override_settings
 
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from .base import BaseDownloadTests, DownloadMixin
@@ -90,7 +91,7 @@ class RegressionTests(DownloadMixin, TestCase):
         self.assertEqual(len(response.context['python_files']), 3)
 
 
-class BaseDownloadApiViewsTest(BaseAPITestCase):
+class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
     # This API used by add-to-pydotorg.py in python/release-tools.
     app_label = 'downloads'
 
@@ -101,12 +102,8 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
             password='passworduser',
             is_staff=True,
         )
-        self.staff_key = self.staff_user.api_key.key
-        self.token_header = 'ApiKey'
-        self.Authorization = '%s %s:%s' % (
-            self.token_header, self.staff_user.username, self.staff_key,
-        )
-        self.Authorization_invalid = '%s invalid:token' % self.token_header
+        self.Authorization = f'Token {self.staff_user.api_v2_token}'
+        self.Authorization_invalid = 'Token invalid-token'
 
     def get_json(self, response):
         json_response = response.json()
@@ -438,6 +435,15 @@ class BaseDownloadApiViewsTest(BaseAPITestCase):
 class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
     api_version = 'v1'
 
+    def setUp(self):
+        super().setUp()
+        self.staff_key = self.staff_user.api_key.key
+        self.token_header = 'ApiKey'
+        self.Authorization = '{} {}:{}'.format(
+            self.token_header, self.staff_user.username, self.staff_key,
+        )
+        self.Authorization_invalid = '%s invalid:token' % self.token_header
+
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):
     api_version = 'v2'
@@ -446,14 +452,14 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
         super().setUp()
         self.staff_key = self.staff_user.auth_token.key
         self.token_header = 'Token'
-        self.Authorization = '%s %s' % (self.token_header, self.staff_key)
+        self.Authorization = f'{self.token_header} {self.staff_key}'
         self.Authorization_invalid = '%s invalidtoken' % self.token_header
         self.normal_user = UserFactory(
             username='normaluser',
             password='password',
         )
         self.normal_user_key = self.normal_user.auth_token.key
-        self.Authorization_normal = '%s %s' % (
+        self.Authorization_normal = '{} {}'.format(
             self.token_header, self.normal_user_key,
         )
 

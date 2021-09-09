@@ -5,7 +5,8 @@ from django.conf import settings
 from django.core import mail
 from django.template.loader import render_to_string
 from django.test import TestCase, RequestFactory
-from django.contrib.admin.models import LogEntry, CHANGE
+from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
+from django.contrib.contenttypes.models import ContentType
 
 from sponsors import notifications
 from sponsors.models import Sponsorship, Contract
@@ -190,7 +191,7 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.contract = baker.make_recipe(
             "sponsors.tests.awaiting_signature_contract",
             sponsorship=sponsorship,
-            _fill_optional=["document"],
+            _fill_optional=["document", "document_docx"],
             _create_files=True,
         )
         self.subject_template = "sponsors/email/sponsor_contract_subject.txt"
@@ -210,12 +211,14 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual([self.user.email], email.to)
 
-    def test_attach_contract_pdf(self):
+    def test_attach_contract_pdf_by_default(self):
         self.assertTrue(self.contract.document.name)
         with self.contract.document.open("rb") as fd:
             expected_content = fd.read()
         self.assertTrue(expected_content)
 
+        self.contract.document_docx = None
+        self.contract.save()
         self.contract.refresh_from_db()
         self.notification.notify(contract=self.contract)
         email = mail.outbox[0]
@@ -226,6 +229,22 @@ class ContractNotificationToSponsorsTests(TestCase):
         self.assertEqual(mime, "application/pdf")
         self.assertEqual(content, expected_content)
 
+    def test_attach_contract_docx_if_it_exists(self):
+        self.assertTrue(self.contract.document_docx.name)
+        with self.contract.document_docx.open("rb") as fd:
+            expected_content = fd.read()
+        self.assertTrue(expected_content)
+
+        self.contract.refresh_from_db()
+        self.notification.notify(contract=self.contract)
+        email = mail.outbox[0]
+
+        self.assertEqual(len(email.attachments), 1)
+        name, content, mime = email.attachments[0]
+        self.assertEqual(name, "Contract.docx")
+        self.assertEqual(mime, "application/msword")
+        self.assertEqual(content, expected_content)
+
 
 class SponsorshipApprovalLoggerTests(TestCase):
 
@@ -233,24 +252,34 @@ class SponsorshipApprovalLoggerTests(TestCase):
         self.request = RequestFactory().get('/')
         self.request.user = baker.make(settings.AUTH_USER_MODEL)
         self.sponsorship = baker.make(Sponsorship, status=Sponsorship.APPROVED, sponsor__name='foo', _fill_optional=True)
+        self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship=self.sponsorship)
         self.kwargs = {
             "request": self.request,
             "sponsorship": self.sponsorship,
+            "contract": self.contract
         }
         self.logger = notifications.SponsorshipApprovalLogger()
 
     def test_create_log_entry_for_change_operation_with_approval_message(self):
         self.assertEqual(LogEntry.objects.count(), 0)
+        sponsorship_content_id = ContentType.objects.get_for_model(Sponsorship).pk
+        contract_id = ContentType.objects.get_for_model(Contract).pk
 
         self.logger.notify(**self.kwargs)
 
-        self.assertEqual(LogEntry.objects.count(), 1)
-        log_entry = LogEntry.objects.get()
+        self.assertEqual(LogEntry.objects.count(), 2)
+        log_entry = LogEntry.objects.get(content_type_id=sponsorship_content_id)
         self.assertEqual(log_entry.user, self.request.user)
         self.assertEqual(log_entry.object_id, str(self.sponsorship.pk))
         self.assertEqual(str(self.sponsorship), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
         self.assertEqual(log_entry.change_message, "Sponsorship Approval")
+        log_entry = LogEntry.objects.get(content_type_id=contract_id)
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.contract.pk))
+        self.assertEqual(str(self.contract), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, ADDITION)
+        self.assertEqual(log_entry.change_message, "Created After Sponsorship Approval")
 
 
 class SentContractLoggerTests(TestCase):
@@ -303,6 +332,32 @@ class ExecutedContractLoggerTests(TestCase):
         self.assertEqual(str(self.contract), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
         self.assertEqual(log_entry.change_message, "Contract Executed")
+
+
+class ExecutedExistingContractLoggerTests(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get('/')
+        self.request.user = baker.make(settings.AUTH_USER_MODEL)
+        self.contract = baker.make_recipe('sponsors.tests.empty_contract')
+        self.kwargs = {
+            "request": self.request,
+            "contract": self.contract,
+        }
+        self.logger = notifications.ExecutedExistingContractLogger()
+
+    def test_create_log_entry_for_change_operation_with_approval_message(self):
+        self.assertEqual(LogEntry.objects.count(), 0)
+
+        self.logger.notify(**self.kwargs)
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.contract.pk))
+        self.assertEqual(str(self.contract), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, CHANGE)
+        self.assertEqual(log_entry.change_message, "Existing Contract Uploaded and Executed")
 
 
 class NullifiedContractLoggerTests(TestCase):

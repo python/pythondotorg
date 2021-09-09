@@ -1,9 +1,10 @@
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
+from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.urls import path
+from django.urls import path, reverse
 from django.utils.html import mark_safe
 
 from .models import (
@@ -18,6 +19,7 @@ from .models import (
     Contract,
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
+    TieredQuantityConfiguration,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -37,14 +39,19 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
+    class TieredQuantityConfigurationInline(StackedPolymorphicInline.Child):
+        model = TieredQuantityConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
-        LogoPlacementConfigurationInline
+        LogoPlacementConfigurationInline,
+        TieredQuantityConfigurationInline,
     ]
 
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
+    change_form_template = "sponsors/admin/sponsorshipbenefit_change_form.html"
     inlines = [BenefitFeatureConfigurationInline]
     ordering = ("program", "order")
     list_display = [
@@ -87,11 +94,30 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         ),
     ]
 
+    def get_urls(self):
+        urls = super().get_urls()
+        my_urls = [
+            path(
+                "<int:pk>/update-related-sponsorships",
+                self.admin_site.admin_view(self.update_related_sponsorships),
+                name="sponsors_sponsorshipbenefit_update_related",
+            ),
+        ]
+        return my_urls + urls
+
+    def update_related_sponsorships(self, *args, **kwargs):
+        return views_admin.update_related_sponsorships(self, *args, **kwargs)
+
 
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
     list_display = ["name", "move_up_down_links"]
+
+    def get_readonly_fields(self, request, obj=None):
+        if request.user.is_superuser:
+            return []
+        return ["logo_dimension"]
 
 
 class SponsorContactInline(admin.TabularInline):
@@ -103,6 +129,7 @@ class SponsorContactInline(admin.TabularInline):
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
     inlines = [SponsorContactInline]
+    search_fields = ["name"]
 
 
 class SponsorBenefitInline(admin.TabularInline):
@@ -111,10 +138,8 @@ class SponsorBenefitInline(admin.TabularInline):
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
 
-    def has_add_permission(self, request):
-        # this work around is necessary because the `obj` parameter was added to
-        # InlineModelAdmin.has_add_permission only in Django 2.1.x and we're using 2.0.x
-        has_add_permission = super().has_add_permission(request)
+    def has_add_permission(self, request, obj=None):
+        has_add_permission = super().has_add_permission(request, obj=obj)
         match = request.resolver_match
         if match.url_name == "sponsors_sponsorship_change":
             sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
@@ -132,54 +157,22 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
-class LevelNameFilter(admin.SimpleListFilter):
-    title = "level name"
-    parameter_name = "level"
-
-    def lookups(self, request, model_admin):
-        qs = SponsorshipPackage.objects.all()
-        return list(set([(program.name, program.name) for program in qs]))
-
-    def queryset(self, request, queryset):
-        if self.value() == "all":
-            return queryset
-        if self.value():
-            return queryset.filter(level_name=self.value())
-
-
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline]
+    search_fields = ["sponsor__name"]
     list_display = [
         "sponsor",
         "status",
-        "level_name",
+        "package",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", LevelNameFilter]
-    readonly_fields = [
-        "for_modified_package",
-        "sponsor",
-        "status",
-        "applied_on",
-        "rejected_on",
-        "approved_on",
-        "finalized_on",
-        "get_estimated_cost",
-        "get_sponsor_name",
-        "get_sponsor_description",
-        "get_sponsor_landing_page_url",
-        "get_sponsor_web_logo",
-        "get_sponsor_print_logo",
-        "get_sponsor_primary_phone",
-        "get_sponsor_mailing_address",
-        "get_sponsor_contacts",
-    ]
+    list_filter = ["status", "package"]
 
     fieldsets = [
         (
@@ -188,12 +181,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 "fields": (
                     "sponsor",
                     "status",
+                    "package",
                     "for_modified_package",
-                    "level_name",
                     "sponsorship_fee",
                     "get_estimated_cost",
                     "start_date",
                     "end_date",
+                    "get_contract",
+                    "level_name",
                 ),
             },
         ),
@@ -235,6 +230,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "rejected_on",
             "approved_on",
             "finalized_on",
+            "level_name",
             "get_estimated_cost",
             "get_sponsor_name",
             "get_sponsor_description",
@@ -244,10 +240,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_sponsor_primary_phone",
             "get_sponsor_mailing_address",
             "get_sponsor_contacts",
+            "get_contract",
         ]
 
         if obj and obj.status != Sponsorship.APPLIED:
-            extra = ["start_date", "end_date", "level_name", "sponsorship_fee"]
+            extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
         return readonly_fields
@@ -264,8 +261,15 @@ class SponsorshipAdmin(admin.ModelAdmin):
             cost = intcomma(obj.estimated_cost)
             html = f"{cost} USD <br/><b>Important: </b> {msg}"
         return mark_safe(html)
-
     get_estimated_cost.short_description = "Estimated cost"
+
+    def get_contract(self, obj):
+        if not obj.contract:
+            return "---"
+        url = reverse("admin:sponsors_contract_change", args=[obj.contract.pk])
+        html = f"<a href='{url}' target='_blank'>{obj.contract}</a>"
+        return mark_safe(html)
+    get_contract.short_description = "Contract"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -276,6 +280,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 # group or permission to review sponsorship applications
                 self.admin_site.admin_view(self.reject_sponsorship_view),
                 name="sponsors_sponsorship_reject",
+            ),
+            path(
+                "<int:pk>/approve-existing",
+                self.admin_site.admin_view(self.approve_signed_sponsorship_view),
+                name="sponsors_sponsorship_approve_existing_contract",
             ),
             path(
                 "<int:pk>/approve",
@@ -306,7 +315,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
-        html = f"<img src='{obj.sponsor.web_logo.url}'/>"
+        html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        template = Template(html)
+        context = Context({'sponsor': obj.sponsor})
+        html = template.render(context)
         return mark_safe(html)
 
     get_sponsor_web_logo.short_description = "Web Logo"
@@ -315,7 +327,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
         img = obj.sponsor.print_logo
         html = ""
         if img:
-            html = f"<img src='{img.url}'/>"
+            html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+            template = Template(html)
+            context = Context({'img': img})
+            html = template.render(context)
         return mark_safe(html) if html else "---"
 
     get_sponsor_print_logo.short_description = "Print Logo"
@@ -374,6 +389,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
     def approve_sponsorship_view(self, request, pk):
         return views_admin.approve_sponsorship_view(self, request, pk)
 
+    def approve_signed_sponsorship_view(self, request, pk):
+        return views_admin.approve_signed_sponsorship_view(self, request, pk)
+
 
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
@@ -406,7 +424,7 @@ class ContractModelAdmin(admin.ModelAdmin):
         (
             "Info",
             {
-                "fields": ("sponsorship", "status", "revision"),
+                "fields": ("get_sponsorship_url", "status", "revision"),
             },
         ),
         (
@@ -425,6 +443,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "document",
+                    "document_docx",
                     "signed_document",
                 )
             },
@@ -451,6 +470,8 @@ class ContractModelAdmin(admin.ModelAdmin):
             "sponsorship",
             "revision",
             "document",
+            "document_docx",
+            "get_sponsorship_url",
         ]
 
         if obj and not obj.is_draft:
@@ -480,8 +501,16 @@ class ContractModelAdmin(admin.ModelAdmin):
         if url and msg:
             html = f'<a href="{url}" target="_blank">{msg}</a>'
         return mark_safe(html)
-
     document_link.short_description = "Contract document"
+
+
+    def get_sponsorship_url(self, obj):
+        if not obj.sponsorship:
+            return "---"
+        url = reverse("admin:sponsors_sponsorship_change", args=[obj.sponsorship.pk])
+        html = f"<a href='{url}' target='_blank'>{obj.sponsorship}</a>"
+        return mark_safe(html)
+    get_sponsorship_url.short_description = "Sponsorship"
 
     def get_urls(self):
         urls = super().get_urls()

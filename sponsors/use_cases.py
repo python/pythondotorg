@@ -1,6 +1,6 @@
 from sponsors import notifications
 from sponsors.models import Sponsorship, Contract
-from sponsors.pdf import render_contract_to_pdf_file
+from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
 
 
 class BaseUseCaseWithNotifications:
@@ -50,10 +50,11 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, sponsorship, start_date, end_date, **kwargs):
         sponsorship.approve(start_date, end_date)
-        level_name = kwargs.get("level_name")
+        package = kwargs.get("package")
         fee = kwargs.get("sponsorship_fee")
-        if level_name:
-            sponsorship.level_name = level_name
+        if package:
+            sponsorship.package = package
+            sponsorship.level_name = package.name
         if fee:
             sponsorship.sponsorship_fee = fee
 
@@ -82,7 +83,8 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, contract, **kwargs):
         pdf_file = render_contract_to_pdf_file(contract)
-        contract.set_final_version(pdf_file)
+        docx_file = render_contract_to_docx_file(contract)
+        contract.set_final_version(pdf_file, docx_file)
         self.notify(
             request=kwargs.get("request"),
             contract=contract,
@@ -96,6 +98,20 @@ class ExecuteContractUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, contract, **kwargs):
         contract.execute()
+        self.notify(
+            request=kwargs.get("request"),
+            contract=contract,
+        )
+
+
+class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.ExecutedExistingContractLogger(),
+    ]
+
+    def execute(self, contract, contract_file, **kwargs):
+        contract.signed_document = contract_file
+        contract.execute(force=True)
         self.notify(
             request=kwargs.get("request"),
             contract=contract,

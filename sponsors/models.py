@@ -1,12 +1,11 @@
+import uuid
 from abc import ABC
-from pathlib import Path
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
-from django.core.files.storage import default_storage
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import Sum
+from django.db.models import Sum, Subquery
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -15,16 +14,22 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 from allauth.account.admin import EmailAddress
 from django_countries.fields import CountryField
+from pathlib import Path
 from polymorphic.models import PolymorphicModel
 
 from cms.models import ContentManageable
 from .enums import LogoPlacementChoices, PublisherChoices
-from .managers import SponsorContactQuerySet, SponsorshipQuerySet, SponsorshipBenefitManager
+from .managers import (
+    SponsorContactQuerySet,
+    SponsorshipQuerySet,
+    SponsorshipBenefitManager,
+)
 from .exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
     SponsorshipInvalidDateRangeException,
 )
+from .utils import file_from_storage
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -33,8 +38,10 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
+    logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control logos dimensions at sponsors page")
 
     def __str__(self):
         return self.name
@@ -49,9 +56,9 @@ class SponsorshipPackage(OrderedModel):
         pkg_benefits_with_conflicts = set(self.benefits.with_conflicts())
 
         # check if all packages' benefits without conflict are present in benefits list
-        from_pkg_benefits = set(
-            [b for b in benefits if b not in pkg_benefits_with_conflicts]
-        )
+        from_pkg_benefits = {
+            b for b in benefits if b not in pkg_benefits_with_conflicts
+        }
         if from_pkg_benefits != set(self.benefits.without_conflicts()):
             return True
 
@@ -78,6 +85,7 @@ class SponsorshipProgram(OrderedModel):
     """
     Possible programs that a benefit belongs to (Foundation, Pypi, etc)
     """
+
     name = models.CharField(max_length=64)
     description = models.TextField(null=True, blank=True)
 
@@ -93,6 +101,7 @@ class SponsorshipBenefit(OrderedModel):
     Benefit that sponsors can pick which are organized under
     package and program.
     """
+
     objects = SponsorshipBenefitManager()
 
     # Public facing
@@ -211,14 +220,29 @@ class SponsorshipBenefit(OrderedModel):
     def features_config(self):
         return self.benefitfeatureconfiguration_set
 
+    @property
+    def related_sponsorships(self):
+        ids_qs = self.sponsorbenefit_set.values_list("sponsorship__pk", flat=True)
+        return Sponsorship.objects.filter(id__in=Subquery(ids_qs))
+
     def __str__(self):
         return f"{self.program} > {self.name}"
 
     def _short_name(self):
         return truncatechars(self.name, 42)
 
+    def name_for_display(self, package=None):
+        name = self.name
+        for feature in self.features_config.all():
+            name = feature.display_modifier(name, package=package)
+        return name
+
     _short_name.short_description = "Benefit Name"
     short_name = property(_short_name)
+
+    @cached_property
+    def has_tiers(self):
+        return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
 
     class Meta(OrderedModel.Meta):
         pass
@@ -238,10 +262,16 @@ class SponsorContact(models.Model):
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
     )  # Optionally related to a User! (This needs discussion)
     primary = models.BooleanField(
-        default=False, help_text="If this is the primary contact for the sponsor"
+        default=False,
+        help_text="The primary contact for a sponsorship will be responsible for managing deliverables we need to fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship."
     )
     administrative = models.BooleanField(
-        default=False, help_text="If this is an administrative contact for the sponsor"
+        default=False,
+        help_text="Administrative contacts will only be notified regarding contracts."
+    )
+    accounting = models.BooleanField(
+        default=False,
+        help_text="Accounting contacts will only be notified regarding invoices and payments."
     )
     manager = models.BooleanField(
         default=False,
@@ -301,8 +331,22 @@ class Sponsorship(models.Model):
         default=False,
         help_text="If true, it means the user customized the package's benefits.",
     )
-    level_name = models.CharField(max_length=64, default="")
+    level_name_old = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed after manual data sanity check.", verbose_name="Level name")
+    package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
+
+    class Meta:
+        permissions = [
+            ("sponsor_publisher", "Can access sponsor placement API"),
+        ]
+
+    @property
+    def level_name(self):
+        return self.package.name if self.package else self.level_name_old
+
+    @level_name.setter
+    def level_name(self, value):
+        self.level_name_old = value
 
     def __str__(self):
         repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
@@ -336,6 +380,7 @@ class Sponsorship(models.Model):
             submited_by=submited_by,
             sponsor=sponsor,
             level_name="" if not package else package.name,
+            package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
         )
@@ -360,7 +405,7 @@ class Sponsorship(models.Model):
     @property
     def verbose_sponsorship_fee(self):
         if self.sponsorship_fee is None:
-          return 0
+            return 0
         return num2words(self.sponsorship_fee)
 
     @property
@@ -369,9 +414,8 @@ class Sponsorship(models.Model):
         if self.status in valid_status:
             return self.sponsorship_fee
         try:
-            package = SponsorshipPackage.objects.get(name=self.level_name)
             benefits = [sb.sponsorship_benefit for sb in self.package_benefits.all().select_related('sponsorship_benefit')]
-            if package and not package.has_user_customization(benefits):
+            if self.package and not self.package.has_user_customization(benefits):
                 return self.sponsorship_fee
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
@@ -465,6 +509,7 @@ class SponsorBenefit(OrderedModel):
     Link a benefit to a sponsorship application.
     Created after a new sponsorship
     """
+
     sponsorship = models.ForeignKey(
         Sponsorship, on_delete=models.CASCADE, related_name="benefits"
     )
@@ -533,7 +578,8 @@ class SponsorBenefit(OrderedModel):
         # generate benefit features from benefit features configurations
         for feature_config in benefit.features_config.all():
             feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
-            feature.save()
+            if feature is not None:
+                feature.save()
 
         return sponsor_benefit
 
@@ -542,6 +588,13 @@ class SponsorBenefit(OrderedModel):
         if self.sponsorship_benefit is not None:
             return self.sponsorship_benefit.legal_clauses.all()
         return []
+
+    @property
+    def name_for_display(self):
+        name = self.name
+        for feature in self.features.all():
+            name = feature.display_modifier(name)
+        return name
 
     class Meta(OrderedModel.Meta):
         pass
@@ -660,6 +713,16 @@ class LegalClause(OrderedModel):
         pass
 
 
+def signed_contract_random_path(instance, filename):
+    """
+    Use random UUID to name signed contracts
+    """
+    dir = instance.SIGNED_PDF_DIR
+    ext = "".join(Path(filename).suffixes)
+    name = uuid.uuid4()
+    return f"{dir}{name}{ext}"
+
+
 class Contract(models.Model):
     """
     Contract model to oficialize a Sponsorship
@@ -679,7 +742,8 @@ class Contract(models.Model):
         (NULLIFIED, "Nullified"),
     ]
 
-    FINAL_VERSION_PDF_DIR = "sponsors/statmentes_of_work/"
+    FINAL_VERSION_PDF_DIR = "sponsors/contracts/"
+    FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
     status = models.CharField(
@@ -691,8 +755,13 @@ class Contract(models.Model):
         blank=True,
         verbose_name="Unsigned PDF",
     )
+    document_docx = models.FileField(
+        upload_to=FINAL_VERSION_DOCX_DIR,
+        blank=True,
+        verbose_name="Unsigned Docx",
+    )
     signed_document = models.FileField(
-        upload_to=SIGNED_PDF_DIR,
+        upload_to=signed_contract_random_path,
         blank=True,
         verbose_name="Signed PDF",
     )
@@ -754,12 +823,12 @@ class Contract(models.Model):
 
         benefits = sponsorship.benefits.all()
         # must query for Legal Clauses again to respect model's ordering
-        clauses_ids = [c.id for c in chain(*[b.legal_clauses for b in benefits])]
+        clauses_ids = [c.id for c in chain(*(b.legal_clauses for b in benefits))]
         legal_clauses = list(LegalClause.objects.filter(id__in=clauses_ids))
 
         benefits_list = []
         for benefit in benefits:
-            item = f"- {benefit.program_name} - {benefit.name}"
+            item = f"- {benefit.program_name} - {benefit.name_for_display}"
             index_str = ""
             for legal_clause in benefit.legal_clauses:
                 index = legal_clauses.index(legal_clause) + 1
@@ -807,36 +876,35 @@ class Contract(models.Model):
             self.revision += 1
         return super().save(**kwargs)
 
-    def set_final_version(self, pdf_file):
+    def set_final_version(self, pdf_file, docx_file=None):
         if self.AWAITING_SIGNATURE not in self.next_status:
             msg = f"Can't send a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
-        path = f"{self.FINAL_VERSION_PDF_DIR}"
         sponsor = self.sponsorship.sponsor.name.upper()
-        filename = f"{path}SoW: {sponsor}.pdf"
 
-        mode = "wb"
-        try:
-            # if using S3 Storage the file will always exist
-            file = default_storage.open(filename, mode)
-        except FileNotFoundError as e:
-            # local env, not using S3
-            path = Path(e.filename).parent
-            if not path.exists():
-                path.mkdir(parents=True)
-            Path(e.filename).touch()
-            file = default_storage.open(filename, mode)
-
+        # save contract as PDF file
+        path = f"{self.FINAL_VERSION_PDF_DIR}"
+        pdf_filename = f"{path}SoW: {sponsor}.pdf"
+        file = file_from_storage(pdf_filename, mode="wb")
         file.write(pdf_file)
         file.close()
+        self.document = pdf_filename
 
-        self.document = filename
+        # save contract as docx file
+        if docx_file:
+            path = f"{self.FINAL_VERSION_DOCX_DIR}"
+            docx_filename = f"{path}SoW: {sponsor}.docx"
+            file = file_from_storage(docx_filename, mode="wb")
+            file.write(docx_file)
+            file.close()
+            self.document_docx = docx_filename
+
         self.status = self.AWAITING_SIGNATURE
         self.save()
 
-    def execute(self, commit=True):
-        if self.EXECUTED not in self.next_status:
+    def execute(self, commit=True, force=False):
+        if not force and self.EXECUTED not in self.next_status:
             msg = f"Can't execute a {self.get_status_display()} contract."
             raise InvalidStatusException(msg)
 
@@ -878,12 +946,21 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
+class BaseTieredQuantity(models.Model):
+    package = models.ForeignKey(SponsorshipPackage, on_delete=models.CASCADE)
+    quantity = models.PositiveIntegerField()
+
+    class Meta:
+        abstract = True
+
+
 ######################################################
 ##### SponsorshipBenefit features configuration models
 class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
     """
+
     benefit = models.ForeignKey(SponsorshipBenefit, on_delete=models.CASCADE)
 
     class Meta:
@@ -898,9 +975,10 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature(self, **kwargs):
+    def get_benefit_feature_kwargs(self, **kwargs):
         """
-        Returns an instance of a configured type of BenefitFeature
+        Return kwargs dict to initialize the benefit feature.
+        If the benefit should not be created, return None instead.
         """
         # Get all fields from benefit feature configuration base model
         base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
@@ -913,8 +991,20 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
                 continue
             kwargs[field.name] = getattr(self, field.name)
+        return kwargs
+
+    def get_benefit_feature(self, **kwargs):
+        """
+        Returns an instance of a configured type of BenefitFeature
+        """
         BenefitFeatureClass = self.benefit_feature_class
+        kwargs = self.get_benefit_feature_kwargs(**kwargs)
+        if kwargs is None:
+            return None
         return BenefitFeatureClass(**kwargs)
+
+    def display_modifier(self, name, **kwargs):
+        return name
 
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
@@ -934,17 +1024,48 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
+class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguration):
+    """
+    Configuration for tiered quantities among packages
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Tiered Benefit Configuration"
+        verbose_name_plural = "Tiered Benefit Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return TieredQuantity
+
+    def get_benefit_feature_kwargs(self, **kwargs):
+        if kwargs["sponsor_benefit"].sponsorship.package == self.package:
+            return super().get_benefit_feature_kwargs(**kwargs)
+        return None
+
+    def __str__(self):
+        return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
+
+    def display_modifier(self, name, **kwargs):
+        if kwargs.get("package") != self.package:
+            return name
+        return f"{name} ({self.quantity})"
+
+
 ####################################
 ##### SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+
     sponsor_benefit = models.ForeignKey(SponsorBenefit, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Benefit Feature"
         verbose_name_plural = "Benefit Features"
+
+    def display_modifier(self, name, **kwargs):
+        return name
 
 
 class LogoPlacement(BaseLogoPlacement, BenefitFeature):
@@ -958,3 +1079,19 @@ class LogoPlacement(BaseLogoPlacement, BenefitFeature):
 
     def __str__(self):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+
+
+class TieredQuantity(BaseTieredQuantity, BenefitFeature):
+    """
+    Tiered Quantity feature for sponsor benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+        verbose_name = "Tiered Quantity"
+        verbose_name_plural = "Tiered Quantities"
+
+    def display_modifier(self, name, **kwargs):
+        return f"{name} ({self.quantity})"
+
+    def __str__(self):
+        return f"{self.quantity} of {self.benefit} for {self.package}"
