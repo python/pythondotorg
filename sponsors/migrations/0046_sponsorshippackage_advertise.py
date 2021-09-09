@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AddField(
             model_name='sponsorshippackage',
-            name='advertisable',
-            field=models.BooleanField(default=False, help_text='If checked, this package will be available in sponsosrhip applications'),
+            name='advertise',
+            field=models.BooleanField(default=False, help_text='If checked, this package will be advertised in the sponsosrhip application'),
         ),
     ]

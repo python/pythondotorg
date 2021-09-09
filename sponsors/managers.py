@@ -71,4 +71,4 @@ class SponsorshipBenefitManager(OrderedModelManager):
 
 class SponsorshipPackageManager(OrderedModelManager):
     def list_advertisables(self):
-        return self.filter(advertisable=True)
+        return self.filter(advertise=True)

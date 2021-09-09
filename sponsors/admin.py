@@ -112,8 +112,8 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
-    list_display = ["name", "advertisable", "move_up_down_links"]
-    list_filter = ["advertisable"]
+    list_display = ["name", "advertise", "move_up_down_links"]
+    list_filter = ["advertise"]
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
