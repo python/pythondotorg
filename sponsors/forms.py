@@ -376,8 +376,6 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        if "benefit_internal_value" in self.fields:
-            self.fields["benefit_internal_value"].required = True
 
     class Meta:
         model = SponsorBenefit

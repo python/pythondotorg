@@ -401,7 +401,6 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
     def test_required_fields_for_new_sponsor_benefit(self):
         required_fields = [
             "sponsorship",
-            "benefit_internal_value",
         ]
 
         form = SponsorBenefitAdminInlineForm({})
