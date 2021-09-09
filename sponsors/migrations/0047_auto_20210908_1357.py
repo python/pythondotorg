@@ -12,7 +12,7 @@ def update_package_as_advertisable(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('sponsors', '0045_sponsorshippackage_advertisable'),
+        ('sponsors', '0046_sponsorshippackage_advertisable'),
     ]
 
     operations = [
