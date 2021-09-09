@@ -23,6 +23,7 @@ from .managers import (
     SponsorContactQuerySet,
     SponsorshipQuerySet,
     SponsorshipBenefitManager,
+    SponsorshipPackageManager
 )
 from .exceptions import (
     SponsorWithExistingApplicationException,
@@ -38,9 +39,11 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
+    objects = SponsorshipPackageManager()
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
+    advertise = models.BooleanField(default=False, blank=True, help_text="If checked, this package will be advertised in the sponsosrhip application")
     logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control logos dimensions at sponsors page")
 
     def __str__(self):

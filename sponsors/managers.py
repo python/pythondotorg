@@ -67,3 +67,8 @@ class SponsorshipBenefitManager(OrderedModelManager):
             .exclude(num_packages=0)
             .order_by("-num_packages", "order")
         )
+
+
+class SponsorshipPackageManager(OrderedModelManager):
+    def list_advertisables(self):
+        return self.filter(advertise=True)

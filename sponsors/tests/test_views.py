@@ -35,9 +35,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5
         )
-        self.package = baker.make("sponsors.SponsorshipPackage")
+        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
         self.package.benefits.add(*self.program_1_benefits)
-        package_2 = baker.make("sponsors.SponsorshipPackage")
+        package_2 = baker.make("sponsors.SponsorshipPackage", advertise=True)
         package_2.benefits.add(*self.program_2_benefits)
         self.add_on_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=2
@@ -61,8 +61,8 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         session.save()
 
     def test_display_template_with_form_and_context(self):
-        psf_package = baker.make("sponsors.SponsorshipPackage")
-        extra_package = baker.make("sponsors.SponsorshipPackage")
+        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        extra_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
 
         r = self.client.get(self.url)
         packages = r.context["sponsorship_packages"]
@@ -103,7 +103,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertEqual(self.data, r.context["form"].initial)
 
     def test_capacity_flag(self):
-        psf_package = baker.make("sponsors.SponsorshipPackage")
+        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
         r = self.client.get(self.url)
         self.assertEqual(False, r.context["capacities_met"])
 
@@ -111,7 +111,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         at_capacity_benefit = baker.make(
             SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
         )
-        psf_package = baker.make("sponsors.SponsorshipPackage")
+        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
 
         r = self.client.get(self.url)
         self.assertEqual(True, r.context["capacities_met"])
@@ -149,7 +149,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.program_1_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=3
         )
-        self.package = baker.make("sponsors.SponsorshipPackage")
+        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
         for benefit in self.program_1_benefits:
             benefit.packages.add(self.package)
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
