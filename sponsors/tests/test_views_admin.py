@@ -14,7 +14,7 @@ from django.test import TestCase
 from django.urls import reverse
 
 from .utils import assertMessage
-from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit
+from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
 from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
 
 
@@ -890,3 +890,43 @@ class PreviewContractViewTests(TestCase):
         self.assertEqual(mocked_render.call_count, 1)
         self.assertEqual(mocked_render.call_args[0][1], self.contract)
         self.assertIsInstance(mocked_render.call_args[0][0], WSGIRequest)
+
+
+class PreviewSponsorEmailNotificationTemplateTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsor_notification = baker.make(SponsorEmailNotificationTemplate, content="{{'content'|upper}}")
+        self.url = self.sponsor_notification.preview_content_url
+
+    def test_display_content_on_response(self):
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(b"CONTENT", response.content)
+
+    def test_404_if_template_does_not_exist(self):
+        self.sponsor_notification.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
