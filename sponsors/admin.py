@@ -7,6 +7,7 @@ from django.contrib.humanize.templatetags.humanize import intcomma
 from django.urls import path, reverse
 from django.utils.html import mark_safe
 
+from mailing.admin import BaseEmailTemplateAdmin
 from .models import (
     SponsorshipPackage,
     SponsorshipProgram,
@@ -20,6 +21,7 @@ from .models import (
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
     TieredQuantityConfiguration,
+    SponsorEmailNotificationTemplate,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -551,3 +553,8 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def nullify_contract_view(self, request, pk):
         return views_admin.nullify_contract_view(self, request, pk)
+
+
+@admin.register(SponsorEmailNotificationTemplate)
+class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
+    pass
