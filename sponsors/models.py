@@ -1,5 +1,4 @@
 import uuid
-from abc import ABC
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
@@ -17,6 +16,7 @@ from django_countries.fields import CountryField
 from pathlib import Path
 from polymorphic.models import PolymorphicModel
 
+from mailing.models import BaseEmailTemplate
 from cms.models import ContentManageable
 from .enums import LogoPlacementChoices, PublisherChoices
 from .managers import (
@@ -927,6 +927,15 @@ class Contract(models.Model):
         if commit:
             self.sponsorship.save()
             self.save()
+
+
+#################################
+##### Sponsor Email Notifications
+class SponsorEmailNotificationTemplate(BaseEmailTemplate):
+
+    class Meta:
+        verbose_name = "Sponsor Email Notification Template"
+        verbose_name_plural = "Sponsor Email Notification Templates"
 
 
 ########################################
