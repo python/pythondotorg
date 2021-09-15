@@ -177,6 +177,7 @@ INSTALLED_APPS = [
     'downloads',
     'events',
     'jobs',
+    'mailing',
     'minutes',
     'nominations',
     'pages',
