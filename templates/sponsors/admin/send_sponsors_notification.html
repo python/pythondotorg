@@ -18,9 +18,10 @@
 <h1>Send notifications</h1>
 <p>Please review the sponsorships application list bellow, select a notification template to use and click in the Send button to dispatch the emails.</p>
 
-{% if ignore %}
+{% if to_ignore %}
 <p><small><b>Important:</b> the following sponsorships were previous selected but don't have benefits which have the targetable email configuration. Because of that, they'll be ignored by the email sending:
-{% for obj in to_notify %}
+<br/>
+{% for obj in to_ignore %}
   <span >{{ obj }}</span><br>
 {% endfor %}
 </small>

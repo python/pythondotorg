@@ -271,7 +271,7 @@ def update_related_sponsorships(ModelAdmin, request, pk):
 ### CUSTOM ACTIONS
 def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     to_notify = queryset.includes_benefit_feature(EmailTargetable)
-    ignore = queryset.exclude(id__in=to_notify.values_list("id", flat=True))
+    to_ignore = queryset.exclude(id__in=to_notify.values_list("id", flat=True))
 
     if request.method.upper() == "POST" and "confirm" in request.POST:
         form = SponsorEmailNotificationTemplateListForm(request.POST)
@@ -286,5 +286,5 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     else:
         form = SponsorEmailNotificationTemplateListForm()
 
-    context = {"to_notify": to_notify, "ignore": ignore, "form":form}
+    context = {"to_notify": to_notify, "to_ignore": to_ignore, "form":form}
     return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)

@@ -960,8 +960,8 @@ class SendSponsorshipNotificationTests(TestCase):
         self.assertEqual(request, request)
         self.assertEqual("sponsors/admin/send_sponsors_notification.html", template)
         self.assertEqual([self.sponsorship], list(context["to_notify"]))
-        self.assertEqual(2, len(context["ignore"]))
-        self.assertNotIn(self.sponsorship, context["ignore"])
+        self.assertEqual(2, len(context["to_ignore"]))
+        self.assertNotIn(self.sponsorship, context["to_ignore"])
         self.assertIsInstance(context["form"], SponsorEmailNotificationTemplateListForm)
 
     @patch("sponsors.views_admin.render")
