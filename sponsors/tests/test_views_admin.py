@@ -975,3 +975,14 @@ class SendSponsorshipNotificationTests(TestCase):
         form = context["form"]
 
         self.assertIn("notification", form.errors)
+
+    def test_redirect_if_none_of_selected_sponsorships_are_targetable(self):
+        self.sponsorship.delete()
+        request = self.request_factory.post("/", data={"confirm": "yes"})
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        expected_url = reverse("admin:sponsors_sponsorship_changelist")
+
+        self.assertEqual(302, resp.status_code)
+        self.assertEqual(expected_url, resp["Location"])
