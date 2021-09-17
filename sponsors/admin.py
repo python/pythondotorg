@@ -5,6 +5,7 @@ from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.urls import path, reverse
+from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
@@ -18,6 +19,7 @@ from .models import (
     SponsorBenefit,
     LegalClause,
     Contract,
+    BenefitFeature,
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
     TieredQuantityConfiguration,
@@ -170,6 +172,27 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
+class BenefitFeatureFilter(admin.SimpleListFilter):
+    title = "benefits' feature"
+    parameter_name = 'feature'
+
+    @cached_property
+    def features(self):
+        features_types = BenefitFeature.__subclasses__()
+        return {feature._meta.model_name: feature for feature in features_types}
+
+    def lookups(self, request, model_admin):
+        return [
+          (k, f._meta.verbose_name) for k, f in self.features.items()
+        ]
+
+    def queryset(self, request, queryset):
+        feature = self.features.get(self.value())
+        if not feature:
+            return queryset
+        return queryset.includes_benefit_feature(feature)
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -185,7 +208,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", "package"]
+    list_filter = ["status", "package", BenefitFeatureFilter]
 
     fieldsets = [
         (

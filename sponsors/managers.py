@@ -1,3 +1,4 @@
+from polymorphic.managers import PolymorphicManager
 from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
@@ -39,6 +40,12 @@ class SponsorshipQuerySet(QuerySet):
             feature_qs = feature_qs.filter(logo_place=logo_place)
         if publisher:
             feature_qs = feature_qs.filter(publisher=publisher)
+        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
+        return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+
+    def includes_benefit_feature(self, feature_model):
+        from sponsors.models import SponsorBenefit
+        feature_qs = feature_model.objects.all()
         benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
