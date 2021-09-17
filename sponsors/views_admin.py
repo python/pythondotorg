@@ -284,13 +284,13 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     if request.method.upper() == "POST" and "confirm" in request.POST:
         form = SponsorEmailNotificationTemplateListForm(request.POST)
         if form.is_valid():
-            print("Sending email")  # TODO
+            use_case = use_cases.SendSponsorshipNotificationUseCase.build()
+            use_case.execute(form.cleaned_data["notification"], to_notify, request=request)
             ModelAdmin.message_user(
                 request, "Notifications were sent!", messages.SUCCESS
             )
 
-            url = reverse("admin:sponsors_sponsorship_changelist")
-            return redirect(url)
+            return redirect(redirect_url)
     else:
         form = SponsorEmailNotificationTemplateListForm()
 

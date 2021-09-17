@@ -129,3 +129,8 @@ class NullifyContractUseCase(BaseUseCaseWithNotifications):
             request=kwargs.get("request"),
             contract=contract,
         )
+
+
+class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
+    def execute(self, notification, sponsorships, **kwargs):
+        pass

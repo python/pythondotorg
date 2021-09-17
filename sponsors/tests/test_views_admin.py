@@ -17,6 +17,7 @@ from .utils import assertMessage
 from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
 from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SponsorEmailNotificationTemplateListForm
 from sponsors.views_admin import send_sponsorship_notifications_action
+from sponsors.use_cases import SendSponsorshipNotificationUseCase
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -986,3 +987,25 @@ class SendSponsorshipNotificationTests(TestCase):
 
         self.assertEqual(302, resp.status_code)
         self.assertEqual(expected_url, resp["Location"])
+
+    @patch.object(SendSponsorshipNotificationUseCase, "build")
+    def test_call_use_case_and_redirect_with_success(self, mock_build):
+        notification = baker.make("SponsorEmailNotificationTemplate")
+        mocked_uc = Mock(SendSponsorshipNotificationUseCase, autospec=True)
+        mock_build.return_value = mocked_uc
+        data = {"confirm": "yes", "notification": notification.pk}
+        request = self.request_factory.post("/", data=data)
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        expected_url = reverse("admin:sponsors_sponsorship_changelist")
+
+        self.assertEqual(302, resp.status_code)
+        self.assertEqual(expected_url, resp["Location"])
+        mock_build.assert_called_once_with()
+        self.assertEqual(1, mocked_uc.execute.call_count)
+        call_notification, call_sponsorships = mocked_uc.execute.call_args[0]
+        call_request = mocked_uc.execute.call_args[1]["request"]
+        self.assertEqual(request, call_request)
+        self.assertEqual(notification, call_notification)
+        self.assertEqual([self.sponsorship], list(call_sponsorships))
