@@ -966,6 +966,11 @@ class BaseTieredQuantity(models.Model):
         abstract = True
 
 
+class BaseEmailTargetable(models.Model):
+
+    class Meta:
+        abstract = True
+
 ######################################################
 ##### SponsorshipBenefit features configuration models
 class BenefitFeatureConfiguration(PolymorphicModel):
@@ -1063,6 +1068,23 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return f"{name} ({self.quantity})"
 
 
+class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfiguration):
+    """
+    Configuration for email targeatable benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Email Targetable Configuration"
+        verbose_name_plural = "Email Targetable Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return EmailTargetable
+
+    def __str__(self):
+        return f"Email targeatable configuration"
+
+
 ####################################
 ##### SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -1107,3 +1129,16 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
 
     def __str__(self):
         return f"{self.quantity} of {self.benefit} for {self.package}"
+
+
+class EmailTargetable(BaseEmailTargetable, BenefitFeature):
+    """
+    For email targeatable benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+        verbose_name = "Email Targetable Benefit"
+        verbose_name_plural = "Email Targetable Benefits"
+
+    def __str__(self):
+        return f"Email targeatable"

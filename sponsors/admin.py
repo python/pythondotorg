@@ -21,6 +21,7 @@ from .models import (
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
     TieredQuantityConfiguration,
+    EmailTargetableConfiguration,
     SponsorEmailNotificationTemplate,
 )
 from sponsors import views_admin
@@ -44,10 +45,18 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class TieredQuantityConfigurationInline(StackedPolymorphicInline.Child):
         model = TieredQuantityConfiguration
 
+    class EmailTargetableConfigurationInline(StackedPolymorphicInline.Child):
+        model = EmailTargetableConfiguration
+        readonly_fields = ["display"]
+
+        def display(self, obj):
+            return "Enabled"
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
         TieredQuantityConfigurationInline,
+        EmailTargetableConfigurationInline,
     ]
 
 
