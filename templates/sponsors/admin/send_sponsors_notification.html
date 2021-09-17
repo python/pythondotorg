@@ -1,0 +1,57 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n static sponsors %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Send notifications | python.org{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+  <a href="{% url 'admin:sponsors_sponsorship_changelist' %}">{% trans 'Sponsorship' %}</a> &gt
+  {% trans 'Send notifications' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Send notifications</h1>
+<p>Please review the sponsorships application list bellow, select a notification template to use and click in the Send button to dispatch the emails.</p>
+
+{% if ignore %}
+<p><small><b>Important:</b> the following sponsorships were previous selected but don't have benefits which have the targetable email configuration. Because of that, they'll be ignored by the email sending:
+{% for obj in to_notify %}
+  <span >{{ obj }}</span><br>
+{% endfor %}
+</small>
+</p>
+
+<hr/>
+<br/>
+{% endif %}
+
+<div id="content-main">
+
+<form action="" method="post">
+{% csrf_token %}
+<input name="action" value="send_notifications" type="hidden"/>
+
+{% for obj in to_notify %}
+  <input name="_selected_action" value="{{ obj.pk }}" type="checkbox" checked/><label>  {{ obj }}</label><br>
+{% endfor %}
+
+<br/>
+
+{{ form.as_p }}
+
+<br/>
+
+<input name="confirm" value="yes" style="display:none">
+<div class="submit-row">
+  <input type="submit" value="Send" class="default">
+</div>
+
+</form>
+<div>
+</div>
+{% endblock %}

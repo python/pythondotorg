@@ -2,7 +2,7 @@ import io
 import json
 from model_bakery import baker
 from datetime import date, timedelta
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, Mock
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,12 +10,13 @@ from django.contrib.messages import get_messages
 from django.core import mail
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
 from .utils import assertMessage
 from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SponsorEmailNotificationTemplateListForm
+from sponsors.views_admin import send_sponsorship_notifications_action
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -930,3 +931,47 @@ class PreviewSponsorEmailNotificationTemplateTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+#######################
+### TEST CUSTOM ACTIONS
+class SendSponsorshipNotificationTests(TestCase):
+
+    def setUp(self):
+        self.request_factory = RequestFactory()
+        baker.make(Sponsorship, _quantity=3, sponsor__name='foo')
+        self.sponsorship = Sponsorship.objects.all()[0]
+        baker.make('sponsors.EmailTargetable', sponsor_benefit__sponsorship=self.sponsorship)
+        self.queryset = Sponsorship.objects.all()
+        self.user = baker.make("users.User")
+
+    @patch("sponsors.views_admin.render")
+    def test_render_template_and_context_as_expected(self, mocked_render):
+        mocked_render.return_value = "HTTP Response"
+        request = self.request_factory.post("/", data={})
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+
+        self.assertEqual("HTTP Response", resp)
+        self.assertEqual(1, mocked_render.call_count)
+        ret_request, template = mocked_render.call_args[0]
+        context = mocked_render.call_args[1]["context"]
+        self.assertEqual(request, request)
+        self.assertEqual("sponsors/admin/send_sponsors_notification.html", template)
+        self.assertEqual([self.sponsorship], list(context["to_notify"]))
+        self.assertEqual(2, len(context["ignore"]))
+        self.assertNotIn(self.sponsorship, context["ignore"])
+        self.assertIsInstance(context["form"], SponsorEmailNotificationTemplateListForm)
+
+    @patch("sponsors.views_admin.render")
+    def test_render_form_error_if_invalid(self, mocked_render):
+        mocked_render.return_value = "HTTP Response"
+        request = self.request_factory.post("/", data={"confirm": "yes"})
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        context = mocked_render.call_args[1]["context"]
+        form = context["form"]
+
+        self.assertIn("notification", form.errors)

@@ -17,6 +17,7 @@ from sponsors.models import (
     SponsorContact,
     Sponsorship,
     SponsorBenefit,
+    SponsorEmailNotificationTemplate
 )
 
 
@@ -426,3 +427,10 @@ class SponsorshipsListForm(forms.Form):
         form.sponsorship_benefit = sponsorship_benefit
 
         return form
+
+
+class SponsorEmailNotificationTemplateListForm(forms.Form):
+    notification = forms.ModelChoiceField(
+        required=True,
+        queryset=SponsorEmailNotificationTemplate.objects.all(),
+    )

@@ -209,7 +209,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "end_date",
     ]
     list_filter = ["status", "package", BenefitFeatureFilter]
-
+    actions = ["send_notifications"]
     fieldsets = [
         (
             "Sponsorship Data",
@@ -257,6 +257,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsor")
+
+    def send_notifications(self, request, queryset):
+        return views_admin.send_sponsorship_notifications_action(self, request, queryset)
+    send_notifications.short_description = 'Send notifications to selected'
+
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
             "for_modified_package",
@@ -284,10 +292,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
             readonly_fields.extend(extra)
 
         return readonly_fields
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor")
 
     def get_estimated_cost(self, obj):
         cost = None
@@ -337,17 +341,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_sponsor_name(self, obj):
         return obj.sponsor.name
-
     get_sponsor_name.short_description = "Name"
 
     def get_sponsor_description(self, obj):
         return obj.sponsor.description
-
     get_sponsor_description.short_description = "Description"
 
     def get_sponsor_landing_page_url(self, obj):
         return obj.sponsor.landing_page_url
-
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
@@ -356,7 +357,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         context = Context({'sponsor': obj.sponsor})
         html = template.render(context)
         return mark_safe(html)
-
     get_sponsor_web_logo.short_description = "Web Logo"
 
     def get_sponsor_print_logo(self, obj):
@@ -368,12 +368,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             context = Context({'img': img})
             html = template.render(context)
         return mark_safe(html) if html else "---"
-
     get_sponsor_print_logo.short_description = "Print Logo"
 
     def get_sponsor_primary_phone(self, obj):
         return obj.sponsor.primary_phone
-
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
@@ -392,7 +390,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html += f"<p>{mail_row}</p>"
         html += f"<p>{sponsor.postal_code}</p>"
         return mark_safe(html)
-
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
     def get_sponsor_contacts(self, obj):
@@ -413,7 +410,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         return mark_safe(html)
-
     get_sponsor_contacts.short_description = "Contacts"
 
     def rollback_to_editing_view(self, request, pk):
