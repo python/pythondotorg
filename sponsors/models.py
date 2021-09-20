@@ -3,8 +3,10 @@ from itertools import chain
 from num2words import num2words
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.mail import EmailMessage
 from django.db import models, transaction
 from django.db.models import Sum, Subquery
+from django.template import Context, Template
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -936,6 +938,27 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
     class Meta:
         verbose_name = "Sponsor Email Notification Template"
         verbose_name_plural = "Sponsor Email Notification Templates"
+
+    def get_email_context_data(self, sponsorship, **kwargs):
+        context = {
+            "sponsor_name": sponsorship.sponsor.name,
+            "sponsorship_start_date": sponsorship.start_date,
+            "sponsorship_end_date": sponsorship.end_date,
+            "sponsorship_status": sponsorship.status,
+            "sponsorship_level": sponsorship.level_name,
+        }
+        context.update(kwargs)
+        return context
+
+    def get_email_message(self, sponsorship):
+        primary_contact = sponsorship.sponsor.primary_contact
+        if not primary_contact:
+            return
+        recipients = [primary_contact.email]
+        template = Template(self.content)
+        context = Context(self.get_email_context_data(sponsorship))
+        body = template.render(context)
+        return EmailMessage(self.subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
 
 
 ########################################
