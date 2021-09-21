@@ -1,6 +1,7 @@
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
+from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
@@ -172,25 +173,29 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
-class BenefitFeatureFilter(admin.SimpleListFilter):
-    title = "benefits' feature"
-    parameter_name = 'feature'
+class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
+    title = "targetable email benefits"
+    parameter_name = 'email_benefit'
 
     @cached_property
-    def features(self):
-        features_types = BenefitFeature.__subclasses__()
-        return {feature._meta.model_name: feature for feature in features_types}
+    def benefits(self):
+        qs = EmailTargetableConfiguration.objects.all().values_list("benefit_id", flat=True)
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
         return [
-          (k, f._meta.verbose_name) for k, f in self.features.items()
+          (k, b.name) for k, b in self.benefits.items()
         ]
 
     def queryset(self, request, queryset):
-        feature = self.features.get(self.value())
-        if not feature:
+        benefit = self.benefits.get(self.value())
+        if not benefit:
             return queryset
-        return queryset.includes_benefit_feature(feature)
+        # all sponsors benefit related with such sponsorship benefit
+        qs = SponsorBenefit.objects.filter(
+            sponsorship_benefit_id=benefit.id).values_list("sponsorship_id", flat=True)
+        return queryset.filter(id__in=Subquery(qs))
 
 
 @admin.register(Sponsorship)
@@ -208,7 +213,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", "package", BenefitFeatureFilter]
+    list_filter = ["status", "package", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
     fieldsets = [
         (
