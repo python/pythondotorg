@@ -20,33 +20,56 @@
 
 <div id="content-main">
 
-<form action="" method="post">
-{% csrf_token %}
-<input name="action" value="send_notifications" type="hidden"/>
+  <form action="" method="post" id="id_form">
+    {% csrf_token %}
+    <input name="action" value="send_notifications" type="hidden"/>
 
-{% for obj in to_notify %}
-  <input name="_selected_action" value="{{ obj.pk }}" type="checkbox" checked/><label>  {{ obj }}</label><br>
-{% endfor %}
-{% for obj in to_ignore %}
-  <input name="_selected_action" value="{{ obj.pk }}" type="checkbox"/><label>  * {{ obj }}</label><br>
-{% endfor %}
+    {% for obj in to_notify %}
+      <input name="_selected_action" value="{{ obj.pk }}" type="checkbox" checked/><label>  {{ obj }}</label><br>
+    {% endfor %}
+    {% for obj in to_ignore %}
+      <input name="_selected_action" value="{{ obj.pk }}" type="checkbox"/><label>  * {{ obj }}</label><br>
+    {% endfor %}
 
-{% if to_ignore %}
-<p><small><b>* Important:</b> the selected sponsorship doesn't have benefits which enable it as email targetable ones. You must manually select it again to send notification.
-{% endif %}
+    {% if to_ignore %}
+    <p><small><b>* Important:</b> the selected sponsorship doesn't have benefits which enable it as email targetable ones. You must manually select it again to send notification.
+    {% endif %}
 
-<br/>
+    <p>
+      <a onclick="selectAll()" href="#">Select all</a> -
+      <a onclick="clearAll()" href="#">Clear selected</a>
+    </p>
 
-{{ form.as_p }}
+    <br/>
 
-<br/>
+    {{ form.as_p }}
 
-<input name="confirm" value="yes" style="display:none">
-<div class="submit-row">
-  <input type="submit" value="Send" class="default">
+    <br/>
+
+    <input name="confirm" value="yes" style="display:none">
+    <div class="submit-row">
+      <input type="submit" value="Send" class="default">
+    </div>
+
+  </form>
+  <div>
 </div>
 
-</form>
-<div>
-</div>
+<script type="text/javascript">
+
+function selectAll() {
+  const checkboxes = document.getElementsByName('_selected_action');
+  for(checkbox of checkboxes) {
+    checkbox.checked = true;
+  }
+}
+
+function clearAll() {
+  const checkboxes = document.getElementsByName('_selected_action');
+  for(checkbox of checkboxes) {
+    checkbox.checked = false;
+  }
+}
+
+</script>
 {% endblock %}
