@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import EmailMessage
 from django.db import models, transaction
-from django.db.models import Sum, Subquery
+from django.db.models import Sum, Subquery, Q
 from django.template import Context, Template
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
@@ -960,11 +960,18 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
         context.update(kwargs)
         return context
 
-    def get_email_message(self, sponsorship):
-        primary_contact = sponsorship.sponsor.primary_contact
-        if not primary_contact:
+    def get_email_message(self, sponsorship, **kwargs):
+        contact_types = {
+            "primary": kwargs.get("to_primary"),
+            "administrative": kwargs.get("to_administrative"),
+            "accounting": kwargs.get("to_accounting"),
+            "manager": kwargs.get("to_manager"),
+        }
+        contacts = sponsorship.sponsor.contacts.filter_by_contact_types(**contact_types)
+        if not contacts.exists():
             return
-        recipients = [primary_contact.email]
+
+        recipients = contacts.values_list("email", flat=True)
         template = Template(self.content)
         context = Context(self.get_email_context_data(sponsorship))
         body = template.render(context)

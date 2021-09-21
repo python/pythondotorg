@@ -57,6 +57,22 @@ class SponsorContactQuerySet(QuerySet):
             raise self.model.DoesNotExist()
         return contact
 
+    def filter_by_contact_types(self, primary=False, administrative=False, accounting=False, manager=False):
+        if not any([primary, administrative, accounting, manager]):
+            return self.none()
+
+        query = Q()
+        if primary:
+            query |= Q(primary=True)
+        if administrative:
+            query |= Q(administrative=True)
+        if accounting:
+            query |= Q(accounting=True)
+        if manager:
+            query |= Q(manager=True)
+
+        return self.filter(query)
+
 
 class SponsorshipBenefitManager(OrderedModelManager):
     def with_conflicts(self):

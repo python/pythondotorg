@@ -684,20 +684,30 @@ class SponsorEmailNotificationTemplateTests(TestCase):
         self.assertEqual(expected_context, context)
 
     def test_get_email_message(self):
-        email = self.notification.get_email_message(self.sponsorship)
+        manager = baker.make(
+            SponsorContact, sponsor=self.sponsorship.sponsor, manager=True
+        )
+        baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, accounting=True)
+
+        email = self.notification.get_email_message(
+            self.sponsorship, to_primary=True, to_manager=True
+        )
 
         self.assertIsInstance(email, EmailMessage)
         self.assertEqual(self.notification.subject, email.subject)
         self.assertEqual("Hi Foo, how are you?", email.body)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
-        self.assertEqual([self.contact.email], email.to)
+        self.assertEqual(2, len(email.to))
+        self.assertIn(self.contact.email, email.to)
+        self.assertIn(manager.email, email.to)
         self.assertEqual(email.cc, [])
         self.assertEqual(email.bcc, [])
         self.assertEqual(email.attachments, [])
 
     def test_get_email_message_returns_none_if_no_contact(self):
         self.contact.delete()
-        email = self.notification.get_email_message(self.sponsorship)
+        SponsorContact.objects.all().delete()
+        email = self.notification.get_email_message(self.sponsorship, to_primary=True, to_manager=True)
         self.assertIsNone(email)
 
 
