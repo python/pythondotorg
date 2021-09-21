@@ -25,3 +25,6 @@ class BaseEmailTemplate(models.Model):
 
     class Meta:
         abstract = True
+
+    def __str__(self):
+        return f"Email template: {self.internal_name}"
