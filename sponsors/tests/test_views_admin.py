@@ -15,7 +15,7 @@ from django.urls import reverse
 
 from .utils import assertMessage
 from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SponsorEmailNotificationTemplateListForm
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
 from sponsors.views_admin import send_sponsorship_notifications_action
 from sponsors.use_cases import SendSponsorshipNotificationUseCase
 
@@ -963,7 +963,7 @@ class SendSponsorshipNotificationTests(TestCase):
         self.assertEqual([self.sponsorship], list(context["to_notify"]))
         self.assertEqual(2, len(context["to_ignore"]))
         self.assertNotIn(self.sponsorship, context["to_ignore"])
-        self.assertIsInstance(context["form"], SponsorEmailNotificationTemplateListForm)
+        self.assertIsInstance(context["form"], SendSponsorshipNotificationForm)
 
     @patch("sponsors.views_admin.render")
     def test_render_form_error_if_invalid(self, mocked_render):
@@ -993,7 +993,7 @@ class SendSponsorshipNotificationTests(TestCase):
         notification = baker.make("SponsorEmailNotificationTemplate")
         mocked_uc = Mock(SendSponsorshipNotificationUseCase, autospec=True)
         mock_build.return_value = mocked_uc
-        data = {"confirm": "yes", "notification": notification.pk}
+        data = {"confirm": "yes", "notification": notification.pk, "contact_type": ["primary"]}
         request = self.request_factory.post("/", data=data)
         request.user = self.user
 

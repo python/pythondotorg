@@ -7,7 +7,7 @@ from django.db.models import Q
 from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SponsorEmailNotificationTemplateListForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
 from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable
@@ -282,7 +282,7 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
         return redirect(redirect_url)
 
     if request.method.upper() == "POST" and "confirm" in request.POST:
-        form = SponsorEmailNotificationTemplateListForm(request.POST)
+        form = SendSponsorshipNotificationForm(request.POST)
         if form.is_valid():
             use_case = use_cases.SendSponsorshipNotificationUseCase.build()
             use_case.execute(form.cleaned_data["notification"], queryset, request=request)
@@ -292,7 +292,7 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
 
             return redirect(redirect_url)
     else:
-        form = SponsorEmailNotificationTemplateListForm()
+        form = SendSponsorshipNotificationForm()
 
     context = {"to_notify": to_notify, "to_ignore": to_ignore, "form":form}
     return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)

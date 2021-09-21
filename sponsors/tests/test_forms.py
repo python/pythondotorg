@@ -13,6 +13,7 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
+    SendSponsorshipNotificationForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact
 from .utils import get_static_image_file_as_upload
@@ -503,3 +504,12 @@ class SponsorContactFormTests(TestCase):
         meta = SponsorContactForm._meta
         self.assertEqual(set(expected_fields), set(meta.fields))
         self.assertEqual(SponsorContact, meta.model)
+
+
+class SendSponsorshipNotificationFormTests(TestCase):
+
+    def test_required_fields(self):
+        required_fields = set(["notification", "contact_type"])
+        form = SendSponsorshipNotificationForm({})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(required_fields, set(form.errors))

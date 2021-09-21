@@ -257,6 +257,16 @@ class SponsorContact(models.Model):
     """
     Sponsor contact information
     """
+    PRIMARY_CONTACT = "primary"
+    ADMINISTRATIVE_CONTACT = "administrative"
+    ACCOUTING_CONTACT = "accounting"
+    MANAGER_CONTACT = "manager"
+    CONTACT_TYPES = [
+        (PRIMARY_CONTACT, "Primary"),
+        (ADMINISTRATIVE_CONTACT, "Administrative"),
+        (ACCOUTING_CONTACT, "Accounting"),
+        (MANAGER_CONTACT, "Manager"),
+    ]
 
     objects = SponsorContactQuerySet.as_manager()
 

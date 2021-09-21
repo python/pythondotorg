@@ -429,8 +429,13 @@ class SponsorshipsListForm(forms.Form):
         return form
 
 
-class SponsorEmailNotificationTemplateListForm(forms.Form):
+class SendSponsorshipNotificationForm(forms.Form):
     notification = forms.ModelChoiceField(
         required=True,
         queryset=SponsorEmailNotificationTemplate.objects.all(),
+    )
+    contact_type = forms.MultipleChoiceField(
+        choices=SponsorContact.CONTACT_TYPES,
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
     )
