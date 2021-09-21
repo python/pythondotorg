@@ -1008,4 +1008,4 @@ class SendSponsorshipNotificationTests(TestCase):
         call_request = mocked_uc.execute.call_args[1]["request"]
         self.assertEqual(request, call_request)
         self.assertEqual(notification, call_notification)
-        self.assertEqual([self.sponsorship], list(call_sponsorships))
+        self.assertEqual(list(self.queryset), list(call_sponsorships))
