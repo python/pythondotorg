@@ -516,7 +516,7 @@ class SendSponsorshipNotificationFormTests(TestCase):
         }
 
     def test_required_fields(self):
-        required_fields = set(["notification", "contact_types"])
+        required_fields = set(["__all__", "contact_types"])
         form = SendSponsorshipNotificationForm({})
         self.assertFalse(form.is_valid())
         self.assertEqual(required_fields, set(form.errors))
@@ -525,3 +525,21 @@ class SendSponsorshipNotificationFormTests(TestCase):
         form = SendSponsorshipNotificationForm(self.data)
         self.assertTrue(form.is_valid())
         self.assertEqual(self.data["contact_types"], form.cleaned_data["contact_types"])
+
+    def test_form_error_if_notification_and_email_custom_content(self):
+        self.data["content"] = "email content"
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_form_error_if_not_notification_and_neither_custom_content(self):
+        self.data.pop("notification")
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_validate_form_with_custom_content(self):
+        self.data.pop("notification")
+        self.data.update({"content": "content", "subject": "subject"})
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertTrue(form.is_valid())

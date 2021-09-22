@@ -430,12 +430,29 @@ class SponsorshipsListForm(forms.Form):
 
 
 class SendSponsorshipNotificationForm(forms.Form):
-    notification = forms.ModelChoiceField(
-        required=True,
-        queryset=SponsorEmailNotificationTemplate.objects.all(),
-    )
     contact_types = forms.MultipleChoiceField(
         choices=SponsorContact.CONTACT_TYPES,
         required=True,
         widget=forms.CheckboxSelectMultiple,
     )
+    notification = forms.ModelChoiceField(
+        queryset=SponsorEmailNotificationTemplate.objects.all(),
+        help_text="You can select an existing notification or your own custom subject/content",
+        required=False,
+    )
+    subject = forms.CharField(max_length=140, required=False)
+    content = forms.CharField(widget=forms.widgets.Textarea(), required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        notification = cleaned_data.get("notification")
+        subject = cleaned_data.get("subject", "").strip()
+        content = cleaned_data.get("content", "").strip()
+        custom_notification = subject or content
+
+        if not (notification or custom_notification):
+            raise forms.ValidationError("Can not send email without notification or custom content")
+        if notification and custom_notification:
+            raise forms.ValidationError("You must select a notification or use custom content, not both")
+
+        return cleaned_data

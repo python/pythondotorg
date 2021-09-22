@@ -975,7 +975,7 @@ class SendSponsorshipNotificationTests(TestCase):
         context = mocked_render.call_args[1]["context"]
         form = context["form"]
 
-        self.assertIn("notification", form.errors)
+        self.assertIn("contact_types", form.errors)
 
     def test_redirect_if_none_of_selected_sponsorships_are_targetable(self):
         self.sponsorship.delete()
