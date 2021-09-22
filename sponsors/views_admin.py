@@ -273,14 +273,6 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     to_notify = queryset.includes_benefit_feature(EmailTargetable)
     to_ignore = queryset.exclude(id__in=to_notify.values_list("id", flat=True))
 
-    redirect_url = reverse("admin:sponsors_sponsorship_changelist")
-    if not to_notify.exists():
-        ModelAdmin.message_user(
-            request, "None of the selected sponsorships are targetable ones!", messages.WARNING
-        )
-
-        return redirect(redirect_url)
-
     if request.method.upper() == "POST" and "confirm" in request.POST:
         form = SendSponsorshipNotificationForm(request.POST)
         if form.is_valid():
@@ -296,6 +288,7 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
                 request, "Notifications were sent!", messages.SUCCESS
             )
 
+            redirect_url = reverse("admin:sponsors_sponsorship_changelist")
             return redirect(redirect_url)
     else:
         form = SendSponsorshipNotificationForm()
