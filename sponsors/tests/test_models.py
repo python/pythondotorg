@@ -663,7 +663,7 @@ class SponsorEmailNotificationTemplateTests(TestCase):
     def setUp(self):
         self.notification = baker.make(
             'sponsors.SponsorEmailNotificationTemplate',
-            subject="Notification subject",
+            subject="Subject - {{ sponsor_name }}",
             content="Hi {{ sponsor_name }}, how are you?",
         )
         self.sponsorship = baker.make(Sponsorship, sponsor__name="Foo")
@@ -694,7 +694,7 @@ class SponsorEmailNotificationTemplateTests(TestCase):
         )
 
         self.assertIsInstance(email, EmailMessage)
-        self.assertEqual(self.notification.subject, email.subject)
+        self.assertEqual("Subject - Foo", email.subject)
         self.assertEqual("Hi Foo, how are you?", email.body)
         self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
         self.assertEqual(2, len(email.to))

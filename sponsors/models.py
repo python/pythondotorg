@@ -972,10 +972,13 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
             return
 
         recipients = contacts.values_list("email", flat=True)
-        template = Template(self.content)
         context = Context(self.get_email_context_data(sponsorship))
+        template = Template(self.content)
         body = template.render(context)
-        return EmailMessage(self.subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
+        template = Template(self.subject)
+        subject = template.render(context)
+
+        return EmailMessage(subject, body, settings.DEFAULT_FROM_EMAIL, recipients)
 
 
 ########################################
