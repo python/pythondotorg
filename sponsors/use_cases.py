@@ -145,7 +145,7 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
         }
 
         for sponsorship in sponsorships:
-            email = notification.get_email_message(sponsorship.pk, **msg_kwargs)
+            email = notification.get_email_message(sponsorship, **msg_kwargs)
             if not email:
                 continue
             email.send()
