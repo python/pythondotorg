@@ -1004,8 +1004,8 @@ class SendSponsorshipNotificationTests(TestCase):
         self.assertEqual(expected_url, resp["Location"])
         mock_build.assert_called_once_with()
         self.assertEqual(1, mocked_uc.execute.call_count)
-        call_notification, call_sponsorships = mocked_uc.execute.call_args[0]
-        call_request = mocked_uc.execute.call_args[1]["request"]
-        self.assertEqual(request, call_request)
-        self.assertEqual(notification, call_notification)
-        self.assertEqual(list(self.queryset), list(call_sponsorships))
+        kwargs = mocked_uc.execute.call_args[1]
+        self.assertEqual(request, kwargs["request"])
+        self.assertEqual(notification, kwargs["notification"])
+        self.assertEqual(list(self.queryset), list(kwargs["sponsorships"]))
+        self.assertEqual(["primary"], kwargs["contact_types"])

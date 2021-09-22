@@ -1,5 +1,5 @@
 from sponsors import notifications
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate
 from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
 
 
@@ -132,5 +132,25 @@ class NullifyContractUseCase(BaseUseCaseWithNotifications):
 
 
 class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
-    def execute(self, notification, sponsorships, **kwargs):
-        pass
+    # TODO: add notification new LogEntry about the email dispatch
+
+    def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
+        msg_kwargs = {
+            "primary": SponsorContact.PRIMARY_CONTACT in contact_types,
+            "administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
+            "accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
+            "manager": SponsorContact.MANAGER_CONTACT in contact_types,
+        }
+
+        for sponsorship in sponsorships:
+            email = notification.get_email_message(sponsorship.pk, **msg_kwargs)
+            if not email:
+                continue
+            email.send()
+
+            self.notify(
+                notification=notification,
+                sponsorship=sponsorship,
+                contact_types=contact_types,
+                request=kwargs.get("request"),
+            )

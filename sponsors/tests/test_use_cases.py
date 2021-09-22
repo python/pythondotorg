@@ -1,5 +1,5 @@
 import os
-from unittest.mock import Mock, patch
+from unittest.mock import Mock, patch, call
 from model_bakery import baker
 from datetime import timedelta, date
 from pathlib import Path
@@ -7,11 +7,12 @@ from pathlib import Path
 from django.conf import settings
 from django.test import TestCase
 from django.utils import timezone
+from django.core.mail import EmailMessage
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -232,3 +233,38 @@ class NullifyContractUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[0], NullifiedContractLogger
         )
+
+
+class SendSponsorshipNotificationUseCaseTests(TestCase):
+    def setUp(self):
+        self.notifications = [Mock()]
+        self.use_case = use_cases.SendSponsorshipNotificationUseCase(self.notifications)
+        self.notification = baker.make(SponsorEmailNotificationTemplate)
+        self.sponsorships = baker.make(Sponsorship, sponsor__name="Foo", _quantity=3)
+        self.sponsorships = Sponsorship.objects.all()  # to respect DB order
+
+    @patch.object(SponsorEmailNotificationTemplate, 'get_email_message')
+    def test_send_notifications(self, mock_get_email_message):
+        emails = [Mock(EmailMessage, autospec=True) for i in range(3)]
+        mock_get_email_message.side_effect = emails
+        contact_types = ["administrative"]
+
+        self.use_case.execute(self.notification, self.sponsorships, contact_types, request='request')
+
+        self.assertEqual(mock_get_email_message.call_count, 3)
+        self.assertEqual(self.notifications[0].notify.call_count, 3)
+        for sponsorship in self.sponsorships:
+            kwargs = dict(accounting=False, administrative=True, manager=False, primary=False)
+            mock_get_email_message.assert_has_calls([call(sponsorship.pk, **kwargs)])
+            self.notifications[0].notify.assert_has_calls([
+                call(notification=self.notification, sponsorship=sponsorship, contact_types=contact_types, request='request')
+            ])
+        for email in emails:
+            email.send.assert_called_once_with()
+
+    @patch.object(SponsorEmailNotificationTemplate, 'get_email_message', Mock(return_value=None))
+    def test_skip_sponsorships_if_no_email_message(self):
+        contact_types = ["administrative"]
+        self.use_case.execute(self.notification, self.sponsorships, contact_types, request='request')
+
+        self.assertEqual(self.notifications[0].notify.call_count, 0)
