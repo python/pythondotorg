@@ -434,7 +434,7 @@ class SendSponsorshipNotificationForm(forms.Form):
         required=True,
         queryset=SponsorEmailNotificationTemplate.objects.all(),
     )
-    contact_type = forms.MultipleChoiceField(
+    contact_types = forms.MultipleChoiceField(
         choices=SponsorContact.CONTACT_TYPES,
         required=True,
         widget=forms.CheckboxSelectMultiple,

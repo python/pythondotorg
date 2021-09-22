@@ -993,7 +993,7 @@ class SendSponsorshipNotificationTests(TestCase):
         notification = baker.make("SponsorEmailNotificationTemplate")
         mocked_uc = Mock(SendSponsorshipNotificationUseCase, autospec=True)
         mock_build.return_value = mocked_uc
-        data = {"confirm": "yes", "notification": notification.pk, "contact_type": ["primary"]}
+        data = {"confirm": "yes", "notification": notification.pk, "contact_types": ["primary"]}
         request = self.request_factory.post("/", data=data)
         request.user = self.user
 

@@ -508,8 +508,20 @@ class SponsorContactFormTests(TestCase):
 
 class SendSponsorshipNotificationFormTests(TestCase):
 
+    def setUp(self):
+        self.notification = baker.make("sponsors.SponsorEmailNotificationTemplate")
+        self.data = {
+            "notification": self.notification.pk,
+            "contact_types": [SponsorContact.MANAGER_CONTACT, SponsorContact.ADMINISTRATIVE_CONTACT],
+        }
+
     def test_required_fields(self):
-        required_fields = set(["notification", "contact_type"])
+        required_fields = set(["notification", "contact_types"])
         form = SendSponsorshipNotificationForm({})
         self.assertFalse(form.is_valid())
         self.assertEqual(required_fields, set(form.errors))
+
+    def test_get_contact_types_list(self):
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(self.data["contact_types"], form.cleaned_data["contact_types"])
