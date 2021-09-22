@@ -268,3 +268,10 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.use_case.execute(self.notification, self.sponsorships, contact_types, request='request')
 
         self.assertEqual(self.notifications[0].notify.call_count, 0)
+
+    def test_build_use_case_with_default_notificationss(self):
+        uc = use_cases.SendSponsorshipNotificationUseCase.build()
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(
+            uc.notifications[0], SendSponsorNotificationLogger
+        )

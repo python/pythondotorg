@@ -132,7 +132,9 @@ class NullifyContractUseCase(BaseUseCaseWithNotifications):
 
 
 class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
-    # TODO: add notification new LogEntry about the email dispatch
+    notifications = [
+        notifications.SendSponsorNotificationLogger(),
+    ]
 
     def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
         msg_kwargs = {
