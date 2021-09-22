@@ -456,3 +456,10 @@ class SendSponsorshipNotificationForm(forms.Form):
             raise forms.ValidationError("You must select a notification or use custom content, not both")
 
         return cleaned_data
+
+    def get_notification(self):
+        default_notification = SponsorEmailNotificationTemplate(
+            content=self.cleaned_data["content"],
+            subject=self.cleaned_data["subject"],
+        )
+        return self.cleaned_data.get("notification") or default_notification

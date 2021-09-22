@@ -285,8 +285,12 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
         form = SendSponsorshipNotificationForm(request.POST)
         if form.is_valid():
             use_case = use_cases.SendSponsorshipNotificationUseCase.build()
-            kwargs = form.cleaned_data.copy()
-            kwargs.update({"sponsorships": queryset, "request": request})
+            kwargs = {
+                "sponsorships": queryset,
+                "notification": form.get_notification(),
+                "contact_types": form.cleaned_data["contact_types"],
+                "request": request,
+            }
             use_case.execute(**kwargs)
             ModelAdmin.message_user(
                 request, "Notifications were sent!", messages.SUCCESS

@@ -525,6 +525,7 @@ class SendSponsorshipNotificationFormTests(TestCase):
         form = SendSponsorshipNotificationForm(self.data)
         self.assertTrue(form.is_valid())
         self.assertEqual(self.data["contact_types"], form.cleaned_data["contact_types"])
+        self.assertEqual(self.notification, form.get_notification())
 
     def test_form_error_if_notification_and_email_custom_content(self):
         self.data["content"] = "email content"
@@ -543,3 +544,7 @@ class SendSponsorshipNotificationFormTests(TestCase):
         self.data.update({"content": "content", "subject": "subject"})
         form = SendSponsorshipNotificationForm(self.data)
         self.assertTrue(form.is_valid())
+        notification = form.get_notification()
+        self.assertEqual("content", notification.content)
+        self.assertEqual("subject", notification.subject)
+        self.assertIsNone(notification.pk)
