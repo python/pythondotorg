@@ -1,3 +1,4 @@
+from django.core.mail import EmailMessage
 from django.db import models
 from django.template import Template, Context
 from django.urls import reverse
@@ -22,6 +23,21 @@ class BaseEmailTemplate(models.Model):
         template = Template(self.content)
         ctx = Context(context)
         return template.render(ctx)
+
+    def render_subject(self, context):
+        template = Template(self.subject)
+        ctx = Context(context)
+        return template.render(ctx)
+
+    def get_email(self, from_email, to, context=None, **kwargs):
+        context = context or {}
+        context = self.get_email_context_data(**context)
+        subject = self.render_subject(context)
+        content = self.render_content(context)
+        return EmailMessage(subject, content, from_email, to, **kwargs)
+
+    def get_email_context_data(self, **kwargs):
+        return kwargs
 
     class Meta:
         abstract = True

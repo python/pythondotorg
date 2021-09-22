@@ -680,7 +680,7 @@ class SponsorEmailNotificationTemplateTests(TestCase):
             "sponsorship_level": self.sponsorship.level_name,
             "extra": "foo"
         }
-        context = self.notification.get_email_context_data(self.sponsorship, extra="foo")
+        context = self.notification.get_email_context_data(sponsorship=self.sponsorship, extra="foo")
         self.assertEqual(expected_context, context)
 
     def test_get_email_message(self):
