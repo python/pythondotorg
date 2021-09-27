@@ -264,7 +264,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor")
+        return qs.select_related("sponsor", "package")
 
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
