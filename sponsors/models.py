@@ -819,7 +819,7 @@ class Contract(models.Model):
         sponsor = sponsorship.sponsor
         primary_contact = sponsor.primary_contact
 
-        sponsor_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
+        sponsor_info = f"{sponsor.name}, {sponsor.description}"
         sponsor_contact = ""
         if primary_contact:
             sponsor_contact = f"{primary_contact.name} - {primary_contact.phone} | {primary_contact.email}"
