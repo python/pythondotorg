@@ -254,7 +254,7 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.assertEqual(mock_get_email_message.call_count, 3)
         self.assertEqual(self.notifications[0].notify.call_count, 3)
         for sponsorship in self.sponsorships:
-            kwargs = dict(accounting=False, administrative=True, manager=False, primary=False)
+            kwargs = dict(to_accounting=False, to_administrative=True, to_manager=False, to_primary=False)
             mock_get_email_message.assert_has_calls([call(sponsorship, **kwargs)])
             self.notifications[0].notify.assert_has_calls([
                 call(notification=self.notification, sponsorship=sponsorship, contact_types=contact_types, request='request')

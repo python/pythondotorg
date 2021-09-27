@@ -138,10 +138,10 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
 
     def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
         msg_kwargs = {
-            "primary": SponsorContact.PRIMARY_CONTACT in contact_types,
-            "administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
-            "accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
-            "manager": SponsorContact.MANAGER_CONTACT in contact_types,
+            "to_primary": SponsorContact.PRIMARY_CONTACT in contact_types,
+            "to_administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
+            "to_accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
+            "to_manager": SponsorContact.MANAGER_CONTACT in contact_types,
         }
 
         for sponsorship in sponsorships:
