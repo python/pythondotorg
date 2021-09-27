@@ -46,9 +46,16 @@
 
     <br/>
 
-    <input name="confirm" value="yes" style="display:none">
+    {% if email_preview %}
+    <h1><b>Email Preview</b></h1>
+    <p><b>Suject:</b> {{ email_preview.subject }}</p>
+    <p>{{ email_preview.body|linebreaks }}</p>
+    <small>This sample preview is based on the first sponsorship: {{ queryset.first }}</small>
+    {% endif %}
+
     <div class="submit-row">
-      <input type="submit" value="Send" class="default">
+      <input type="submit" name="confirm" value="Send" class="default">
+      <input type="submit" name="preview" value="Preview" class="default">
     </div>
 
   </form>
