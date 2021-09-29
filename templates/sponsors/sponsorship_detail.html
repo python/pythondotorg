@@ -15,46 +15,56 @@
 {% block main-nav_attributes %}psf-navigation{% endblock %}
 
 {% block user_content %}
-  <h1>{{ sponsorship.sponsor.name }} Sponsorship Application</h1>
+  <div id="sponsorship-container">
+    <h1>{{ sponsorship.sponsor.name }} Sponsorship Application</h1>
 
-  <h3>Application Data</h3>
-  <ul>
-    <li>
-      <b>Status:</b> {{ sponsorship.get_status_display }}
-    </li>
-    <li>
-      <b>Application date:</b> {{ sponsorship.applied_on|default_if_none:"---" }}
-    </li>
-    <li>
-      <b>Approval date:</b> {{ sponsorship.approved_on|default_if_none:"---" }}
-    </li>
-    <li>
-      <b>Start date:</b> {{ sponsorship.start_date|default_if_none:"---" }}
-    </li>
-    <li>
-      <b>End date:</b> {{ sponsorship.end_date|default_if_none:"---" }}
-    </li>
-    {% if sponsorship.finalized_on %}
-    <li>
-      <b>Finalized date:</b> {{ sponsorship.finalized_on }}
-    </li>
-    {% endif %}
-    <li>
-      <b>Level:</b> {{ sponsorship.level_name }}
-    </li>
-    <li>
-      <b>Agreed sponsorship fee:</b> {% if sponsorship.agreed_fee %}${{ sponsorship.agreed_fee|intcomma }}{% else %}To be determined{% endif %}
-    </li>
-  </ul>
+    <div id="sponsor-info">
+    </div>
 
-  <h3>Sponsorship Benefits</h3>
-  <ul style="list-style-type:none; margin-left: 0.5em">
-    {% for benefit in sponsorship.benefits.all %}
-    <li>
-      {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i> - {% endif %} {{ benefit.name_for_display }}
-    </li>
-    {% endfor %}
-  </ul>
+    <div id="sponsorship-info">
+      <h3>Application Data</h3>
+      <ul>
+        <li>
+          <b>Status:</b> {{ sponsorship.get_status_display }}
+        </li>
+        <li>
+          <b>Application date:</b> {{ sponsorship.applied_on|default_if_none:"---" }}
+        </li>
+        <li>
+          <b>Approval date:</b> {{ sponsorship.approved_on|default_if_none:"---" }}
+        </li>
+        <li>
+          <b>Start date:</b> {{ sponsorship.start_date|default_if_none:"---" }}
+        </li>
+        <li>
+          <b>End date:</b> {{ sponsorship.end_date|default_if_none:"---" }}
+        </li>
+        {% if sponsorship.finalized_on %}
+          <li>
+            <b>Finalized date:</b> {{ sponsorship.finalized_on }}
+          </li>
+        {% endif %}
+        <li>
+          <b>Level:</b> {{ sponsorship.level_name }}
+        </li>
+        <li>
+          <b>Agreed sponsorship fee:</b> {% if sponsorship.agreed_fee %}${{ sponsorship.agreed_fee|intcomma }}{% else %}
+          To
+          be determined{% endif %}
+        </li>
+      </ul>
+
+      <h3>Sponsorship Benefits</h3>
+      <ul style="list-style-type:none; margin-left: 0.5em">
+        {% for benefit in sponsorship.benefits.all %}
+          <li>
+            {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i>
+              - {% endif %} {{ benefit.name_for_display }}
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
 {% endblock %}
 
 {% block javascript %}
