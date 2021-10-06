@@ -12,6 +12,7 @@ urlpatterns = [
     path('membership/affirm/', views.MembershipVoteAffirm.as_view(), name='membership_affirm_vote'),
     path('membership/affirm/done/', views.MembershipVoteAffirmDone.as_view(), name='membership_affirm_vote_done'),
     path('nominations/', views.UserNominationsView.as_view(), name='user_nominations_view'),
+    path('sponsorships/', views.UserSponsorshipsDashboard.as_view(), name='user_sponsorships_dashboard'),
     re_path(r'^(?P<slug>[-a-zA-Z0-9_\@\.+]+)/delete/$', views.UserDeleteView.as_view(), name='user_delete'),
     re_path(r'^(?P<slug>[-a-zA-Z0-9_\@\.+]+)/$', views.UserDetail.as_view(), name='user_detail'),
 ]

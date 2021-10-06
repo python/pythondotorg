@@ -9,8 +9,9 @@ from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView,
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView
 )
 
 from allauth.account.views import SignupView, PasswordChangeView
@@ -191,3 +192,12 @@ class UserNominationsView(LoginRequiredMixin, TemplateView):
             elections[nomination.election]['nominations_made'].append(nomination)
         context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
         return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UserSponsorshipsDashboard(ListView):
+    context_object_name = 'sponsorships'
+    template_name = 'users/list_user_sponsorships.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsors")
