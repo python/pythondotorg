@@ -2893,6 +2893,8 @@ p.quote-by-organization {
     padding: 0.25em 1em; }
     .user-profile-controls div.section:hover .section-links {
       display: inline; }
+  .user-profile-controls div.single-link span > a {
+    color: #4d4d4d !important; }
   .user-profile-controls div.section-links {
     display: none; }
     .user-profile-controls div.section-links ul {

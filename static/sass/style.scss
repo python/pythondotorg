@@ -2076,6 +2076,12 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
       }
     }
 
+    div.single-link {
+       span > a {
+          color: #4d4d4d !important;
+       }
+    }
+
     div.section-links {
       display: none;
 
