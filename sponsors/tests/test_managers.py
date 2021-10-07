@@ -4,7 +4,7 @@ from model_bakery import baker
 from django.conf import settings
 from django.test import TestCase
 
-from ..models import Sponsorship, SponsorBenefit
+from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity
 from ..enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -95,3 +95,15 @@ class SponsorshipQuerySetTests(TestCase):
 
         self.assertEqual(1, len(qs))
         self.assertIn(sponsorship_with_download_logo, qs)
+
+    def test_filter_sponsorship_by_benefit_feature_type(self):
+        sponsorship_feature_1 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
+        sponsorship_feature_2 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
+        baker.make(LogoPlacement, sponsor_benefit__sponsorship=sponsorship_feature_1)
+        baker.make(TieredQuantity, sponsor_benefit__sponsorship=sponsorship_feature_2)
+
+        with self.assertNumQueries(1):
+            qs = list(Sponsorship.objects.includes_benefit_feature(LogoPlacement))
+
+        self.assertEqual(1, len(qs))
+        self.assertIn(sponsorship_feature_1, qs)

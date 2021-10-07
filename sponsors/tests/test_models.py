@@ -2,6 +2,7 @@ from datetime import date, timedelta
 from model_bakery import baker, seq
 
 from django.conf import settings
+from django.core.mail import EmailMessage
 from django.test import TestCase
 from django.utils import timezone
 
@@ -653,6 +654,62 @@ class SponsorBenefitModelTests(TestCase):
             quantity=10
         )
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
+
+###########
+####### Email notification tests
+###########
+class SponsorEmailNotificationTemplateTests(TestCase):
+
+    def setUp(self):
+        self.notification = baker.make(
+            'sponsors.SponsorEmailNotificationTemplate',
+            subject="Subject - {{ sponsor_name }}",
+            content="Hi {{ sponsor_name }}, how are you?",
+        )
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="Foo")
+        self.contact = baker.make(
+            SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
+        )
+
+    def test_map_sponsorship_info_to_simplified_context_data(self):
+        expected_context = {
+            "sponsor_name": "Foo",
+            "sponsorship_start_date": self.sponsorship.start_date,
+            "sponsorship_end_date": self.sponsorship.end_date,
+            "sponsorship_status": self.sponsorship.status,
+            "sponsorship_level": self.sponsorship.level_name,
+            "extra": "foo"
+        }
+        context = self.notification.get_email_context_data(sponsorship=self.sponsorship, extra="foo")
+        self.assertEqual(expected_context, context)
+
+    def test_get_email_message(self):
+        manager = baker.make(
+            SponsorContact, sponsor=self.sponsorship.sponsor, manager=True
+        )
+        baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, accounting=True)
+
+        email = self.notification.get_email_message(
+            self.sponsorship, to_primary=True, to_manager=True
+        )
+
+        self.assertIsInstance(email, EmailMessage)
+        self.assertEqual("Subject - Foo", email.subject)
+        self.assertEqual("Hi Foo, how are you?", email.body)
+        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(2, len(email.to))
+        self.assertIn(self.contact.email, email.to)
+        self.assertIn(manager.email, email.to)
+        self.assertEqual(email.cc, [])
+        self.assertEqual(email.bcc, [])
+        self.assertEqual(email.attachments, [])
+
+    def test_get_email_message_returns_none_if_no_contact(self):
+        self.contact.delete()
+        SponsorContact.objects.all().delete()
+        email = self.notification.get_email_message(self.sponsorship, to_primary=True, to_manager=True)
+        self.assertIsNone(email)
+
 
 ###########
 ####### Benefit features/configuration tests

@@ -2,7 +2,7 @@ import io
 import json
 from model_bakery import baker
 from datetime import date, timedelta
-from unittest.mock import patch, PropertyMock
+from unittest.mock import patch, PropertyMock, Mock
 
 from django.conf import settings
 from django.contrib import messages
@@ -10,12 +10,14 @@ from django.contrib.messages import get_messages
 from django.core import mail
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
 from .utils import assertMessage
-from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
+from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
+from sponsors.views_admin import send_sponsorship_notifications_action
+from sponsors.use_cases import SendSponsorshipNotificationUseCase
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -890,3 +892,109 @@ class PreviewContractViewTests(TestCase):
         self.assertEqual(mocked_render.call_count, 1)
         self.assertEqual(mocked_render.call_args[0][1], self.contract)
         self.assertIsInstance(mocked_render.call_args[0][0], WSGIRequest)
+
+
+class PreviewSponsorEmailNotificationTemplateTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.sponsor_notification = baker.make(SponsorEmailNotificationTemplate, content="{{'content'|upper}}")
+        self.url = self.sponsor_notification.preview_content_url
+
+    def test_display_content_on_response(self):
+        response = self.client.get(self.url)
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(b"CONTENT", response.content)
+
+    def test_404_if_template_does_not_exist(self):
+        self.sponsor_notification.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+#######################
+### TEST CUSTOM ACTIONS
+class SendSponsorshipNotificationTests(TestCase):
+
+    def setUp(self):
+        self.request_factory = RequestFactory()
+        baker.make(Sponsorship, _quantity=3, sponsor__name='foo')
+        self.sponsorship = Sponsorship.objects.all()[0]
+        baker.make('sponsors.EmailTargetable', sponsor_benefit__sponsorship=self.sponsorship)
+        self.queryset = Sponsorship.objects.all()
+        self.user = baker.make("users.User")
+
+    @patch("sponsors.views_admin.render")
+    def test_render_template_and_context_as_expected(self, mocked_render):
+        mocked_render.return_value = "HTTP Response"
+        request = self.request_factory.post("/", data={})
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+
+        self.assertEqual("HTTP Response", resp)
+        self.assertEqual(1, mocked_render.call_count)
+        ret_request, template = mocked_render.call_args[0]
+        context = mocked_render.call_args[1]["context"]
+        self.assertEqual(request, request)
+        self.assertEqual("sponsors/admin/send_sponsors_notification.html", template)
+        self.assertEqual([self.sponsorship], list(context["to_notify"]))
+        self.assertEqual(2, len(context["to_ignore"]))
+        self.assertNotIn(self.sponsorship, context["to_ignore"])
+        self.assertIsInstance(context["form"], SendSponsorshipNotificationForm)
+
+    @patch("sponsors.views_admin.render")
+    def test_render_form_error_if_invalid(self, mocked_render):
+        mocked_render.return_value = "HTTP Response"
+        request = self.request_factory.post("/", data={"confirm": "yes"})
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        context = mocked_render.call_args[1]["context"]
+        form = context["form"]
+
+        self.assertIn("contact_types", form.errors)
+
+    @patch.object(SendSponsorshipNotificationUseCase, "build")
+    def test_call_use_case_and_redirect_with_success(self, mock_build):
+        notification = baker.make("SponsorEmailNotificationTemplate")
+        mocked_uc = Mock(SendSponsorshipNotificationUseCase, autospec=True)
+        mock_build.return_value = mocked_uc
+        data = {"confirm": "yes", "notification": notification.pk, "contact_types": ["primary"]}
+        request = self.request_factory.post("/", data=data)
+        request.user = self.user
+
+        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        expected_url = reverse("admin:sponsors_sponsorship_changelist")
+
+        self.assertEqual(302, resp.status_code)
+        self.assertEqual(expected_url, resp["Location"])
+        mock_build.assert_called_once_with()
+        self.assertEqual(1, mocked_uc.execute.call_count)
+        kwargs = mocked_uc.execute.call_args[1]
+        self.assertEqual(request, kwargs["request"])
+        self.assertEqual(notification, kwargs["notification"])
+        self.assertEqual(list(self.queryset), list(kwargs["sponsorships"]))
+        self.assertEqual(["primary"], kwargs["contact_types"])

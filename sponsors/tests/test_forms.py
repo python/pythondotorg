@@ -13,6 +13,7 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
+    SendSponsorshipNotificationForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact
 from .utils import get_static_image_file_as_upload
@@ -503,3 +504,47 @@ class SponsorContactFormTests(TestCase):
         meta = SponsorContactForm._meta
         self.assertEqual(set(expected_fields), set(meta.fields))
         self.assertEqual(SponsorContact, meta.model)
+
+
+class SendSponsorshipNotificationFormTests(TestCase):
+
+    def setUp(self):
+        self.notification = baker.make("sponsors.SponsorEmailNotificationTemplate")
+        self.data = {
+            "notification": self.notification.pk,
+            "contact_types": [SponsorContact.MANAGER_CONTACT, SponsorContact.ADMINISTRATIVE_CONTACT],
+        }
+
+    def test_required_fields(self):
+        required_fields = set(["__all__", "contact_types"])
+        form = SendSponsorshipNotificationForm({})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(required_fields, set(form.errors))
+
+    def test_get_contact_types_list(self):
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(self.data["contact_types"], form.cleaned_data["contact_types"])
+        self.assertEqual(self.notification, form.get_notification())
+
+    def test_form_error_if_notification_and_email_custom_content(self):
+        self.data["content"] = "email content"
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_form_error_if_not_notification_and_neither_custom_content(self):
+        self.data.pop("notification")
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_validate_form_with_custom_content(self):
+        self.data.pop("notification")
+        self.data.update({"content": "content", "subject": "subject"})
+        form = SendSponsorshipNotificationForm(self.data)
+        self.assertTrue(form.is_valid())
+        notification = form.get_notification()
+        self.assertEqual("content", notification.content)
+        self.assertEqual("subject", notification.subject)
+        self.assertIsNone(notification.pk)

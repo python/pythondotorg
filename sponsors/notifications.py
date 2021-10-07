@@ -187,3 +187,17 @@ class NullifiedContractLogger():
             action_flag=CHANGE,
             change_message="Contract Nullified"
         )
+
+
+class SendSponsorNotificationLogger():
+    def notify(self, notification, sponsorship, contact_types, request, **kwargs):
+        contacts = ", ".join(contact_types)
+        msg = f"Notification '{notification.internal_name}' was sent to contacts: {contacts}"
+        LogEntry.objects.log_action(
+            user_id=request.user.id,
+            content_type_id=ContentType.objects.get_for_model(Sponsorship).pk,
+            object_id=sponsorship.pk,
+            object_repr=str(sponsorship),
+            action_flag=CHANGE,
+            change_message=msg
+        )

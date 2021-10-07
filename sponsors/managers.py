@@ -1,3 +1,4 @@
+from polymorphic.managers import PolymorphicManager
 from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
@@ -42,6 +43,12 @@ class SponsorshipQuerySet(QuerySet):
         benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
+    def includes_benefit_feature(self, feature_model):
+        from sponsors.models import SponsorBenefit
+        feature_qs = feature_model.objects.all()
+        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
+        return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+
 
 class SponsorContactQuerySet(QuerySet):
     def get_primary_contact(self, sponsor):
@@ -49,6 +56,22 @@ class SponsorContactQuerySet(QuerySet):
         if not contact:
             raise self.model.DoesNotExist()
         return contact
+
+    def filter_by_contact_types(self, primary=False, administrative=False, accounting=False, manager=False):
+        if not any([primary, administrative, accounting, manager]):
+            return self.none()
+
+        query = Q()
+        if primary:
+            query |= Q(primary=True)
+        if administrative:
+            query |= Q(administrative=True)
+        if accounting:
+            query |= Q(accounting=True)
+        if manager:
+            query |= Q(manager=True)
+
+        return self.filter(query)
 
 
 class SponsorshipBenefitManager(OrderedModelManager):

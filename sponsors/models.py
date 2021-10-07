@@ -1,11 +1,10 @@
 import uuid
-from abc import ABC
 from itertools import chain
 from num2words import num2words
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
-from django.db.models import Sum, Subquery
+from django.db.models import Sum, Subquery, Q
 from django.template.defaultfilters import truncatechars
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -17,6 +16,7 @@ from django_countries.fields import CountryField
 from pathlib import Path
 from polymorphic.models import PolymorphicModel
 
+from mailing.models import BaseEmailTemplate
 from cms.models import ContentManageable
 from .enums import LogoPlacementChoices, PublisherChoices
 from .managers import (
@@ -255,6 +255,16 @@ class SponsorContact(models.Model):
     """
     Sponsor contact information
     """
+    PRIMARY_CONTACT = "primary"
+    ADMINISTRATIVE_CONTACT = "administrative"
+    ACCOUTING_CONTACT = "accounting"
+    MANAGER_CONTACT = "manager"
+    CONTACT_TYPES = [
+        (PRIMARY_CONTACT, "Primary"),
+        (ADMINISTRATIVE_CONTACT, "Administrative"),
+        (ACCOUTING_CONTACT, "Accounting"),
+        (MANAGER_CONTACT, "Manager"),
+    ]
 
     objects = SponsorContactQuerySet.as_manager()
 
@@ -929,6 +939,41 @@ class Contract(models.Model):
             self.save()
 
 
+#################################
+##### Sponsor Email Notifications
+class SponsorEmailNotificationTemplate(BaseEmailTemplate):
+
+    class Meta:
+        verbose_name = "Sponsor Email Notification Template"
+        verbose_name_plural = "Sponsor Email Notification Templates"
+
+    def get_email_context_data(self, **kwargs):
+        sponsorship = kwargs.pop("sponsorship")
+        context = {
+            "sponsor_name": sponsorship.sponsor.name,
+            "sponsorship_start_date": sponsorship.start_date,
+            "sponsorship_end_date": sponsorship.end_date,
+            "sponsorship_status": sponsorship.status,
+            "sponsorship_level": sponsorship.level_name,
+        }
+        context.update(kwargs)
+        return context
+
+    def get_email_message(self, sponsorship, **kwargs):
+        contact_types = {
+            "primary": kwargs.get("to_primary"),
+            "administrative": kwargs.get("to_administrative"),
+            "accounting": kwargs.get("to_accounting"),
+            "manager": kwargs.get("to_manager"),
+        }
+        contacts = sponsorship.sponsor.contacts.filter_by_contact_types(**contact_types)
+        if not contacts.exists():
+            return
+
+        recipients = contacts.values_list("email", flat=True)
+        return self.get_email(from_email=settings.DEFAULT_FROM_EMAIL, to=recipients, context={"sponsorship": sponsorship})
+
+
 ########################################
 ##### Benefit features abstract classes
 class BaseLogoPlacement(models.Model):
@@ -956,6 +1001,11 @@ class BaseTieredQuantity(models.Model):
     class Meta:
         abstract = True
 
+
+class BaseEmailTargetable(models.Model):
+
+    class Meta:
+        abstract = True
 
 ######################################################
 ##### SponsorshipBenefit features configuration models
@@ -1054,6 +1104,23 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return f"{name} ({self.quantity})"
 
 
+class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfiguration):
+    """
+    Configuration for email targeatable benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Email Targetable Configuration"
+        verbose_name_plural = "Email Targetable Configurations"
+
+    @property
+    def benefit_feature_class(self):
+        return EmailTargetable
+
+    def __str__(self):
+        return f"Email targeatable configuration"
+
+
 ####################################
 ##### SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -1098,3 +1165,16 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
 
     def __str__(self):
         return f"{self.quantity} of {self.benefit} for {self.package}"
+
+
+class EmailTargetable(BaseEmailTargetable, BenefitFeature):
+    """
+    For email targeatable benefits
+    """
+
+    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+        verbose_name = "Email Targetable Benefit"
+        verbose_name_plural = "Email Targetable Benefits"
+
+    def __str__(self):
+        return f"Email targeatable"

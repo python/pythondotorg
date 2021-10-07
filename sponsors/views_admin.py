@@ -7,10 +7,10 @@ from django.db.models import Q
 from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit
+from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -227,6 +227,7 @@ def nullify_contract_view(ModelAdmin, request, pk):
     context = {"contract": contract}
     return render(request, "sponsors/admin/nullify_contract.html", context=context)
 
+
 @transaction.atomic
 def update_related_sponsorships(ModelAdmin, request, pk):
     """
@@ -264,3 +265,52 @@ def update_related_sponsorships(ModelAdmin, request, pk):
 
     context = {"benefit": benefit, "form": form}
     return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
+
+
+##################
+### CUSTOM ACTIONS
+def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
+    to_notify = queryset.includes_benefit_feature(EmailTargetable)
+    to_ignore = queryset.exclude(id__in=to_notify.values_list("id", flat=True))
+    email_preview = None
+
+    post_request = request.method.upper() == "POST"
+    if post_request and "confirm" in request.POST:
+        form = SendSponsorshipNotificationForm(request.POST)
+        if form.is_valid():
+            use_case = use_cases.SendSponsorshipNotificationUseCase.build()
+            kwargs = {
+                "sponsorships": queryset,
+                "notification": form.get_notification(),
+                "contact_types": form.cleaned_data["contact_types"],
+                "request": request,
+            }
+            use_case.execute(**kwargs)
+            ModelAdmin.message_user(
+                request, "Notifications were sent!", messages.SUCCESS
+            )
+
+            redirect_url = reverse("admin:sponsors_sponsorship_changelist")
+            return redirect(redirect_url)
+    elif post_request and "preview" in request.POST:
+        form = SendSponsorshipNotificationForm(request.POST)
+        if form.is_valid():
+            msg_kwargs = {
+                "to_primary": True,
+                "to_administrative": True,
+                "to_accounting": True,
+                "to_manager": True,
+            }
+            notification = form.get_notification()
+            email_preview = notification.get_email_message(queryset.first(), **msg_kwargs)
+    else:
+        form = SendSponsorshipNotificationForm()
+
+    context = {
+        "to_notify": to_notify,
+        "to_ignore": to_ignore,
+        "form":form,
+        "email_preview": email_preview,
+        "queryset": queryset,
+    }
+    return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)
