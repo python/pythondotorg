@@ -3,8 +3,11 @@ Installing
 
 Manual setup
 ------------
+First, install PostgreSQL_ on your machine and run it.
 
-First, clone the repository::
+.. _PostgreSQL: https://www.postgresql.org/download/
+
+Then clone the repository::
 
     $ git clone git://github.com/python/pythondotorg.git
 
