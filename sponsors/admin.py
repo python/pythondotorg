@@ -1,12 +1,15 @@
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
+from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.urls import path, reverse
+from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
+from mailing.admin import BaseEmailTemplateAdmin
 from .models import (
     SponsorshipPackage,
     SponsorshipProgram,
@@ -17,9 +20,12 @@ from .models import (
     SponsorBenefit,
     LegalClause,
     Contract,
+    BenefitFeature,
     BenefitFeatureConfiguration,
     LogoPlacementConfiguration,
     TieredQuantityConfiguration,
+    EmailTargetableConfiguration,
+    SponsorEmailNotificationTemplate,
 )
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
@@ -42,10 +48,18 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class TieredQuantityConfigurationInline(StackedPolymorphicInline.Child):
         model = TieredQuantityConfiguration
 
+    class EmailTargetableConfigurationInline(StackedPolymorphicInline.Child):
+        model = EmailTargetableConfiguration
+        readonly_fields = ["display"]
+
+        def display(self, obj):
+            return "Enabled"
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
         TieredQuantityConfigurationInline,
+        EmailTargetableConfigurationInline,
     ]
 
 
@@ -159,6 +173,31 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
 
+class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
+    title = "targetable email benefits"
+    parameter_name = 'email_benefit'
+
+    @cached_property
+    def benefits(self):
+        qs = EmailTargetableConfiguration.objects.all().values_list("benefit_id", flat=True)
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        return {str(b.id): b for b in benefits}
+
+    def lookups(self, request, model_admin):
+        return [
+          (k, b.name) for k, b in self.benefits.items()
+        ]
+
+    def queryset(self, request, queryset):
+        benefit = self.benefits.get(self.value())
+        if not benefit:
+            return queryset
+        # all sponsors benefit related with such sponsorship benefit
+        qs = SponsorBenefit.objects.filter(
+            sponsorship_benefit_id=benefit.id).values_list("sponsorship_id", flat=True)
+        return queryset.filter(id__in=Subquery(qs))
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -174,8 +213,8 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", "package"]
-
+    list_filter = ["status", "package", TargetableEmailBenefitsFilter]
+    actions = ["send_notifications"]
     fieldsets = [
         (
             "Sponsorship Data",
@@ -223,6 +262,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsor", "package")
+
+    def send_notifications(self, request, queryset):
+        return views_admin.send_sponsorship_notifications_action(self, request, queryset)
+    send_notifications.short_description = 'Send notifications to selected'
+
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
             "for_modified_package",
@@ -250,10 +297,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
             readonly_fields.extend(extra)
 
         return readonly_fields
-
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor")
 
     def get_estimated_cost(self, obj):
         cost = None
@@ -303,17 +346,14 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_sponsor_name(self, obj):
         return obj.sponsor.name
-
     get_sponsor_name.short_description = "Name"
 
     def get_sponsor_description(self, obj):
         return obj.sponsor.description
-
     get_sponsor_description.short_description = "Description"
 
     def get_sponsor_landing_page_url(self, obj):
         return obj.sponsor.landing_page_url
-
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
@@ -322,7 +362,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         context = Context({'sponsor': obj.sponsor})
         html = template.render(context)
         return mark_safe(html)
-
     get_sponsor_web_logo.short_description = "Web Logo"
 
     def get_sponsor_print_logo(self, obj):
@@ -334,12 +373,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             context = Context({'img': img})
             html = template.render(context)
         return mark_safe(html) if html else "---"
-
     get_sponsor_print_logo.short_description = "Print Logo"
 
     def get_sponsor_primary_phone(self, obj):
         return obj.sponsor.primary_phone
-
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
@@ -358,7 +395,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html += f"<p>{mail_row}</p>"
         html += f"<p>{sponsor.postal_code}</p>"
         return mark_safe(html)
-
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
     def get_sponsor_contacts(self, obj):
@@ -379,7 +415,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         return mark_safe(html)
-
     get_sponsor_contacts.short_description = "Contacts"
 
     def rollback_to_editing_view(self, request, pk):
@@ -551,3 +586,8 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def nullify_contract_view(self, request, pk):
         return views_admin.nullify_contract_view(self, request, pk)
+
+
+@admin.register(SponsorEmailNotificationTemplate)
+class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
+    pass

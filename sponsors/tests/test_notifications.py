@@ -384,3 +384,32 @@ class NullifiedContractLoggerTests(TestCase):
         self.assertEqual(str(self.contract), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
         self.assertEqual(log_entry.change_message, "Contract Nullified")
+
+
+class SendSponsorNotificationLoggerTests(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get('/')
+        self.request.user = baker.make(settings.AUTH_USER_MODEL)
+        self.sponsorship = baker.make('sponsors.Sponsorship', sponsor__name="Sponsor")
+        self.notification = baker.make('sponsors.SponsorEmailNotificationTemplate', internal_name="Foo")
+        self.kwargs = {
+            "request": self.request,
+            "notification": self.notification,
+            "sponsorship": self.sponsorship,
+            "contact_types": ["administrative"],
+        }
+        self.logger = notifications.SendSponsorNotificationLogger()
+
+    def test_create_log_entry(self):
+        self.assertEqual(LogEntry.objects.count(), 0)
+
+        self.logger.notify(**self.kwargs)
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.sponsorship.pk))
+        self.assertEqual(str(self.sponsorship), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, CHANGE)
+        self.assertEqual(log_entry.change_message, "Notification 'Foo' was sent to contacts: administrative")
