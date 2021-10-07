@@ -1,8 +1,8 @@
 from datetime import date, timedelta
 
-from model_bakery.recipe import Recipe
+from model_bakery.recipe import Recipe, foreign_key
 
-from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorBenefit
+from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorshipPackage, SponsorBenefit
 from sponsors.enums import LogoPlacementChoices, PublisherChoices
 
 today = date.today()
@@ -25,12 +25,17 @@ awaiting_signature_contract = Recipe(
     status=Contract.AWAITING_SIGNATURE,
 )
 
+package = Recipe(
+    SponsorshipPackage
+)
+
 finalized_sponsorship = Recipe(
     Sponsorship,
     sponsor__name="Sponsor Name",
     status=Sponsorship.FINALIZED,
     start_date=today - two_days,
     end_date=today + two_days,
+    package=foreign_key(package),
 )
 
 logo_at_download_feature = Recipe(

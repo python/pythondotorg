@@ -20,6 +20,8 @@ class LogoPlacementSerializer(serializers.Serializer):
     start_date = serializers.DateField()
     end_date = serializers.DateField()
     sponsor_url = serializers.URLField()
+    level_name = serializers.CharField()
+    level_order = serializers.IntegerField()
 
 
 class SponsorPublisherPermission(permissions.BasePermission):
@@ -45,6 +47,8 @@ class LogoPlacementeAPIList(APIView):
             sponsor = sponsorship.sponsor
             base_data = {
                 "sponsor": sponsor.name,
+                "level_name": sponsorship.level_name,
+                "level_order": sponsorship.package.order,
                 "description": sponsor.description,
                 "logo": sponsor.web_logo.url,
                 "sponsor_url": sponsor.landing_page_url,
