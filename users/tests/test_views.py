@@ -4,6 +4,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 
+from sponsors.forms import SponsorUpdateForm
 from sponsors.models import Sponsorship
 from users.factories import UserFactory
 from users.models import Membership
@@ -415,5 +416,40 @@ class SponsorshipDetailViewTests(TestCase):
 
     def test_404_if_sponsorship_does_not_belong_to_user(self):
         self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+
+class UpdateSponsorInfoViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.sponsor = self.sponsorship.sponsor
+        self.url = reverse(
+            "users:edit_sponsor_info", args=[self.sponsor.pk]
+        )
+
+    def test_display_template_with_sponsor_info(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "users/sponsor_info_update.html")
+        self.assertEqual(context["sponsor"], self.sponsor)
+        self.assertIsInstance(context["form"], SponsorUpdateForm)
+
+    def test_404_if_sponsor_does_not_exist(self):
+        self.sponsor.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_404_if_sponsor_from_sponsorship_from_another_user(self):
+        sponsorship = baker.make(Sponsorship, _fill_optional=True)
+        self.url = reverse(
+            "users:edit_sponsor_info", args=[sponsorship.sponsor.pk]
+        )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)

@@ -1,9 +1,11 @@
 from collections import defaultdict
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Subquery
 from django.urls import reverse, reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, redirect
@@ -18,6 +20,8 @@ from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
+from sponsors.forms import SponsorUpdateForm
+from sponsors.models import Sponsor
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
@@ -210,6 +214,7 @@ class UserSponsorshipsDashboard(ListView):
         context["ongoing_sponsorships"] = [
             sp for sp in context["sponsorships"] if not sp.open_for_editing
         ]
+        context["sponsors"] = set([sp.sponsor for sp in context["sponsorships"]])
         return context
 
 
@@ -220,3 +225,18 @@ class SponsorshipDetailView(DetailView):
 
     def get_queryset(self):
         return self.request.user.sponsorships.select_related("sponsor")
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UpdateSponsorInfoView(UpdateView):
+    object_name = "sponsor"
+    template_name = 'users/sponsor_info_update.html'
+    form_class = SponsorUpdateForm
+
+    def get_queryset(self):
+        sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
+        return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
+        return self.request.path

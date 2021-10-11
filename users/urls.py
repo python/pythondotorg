@@ -14,6 +14,11 @@ urlpatterns = [
     path('nominations/', views.UserNominationsView.as_view(), name='user_nominations_view'),
     path('sponsorships/', views.UserSponsorshipsDashboard.as_view(), name='user_sponsorships_dashboard'),
     path(
+        "sponsorships/sponsor/<int:pk>/",
+        views.UpdateSponsorInfoView.as_view(),
+        name="edit_sponsor_info",
+    ),
+    path(
         "sponsorships/<int:pk>/",
         views.SponsorshipDetailView.as_view(),
         name="sponsorship_application_detail",

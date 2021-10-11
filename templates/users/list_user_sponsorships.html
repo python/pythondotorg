@@ -18,6 +18,16 @@
   <h1>Sponsorship Dashboard</h1>
   <p>Here you can manage all of you sponsorship applications and sponsor information. </p>
 
+  {% if sponsors %}
+    <br/>
+    <b>Sponsors list</b>
+    <ul>
+      {% for sponsor in sponsors %}
+        <li><a href="{% url 'users:edit_sponsor_info' sponsor.pk %}">{{ sponsor }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
   {% if open_sponsorships %}
     <br/>
     <b>Open applications</b>

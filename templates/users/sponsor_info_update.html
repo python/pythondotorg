@@ -1,0 +1,24 @@
+{% extends "users/base.html" %}
+{% load humanize pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}
+  Edit {{ sponsor }} | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="psf signup default-page"{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block user_content %}
+  <h1>Edit {{ sponsor }}</h1>
+
+  <form id="edit-sponsor-form" action="." method="POST" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" name="submit-btn" value="Save"/>
+  </form>
+{% endblock %}

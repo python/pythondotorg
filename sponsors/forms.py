@@ -463,3 +463,10 @@ class SendSponsorshipNotificationForm(forms.Form):
             subject=self.cleaned_data["subject"],
         )
         return self.cleaned_data.get("notification") or default_notification
+
+
+class SponsorUpdateForm(forms.ModelForm):
+
+    class Meta:
+        exclude = ["created", "updated", "creator", "last_modified_by"]
+        model = Sponsor
