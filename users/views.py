@@ -200,4 +200,14 @@ class UserSponsorshipsDashboard(ListView):
     template_name = 'users/list_user_sponsorships.html'
 
     def get_queryset(self):
-        return self.request.user.sponsorships.select_related("sponsors")
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["open_sponsorships"] = [
+            sp for sp in context["sponsorships"] if sp.open_for_editing
+        ]
+        context["ongoing_sponsorships"] = [
+            sp for sp in context["sponsorships"] if not sp.open_for_editing
+        ]
+        return context

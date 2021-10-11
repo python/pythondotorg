@@ -1,0 +1,45 @@
+{% extends "users/base.html" %}
+{% load humanize pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}
+  Sponsorship Dashboard | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="psf signup default-page"{% endblock %}
+
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block user_content %}
+  <h1>Sponsorship Dashboard</h1>
+  <p>Here you can manage all of you sponsorship applications and sponsor information. </p>
+
+  {% if open_sponsorships %}
+    <br/>
+    <b>Open applications</b>
+    <ul>
+      {% for sponsorship in open_sponsorships %}
+        <li><a href="{{ sponsorship.detail_url }}">{{ sponsorship }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+  {% if ongoing_sponsorships %}
+    <br/>
+    <b>Ongoing or finished applications</b>
+    <ul>
+      {% for sponsorship in ongoing_sponsorships %}
+        <li><a href="{{ sponsorship.detail_url }}">{{ sponsorship }}</a></li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+
+{% endblock %}
+
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
