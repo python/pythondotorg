@@ -492,7 +492,7 @@ class Sponsorship(models.Model):
 
     @property
     def detail_url(self):
-        return reverse("sponsorship_application_detail", args=[self.pk])
+        return reverse("users:sponsorship_application_detail", args=[self.pk])
 
     @cached_property
     def package_benefits(self):

@@ -7,7 +7,7 @@ from django.forms.utils import ErrorList
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, DetailView
+from django.views.generic import FormView, DetailView, RedirectView
 
 from .models import (
     SponsorshipBenefit,
@@ -169,12 +169,3 @@ class NewSponsorshipApplicationView(FormView):
         )
         cookies.delete_sponsorship_selected_benefits(response)
         return response
-
-
-@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
-class SponsorshipDetailView(DetailView):
-    context_object_name = 'sponsorship'
-    template_name = 'sponsors/sponsorship_detail.html'
-
-    def get_queryset(self):
-        return self.request.user.sponsorships.select_related("sponsor")

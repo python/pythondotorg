@@ -211,3 +211,12 @@ class UserSponsorshipsDashboard(ListView):
             sp for sp in context["sponsorships"] if not sp.open_for_editing
         ]
         return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class SponsorshipDetailView(DetailView):
+    context_object_name = 'sponsorship'
+    template_name = 'users/sponsorship_detail.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")

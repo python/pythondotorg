@@ -1,8 +1,10 @@
+from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 
+from sponsors.models import Sponsorship
 from users.factories import UserFactory
 from users.models import Membership
 
@@ -376,3 +378,42 @@ class UsersViewsTestCase(TestCase):
         logged_in = self.client.login(username=self.user.username,
                                       password='newpassword')
         self.assertTrue(logged_in)
+
+
+class SponsorshipDetailViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.url = reverse(
+            "users:sponsorship_application_detail", args=[self.sponsorship.pk]
+        )
+
+    def test_display_template_with_sponsorship_info(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "users/sponsorship_detail.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = settings.LOGIN_URL
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_404_if_sponsorship_does_not_belong_to_user(self):
+        self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
