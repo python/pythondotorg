@@ -2441,7 +2441,8 @@ span.highlighted {
 $breakpoint-phone: 640px;
 $breakpoint-desktop: 1200px;
 
-#new_sponsorship_application_container {
+#new_sponsorship_application_container, #edit-sponsor-information {
+
   .form_field {
     margin-top: 1em;
     margin-bottom: 0;
@@ -2532,6 +2533,12 @@ $breakpoint-desktop: 1200px;
     margin: 0;
     font-size: 75%;
   }
+}
+
+#edit-sponsor-information {
+    .helptext {
+        font-size: 65%;
+    }
 }
 
 #select_sponsorship_benefits_container {
