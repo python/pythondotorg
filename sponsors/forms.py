@@ -466,7 +466,45 @@ class SendSponsorshipNotificationForm(forms.Form):
 
 
 class SponsorUpdateForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        formset_kwargs = {"prefix": "contact", "instance": self.instance}
+        factory = forms.inlineformset_factory(
+            Sponsor,
+            SponsorContact,
+            form=SponsorContactForm,
+            extra=0,
+            min_num=1,
+            validate_min=True,
+            can_delete=True,
+            can_order=False,
+            max_num=5,
+        )
+        if self.data:
+            self.contacts_formset = factory(self.data, **formset_kwargs)
+        else:
+            self.contacts_formset = factory(**formset_kwargs)
 
     class Meta:
         exclude = ["created", "updated", "creator", "last_modified_by"]
         model = Sponsor
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        if not self.contacts_formset.is_valid():
+            msg = "Errors with contact(s) information"
+            if not self.contacts_formset.errors:
+                msg = "You have to enter at least one contact"
+            raise forms.ValidationError(msg)
+
+        has_primary_contact = any(
+            f.cleaned_data.get("primary") for f in self.contacts_formset.forms
+        )
+        if not has_primary_contact:
+            msg = "You have to mark at least one contact as the primary one."
+            raise forms.ValidationError(msg)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        self.contacts_formset.save()

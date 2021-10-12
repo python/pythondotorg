@@ -18,7 +18,28 @@
 
   <form id="edit-sponsor-form" action="." method="POST" enctype="multipart/form-data">
     {% csrf_token %}
+
+    <h2>Sponsor Information</h2>
     {{ form.as_p }}
+
+    <h2>Contacts</h2>
+    {{ form.contacts_formset.management_form }}
+    <div class="sponsor-contacts-container">
+
+      {% for form in form.contacts_formset %}
+        <div class="contact-form form-row">
+          <table>
+            {{ form }}
+            <tr class="remove {% if forloop.first %}remove-contact-row {% endif %}remove-form-row">
+              <th><label>Remove contact</label></th>
+            </tr>
+          </table>
+        </div>
+      {% endfor %}
+
+      <button class="formset-btn add-form-row" type="button">Extra contact</button>
+    </div>
+
     <input type="submit" name="submit-btn" value="Save"/>
   </form>
 {% endblock %}
