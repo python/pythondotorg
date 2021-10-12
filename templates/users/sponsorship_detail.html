@@ -18,10 +18,9 @@
   <div id="sponsorship-container">
     <h1>{{ sponsorship.sponsor.name }} Sponsorship Application</h1>
 
-    <div id="sponsor-info">
-    </div>
-
     <div id="sponsorship-info">
+      <p>Here you can find all the information associated with your sponsorship application for {{  sponsorship.sponsor.name }} sponsor. <a href="{% url 'users:edit_sponsor_info' sponsorship.sponsor.pk %}">Click here</a> if you want to edit any sponsor information.</p>
+
       <h3>Application Data</h3>
       <ul>
         <li>
