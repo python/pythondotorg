@@ -27,6 +27,7 @@ from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import Membership
+from sponsors.models import Sponsorship
 
 User = get_user_model()
 
@@ -208,12 +209,20 @@ class UserSponsorshipsDashboard(ListView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["open_sponsorships"] = [
-            sp for sp in context["sponsorships"] if sp.open_for_editing
-        ]
-        context["ongoing_sponsorships"] = [
-            sp for sp in context["sponsorships"] if not sp.open_for_editing
-        ]
+        sponsorships = context["sponsorships"]
+        context["active"] = [sp for sp in sponsorships if sp.is_active]
+
+        by_status = []
+        inactive = [sp for sp in sponsorships if not sp.is_active]
+        for value, label in Sponsorship.STATUS_CHOICES[::-1]:
+            by_status.append((
+                label, [
+                    sp for sp in inactive
+                    if sp.status == value
+                ]
+            ))
+
+        context["by_status"] = by_status
         return context
 
 

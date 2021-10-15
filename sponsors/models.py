@@ -1,6 +1,7 @@
 import uuid
 from itertools import chain
 from num2words import num2words
+from datetime import date
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
@@ -432,6 +433,13 @@ class Sponsorship(models.Model):
                 return self.sponsorship_fee
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
+
+    @property
+    def is_active(self):
+        conditions = [
+            self.status == self.FINALIZED,
+            self.end_date and self.end_date > date.today()
+        ]
 
     def reject(self):
         if self.REJECTED not in self.next_status:
