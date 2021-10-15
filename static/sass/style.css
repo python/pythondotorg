@@ -3715,6 +3715,11 @@ span.highlighted {
 #edit-sponsor-information .form-actions {
   margin-top: 1em;
   float: right; }
+#edit-sponsor-information input:read-only {
+  background: #f2f4f6;
+  cursor: not-allowed; }
+#edit-sponsor-information input[type=submit] {
+  cursor: pointer; }
 
 #select_sponsorship_benefits_container h1 {
   /* Page header */

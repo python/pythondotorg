@@ -2544,6 +2544,15 @@ $breakpoint-desktop: 1200px;
     margin-top: 1em;
     float: right;
   }
+
+  input:read-only {
+    background: $grey-lighterest;
+    cursor: not-allowed;
+  }
+
+  input[type=submit] {
+    cursor: pointer;
+  }
 }
 
 #select_sponsorship_benefits_container {
