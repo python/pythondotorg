@@ -214,7 +214,6 @@ class UserSponsorshipsDashboard(ListView):
         context["ongoing_sponsorships"] = [
             sp for sp in context["sponsorships"] if not sp.open_for_editing
         ]
-        context["sponsors"] = set([sp.sponsor for sp in context["sponsorships"]])
         return context
 
 
@@ -230,6 +229,7 @@ class SponsorshipDetailView(DetailView):
         context = super().get_context_data(*args, **kwargs)
         context["sponsor"] = context["sponsorship"].sponsor
         return context
+
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorInfoView(UpdateView):
