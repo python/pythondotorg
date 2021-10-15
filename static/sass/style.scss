@@ -2536,9 +2536,14 @@ $breakpoint-desktop: 1200px;
 }
 
 #edit-sponsor-information {
-    .helptext {
-        font-size: 65%;
-    }
+  .helptext {
+    font-size: 65%;
+  }
+
+  .form-actions {
+    margin-top: 1em;
+    float: right;
+  }
 }
 
 #select_sponsorship_benefits_container {
@@ -2908,6 +2913,5 @@ $breakpoint-desktop: 1200px;
       margin: 0;
     }
   }
-
 
 }

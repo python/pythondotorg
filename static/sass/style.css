@@ -3712,6 +3712,9 @@ span.highlighted {
 
 #edit-sponsor-information .helptext {
   font-size: 65%; }
+#edit-sponsor-information .form-actions {
+  margin-top: 1em;
+  float: right; }
 
 #select_sponsorship_benefits_container h1 {
   /* Page header */
