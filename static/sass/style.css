@@ -3948,3 +3948,23 @@ span.highlighted {
 
 .hidden {
   display: none; }
+
+#sponsorship-detail-container .info-cards {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  flex-wrap: wrap; }
+#sponsorship-detail-container .card {
+  flex: 1 0 48%; }
+#sponsorship-detail-container .card-info {
+  margin: 0.5em 0.5em;
+  padding: 1em 1em;
+  border: 1px solid #caccce;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  background: #e6e8ea; }
+  #sponsorship-detail-container .card-info h3 {
+    margin: 0; }

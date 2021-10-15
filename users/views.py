@@ -226,6 +226,10 @@ class SponsorshipDetailView(DetailView):
     def get_queryset(self):
         return self.request.user.sponsorships.select_related("sponsor")
 
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["sponsor"] = context["sponsorship"].sponsor
+        return context
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorInfoView(UpdateView):

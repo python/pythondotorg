@@ -2883,3 +2883,31 @@ $breakpoint-desktop: 1200px;
 .hidden {
   display: none;
 }
+
+
+#sponsorship-detail-container {
+  .info-cards {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    flex: 1 0 48%;
+  }
+
+  .card-info {
+    margin: .5em .5em;
+    padding: 1em 1em;
+    border: 1px solid $default-border-color;
+    @include border-radius();
+    background: $grey-lightest;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
+
+}
