@@ -452,7 +452,7 @@ class ContractModelTests(TestCase):
         contract.refresh_from_db()
 
         sponsor = self.sponsorship.sponsor
-        expected_info = f"{sponsor.name} with address {sponsor.full_address} and contact {sponsor.primary_phone}"
+        expected_info = f"{sponsor.name}, {sponsor.description}"
 
         self.assertEqual(contract.sponsorship, self.sponsorship)
         self.assertEqual(contract.sponsor_info, expected_info)

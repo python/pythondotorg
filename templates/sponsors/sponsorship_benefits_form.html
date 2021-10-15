@@ -136,7 +136,7 @@
 
       <div id="add-on-benefits">
         <div class="row">
-          {% for benefit in form.fields.add_ons_benefits.queryset %}
+        {% for benefit in form.fields.add_ons_benefits.queryset %}
           <div class="col col-items">
             <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
             <div class="add-on-description">
@@ -145,7 +145,11 @@
               <span class="benefit-description">{{ benefit.description }}</span>
             </div>
           </div>
-          {% endfor %}
+        {% if forloop.counter|divisibleby:4 %}
+        </div>
+        <div class="row">
+        {% endif %}
+        {% endfor %}
         </div>
       </div>
 
