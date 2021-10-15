@@ -453,3 +453,9 @@ class UpdateSponsorInfoViewTests(TestCase):
         )
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
+
+# TEST CHECK LIST
+#
+# 1. Empty post validate against errors
+# 2. Valid post updates sponsor + contact
+# 3. Can't have multiple primary contacts
