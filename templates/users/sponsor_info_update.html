@@ -166,10 +166,9 @@
           {{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.web_logo %}
         {% if sponsor.web_logo %}
-          <span>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></span>
+          <p>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></p>
         {% endif %}
         {% if form.web_logo.help_text %}
-          <br/>
           <span class="helptext">{{ form.web_logo.help_text }}</span>
         {% endif %}
       </p>
@@ -179,10 +178,9 @@
           {{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.print_logo %}
         {% if sponsor.print_logo %}
-          <span>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></span>
+          <p>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></p>
         {% endif %}
         {% if form.print_logo.help_text %}
-          <br/>
           <span class="helptext">{{ form.print_logo.help_text }}</span>
         {% endif %}
       </p>
