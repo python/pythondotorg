@@ -473,10 +473,12 @@ class SponsorUpdateForm(forms.ModelForm):
     web_logo = forms.ImageField(
         widget=forms.widgets.FileInput,
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+        required=False,
     )
     print_logo = forms.ImageField(
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
+        required=False,
     )
 
     def __init__(self, *args, **kwargs):
