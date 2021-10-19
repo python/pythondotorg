@@ -34,10 +34,12 @@ def user_nav_bar_links(request):
     nav = {}
     if request.user.is_authenticated:
         user = request.user
-        sponsorship_urls = [
-            {"url": sp.detail_url, "label": f"{sp.sponsor.name}'s sponsorship"}
-            for sp in user.sponsorships
-        ]
+        sponsorship_url = None
+        if user.sponsorships.exists():
+            sponsorship_url = reverse("users:user_sponsorships_dashboard")
+
+        # if the section has a urls key, the section buttion will work as a drop-down menu
+        # if the section has only a url key, the button will be a link instead
         nav = {
             "account": {
                 "label": "Your Account",
@@ -54,8 +56,8 @@ def user_nav_bar_links(request):
                 ],
             },
             "sponsorships": {
-                "label": "Sponsorships",
-                "urls": sponsorship_urls,
+                "label": "Sponsorships Dashboard",
+                "url": sponsorship_url
             }
         }
 

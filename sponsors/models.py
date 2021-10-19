@@ -1,6 +1,7 @@
 import uuid
 from itertools import chain
 from num2words import num2words
+from datetime import date
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
@@ -433,6 +434,13 @@ class Sponsorship(models.Model):
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
 
+    @property
+    def is_active(self):
+        conditions = [
+            self.status == self.FINALIZED,
+            self.end_date and self.end_date > date.today()
+        ]
+
     def reject(self):
         if self.REJECTED not in self.next_status:
             msg = f"Can't reject a {self.get_status_display()} sponsorship."
@@ -492,7 +500,7 @@ class Sponsorship(models.Model):
 
     @property
     def detail_url(self):
-        return reverse("sponsorship_application_detail", args=[self.pk])
+        return reverse("users:sponsorship_application_detail", args=[self.pk])
 
     @cached_property
     def package_benefits(self):
@@ -620,39 +628,39 @@ class Sponsor(ContentManageable):
 
     name = models.CharField(
         max_length=100,
-        verbose_name="Sponsor name",
+        verbose_name="Name",
         help_text="Name of the sponsor, for public display.",
     )
     description = models.TextField(
-        verbose_name="Sponsor description",
+        verbose_name="Description",
         help_text="Brief description of the sponsor for public display.",
     )
     landing_page_url = models.URLField(
         blank=True,
         null=True,
-        verbose_name="Sponsor landing page",
-        help_text="Sponsor landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
+        verbose_name="Landing page URL",
+        help_text="Landing page URL. This may be provided by the sponsor, however the linked page may not contain any sales or marketing information.",
     )
     twitter_handle = models.CharField(
         max_length=32,  # Actual limit set by twitter is 15 characters, but that may change?
         blank=True,
         null=True,
-        verbose_name="Sponsor twitter hanlde",
+        verbose_name="Twitter handle",
     )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
-        verbose_name="Sponsor web logo",
+        verbose_name="Web logo",
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
     )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
         blank=True,
         null=True,
-        verbose_name="Sponsor print logo",
+        verbose_name="Print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
     )
 
-    primary_phone = models.CharField("Sponsor Primary Phone", max_length=32)
+    primary_phone = models.CharField("Primary Phone", max_length=32)
     mailing_address_line_1 = models.CharField(
         verbose_name="Mailing Address line 1", max_length=128, default=""
     )

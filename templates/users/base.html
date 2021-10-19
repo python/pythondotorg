@@ -18,8 +18,8 @@
     <div class="user-profile-controls">
       <div class="menu">
         {% for section in USER_NAV_BAR.values %}
-          {% if section.urls %}
           <div class="section">
+          {% if section.urls %}
             <span>{{ section.label }}</span>
             <div class="section-links">
               <ul>
@@ -28,8 +28,12 @@
                 {% endfor %}
               </ul>
             </div>
-          </div>
+          {% elif section.url %}
+            <div class="single-link">
+              <span><a href="{{ section.url }}">{{ section.label }}</a></span>
+            </div>
           {% endif %}
+          </div>
         {% endfor %}
       </div>
     </div>

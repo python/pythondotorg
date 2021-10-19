@@ -2893,6 +2893,8 @@ p.quote-by-organization {
     padding: 0.25em 1em; }
     .user-profile-controls div.section:hover .section-links {
       display: inline; }
+  .user-profile-controls div.single-link span > a {
+    color: #4d4d4d !important; }
   .user-profile-controls div.section-links {
     display: none; }
     .user-profile-controls div.section-links ul {
@@ -3638,49 +3640,49 @@ span.highlighted {
 .ui-tooltip-content {
   font-size: 75%; }
 
-#new_sponsorship_application_container .form_field {
+#new_sponsorship_application_container .form_field, #edit-sponsor-information .form_field {
   margin-top: 1em;
   margin-bottom: 0; }
-  #new_sponsorship_application_container .form_field textarea, #new_sponsorship_application_container .form_field input {
+  #new_sponsorship_application_container .form_field textarea, #new_sponsorship_application_container .form_field input, #edit-sponsor-information .form_field textarea, #edit-sponsor-information .form_field input {
     margin-bottom: 0px; }
-  #new_sponsorship_application_container .form_field select {
+  #new_sponsorship_application_container .form_field select, #edit-sponsor-information .form_field select {
     margin-bottom: 0px; }
-  #new_sponsorship_application_container .form_field .error-message {
+  #new_sponsorship_application_container .form_field .error-message, #edit-sponsor-information .form_field .error-message {
     font-size: 75%; }
-#new_sponsorship_application_container #sponsorship-info-container ul {
+#new_sponsorship_application_container #sponsorship-info-container ul, #edit-sponsor-information #sponsorship-info-container ul {
   margin-bottom: 0px; }
-#new_sponsorship_application_container .helptext {
+#new_sponsorship_application_container .helptext, #edit-sponsor-information .helptext {
   font-size: 85%; }
-#new_sponsorship_application_container .inline_fields {
+#new_sponsorship_application_container .inline_fields, #edit-sponsor-information .inline_fields {
   display: block; }
-  #new_sponsorship_application_container .inline_fields div {
+  #new_sponsorship_application_container .inline_fields div, #edit-sponsor-information .inline_fields div {
     display: inline-block;
     width: 49%; }
-  #new_sponsorship_application_container .inline_fields .form_field {
+  #new_sponsorship_application_container .inline_fields .form_field, #edit-sponsor-information .inline_fields .form_field {
     display: block; }
-  #new_sponsorship_application_container .inline_fields .helptext {
+  #new_sponsorship_application_container .inline_fields .helptext, #edit-sponsor-information .inline_fields .helptext {
     display: block; }
-#new_sponsorship_application_container #new-application-link {
+#new_sponsorship_application_container #new-application-link, #edit-sponsor-information #new-application-link {
   cursor: pointer;
   text-decoration: underline;
   color: #3776ab; }
-#new_sponsorship_application_container .sponsor-contacts-container table {
+#new_sponsorship_application_container .sponsor-contacts-container table, #edit-sponsor-information .sponsor-contacts-container table {
   margin-bottom: 0;
   table-layout: fixed;
   width: 100%; }
-  #new_sponsorship_application_container .sponsor-contacts-container table * {
+  #new_sponsorship_application_container .sponsor-contacts-container table *, #edit-sponsor-information .sponsor-contacts-container table * {
     vertical-align: middle; }
-  #new_sponsorship_application_container .sponsor-contacts-container table th {
+  #new_sponsorship_application_container .sponsor-contacts-container table th, #edit-sponsor-information .sponsor-contacts-container table th {
     width: 25%; }
-  #new_sponsorship_application_container .sponsor-contacts-container table td {
+  #new_sponsorship_application_container .sponsor-contacts-container table td, #edit-sponsor-information .sponsor-contacts-container table td {
     width: 75%; }
-  #new_sponsorship_application_container .sponsor-contacts-container table .remove-contact-row {
+  #new_sponsorship_application_container .sponsor-contacts-container table .remove-contact-row, #edit-sponsor-information .sponsor-contacts-container table .remove-contact-row {
     display: none; }
-  #new_sponsorship_application_container .sponsor-contacts-container table input {
+  #new_sponsorship_application_container .sponsor-contacts-container table input, #edit-sponsor-information .sponsor-contacts-container table input {
     margin: 0 0.5em 0 0; }
-  #new_sponsorship_application_container .sponsor-contacts-container table br {
+  #new_sponsorship_application_container .sponsor-contacts-container table br, #edit-sponsor-information .sponsor-contacts-container table br {
     display: none; }
-#new_sponsorship_application_container .sponsor-contacts-container .formset-btn {
+#new_sponsorship_application_container .sponsor-contacts-container .formset-btn, #edit-sponsor-information .sponsor-contacts-container .formset-btn {
   margin-top: 0.5em;
   font-size: 65%;
   border-color: #82b043;
@@ -3693,20 +3695,34 @@ span.highlighted {
   background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: -o-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: linear-gradient(#b2d287 10%, #82b043 90%); }
-#new_sponsorship_application_container .sponsor-contacts-container .contact-form {
+#new_sponsorship_application_container .sponsor-contacts-container .contact-form, #edit-sponsor-information .sponsor-contacts-container .contact-form {
   margin-bottom: 1em; }
-#new_sponsorship_application_container #submit-btn {
+#new_sponsorship_application_container #submit-btn, #edit-sponsor-information #submit-btn {
   margin-top: 1em; }
-#new_sponsorship_application_container .remove {
+#new_sponsorship_application_container .remove, #edit-sponsor-information .remove {
   font-size: 75%; }
-  #new_sponsorship_application_container .remove label {
+  #new_sponsorship_application_container .remove label, #edit-sponsor-information .remove label {
     display: inline;
     cursor: pointer;
     text-decoration: underline;
     color: #b55863 !important; }
-#new_sponsorship_application_container .errorlist {
+#new_sponsorship_application_container .errorlist, #edit-sponsor-information .errorlist {
   margin: 0;
   font-size: 75%; }
+
+#edit-sponsor-information .helptext {
+  font-size: 65%; }
+#edit-sponsor-information .form-actions {
+  margin-top: 1em;
+  float: right; }
+#edit-sponsor-information input:read-only {
+  background: #f2f4f6;
+  cursor: not-allowed; }
+#edit-sponsor-information input[type=file] {
+  background: none;
+  cursor: pointer; }
+#edit-sponsor-information input[type=submit] {
+  cursor: pointer; }
 
 #select_sponsorship_benefits_container h1 {
   /* Page header */
@@ -3943,3 +3959,23 @@ span.highlighted {
 
 .hidden {
   display: none; }
+
+#sponsorship-detail-container .info-cards {
+  display: flex;
+  width: 100%;
+  align-content: center;
+  flex-wrap: wrap; }
+#sponsorship-detail-container .card {
+  flex: 1 0 48%; }
+#sponsorship-detail-container .card-info {
+  margin: 0.5em 0.5em;
+  padding: 1em 1em;
+  border: 1px solid #caccce;
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  background: #e6e8ea; }
+  #sponsorship-detail-container .card-info h3 {
+    margin: 0; }

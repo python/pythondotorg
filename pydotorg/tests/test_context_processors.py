@@ -52,8 +52,8 @@ class TemplateProcessorsTestCase(TestCase):
                 ],
             },
             "sponsorships": {
-                "label": "Sponsorships",
-                "urls": [],
+                "label": "Sponsorships Dashboard",
+                "url": None,
             }
         }
 
@@ -84,8 +84,8 @@ class TemplateProcessorsTestCase(TestCase):
                 ],
             },
             "sponsorships": {
-                "label": "Sponsorships",
-                "urls": [],
+                "label": "Sponsorships Dashboard",
+                "url": None,
             }
         }
 
@@ -97,18 +97,15 @@ class TemplateProcessorsTestCase(TestCase):
     def test_user_nav_bar_sponsorship_links(self):
         request = self.factory.get('/about/')
         request.user = baker.make(settings.AUTH_USER_MODEL, username='foo')
-        sponsorships = baker.make("sponsors.Sponsorship", submited_by=request.user, _quantity=2, _fill_optional=True)
+        baker.make("sponsors.Sponsorship", submited_by=request.user, _quantity=2, _fill_optional=True)
 
-        expected_sponsorships = {
-            "label": "Sponsorships",
-            "urls": [
-                {"url": sp.detail_url, "label": f"{sp.sponsor.name}'s sponsorship"}
-                for sp in request.user.sponsorships
-            ]
+        expected_section = {
+            "label": "Sponsorships Dashboard",
+            "url": reverse("users:user_sponsorships_dashboard")
         }
 
         self.assertEqual(
-            expected_sponsorships,
+            expected_section,
             context_processors.user_nav_bar_links(request)['USER_NAV_BAR']['sponsorships']
         )
 
