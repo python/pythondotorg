@@ -6,6 +6,7 @@ from django.test import TestCase
 
 from sponsors.forms import SponsorUpdateForm
 from sponsors.models import Sponsorship
+from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
 
@@ -450,6 +451,8 @@ class UpdateSponsorInfoViewTests(TestCase):
             "contact-MAX_NUM_FORMS": 5,
             "contact-MIN_NUM_FORMS": 1,
             "contact-INITIAL_FORMS": 1,
+            "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
+            "print_logo": get_static_image_file_as_upload("psf-logo_print.png", "logo_print.png"),
         }
 
     def test_display_template_with_sponsor_info(self):

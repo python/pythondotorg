@@ -468,9 +468,16 @@ class SendSponsorshipNotificationForm(forms.Form):
 class SponsorUpdateForm(forms.ModelForm):
     READONLY_FIELDS = [
         "name",
-        "web_logo",
-        "print_logo",
     ]
+
+    web_logo = forms.ImageField(
+        widget=forms.widgets.FileInput,
+        help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
+    )
+    print_logo = forms.ImageField(
+        widget=forms.widgets.FileInput,
+        help_text="For printed materials, signage, and projection. SVG or EPS",
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -490,7 +497,6 @@ class SponsorUpdateForm(forms.ModelForm):
             self.contacts_formset = factory(self.data, **formset_kwargs)
         else:
             self.contacts_formset = factory(**formset_kwargs)
-        self.fields["web_logo"].required = False
         # display fields as read-only
         for disabled in self.READONLY_FIELDS:
             self.fields[disabled].widget.attrs['readonly'] = True
