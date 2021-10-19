@@ -468,6 +468,8 @@ class SendSponsorshipNotificationForm(forms.Form):
 class SponsorUpdateForm(forms.ModelForm):
     READONLY_FIELDS = [
         "name",
+        "web_logo",
+        "print_logo",
     ]
 
     def __init__(self, *args, **kwargs):
@@ -488,12 +490,13 @@ class SponsorUpdateForm(forms.ModelForm):
             self.contacts_formset = factory(self.data, **formset_kwargs)
         else:
             self.contacts_formset = factory(**formset_kwargs)
+        self.fields["web_logo"].required = False
         # display fields as read-only
         for disabled in self.READONLY_FIELDS:
             self.fields[disabled].widget.attrs['readonly'] = True
 
     class Meta:
-        exclude = ["created", "updated", "creator", "last_modified_by", "web_logo", "print_logo"]
+        exclude = ["created", "updated", "creator", "last_modified_by"]
         model = Sponsor
 
     def clean(self):

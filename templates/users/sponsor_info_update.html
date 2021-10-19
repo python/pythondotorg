@@ -161,6 +161,26 @@
         </div>
       </div>
 
+      <p class="form_field">
+        <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}
+          {{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.web_logo %}
+        {% if form.web_logo.help_text %}
+          <br/>
+          <span class="helptext">{{ form.web_logo.help_text }}</span>
+        {% endif %}
+      </p>
+
+      <p class="form_field">
+        <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}
+          {{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.print_logo %}
+        {% if form.print_logo.help_text %}
+          <br/>
+          <span class="helptext">{{ form.print_logo.help_text }}</span>
+        {% endif %}
+      </p>
+
       <h2>Contacts</h2>
       {{ form.contacts_formset.management_form }}
       <div class="sponsor-contacts-container">
