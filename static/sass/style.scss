@@ -2550,9 +2550,15 @@ $breakpoint-desktop: 1200px;
     cursor: not-allowed;
   }
 
+  input[type=file] {
+      background: none;
+      cursor: pointer;
+  }
+
   input[type=submit] {
     cursor: pointer;
   }
+
 }
 
 #select_sponsorship_benefits_container {

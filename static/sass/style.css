@@ -3718,6 +3718,9 @@ span.highlighted {
 #edit-sponsor-information input:read-only {
   background: #f2f4f6;
   cursor: not-allowed; }
+#edit-sponsor-information input[type=file] {
+  background: none;
+  cursor: pointer; }
 #edit-sponsor-information input[type=submit] {
   cursor: pointer; }
 
