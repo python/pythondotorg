@@ -1,3 +1,9 @@
+"""
+Python.org sponsors app is heavily db-oriented. This results in
+a huge models.py. To reduce file length the models are being
+structured as a python package.
+"""
+
 import uuid
 from itertools import chain
 from num2words import num2words
@@ -19,19 +25,19 @@ from polymorphic.models import PolymorphicModel
 
 from mailing.models import BaseEmailTemplate
 from cms.models import ContentManageable
-from .enums import LogoPlacementChoices, PublisherChoices
-from .managers import (
+from sponsors.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.managers import (
     SponsorContactQuerySet,
     SponsorshipQuerySet,
     SponsorshipBenefitManager,
     SponsorshipPackageManager
 )
-from .exceptions import (
+from sponsors.exceptions import (
     SponsorWithExistingApplicationException,
     InvalidStatusException,
     SponsorshipInvalidDateRangeException,
 )
-from .utils import file_from_storage
+from sponsors.utils import file_from_storage
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -1186,3 +1192,4 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
 
     def __str__(self):
         return f"Email targeatable"
+
