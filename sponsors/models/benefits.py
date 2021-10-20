@@ -8,7 +8,7 @@ from django.db import models
 # Benefit features abstract classes
 from polymorphic.models import PolymorphicModel
 
-from sponsors.enums import PublisherChoices, LogoPlacementChoices
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 
 class BaseLogoPlacement(models.Model):

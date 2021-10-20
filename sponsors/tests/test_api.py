@@ -5,7 +5,8 @@ from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from sponsors.models import Sponsor
-from sponsors.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models.enums import LogoPlacementChoices
+
 
 class LogoPlacementeAPIListTests(APITestCase):
     url = reverse_lazy("logo_placement_list")

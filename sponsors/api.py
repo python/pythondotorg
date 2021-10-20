@@ -1,13 +1,8 @@
-import csv
-
-from django.conf import settings
-
 from rest_framework import permissions
 from rest_framework import serializers
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from sponsors.enums import LogoPlacementChoices, PublisherChoices
 from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship
 
 
