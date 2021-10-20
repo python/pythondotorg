@@ -8,7 +8,7 @@ from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
 
 from cms.models import ContentManageable
-from sponsors.managers import SponsorContactQuerySet
+from sponsors.models.managers import SponsorContactQuerySet
 
 
 class Sponsor(ContentManageable):

@@ -18,7 +18,7 @@ from ordered_model.models import OrderedModel
 
 from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
     SponsorshipInvalidDateRangeException
-from sponsors.managers import SponsorshipPackageManager, SponsorshipBenefitManager, SponsorshipQuerySet
+from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenefitManager, SponsorshipQuerySet
 from sponsors.models.benefits import TieredQuantityConfiguration
 from sponsors.models.sponsors import SponsorBenefit
 
