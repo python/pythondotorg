@@ -199,7 +199,7 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         except ValueError:
             pass
 
-    @patch("sponsors.models.uuid.uuid4", Mock(return_value="1234"))
+    @patch("sponsors.models.contract.uuid.uuid4", Mock(return_value="1234"))
     def test_execute_and_update_database_object(self):
         self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
