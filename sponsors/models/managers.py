@@ -1,11 +1,8 @@
-from polymorphic.managers import PolymorphicManager
 from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
-
-from .enums import PublisherChoices
 
 
 class SponsorshipQuerySet(QuerySet):
