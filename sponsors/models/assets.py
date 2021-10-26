@@ -2,6 +2,7 @@
 This module holds models to store generic assets
 from Sponsors or Sponsorships
 """
+import uuid
 from pathlib import Path
 
 from django.db import models
@@ -14,9 +15,9 @@ def generic_asset_path(instance, filename):
     """
     Uses internal name + content type + obj id to avoid name collisions
     """
-    directory = "sponsors-assets"
+    directory = "sponsors-app-assets"
     ext = "".join(Path(filename).suffixes)
-    name = f"{instance.internal_name} - {instance.content_type} - {instance.object_id}{ext}"
+    name = f"{instance.uuid}{ext}"
     return f"{directory}{name}{ext}"
 
 
@@ -24,6 +25,7 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     # The next 3 fields are required by Django to enable and set up generic relations
     # pointing the asset to a Sponsor or Sponsorship object
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
