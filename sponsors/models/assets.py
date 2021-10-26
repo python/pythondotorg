@@ -25,7 +25,8 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
-    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    # UUID can't be the object ID because Polymorphic expects default django integer ID
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     # The next 3 fields are required by Django to enable and set up generic relations
     # pointing the asset to a Sponsor or Sponsorship object
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
