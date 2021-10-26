@@ -11,8 +11,14 @@ class LogoPlacementChoices(Enum):
     DOWNLOAD_PAGE = "download"
     DEV_GUIDE = "devguide"
 
+
 class PublisherChoices(Enum):
     FOUNDATION = "psf"
     PYCON = "pycon"
     PYPI = "pypi"
     CORE_DEV = "core"
+
+
+class AssetsRelatedTo(Enum):
+    SPONSOR = "sponsor"
+    SPONSORSHIP = "sponsorship"

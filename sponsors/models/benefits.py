@@ -3,14 +3,13 @@ This module holds models related to benefits features and configurations
 """
 
 from django.db import models
+from polymorphic.models import PolymorphicModel
+
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
+
 
 ########################################
 # Benefit features abstract classes
-from polymorphic.models import PolymorphicModel
-
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
-
-
 class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
@@ -32,6 +31,29 @@ class BaseLogoPlacement(models.Model):
 class BaseTieredQuantity(models.Model):
     package = models.ForeignKey("sponsors.SponsorshipPackage", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+
+    class Meta:
+        abstract = True
+
+
+class BaseRequiredImgAsset(models.Model):
+    related_to = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
+        verbose_name="Related To",
+        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to."
+    )
+    internal_name = models.CharField(
+        max_length=128,
+        verbose_name="Internal Name",
+        help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+        unique=True,
+        db_index=True,
+    )
+    min_width = models.PositiveIntegerField()
+    max_width = models.PositiveIntegerField()
+    min_height = models.PositiveIntegerField()
+    max_height = models.PositiveIntegerField()
 
     class Meta:
         abstract = True
@@ -156,6 +178,19 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return f"Email targeatable configuration"
 
 
+class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfiguration):
+    class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Require Image Configuration"
+        verbose_name_plural = "Require Image Configurations"
+
+    def __str__(self):
+        return f"Require image configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return RequiredImgAsset
+
+
 ####################################
 # SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -213,3 +248,12 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
 
     def __str__(self):
         return f"Email targeatable"
+
+
+class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
+    class Meta(BaseRequiredImgAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Require Image Benefit"
+        verbose_name_plural = "Require Image Benefits"
+
+    def __str__(self):
+        return f"Require image"

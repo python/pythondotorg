@@ -8,6 +8,6 @@ from .notifications import SponsorEmailNotificationTemplate
 from .sponsors import Sponsor, SponsorContact, SponsorBenefit
 from .benefits import BaseLogoPlacement, BaseTieredQuantity, BaseEmailTargetable, BenefitFeatureConfiguration, \
     LogoPlacementConfiguration, TieredQuantityConfiguration, EmailTargetableConfiguration, BenefitFeature, \
-    LogoPlacement, EmailTargetable, TieredQuantity
+    LogoPlacement, EmailTargetable, TieredQuantity, RequiredImgAsset, RequiredImgAssetConfiguration
 from .sponsorship import Sponsorship, SponsorshipProgram, SponsorshipBenefit, Sponsorship, SponsorshipPackage
 from .contract import LegalClause, Contract, signed_contract_random_path
