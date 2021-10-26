@@ -43,12 +43,16 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         model = RequiredImgAssetConfiguration
         form = RequiredImgAssetConfigurationForm
 
+    class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredTextAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
         TieredQuantityConfigurationInline,
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
+        RequiredTextAssetConfigurationInline,
     ]
 
 

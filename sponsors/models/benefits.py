@@ -36,7 +36,12 @@ class BaseTieredQuantity(models.Model):
         abstract = True
 
 
-class BaseRequiredImgAsset(models.Model):
+class BaseEmailTargetable(models.Model):
+    class Meta:
+        abstract = True
+
+
+class BaseRequiredAsset(models.Model):
     related_to = models.CharField(
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
@@ -50,6 +55,12 @@ class BaseRequiredImgAsset(models.Model):
         unique=True,
         db_index=True,
     )
+
+    class Meta:
+        abstract = True
+
+
+class BaseRequiredImgAsset(BaseRequiredAsset):
     min_width = models.PositiveIntegerField()
     max_width = models.PositiveIntegerField()
     min_height = models.PositiveIntegerField()
@@ -59,7 +70,18 @@ class BaseRequiredImgAsset(models.Model):
         abstract = True
 
 
-class BaseEmailTargetable(models.Model):
+class BaseRequiredTextAsset(BaseRequiredAsset):
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the text input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
+
     class Meta:
         abstract = True
 
@@ -191,6 +213,19 @@ class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfigur
         return RequiredImgAsset
 
 
+class RequiredTextAssetConfiguration(BaseRequiredTextAsset, BenefitFeatureConfiguration):
+    class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Require Text Configuration"
+        verbose_name_plural = "Require Text Configurations"
+
+    def __str__(self):
+        return f"Require text configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return RequiredTextAsset
+
+
 ####################################
 # SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -252,8 +287,17 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
 
 class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeature.Meta):
-        verbose_name = "Require Image Benefit"
-        verbose_name_plural = "Require Image Benefits"
+        verbose_name = "Require Image"
+        verbose_name_plural = "Require Images"
 
     def __str__(self):
         return f"Require image"
+
+
+class RequiredTextAsset(BaseRequiredTextAsset, BenefitFeature):
+    class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Require Text"
+        verbose_name_plural = "Require Texts"
+
+    def __str__(self):
+        return f"Require text"
