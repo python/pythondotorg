@@ -58,3 +58,15 @@ class ImgAsset(GenericAsset):
     class Meta:
         verbose_name = "Image Asset"
         verbose_name_plural = "Image Assets"
+
+
+class TextAsset(GenericAsset):
+    text = models.TextField(default="")
+
+    def __str__(self):
+        return f"Image asset: {self.internal_name}"
+
+    class Meta:
+        verbose_name = "Image Asset"
+        verbose_name_plural = "Image Assets"
+

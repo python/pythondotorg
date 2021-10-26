@@ -4,7 +4,7 @@ a huge models.py. To reduce file length the models are being
 structured as a python package.
 """
 
-from .assets import GenericAsset, ImgAsset
+from .assets import GenericAsset, ImgAsset, TextAsset
 from .notifications import SponsorEmailNotificationTemplate
 from .sponsors import Sponsor, SponsorContact, SponsorBenefit
 from .benefits import BaseLogoPlacement, BaseTieredQuantity, BaseEmailTargetable, BenefitFeatureConfiguration, \
