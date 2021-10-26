@@ -12,7 +12,7 @@ from django.utils.html import mark_safe
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -41,6 +41,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
 
     class RequiredImgAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = RequiredImgAssetConfiguration
+        form = RequiredImgAssetConfigurationForm
 
     model = BenefitFeatureConfiguration
     child_inlines = [
