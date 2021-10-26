@@ -10,23 +10,7 @@ from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
-from .models import (
-    SponsorshipPackage,
-    SponsorshipProgram,
-    SponsorshipBenefit,
-    Sponsor,
-    Sponsorship,
-    SponsorContact,
-    SponsorBenefit,
-    LegalClause,
-    Contract,
-    BenefitFeature,
-    BenefitFeatureConfiguration,
-    LogoPlacementConfiguration,
-    TieredQuantityConfiguration,
-    EmailTargetableConfiguration,
-    SponsorEmailNotificationTemplate,
-)
+from sponsors.models import *
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
 from cms.admin import ContentManageableModelAdmin
@@ -55,11 +39,15 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         def display(self, obj):
             return "Enabled"
 
+    class RequiredImgAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredImgAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
         TieredQuantityConfigurationInline,
         EmailTargetableConfigurationInline,
+        RequiredImgAssetConfigurationInline,
     ]
 
 
