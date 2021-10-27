@@ -227,9 +227,7 @@ class SponsorBenefit(OrderedModel):
 
         # generate benefit features from benefit features configurations
         for feature_config in benefit.features_config.all():
-            feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
-            if feature is not None:
-                feature.save()
+            feature_config.create_benefit_feature(sponsor_benefit)
 
         return sponsor_benefit
 

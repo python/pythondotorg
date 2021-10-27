@@ -138,6 +138,15 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     def display_modifier(self, name, **kwargs):
         return name
 
+    def create_benefit_feature(self, sponsor_benefit, **kwargs):
+        """
+        This methods persists a benefit feature from the configuration
+        """
+        feature = self.get_benefit_feature(sponsor_benefit=sponsor_benefit, **kwargs)
+        if feature is not None:
+            feature.save()
+        return feature
+
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
     """
