@@ -18,14 +18,14 @@ from ..models import (
     SponsorshipBenefit,
     SponsorshipPackage,
     TieredQuantity,
-    TieredQuantityConfiguration
+    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
     InvalidStatusException,
 )
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -754,3 +754,35 @@ class TieredQuantityTests(TestCase):
         placement = baker.make(TieredQuantity, quantity=10)
         name = 'Benefit'
         self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
+
+
+class RequiredImgAssetConfigurationTests(TestCase):
+
+    def setUp(self):
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.config = baker.make(
+            RequiredImgAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+        )
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        benefit_feature = self.config.get_benefit_feature(sponsor_benefit=self.sponsor_benefit)
+
+        self.assertIsInstance(benefit_feature, RequiredImgAsset)
+        self.assertEqual(benefit_feature.max_width, self.config.max_width)
+        self.assertEqual(benefit_feature.min_width, self.config.min_width)
+        self.assertEqual(benefit_feature.max_height, self.config.max_height)
+        self.assertEqual(benefit_feature.min_height, self.config.min_height)
+
+    def test_create_benefit_feature_and_sponsor_generic_img_assets(self):
+        sponsor = self.sponsor_benefit.sponsorship.sponsor
+
+        feature = self.config.create_benefit_feature(self.sponsor_benefit)
+        asset = ImgAsset.objects.get()
+
+        self.assertIsInstance(feature, RequiredImgAsset)
+        self.assertTrue(feature.pk)
+        self.assertEqual(self.config.internal_name, asset.internal_name)
+        self.assertEqual(sponsor, asset.content_object)
+        self.assertFalse(asset.image.name)

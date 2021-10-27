@@ -5,6 +5,7 @@ This module holds models related to benefits features and configurations
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
+from sponsors.models.assets import ImgAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
 
@@ -42,6 +43,8 @@ class BaseEmailTargetable(models.Model):
 
 
 class BaseRequiredAsset(models.Model):
+    ASSET_CLASS = None
+
     related_to = models.CharField(
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
@@ -56,11 +59,27 @@ class BaseRequiredAsset(models.Model):
         db_index=True,
     )
 
+    def create_benefit_feature(self, sponsor_benefit, **kwargs):
+        if not self.ASSET_CLASS:
+            raise NotImplementedError("Subclasses of BaseRequiredAsset must define an ASSET_CLASS attribute.")
+
+        # Super: BenefitFeatureConfiguration.create_benefit_feature
+        benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
+        asset = self.ASSET_CLASS(
+            content_object=sponsor_benefit.sponsorship.sponsor,
+            internal_name=self.internal_name,
+        )
+        asset.save()
+
+        return benefit_feature
+
     class Meta:
         abstract = True
 
 
 class BaseRequiredImgAsset(BaseRequiredAsset):
+    ASSET_CLASS = ImgAsset
+
     min_width = models.PositiveIntegerField()
     max_width = models.PositiveIntegerField()
     min_height = models.PositiveIntegerField()
