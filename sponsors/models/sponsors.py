@@ -6,8 +6,10 @@ from django.conf import settings
 from django.db import models
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
+from django.contrib.contenttypes.fields import GenericRelation
 
 from cms.models import ContentManageable
+from sponsors.models.assets import GenericAsset
 from sponsors.models.managers import SponsorContactQuerySet
 
 
@@ -67,6 +69,7 @@ class Sponsor(ContentManageable):
         verbose_name="Zip/Postal Code", max_length=64, default=""
     )
     country = CountryField(default="")
+    assets = GenericRelation(GenericAsset)
 
     class Meta:
         verbose_name = "sponsor"
