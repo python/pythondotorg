@@ -70,17 +70,6 @@ class SponsorshipBenefitModelTests(TestCase):
             TieredQuantityConfiguration,
             package__name='Package',
             benefit=benefit,
-        )
-
-        self.assertEqual(benefit.name_for_display(), self.sponsorship_benefit.name)
-        self.assertFalse(benefit.has_tiers)
-
-    def test_name_for_display_without_specifying_package(self):
-        benefit = baker.make(SponsorshipBenefit, name='Benefit')
-        benefit_config = baker.make(
-            TieredQuantityConfiguration,
-            package__name='Package',
-            benefit=benefit,
             quantity=10
         )
 
@@ -268,30 +257,6 @@ class SponsorshipModelTests(TestCase):
             sponsorship.rollback_to_editing()
 
         self.assertEqual(1, Contract.objects.count())
-
-    def test_rollback_sponsorship_to_edit(self):
-        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
-        can_rollback_from = [
-            Sponsorship.APPLIED,
-            Sponsorship.APPROVED,
-            Sponsorship.REJECTED,
-        ]
-        for status in can_rollback_from:
-            sponsorship.status = status
-            sponsorship.save()
-            sponsorship.refresh_from_db()
-
-            sponsorship.rollback_to_editing()
-
-            self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
-            self.assertIsNone(sponsorship.approved_on)
-            self.assertIsNone(sponsorship.rejected_on)
-
-        sponsorship.status = Sponsorship.FINALIZED
-        sponsorship.save()
-        sponsorship.refresh_from_db()
-        with self.assertRaises(InvalidStatusException):
-            sponsorship.rollback_to_editing()
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
@@ -655,8 +620,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
 ###########
-####### Email notification tests
-###########
+# Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):
 
     def setUp(self):
