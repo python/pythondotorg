@@ -65,9 +65,13 @@ class BaseRequiredAsset(models.Model):
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
+
+        content_object = sponsor_benefit.sponsorship
+        if self.related_to == AssetsRelatedTo.SPONSOR.value:
+            content_object = sponsor_benefit.sponsorship.sponsor
+
         asset = self.ASSET_CLASS(
-            content_object=sponsor_benefit.sponsorship.sponsor,
-            internal_name=self.internal_name,
+            content_object=content_object, internal_name=self.internal_name,
         )
         asset.save()
 

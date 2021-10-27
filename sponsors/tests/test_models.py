@@ -818,3 +818,13 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.assertEqual(self.config.internal_name, asset.internal_name)
         self.assertEqual(sponsor, asset.content_object)
         self.assertFalse(asset.text)
+
+    def test_relate_asset_with_sponsorship_respecting_config(self):
+        self.config.related_to = AssetsRelatedTo.SPONSORSHIP.value
+        self.config.save()
+        sponsorship = self.sponsor_benefit.sponsorship
+
+        self.config.create_benefit_feature(self.sponsor_benefit)
+
+        asset = TextAsset.objects.get()
+        self.assertEqual(sponsorship, asset.content_object)
