@@ -5,7 +5,7 @@ This module holds models related to benefits features and configurations
 from django.db import models
 from polymorphic.models import PolymorphicModel
 
-from sponsors.models.assets import ImgAsset
+from sponsors.models.assets import ImgAsset, TextAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
 
@@ -90,6 +90,8 @@ class BaseRequiredImgAsset(BaseRequiredAsset):
 
 
 class BaseRequiredTextAsset(BaseRequiredAsset):
+    ASSET_CLASS = TextAsset
+
     label = models.CharField(
         max_length=256,
         help_text="What's the title used to display the text input to the sponsor?"

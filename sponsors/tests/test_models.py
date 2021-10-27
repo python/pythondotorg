@@ -18,7 +18,8 @@ from ..models import (
     SponsorshipBenefit,
     SponsorshipPackage,
     TieredQuantity,
-    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset
+    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
+    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -786,3 +787,34 @@ class RequiredImgAssetConfigurationTests(TestCase):
         self.assertEqual(self.config.internal_name, asset.internal_name)
         self.assertEqual(sponsor, asset.content_object)
         self.assertFalse(asset.image.name)
+
+
+class RequiredTextAssetConfigurationTests(TestCase):
+
+    def setUp(self):
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.config = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+            _fill_optional=True,
+        )
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        benefit_feature = self.config.get_benefit_feature(sponsor_benefit=self.sponsor_benefit)
+
+        self.assertIsInstance(benefit_feature, RequiredTextAsset)
+        self.assertEqual(benefit_feature.label, self.config.label)
+        self.assertEqual(benefit_feature.help_text, self.config.help_text)
+
+    def test_create_benefit_feature_and_sponsor_generic_text_asset(self):
+        sponsor = self.sponsor_benefit.sponsorship.sponsor
+
+        feature = self.config.create_benefit_feature(self.sponsor_benefit)
+        asset = TextAsset.objects.get()
+
+        self.assertIsInstance(feature, RequiredTextAsset)
+        self.assertTrue(feature.pk)
+        self.assertEqual(self.config.internal_name, asset.internal_name)
+        self.assertEqual(sponsor, asset.content_object)
+        self.assertFalse(asset.text)
