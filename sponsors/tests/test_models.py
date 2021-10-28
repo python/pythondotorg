@@ -8,7 +8,6 @@ from django.utils import timezone
 
 from ..models import (
     Contract,
-    Contract,
     LegalClause,
     LogoPlacement,
     LogoPlacementConfiguration,
@@ -26,7 +25,7 @@ from ..exceptions import (
     SponsorshipInvalidDateRangeException,
     InvalidStatusException,
 )
-from ..enums import PublisherChoices, LogoPlacementChoices
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 
 class SponsorshipBenefitModelTests(TestCase):

@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity
-from ..enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
 class SponsorshipQuerySetTests(TestCase):

@@ -2076,6 +2076,12 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
       }
     }
 
+    div.single-link {
+       span > a {
+          color: #4d4d4d !important;
+       }
+    }
+
     div.section-links {
       display: none;
 
@@ -2435,7 +2441,8 @@ span.highlighted {
 $breakpoint-phone: 640px;
 $breakpoint-desktop: 1200px;
 
-#new_sponsorship_application_container {
+#new_sponsorship_application_container, #edit-sponsor-information {
+
   .form_field {
     margin-top: 1em;
     margin-bottom: 0;
@@ -2526,6 +2533,32 @@ $breakpoint-desktop: 1200px;
     margin: 0;
     font-size: 75%;
   }
+}
+
+#edit-sponsor-information {
+  .helptext {
+    font-size: 65%;
+  }
+
+  .form-actions {
+    margin-top: 1em;
+    float: right;
+  }
+
+  input:read-only {
+    background: $grey-lighterest;
+    cursor: not-allowed;
+  }
+
+  input[type=file] {
+      background: none;
+      cursor: pointer;
+  }
+
+  input[type=submit] {
+    cursor: pointer;
+  }
+
 }
 
 #select_sponsorship_benefits_container {
@@ -2869,4 +2902,31 @@ $breakpoint-desktop: 1200px;
 
 .hidden {
   display: none;
+}
+
+
+#sponsorship-detail-container {
+  .info-cards {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    flex: 1 0 48%;
+  }
+
+  .card-info {
+    margin: .5em .5em;
+    padding: 1em 1em;
+    border: 1px solid $default-border-color;
+    @include border-radius();
+    background: $grey-lightest;
+
+    h3 {
+      margin: 0;
+    }
+  }
+
 }

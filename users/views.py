@@ -1,27 +1,33 @@
 from collections import defaultdict
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Subquery
 from django.urls import reverse, reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView,
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView
 )
 
 from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
+from sponsors.forms import SponsorUpdateForm
+from sponsors.models import Sponsor
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import Membership
+from sponsors.models import Sponsorship
 
 User = get_user_model()
 
@@ -191,3 +197,59 @@ class UserNominationsView(LoginRequiredMixin, TemplateView):
             elections[nomination.election]['nominations_made'].append(nomination)
         context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
         return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UserSponsorshipsDashboard(ListView):
+    context_object_name = 'sponsorships'
+    template_name = 'users/list_user_sponsorships.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        sponsorships = context["sponsorships"]
+        context["active"] = [sp for sp in sponsorships if sp.is_active]
+
+        by_status = []
+        inactive = [sp for sp in sponsorships if not sp.is_active]
+        for value, label in Sponsorship.STATUS_CHOICES[::-1]:
+            by_status.append((
+                label, [
+                    sp for sp in inactive
+                    if sp.status == value
+                ]
+            ))
+
+        context["by_status"] = by_status
+        return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class SponsorshipDetailView(DetailView):
+    context_object_name = 'sponsorship'
+    template_name = 'users/sponsorship_detail.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        context["sponsor"] = context["sponsorship"].sponsor
+        return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UpdateSponsorInfoView(UpdateView):
+    object_name = "sponsor"
+    template_name = 'users/sponsor_info_update.html'
+    form_class = SponsorUpdateForm
+
+    def get_queryset(self):
+        sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
+        return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
+        return self.request.path

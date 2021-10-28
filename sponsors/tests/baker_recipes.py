@@ -2,8 +2,8 @@ from datetime import date, timedelta
 
 from model_bakery.recipe import Recipe, foreign_key
 
-from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorshipPackage, SponsorBenefit
-from sponsors.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorshipPackage
+from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 today = date.today()
 two_days = timedelta(days=2)

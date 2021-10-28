@@ -1,8 +1,8 @@
 from collections import OrderedDict
 from django import template
 
-from ..models import Sponsorship, SponsorshipPackage, Sponsor, TieredQuantityConfiguration
-from ..enums import PublisherChoices, LogoPlacementChoices
+from ..models import Sponsorship, SponsorshipPackage, TieredQuantityConfiguration
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 
 register = template.Library()
