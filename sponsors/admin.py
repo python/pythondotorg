@@ -146,6 +146,7 @@ class SponsorBenefitInline(admin.TabularInline):
     form = SponsorBenefitAdminInlineForm
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
+    max_num = 0
 
     def has_add_permission(self, request, obj=None):
         has_add_permission = super().has_add_permission(request, obj=obj)
@@ -164,6 +165,10 @@ class SponsorBenefitInline(admin.TabularInline):
         if not obj:
             return True
         return obj.open_for_editing
+
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsorship_benefit__program", "program")
 
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
@@ -257,7 +262,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor", "package")
+        return qs.select_related("sponsor", "package", "submited_by")
 
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
