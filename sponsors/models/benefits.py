@@ -2,7 +2,8 @@
 This module holds models related to benefits features and configurations
 """
 
-from django.db import models
+from django.db import models, IntegrityError, transaction
+from django.db.models import UniqueConstraint
 from polymorphic.models import PolymorphicModel
 
 from sponsors.models.assets import ImgAsset, TextAsset
@@ -55,7 +56,7 @@ class BaseRequiredAsset(models.Model):
         max_length=128,
         verbose_name="Internal Name",
         help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
-        unique=True,
+        unique=False,
         db_index=True,
     )
 
@@ -70,10 +71,12 @@ class BaseRequiredAsset(models.Model):
         if self.related_to == AssetsRelatedTo.SPONSOR.value:
             content_object = sponsor_benefit.sponsorship.sponsor
 
-        asset = self.ASSET_CLASS(
-            content_object=content_object, internal_name=self.internal_name,
-        )
-        asset.save()
+        asset_qs = content_object.assets.filter(internal_name=self.internal_name)
+        if not asset_qs.exists():
+            asset = self.ASSET_CLASS(
+                content_object=content_object, internal_name=self.internal_name,
+            )
+            asset.save()
 
         return benefit_feature
 
@@ -235,9 +238,11 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
 
 
 class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfiguration):
+
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_img_asset_cfg")]
 
     def __str__(self):
         return f"Require image configuration"
@@ -251,6 +256,7 @@ class RequiredTextAssetConfiguration(BaseRequiredTextAsset, BenefitFeatureConfig
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_text_asset_cfg")]
 
     def __str__(self):
         return f"Require text configuration"

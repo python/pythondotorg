@@ -828,3 +828,9 @@ class RequiredTextAssetConfigurationTests(TestCase):
 
         asset = TextAsset.objects.get()
         self.assertEqual(sponsorship, asset.content_object)
+
+    def test_cant_create_same_asset_twice(self):
+        self.config.create_benefit_feature(self.sponsor_benefit)
+        self.sponsor_benefit.refresh_from_db()
+        self.config.create_benefit_feature(self.sponsor_benefit)
+        self.assertEqual(1, TextAsset.objects.count())
