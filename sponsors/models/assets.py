@@ -45,6 +45,10 @@ class GenericAsset(PolymorphicModel):
         verbose_name_plural = "Assets"
         unique_together = ["content_type", "object_id", "internal_name"]
 
+    @property
+    def value(self):
+        return None
+
 
 class ImgAsset(GenericAsset):
     image = models.ImageField(
@@ -60,14 +64,21 @@ class ImgAsset(GenericAsset):
         verbose_name = "Image Asset"
         verbose_name_plural = "Image Assets"
 
+    @property
+    def value(self):
+        return self.image
+
 
 class TextAsset(GenericAsset):
     text = models.TextField(default="")
 
     def __str__(self):
-        return f"Image asset: {self.internal_name}"
+        return f"Text asset: {self.internal_name}"
 
     class Meta:
-        verbose_name = "Image Asset"
-        verbose_name_plural = "Image Assets"
+        verbose_name = "Text Asset"
+        verbose_name_plural = "Text Assets"
 
+    @property
+    def value(self):
+        return self.text
