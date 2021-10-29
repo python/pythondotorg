@@ -89,7 +89,7 @@ class BaseRequiredImgAsset(BaseRequiredAsset):
     min_height = models.PositiveIntegerField()
     max_height = models.PositiveIntegerField()
 
-    class Meta:
+    class Meta(BaseRequiredAsset.Meta):
         abstract = True
 
 
@@ -107,7 +107,7 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
         blank=True
     )
 
-    class Meta:
+    class Meta(BaseRequiredAsset.Meta):
         abstract = True
 
 
