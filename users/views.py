@@ -236,11 +236,7 @@ class SponsorshipDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        sponsorship = context["sponsorship"]
-        assets = list(sponsorship.assets.all()) + list(sponsorship.sponsor.assets.all())
-        context["sponsor"] = sponsorship.sponsor
-        context["assets"] = assets
-        context["fullfilled_assets"] = all([bool(asset.value) for asset in assets])
+        context["sponsor"] = context["sponsorship"].sponsor
         return context
 
 
