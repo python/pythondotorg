@@ -13,10 +13,12 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm,
+    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm,
 )
-from sponsors.models import SponsorshipBenefit, SponsorContact
+from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
+    RequiredImgAssetConfiguration
 from .utils import get_static_image_file_as_upload
+from ..models.enums import AssetsRelatedTo
 
 
 class SponsorshiptBenefitsFormTests(TestCase):
@@ -258,7 +260,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertIsNone(contact.user)
 
     def test_create_sponsor_with_valid_data_for_non_required_inputs(
-        self,
+            self,
     ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
@@ -548,3 +550,34 @@ class SendSponsorshipNotificationFormTests(TestCase):
         self.assertEqual("content", notification.content)
         self.assertEqual("subject", notification.subject)
         self.assertIsNone(notification.pk)
+
+
+class SponsorRequiredAssetsFormTest(TestCase):
+
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="foo")
+        self.required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Text Input"
+        )
+        self.required_img_cfg = baker.make(
+            RequiredImgAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="Image Input"
+        )
+        self.benefits = baker.make(
+            SponsorBenefit, sponsorship=self.sponsorship, _quantity=3
+        )
+
+    def test_build_form_with_no_fields_if_no_required_asset(self):
+        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship)
+        self.assertEqual(len(form.fields), 0)
+
+    def test_build_form_fields_from_required_assets(self):
+        self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        self.required_img_cfg.create_benefit_feature(self.benefits[1])
+
+        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship)
+
+        self.assertEqual(len(form.fields), 2)

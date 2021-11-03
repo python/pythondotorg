@@ -19,6 +19,7 @@ from sponsors.models import (
     SponsorBenefit,
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
+    BenefitFeature,
 )
 
 
@@ -546,3 +547,27 @@ class RequiredImgAssetConfigurationForm(forms.ModelForm):
     class Meta:
         model = RequiredImgAssetConfiguration
         fields = "__all__"
+
+
+class SponsorRequiredAssetsForm(forms.Form):
+    """
+    This form is used by the sponsor to fullfill their information related
+    to the required assets. The form is built dynamically by fetching the
+    required assets from the sponsorship.
+    """
+
+    @classmethod
+    def for_sponsorship(cls, sponsorship):
+        """
+        Constructor method to introspect the sponsorship object and
+        build the form object
+        """
+        form = cls()
+        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+
+        fields = {}
+        for required_asset in required_assets:
+            fields[slugify(required_asset.internal_name)] = required_asset.as_form_field()
+
+        form.fields.update(fields)
+        return form
