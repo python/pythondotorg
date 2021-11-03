@@ -9,7 +9,6 @@ from polymorphic.models import PolymorphicModel
 from sponsors.models.assets import ImgAsset, TextAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
-
 ########################################
 # Benefit features abstract classes
 from sponsors.models.managers import BenefitFeatureQuerySet
@@ -76,7 +75,8 @@ class RequiredAssetConfigurationMixin:
 
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
-            raise NotImplementedError("Subclasses of RequiredAssetConfigurationMixin must define an ASSET_CLASS attribute.")
+            raise NotImplementedError(
+                "Subclasses of RequiredAssetConfigurationMixin must define an ASSET_CLASS attribute.")
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -123,6 +123,22 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
 
     class Meta(BaseRequiredAsset.Meta):
         abstract = True
+
+
+class RequiredAssetMixin:
+    """
+    This class should be used to implement required assets.
+    It's a mixin to get the information submitted by the user
+    and which is stored in the related asset class.
+    """
+
+    def get_value(self):
+        object = self.sponsor_benefit.sponsorship
+        if self.related_to == AssetsRelatedTo.SPONSOR.value:
+            object = self.sponsor_benefit.sponsorship.sponsor
+
+        asset = object.assets.get(internal_name=self.internal_name)
+        return asset.value
 
 
 ######################################################
@@ -249,7 +265,6 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
 
 
 class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
-
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
@@ -263,7 +278,8 @@ class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequire
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredTextAsset, BenefitFeatureConfiguration):
+class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredTextAsset,
+                                     BenefitFeatureConfiguration):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
@@ -337,7 +353,7 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
         return f"Email targeatable"
 
 
-class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
+class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Require Image"
         verbose_name_plural = "Require Images"
@@ -346,7 +362,7 @@ class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
         return f"Require image"
 
 
-class RequiredTextAsset(BaseRequiredTextAsset, BenefitFeature):
+class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Require Text"
         verbose_name_plural = "Require Texts"

@@ -27,6 +27,7 @@ from ..exceptions import (
     InvalidStatusException,
 )
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
+from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -834,3 +835,49 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.sponsor_benefit.refresh_from_db()
         self.config.create_benefit_feature(self.sponsor_benefit)
         self.assertEqual(1, TextAsset.objects.count())
+
+
+class RequiredTextAssetTests(TestCase):
+
+    def setUp(self):
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+
+    def test_get_value_from_sponsor_asset(self):
+        config = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            _fill_optional=True,
+        )
+        text_asset_feature = config.create_benefit_feature(self.sponsor_benefit)
+        asset = TextAsset.objects.get()
+
+        self.assertEqual("", text_asset_feature.get_value())
+        asset.text = "sponsor information"
+        asset.save()
+
+        self.assertEqual("sponsor information", text_asset_feature.get_value())
+
+    def test_get_value_from_sponsorship_asset(self):
+        config = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            _fill_optional=True,
+        )
+        text_asset_feature = config.create_benefit_feature(self.sponsor_benefit)
+        asset = TextAsset.objects.get()
+
+        self.assertEqual("", text_asset_feature.get_value())
+        asset.text = "sponsorship information"
+        asset.save()
+
+        self.assertEqual("sponsorship information", text_asset_feature.get_value())
+
+    def test_required_asset_class_inherits_from_expected_classed(self):
+        classes = (RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature)
+        issubclass(RequiredTextAsset, classes)
+
+
+class RequiredImgAssetTests(TestCase):
+    def test_required_asset_class_inherits_from_expected_classed(self):
+        classes = (RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
+        issubclass(RequiredImgAsset, classes)
