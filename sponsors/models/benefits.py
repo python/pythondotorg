@@ -12,6 +12,9 @@ from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, Assets
 
 ########################################
 # Benefit features abstract classes
+from sponsors.models.managers import BenefitFeatureQuerySet
+
+
 class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
@@ -60,9 +63,20 @@ class BaseRequiredAsset(models.Model):
         db_index=True,
     )
 
+    class Meta:
+        abstract = True
+
+
+class RequiredAssetConfigurationMixin:
+    """
+    This class should be used to implement assets configuration.
+    It's a mixin to updates the benefit feature creation to also
+    create the related assets models
+    """
+
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
-            raise NotImplementedError("Subclasses of BaseRequiredAsset must define an ASSET_CLASS attribute.")
+            raise NotImplementedError("Subclasses of RequiredAssetConfigurationMixin must define an ASSET_CLASS attribute.")
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -79,9 +93,6 @@ class BaseRequiredAsset(models.Model):
             asset.save()
 
         return benefit_feature
-
-    class Meta:
-        abstract = True
 
 
 class BaseRequiredImgAsset(BaseRequiredAsset):
@@ -237,7 +248,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return f"Email targeatable configuration"
 
 
-class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfiguration):
+class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
 
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
@@ -252,7 +263,7 @@ class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfigur
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(BaseRequiredTextAsset, BenefitFeatureConfiguration):
+class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredTextAsset, BenefitFeatureConfiguration):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
