@@ -3,6 +3,7 @@ from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
+from polymorphic.query import PolymorphicQuerySet
 
 
 class SponsorshipQuerySet(QuerySet):
@@ -92,3 +93,14 @@ class SponsorshipBenefitManager(OrderedModelManager):
 class SponsorshipPackageManager(OrderedModelManager):
     def list_advertisables(self):
         return self.filter(advertise=True)
+
+
+class BenefitFeatureQuerySet(PolymorphicQuerySet):
+
+    def from_sponsorship(self, sponsorship):
+        return self.filter(sponsor_benefit__sponsorship=sponsorship)
+
+    def required_assets(self):
+        from sponsors.models.benefits import RequiredAssetMixin
+        required_assets_classes = RequiredAssetMixin.__subclasses__()
+        return self.instance_of(*required_assets_classes)

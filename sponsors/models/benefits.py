@@ -283,6 +283,7 @@ class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+    objects = BenefitFeatureQuerySet.as_manager()
 
     sponsor_benefit = models.ForeignKey("sponsors.SponsorBenefit", on_delete=models.CASCADE)
 
