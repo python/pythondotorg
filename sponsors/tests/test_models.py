@@ -1,6 +1,7 @@
 from datetime import date, timedelta
 from model_bakery import baker, seq
 
+from django import forms
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.test import TestCase
@@ -876,8 +877,25 @@ class RequiredTextAssetTests(TestCase):
         classes = (RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature)
         issubclass(RequiredTextAsset, classes)
 
+    def test_build_form_field_from_input(self):
+        text_asset = baker.make(RequiredTextAsset, _fill_optional=True)
+        field = text_asset.as_form_field()
+        self.assertIsInstance(field, forms.CharField)
+        self.assertIsInstance(field.widget, forms.TextInput)
+        self.assertFalse(field.required)
+        self.assertEqual(text_asset.help_text, field.help_text)
+        self.assertEqual(text_asset.label, field.label)
+
 
 class RequiredImgAssetTests(TestCase):
     def test_required_asset_class_inherits_from_expected_classed(self):
         classes = (RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         issubclass(RequiredImgAsset, classes)
+
+    def test_build_form_field_from_input(self):
+        text_asset = baker.make(RequiredImgAsset, _fill_optional=True)
+        field = text_asset.as_form_field()
+        self.assertIsInstance(field, forms.ImageField)
+        self.assertFalse(field.required)
+        self.assertEqual(text_asset.help_text, field.help_text)
+        self.assertEqual(text_asset.label, field.label)

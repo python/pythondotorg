@@ -361,7 +361,7 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         return f"Require image"
 
     def as_form_field(self):
-        return forms.ImageField(required=False)
+        return forms.ImageField(required=False, help_text=self.help_text, label=self.label)
 
 
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
