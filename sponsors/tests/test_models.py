@@ -852,11 +852,11 @@ class RequiredTextAssetTests(TestCase):
         text_asset_feature = config.create_benefit_feature(self.sponsor_benefit)
         asset = TextAsset.objects.get()
 
-        self.assertEqual("", text_asset_feature.get_value())
+        self.assertEqual("", text_asset_feature.value)
         asset.text = "sponsor information"
         asset.save()
 
-        self.assertEqual("sponsor information", text_asset_feature.get_value())
+        self.assertEqual("sponsor information", text_asset_feature.value)
 
     def test_get_value_from_sponsorship_asset(self):
         config = baker.make(
@@ -867,11 +867,11 @@ class RequiredTextAssetTests(TestCase):
         text_asset_feature = config.create_benefit_feature(self.sponsor_benefit)
         asset = TextAsset.objects.get()
 
-        self.assertEqual("", text_asset_feature.get_value())
+        self.assertEqual("", text_asset_feature.value)
         asset.text = "sponsorship information"
         asset.save()
 
-        self.assertEqual("sponsorship information", text_asset_feature.get_value())
+        self.assertEqual("sponsorship information", text_asset_feature.value)
 
     def test_required_asset_class_inherits_from_expected_classed(self):
         classes = (RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature)

@@ -595,7 +595,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.assertTrue(form.is_valid())
         form.update_assets()
 
-        self.assertEqual("submitted data", text_asset.get_value())
+        self.assertEqual("submitted data", text_asset.value)
 
     def test_save_info_for_image_asset(self):
         img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
@@ -607,4 +607,4 @@ class SponsorRequiredAssetsFormTest(TestCase):
         asset = ImgAsset.objects.get()
         expected_url = f"/media/sponsors-app-assets/{asset.uuid}.png"
 
-        self.assertEqual(expected_url, img_asset.get_value().url)
+        self.assertEqual(expected_url, img_asset.value.url)

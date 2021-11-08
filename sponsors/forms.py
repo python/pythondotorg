@@ -585,9 +585,9 @@ class SponsorRequiredAssetsForm(forms.Form):
         Iterate over every required asset, get the value from form data and
         update it
         """
-        for asset in self.required_assets:
-            f_name = self._get_field_name(asset)
+        for req_asset in self.required_assets:
+            f_name = self._get_field_name(req_asset)
             value = self.cleaned_data.get(f_name, None)
             if value is None:
                 continue
-            asset.set_value(value)
+            req_asset.value = value
