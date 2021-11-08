@@ -18,8 +18,8 @@ def generic_asset_path(instance, filename):
     """
     directory = "sponsors-app-assets"
     ext = "".join(Path(filename).suffixes)
-    name = f"{instance.uuid}{ext}"
-    return f"{directory}{name}{ext}"
+    name = f"{instance.uuid}"
+    return f"{directory}/{name}{ext}"
 
 
 class GenericAsset(PolymorphicModel):
