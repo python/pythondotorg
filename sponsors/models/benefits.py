@@ -139,6 +139,15 @@ class RequiredAssetMixin:
         asset = object.assets.get(internal_name=self.internal_name)
         return asset.value
 
+    def set_value(self, value):
+        object = self.sponsor_benefit.sponsorship
+        if self.related_to == AssetsRelatedTo.SPONSOR.value:
+            object = self.sponsor_benefit.sponsorship.sponsor
+
+        asset = object.assets.get(internal_name=self.internal_name)
+        asset.value = value
+        asset.save()
+
 
 ######################################################
 # SponsorshipBenefit features configuration models

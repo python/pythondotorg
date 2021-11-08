@@ -556,19 +556,38 @@ class SponsorRequiredAssetsForm(forms.Form):
     required assets from the sponsorship.
     """
 
+    def __init__(self, required_assets, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.required_assets = required_assets
+
+    def _get_field_name(self, asset):
+        return slugify(asset.internal_name).replace("-", "_")
+
     @classmethod
-    def for_sponsorship(cls, sponsorship):
+    def for_sponsorship(cls, sponsorship, *args, **kwargs):
         """
         Constructor method to introspect the sponsorship object and
         build the form object
         """
-        form = cls()
         required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        form = cls(required_assets, *args, **kwargs)
 
         fields = {}
         for required_asset in required_assets:
-            f_name = slugify(required_asset.internal_name).replace("-", "_")
+            f_name = form._get_field_name(required_asset)
             fields[f_name] = required_asset.as_form_field()
 
         form.fields.update(fields)
         return form
+
+    def update_assets(self):
+        """
+        Iterate over every required asset, get the value from form data and
+        update it
+        """
+        for asset in self.required_assets:
+            f_name = self._get_field_name(asset)
+            value = self.cleaned_data.get(f_name, None)
+            if value is None:
+                continue
+            asset.set_value(value)

@@ -69,6 +69,10 @@ class ImgAsset(GenericAsset):
     def value(self):
         return self.image
 
+    @value.setter
+    def value(self, value):
+        self.image = value
+
 
 class TextAsset(GenericAsset):
     text = models.TextField(default="")
@@ -83,3 +87,7 @@ class TextAsset(GenericAsset):
     @property
     def value(self):
         return self.text
+
+    @value.setter
+    def value(self, value):
+        self.text = value
