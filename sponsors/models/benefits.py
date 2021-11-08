@@ -61,6 +61,16 @@ class BaseRequiredAsset(models.Model):
         unique=False,
         db_index=True,
     )
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
 
     class Meta:
         abstract = True
@@ -109,17 +119,6 @@ class BaseRequiredImgAsset(BaseRequiredAsset):
 
 class BaseRequiredTextAsset(BaseRequiredAsset):
     ASSET_CLASS = TextAsset
-
-    label = models.CharField(
-        max_length=256,
-        help_text="What's the title used to display the text input to the sponsor?"
-    )
-    help_text = models.CharField(
-        max_length=256,
-        help_text="Any helper comment on how the input should be populated",
-        default="",
-        blank=True
-    )
 
     class Meta(BaseRequiredAsset.Meta):
         abstract = True
