@@ -2,15 +2,16 @@
 This module holds models related to benefits features and configurations
 """
 
-from django.db import models
+from django.db import models, IntegrityError, transaction
+from django.db.models import UniqueConstraint
+from polymorphic.models import PolymorphicModel
+
+from sponsors.models.assets import ImgAsset, TextAsset
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
+
 
 ########################################
 # Benefit features abstract classes
-from polymorphic.models import PolymorphicModel
-
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
-
-
 class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
@@ -39,6 +40,77 @@ class BaseTieredQuantity(models.Model):
 
 class BaseEmailTargetable(models.Model):
     class Meta:
+        abstract = True
+
+
+class BaseRequiredAsset(models.Model):
+    ASSET_CLASS = None
+
+    related_to = models.CharField(
+        max_length=30,
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
+        verbose_name="Related To",
+        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to."
+    )
+    internal_name = models.CharField(
+        max_length=128,
+        verbose_name="Internal Name",
+        help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+        unique=False,
+        db_index=True,
+    )
+
+    def create_benefit_feature(self, sponsor_benefit, **kwargs):
+        if not self.ASSET_CLASS:
+            raise NotImplementedError("Subclasses of BaseRequiredAsset must define an ASSET_CLASS attribute.")
+
+        # Super: BenefitFeatureConfiguration.create_benefit_feature
+        benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
+
+        content_object = sponsor_benefit.sponsorship
+        if self.related_to == AssetsRelatedTo.SPONSOR.value:
+            content_object = sponsor_benefit.sponsorship.sponsor
+
+        asset_qs = content_object.assets.filter(internal_name=self.internal_name)
+        if not asset_qs.exists():
+            asset = self.ASSET_CLASS(
+                content_object=content_object, internal_name=self.internal_name,
+            )
+            asset.save()
+
+        return benefit_feature
+
+    class Meta:
+        abstract = True
+
+
+class BaseRequiredImgAsset(BaseRequiredAsset):
+    ASSET_CLASS = ImgAsset
+
+    min_width = models.PositiveIntegerField()
+    max_width = models.PositiveIntegerField()
+    min_height = models.PositiveIntegerField()
+    max_height = models.PositiveIntegerField()
+
+    class Meta(BaseRequiredAsset.Meta):
+        abstract = True
+
+
+class BaseRequiredTextAsset(BaseRequiredAsset):
+    ASSET_CLASS = TextAsset
+
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the text input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
+
+    class Meta(BaseRequiredAsset.Meta):
         abstract = True
 
 
@@ -93,6 +165,15 @@ class BenefitFeatureConfiguration(PolymorphicModel):
 
     def display_modifier(self, name, **kwargs):
         return name
+
+    def create_benefit_feature(self, sponsor_benefit, **kwargs):
+        """
+        This methods persists a benefit feature from the configuration
+        """
+        feature = self.get_benefit_feature(sponsor_benefit=sponsor_benefit, **kwargs)
+        if feature is not None:
+            feature.save()
+        return feature
 
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
@@ -156,6 +237,35 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return f"Email targeatable configuration"
 
 
+class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfiguration):
+
+    class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Require Image Configuration"
+        verbose_name_plural = "Require Image Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_img_asset_cfg")]
+
+    def __str__(self):
+        return f"Require image configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return RequiredImgAsset
+
+
+class RequiredTextAssetConfiguration(BaseRequiredTextAsset, BenefitFeatureConfiguration):
+    class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Require Text Configuration"
+        verbose_name_plural = "Require Text Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_text_asset_cfg")]
+
+    def __str__(self):
+        return f"Require text configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return RequiredTextAsset
+
+
 ####################################
 # SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -213,3 +323,21 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
 
     def __str__(self):
         return f"Email targeatable"
+
+
+class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
+    class Meta(BaseRequiredImgAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Require Image"
+        verbose_name_plural = "Require Images"
+
+    def __str__(self):
+        return f"Require image"
+
+
+class RequiredTextAsset(BaseRequiredTextAsset, BenefitFeature):
+    class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Require Text"
+        verbose_name_plural = "Require Texts"
+
+    def __str__(self):
+        return f"Require text"

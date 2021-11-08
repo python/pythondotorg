@@ -17,7 +17,8 @@ from sponsors.models import (
     SponsorContact,
     Sponsorship,
     SponsorBenefit,
-    SponsorEmailNotificationTemplate
+    SponsorEmailNotificationTemplate,
+    RequiredImgAssetConfiguration,
 )
 
 
@@ -526,3 +527,22 @@ class SponsorUpdateForm(forms.ModelForm):
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
         self.contacts_formset.save()
+
+
+class RequiredImgAssetConfigurationForm(forms.ModelForm):
+
+    def clean(self):
+        data = super().clean()
+
+        min_width, max_width = data.get("min_width"), data.get("max_width")
+        if min_width and max_width and max_width < min_width:
+            raise forms.ValidationError("Max width must be greater than min width")
+        min_height, max_height = data.get("min_height"), data.get("max_height")
+        if min_height and max_height and max_height < min_height:
+            raise forms.ValidationError("Max height must be greater than min height")
+
+        return data
+
+    class Meta:
+        model = RequiredImgAssetConfiguration
+        fields = "__all__"

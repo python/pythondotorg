@@ -5,6 +5,7 @@ from datetime import date
 from itertools import chain
 
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models, transaction
 from django.db.models import Subquery, Sum
@@ -18,6 +19,7 @@ from ordered_model.models import OrderedModel
 
 from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
     SponsorshipInvalidDateRangeException
+from sponsors.models.assets import GenericAsset
 from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenefitManager, SponsorshipQuerySet
 from sponsors.models.benefits import TieredQuantityConfiguration
 from sponsors.models.sponsors import SponsorBenefit
@@ -136,6 +138,8 @@ class Sponsorship(models.Model):
                                                                                                               "name")
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
+
+    assets = GenericRelation(GenericAsset)
 
     class Meta:
         permissions = [

@@ -6,8 +6,10 @@ from django.conf import settings
 from django.db import models
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
+from django.contrib.contenttypes.fields import GenericRelation
 
 from cms.models import ContentManageable
+from sponsors.models.assets import GenericAsset
 from sponsors.models.managers import SponsorContactQuerySet
 
 
@@ -67,6 +69,7 @@ class Sponsor(ContentManageable):
         verbose_name="Zip/Postal Code", max_length=64, default=""
     )
     country = CountryField(default="")
+    assets = GenericRelation(GenericAsset)
 
     class Meta:
         verbose_name = "sponsor"
@@ -227,9 +230,7 @@ class SponsorBenefit(OrderedModel):
 
         # generate benefit features from benefit features configurations
         for feature_config in benefit.features_config.all():
-            feature = feature_config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
-            if feature is not None:
-                feature.save()
+            feature_config.create_benefit_feature(sponsor_benefit)
 
         return sponsor_benefit
 

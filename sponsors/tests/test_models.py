@@ -18,14 +18,15 @@ from ..models import (
     SponsorshipBenefit,
     SponsorshipPackage,
     TieredQuantity,
-    TieredQuantityConfiguration
+    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
+    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
     SponsorshipInvalidDateRangeException,
     InvalidStatusException,
 )
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -63,17 +64,6 @@ class SponsorshipBenefitModelTests(TestCase):
         self.assertEqual(2, Sponsorship.objects.count())
         self.assertEqual(1, len(sponsorships))
         self.assertIn(sponsor_benefit.sponsorship, sponsorships)
-
-    def test_name_for_display_without_specifying_package(self):
-        benefit = baker.make(SponsorshipBenefit, name='Benefit')
-        benefit_config = baker.make(
-            TieredQuantityConfiguration,
-            package__name='Package',
-            benefit=benefit,
-        )
-
-        self.assertEqual(benefit.name_for_display(), self.sponsorship_benefit.name)
-        self.assertFalse(benefit.has_tiers)
 
     def test_name_for_display_without_specifying_package(self):
         benefit = baker.make(SponsorshipBenefit, name='Benefit')
@@ -268,30 +258,6 @@ class SponsorshipModelTests(TestCase):
             sponsorship.rollback_to_editing()
 
         self.assertEqual(1, Contract.objects.count())
-
-    def test_rollback_sponsorship_to_edit(self):
-        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
-        can_rollback_from = [
-            Sponsorship.APPLIED,
-            Sponsorship.APPROVED,
-            Sponsorship.REJECTED,
-        ]
-        for status in can_rollback_from:
-            sponsorship.status = status
-            sponsorship.save()
-            sponsorship.refresh_from_db()
-
-            sponsorship.rollback_to_editing()
-
-            self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
-            self.assertIsNone(sponsorship.approved_on)
-            self.assertIsNone(sponsorship.rejected_on)
-
-        sponsorship.status = Sponsorship.FINALIZED
-        sponsorship.save()
-        sponsorship.refresh_from_db()
-        with self.assertRaises(InvalidStatusException):
-            sponsorship.rollback_to_editing()
 
     def test_raise_exception_when_trying_to_create_sponsorship_for_same_sponsor(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
@@ -655,8 +621,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
 ###########
-####### Email notification tests
-###########
+# Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):
 
     def setUp(self):
@@ -790,3 +755,82 @@ class TieredQuantityTests(TestCase):
         placement = baker.make(TieredQuantity, quantity=10)
         name = 'Benefit'
         self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
+
+
+class RequiredImgAssetConfigurationTests(TestCase):
+
+    def setUp(self):
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.config = baker.make(
+            RequiredImgAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+        )
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        benefit_feature = self.config.get_benefit_feature(sponsor_benefit=self.sponsor_benefit)
+
+        self.assertIsInstance(benefit_feature, RequiredImgAsset)
+        self.assertEqual(benefit_feature.max_width, self.config.max_width)
+        self.assertEqual(benefit_feature.min_width, self.config.min_width)
+        self.assertEqual(benefit_feature.max_height, self.config.max_height)
+        self.assertEqual(benefit_feature.min_height, self.config.min_height)
+
+    def test_create_benefit_feature_and_sponsor_generic_img_assets(self):
+        sponsor = self.sponsor_benefit.sponsorship.sponsor
+
+        feature = self.config.create_benefit_feature(self.sponsor_benefit)
+        asset = ImgAsset.objects.get()
+
+        self.assertIsInstance(feature, RequiredImgAsset)
+        self.assertTrue(feature.pk)
+        self.assertEqual(self.config.internal_name, asset.internal_name)
+        self.assertEqual(sponsor, asset.content_object)
+        self.assertFalse(asset.image.name)
+
+
+class RequiredTextAssetConfigurationTests(TestCase):
+
+    def setUp(self):
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.config = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+            _fill_optional=True,
+        )
+
+    def test_get_benefit_feature_respecting_configuration(self):
+        benefit_feature = self.config.get_benefit_feature(sponsor_benefit=self.sponsor_benefit)
+
+        self.assertIsInstance(benefit_feature, RequiredTextAsset)
+        self.assertEqual(benefit_feature.label, self.config.label)
+        self.assertEqual(benefit_feature.help_text, self.config.help_text)
+
+    def test_create_benefit_feature_and_sponsor_generic_text_asset(self):
+        sponsor = self.sponsor_benefit.sponsorship.sponsor
+
+        feature = self.config.create_benefit_feature(self.sponsor_benefit)
+        asset = TextAsset.objects.get()
+
+        self.assertIsInstance(feature, RequiredTextAsset)
+        self.assertTrue(feature.pk)
+        self.assertEqual(self.config.internal_name, asset.internal_name)
+        self.assertEqual(sponsor, asset.content_object)
+        self.assertFalse(asset.text)
+
+    def test_relate_asset_with_sponsorship_respecting_config(self):
+        self.config.related_to = AssetsRelatedTo.SPONSORSHIP.value
+        self.config.save()
+        sponsorship = self.sponsor_benefit.sponsorship
+
+        self.config.create_benefit_feature(self.sponsor_benefit)
+
+        asset = TextAsset.objects.get()
+        self.assertEqual(sponsorship, asset.content_object)
+
+    def test_cant_create_same_asset_twice(self):
+        self.config.create_benefit_feature(self.sponsor_benefit)
+        self.sponsor_benefit.refresh_from_db()
+        self.config.create_benefit_feature(self.sponsor_benefit)
+        self.assertEqual(1, TextAsset.objects.count())
