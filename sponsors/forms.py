@@ -567,7 +567,8 @@ class SponsorRequiredAssetsForm(forms.Form):
 
         fields = {}
         for required_asset in required_assets:
-            fields[slugify(required_asset.internal_name)] = required_asset.as_form_field()
+            f_name = slugify(required_asset.internal_name).replace("-", "_")
+            fields[f_name] = required_asset.as_form_field()
 
         form.fields.update(fields)
         return form

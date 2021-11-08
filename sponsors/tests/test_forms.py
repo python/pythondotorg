@@ -559,12 +559,14 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.required_text_cfg = baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSORSHIP.value,
-            internal_name="Text Input"
+            internal_name="Text Input",
+            _fill_optional=True,
         )
         self.required_img_cfg = baker.make(
             RequiredImgAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSOR.value,
-            internal_name="Image Input"
+            internal_name="Image Input",
+            _fill_optional=True,
         )
         self.benefits = baker.make(
             SponsorBenefit, sponsorship=self.sponsorship, _quantity=3
@@ -575,9 +577,12 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.assertEqual(len(form.fields), 0)
 
     def test_build_form_fields_from_required_assets(self):
-        self.required_text_cfg.create_benefit_feature(self.benefits[0])
-        self.required_img_cfg.create_benefit_feature(self.benefits[1])
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
 
         form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship)
+        fields = dict(form.fields)
 
-        self.assertEqual(len(form.fields), 2)
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(type(text_asset.as_form_field()), type(fields["text_input"]))
+        self.assertEqual(type(img_asset.as_form_field()), type(fields["image_input"]))
