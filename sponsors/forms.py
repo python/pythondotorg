@@ -576,6 +576,9 @@ class SponsorRequiredAssetsForm(forms.Form):
         for required_asset in required_assets:
             f_name = form._get_field_name(required_asset)
             fields[f_name] = required_asset.as_form_field()
+            value = required_asset.value
+            if value:
+                form.initial[f_name] = value
 
         form.fields.update(fields)
         return form
@@ -591,3 +594,7 @@ class SponsorRequiredAssetsForm(forms.Form):
             if value is None:
                 continue
             req_asset.value = value
+
+    @property
+    def has_input(self):
+        return bool(self.fields)
