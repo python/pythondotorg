@@ -556,31 +556,29 @@ class SponsorRequiredAssetsForm(forms.Form):
     required assets from the sponsorship.
     """
 
-    def __init__(self, required_assets, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.required_assets = required_assets
-
-    def _get_field_name(self, asset):
-        return slugify(asset.internal_name).replace("-", "_")
-
-    @classmethod
-    def for_sponsorship(cls, sponsorship, *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         """
-        Constructor method to introspect the sponsorship object and
+        Init method introspect the sponsorship object and
         build the form object
         """
-        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
-        form = cls(required_assets, *args, **kwargs)
+        self.sponsorship = kwargs.pop("instance", None)
+        if not self.sponsorship:
+            msg = "Form must be initialized with a sponsorship passed by the instance parameter"
+            raise TypeError(msg)
+        super().__init__(*args, **kwargs)
+        self.required_assets = BenefitFeature.objects.required_assets().from_sponsorship(self.sponsorship)
 
         fields = {}
-        for required_asset in required_assets:
+        for required_asset in self.required_assets:
             value = required_asset.value
-            f_name = form._get_field_name(required_asset)
+            f_name = self._get_field_name(required_asset)
             required = bool(value)
             fields[f_name] = required_asset.as_form_field(required=required, initial=value)
 
-        form.fields.update(fields)
-        return form
+        self.fields.update(fields)
+
+    def _get_field_name(self, asset):
+        return slugify(asset.internal_name).replace("-", "_")
 
     def update_assets(self):
         """

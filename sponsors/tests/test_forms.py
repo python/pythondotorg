@@ -573,7 +573,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         )
 
     def test_build_form_with_no_fields_if_no_required_asset(self):
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship)
         self.assertEqual(len(form.fields), 0)
         self.assertFalse(form.has_input)
 
@@ -581,7 +581,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
         img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
 
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship)
         fields = dict(form.fields)
 
         self.assertEqual(len(fields), 2)
@@ -593,7 +593,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
         data = {"text_input": "submitted data"}
 
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data=data)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data=data)
         self.assertTrue(form.is_valid())
         form.update_assets()
 
@@ -603,7 +603,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
         files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
 
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={}, files=files)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={}, files=files)
         self.assertTrue(form.is_valid())
         form.update_assets()
         asset = ImgAsset.objects.get()
@@ -615,12 +615,15 @@ class SponsorRequiredAssetsFormTest(TestCase):
         img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
         text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
         files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={"text_input": "data"}, files=files)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={"text_input": "data"}, files=files)
         self.assertTrue(form.is_valid())
         form.update_assets()
 
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={}, files=files)
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={}, files=files)
         self.assertTrue(form.fields["image_input"].initial)
         self.assertTrue(form.fields["text_input"].initial)
         self.assertTrue(form.fields["text_input"].required)
         self.assertTrue(form.fields["image_input"].required)
+
+    def test_raise_error_if_form_initialized_without_instance(self):
+        self.assertRaises(TypeError, SponsorRequiredAssetsForm)
