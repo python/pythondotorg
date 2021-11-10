@@ -4,8 +4,9 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 
-from sponsors.forms import SponsorUpdateForm
-from sponsors.models import Sponsorship
+from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
+from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
+from sponsors.models.enums import AssetsRelatedTo
 from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
@@ -492,3 +493,59 @@ class UpdateSponsorInfoViewTests(TestCase):
         self.assertEqual(302, response.status_code)
         self.assertEqual("desc", self.sponsor.description)
         self.assertEqual("John", self.contact.name)
+
+
+class UpdateSponsorshipAssetsViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(User)
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="foo", submited_by=self.user)
+        self.required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Text Input",
+            _fill_optional=True,
+        )
+        self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        self.required_asset = self.required_text_cfg.create_benefit_feature(self.benefit)
+        self.client.force_login(self.user)
+        self.url = reverse("users:update_sponsorship_assets", args=[self.sponsorship.pk])
+
+    def test_render_expected_html_and_context(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, "users/sponsorship_assets_update.html")
+        self.assertEqual(self.sponsorship, context["sponsorship"])
+        self.assertEqual(self.sponsorship, context["form"].sponsorship)
+        self.assertIsInstance(context["form"], SponsorRequiredAssetsForm)
+
+    def test_update_assets_information_with_valid_post(self):
+        response = self.client.post(self.url, data={"text_input": "information"})
+        context = response.context
+
+        self.assertRedirects(response, reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk]))
+        self.assertEqual(self.required_asset.value, "information")
+
+    def test_render_form_with_errors_when_updating_info_with_invalid_post(self):
+        self.client.post(self.url, data={"text_input": "information"})  # first post updates the asset value
+
+        response = self.client.post(self.url, {})
+        context = response.context
+
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, "users/sponsorship_assets_update.html")
+        self.assertFalse(context["form"].is_valid())
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(404, response.status_code)
+
+    def test_404_if_sponsorship_does_not_belong_to_user(self):
+        other_user = baker.make(User)
+        self.client.force_login(other_user)
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(404, response.status_code)
