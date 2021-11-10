@@ -611,13 +611,17 @@ class SponsorRequiredAssetsFormTest(TestCase):
 
         self.assertEqual(expected_url, img_asset.value.url)
 
-    def test_load_initial_from_assets(self):
+    def test_load_initial_from_assets_and_force_field_if_previous_Data(self):
         img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
         files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
-        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={}, files=files)
+        form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={"text_input": "data"}, files=files)
         self.assertTrue(form.is_valid())
         form.update_assets()
 
         form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={}, files=files)
         self.assertTrue(form.initial)
         self.assertTrue(form.initial["image_input"])
+        self.assertTrue(form.initial["text_input"])
+        self.assertTrue(form.fields["text_input"].required)
+        self.assertTrue(form.fields["image_input"].required)

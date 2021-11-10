@@ -579,6 +579,7 @@ class SponsorRequiredAssetsForm(forms.Form):
             value = required_asset.value
             if value:
                 form.initial[f_name] = value
+                fields[f_name].required = True
 
         form.fields.update(fields)
         return form
