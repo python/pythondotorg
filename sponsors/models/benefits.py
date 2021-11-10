@@ -14,6 +14,8 @@ from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, Assets
 from sponsors.models.managers import BenefitFeatureQuerySet
 
 
+########################################
+# Benefit features abstract classes
 class BaseLogoPlacement(models.Model):
     publisher = models.CharField(
         max_length=30,
@@ -104,6 +106,9 @@ class RequiredAssetConfigurationMixin:
 
         return benefit_feature
 
+    class Meta:
+        abstract = True
+
 
 class BaseRequiredImgAsset(BaseRequiredAsset):
     ASSET_CLASS = ImgAsset
@@ -119,6 +124,17 @@ class BaseRequiredImgAsset(BaseRequiredAsset):
 
 class BaseRequiredTextAsset(BaseRequiredAsset):
     ASSET_CLASS = TextAsset
+
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the text input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
 
     class Meta(BaseRequiredAsset.Meta):
         abstract = True
