@@ -175,7 +175,7 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.FileField(
+    print_logo = forms.ImageField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
