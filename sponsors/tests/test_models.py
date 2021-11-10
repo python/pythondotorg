@@ -899,3 +899,4 @@ class RequiredImgAssetTests(TestCase):
         self.assertFalse(field.required)
         self.assertEqual(text_asset.help_text, field.help_text)
         self.assertEqual(text_asset.label, field.label)
+        self.assertIsInstance(field.widget, forms.ClearableFileInput)

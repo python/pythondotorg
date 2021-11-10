@@ -620,8 +620,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
         form.update_assets()
 
         form = SponsorRequiredAssetsForm.for_sponsorship(self.sponsorship, data={}, files=files)
-        self.assertTrue(form.initial)
-        self.assertTrue(form.initial["image_input"])
-        self.assertTrue(form.initial["text_input"])
+        self.assertTrue(form.fields["image_input"].initial)
+        self.assertTrue(form.fields["text_input"].initial)
         self.assertTrue(form.fields["text_input"].required)
         self.assertTrue(form.fields["image_input"].required)

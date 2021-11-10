@@ -2,7 +2,7 @@
 This module holds models related to benefits features and configurations
 """
 from django import forms
-from django.db import models, IntegrityError, transaction
+from django.db import models
 from django.db.models import UniqueConstraint
 from polymorphic.models import PolymorphicModel
 
@@ -370,8 +370,11 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
     def __str__(self):
         return f"Require image"
 
-    def as_form_field(self):
-        return forms.ImageField(required=False, help_text=self.help_text, label=self.label)
+    def as_form_field(self, **kwargs):
+        help_text = kwargs.pop("help_text", self.help_text)
+        label = kwargs.pop("label", self.label)
+        required = kwargs.pop("required", False)
+        return forms.ImageField(required=required, help_text=help_text, label=label, widget=forms.ClearableFileInput, **kwargs)
 
 
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
@@ -382,5 +385,8 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
     def __str__(self):
         return f"Require text"
 
-    def as_form_field(self):
-        return forms.CharField(required=False, widget=forms.TextInput, help_text=self.help_text, label=self.label)
+    def as_form_field(self, **kwargs):
+        help_text = kwargs.pop("help_text", self.help_text)
+        label = kwargs.pop("label", self.label)
+        required = kwargs.pop("required", False)
+        return forms.CharField(required=required, help_text=help_text, label=label, widget=forms.TextInput, **kwargs)
