@@ -3979,3 +3979,12 @@ span.highlighted {
   background: #e6e8ea; }
   #sponsorship-detail-container .card-info h3 {
     margin: 0; }
+
+#update-sponsorship-assets input {
+  padding: 0.25em;
+  margin-top: 0.25em;
+  margin-bottom: 0; }
+#update-sponsorship-assets .helptext {
+  font-size: 75%; }
+#update-sponsorship-assets .form-actions {
+  margin: 0.5em 0; }
