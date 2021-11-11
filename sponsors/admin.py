@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.admin import GenericTabularInline
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
 
@@ -5,31 +6,34 @@ from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
-from django.urls import path, reverse
+from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
-from .models import (
-    SponsorshipPackage,
-    SponsorshipProgram,
-    SponsorshipBenefit,
-    Sponsor,
-    Sponsorship,
-    SponsorContact,
-    SponsorBenefit,
-    LegalClause,
-    Contract,
-    BenefitFeature,
-    BenefitFeatureConfiguration,
-    LogoPlacementConfiguration,
-    TieredQuantityConfiguration,
-    EmailTargetableConfiguration,
-    SponsorEmailNotificationTemplate,
-)
+from sponsors.models import *
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm
 from cms.admin import ContentManageableModelAdmin
+
+
+class AssetsInline(GenericTabularInline):
+    model = GenericAsset
+    extra = 0
+    max_num = 0
+    has_delete_permission = lambda self, request, obj: False
+    readonly_fields = ["internal_name", "user_submitted_info", "value"]
+
+    def value(self, request, obj=None):
+        if not obj or not obj.value:
+            return ""
+        return obj.value
+    value.short_description = "Submitted information"
+
+    def user_submitted_info(self, request, obj=None):
+        return bool(self.value(request, obj))
+    user_submitted_info.short_description = "Fullfilled data?"
+    user_submitted_info.boolean = True
 
 
 @admin.register(SponsorshipProgram)
@@ -55,11 +59,20 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         def display(self, obj):
             return "Enabled"
 
+    class RequiredImgAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredImgAssetConfiguration
+        form = RequiredImgAssetConfigurationForm
+
+    class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredTextAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
         TieredQuantityConfigurationInline,
         EmailTargetableConfigurationInline,
+        RequiredImgAssetConfigurationInline,
+        RequiredTextAssetConfigurationInline,
     ]
 
 
@@ -144,7 +157,7 @@ class SponsorContactInline(admin.TabularInline):
 
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
-    inlines = [SponsorContactInline]
+    inlines = [SponsorContactInline, AssetsInline]
     search_fields = ["name"]
 
 
@@ -153,6 +166,7 @@ class SponsorBenefitInline(admin.TabularInline):
     form = SponsorBenefitAdminInlineForm
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
+    max_num = 0
 
     def has_add_permission(self, request, obj=None):
         has_add_permission = super().has_add_permission(request, obj=obj)
@@ -172,6 +186,10 @@ class SponsorBenefitInline(admin.TabularInline):
             return True
         return obj.open_for_editing
 
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args, **kwargs)
+        return qs.select_related("sponsorship_benefit__program", "program")
+
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
     title = "targetable email benefits"
@@ -185,7 +203,7 @@ class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
 
     def lookups(self, request, model_admin):
         return [
-          (k, b.name) for k, b in self.benefits.items()
+            (k, b.name) for k, b in self.benefits.items()
         ]
 
     def queryset(self, request, queryset):
@@ -202,7 +220,7 @@ class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
-    inlines = [SponsorBenefitInline]
+    inlines = [SponsorBenefitInline, AssetsInline]
     search_fields = ["sponsor__name"]
     list_display = [
         "sponsor",
@@ -264,7 +282,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsor", "package")
+        return qs.select_related("sponsor", "package", "submited_by")
 
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
@@ -306,6 +324,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             cost = intcomma(obj.estimated_cost)
             html = f"{cost} USD <br/><b>Important: </b> {msg}"
         return mark_safe(html)
+
     get_estimated_cost.short_description = "Estimated cost"
 
     def get_contract(self, obj):
@@ -314,6 +333,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         url = reverse("admin:sponsors_contract_change", args=[obj.contract.pk])
         html = f"<a href='{url}' target='_blank'>{obj.contract}</a>"
         return mark_safe(html)
+
     get_contract.short_description = "Contract"
 
     def get_urls(self):
@@ -346,14 +366,17 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_sponsor_name(self, obj):
         return obj.sponsor.name
+
     get_sponsor_name.short_description = "Name"
 
     def get_sponsor_description(self, obj):
         return obj.sponsor.description
+
     get_sponsor_description.short_description = "Description"
 
     def get_sponsor_landing_page_url(self, obj):
         return obj.sponsor.landing_page_url
+
     get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
     def get_sponsor_web_logo(self, obj):
@@ -362,6 +385,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         context = Context({'sponsor': obj.sponsor})
         html = template.render(context)
         return mark_safe(html)
+
     get_sponsor_web_logo.short_description = "Web Logo"
 
     def get_sponsor_print_logo(self, obj):
@@ -373,10 +397,12 @@ class SponsorshipAdmin(admin.ModelAdmin):
             context = Context({'img': img})
             html = template.render(context)
         return mark_safe(html) if html else "---"
+
     get_sponsor_print_logo.short_description = "Print Logo"
 
     def get_sponsor_primary_phone(self, obj):
         return obj.sponsor.primary_phone
+
     get_sponsor_primary_phone.short_description = "Primary Phone"
 
     def get_sponsor_mailing_address(self, obj):
@@ -395,6 +421,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html += f"<p>{mail_row}</p>"
         html += f"<p>{sponsor.postal_code}</p>"
         return mark_safe(html)
+
     get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
     def get_sponsor_contacts(self, obj):
@@ -415,6 +442,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             )
             html += "</ul>"
         return mark_safe(html)
+
     get_sponsor_contacts.short_description = "Contacts"
 
     def rollback_to_editing_view(self, request, pk):
@@ -538,8 +566,8 @@ class ContractModelAdmin(admin.ModelAdmin):
         if url and msg:
             html = f'<a href="{url}" target="_blank">{msg}</a>'
         return mark_safe(html)
-    document_link.short_description = "Contract document"
 
+    document_link.short_description = "Contract document"
 
     def get_sponsorship_url(self, obj):
         if not obj.sponsorship:
@@ -547,6 +575,7 @@ class ContractModelAdmin(admin.ModelAdmin):
         url = reverse("admin:sponsors_sponsorship_change", args=[obj.sponsorship.pk])
         html = f"<a href='{url}' target='_blank'>{obj.sponsorship}</a>"
         return mark_safe(html)
+
     get_sponsorship_url.short_description = "Sponsorship"
 
     def get_urls(self):
