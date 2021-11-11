@@ -53,13 +53,13 @@ class LogoPlacementeAPIListTests(APITestCase):
             f"http://testserver/psf/sponsors/#{slugify(sp3.sponsor.name)}",
             [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]['sponsor_url']
         )
-        self.assertEqual(
-            sp1.sponsor.description,
-            [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]['description']
+        self.assertCountEqual(
+            [sp1.sponsor.description, sp1.sponsor.description, sp2.sponsor.description],
+            [p['description'] for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value]
         )
         self.assertEqual(
-            f"{sp3.sponsor.name} is a {sp3.level_name} sponsor of the Python Software Foundation.",
-            [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]['description']
+            [f"{sp3.sponsor.name} is a {sp3.level_name} sponsor of the Python Software Foundation."],
+            [p['description'] for p in data if p["publisher"] == PublisherChoices.PYPI.value]
         )
 
     def test_invalid_token(self):
