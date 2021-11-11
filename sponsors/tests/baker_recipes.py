@@ -49,3 +49,9 @@ logo_at_sponsors_feature = Recipe(
     publisher=PublisherChoices.FOUNDATION.value,
     logo_place=LogoPlacementChoices.SPONSORS_PAGE.value,
 )
+
+logo_at_pypi_feature = Recipe(
+    LogoPlacement,
+    publisher=PublisherChoices.PYPI.value,
+    logo_place=LogoPlacementChoices.SIDEBAR.value,
+)
