@@ -1,11 +1,12 @@
 from django.contrib.auth.models import Permission
 from django.urls import reverse_lazy
+from django.utils.text import slugify
 from model_bakery import baker
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from sponsors.models import Sponsor
-from sponsors.models.enums import LogoPlacementChoices
+from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
 class LogoPlacementeAPIListTests(APITestCase):
@@ -17,7 +18,7 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.permission = Permission.objects.get(name='Can access sponsor placement API')
         self.user.user_permissions.add(self.permission)
         self.authorization = f'Token {token.key}'
-        self.sponsors = baker.make(Sponsor, _create_files=True, _quantity=2)
+        self.sponsors = baker.make(Sponsor, _create_files=True, _quantity=3)
 
     def tearDown(self):
         for sponsor in Sponsor.objects.all():
@@ -27,20 +28,39 @@ class LogoPlacementeAPIListTests(APITestCase):
                 sponsor.print_logo.delete()
 
     def test_list_logo_placement_as_expected(self):
-        sp1, sp2 = baker.make_recipe("sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors), _quantity=2)
+        sp1, sp2, sp3 = baker.make_recipe("sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors), _quantity=3)
         baker.make_recipe("sponsors.tests.logo_at_download_feature", sponsor_benefit__sponsorship=sp1)
         baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=sp1)
         baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=sp2)
+        baker.make_recipe("sponsors.tests.logo_at_pypi_feature", sponsor_benefit__sponsorship=sp3, link_to_sponsors_page=True, describe_as_sponsor=True)
 
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         data = response.json()
 
         self.assertEqual(200, response.status_code)
-        self.assertEqual(3, len(data))
+        self.assertEqual(4, len(data))
         self.assertEqual(2, len([p for p in data if p["flight"] == LogoPlacementChoices.SPONSORS_PAGE.value]))
         self.assertEqual(1, len([p for p in data if p["flight"] == LogoPlacementChoices.DOWNLOAD_PAGE.value]))
+        self.assertEqual(1, len([p for p in data if p["flight"] == LogoPlacementChoices.SIDEBAR.value]))
         self.assertEqual(2, len([p for p in data if p["sponsor"] == self.sponsors[0].name]))
         self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[1].name]))
+        self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[2].name]))
+        self.assertEqual(
+            None,
+            [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]['sponsor_url']
+        )
+        self.assertEqual(
+            f"http://testserver/psf/sponsors/#{slugify(sp3.sponsor.name)}",
+            [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]['sponsor_url']
+        )
+        self.assertCountEqual(
+            [sp1.sponsor.description, sp1.sponsor.description, sp2.sponsor.description],
+            [p['description'] for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value]
+        )
+        self.assertEqual(
+            [f"{sp3.sponsor.name} is a {sp3.level_name} sponsor of the Python Software Foundation."],
+            [p['description'] for p in data if p["publisher"] == PublisherChoices.PYPI.value]
+        )
 
     def test_invalid_token(self):
         Token.objects.all().delete()
