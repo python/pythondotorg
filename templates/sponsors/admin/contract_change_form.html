@@ -14,10 +14,14 @@
     <li>
         <a href="{% url 'admin:sponsors_contract_send' contract.pk %}" style="background: #70bf2b">Send document</a>
     </li>
-    {% elif contract.status == contract.AWAITING_SIGNATURE %}
+    {% endif %}
+
+    {% if contract.EXECUTED in contract.next_status %}
     <li>
         <a href="{% url 'admin:sponsors_contract_execute' contract.pk %}" style="background: #70bf2b">Execute</a>
     </li>
+    {% endif %}
+    {% if contract.NULLIFY in contract.next_status %}
     <li>
         <a href="{% url 'admin:sponsors_contract_nullify' contract.pk %}" style="background: #ba2121" >Nullify</a>
     </li>
