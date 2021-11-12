@@ -98,9 +98,9 @@ class SponsorshipPackageManager(OrderedModelManager):
 class BenefitFeatureQuerySet(PolymorphicQuerySet):
 
     def from_sponsorship(self, sponsorship):
-        return self.filter(sponsor_benefit__sponsorship=sponsorship)
+        return self.filter(sponsor_benefit__sponsorship=sponsorship).select_related("sponsor_benefit__sponsorship")
 
     def required_assets(self):
         from sponsors.models.benefits import RequiredAssetMixin
         required_assets_classes = RequiredAssetMixin.__subclasses__()
-        return self.instance_of(*required_assets_classes)
+        return self.instance_of(*required_assets_classes).select_related("sponsor_benefit__sponsorship")

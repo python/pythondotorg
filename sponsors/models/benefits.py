@@ -4,6 +4,7 @@ This module holds models related to benefits features and configurations
 from django import forms
 from django.db import models
 from django.db.models import UniqueConstraint
+from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
 from sponsors.models.assets import ImgAsset, TextAsset
@@ -172,6 +173,11 @@ class RequiredAssetMixin:
         asset = self.__related_asset()
         asset.value = value
         asset.save()
+
+    @property
+    def user_edit_url(self):
+        url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
+        return url + f"?required_asset={self.pk}"
 
 
 ######################################################
