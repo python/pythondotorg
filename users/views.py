@@ -21,7 +21,7 @@ from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
 from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
-from sponsors.models import Sponsor
+from sponsors.models import Sponsor, BenefitFeature
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
@@ -236,11 +236,19 @@ class SponsorshipDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
+
         sponsorship = context["sponsorship"]
-        assets = list(sponsorship.assets.all()) + list(sponsorship.sponsor.assets.all())
+        assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        fulfilled, pending = [], []
+        for asset in assets:
+            if bool(asset.value):
+                fulfilled.append(asset)
+            else:
+                pending.append(asset)
+
+        context["assets"] = pending
+        context["fulfilled_assets"] = fulfilled
         context["sponsor"] = sponsorship.sponsor
-        context["assets"] = assets
-        context["fullfilled_assets"] = all([bool(asset.value) for asset in assets])
         return context
 
 

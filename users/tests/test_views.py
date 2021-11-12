@@ -421,6 +421,34 @@ class SponsorshipDetailViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 404)
 
+    def test_list_assets(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(1, len(context["assets"]))
+        self.assertIn(asset, context["assets"])
+        self.assertEqual(0, len(context["fulfilled_assets"]))
+
+    def test_fulfilled_assets(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+        asset.value = "information"
+        asset.save()
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, len(context["assets"]))
+        self.assertEqual(1, len(context["fulfilled_assets"]))
+        self.assertIn(asset, context["fulfilled_assets"])
+
 
 class UpdateSponsorInfoViewTests(TestCase):
 
