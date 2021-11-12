@@ -19,7 +19,11 @@
     <h1>Update assets for {{ sponsorship.sponsor }} sponsorship</h1>
 
     {% if not form.has_input %}
-      <p>This sponsorship application does not require for extra assets information.</p>
+      {% if not required_asset_id %}
+        <p>This sponsorship application does not require for extra assets information.</p>
+      {% else %}
+        <p>This sponsorship application does not have a required asset with ID {{ required_asset_id }}.</p>
+      {% endif %}
       <p><a href="{% url 'users:sponsorship_application_detail' sponsorship.pk %}">Click here</a> to go back to the sponsorship detail.</p>
     {% else %}
       <p>Please, submit all the pending required assets.</p>

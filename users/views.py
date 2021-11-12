@@ -283,6 +283,11 @@ class UpdateSponsorshipAssetsView(UpdateView):
             kwargs["required_assets_ids"] = [specific_asset]
         return kwargs
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["required_asset_id"] = self.request.GET.get("required_asset", None)
+        return context
+
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
         return reverse("users:sponsorship_application_detail", args=[self.object.pk])
