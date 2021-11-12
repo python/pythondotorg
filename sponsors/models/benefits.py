@@ -29,6 +29,14 @@ class BaseLogoPlacement(models.Model):
         verbose_name="Logo Placement",
         help_text="Where the logo should be placed?"
     )
+    link_to_sponsors_page = models.BooleanField(
+        default=False,
+        help_text="Override URL in placement to the PSF Sponsors Page, rather than the sponsor landing page url.",
+    )
+    describe_as_sponsor = models.BooleanField(
+        default=False,
+        help_text='Override description with "SPONSOR_NAME is a SPONSOR_LEVEL sponsor of the Python Software Foundation".',
+    )
 
     class Meta:
         abstract = True

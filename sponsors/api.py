@@ -1,3 +1,6 @@
+from django.utils.text import slugify
+from django.urls import reverse
+
 from rest_framework import permissions
 from rest_framework import serializers
 from rest_framework.authentication import TokenAuthentication
@@ -56,6 +59,10 @@ class LogoPlacementeAPIList(APIView):
                 placement = base_data.copy()
                 placement["publisher"] = logo.publisher
                 placement["flight"] = logo.logo_place
+                if logo.describe_as_sponsor:
+                    placement["description"] = f"{sponsor.name} is a {sponsorship.level_name} sponsor of the Python Software Foundation."
+                if logo.link_to_sponsors_page:
+                    placement["sponsor_url"] = request.build_absolute_uri(reverse('psf-sponsors') + f"#{slugify(sponsor.name)}")
                 placements.append(placement)
 
         serializer = LogoPlacementSerializer(placements, many=True)
