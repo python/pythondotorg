@@ -11,6 +11,7 @@ from django.core.mail import EmailMessage
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
+from sponsors.exceptions import ContractWithoutSignedDocumentException
 from sponsors.notifications import *
 from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate
 
@@ -168,12 +169,22 @@ class ExecuteContractUseCaseTests(TestCase):
         self.notifications = [Mock()]
         self.use_case = use_cases.ExecuteContractUseCase(self.notifications)
         self.user = baker.make(settings.AUTH_USER_MODEL)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
+        self.file = SimpleUploadedFile("contract.txt", b"Contract content")
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.AWAITING_SIGNATURE,
+        )
+
+    def tearDown(self):
+        self.contract.refresh_from_db()
+        if self.contract.signed_document:
+            self.contract.signed_document.delete()
 
     def test_execute_and_update_database_object(self):
-        self.use_case.execute(self.contract)
+        self.use_case.execute(self.contract, self.file)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.EXECUTED)
+        self.assertTrue(self.contract.signed_document.url)
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteContractUseCase.build()

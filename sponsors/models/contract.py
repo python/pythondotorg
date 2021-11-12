@@ -193,7 +193,7 @@ class Contract(models.Model):
     @property
     def next_status(self):
         states_map = {
-            self.DRAFT: [self.AWAITING_SIGNATURE],
+            self.DRAFT: [self.AWAITING_SIGNATURE, self.EXECUTED],
             self.OUTDATED: [],
             self.AWAITING_SIGNATURE: [self.EXECUTED, self.NULLIFIED],
             self.EXECUTED: [],
