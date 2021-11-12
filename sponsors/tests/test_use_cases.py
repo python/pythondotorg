@@ -11,7 +11,6 @@ from django.core.mail import EmailMessage
 from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
-from sponsors.exceptions import ContractWithoutSignedDocumentException
 from sponsors.notifications import *
 from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate
 
