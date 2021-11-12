@@ -1,5 +1,7 @@
 import io
 import json
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from datetime import date, timedelta
 from unittest.mock import patch, PropertyMock, Mock
@@ -569,7 +571,16 @@ class ExecuteContractViewTests(TestCase):
         )
         self.data = {
             "confirm": "yes",
+            "signed_document": SimpleUploadedFile("contract.txt", b"Contract content"),
         }
+
+    def tearDown(self):
+        try:
+            self.contract.refresh_from_db()
+            if self.contract.signed_document:
+                self.contract.signed_document.delete()
+        except Contract.DoesNotExist:
+            pass
 
     def test_display_confirmation_form_on_get(self):
         response = self.client.get(self.url)
@@ -591,7 +602,7 @@ class ExecuteContractViewTests(TestCase):
         assertMessage(msg, "Contract was executed!", messages.SUCCESS)
 
     def test_display_error_message_to_user_if_invalid_status(self):
-        self.contract.status = Contract.DRAFT
+        self.contract.status = Contract.OUTDATED
         self.contract.save()
         expected_url = reverse(
             "admin:sponsors_contract_change", args=[self.contract.pk]
@@ -602,10 +613,10 @@ class ExecuteContractViewTests(TestCase):
         msg = list(get_messages(response.wsgi_request))[0]
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
-        self.assertEqual(self.contract.status, Contract.DRAFT)
+        self.assertEqual(self.contract.status, Contract.OUTDATED)
         assertMessage(
             msg,
-            "Contract with status Draft can't be executed.",
+            "Contract with status Outdated can't be executed.",
             messages.ERROR,
         )
 
@@ -621,6 +632,15 @@ class ExecuteContractViewTests(TestCase):
         self.assertTemplateUsed(response, "sponsors/admin/execute_contract.html")
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
+    def test_display_error_message_to_user_if_no_signed_document(self):
+        self.data.pop("signed_document")
+        response = self.client.post(self.url, data=self.data)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/admin/execute_contract.html")
+        self.assertEqual(context["contract"], self.contract)
+        self.assertTrue(context["error_msg"])
 
     def test_404_if_contract_does_not_exist(self):
         self.contract.delete()
