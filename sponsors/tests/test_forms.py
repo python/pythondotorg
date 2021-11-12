@@ -589,6 +589,16 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.assertEqual(type(img_asset.as_form_field()), type(fields["image_input"]))
         self.assertTrue(form.has_input)
 
+    def test_build_form_fields_from_specific_list_of_required_assets(self):
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, required_assets_ids=[text_asset.pk])
+        fields = dict(form.fields)
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(type(text_asset.as_form_field()), type(fields["text_input"]))
+
     def test_save_info_for_text_asset(self):
         text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
         data = {"text_input": "submitted data"}

@@ -562,11 +562,14 @@ class SponsorRequiredAssetsForm(forms.Form):
         build the form object
         """
         self.sponsorship = kwargs.pop("instance", None)
+        required_assets_ids = kwargs.pop("required_assets_ids", [])
         if not self.sponsorship:
             msg = "Form must be initialized with a sponsorship passed by the instance parameter"
             raise TypeError(msg)
         super().__init__(*args, **kwargs)
         self.required_assets = BenefitFeature.objects.required_assets().from_sponsorship(self.sponsorship)
+        if required_assets_ids:
+            self.required_assets = self.required_assets.filter(pk__in=required_assets_ids)
 
         fields = {}
         for required_asset in self.required_assets:

@@ -268,6 +268,13 @@ class UpdateSponsorshipAssetsView(UpdateView):
     def get_queryset(self):
         return self.request.user.sponsorships.select_related("sponsor")
 
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        specific_asset = self.request.GET.get("required_asset", None)
+        if specific_asset:
+            kwargs["required_assets_ids"] = [specific_asset]
+        return kwargs
+
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
         return reverse("users:sponsorship_application_detail", args=[self.object.pk])

@@ -521,6 +521,21 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
         self.assertEqual(self.sponsorship, context["form"].sponsorship)
         self.assertIsInstance(context["form"], SponsorRequiredAssetsForm)
 
+    def test_render_form_for_specific_asset_if_informed_via_querystring(self):
+        extra_required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Second Text Input",
+            _fill_optional=True,
+        )
+        req_asset = extra_required_text_cfg.create_benefit_feature(self.benefit)
+
+        response = self.client.get(self.url + f"?required_asset={req_asset.pk}")
+        form = response.context["form"]
+
+        self.assertEqual(1, len(form.fields))
+        self.assertIn("second_text_input", form.fields)
+
     def test_update_assets_information_with_valid_post(self):
         response = self.client.post(self.url, data={"text_input": "information"})
         context = response.context
