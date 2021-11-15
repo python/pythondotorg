@@ -536,6 +536,7 @@ class ContractModelAdmin(admin.ModelAdmin):
             "revision",
             "document",
             "document_docx",
+            "signed_document",
             "get_sponsorship_url",
         ]
 

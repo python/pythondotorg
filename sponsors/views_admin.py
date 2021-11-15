@@ -179,11 +179,13 @@ def rollback_to_editing_view(ModelAdmin, request, pk):
 def execute_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
 
-    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+    is_post = request.method.upper() == "POST"
+    signed_document = request.FILES.get("signed_document")
+    if is_post and request.POST.get("confirm") == "yes" and signed_document:
 
         use_case = use_cases.ExecuteContractUseCase.build()
         try:
-            use_case.execute(contract, request=request)
+            use_case.execute(contract, signed_document, request=request)
             ModelAdmin.message_user(
                 request, "Contract was executed!", messages.SUCCESS
             )
@@ -198,7 +200,11 @@ def execute_contract_view(ModelAdmin, request, pk):
         redirect_url = reverse("admin:sponsors_contract_change", args=[contract.pk])
         return redirect(redirect_url)
 
-    context = {"contract": contract}
+    error_msg = ""
+    if is_post and not signed_document:
+        error_msg = "You must submit the signed contract document to execute it."
+
+    context = {"contract": contract, "error_msg": error_msg}
     return render(request, "sponsors/admin/execute_contract.html", context=context)
 
 

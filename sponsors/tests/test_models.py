@@ -485,7 +485,7 @@ class ContractModelTests(TestCase):
     def test_control_contract_next_status(self):
         SOW = Contract
         states_map = {
-            SOW.DRAFT: [SOW.AWAITING_SIGNATURE],
+            SOW.DRAFT: [SOW.AWAITING_SIGNATURE, SOW.EXECUTED],
             SOW.OUTDATED: [],
             SOW.AWAITING_SIGNATURE: [SOW.EXECUTED, SOW.NULLIFIED],
             SOW.EXECUTED: [],
@@ -547,7 +547,7 @@ class ContractModelTests(TestCase):
 
     def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
         contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.DRAFT
+            "sponsors.tests.empty_contract", status=Contract.OUTDATED
         )
 
         with self.assertRaises(InvalidStatusException):

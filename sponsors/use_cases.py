@@ -91,31 +91,26 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
         )
 
 
-class ExecuteContractUseCase(BaseUseCaseWithNotifications):
-    notifications = [
-        notifications.ExecutedContractLogger(),
-    ]
-
-    def execute(self, contract, **kwargs):
-        contract.execute()
-        self.notify(
-            request=kwargs.get("request"),
-            contract=contract,
-        )
-
-
 class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.ExecutedExistingContractLogger(),
     ]
+    force_execute = True
 
     def execute(self, contract, contract_file, **kwargs):
         contract.signed_document = contract_file
-        contract.execute(force=True)
+        contract.execute(force=self.force_execute)
         self.notify(
             request=kwargs.get("request"),
             contract=contract,
         )
+
+
+class ExecuteContractUseCase(ExecuteExistingContractUseCase):
+    notifications = [
+        notifications.ExecutedContractLogger(),
+    ]
+    force_execute = False
 
 
 class NullifyContractUseCase(BaseUseCaseWithNotifications):
