@@ -4,7 +4,7 @@ from django.conf import settings
 from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
 from django.contrib.contenttypes.models import ContentType
 
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import Sponsorship, Contract, BenefitFeature
 
 
 class BaseEmailSponsorshipNotification:
@@ -27,8 +27,11 @@ class BaseEmailSponsorshipNotification:
         """
         return []
 
+    def get_email_context(self, **kwargs):
+        return {k: kwargs.get(k) for k in self.email_context_keys}
+
     def notify(self, **kwargs):
-        context = {k: kwargs.get(k) for k in self.email_context_keys}
+        context = self.get_email_context(**kwargs)
 
         email = EmailMessage(
             subject=self.get_subject(context),
@@ -54,10 +57,15 @@ class AppliedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):
 class AppliedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_new_application_subject.txt"
     message_template = "sponsors/email/sponsor_new_application.txt"
-    email_context_keys = ["sponsorship"]
+    email_context_keys = ["sponsorship", "request"]
 
     def get_recipient_list(self, context):
         return context["sponsorship"].verified_emails
+
+    def get_email_context(self, **kwargs):
+        context = super().get_email_context(**kwargs)
+        context["required_assets"] = BenefitFeature.objects.from_sponsorship(context["sponsorship"]).required_assets()
+        return context
 
 
 class RejectedSponsorshipNotificationToPSF(BaseEmailSponsorshipNotification):

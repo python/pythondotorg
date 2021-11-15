@@ -13,15 +13,15 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView, FormView
 )
 
 from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
-from sponsors.forms import SponsorUpdateForm
-from sponsors.models import Sponsor
+from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
+from sponsors.models import Sponsor, BenefitFeature
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
@@ -236,7 +236,19 @@ class SponsorshipDetailView(DetailView):
 
     def get_context_data(self, *args, **kwargs):
         context = super().get_context_data(*args, **kwargs)
-        context["sponsor"] = context["sponsorship"].sponsor
+
+        sponsorship = context["sponsorship"]
+        assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        fulfilled, pending = [], []
+        for asset in assets:
+            if bool(asset.value):
+                fulfilled.append(asset)
+            else:
+                pending.append(asset)
+
+        context["assets"] = pending
+        context["fulfilled_assets"] = fulfilled
+        context["sponsor"] = sponsorship.sponsor
         return context
 
 
@@ -253,3 +265,33 @@ class UpdateSponsorInfoView(UpdateView):
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
         return self.request.path
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UpdateSponsorshipAssetsView(UpdateView):
+    object_name = "sponsorship"
+    template_name = 'users/sponsorship_assets_update.html'
+    form_class = SponsorRequiredAssetsForm
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        specific_asset = self.request.GET.get("required_asset", None)
+        if specific_asset:
+            kwargs["required_assets_ids"] = [specific_asset]
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["required_asset_id"] = self.request.GET.get("required_asset", None)
+        return context
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
+        return reverse("users:sponsorship_application_detail", args=[self.object.pk])
+
+    def form_valid(self, form):
+        form.update_assets()
+        return redirect(self.get_success_url())

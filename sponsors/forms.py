@@ -19,6 +19,7 @@ from sponsors.models import (
     SponsorBenefit,
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
+    BenefitFeature,
 )
 
 
@@ -174,7 +175,7 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.FileField(
+    print_logo = forms.ImageField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
@@ -546,3 +547,54 @@ class RequiredImgAssetConfigurationForm(forms.ModelForm):
     class Meta:
         model = RequiredImgAssetConfiguration
         fields = "__all__"
+
+
+class SponsorRequiredAssetsForm(forms.Form):
+    """
+    This form is used by the sponsor to fullfill their information related
+    to the required assets. The form is built dynamically by fetching the
+    required assets from the sponsorship.
+    """
+
+    def __init__(self, *args, **kwargs):
+        """
+        Init method introspect the sponsorship object and
+        build the form object
+        """
+        self.sponsorship = kwargs.pop("instance", None)
+        required_assets_ids = kwargs.pop("required_assets_ids", [])
+        if not self.sponsorship:
+            msg = "Form must be initialized with a sponsorship passed by the instance parameter"
+            raise TypeError(msg)
+        super().__init__(*args, **kwargs)
+        self.required_assets = BenefitFeature.objects.required_assets().from_sponsorship(self.sponsorship)
+        if required_assets_ids:
+            self.required_assets = self.required_assets.filter(pk__in=required_assets_ids)
+
+        fields = {}
+        for required_asset in self.required_assets:
+            value = required_asset.value
+            f_name = self._get_field_name(required_asset)
+            required = bool(value)
+            fields[f_name] = required_asset.as_form_field(required=required, initial=value)
+
+        self.fields.update(fields)
+
+    def _get_field_name(self, asset):
+        return slugify(asset.internal_name).replace("-", "_")
+
+    def update_assets(self):
+        """
+        Iterate over every required asset, get the value from form data and
+        update it
+        """
+        for req_asset in self.required_assets:
+            f_name = self._get_field_name(req_asset)
+            value = self.cleaned_data.get(f_name, None)
+            if value is None:
+                continue
+            req_asset.value = value
+
+    @property
+    def has_input(self):
+        return bool(self.fields)
