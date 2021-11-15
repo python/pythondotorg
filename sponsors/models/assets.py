@@ -17,8 +17,8 @@ def generic_asset_path(instance, filename):
     """
     directory = "sponsors-app-assets"
     ext = "".join(Path(filename).suffixes)
-    name = f"{instance.uuid}{ext}"
-    return f"{directory}{name}{ext}"
+    name = f"{instance.uuid}"
+    return f"{directory}/{name}{ext}"
 
 
 class GenericAsset(PolymorphicModel):
@@ -68,6 +68,10 @@ class ImgAsset(GenericAsset):
     def value(self):
         return self.image
 
+    @value.setter
+    def value(self, value):
+        self.image = value
+
 
 class TextAsset(GenericAsset):
     text = models.TextField(default="")
@@ -82,3 +86,7 @@ class TextAsset(GenericAsset):
     @property
     def value(self):
         return self.text
+
+    @value.setter
+    def value(self, value):
+        self.text = value

@@ -13,10 +13,12 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm,
+    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm,
 )
-from sponsors.models import SponsorshipBenefit, SponsorContact
+from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
+    RequiredImgAssetConfiguration, ImgAsset
 from .utils import get_static_image_file_as_upload
+from ..models.enums import AssetsRelatedTo
 
 
 class SponsorshiptBenefitsFormTests(TestCase):
@@ -258,7 +260,7 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertIsNone(contact.user)
 
     def test_create_sponsor_with_valid_data_for_non_required_inputs(
-        self,
+            self,
     ):
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
@@ -548,3 +550,90 @@ class SendSponsorshipNotificationFormTests(TestCase):
         self.assertEqual("content", notification.content)
         self.assertEqual("subject", notification.subject)
         self.assertIsNone(notification.pk)
+
+
+class SponsorRequiredAssetsFormTest(TestCase):
+
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="foo")
+        self.required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Text Input",
+            _fill_optional=True,
+        )
+        self.required_img_cfg = baker.make(
+            RequiredImgAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="Image Input",
+            _fill_optional=True,
+        )
+        self.benefits = baker.make(
+            SponsorBenefit, sponsorship=self.sponsorship, _quantity=3
+        )
+
+    def test_build_form_with_no_fields_if_no_required_asset(self):
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship)
+        self.assertEqual(len(form.fields), 0)
+        self.assertFalse(form.has_input)
+
+    def test_build_form_fields_from_required_assets(self):
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship)
+        fields = dict(form.fields)
+
+        self.assertEqual(len(fields), 2)
+        self.assertEqual(type(text_asset.as_form_field()), type(fields["text_input"]))
+        self.assertEqual(type(img_asset.as_form_field()), type(fields["image_input"]))
+        self.assertTrue(form.has_input)
+
+    def test_build_form_fields_from_specific_list_of_required_assets(self):
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, required_assets_ids=[text_asset.pk])
+        fields = dict(form.fields)
+
+        self.assertEqual(len(fields), 1)
+        self.assertEqual(type(text_asset.as_form_field()), type(fields["text_input"]))
+
+    def test_save_info_for_text_asset(self):
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        data = {"text_input": "submitted data"}
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data=data)
+        self.assertTrue(form.is_valid())
+        form.update_assets()
+
+        self.assertEqual("submitted data", text_asset.value)
+
+    def test_save_info_for_image_asset(self):
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
+        files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={}, files=files)
+        self.assertTrue(form.is_valid())
+        form.update_assets()
+        asset = ImgAsset.objects.get()
+        expected_url = f"/media/sponsors-app-assets/{asset.uuid}.png"
+
+        self.assertEqual(expected_url, img_asset.value.url)
+
+    def test_load_initial_from_assets_and_force_field_if_previous_Data(self):
+        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
+        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={"text_input": "data"}, files=files)
+        self.assertTrue(form.is_valid())
+        form.update_assets()
+
+        form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={}, files=files)
+        self.assertTrue(form.fields["image_input"].initial)
+        self.assertTrue(form.fields["text_input"].initial)
+        self.assertTrue(form.fields["text_input"].required)
+        self.assertTrue(form.fields["image_input"].required)
+
+    def test_raise_error_if_form_initialized_without_instance(self):
+        self.assertRaises(TypeError, SponsorRequiredAssetsForm)

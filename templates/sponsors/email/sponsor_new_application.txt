@@ -7,6 +7,10 @@ Thank you for submitting your sponsorship application. We will be sending a Cont
 {% endif %}
 You can review your full application and a list of benefits you will receive below.
 
+{% if required_assets %}One or more benefits you've select require more information. Here's a list of the required assets with links, so you can submit them:
+{% for asset in required_assets %}
+- {{ asset.label }}: http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{{ asset.user_edit_url }}{% endfor %}{% endif %}
+
 Thank you,
 Betsy Waliszewski
 Sponsorship Coordinator

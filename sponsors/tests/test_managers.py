@@ -4,7 +4,8 @@ from model_bakery import baker
 from django.conf import settings
 from django.test import TestCase
 
-from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity
+from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity, RequiredTextAsset, RequiredImgAsset, \
+    BenefitFeature
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -107,3 +108,30 @@ class SponsorshipQuerySetTests(TestCase):
 
         self.assertEqual(1, len(qs))
         self.assertIn(sponsorship_feature_1, qs)
+
+
+class BenefitFeatureQuerySet(TestCase):
+    def setUp(self):
+        self.sponsorship = baker.make(Sponsorship)
+        self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+
+    def test_filter_benefits_from_sponsorship(self):
+        feature_1 = baker.make(TieredQuantity, sponsor_benefit=self.benefit)
+        feature_2 = baker.make(LogoPlacement, sponsor_benefit=self.benefit)
+        baker.make(LogoPlacement)  # benefit from other sponsor benefit
+
+        qs = BenefitFeature.objects.from_sponsorship(self.sponsorship)
+
+        self.assertEqual(qs.count(), 2)
+        self.assertIn(feature_1, qs)
+        self.assertIn(feature_2, qs)
+
+    def test_filter_only_for_required_assets(self):
+        baker.make(TieredQuantity)
+        text_asset = baker.make(RequiredTextAsset)
+        img_asset = baker.make(RequiredImgAsset)
+
+        qs = BenefitFeature.objects.required_assets()
+
+        self.assertEqual(qs.count(), 2)
+        self.assertIn(text_asset, qs)

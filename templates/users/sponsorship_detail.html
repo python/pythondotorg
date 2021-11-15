@@ -86,6 +86,24 @@
             </li>
           </ul>
         </div>
+
+        {% if assets or fulfilled_assets %}
+        <div id="assets-info" class="card-info">
+          <h3>Required Assets</h3>
+          <p><small>You've selected benefits which requires extra assets (logos, slides etc).</small></p>
+          <br/>
+          <ul>
+            {% for asset in assets %}
+              <li><b>{{ asset.label }}</b>: pending. <a href="{{ asset.user_edit_url }}">Add asset</a>.</li>
+            {% endfor %}
+          {% for asset in fulfilled_assets %}
+            <li><b>{{ asset.label }}</b>: fulfilled. <a href="{{ asset.user_edit_url }}">Edit asset</a>.</li>
+          {% endfor %}
+          </ul>
+          <br/>
+          <small>Or you can also <a href="{% url 'users:update_sponsorship_assets' sponsorship.pk %}">click here</a> to edit all the assets under the same page.</small>
+        </div>
+        {% endif %}
       </div>
 
       <div id="sponsorship-info" class="card">

@@ -1,3 +1,5 @@
+from unittest.mock import Mock
+
 from model_bakery import baker
 
 from allauth.account.models import EmailAddress
@@ -9,7 +11,7 @@ from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
 from django.contrib.contenttypes.models import ContentType
 
 from sponsors import notifications
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import Sponsorship, Contract, RequiredTextAssetConfiguration, SponsorBenefit
 
 
 class AppliedSponsorshipNotificationToPSFTests(TestCase):
@@ -78,6 +80,19 @@ class AppliedSponsorshipNotificationToSponsorsTests(TestCase):
         self.assertCountEqual(
             expected_contacts, self.notification.get_recipient_list(context)
         )
+
+    def test_list_required_assets_in_email_context(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+        request = Mock()
+        base_context = {"sponsorship": self.sponsorship, "request": request}
+        context = self.notification.get_email_context(**base_context)
+        self.assertEqual(3, len(context))
+        self.assertEqual(self.sponsorship, context["sponsorship"])
+        self.assertEqual(request, context["request"])
+        self.assertEqual(1, len(context["required_assets"]))
+        self.assertIn(asset, context["required_assets"])
 
 
 class RejectedSponsorshipNotificationToPSFTests(TestCase):

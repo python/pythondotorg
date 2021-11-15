@@ -1,13 +1,18 @@
 """
 This module holds models related to benefits features and configurations
 """
-
-from django.db import models, IntegrityError, transaction
+from django import forms
+from django.db import models
 from django.db.models import UniqueConstraint
+from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
 from sponsors.models.assets import ImgAsset, TextAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
+
+########################################
+# Benefit features abstract classes
+from sponsors.models.managers import BenefitFeatureQuerySet
 
 
 ########################################
@@ -67,10 +72,32 @@ class BaseRequiredAsset(models.Model):
         unique=False,
         db_index=True,
     )
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
+
+    class Meta:
+        abstract = True
+
+
+class RequiredAssetConfigurationMixin:
+    """
+    This class should be used to implement assets configuration.
+    It's a mixin to updates the benefit feature creation to also
+    create the related assets models
+    """
 
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
-            raise NotImplementedError("Subclasses of BaseRequiredAsset must define an ASSET_CLASS attribute.")
+            raise NotImplementedError(
+                "Subclasses of RequiredAssetConfigurationMixin must define an ASSET_CLASS attribute.")
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -120,6 +147,37 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
 
     class Meta(BaseRequiredAsset.Meta):
         abstract = True
+
+
+class RequiredAssetMixin:
+    """
+    This class should be used to implement required assets.
+    It's a mixin to get the information submitted by the user
+    and which is stored in the related asset class.
+    """
+
+    def __related_asset(self):
+        object = self.sponsor_benefit.sponsorship
+        if self.related_to == AssetsRelatedTo.SPONSOR.value:
+            object = self.sponsor_benefit.sponsorship.sponsor
+
+        return object.assets.get(internal_name=self.internal_name)
+
+    @property
+    def value(self):
+        asset = self.__related_asset()
+        return asset.value
+
+    @value.setter
+    def value(self, value):
+        asset = self.__related_asset()
+        asset.value = value
+        asset.save()
+
+    @property
+    def user_edit_url(self):
+        url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
+        return url + f"?required_asset={self.pk}"
 
 
 ######################################################
@@ -245,8 +303,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return f"Email targeatable configuration"
 
 
-class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfiguration):
-
+class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
@@ -260,7 +317,8 @@ class RequiredImgAssetConfiguration(BaseRequiredImgAsset, BenefitFeatureConfigur
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(BaseRequiredTextAsset, BenefitFeatureConfiguration):
+class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredTextAsset,
+                                     BenefitFeatureConfiguration):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
@@ -280,6 +338,7 @@ class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+    objects = BenefitFeatureQuerySet.as_manager()
 
     sponsor_benefit = models.ForeignKey("sponsors.SponsorBenefit", on_delete=models.CASCADE)
 
@@ -333,7 +392,7 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
         return f"Email targeatable"
 
 
-class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
+class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Require Image"
         verbose_name_plural = "Require Images"
@@ -341,11 +400,23 @@ class RequiredImgAsset(BaseRequiredImgAsset, BenefitFeature):
     def __str__(self):
         return f"Require image"
 
+    def as_form_field(self, **kwargs):
+        help_text = kwargs.pop("help_text", self.help_text)
+        label = kwargs.pop("label", self.label)
+        required = kwargs.pop("required", False)
+        return forms.ImageField(required=required, help_text=help_text, label=label, widget=forms.ClearableFileInput, **kwargs)
 
-class RequiredTextAsset(BaseRequiredTextAsset, BenefitFeature):
+
+class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Require Text"
         verbose_name_plural = "Require Texts"
 
     def __str__(self):
         return f"Require text"
+
+    def as_form_field(self, **kwargs):
+        help_text = kwargs.pop("help_text", self.help_text)
+        label = kwargs.pop("label", self.label)
+        required = kwargs.pop("required", False)
+        return forms.CharField(required=required, help_text=help_text, label=label, widget=forms.TextInput, **kwargs)
