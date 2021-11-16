@@ -9,6 +9,14 @@
   {% endthumbnail %}
   {% endfor %}
 
+{% elif logo_place == "jobs" %}
+  <h3 class="widget-title">Job Board Sponsors</h3>
+  {% for sponsorship in sponsorships %}
+  {% thumbnail sponsorship.sponsor.web_logo "x100" format="PNG" quality=100 as im %}
+    <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" height="100px">
+  {% endthumbnail %}
+  {% endfor %}
+
 {% elif logo_place == "sponsors" %}
 
   {% for package, placement_info in sponsorships_by_package.items %}
