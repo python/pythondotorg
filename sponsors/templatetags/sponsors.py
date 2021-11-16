@@ -23,7 +23,7 @@ def full_sponsorship(sponsorship, display_fee=False):
 def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     sponsorships = Sponsorship.objects.enabled().with_logo_placement(
         logo_place=logo_place, publisher=publisher
-    ).select_related('sponsor')
+    ).order_by('package').select_related('sponsor')
     packages = SponsorshipPackage.objects.all()
 
     context = {
