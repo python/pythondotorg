@@ -48,7 +48,7 @@
 
     {% if email_preview %}
     <h1><b>Email Preview</b></h1>
-    <p><b>Suject:</b> {{ email_preview.subject }}</p>
+    <p><b>Subject:</b> {{ email_preview.subject }}</p>
     <p>{{ email_preview.body|linebreaks }}</p>
     <small>This sample preview is based on the first sponsorship: {{ queryset.first }}</small>
     {% endif %}
