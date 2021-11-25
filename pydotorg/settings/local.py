@@ -71,3 +71,8 @@ CACHES = {
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] += (
     'rest_framework.renderers.BrowsableAPIRenderer',
 )
+
+# detailed info https://django-extensions.readthedocs.io/en/latest/graph_models.html
+GRAPH_MODELS = {
+    'app_labels': ["sponsors"],
+}
