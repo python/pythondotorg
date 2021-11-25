@@ -106,6 +106,13 @@ they represent:
 :contract.py: The `Contract` model which is used to generate the final contract document and other
               support models;
 
+.. image:: _images/sponsors-db.png
+    :alt: Sponsors app's database schema
+
+The sponsors app is mostly an administrative one. Its only part that regular uses can interact with is
+the sponsorship application form, available at ``/sponsors/application/new/``. Despite that, every
+administrative operation should be done via admin actions buttons in both ``Sponsorship`` and ``Contract``
+models.
 
 Events
 ------
