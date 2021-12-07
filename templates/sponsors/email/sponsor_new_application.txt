@@ -12,8 +12,9 @@ You can review your full application and a list of benefits you will receive bel
 - {{ asset.label }}: http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{{ asset.user_edit_url }}{% endfor %}{% endif %}
 
 Thank you,
-Betsy Waliszewski
-Sponsorship Coordinator
+Loren Crary
+Director of Resource Development
+Python Software Foundation
 
 -------------------------------------------------------------------------------
 
