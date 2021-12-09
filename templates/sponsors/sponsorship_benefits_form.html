@@ -9,13 +9,12 @@
 {% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block content %}
+  <article class="text">
+    {% box 'sponsorship-application' %}
+  </article>
   <form id="application_form" action="" method="POST">
     {% csrf_token %}
     <div id="select_sponsorship_benefits_container">
-      <h1>Sponsor the PSF</h1>
-      <p>Select a sponsorship package or customize the benefits that make the most sense for your business.</p>
-      <p><small>The listed sponsorship costs are subject to change if customization to selected benefits are made.</small></p>
-      <br/>
 
       <div class="row section-title">
         <img class="col" src='{% static "img/sponsors/title-1.png" %}'/>
