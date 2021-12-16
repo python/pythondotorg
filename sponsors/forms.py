@@ -394,7 +394,9 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
         else:
             self.instance.refresh_from_db()
 
-        self.instance.benefit_internal_value = value
+        self.instance.benefit_internal_value = benefit.internal_value
+        if value:
+            self.instance.benefit_internal_value = value
         updated_sponsorship_benefit = False
         if benefit.pk != self.instance.sponsorship_benefit_id:
             updated_sponsorship_benefit = True
