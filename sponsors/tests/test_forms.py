@@ -480,7 +480,8 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
 
         # new benefit requires text instead of logo
         new_benefit = baker.make(SponsorshipBenefit)
-        baker.make(RequiredTextAssetConfiguration, benefit=new_benefit)
+        baker.make(RequiredTextAssetConfiguration, benefit=new_benefit, internal_name='foo',
+                   related_to=AssetsRelatedTo.SPONSORSHIP.value)
         self.data["sponsorship_benefit"] = new_benefit.pk
 
         form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
