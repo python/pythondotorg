@@ -89,11 +89,15 @@ class SponsorshiptBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None):
+    def get_benefits(self, cleaned_data=None, include_add_ons=False):
         cleaned_data = cleaned_data or self.cleaned_data
-        return list(
+        benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
+        add_ons = cleaned_data.get("add_ons_benefits")
+        if include_add_ons and add_ons:
+            benefits.extend([b for b in add_ons])
+        return benefits
 
     def get_package(self):
         return self.cleaned_data.get("package")

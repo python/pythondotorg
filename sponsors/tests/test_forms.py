@@ -125,6 +125,24 @@ class SponsorshiptBenefitsFormTests(TestCase):
             form.errors["__all__"],
         )
 
+    def test_get_benefits_from_cleaned_data(self):
+        benefit = self.program_1_benefits[0]
+
+        data = {"benefits_psf": [benefit.id],
+                "add_ons_benefits": [b.id for b in self.add_ons]}
+        form = SponsorshiptBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        benefits = form.get_benefits()
+        self.assertEqual(1, len(benefits))
+        self.assertIn(benefit, benefits)
+
+        benefits = form.get_benefits(include_add_ons=True)
+        self.assertEqual(3, len(benefits))
+        self.assertIn(benefit, benefits)
+        for add_on in self.add_ons:
+            self.assertIn(add_on, benefits)
+
     def test_package_only_benefit_without_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)
 
