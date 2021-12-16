@@ -398,8 +398,12 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
         else:
             self.instance.refresh_from_db()
 
-        self.instance.benefit_internal_value = value
+        self.instance.benefit_internal_value = benefit.internal_value
+        if value:
+            self.instance.benefit_internal_value = value
+        updated_sponsorship_benefit = False
         if benefit.pk != self.instance.sponsorship_benefit_id:
+            updated_sponsorship_benefit = True
             self.instance.sponsorship_benefit = benefit
             self.instance.name = benefit.name
             self.instance.description = benefit.description
@@ -407,6 +411,11 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
 
         if commit:
             self.instance.save()
+
+            if updated_sponsorship_benefit:
+                self.instance.features.all().delete()
+                for feature_config in benefit.features_config.all():
+                    feature_config.create_benefit_feature(self.instance)
 
         return self.instance
 

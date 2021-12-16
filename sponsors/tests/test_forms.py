@@ -16,7 +16,7 @@ from sponsors.forms import (
     SendSponsorshipNotificationForm, SponsorRequiredAssetsForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset
+    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 
@@ -473,7 +473,6 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
             sponsorship=self.sponsorship,
             sponsorship_benefit=self.benefit,
         )
-        new_benefit = baker.make(SponsorshipBenefit)
 
         form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
         self.assertTrue(form.is_valid(), form.errors)
@@ -487,6 +486,29 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
         self.assertEqual(sponsor_benefit.sponsorship_benefit, self.benefit)
         self.assertNotEqual(sponsor_benefit.name, "new name")
         self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
+
+    def test_update_existing_benefit_features(self):
+        sponsor_benefit = baker.make(
+            SponsorBenefit,
+            sponsorship=self.sponsorship,
+            sponsorship_benefit=self.benefit,
+        )
+        # existing benefit depends on logo
+        baker.make_recipe('sponsors.tests.logo_at_download_feature', sponsor_benefit=sponsor_benefit)
+
+        # new benefit requires text instead of logo
+        new_benefit = baker.make(SponsorshipBenefit)
+        baker.make(RequiredTextAssetConfiguration, benefit=new_benefit, internal_name='foo',
+                   related_to=AssetsRelatedTo.SPONSORSHIP.value)
+        self.data["sponsorship_benefit"] = new_benefit.pk
+
+        form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
+        self.assertTrue(form.is_valid(), form.errors)
+        form.save()
+        sponsor_benefit.refresh_from_db()
+
+        self.assertEqual(sponsor_benefit.features.count(), 1)
+        self.assertIsInstance(sponsor_benefit.features.get(), RequiredTextAsset)
 
 
 class SponsorshipsFormTestCase(TestCase):
