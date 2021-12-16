@@ -154,7 +154,7 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(),
+            benefits_form.get_benefits(include_add_ons=True),
             benefits_form.get_package(),
             request=self.request,
         )

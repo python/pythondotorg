@@ -152,10 +152,15 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
         for benefit in self.program_1_benefits:
             benefit.packages.add(self.package)
+
+        # packages without associated packages
+        self.add_on = baker.make(SponsorshipBenefit)
+
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
                 "package": self.package.id,
                 "benefits_psf": [b.id for b in self.program_1_benefits],
+                "add_ons_benefits": [self.add_on.id],
             }
         )
         self.data = {
@@ -176,7 +181,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
         }
 
-    def test_display_template_with_form_and_context(self):
+    def test_display_template_with_form_and_context_without_add_ons(self):
+        self.add_on.delete()
         r = self.client.get(self.url)
 
         self.assertEqual(r.status_code, 200)
@@ -192,6 +198,13 @@ class NewSponsorshipApplicationViewTests(TestCase):
         )
         for benefit in self.program_1_benefits:
             self.assertIn(benefit, r.context["sponsorship_benefits"])
+
+    def test_display_template_with_form_and_context_with_add_ons(self):
+        r = self.client.get(self.url)
+
+        self.assertEqual(r.status_code, 200)
+        self.assertIn(self.add_on, r.context["added_benefits"])
+        self.assertIsNone(r.context["sponsorship_price"])
 
     def test_return_package_as_none_if_not_previously_selected(self):
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
@@ -277,6 +290,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         )
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
+        # 3 benefits + 1 add-on
+        self.assertEqual(4, sponsorship.benefits.count())
         self.assertTrue(sponsorship.level_name)
         self.assertTrue(sponsorship.submited_by, self.user)
         self.assertEqual(
