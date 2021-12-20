@@ -367,6 +367,11 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Benefit is unavailable",
         help_text="If selected, this benefit will not be available to applicants.",
     )
+    a_la_carte = models.BooleanField(
+        default=False,
+        verbose_name="À La Carte",
+        help_text="À la carte benefits can be selected without the need of a package.",
+    )
 
     # Internal
     legal_clauses = models.ManyToManyField(
