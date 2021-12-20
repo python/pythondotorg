@@ -13,7 +13,7 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm,
+    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
     RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset
@@ -677,3 +677,26 @@ class SponsorRequiredAssetsFormTest(TestCase):
 
     def test_raise_error_if_form_initialized_without_instance(self):
         self.assertRaises(TypeError, SponsorRequiredAssetsForm)
+
+
+class SponsorshipBenefitAdminFormTests(TestCase):
+
+    def setUp(self):
+        self.program = baker.make("sponsors.SponsorshipProgram")
+
+    def test_required_fields(self):
+        required = {"name", "program"}
+        form = SponsorshipBenefitAdminForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(set(form.errors), required)
+
+    def test_a_la_carte_benefit_cannot_have_package(self):
+        data = {"name": "benefit", "program": self.program.pk, "a_la_carte": True}
+        form = SponsorshipBenefitAdminForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        package = baker.make("sponsors.SponsorshipPackage")
+        data["packages"] = [package.pk]
+        form = SponsorshipBenefitAdminForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)

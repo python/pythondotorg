@@ -13,7 +13,8 @@ from django.utils.html import mark_safe
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
+    SponsorshipBenefitAdminForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -90,6 +91,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
     ]
     list_filter = ["program", "package_only", "packages"]
     search_fields = ["name"]
+    form = SponsorshipBenefitAdminForm
 
     fieldsets = [
         (
@@ -103,6 +105,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
                     "package_only",
                     "new",
                     "unavailable",
+                    "a_la_carte",
                 ),
             },
         ),

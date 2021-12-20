@@ -611,3 +611,22 @@ class SponsorRequiredAssetsForm(forms.Form):
     @property
     def has_input(self):
         return bool(self.fields)
+
+
+class SponsorshipBenefitAdminForm(forms.ModelForm):
+
+    class Meta:
+        model = SponsorshipBenefit
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        a_la_carte = cleaned_data.get("a_la_carte")
+        packages = cleaned_data.get("packages")
+
+        # a la carte benefit cannot be associated with a package
+        if a_la_carte and packages:
+            error = "À la carte benefits must not belong to any package."
+            raise forms.ValidationError(error)
+
+        return cleaned_data
