@@ -47,7 +47,7 @@ SponsorContactFormSet = forms.formset_factory(
 )
 
 
-class SponsorshiptBenefitsForm(forms.Form):
+class SponsorshipsBenefitsForm(forms.Form):
     package = forms.ModelChoiceField(
         queryset=SponsorshipPackage.objects.list_advertisables(),
         widget=forms.RadioSelect(),

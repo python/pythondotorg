@@ -17,11 +17,11 @@ from .models import (
 
 from sponsors import cookies
 from sponsors import use_cases
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+from sponsors.forms import SponsorshipsBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
-    form_class = SponsorshiptBenefitsForm
+    form_class = SponsorshipsBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"
 
     def get_context_data(self, *args, **kwargs):
@@ -144,7 +144,7 @@ class NewSponsorshipApplicationView(FormView):
 
     @transaction.atomic
     def form_valid(self, form):
-        benefits_form = SponsorshiptBenefitsForm(data=self.benefits_data)
+        benefits_form = SponsorshipsBenefitsForm(data=self.benefits_data)
         if not benefits_form.is_valid():
             return self._redirect_back_to_benefits()
 
