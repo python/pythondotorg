@@ -18,7 +18,7 @@ from ..models import (
     Sponsorship,
 )
 from sponsors.forms import (
-    SponsorshiptBenefitsForm,
+    SponsorshipsBenefitsForm,
     SponsorshipApplicationForm,
 )
 
@@ -69,7 +69,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
         self.assertEqual(r.status_code, 200)
         self.assertTemplateUsed(r, "sponsors/sponsorship_benefits_form.html")
-        self.assertIsInstance(r.context["form"], SponsorshiptBenefitsForm)
+        self.assertIsInstance(r.context["form"], SponsorshipsBenefitsForm)
         self.assertEqual(r.context["benefit_model"], SponsorshipBenefit)
         self.assertEqual(4, packages.count())
         self.assertIn(psf_package, packages)
@@ -84,7 +84,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         r = self.client.post(self.url, {})
         form = r.context["form"]
 
-        self.assertIsInstance(form, SponsorshiptBenefitsForm)
+        self.assertIsInstance(form, SponsorshipsBenefitsForm)
         self.assertTrue(form.errors)
 
     def test_valid_post_redirect_user_to_next_form_step_and_save_info_in_cookies(self):
@@ -132,7 +132,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         r = self.client.post(self.url, data=self.data)
         form = r.context["form"]
 
-        self.assertIsInstance(form, SponsorshiptBenefitsForm)
+        self.assertIsInstance(form, SponsorshipsBenefitsForm)
         msg = "You must allow cookies from python.org to proceed."
         self.assertEqual(form.non_field_errors(), [msg])
 
