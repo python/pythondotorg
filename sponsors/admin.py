@@ -166,6 +166,7 @@ class SponsorBenefitInline(admin.TabularInline):
     form = SponsorBenefitAdminInlineForm
     fields = ["sponsorship_benefit", "benefit_internal_value"]
     extra = 0
+    max_num = 0
 
     def has_add_permission(self, request, obj=None):
         has_add_permission = super().has_add_permission(request, obj=obj)
