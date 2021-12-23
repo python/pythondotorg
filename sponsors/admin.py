@@ -147,9 +147,17 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            return []
-        return ["logo_dimension"]
+        readonly = []
+        if obj:
+            readonly.append("slug")
+        if not request.user.is_superuser:
+            readonly.append("logo_dimension")
+        return readonly
+
+    def get_prepopulated_fields(self, request, obj=None):
+        if not obj:
+            return {'slug': ['name']}
+        return {}
 
 
 class SponsorContactInline(admin.TabularInline):

@@ -38,6 +38,8 @@ class SponsorshipPackage(OrderedModel):
     logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control "
                                                                                     "logos dimensions at sponsors "
                                                                                     "page")
+    slug = models.SlugField(db_index=True, blank=False, null=False, default="", help_text="Internal identifier used "
+                                                                                          "to reference this package.")
 
     def __str__(self):
         return self.name
