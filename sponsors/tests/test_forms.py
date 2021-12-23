@@ -93,7 +93,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertIn("__all__", form.errors)
 
         form = SponsorshipsBenefitsForm(
-            data={"benefits_psf": [self.program_1_benefits[0].id]}
+            data={"benefits_psf": [self.program_1_benefits[0].id], "package": self.package.id}
         )
         self.assertTrue(form.is_valid())
 
@@ -105,6 +105,16 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual([], form.get_benefits())
         self.assertEqual([benefit], form.get_benefits(include_a_la_carte=True))
+
+    def test_should_not_validate_form_without_package_with_add_ons_and_a_la_carte_benefits(self):
+        data = {
+            "a_la_carte_benefits": [self.a_la_carte[0]],
+            "add_ons_benefits": [self.add_ons[0]],
+        }
+
+        form = SponsorshipsBenefitsForm(data=data)
+
+        self.assertFalse(form.is_valid())
 
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
@@ -134,7 +144,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         benefit_1.conflicts.add(*self.program_1_benefits)
         self.package.benefits.add(benefit_1)
 
-        data = {"benefits_psf": [b.id for b in self.program_1_benefits]}
+        data = {"benefits_psf": [b.id for b in self.program_1_benefits], "package": self.package.id}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
 
@@ -150,7 +160,8 @@ class SponsorshipsBenefitsFormTests(TestCase):
         benefit = self.program_1_benefits[0]
 
         data = {"benefits_psf": [benefit.id],
-                "add_ons_benefits": [b.id for b in self.add_ons]}
+                "add_ons_benefits": [b.id for b in self.add_ons],
+                "package": self.package.id}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
 
@@ -172,7 +183,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         form = SponsorshipsBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn(
-            "The application has 1 or more package only benefits and no sponsor package.",
+            "You must pick a package to include the selected benefits.",
             form.errors["__all__"],
         )
 
@@ -203,7 +214,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
     def test_benefit_with_no_capacity_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(capacity=0)
 
-        data = {"benefits_psf": [self.program_1_benefits[0]]}
+        data = {"benefits_psf": [self.program_1_benefits[0]], "package": self.package.id}
 
         form = SponsorshipsBenefitsForm(data=data)
         self.assertFalse(form.is_valid())
@@ -215,7 +226,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
     def test_benefit_with_soft_capacity_should_validate(self):
         SponsorshipBenefit.objects.all().update(capacity=0, soft_capacity=True)
 
-        data = {"benefits_psf": [self.program_1_benefits[0]]}
+        data = {"benefits_psf": [self.program_1_benefits[0]], "package": self.package.id}
 
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
