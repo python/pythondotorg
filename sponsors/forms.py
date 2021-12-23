@@ -48,6 +48,10 @@ SponsorContactFormSet = forms.formset_factory(
 
 
 class SponsorshipsBenefitsForm(forms.Form):
+    """
+    Form to enable user to select packages, benefits and add-ons during
+    the sponsorship application submission.
+    """
     package = forms.ModelChoiceField(
         queryset=SponsorshipPackage.objects.list_advertisables(),
         widget=forms.RadioSelect(),
@@ -93,14 +97,17 @@ class SponsorshipsBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None, include_add_ons=False):
+    def get_benefits(self, cleaned_data=None, include_add_ons=False, include_a_la_carte=False):
         cleaned_data = cleaned_data or self.cleaned_data
         benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
-        add_ons = cleaned_data.get("add_ons_benefits")
-        if include_add_ons and add_ons:
+        add_ons = cleaned_data.get("add_ons_benefits", [])
+        if include_add_ons:
             benefits.extend([b for b in add_ons])
+        a_la_carte = cleaned_data.get("a_la_carte_benefits", [])
+        if include_a_la_carte:
+            benefits.extend([b for b in a_la_carte])
         return benefits
 
     def get_package(self):
@@ -114,11 +121,16 @@ class SponsorshipsBenefitsForm(forms.Form):
         - benefit with no capacity, except if soft
         """
         package = cleaned_data.get("package")
-        benefits = self.get_benefits(cleaned_data)
+        benefits = self.get_benefits(cleaned_data, include_add_ons=True)
         a_la_carte = cleaned_data.get("a_la_carte_benefits")
+
         if not benefits and not a_la_carte:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
+            )
+        elif benefits and not package:
+            raise forms.ValidationError(
+                _("You must pick a package to include the selected benefits.")
             )
 
         benefits_ids = [b.id for b in benefits]
