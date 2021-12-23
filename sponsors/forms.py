@@ -58,6 +58,10 @@ class SponsorshipsBenefitsForm(forms.Form):
         required=False,
         queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
     )
+    a_la_carte_benefits = PickSponsorshipBenefitsField(
+        required=False,
+        queryset=SponsorshipBenefit.objects.a_la_carte().select_related("program"),
+    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -111,7 +115,8 @@ class SponsorshipsBenefitsForm(forms.Form):
         """
         package = cleaned_data.get("package")
         benefits = self.get_benefits(cleaned_data)
-        if not benefits:
+        a_la_carte = cleaned_data.get("a_la_carte_benefits")
+        if not benefits and not a_la_carte:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
             )
