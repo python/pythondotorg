@@ -16,7 +16,7 @@ from sponsors.forms import (
     SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset
+    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 
@@ -230,6 +230,34 @@ class SponsorshipsBenefitsFormTests(TestCase):
 
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
+
+    def test_get_package_return_selected_package(self):
+        data = {"benefits_psf": [self.program_1_benefits[0]], "package": self.package.id}
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(self.package, form.get_package())
+
+    def test_get_package_get_or_create_a_la_carte_only_package(self):
+        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(1, SponsorshipPackage.objects.count())
+
+        # should create package if it doesn't exist yet
+        package = form.get_package()
+        self.assertEqual("A La Carte Only", package.name)
+        self.assertEqual("a-la-carte-only", package.slug)
+        self.assertEqual(175, package.logo_dimension)
+        self.assertEqual(0, package.sponsorship_amount)
+        self.assertFalse(package.advertise)
+        self.assertEqual(2, SponsorshipPackage.objects.count())
+
+        # re-use previously created package for subsequent applications
+        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(package, form.get_package())
+        self.assertEqual(2, SponsorshipPackage.objects.count())
 
 
 class SponsorshipApplicationFormTests(TestCase):
