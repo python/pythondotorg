@@ -68,13 +68,14 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return super().get(request, *args, **kwargs)
 
     def _set_form_data_cookie(self, form, response):
+        pkg = form.cleaned_data.get("package", "")
         data = {
-            "package": "" if not form.get_package() else form.get_package().id,
+            "package": "" if not pkg else pkg.id,
         }
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f == 'add_ons_benefits'
+            if f.startswith("benefits_") or f in ['add_ons_benefits', 'a_la_carte_benefits']
         ]:
             data[fname] = sorted(b.id for b in benefits)
 
@@ -154,7 +155,7 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(include_add_ons=True),
+            benefits_form.get_benefits(include_add_ons=True, include_a_la_carte=True),
             benefits_form.get_package(),
             request=self.request,
         )
