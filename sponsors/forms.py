@@ -111,7 +111,17 @@ class SponsorshipsBenefitsForm(forms.Form):
         return benefits
 
     def get_package(self):
-        return self.cleaned_data.get("package")
+        pkg = self.cleaned_data.get("package")
+
+        pkg_benefits = self.get_benefits(include_add_ons=True)
+        a_la_carte = self.cleaned_data.get("a_la_carte_benefits")
+        if not pkg_benefits and a_la_carte:  # a la carte only
+            pkg, _ = SponsorshipPackage.objects.get_or_create(
+                slug="a-la-carte-only",
+                defaults={"name": "A La Carte Only", "sponsorship_amount": 0},
+            )
+
+        return pkg
 
     def _clean_benefits(self, cleaned_data):
         """
