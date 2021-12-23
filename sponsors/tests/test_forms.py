@@ -38,7 +38,10 @@ class SponsorshipsBenefitsFormTests(TestCase):
         # packages without associated packages
         self.add_ons = baker.make(SponsorshipBenefit, program=self.psf, _quantity=2)
 
-    def test_benefits_organized_by_program(self):
+        # a la carte benefits
+        self.a_la_carte = baker.make(SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2)
+
+    def test_specific_field_to_select_add_ons(self):
         form = SponsorshipsBenefitsForm()
 
         choices = list(form.fields["add_ons_benefits"].choices)
@@ -47,7 +50,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.add_ons:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_specific_field_to_select_add_ons(self):
+    def test_benefits_organized_by_program(self):
         form = SponsorshipsBenefitsForm()
 
         field1, field2 = sorted(form.benefits_programs, key=lambda f: f.name)
@@ -64,6 +67,15 @@ class SponsorshipsBenefitsFormTests(TestCase):
         choices = list(field2.field.choices)
         self.assertEqual(len(self.program_2_benefits), len(choices))
         for benefit in self.program_2_benefits:
+            self.assertIn(benefit.id, [c[0] for c in choices])
+
+    def test_specific_field_to_select_a_la_carte_benefits(self):
+        form = SponsorshipsBenefitsForm()
+
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+
+        self.assertEqual(len(self.a_la_carte), len(choices))
+        for benefit in self.a_la_carte:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
     def test_package_list_only_advertisable_ones(self):
@@ -84,6 +96,15 @@ class SponsorshipsBenefitsFormTests(TestCase):
             data={"benefits_psf": [self.program_1_benefits[0].id]}
         )
         self.assertTrue(form.is_valid())
+
+    def test_validate_form_without_package_but_with_a_la_carte_benefits(self):
+        benefit = self.a_la_carte[0]
+        form = SponsorshipsBenefitsForm(
+            data={"a_la_carte_benefits": [benefit.id]}
+        )
+        self.assertTrue(form.is_valid())
+        self.assertEqual([], form.get_benefits())
+        self.assertEqual([benefit], form.get_benefits(include_a_la_carte=True))
 
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
