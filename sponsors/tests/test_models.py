@@ -622,6 +622,16 @@ class SponsorBenefitModelTests(TestCase):
         )
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
+    def test_sponsor_benefit_from_a_la_carte_one(self):
+        self.sponsorship_benefit.a_la_carte = True
+        self.sponsorship_benefit.save()
+        sponsor_benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        self.assertTrue(sponsor_benefit.added_by_user)
+        self.assertTrue(sponsor_benefit.a_la_carte)
+
 ###########
 # Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):

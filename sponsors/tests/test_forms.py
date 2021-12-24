@@ -511,7 +511,7 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
             sponsorship=self.sponsorship,
             sponsorship_benefit=self.benefit,
         )
-        new_benefit = baker.make(SponsorshipBenefit)
+        new_benefit = baker.make(SponsorshipBenefit, a_la_carte=True)
         self.data["sponsorship_benefit"] = new_benefit.pk
 
         form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
@@ -526,6 +526,8 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
         self.assertEqual(sponsor_benefit.description, new_benefit.description)
         self.assertEqual(sponsor_benefit.program, new_benefit.program)
         self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
+        self.assertTrue(sponsor_benefit.added_by_user)
+        self.assertTrue(sponsor_benefit.a_la_carte)
 
     def test_do_not_update_sponsorship_if_it_doesn_change(self):
         sponsor_benefit = baker.make(
