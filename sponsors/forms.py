@@ -435,6 +435,8 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
             self.instance.name = benefit.name
             self.instance.description = benefit.description
             self.instance.program = benefit.program
+            self.instance.added_by_user = self.instance.added_by_user or benefit.a_la_carte
+            self.instance.a_la_carte = benefit.a_la_carte
 
         if commit:
             self.instance.save()

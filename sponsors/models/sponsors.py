@@ -206,6 +206,9 @@ class SponsorBenefit(OrderedModel):
     added_by_user = models.BooleanField(
         blank=True, default=False, verbose_name="Added by user?"
     )
+    a_la_carte = models.BooleanField(
+        blank=True, default=False, verbose_name="Added as a la carte benefit?"
+    )
 
     def __str__(self):
         if self.program is not None:
@@ -218,6 +221,8 @@ class SponsorBenefit(OrderedModel):
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
+        kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.a_la_carte
+        kwargs["a_la_carte"] = benefit.a_la_carte
         sponsor_benefit = cls.objects.create(
             sponsorship_benefit=benefit,
             program_name=benefit.program.name,
