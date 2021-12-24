@@ -3842,32 +3842,32 @@ span.highlighted {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .selected {
       background-color: transparent; } }
-#select_sponsorship_benefits_container #add-on-benefits {
+#select_sponsorship_benefits_container .custom-benefits {
   margin: 2em 0;
   padding: 0 2em; }
-  #select_sponsorship_benefits_container #add-on-benefits input {
+  #select_sponsorship_benefits_container .custom-benefits input {
     margin-bottom: 0.5em; }
-  #select_sponsorship_benefits_container #add-on-benefits .col-items {
+  #select_sponsorship_benefits_container .custom-benefits .col-items {
     min-height: 137px;
     background-color: #C4C4C4;
     margin: 0em 0.5em;
     padding: 1em 0.5em;
     width: 23%;
     color: #000000; }
-  #select_sponsorship_benefits_container #add-on-benefits .benefit-title {
+  #select_sponsorship_benefits_container .custom-benefits .benefit-title {
     color: #000000;
     margin: 0;
     padding: 0; }
   @media (max-width: 1200px) {
-    #select_sponsorship_benefits_container #add-on-benefits {
+    #select_sponsorship_benefits_container .custom-benefits {
       margin: 0;
       padding: 1em; }
-      #select_sponsorship_benefits_container #add-on-benefits input {
+      #select_sponsorship_benefits_container .custom-benefits input {
         margin-right: 1em; }
-      #select_sponsorship_benefits_container #add-on-benefits .row {
+      #select_sponsorship_benefits_container .custom-benefits .row {
         flex-flow: column wrap !important;
         width: 100%; }
-      #select_sponsorship_benefits_container #add-on-benefits .col-items {
+      #select_sponsorship_benefits_container .custom-benefits .col-items {
         background-color: transparent;
         flex-flow: row nowrap !important;
         width: 100%;
@@ -3875,7 +3875,7 @@ span.highlighted {
         padding: 0;
         min-height: initial;
         align-items: baseline; }
-      #select_sponsorship_benefits_container #add-on-benefits .add-on-description {
+      #select_sponsorship_benefits_container .custom-benefits .add-on-description {
         text-align: left;
         padding-right: 1em; } }
 #select_sponsorship_benefits_container .submit-row {

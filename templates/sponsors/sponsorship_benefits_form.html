@@ -125,35 +125,76 @@
         {% endfor %}
       </div>
 
-      <div class="row section-title">
-        <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
-        <div class="col with-description">
-          <h4>Select add-on benefits</h4>
-          <span>Available at any level of sponsorship</span>
-        </div>
-      </div>
-
-      <div id="add-on-benefits">
-        <div class="row">
-        {% for benefit in form.fields.add_ons_benefits.queryset %}
-          <div class="col col-items">
-            <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
-            <div class="add-on-description">
-              <span class="benefit-program">{{ benefit.program }}</span> -
-              <span class="benefit-title">{{ benefit.name }}</span>
-              <span class="benefit-description">{{ benefit.description }}</span>
-            </div>
+      {% if form.fields.add_ons_benefits.queryset.exists %}
+        <div class="row section-title">
+          <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+          <div class="col with-description">
+            <h4>Select add-on benefits</h4>
+            <span>Available at any level of sponsorship</span>
           </div>
-        {% if forloop.counter|divisibleby:4 %}
         </div>
-        <div class="row">
-        {% endif %}
-        {% endfor %}
+
+        <div id="add-on-benefits" class="custom-benefits">
+          <div class="row">
+          {% for benefit in form.fields.add_ons_benefits.queryset %}
+            <div class="col col-items">
+              <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
+              <div class="add-on-description">
+                <span class="benefit-program">{{ benefit.program }}</span> -
+                <span class="benefit-title">{{ benefit.name }}</span>
+                <span class="benefit-description">{{ benefit.description }}</span>
+              </div>
+            </div>
+          {% if forloop.counter|divisibleby:4 %}
+          </div>
+          <div class="row">
+          {% endif %}
+          {% endfor %}
+          </div>
         </div>
-      </div>
+      {% endif %}
+
+      {% if form.fields.a_la_carte_benefits.queryset.exists %}
+        <div class="row section-title">
+          {% if not form.fields.add_ons_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+          {% else %}
+          <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+          {% endif %}
+          <div class="col with-description">
+            <h4>Select a la carte benefits</h4>
+            <span>Available to be selected without package</span>
+          </div>
+        </div>
+
+        <div id="a-la-carte-benefits" class="custom-benefits">
+          <div class="row">
+            {% for benefit in form.fields.a_la_carte_benefits.queryset %}
+              <div class="col col-items">
+                <input type="checkbox" name="a_la_carte_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
+                <div class="add-on-description">
+                  <span class="benefit-program">{{ benefit.program }}</span> -
+                  <span class="benefit-title">{{ benefit.name }}</span>
+                  <span class="benefit-description">{{ benefit.description }}</span>
+                </div>
+              </div>
+              {% if forloop.counter|divisibleby:4 %}
+                </div>
+                <div class="row">
+              {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+      {% endif %}
 
       <div class="row section-title">
+        {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.a_la_carte_benefits.queryset.exists %}
+        <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+        {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.a_la_carte_benefits.queryset.exists %}
         <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+        {% else %}
+        <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+        {% endif %}
         <h4 class="col">Submit your contact information</h4>
       </div>
 
@@ -169,7 +210,13 @@
       </div>
 
       <div class="row section-title">
-        <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+        {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.a_la_carte_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-5.png" %}'/>
+        {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.a_la_carte_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+        {% else %}
+          <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+        {% endif %}
         <h4 class="col">PSF staff will reach out to confirm and finalize</h4>
       </div>
 
