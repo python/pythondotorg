@@ -1,4 +1,5 @@
 from django.core.mail import EmailMessage
+from django.core.cache import cache
 from django.template.loader import render_to_string
 from django.conf import settings
 from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
@@ -209,3 +210,9 @@ class SendSponsorNotificationLogger():
             action_flag=CHANGE,
             change_message=msg
         )
+
+
+class RefreshSponsorshipsCache:
+    def notify(self, *args, **kwargs):
+        # clean up cached used by "sponsors/partials/sponsors-list.html"
+        cache.delete("CACHED_SPONSORS_LIST")
