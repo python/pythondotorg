@@ -1,4 +1,8 @@
 {% load thumbnail %}
+{% load cache %}
+
+{% comment %}30-days cache{% endcomment %}
+{% cache 2592000 CACHED_SPONSORS_LIST %}
 
 {% if logo_place == "download" %}
   <h2 class="widget-title">Sponsors</h2>
@@ -51,3 +55,4 @@
   {% endif %}
   {% endfor %}
 {% endif %}
+{% endcache CACHED_SPONSORS_LIST %}
