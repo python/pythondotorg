@@ -76,6 +76,17 @@ class SponsorshipPackage(OrderedModel):
         )
         return not has_all_conflicts
 
+    def get_user_customization(self, benefits):
+        """
+        Given a list of benefits this method returns the customizations
+        """
+        benefits = set(tuple(benefits))
+        pkg_benefits = set(tuple(self.benefits.all()))
+        return {
+          "added_by_user": benefits - pkg_benefits,
+          "removed_by_user": pkg_benefits - benefits,
+        }
+
 
 class SponsorshipProgram(OrderedModel):
     """
