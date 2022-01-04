@@ -266,6 +266,16 @@ class SponsorshipAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "User Customizations",
+            {
+                "fields": (
+                    "get_custom_benefits_added_by_user",
+                    "get_custom_benefits_removed_by_user",
+                ),
+                "classes": ["collapse"],
+            },
+        ),
+        (
             "Events dates",
             {
                 "fields": (
@@ -307,6 +317,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_sponsor_mailing_address",
             "get_sponsor_contacts",
             "get_contract",
+            "get_added_by_user",
+            "get_custom_benefits_added_by_user",
+            "get_custom_benefits_removed_by_user",
         ]
 
         if obj and obj.status != Sponsorship.APPLIED:
@@ -443,6 +456,30 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
+
+    def get_custom_benefits_added_by_user(self, obj):
+        benefits = obj.user_customizations["added_by_user"]
+        if not benefits:
+            return "---"
+
+        html = "".join(
+            [f"<p>{b}</p>" for b in benefits]
+        )
+        return mark_safe(html)
+
+    get_custom_benefits_added_by_user.short_description = "Added by User"
+
+    def get_custom_benefits_removed_by_user(self, obj):
+        benefits = obj.user_customizations["removed_by_user"]
+        if not benefits:
+            return "---"
+
+        html = "".join(
+            [f"<p>{b}</p>" for b in benefits]
+        )
+        return mark_safe(html)
+
+    get_custom_benefits_removed_by_user.short_description = "Removed by User"
 
     def rollback_to_editing_view(self, request, pk):
         return views_admin.rollback_to_editing_view(self, request, pk)

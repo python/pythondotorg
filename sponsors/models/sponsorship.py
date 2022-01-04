@@ -141,7 +141,7 @@ class Sponsorship(models.Model):
 
     for_modified_package = models.BooleanField(
         default=False,
-        help_text="If true, it means the user customized the package's benefits.",
+        help_text="If true, it means the user customized the package's benefits. Changes are listed under section 'User Customizations'.",
     )
     level_name_old = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed "
                                                                                        "after manual data sanity "
@@ -164,6 +164,11 @@ class Sponsorship(models.Model):
     @level_name.setter
     def level_name(self, value):
         self.level_name_old = value
+
+    @cached_property
+    def user_customizations(self):
+        benefits = [b.sponsorship_benefit for b in self.benefits.select_related("sponsorship_benefit")]
+        return self.package.get_user_customization(benefits)
 
     def __str__(self):
         repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
