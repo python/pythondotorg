@@ -289,6 +289,16 @@ class SponsorshipAdmin(admin.ModelAdmin):
         ),
     ]
 
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = []
+        for title, cfg in super().get_fieldsets(request, obj):
+            # disable collapse option in case of sponsorships with customizations
+            if title == "User Customizations" and obj:
+                if obj.user_customizations["added_by_user"] or obj.user_customizations["removed_by_user"]:
+                    cfg["classes"] = []
+            fieldsets.append((title, cfg))
+        return fieldsets
+
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
         return qs.select_related("sponsor", "package", "submited_by")
