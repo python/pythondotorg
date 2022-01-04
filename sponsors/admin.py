@@ -237,10 +237,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "Sponsorship Data",
             {
                 "fields": (
+                    "for_modified_package",
                     "sponsor",
                     "status",
                     "package",
-                    "for_modified_package",
                     "sponsorship_fee",
                     "get_estimated_cost",
                     "start_date",
