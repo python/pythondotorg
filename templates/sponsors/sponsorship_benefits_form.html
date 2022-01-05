@@ -17,7 +17,7 @@
     <div id="select_sponsorship_benefits_container">
 
       <div class="row section-title">
-        <img class="col" src='{% static "img/sponsors/title-1.png" %}'/>
+        <img class="col" src='{% static "img/sponsors/title-1.svg" %}'/>
         <h4 class="col">Select a Sponsorship Package</h4>
       </div>
 
@@ -127,7 +127,7 @@
 
       {% if form.fields.add_ons_benefits.queryset.exists %}
         <div class="row section-title">
-          <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
           <div class="col with-description">
             <h4>Select add-on benefits</h4>
             <span>Available at any level of sponsorship</span>
@@ -157,9 +157,9 @@
       {% if form.fields.a_la_carte_benefits.queryset.exists %}
         <div class="row section-title">
           {% if not form.fields.add_ons_benefits.queryset.exists %}
-          <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
           {% else %}
-          <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
           {% endif %}
           <div class="col with-description">
             <h4>Select a la carte benefits</h4>
@@ -189,11 +189,11 @@
 
       <div class="row section-title">
         {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.a_la_carte_benefits.queryset.exists %}
-        <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+        <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
         {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.a_la_carte_benefits.queryset.exists %}
-        <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+        <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
         {% else %}
-        <img class="col" src='{% static "img/sponsors/title-2.png" %}'/>
+        <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
         {% endif %}
         <h4 class="col">Submit your contact information</h4>
       </div>
@@ -211,11 +211,11 @@
 
       <div class="row section-title">
         {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.a_la_carte_benefits.queryset.exists %}
-          <img class="col" src='{% static "img/sponsors/title-5.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-5.svg" %}'/>
         {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.a_la_carte_benefits.queryset.exists %}
-          <img class="col" src='{% static "img/sponsors/title-4.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
         {% else %}
-          <img class="col" src='{% static "img/sponsors/title-3.png" %}'/>
+          <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
         {% endif %}
         <h4 class="col">PSF staff will reach out to confirm and finalize</h4>
       </div>
