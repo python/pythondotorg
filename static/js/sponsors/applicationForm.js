@@ -22,6 +22,7 @@ $(document).ready(function(){
   SELECTORS.packageInput().click(function(){
     let package = this.value;
     if (package.length == 0) return;
+    $(".section-content").show();
 
     // clear previous customizations
     SELECTORS.tickImages().each((i, img) => {
@@ -110,5 +111,10 @@ function benefitUpdate(benefitId, packageId) {
 // Callback function when user selects a package;
 function updatePackageInput(packageId){
   const packageInput = document.getElementById(`id_package_${ packageId }`);
+
+  // no need to update if package is already selected
+  const container = packageInput.parentElement;
+  if (container.classList.contains("selected")) return;
+
   packageInput.click();
 }

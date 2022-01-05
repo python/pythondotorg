@@ -61,7 +61,7 @@
 
         <!-- Benefits listing (as rows) --!>
         {% for benefit in field.field.queryset %}
-        <div class="row {% if forloop.last %}no-border{% endif %} section-{{ sectionNum }}-content">
+        <div class="row {% if forloop.last %}no-border{% endif %} section-{{ sectionNum }}-content section-content">
           <div class="col benefit">
             <h4 class="benefit-title">{{ benefit.name }}</h4>
             <span class="benefit-description">{{ benefit.description }}</span>
