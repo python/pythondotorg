@@ -3845,7 +3845,9 @@ span.highlighted {
     #select_sponsorship_benefits_container #benefitsTable .benefit-within-package {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .selected {
-      background-color: transparent; } }
+      background-color: transparent; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input.selected {
+      background-color: #e9f1f8; } }
 #select_sponsorship_benefits_container .custom-benefits {
   margin: 2em 0;
   padding: 0 2em; }
@@ -3922,7 +3924,8 @@ span.highlighted {
   #select_sponsorship_benefits_container #package-selection .package-input {
     /* The internal disposition of the package name, price and checkbox for the mobile version differs
      from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
-     items are being displayed using the order property.*/ }
+     items are being displayed using the order property.*/
+    margin: 0.25rem 0 !important; }
     #select_sponsorship_benefits_container #package-selection .package-input h4 {
       order: 2; }
     #select_sponsorship_benefits_container #package-selection .package-input span {

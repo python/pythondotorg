@@ -2741,6 +2741,10 @@ $breakpoint-desktop: 1200px;
     @media (max-width: $breakpoint-desktop) {
       .benefit-within-package {display: none;}
       .selected {background-color: transparent;}
+
+      .package-input.selected {
+          background-color: lighten($blue, 50%);
+      }
     };
   }
 
@@ -2871,6 +2875,7 @@ $breakpoint-desktop: 1200px;
          input { // input
            order: 1;
          }
+         margin: 0.25rem 0 !important;
       }
     }
   }
