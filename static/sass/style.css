@@ -3815,12 +3815,18 @@ span.highlighted {
           width: 70%; } }
   #select_sponsorship_benefits_container #benefitsTable .separator {
     flex-shrink: 0;
-    justify-content: flex-start;
-    border-bottom: 3px solid #ffd343; }
+    border-bottom: 3px solid #ffd343;
+    display: block; }
     #select_sponsorship_benefits_container #benefitsTable .separator h4 {
       font-size: 23px;
       line-height: 29px;
-      font-weight: 700; }
+      font-weight: 700;
+      float: left; }
+    #select_sponsorship_benefits_container #benefitsTable .separator .toggle_btn {
+      margin-top: 2em;
+      float: right;
+      cursor: pointer;
+      text-decoration: underline dotted; }
   #select_sponsorship_benefits_container #benefitsTable .no-border {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {

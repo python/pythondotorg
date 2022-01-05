@@ -7,10 +7,17 @@ $(document).ready(function(){
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
     tickImages: function() { return $(`.benefit-within-package img`) },
+    sectionToggleBtns: function() { return $(".toggle_btn")}
   }
 
   const initialPackage = $("input[name=package]:checked").val();
   if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
+
+  SELECTORS.sectionToggleBtns().click(function(){
+    const section = $(this).data('section');
+    const className = ".section-" + section + "-content";
+    $(className).toggle();
+  });
 
   SELECTORS.packageInput().click(function(){
     let package = this.value;

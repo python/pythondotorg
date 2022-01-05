@@ -53,13 +53,15 @@
         </div>
 
         {% for field in form.benefits_programs %}
+        {% with forloop.counter as sectionNum %}
         <div class="row separator">
-          <h4>{{ field.label }}</h4>
+           <h4>{{ field.label }}</h4>
+           <small class="toggle_btn" data-section={{ sectionNum }}>Collapse/expand section</small>
         </div>
 
         <!-- Benefits listing (as rows) --!>
         {% for benefit in field.field.queryset %}
-        <div class="row {% if forloop.last %}no-border{% endif %}">
+        <div class="row {% if forloop.last %}no-border{% endif %} section-{{ sectionNum }}-content">
           <div class="col benefit">
             <h4 class="benefit-title">{{ benefit.name }}</h4>
             <span class="benefit-description">{{ benefit.description }}</span>
@@ -122,6 +124,7 @@
         </div>
         {% endfor %}
 
+        {% endwith %}
         {% endfor %}
       </div>
 
