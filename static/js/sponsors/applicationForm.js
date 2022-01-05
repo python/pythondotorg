@@ -35,6 +35,7 @@ $(document).ready(function(){
     });
 
     // update package benefits display
+    $(`#pkg_container_${package}`).addClass("selected");
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
 

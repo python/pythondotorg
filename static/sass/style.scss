@@ -2677,6 +2677,7 @@ $breakpoint-desktop: 1200px;
         width: 10%;
         padding: 0 1em;
         text-align: center;
+        margin: 0 0.25em;
 
         @media (max-width: $breakpoint-desktop) {width: 30%};
       }
@@ -2706,12 +2707,13 @@ $breakpoint-desktop: 1200px;
     }
 
     .package-input {
-      .package-price {
-        padding-bottom: 0.5em;
-      }
 
       .custom-fee {
         font-size: 75%;
+        display: none;
+      }
+
+      input {
         display: none;
       }
 
@@ -2720,14 +2722,17 @@ $breakpoint-desktop: 1200px;
       }
 
       cursor: pointer;
+      padding-bottom: 0.5em !important;
+      border: 1px solid $default-border-color;
+      border-radius: 15px;
     }
 
     .selected {
       background-color: lighten($blue, 50%);
       border-radius: 15px;
-      padding: 0.5em 1em !important;
 
       img {
+        padding: 0.5em 1em;
         cursor: pointer;
       }
     }

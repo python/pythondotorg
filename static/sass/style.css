@@ -3802,7 +3802,8 @@ span.highlighted {
     #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
       width: 10%;
       padding: 0 1em;
-      text-align: center; }
+      text-align: center;
+      margin: 0 0.25em; }
       @media (max-width: 1200px) {
         #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
           width: 30%; } }
@@ -3823,19 +3824,22 @@ span.highlighted {
   #select_sponsorship_benefits_container #benefitsTable .no-border {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {
-    cursor: pointer; }
-    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
-      padding-bottom: 0.5em; }
+    cursor: pointer;
+    padding-bottom: 0.5em !important;
+    border: 1px solid #caccce;
+    border-radius: 15px; }
     #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
       font-size: 75%;
+      display: none; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input input {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
       transform: rotateY(35deg); }
   #select_sponsorship_benefits_container #benefitsTable .selected {
     background-color: #e9f1f8;
-    border-radius: 15px;
-    padding: 0.5em 1em !important; }
+    border-radius: 15px; }
     #select_sponsorship_benefits_container #benefitsTable .selected img {
+      padding: 0.5em 1em;
       cursor: pointer; }
   @media (max-width: 1200px) {
     #select_sponsorship_benefits_container #benefitsTable .benefit-within-package {
