@@ -13,7 +13,8 @@ from django.utils.html import mark_safe
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
+    SponsorshipBenefitAdminForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -88,8 +89,9 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "package_only", "packages"]
+    list_filter = ["program", "package_only", "packages", "new", "a_la_carte", "unavailable"]
     search_fields = ["name"]
+    form = SponsorshipBenefitAdminForm
 
     fieldsets = [
         (
@@ -103,6 +105,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
                     "package_only",
                     "new",
                     "unavailable",
+                    "a_la_carte",
                 ),
             },
         ),
@@ -144,9 +147,17 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            return []
-        return ["logo_dimension"]
+        readonly = []
+        if obj:
+            readonly.append("slug")
+        if not request.user.is_superuser:
+            readonly.append("logo_dimension")
+        return readonly
+
+    def get_prepopulated_fields(self, request, obj=None):
+        if not obj:
+            return {'slug': ['name']}
+        return {}
 
 
 class SponsorContactInline(admin.TabularInline):

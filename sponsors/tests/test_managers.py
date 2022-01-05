@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity, RequiredTextAsset, RequiredImgAsset, \
-    BenefitFeature
+    BenefitFeature, SponsorshipPackage, SponsorshipBenefit
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -135,3 +135,23 @@ class BenefitFeatureQuerySet(TestCase):
 
         self.assertEqual(qs.count(), 2)
         self.assertIn(text_asset, qs)
+
+
+class SponsorshipBenefitManagerTests(TestCase):
+
+    def setUp(self):
+        package = baker.make(SponsorshipPackage)
+        self.regular_benefit = baker.make(SponsorshipBenefit)
+        self.regular_benefit.packages.add(package)
+        self.add_on = baker.make(SponsorshipBenefit)
+        self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True)
+
+    def test_add_ons_queryset(self):
+        qs = SponsorshipBenefit.objects.add_ons()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.add_on, qs)
+
+    def test_a_la_carte_queryset(self):
+        qs = SponsorshipBenefit.objects.a_la_carte()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.a_la_carte, qs)

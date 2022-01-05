@@ -38,6 +38,8 @@ class SponsorshipPackage(OrderedModel):
     logo_dimension = models.PositiveIntegerField(default=175, blank=True, help_text="Internal value used to control "
                                                                                     "logos dimensions at sponsors "
                                                                                     "page")
+    slug = models.SlugField(db_index=True, blank=False, null=False, help_text="Internal identifier used "
+                                                                              "to reference this package.")
 
     def __str__(self):
         return self.name
@@ -366,6 +368,11 @@ class SponsorshipBenefit(OrderedModel):
         default=False,
         verbose_name="Benefit is unavailable",
         help_text="If selected, this benefit will not be available to applicants.",
+    )
+    a_la_carte = models.BooleanField(
+        default=False,
+        verbose_name="À La Carte",
+        help_text="À la carte benefits can be selected without the need of a package.",
     )
 
     # Internal
