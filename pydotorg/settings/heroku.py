@@ -11,6 +11,15 @@ DEBUG = TEMPLATE_DEBUG = False
 DATABASE_CONN_MAX_AGE = 600
 DATABASES['default']['CONN_MAX_AGE'] = DATABASE_CONN_MAX_AGE
 
+## Django Caching
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.db.DatabaseCache',
+        'LOCATION': 'django_cache_table',
+    }
+}
+
 HAYSTACK_SEARCHBOX_SSL_URL = config(
     'SEARCHBOX_SSL_URL'
 )

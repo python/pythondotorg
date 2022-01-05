@@ -1,5 +1,7 @@
 from collections import OrderedDict
 from django import template
+from django.conf import settings
+from django.core.cache import cache
 
 from ..models import Sponsorship, SponsorshipPackage, TieredQuantityConfiguration
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
@@ -23,7 +25,7 @@ def full_sponsorship(sponsorship, display_fee=False):
 def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     sponsorships = Sponsorship.objects.enabled().with_logo_placement(
         logo_place=logo_place, publisher=publisher
-    ).order_by('package').select_related('sponsor')
+    ).order_by('package').select_related('sponsor', 'package')
     packages = SponsorshipPackage.objects.all()
 
     context = {
@@ -50,6 +52,7 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
             'packages': SponsorshipPackage.objects.all(),
             'sponsorships_by_package': sponsorships_by_package,
         })
+
     return context
 
 

@@ -94,6 +94,7 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
 class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.ExecutedExistingContractLogger(),
+        notifications.RefreshSponsorshipsCache(),
     ]
     force_execute = True
 
@@ -109,6 +110,7 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
 class ExecuteContractUseCase(ExecuteExistingContractUseCase):
     notifications = [
         notifications.ExecutedContractLogger(),
+        notifications.RefreshSponsorshipsCache(),
     ]
     force_execute = False
 
@@ -116,6 +118,7 @@ class ExecuteContractUseCase(ExecuteExistingContractUseCase):
 class NullifyContractUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.NullifiedContractLogger(),
+        notifications.RefreshSponsorshipsCache(),
     ]
 
     def execute(self, contract, **kwargs):
