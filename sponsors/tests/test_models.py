@@ -294,7 +294,6 @@ class SponsorshipModelTests(TestCase):
             self.assertEqual(sponsorship.agreed_fee, 2000)
 
 
-
 class SponsorshipPackageTests(TestCase):
     def setUp(self):
         self.package = baker.make("sponsors.SponsorshipPackage")
@@ -303,19 +302,24 @@ class SponsorshipPackageTests(TestCase):
 
     def test_has_user_customization_if_benefit_from_other_package(self):
         extra = baker.make(SponsorshipBenefit)
-        customization = self.package.has_user_customization(
-            [extra] + self.package_benefits
-        )
-        self.assertTrue(customization)
+        benefits = [extra] + self.package_benefits
+        has_customization = self.package.has_user_customization(benefits)
+        customization = {"added_by_user": {extra}, "removed_by_user": set()}
+        self.assertTrue(has_customization)
+        self.assertEqual(customization, self.package.get_user_customization(benefits))
 
     def test_no_user_customization_if_all_benefits_from_package(self):
-        customization = self.package.has_user_customization(self.package_benefits)
-        self.assertFalse(customization)
+        has_customization = self.package.has_user_customization(self.package_benefits)
+        customization = {"added_by_user": set(), "removed_by_user": set()}
+        self.assertFalse(has_customization)
+        self.assertEqual(customization, self.package.get_user_customization(self.package_benefits))
 
     def test_has_user_customization_if_missing_package_benefit(self):
-        self.package_benefits.pop()
-        customization = self.package.has_user_customization(self.package_benefits)
-        self.assertTrue(customization)
+        removed_benefit = self.package_benefits.pop()
+        has_customization = self.package.has_user_customization(self.package_benefits)
+        customization = {"added_by_user": set(), "removed_by_user": {removed_benefit}}
+        self.assertTrue(has_customization)
+        self.assertEqual(customization, self.package.get_user_customization(self.package_benefits))
 
     def test_no_user_customization_if_at_least_one_of_conflicts_is_passed(self):
         benefits = baker.make(SponsorshipBenefit, _quantity=3)
@@ -621,6 +625,16 @@ class SponsorBenefitModelTests(TestCase):
             quantity=10
         )
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
+
+    def test_sponsor_benefit_from_a_la_carte_one(self):
+        self.sponsorship_benefit.a_la_carte = True
+        self.sponsorship_benefit.save()
+        sponsor_benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        self.assertTrue(sponsor_benefit.added_by_user)
+        self.assertTrue(sponsor_benefit.a_la_carte)
 
 ###########
 # Email notification tests

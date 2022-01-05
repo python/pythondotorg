@@ -34,7 +34,7 @@ class BaseEmailTemplateAdmin(admin.ModelAdmin):
         prefix = self.model._meta.db_table
         my_urls = [
             path(
-                "<int:pk>/preview-content/$",
+                "<int:pk>/preview-content/",
                 self.admin_site.admin_view(self.preview_email_template),
                 name=f"{prefix}_preview",
             ),

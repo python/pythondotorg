@@ -80,12 +80,15 @@ class SponsorshipBenefitManager(OrderedModelManager):
         return self.filter(conflicts__isnull=True)
 
     def add_ons(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0)
+        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, a_la_carte=False)
+
+    def a_la_carte(self):
+        return self.filter(a_la_carte=True)
 
     def with_packages(self):
         return (
             self.annotate(num_packages=Count("packages"))
-            .exclude(num_packages=0)
+            .exclude(Q(num_packages=0) | Q(a_la_carte=True))
             .order_by("-num_packages", "order")
         )
 

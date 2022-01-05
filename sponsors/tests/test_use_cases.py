@@ -187,9 +187,12 @@ class ExecuteContractUseCaseTests(TestCase):
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteContractUseCase.build()
-        self.assertEqual(len(uc.notifications), 1)
+        self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(
             uc.notifications[0], ExecutedContractLogger
+        )
+        self.assertIsInstance(
+            uc.notifications[1], RefreshSponsorshipsCache,
         )
 
 
@@ -219,9 +222,12 @@ class ExecuteExistingContractUseCaseTests(TestCase):
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()
-        self.assertEqual(len(uc.notifications), 1)
+        self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(
             uc.notifications[0], ExecutedExistingContractLogger
+        )
+        self.assertIsInstance(
+            uc.notifications[1], RefreshSponsorshipsCache,
         )
 
 
@@ -239,9 +245,12 @@ class NullifyContractUseCaseTests(TestCase):
 
     def test_build_use_case_with_default_notificationss(self):
         uc = use_cases.NullifyContractUseCase.build()
-        self.assertEqual(len(uc.notifications), 1)
+        self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(
             uc.notifications[0], NullifiedContractLogger
+        )
+        self.assertIsInstance(
+            uc.notifications[1], RefreshSponsorshipsCache,
         )
 
 

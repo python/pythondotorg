@@ -13,7 +13,8 @@ from django.utils.html import mark_safe
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
 from sponsors import views_admin
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
+    SponsorshipBenefitAdminForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -88,8 +89,9 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "package_only", "packages"]
+    list_filter = ["program", "package_only", "packages", "new", "a_la_carte", "unavailable"]
     search_fields = ["name"]
+    form = SponsorshipBenefitAdminForm
 
     fieldsets = [
         (
@@ -103,6 +105,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
                     "package_only",
                     "new",
                     "unavailable",
+                    "a_la_carte",
                 ),
             },
         ),
@@ -144,9 +147,17 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
-        if request.user.is_superuser:
-            return []
-        return ["logo_dimension"]
+        readonly = []
+        if obj:
+            readonly.append("slug")
+        if not request.user.is_superuser:
+            readonly.append("logo_dimension")
+        return readonly
+
+    def get_prepopulated_fields(self, request, obj=None):
+        if not obj:
+            return {'slug': ['name']}
+        return {}
 
 
 class SponsorContactInline(admin.TabularInline):
@@ -237,10 +248,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "Sponsorship Data",
             {
                 "fields": (
+                    "for_modified_package",
                     "sponsor",
                     "status",
                     "package",
-                    "for_modified_package",
                     "sponsorship_fee",
                     "get_estimated_cost",
                     "start_date",
@@ -266,6 +277,16 @@ class SponsorshipAdmin(admin.ModelAdmin):
             },
         ),
         (
+            "User Customizations",
+            {
+                "fields": (
+                    "get_custom_benefits_added_by_user",
+                    "get_custom_benefits_removed_by_user",
+                ),
+                "classes": ["collapse"],
+            },
+        ),
+        (
             "Events dates",
             {
                 "fields": (
@@ -278,6 +299,16 @@ class SponsorshipAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def get_fieldsets(self, request, obj=None):
+        fieldsets = []
+        for title, cfg in super().get_fieldsets(request, obj):
+            # disable collapse option in case of sponsorships with customizations
+            if title == "User Customizations" and obj:
+                if obj.user_customizations["added_by_user"] or obj.user_customizations["removed_by_user"]:
+                    cfg["classes"] = []
+            fieldsets.append((title, cfg))
+        return fieldsets
 
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args, **kwargs)
@@ -307,6 +338,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_sponsor_mailing_address",
             "get_sponsor_contacts",
             "get_contract",
+            "get_added_by_user",
+            "get_custom_benefits_added_by_user",
+            "get_custom_benefits_removed_by_user",
         ]
 
         if obj and obj.status != Sponsorship.APPLIED:
@@ -443,6 +477,30 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return mark_safe(html)
 
     get_sponsor_contacts.short_description = "Contacts"
+
+    def get_custom_benefits_added_by_user(self, obj):
+        benefits = obj.user_customizations["added_by_user"]
+        if not benefits:
+            return "---"
+
+        html = "".join(
+            [f"<p>{b}</p>" for b in benefits]
+        )
+        return mark_safe(html)
+
+    get_custom_benefits_added_by_user.short_description = "Added by User"
+
+    def get_custom_benefits_removed_by_user(self, obj):
+        benefits = obj.user_customizations["removed_by_user"]
+        if not benefits:
+            return "---"
+
+        html = "".join(
+            [f"<p>{b}</p>" for b in benefits]
+        )
+        return mark_safe(html)
+
+    get_custom_benefits_removed_by_user.short_description = "Removed by User"
 
     def rollback_to_editing_view(self, request, pk):
         return views_admin.rollback_to_editing_view(self, request, pk)
