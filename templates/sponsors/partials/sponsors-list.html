@@ -1,10 +1,10 @@
 {% load thumbnail %}
 {% load cache %}
 
-{% comment %}cache for 1 day{% endcomment %}
-{% cache 86400 CACHED_SPONSORS_LIST %}
 
 {% if logo_place == "download" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_DOWNLOAD_SPONSORS_LIST %}
   <h2 class="widget-title">Sponsors</h2>
   <p>Visionary sponsors help to host Python downloads.</p>
   {% for sponsorship in sponsorships %}
@@ -12,8 +12,11 @@
     <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:200px;max-width:200px;height:auto;width:auto;">
   {% endthumbnail %}
   {% endfor %}
+{% endcache CACHED_DOWNLOAD_SPONSORS_LIST %}
 
 {% elif logo_place == "jobs" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_JOBS_SPONSORS_LIST %}
   <h3 class="widget-title">Job Board Sponsors</h3>
   <div style="display: grid; grid-gap: 1em; grid-template-columns: repeat(auto-fit, minmax(100px, 0fr)); grid-template-rows: repeat(1, minmax(50px, 0fr)); align-items: center; justify-content: center; margin-top: 1em;">
   {% for sponsorship in sponsorships %}
@@ -24,8 +27,11 @@
   {% endthumbnail %}
   {% endfor %}
   </div>
+{% endcache CACHED_JOBS_SPONSORS_LIST %}
 
 {% elif logo_place == "sponsors" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_SPONSORS_LIST %}
 
   {% for package, placement_info in sponsorships_by_package.items %}
   {% if placement_info.sponsorships %}
@@ -54,5 +60,5 @@
   </div>
   {% endif %}
   {% endfor %}
-{% endif %}
 {% endcache CACHED_SPONSORS_LIST %}
+{% endif %}
