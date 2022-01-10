@@ -56,7 +56,7 @@ class BaseEmailTargetable(models.Model):
         abstract = True
 
 
-class BaseRequiredAsset(models.Model):
+class BaseAsset(models.Model):
     ASSET_CLASS = None
 
     related_to = models.CharField(
@@ -87,7 +87,17 @@ class BaseRequiredAsset(models.Model):
         abstract = True
 
 
-class RequiredAssetConfigurationMixin:
+class BaseRequiredAsset(BaseAsset):
+    class Meta:
+        abstract = True
+
+
+class BaseProvidedAsset(BaseAsset):
+    class Meta:
+        abstract = True
+
+
+class AssetConfigurationMixin:
     """
     This class should be used to implement assets configuration.
     It's a mixin to updates the benefit feature creation to also
@@ -97,7 +107,7 @@ class RequiredAssetConfigurationMixin:
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
             raise NotImplementedError(
-                "Subclasses of RequiredAssetConfigurationMixin must define an ASSET_CLASS attribute.")
+                "Subclasses of AssetConfigurationMixin must define an ASSET_CLASS attribute.")
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -149,12 +159,25 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
         abstract = True
 
 
-class RequiredAssetMixin:
-    """
-    This class should be used to implement required assets.
-    It's a mixin to get the information submitted by the user
-    and which is stored in the related asset class.
-    """
+class BaseProvidedTextAsset(BaseProvidedAsset):
+    ASSET_CLASS = TextAsset
+
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the text input to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the input should be populated",
+        default="",
+        blank=True
+    )
+
+    class Meta(BaseProvidedAsset.Meta):
+        abstract = True
+
+
+class AssetMixin:
 
     def __related_asset(self):
         object = self.sponsor_benefit.sponsorship
@@ -178,6 +201,28 @@ class RequiredAssetMixin:
     def user_edit_url(self):
         url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
         return url + f"?required_asset={self.pk}"
+
+
+    @property
+    def user_view_url(self):
+        url = reverse("users:view_provided_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
+        return url + f"?provided_asset={self.pk}"
+
+class RequiredAssetMixin(AssetMixin):
+    """
+    This class should be used to implement required assets.
+    It's a mixin to get the information submitted by the user
+    and which is stored in the related asset class.
+    """
+    pass
+
+class ProvidedAssetMixin(AssetMixin):
+    """
+    This class should be used to implement provided assets.
+    It's a mixin to get the information submitted by the staff
+    and which is stored in the related asset class.
+    """
+    pass
 
 
 ######################################################
@@ -303,7 +348,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return f"Email targeatable configuration"
 
 
-class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
+class RequiredImgAssetConfiguration(AssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
@@ -317,7 +362,7 @@ class RequiredImgAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequire
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequiredTextAsset,
+class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAsset,
                                      BenefitFeatureConfiguration):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
@@ -330,6 +375,21 @@ class RequiredTextAssetConfiguration(RequiredAssetConfigurationMixin, BaseRequir
     @property
     def benefit_feature_class(self):
         return RequiredTextAsset
+
+
+class ProvidedTextAssetConfiguration(AssetConfigurationMixin, BaseProvidedTextAsset,
+                                     BenefitFeatureConfiguration):
+    class Meta(BaseProvidedTextAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Provided Text Configuration"
+        verbose_name_plural = "Provided Text Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_provided_text_asset_cfg")]
+
+    def __str__(self):
+        return f"Provided text configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return ProvidedTextAsset
 
 
 ####################################
@@ -420,3 +480,12 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
         return forms.CharField(required=required, help_text=help_text, label=label, widget=forms.TextInput, **kwargs)
+
+
+class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):
+    class Meta(BaseProvidedTextAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Provided Text"
+        verbose_name_plural = "Provided Texts"
+
+    def __str__(self):
+        return f"Provided text"

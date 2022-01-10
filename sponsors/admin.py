@@ -67,6 +67,9 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = RequiredTextAssetConfiguration
 
+    class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = ProvidedTextAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
@@ -74,6 +77,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
+        ProvidedTextAssetConfigurationInline,
     ]
 
 

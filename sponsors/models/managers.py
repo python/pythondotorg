@@ -107,3 +107,8 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
         from sponsors.models.benefits import RequiredAssetMixin
         required_assets_classes = RequiredAssetMixin.__subclasses__()
         return self.instance_of(*required_assets_classes).select_related("sponsor_benefit__sponsorship")
+
+    def provided_assets(self):
+        from sponsors.models.benefits import ProvidedAssetMixin
+        provided_assets_classes = ProvidedAssetMixin.__subclasses__()
+        return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
