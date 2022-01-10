@@ -1,3 +1,5 @@
+const DESKTOP_WIDTH_LIMIT = 1500;
+
 $(document).ready(function(){
   const SELECTORS = {
     packageInput:  function() { return $("input[name=package]"); },
@@ -63,10 +65,10 @@ $(document).ready(function(){
 
 
 function mobileUpdate(packageId) {
-  // Mobile version lists a single column to controle the selected
-  // benefits and potential add-ons. So, this part of the code
-  // controls this logic.
-  const mobileVersion = $(".benefit-within-package:hidden").length > 0;
+  const width = window.innerWidth
+    || document.documentElement.clientWidth
+    || document.body.clientWidth;
+  const mobileVersion = width <= DESKTOP_WIDTH_LIMIT;
   if (!mobileVersion) return;
   $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
   $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
