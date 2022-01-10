@@ -1,4 +1,4 @@
-const DESKTOP_WIDTH_LIMIT = 1500;
+const DESKTOP_WIDTH_LIMIT = 1200;
 
 $(document).ready(function(){
   const SELECTORS = {

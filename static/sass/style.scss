@@ -2439,7 +2439,7 @@ span.highlighted {
 }
 
 $breakpoint-phone: 640px;
-$breakpoint-desktop: 1500px;
+$breakpoint-desktop: 1200px;
 
 #new_sponsorship_application_container, #edit-sponsor-information {
 
@@ -2586,6 +2586,7 @@ $breakpoint-desktop: 1500px;
       line-height: 28px;
       color: #444444;
       margin-top: 1em;
+      @media (max-width: $breakpoint-desktop*1.1) { font-size: 16px; }
     }
 
     p {
@@ -2675,7 +2676,6 @@ $breakpoint-desktop: 1500px;
 
       .col:not(first-child) {
         width: 10%;
-        padding: 0 1em;
         text-align: center;
         margin: 0 0.25em;
 
@@ -2876,9 +2876,11 @@ $breakpoint-desktop: 1500px;
           items are being displayed using the order property.*/
          h4 { // package name
            order: 2;
+           padding-left: 1em;
          }
          span { // package fee
            order: 3;
+           padding-right: 1em;
          }
          input { // input
            order: 1;
