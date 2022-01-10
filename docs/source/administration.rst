@@ -97,7 +97,7 @@ app has a lot of models that are grouped by context. Here's a list of the group 
 they represent:
 
 :sponsorship.py: The `Sponsorship` model and all the related information to configure a new sponsorship
-                 appplication like programs, packages and benefits;
+                 application like programs, packages and benefits;
 :benefits.py: List models that are used to configure benefits. Here you'll find models that forces a
               benefit to have an asset or controls it maximum quantity;
 :assets.py: Models that are used to configure the type of assets that a benefit can have;
