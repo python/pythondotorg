@@ -3804,13 +3804,13 @@ span.highlighted {
       padding: 0 1em;
       text-align: center;
       margin: 0 0.25em; }
-      @media (max-width: 1200px) {
+      @media (max-width: 1500px) {
         #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
           width: 30%; } }
     #select_sponsorship_benefits_container #benefitsTable .row .col:first-child {
       width: 20%;
       text-align: left; }
-      @media (max-width: 1200px) {
+      @media (max-width: 1500px) {
         #select_sponsorship_benefits_container #benefitsTable .row .col:first-child {
           width: 70%; } }
   #select_sponsorship_benefits_container #benefitsTable .separator {
@@ -3847,7 +3847,7 @@ span.highlighted {
     #select_sponsorship_benefits_container #benefitsTable .selected img {
       padding: 0.5em 1em;
       cursor: pointer; }
-  @media (max-width: 1200px) {
+  @media (max-width: 1500px) {
     #select_sponsorship_benefits_container #benefitsTable .benefit-within-package {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .selected {
@@ -3870,7 +3870,7 @@ span.highlighted {
     color: #000000;
     margin: 0;
     padding: 0; }
-  @media (max-width: 1200px) {
+  @media (max-width: 1500px) {
     #select_sponsorship_benefits_container .custom-benefits {
       margin: 0;
       padding: 1em; }
@@ -3903,14 +3903,14 @@ span.highlighted {
     #select_sponsorship_benefits_container .submit-row .btn:hover, #select_sponsorship_benefits_container .submit-row .btn:focus {
       background: #ffd95c;
       text-shadow: 0 0 5px rgba(255, 211, 67, 0.2); }
-  @media (max-width: 1200px) {
+  @media (max-width: 1500px) {
     #select_sponsorship_benefits_container .submit-row {
       flex-flow: column nowrap !important;
       width: 100%;
       padding: 0; }
       #select_sponsorship_benefits_container .submit-row .btn {
         margin: 1em; } }
-@media (max-width: 1200px) {
+@media (max-width: 1500px) {
   #select_sponsorship_benefits_container #package-selection .row {
     /* Mobile's layout lists the package selection as a single column instead of multiple
        ones as in the desktop version. That's why this strange flex-flow change is being
@@ -3938,10 +3938,10 @@ span.highlighted {
       order: 3; }
     #select_sponsorship_benefits_container #package-selection .package-input input {
       order: 1; } }
-    @media (max-width: 1200px) and (max-width: 640px) {
+    @media (max-width: 1500px) and (max-width: 640px) {
       #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
         width: 80%; } }
-@media (min-width: 1200px) {
+@media (min-width: 1500px) {
   #select_sponsorship_benefits_container {
     /* Destkop version have the package selection row as a fixed header after some scrolling.
        This CSS block address this logic.
