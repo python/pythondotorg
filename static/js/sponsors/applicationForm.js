@@ -24,7 +24,6 @@ $(document).ready(function(){
   SELECTORS.packageInput().click(function(){
     let package = this.value;
     if (package.length == 0) return;
-    $(".section-content").show();
 
     // clear previous customizations
     SELECTORS.tickImages().each((i, img) => {
