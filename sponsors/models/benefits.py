@@ -7,7 +7,7 @@ from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from sponsors.models.assets import ImgAsset, TextAsset
+from sponsors.models.assets import ImgAsset, TextAsset, FileAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
 
 ########################################
@@ -93,6 +93,13 @@ class BaseRequiredAsset(BaseAsset):
 
 
 class BaseProvidedAsset(BaseAsset):
+    shared = models.BooleanField(
+        default = False,
+    )
+
+    def shared_value(self):
+        return None
+
     class Meta:
         abstract = True
 
@@ -176,6 +183,27 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
     class Meta(BaseProvidedAsset.Meta):
         abstract = True
 
+class BaseProvidedFileAsset(BaseProvidedAsset):
+    ASSET_CLASS = FileAsset
+
+    label = models.CharField(
+        max_length=256,
+        help_text="What's the title used to display the file to the sponsor?"
+    )
+    help_text = models.CharField(
+        max_length=256,
+        help_text="Any helper comment on how the file should be used",
+        default="",
+        blank=True
+    )
+    shared_file = models.FileField(blank=True, null=True)
+
+    def shared_value(self):
+        return self.shared_file
+
+    class Meta(BaseProvidedAsset.Meta):
+        abstract = True
+
 
 class AssetMixin:
 
@@ -222,8 +250,12 @@ class ProvidedAssetMixin(AssetMixin):
     It's a mixin to get the information submitted by the staff
     and which is stored in the related asset class.
     """
-    pass
 
+    @property
+    def value(self):
+        if hasattr(self, 'shared') and self.shared:
+            return self.shared_value()
+        return super().value
 
 ######################################################
 # SponsorshipBenefit features configuration models
@@ -392,6 +424,21 @@ class ProvidedTextAssetConfiguration(AssetConfigurationMixin, BaseProvidedTextAs
         return ProvidedTextAsset
 
 
+class ProvidedFileAssetConfiguration(AssetConfigurationMixin, BaseProvidedFileAsset,
+                                     BenefitFeatureConfiguration):
+    class Meta(BaseProvidedFileAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Provided File Configuration"
+        verbose_name_plural = "Provided File Configurations"
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_provided_file_asset_cfg")]
+
+    def __str__(self):
+        return f"Provided File configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return ProvidedFileAsset
+
+
 ####################################
 # SponsorBenefit features models
 class BenefitFeature(PolymorphicModel):
@@ -489,3 +536,11 @@ class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeatur
 
     def __str__(self):
         return f"Provided text"
+
+class ProvidedFileAsset(ProvidedAssetMixin, BaseProvidedFileAsset, BenefitFeature):
+    class Meta(BaseProvidedFileAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Provided File"
+        verbose_name_plural = "Provided Files"
+
+    def __str__(self):
+        return f"Provided file"

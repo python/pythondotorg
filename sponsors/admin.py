@@ -6,6 +6,7 @@ from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
+from django.forms import ModelForm
 from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
@@ -46,7 +47,14 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
     ]
 
 
+class MultiPartForceForm(ModelForm):
+     def is_multipart(self):
+         return True
+
+
 class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
+    form = MultiPartForceForm
+
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
@@ -70,6 +78,9 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = ProvidedTextAssetConfiguration
 
+    class ProvidedFileAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = ProvidedFileAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
@@ -78,8 +89,8 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
         ProvidedTextAssetConfigurationInline,
+        ProvidedFileAssetConfigurationInline,
     ]
-
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
