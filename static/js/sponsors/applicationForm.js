@@ -1,3 +1,5 @@
+const DESKTOP_WIDTH_LIMIT = 1200;
+
 $(document).ready(function(){
   const SELECTORS = {
     packageInput:  function() { return $("input[name=package]"); },
@@ -7,10 +9,17 @@ $(document).ready(function(){
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
     tickImages: function() { return $(`.benefit-within-package img`) },
+    sectionToggleBtns: function() { return $(".toggle_btn")}
   }
 
   const initialPackage = $("input[name=package]:checked").val();
   if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
+
+  SELECTORS.sectionToggleBtns().click(function(){
+    const section = $(this).data('section');
+    const className = ".section-" + section + "-content";
+    $(className).toggle();
+  });
 
   SELECTORS.packageInput().click(function(){
     let package = this.value;
@@ -35,6 +44,7 @@ $(document).ready(function(){
     });
 
     // update package benefits display
+    $(`#pkg_container_${package}`).addClass("selected");
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
 
@@ -54,10 +64,10 @@ $(document).ready(function(){
 
 
 function mobileUpdate(packageId) {
-  // Mobile version lists a single column to controle the selected
-  // benefits and potential add-ons. So, this part of the code
-  // controls this logic.
-  const mobileVersion = $(".benefit-within-package:hidden").length > 0;
+  const width = window.innerWidth
+    || document.documentElement.clientWidth
+    || document.body.clientWidth;
+  const mobileVersion = width <= DESKTOP_WIDTH_LIMIT;
   if (!mobileVersion) return;
   $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
   $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
@@ -102,5 +112,10 @@ function benefitUpdate(benefitId, packageId) {
 // Callback function when user selects a package;
 function updatePackageInput(packageId){
   const packageInput = document.getElementById(`id_package_${ packageId }`);
+
+  // no need to update if package is already selected
+  const container = packageInput.parentElement;
+  if (container.classList.contains("selected")) return;
+
   packageInput.click();
 }
