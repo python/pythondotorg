@@ -376,7 +376,7 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
         return f"{name} ({self.quantity})"
 
     def __str__(self):
-        return f"{self.quantity} of {self.benefit} for {self.package}"
+        return f"{self.quantity} of {self.sponsor_benefit} for {self.package}"
 
 
 class EmailTargetable(BaseEmailTargetable, BenefitFeature):
