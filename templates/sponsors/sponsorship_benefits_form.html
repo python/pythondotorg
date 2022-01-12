@@ -42,7 +42,7 @@
                {% endif %}
              </span>
              {% for package in form.fields.package.queryset %}
-             <div class="col col-items package-input" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
+             <div id="pkg_container_{{ package.id }}" class="col col-items package-input {% if package.id == form.initial.package %}selected{% endif %}" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
                <h4>{{ package.name|upper }}</h4>
                <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
                <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
@@ -53,13 +53,15 @@
         </div>
 
         {% for field in form.benefits_programs %}
+        {% with forloop.counter as sectionNum %}
         <div class="row separator">
-          <h4>{{ field.label }}</h4>
+           <h4>{{ field.label }}</h4>
+           <small class="toggle_btn" data-section={{ sectionNum }}>Collapse/expand section</small>
         </div>
 
         <!-- Benefits listing (as rows) --!>
         {% for benefit in field.field.queryset %}
-        <div class="row {% if forloop.last %}no-border{% endif %}">
+        <div class="row {% if forloop.last %}no-border{% endif %} section-{{ sectionNum }}-content section-content">
           <div class="col benefit">
             <h4 class="benefit-title">{{ benefit.name }}</h4>
             <span class="benefit-description">{{ benefit.description }}</span>
@@ -122,6 +124,7 @@
         </div>
         {% endfor %}
 
+        {% endwith %}
         {% endfor %}
       </div>
 

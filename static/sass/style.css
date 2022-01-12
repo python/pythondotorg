@@ -3745,6 +3745,9 @@ span.highlighted {
   line-height: 28px;
   color: #444444;
   margin-top: 1em; }
+  @media (max-width: 1320px) {
+    #select_sponsorship_benefits_container h4 {
+      font-size: 16px; } }
 #select_sponsorship_benefits_container p {
   font-size: 18px;
   line-height: 28px;
@@ -3801,8 +3804,8 @@ span.highlighted {
     border-bottom: 1px solid #e6e8ea; }
     #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
       width: 10%;
-      padding: 0 1em;
-      text-align: center; }
+      text-align: center;
+      margin: 0 0.25em; }
       @media (max-width: 1200px) {
         #select_sponsorship_benefits_container #benefitsTable .row .col:not(first-child) {
           width: 30%; } }
@@ -3814,34 +3817,45 @@ span.highlighted {
           width: 70%; } }
   #select_sponsorship_benefits_container #benefitsTable .separator {
     flex-shrink: 0;
-    justify-content: flex-start;
-    border-bottom: 3px solid #ffd343; }
+    border-bottom: 3px solid #ffd343;
+    display: block; }
     #select_sponsorship_benefits_container #benefitsTable .separator h4 {
       font-size: 23px;
       line-height: 29px;
-      font-weight: 700; }
+      font-weight: 700;
+      float: left; }
+    #select_sponsorship_benefits_container #benefitsTable .separator .toggle_btn {
+      margin-top: 2em;
+      float: right;
+      cursor: pointer;
+      text-decoration: underline dotted; }
   #select_sponsorship_benefits_container #benefitsTable .no-border {
     border-bottom: none; }
   #select_sponsorship_benefits_container #benefitsTable .package-input {
-    cursor: pointer; }
-    #select_sponsorship_benefits_container #benefitsTable .package-input .package-price {
-      padding-bottom: 0.5em; }
+    cursor: pointer;
+    padding-bottom: 0.5em !important;
+    border: 1px solid #caccce;
+    border-radius: 15px; }
     #select_sponsorship_benefits_container #benefitsTable .package-input .custom-fee {
       font-size: 75%;
+      display: none; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input input {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .package-input h4 {
       transform: rotateY(35deg); }
   #select_sponsorship_benefits_container #benefitsTable .selected {
     background-color: #e9f1f8;
-    border-radius: 15px;
-    padding: 0.5em 1em !important; }
+    border-radius: 15px; }
     #select_sponsorship_benefits_container #benefitsTable .selected img {
+      padding: 0.5em 1em;
       cursor: pointer; }
   @media (max-width: 1200px) {
     #select_sponsorship_benefits_container #benefitsTable .benefit-within-package {
       display: none; }
     #select_sponsorship_benefits_container #benefitsTable .selected {
-      background-color: transparent; } }
+      background-color: transparent; }
+    #select_sponsorship_benefits_container #benefitsTable .package-input.selected {
+      background-color: #e9f1f8; } }
 #select_sponsorship_benefits_container .custom-benefits {
   margin: 2em 0;
   padding: 0 2em; }
@@ -3918,11 +3932,14 @@ span.highlighted {
   #select_sponsorship_benefits_container #package-selection .package-input {
     /* The internal disposition of the package name, price and checkbox for the mobile version differs
      from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
-     items are being displayed using the order property.*/ }
+     items are being displayed using the order property.*/
+    margin: 0.25rem 0 !important; }
     #select_sponsorship_benefits_container #package-selection .package-input h4 {
-      order: 2; }
+      order: 2;
+      padding-left: 1em; }
     #select_sponsorship_benefits_container #package-selection .package-input span {
-      order: 3; }
+      order: 3;
+      padding-right: 1em; }
     #select_sponsorship_benefits_container #package-selection .package-input input {
       order: 1; } }
     @media (max-width: 1200px) and (max-width: 640px) {

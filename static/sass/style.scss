@@ -2586,6 +2586,7 @@ $breakpoint-desktop: 1200px;
       line-height: 28px;
       color: #444444;
       margin-top: 1em;
+      @media (max-width: $breakpoint-desktop*1.1) { font-size: 16px; }
     }
 
     p {
@@ -2675,8 +2676,8 @@ $breakpoint-desktop: 1200px;
 
       .col:not(first-child) {
         width: 10%;
-        padding: 0 1em;
         text-align: center;
+        margin: 0 0.25em;
 
         @media (max-width: $breakpoint-desktop) {width: 30%};
       }
@@ -2691,13 +2692,21 @@ $breakpoint-desktop: 1200px;
 
     .separator {
       flex-shrink: 0;
-      justify-content: flex-start;
       border-bottom: 3px solid #FFD343;
+      display: block;
 
       h4 {
         font-size: 23px;
         line-height: 29px;
         font-weight: 700;
+        float: left;
+      }
+
+      .toggle_btn {
+        margin-top: 2em;
+        float: right;
+        cursor: pointer;
+        text-decoration: underline dotted;
       }
     }
 
@@ -2706,12 +2715,13 @@ $breakpoint-desktop: 1200px;
     }
 
     .package-input {
-      .package-price {
-        padding-bottom: 0.5em;
-      }
 
       .custom-fee {
         font-size: 75%;
+        display: none;
+      }
+
+      input {
         display: none;
       }
 
@@ -2720,14 +2730,17 @@ $breakpoint-desktop: 1200px;
       }
 
       cursor: pointer;
+      padding-bottom: 0.5em !important;
+      border: 1px solid $default-border-color;
+      border-radius: 15px;
     }
 
     .selected {
       background-color: lighten($blue, 50%);
       border-radius: 15px;
-      padding: 0.5em 1em !important;
 
       img {
+        padding: 0.5em 1em;
         cursor: pointer;
       }
     }
@@ -2736,6 +2749,10 @@ $breakpoint-desktop: 1200px;
     @media (max-width: $breakpoint-desktop) {
       .benefit-within-package {display: none;}
       .selected {background-color: transparent;}
+
+      .package-input.selected {
+          background-color: lighten($blue, 50%);
+      }
     };
   }
 
@@ -2859,13 +2876,16 @@ $breakpoint-desktop: 1200px;
           items are being displayed using the order property.*/
          h4 { // package name
            order: 2;
+           padding-left: 1em;
          }
          span { // package fee
            order: 3;
+           padding-right: 1em;
          }
          input { // input
            order: 1;
          }
+         margin: 0.25rem 0 !important;
       }
     }
   }

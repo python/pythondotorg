@@ -19,7 +19,7 @@
   <h1><a href="{% url 'nominations:nominees_list' election=election.slug %}">{{ election.name }} Election</a></h1>
 
   {% if nominations.nominations_recieved|length > 0 %}
-  <h2>Nominations Recieved</h2>
+  <h2>Nominations Received</h2>
   <ul>
     {% for nomination in nominations.nominations_recieved %}
     <li>
