@@ -394,6 +394,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.rollback_to_editing_view),
                 name="sponsors_sponsorship_rollback_to_edit",
             ),
+            path(
+                "<int:pk>/list-assets",
+                self.admin_site.admin_view(self.list_uploaded_assets_view),
+                name="sponsors_sponsorship_list_uploaded_assets",
+            ),
         ]
         return my_urls + urls
 
@@ -513,6 +518,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def approve_signed_sponsorship_view(self, request, pk):
         return views_admin.approve_signed_sponsorship_view(self, request, pk)
+
+    def list_uploaded_assets_view(self, request, pk):
+        return views_admin.list_uploaded_assets(self, request, pk)
 
 
 @admin.register(LegalClause)

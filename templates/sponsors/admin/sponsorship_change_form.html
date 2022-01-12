@@ -31,6 +31,10 @@
     </li>
     {% endif %}
 
+    <li>
+      <a href="{% url 'admin:sponsors_sponsorship_list_uploaded_assets' sp.pk %}">Uploaded Assets</a>
+    </li>
+
   {% endwith %}
 
   {{ block.super }}

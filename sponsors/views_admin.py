@@ -10,7 +10,7 @@ from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact
+from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -271,6 +271,16 @@ def update_related_sponsorships(ModelAdmin, request, pk):
 
     context = {"benefit": benefit, "form": form}
     return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
+
+
+def list_uploaded_assets(ModelAdmin, request, pk):
+    """
+    List and export assets uploaded by the user
+    """
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+    context = {"sponsorship": sponsorship, "assets": assets}
+    return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
 
 
 ##################
