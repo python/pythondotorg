@@ -252,5 +252,9 @@ class SponsorBenefit(OrderedModel):
             name = feature.display_modifier(name)
         return name
 
+    def delete(self):
+        self.features.all().delete()
+        super().delete()
+
     class Meta(OrderedModel.Meta):
         pass
