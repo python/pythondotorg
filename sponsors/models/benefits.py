@@ -88,6 +88,8 @@ class BaseAsset(models.Model):
 
 
 class BaseRequiredAsset(BaseAsset):
+    due_date = models.DateField(default=None, null=True, blank=True)
+
     class Meta:
         abstract = True
 
