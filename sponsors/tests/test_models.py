@@ -653,6 +653,70 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(benefit.benefit_internal_value, self.sponsorship_benefit.internal_value)
         self.assertEqual(benefit.a_la_carte, self.sponsorship_benefit.a_la_carte)
 
+    def test_reset_attributes_add_new_features(self):
+        RequiredTextAssetConfiguration.objects.create(
+            benefit=self.sponsorship_benefit,
+            related_to="sponsorship",
+            internal_name="foo",
+            label="Text",
+        )
+        benefit = baker.make(
+            SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit
+        )
+        # no previous feature
+        self.assertFalse(benefit.features.count())
+
+        benefit.reset_attributes(self.sponsorship_benefit)
+        benefit.refresh_from_db()
+
+        self.assertEqual(1, benefit.features.count())
+
+    def test_reset_attributes_delete_removed_features(self):
+        cfg = RequiredTextAssetConfiguration.objects.create(
+            benefit=self.sponsorship_benefit,
+            related_to="sponsorship",
+            internal_name="foo",
+            label="Text",
+        )
+        benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+        self.assertEqual(1, benefit.features.count())
+        cfg.delete()
+
+        benefit.reset_attributes(self.sponsorship_benefit)
+        benefit.refresh_from_db()
+
+        # no previous feature
+        self.assertFalse(benefit.features.count())
+
+    def test_reset_attributes_recreate_features_but_keeping_previous_values(self):
+        cfg = RequiredTextAssetConfiguration.objects.create(
+            benefit=self.sponsorship_benefit,
+            related_to="sponsorship",
+            internal_name="foo",
+            label="Text",
+        )
+        benefit = SponsorBenefit.new_copy(
+            self.sponsorship_benefit, sponsorship=self.sponsorship
+        )
+
+        feature = RequiredTextAsset.objects.get()
+        feature.value = "foo"
+        feature.save()
+        cfg.label = "New text"
+        cfg.save()
+
+        benefit.reset_attributes(self.sponsorship_benefit)
+        benefit.refresh_from_db()
+
+        # no previous feature
+        self.assertEqual(1, benefit.features.count())
+        asset = benefit.features.required_assets().get()
+        self.assertEqual(asset.label, "New text")
+        self.assertEqual(asset.value, "foo")
+
+
 ###########
 # Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):

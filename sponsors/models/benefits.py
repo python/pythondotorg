@@ -537,6 +537,7 @@ class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeatur
     def __str__(self):
         return f"Provided text"
 
+
 class ProvidedFileAsset(ProvidedAssetMixin, BaseProvidedFileAsset, BenefitFeature):
     class Meta(BaseProvidedFileAsset.Meta, BenefitFeature.Meta):
         verbose_name = "Provided File"
