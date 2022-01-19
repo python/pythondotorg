@@ -208,6 +208,12 @@ class BaseProvidedFileAsset(BaseProvidedAsset):
 class AssetMixin:
 
     def __related_asset(self):
+        """
+        This method exists to avoid FK relationships between the GenericAsset
+        and reuired asset objects. This is to decouple the assets set up from the
+        real assets value in a way that, if the first gets deleted, the second can
+        still be re used.
+        """
         object = self.sponsor_benefit.sponsorship
         if self.related_to == AssetsRelatedTo.SPONSOR.value:
             object = self.sponsor_benefit.sponsorship.sponsor
