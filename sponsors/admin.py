@@ -68,17 +68,25 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         def display(self, obj):
             return "Enabled"
 
-    class RequiredImgAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class BaseAssetInline(StackedPolymorphicInline.Child):
+
+        def get_readonly_fields(self, request, obj=None):
+            fields = list(super().get_readonly_fields(request, obj))
+            if obj:
+                fields.extend(["internal_name", "related_to"])
+            return fields
+
+    class RequiredImgAssetConfigurationInline(BaseAssetInline):
         model = RequiredImgAssetConfiguration
         form = RequiredImgAssetConfigurationForm
 
-    class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class RequiredTextAssetConfigurationInline(BaseAssetInline):
         model = RequiredTextAssetConfiguration
 
-    class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class ProvidedTextAssetConfigurationInline(BaseAssetInline):
         model = ProvidedTextAssetConfiguration
 
-    class ProvidedFileAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class ProvidedFileAssetConfigurationInline(BaseAssetInline):
         model = ProvidedFileAssetConfiguration
 
     model = BenefitFeatureConfiguration
