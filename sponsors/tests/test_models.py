@@ -636,6 +636,23 @@ class SponsorBenefitModelTests(TestCase):
         self.assertTrue(sponsor_benefit.added_by_user)
         self.assertTrue(sponsor_benefit.a_la_carte)
 
+    def test_reset_attributes_updates_all_basic_information(self):
+        benefit = baker.make(
+            SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit
+        )
+        # both have different random values
+        self.assertNotEqual(benefit.name, self.sponsorship_benefit.name)
+
+        benefit.reset_attributes(self.sponsorship_benefit)
+        benefit.refresh_from_db()
+
+        self.assertEqual(benefit.name, self.sponsorship_benefit.name)
+        self.assertEqual(benefit.description, self.sponsorship_benefit.description)
+        self.assertEqual(benefit.program_name, self.sponsorship_benefit.program.name)
+        self.assertEqual(benefit.program, self.sponsorship_benefit.program)
+        self.assertEqual(benefit.benefit_internal_value, self.sponsorship_benefit.internal_value)
+        self.assertEqual(benefit.a_la_carte, self.sponsorship_benefit.a_la_carte)
+
 ###########
 # Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):
