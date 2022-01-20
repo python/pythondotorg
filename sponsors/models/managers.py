@@ -100,6 +100,12 @@ class SponsorshipPackageManager(OrderedModelManager):
 
 class BenefitFeatureQuerySet(PolymorphicQuerySet):
 
+    def delete(self):
+        if not self.polymorphic_disabled:
+            return self.non_polymorphic().delete()
+        else:
+            return super().delete()
+
     def from_sponsorship(self, sponsorship):
         return self.filter(sponsor_benefit__sponsorship=sponsorship).select_related("sponsor_benefit__sponsorship")
 
@@ -107,3 +113,8 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
         from sponsors.models.benefits import RequiredAssetMixin
         required_assets_classes = RequiredAssetMixin.__subclasses__()
         return self.instance_of(*required_assets_classes).select_related("sponsor_benefit__sponsorship")
+
+    def provided_assets(self):
+        from sponsors.models.benefits import ProvidedAssetMixin
+        provided_assets_classes = ProvidedAssetMixin.__subclasses__()
+        return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")

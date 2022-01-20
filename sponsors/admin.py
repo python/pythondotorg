@@ -6,6 +6,7 @@ from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
+from django.forms import ModelForm
 from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
@@ -46,7 +47,14 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
     ]
 
 
+class MultiPartForceForm(ModelForm):
+     def is_multipart(self):
+         return True
+
+
 class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
+    form = MultiPartForceForm
+
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
@@ -60,12 +68,26 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         def display(self, obj):
             return "Enabled"
 
-    class RequiredImgAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class BaseAssetInline(StackedPolymorphicInline.Child):
+
+        def get_readonly_fields(self, request, obj=None):
+            fields = list(super().get_readonly_fields(request, obj))
+            if obj:
+                fields.extend(["internal_name", "related_to"])
+            return fields
+
+    class RequiredImgAssetConfigurationInline(BaseAssetInline):
         model = RequiredImgAssetConfiguration
         form = RequiredImgAssetConfigurationForm
 
-    class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+    class RequiredTextAssetConfigurationInline(BaseAssetInline):
         model = RequiredTextAssetConfiguration
+
+    class ProvidedTextAssetConfigurationInline(BaseAssetInline):
+        model = ProvidedTextAssetConfiguration
+
+    class ProvidedFileAssetConfigurationInline(BaseAssetInline):
+        model = ProvidedFileAssetConfiguration
 
     model = BenefitFeatureConfiguration
     child_inlines = [
@@ -74,8 +96,9 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
+        ProvidedTextAssetConfigurationInline,
+        ProvidedFileAssetConfigurationInline,
     ]
-
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
