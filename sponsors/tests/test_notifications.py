@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import Mock
 
 from model_bakery import baker
@@ -478,9 +479,10 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
         benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
         asset = cfg.create_benefit_feature(benefit)
-        base_context = {"sponsorship": self.sponsorship}
+        base_context = {"sponsorship": self.sponsorship, "due_date": date.today()}
         context = self.notification.get_email_context(**base_context)
-        self.assertEqual(2, len(context))
+        self.assertEqual(3, len(context))
         self.assertEqual(self.sponsorship, context["sponsorship"])
         self.assertEqual(1, len(context["required_assets"]))
+        self.assertEqual(date.today(), context["due_date"])
         self.assertIn(asset, context["required_assets"])
