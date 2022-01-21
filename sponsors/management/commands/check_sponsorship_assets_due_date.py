@@ -23,7 +23,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         num_days = options["num_days"]
         ask_input = not options["no_input"]
-        target_date = timezone.now() - timedelta(days=int(num_days))
+        target_date = timezone.now() + timedelta(days=int(num_days))
 
         req_assets = BenefitFeature.objects.required_assets()
 
