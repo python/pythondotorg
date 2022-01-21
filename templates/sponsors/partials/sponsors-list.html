@@ -1,5 +1,6 @@
 {% load thumbnail %}
 {% load cache %}
+{% load sponsors %}
 
 
 {% if logo_place == "download" %}
@@ -46,7 +47,7 @@
       <div id={{ sponsorship.sponsor.name|slugify }}>
         <a href="{{ sponsorship.sponsor.landing_page_url }}">
          {% thumbnail sponsorship.sponsor.web_logo thumbnail_res format="PNG" quality=100 as im %}
-             <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:{{ im.height }}px;max-width:{{ im.width }}px;height:auto;width:auto;">
+             <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-width:{{ im|ideal_size:dimension }}px;height:auto;width:auto;">
          {% endthumbnail %}
         </a>
 
