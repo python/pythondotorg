@@ -1,0 +1,10 @@
+Hi,
+
+Your sponsorship application for {{ sponsorship.sponsor.name }} requires one or more assets with {{ due_date|date }} as due date.
+
+Please, submit all information in ordeer for PSF to proceed with your application. You can submit your assets via the following link:
+
+https://python.org{% url "users:sponsorship_application_detail" sponsorship.pk %}
+
+Thanks,
+Python Software Foundation
