@@ -5,6 +5,7 @@ from django.db.models import Subquery
 from django.utils import timezone
 
 from sponsors.models import Sponsorship, Contract, BenefitFeature
+from sponsors.notifications import AssetCloseToDueDateNotificationToSponsors
 
 
 class Command(BaseCommand):
@@ -39,7 +40,7 @@ class Command(BaseCommand):
             if to_notify:
                 sponsorships_to_notify.append(sponsorship)
 
-        if sponsorships_to_notify:
+        if not sponsorships_to_notify:
             print("No sponsorship with required assets with due date close to expiration.")
             return
 
@@ -54,3 +55,10 @@ class Command(BaseCommand):
                 return
             elif user_input != "Y":
                 print("Invalid option...")
+
+        notification = AssetCloseToDueDateNotificationToSponsors()
+        for sponsorship in sponsorships_to_notify:
+            kwargs = {"sponsorship": sponsorship, "due_date": target_date}
+            notification.notify(**kwargs)
+
+        print("Notifications sent!")
