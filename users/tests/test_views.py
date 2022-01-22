@@ -430,8 +430,8 @@ class SponsorshipDetailViewTests(TestCase):
         context = response.context
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(1, len(context["assets"]))
-        self.assertIn(asset, context["assets"])
+        self.assertEqual(1, len(context["required_assets"]))
+        self.assertIn(asset, context["required_assets"])
         self.assertEqual(0, len(context["fulfilled_assets"]))
 
     def test_fulfilled_assets(self):
@@ -445,7 +445,7 @@ class SponsorshipDetailViewTests(TestCase):
         context = response.context
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(0, len(context["assets"]))
+        self.assertEqual(0, len(context["required_assets"]))
         self.assertEqual(1, len(context["fulfilled_assets"]))
         self.assertIn(asset, context["fulfilled_assets"])
 

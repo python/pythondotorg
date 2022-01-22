@@ -4,6 +4,7 @@ This module holds models related to the Sponsor entity.
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.db import models
+from django.core.exceptions import ObjectDoesNotExist
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -251,6 +252,31 @@ class SponsorBenefit(OrderedModel):
         for feature in self.features.all():
             name = feature.display_modifier(name)
         return name
+
+    def reset_attributes(self, benefit):
+        """
+        This method resets all the sponsor benefit information
+        fetching new data from the sponsorship benefit.
+        """
+        self.program_name = benefit.program.name
+        self.name = benefit.name
+        self.description = benefit.description
+        self.program = benefit.program
+        self.benefit_internal_value = benefit.internal_value
+        self.a_la_carte = benefit.a_la_carte
+        self.added_by_user = self.added_by_user or self.a_la_carte
+
+        # generate benefit features from benefit features configurations
+        features = self.features.all().delete()
+        for feature_config in benefit.features_config.all():
+            feature_config.create_benefit_feature(self)
+
+        self.save()
+
+
+    def delete(self):
+        self.features.all().delete()
+        super().delete()
 
     class Meta(OrderedModel.Meta):
         pass

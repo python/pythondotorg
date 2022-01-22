@@ -90,3 +90,26 @@ class TextAsset(GenericAsset):
     @value.setter
     def value(self, value):
         self.text = value
+
+
+class FileAsset(GenericAsset):
+    file = models.FileField(
+        upload_to=generic_asset_path,
+        blank=False,
+        null=True,
+    )
+
+    def __str__(self):
+        return f"File asset: {self.internal_name}"
+
+    class Meta:
+        verbose_name = "File Asset"
+        verbose_name_plural = "File Assets"
+
+    @property
+    def value(self):
+        return self.file
+
+    @value.setter
+    def value(self, value):
+        self.file = value
