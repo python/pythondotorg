@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 from ordered_model.admin import OrderedModelAdmin
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin
 
 from django.db.models import Subquery
 from django.template import Context, Template
@@ -12,6 +12,7 @@ from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
+from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
     SponsorshipBenefitAdminForm
@@ -686,3 +687,25 @@ class ContractModelAdmin(admin.ModelAdmin):
 @admin.register(SponsorEmailNotificationTemplate)
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
     pass
+
+
+@admin.register(GenericAsset)
+class GenericAssetModelADmin(PolymorphicParentModelAdmin):
+    list_display = ["id", "internal_name", "get_value", "content_object"]
+
+    def get_child_models(self, *args, **kwargs):
+        return GenericAsset.__subclasses__()
+
+    def get_queryset(self, *args, **kwargs):
+        classes = self.get_child_models(*args, **kwargs)
+        return self.model.objects.prefetch_related("content_object").instance_of(*classes)
+
+    def get_value(self, obj):
+        html = obj.value
+        if getattr(obj.value, "url", None):
+            html = f"<a href='{ obj.value.url }' target='_blank'>{obj.value}</a>"
+        return mark_safe(html)
+    get_value.short_description = "Value"
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
