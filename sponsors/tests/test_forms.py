@@ -1,9 +1,7 @@
-from datetime import timedelta
 from model_bakery import baker
 
 from django.conf import settings
 from django.test import TestCase
-from django.utils import timezone
 
 from sponsors.forms import (
     SponsorshipsBenefitsForm,
@@ -664,7 +662,6 @@ class SponsorRequiredAssetsFormTest(TestCase):
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSORSHIP.value,
             internal_name="Text Input",
-            due_date=timezone.now().date,
             _fill_optional=True,
         )
         self.required_img_cfg = baker.make(
@@ -742,17 +739,6 @@ class SponsorRequiredAssetsFormTest(TestCase):
 
     def test_raise_error_if_form_initialized_without_instance(self):
         self.assertRaises(TypeError, SponsorRequiredAssetsForm)
-
-    def test_disable_input_if_wrong_past_due_date(self):
-        self.required_text_cfg.due_date -= timedelta(days=1)  # yesterday
-        self.required_text_cfg.save()
-        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
-
-        form = SponsorRequiredAssetsForm(instance=self.sponsorship)
-        field = dict(form.fields)["text_input"]
-
-        self.assertTrue(field.widget.attrs["readonly"])
-        self.assertTrue(form.has_input)
 
 
 class SponsorshipBenefitAdminFormTests(TestCase):

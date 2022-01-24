@@ -1,4 +1,3 @@
-from datetime import date
 from itertools import chain
 from django import forms
 from django.conf import settings
@@ -614,16 +613,12 @@ class SponsorRequiredAssetsForm(forms.Form):
         if required_assets_ids:
             self.required_assets = self.required_assets.filter(pk__in=required_assets_ids)
 
-        today = date.today()
         fields = {}
         for required_asset in self.required_assets:
             value = required_asset.value
             f_name = self._get_field_name(required_asset)
             required = bool(value)
-            field = required_asset.as_form_field(required=required, initial=value)
-            if required_asset.due_date and required_asset.due_date < today:
-                field.widget.attrs["readonly"] = True
-            fields[f_name] = field
+            fields[f_name] = required_asset.as_form_field(required=required, initial=value)
 
         self.fields.update(fields)
 
