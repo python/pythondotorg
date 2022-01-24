@@ -1,6 +1,6 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 from ordered_model.admin import OrderedModelAdmin
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
 
 from django.db.models import Subquery
 from django.template import Context, Template
@@ -709,3 +709,20 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
 
     def has_delete_permission(self, *args, **kwargs):
         return False
+
+
+
+class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):
+    """ Base admin class for all GenericAsset child models """
+    base_model = GenericAsset
+    readonly_fields = ["uuid", "content_type", "object_id", "content_object", "internal_name"]
+
+
+@admin.register(TextAsset)
+class TextAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = TextAsset
+
+
+@admin.register(ImgAsset)
+class TextAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = ImgAsset
