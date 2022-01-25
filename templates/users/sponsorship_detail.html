@@ -93,14 +93,14 @@
         {% if required_assets or fulfilled_assets %}
         <div id="assets-info" class="card-info">
           <h3>Required Assets</h3>
-          <p><small>You've selected benefits which requires extra assets (logos, slides etc).</small></p>
+          <p><small>You've selected benefits which requires extra assets (logos, slides etc) in order to be fulfilled.</small></p>
           <br/>
           <ul>
             {% for asset in required_assets %}
-              <li><b>{{ asset.label }}</b>: pending. <a href="{{ asset.user_edit_url }}">Add asset</a>.</li>
+              <li><b>{{ asset.label }}</b><br>Incomplete{% if asset.due_date %} <b>Required by {{ asset.due_date }}</b>{% endif %}: <a href="{{ asset.user_edit_url }}">Add asset</a>.</li>
             {% endfor %}
           {% for asset in fulfilled_assets %}
-            <li><b>{{ asset.label }}</b>: fulfilled. <a href="{{ asset.user_edit_url }}">Edit asset</a>.</li>
+            <li><b>{{ asset.label }}</b><br>Fulfilled: <a href="{{ asset.user_edit_url }}">Edit asset</a>.</li>
           {% endfor %}
           </ul>
           <br/>
