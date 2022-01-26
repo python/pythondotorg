@@ -753,10 +753,32 @@ class AssetContentTypeFilter(admin.SimpleListFilter):
         return queryset.filter(content_type=value)
 
 
+class AssetWithOrWithoutValueFilter(admin.SimpleListFilter):
+    title = "Value"
+    parameter_name = "value"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("with-value", "With value"),
+            ("no-value", "Without value"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        with_value_id = [asset.pk for asset in queryset if asset.value]
+        if value == "with-value":
+            return queryset.filter(pk__in=with_value_id)
+        else:
+            return queryset.exclude(pk__in=with_value_id)
+
+
 @admin.register(GenericAsset)
 class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
-    list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssociatedBenefitListFilter]
+    list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssetWithOrWithoutValueFilter,
+                   AssociatedBenefitListFilter]
 
     def get_child_models(self, *args, **kwargs):
         return GenericAsset.all_asset_types()
