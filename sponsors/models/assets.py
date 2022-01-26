@@ -49,6 +49,10 @@ class GenericAsset(PolymorphicModel):
     def value(self):
         return None
 
+    @classmethod
+    def all_asset_types(cls):
+        return cls.__subclasses__()
+
 
 class ImgAsset(GenericAsset):
     image = models.ImageField(

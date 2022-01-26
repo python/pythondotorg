@@ -1,6 +1,7 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 from ordered_model.admin import OrderedModelAdmin
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, PolymorphicChildModelAdmin
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
+    PolymorphicChildModelAdmin
 
 from django.db.models import Subquery
 from django.template import Context, Template
@@ -30,10 +31,12 @@ class AssetsInline(GenericTabularInline):
         if not obj or not obj.value:
             return ""
         return obj.value
+
     value.short_description = "Submitted information"
 
     def user_submitted_info(self, request, obj=None):
         return bool(self.value(request, obj))
+
     user_submitted_info.short_description = "Fullfilled data?"
     user_submitted_info.boolean = True
 
@@ -317,6 +320,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
+
     send_notifications.short_description = 'Send notifications to selected'
 
     def get_readonly_fields(self, request, obj):
@@ -689,12 +693,31 @@ class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
     pass
 
 
+class AssetTypeListFilter(admin.SimpleListFilter):
+    title = "Asset Type"
+    parameter_name = 'type'
+
+    @property
+    def assets_types_mapping(self):
+        return {asset_type.__name__: asset_type for asset_type in GenericAsset.all_asset_types()}
+
+    def lookups(self, request, model_admin):
+        return [(k, v._meta.verbose_name_plural) for k, v in self.assets_types_mapping.items()]
+
+    def queryset(self, request, queryset):
+        asset_type = self.assets_types_mapping.get(self.value())
+        if not asset_type:
+            return queryset
+        return queryset.instance_of(asset_type)
+
+
 @admin.register(GenericAsset)
 class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_object"]
+    list_filter = [AssetTypeListFilter]
 
     def get_child_models(self, *args, **kwargs):
-        return GenericAsset.__subclasses__()
+        return GenericAsset.all_asset_types()
 
     def get_queryset(self, *args, **kwargs):
         classes = self.get_child_models(*args, **kwargs)
