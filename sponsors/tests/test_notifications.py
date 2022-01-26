@@ -1,3 +1,4 @@
+from datetime import date
 from unittest.mock import Mock
 
 from model_bakery import baker
@@ -428,3 +429,60 @@ class SendSponsorNotificationLoggerTests(TestCase):
         self.assertEqual(str(self.sponsorship), log_entry.object_repr)
         self.assertEqual(log_entry.action_flag, CHANGE)
         self.assertEqual(log_entry.change_message, "Notification 'Foo' was sent to contacts: administrative")
+
+
+class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
+    def setUp(self):
+        self.notification = notifications.AssetCloseToDueDateNotificationToSponsors()
+        self.user = baker.make(settings.AUTH_USER_MODEL, email="foo@foo.com")
+        self.verified_email = baker.make(EmailAddress, verified=True)
+        self.unverified_email = baker.make(EmailAddress, verified=False)
+        self.sponsor_contacts = [
+            baker.make(
+                "sponsors.SponsorContact",
+                email="foo@example.com",
+                primary=True,
+                sponsor__name="foo",
+            ),
+            baker.make("sponsors.SponsorContact", email=self.verified_email.email),
+            baker.make("sponsors.SponsorContact", email=self.unverified_email.email),
+        ]
+        self.sponsor = baker.make("sponsors.Sponsor", contacts=self.sponsor_contacts)
+        self.sponsorship = baker.make(
+            "sponsors.Sponsorship", sponsor=self.sponsor, submited_by=self.user
+        )
+        self.subject_template = "sponsors/email/sponsor_expiring_assets_subject.txt"
+        self.content_template = "sponsors/email/sponsor_expiring_assets.txt"
+
+    def test_send_email_using_correct_templates(self):
+        context = {"sponsorship": self.sponsorship}
+        expected_subject = render_to_string(self.subject_template, context).strip()
+        expected_content = render_to_string(self.content_template, context).strip()
+
+        self.notification.notify(sponsorship=self.sponsorship)
+        self.assertTrue(mail.outbox)
+
+        email = mail.outbox[0]
+        self.assertEqual(expected_subject, email.subject)
+        self.assertEqual(expected_content, email.body)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
+        self.assertCountEqual([self.user.email, self.verified_email.email], email.to)
+
+    def test_send_email_to_correct_recipients(self):
+        context = {"user": self.user, "sponsorship": self.sponsorship}
+        expected_contacts = ["foo@foo.com", self.verified_email.email]
+        self.assertCountEqual(
+            expected_contacts, self.notification.get_recipient_list(context)
+        )
+
+    def test_list_required_assets_in_email_context(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+        base_context = {"sponsorship": self.sponsorship, "due_date": date.today()}
+        context = self.notification.get_email_context(**base_context)
+        self.assertEqual(3, len(context))
+        self.assertEqual(self.sponsorship, context["sponsorship"])
+        self.assertEqual(1, len(context["required_assets"]))
+        self.assertEqual(date.today(), context["due_date"])
+        self.assertIn(asset, context["required_assets"])

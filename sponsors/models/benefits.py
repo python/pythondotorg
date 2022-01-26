@@ -88,6 +88,8 @@ class BaseAsset(models.Model):
 
 
 class BaseRequiredAsset(BaseAsset):
+    due_date = models.DateField(default=None, null=True, blank=True)
+
     class Meta:
         abstract = True
 
@@ -160,6 +162,12 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
         help_text="Any helper comment on how the input should be populated",
         default="",
         blank=True
+    )
+    max_length = models.IntegerField(
+        default=None,
+        help_text="Limit to length of the input, empty means unlimited",
+        null=True,
+        blank=True,
     )
 
     class Meta(BaseRequiredAsset.Meta):
@@ -532,7 +540,11 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.CharField(required=required, help_text=help_text, label=label, widget=forms.TextInput, **kwargs)
+        max_length = self.max_length
+        widget = forms.TextInput
+        if max_length is None or max_length > 256:
+            widget = forms.Textarea
+        return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
 
 
 class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):

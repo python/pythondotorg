@@ -48,8 +48,8 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
 
 
 class MultiPartForceForm(ModelForm):
-     def is_multipart(self):
-         return True
+    def is_multipart(self):
+        return True
 
 
 class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
