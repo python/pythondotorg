@@ -314,3 +314,8 @@ REST_FRAMEWORK = {
 ### pydotorg.middleware.GlobalSurrogateKey
 
 GLOBAL_SURROGATE_KEY = 'pydotorg-app'
+
+### PyCon Integration for Sponsor Voucher Codes
+PYCON_API_KEY = config("PYCON_API_KEY", default="deadbeef-dead-beef-dead-beefdeadbeef")
+PYCON_API_SECRET = config("PYCON_API_SECRET", default="deadbeef-dead-beef-dead-beefdeadbeef")
+PYCON_API_HOST = config("PYCON_API_HOST", default="localhost:8000")
