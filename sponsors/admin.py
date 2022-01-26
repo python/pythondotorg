@@ -790,6 +790,9 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     def has_delete_permission(self, *args, **kwargs):
         return False
 
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
     @cached_property
     def all_sponsors(self):
         qs = Sponsor.objects.all()
