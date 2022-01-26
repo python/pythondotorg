@@ -711,10 +711,36 @@ class AssetTypeListFilter(admin.SimpleListFilter):
         return queryset.instance_of(asset_type)
 
 
+class AssociatedBenefitListFilter(admin.SimpleListFilter):
+    title = "From Benefit Which Requires Asset"
+    parameter_name = 'from_benefit'
+
+    @property
+    def benefits_with_assets(self):
+        qs = BenefitFeature.objects.required_assets().values_list("sponsor_benefit__sponsorship_benefit",
+                                                                  flat=True).distinct()
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        return {str(b.id): b for b in benefits}
+
+    def lookups(self, request, model_admin):
+        return [(k, b.name) for k, b in self.benefits_with_assets.items()]
+
+    def queryset(self, request, queryset):
+        benefit = self.benefits_with_assets.get(self.value())
+        if not benefit:
+            return queryset
+        internal_names = [
+            cfg.internal_name
+            for cfg in benefit.features_config.all()
+            if hasattr(cfg, "internal_name")
+        ]
+        return queryset.filter(internal_name__in=internal_names)
+
+
 @admin.register(GenericAsset)
 class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_object"]
-    list_filter = [AssetTypeListFilter]
+    list_filter = [AssetTypeListFilter, AssociatedBenefitListFilter]
 
     def get_child_models(self, *args, **kwargs):
         return GenericAsset.all_asset_types()
