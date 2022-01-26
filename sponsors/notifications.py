@@ -216,3 +216,17 @@ class RefreshSponsorshipsCache:
     def notify(self, *args, **kwargs):
         # clean up cached used by "sponsors/partials/sponsors-list.html"
         cache.delete("CACHED_SPONSORS_LIST")
+
+
+class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/sponsor_expiring_assets_subject.txt"
+    message_template = "sponsors/email/sponsor_expiring_assets.txt"
+    email_context_keys = ["sponsorship", "required_assets", "due_date"]
+
+    def get_recipient_list(self, context):
+        return context["sponsorship"].verified_emails
+
+    def get_email_context(self, **kwargs):
+        context = super().get_email_context(**kwargs)
+        context["required_assets"] = BenefitFeature.objects.from_sponsorship(context["sponsorship"]).required_assets()
+        return context

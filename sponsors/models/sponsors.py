@@ -273,7 +273,6 @@ class SponsorBenefit(OrderedModel):
 
         self.save()
 
-
     def delete(self):
         self.features.all().delete()
         super().delete()

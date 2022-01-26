@@ -88,6 +88,8 @@ class BaseAsset(models.Model):
 
 
 class BaseRequiredAsset(BaseAsset):
+    due_date = models.DateField(default=None, null=True, blank=True)
+
     class Meta:
         abstract = True
 
@@ -160,6 +162,12 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
         help_text="Any helper comment on how the input should be populated",
         default="",
         blank=True
+    )
+    max_length = models.IntegerField(
+        default=None,
+        help_text="Limit to length of the input, empty means unlimited",
+        null=True,
+        blank=True,
     )
 
     class Meta(BaseRequiredAsset.Meta):
@@ -257,7 +265,7 @@ class ProvidedAssetMixin(AssetMixin):
     and which is stored in the related asset class.
     """
 
-    @property
+    @AssetMixin.value.getter
     def value(self):
         if hasattr(self, 'shared') and self.shared:
             return self.shared_value()
@@ -489,7 +497,7 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
         return f"{name} ({self.quantity})"
 
     def __str__(self):
-        return f"{self.quantity} of {self.benefit} for {self.package}"
+        return f"{self.quantity} of {self.sponsor_benefit} for {self.package}"
 
 
 class EmailTargetable(BaseEmailTargetable, BenefitFeature):
@@ -532,7 +540,11 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.CharField(required=required, help_text=help_text, label=label, widget=forms.TextInput, **kwargs)
+        max_length = self.max_length
+        widget = forms.TextInput
+        if max_length is None or max_length > 256:
+            widget = forms.Textarea
+        return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
 
 
 class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):
@@ -541,7 +553,7 @@ class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeatur
         verbose_name_plural = "Provided Texts"
 
     def __str__(self):
-        return f"Provided text"
+        return f"Provided text {self.internal_name}"
 
 
 class ProvidedFileAsset(ProvidedAssetMixin, BaseProvidedFileAsset, BenefitFeature):
