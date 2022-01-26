@@ -1,4 +1,5 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib.contenttypes.models import ContentType
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
     PolymorphicChildModelAdmin
@@ -737,10 +738,25 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
         return queryset.filter(internal_name__in=internal_names)
 
 
+class AssetContentTypeFilter(admin.SimpleListFilter):
+    title = "Related Object"
+    parameter_name = 'content_type'
+
+    def lookups(self, request, model_admin):
+        qs = ContentType.objects.filter(model__in=["sponsorship", "sponsor"])
+        return [(c_type.pk, c_type.model.title()) for c_type in qs]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        return queryset.filter(content_type=value)
+
+
 @admin.register(GenericAsset)
 class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
-    list_filter = [AssetTypeListFilter, AssociatedBenefitListFilter]
+    list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssociatedBenefitListFilter]
 
     def get_child_models(self, *args, **kwargs):
         return GenericAsset.all_asset_types()
