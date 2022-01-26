@@ -265,7 +265,7 @@ class ProvidedAssetMixin(AssetMixin):
     and which is stored in the related asset class.
     """
 
-    @property
+    @AssetMixin.value.getter
     def value(self):
         if hasattr(self, 'shared') and self.shared:
             return self.shared_value()
@@ -497,7 +497,7 @@ class TieredQuantity(BaseTieredQuantity, BenefitFeature):
         return f"{name} ({self.quantity})"
 
     def __str__(self):
-        return f"{self.quantity} of {self.benefit} for {self.package}"
+        return f"{self.quantity} of {self.sponsor_benefit} for {self.package}"
 
 
 class EmailTargetable(BaseEmailTargetable, BenefitFeature):
@@ -553,7 +553,7 @@ class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeatur
         verbose_name_plural = "Provided Texts"
 
     def __str__(self):
-        return f"Provided text"
+        return f"Provided text {self.internal_name}"
 
 
 class ProvidedFileAsset(ProvidedAssetMixin, BaseProvidedFileAsset, BenefitFeature):
