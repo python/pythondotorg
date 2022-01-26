@@ -702,14 +702,14 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
 
     def get_value(self, obj):
         html = obj.value
-        if getattr(obj.value, "url", None):
-            html = f"<a href='{ obj.value.url }' target='_blank'>{obj.value}</a>"
+        if obj.value and getattr(obj.value, "url", None):
+            html = f"<a href='{obj.value.url}' target='_blank'>{obj.value}</a>"
         return mark_safe(html)
+
     get_value.short_description = "Value"
 
     def has_delete_permission(self, *args, **kwargs):
         return False
-
 
 
 class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):
