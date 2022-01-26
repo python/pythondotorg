@@ -739,7 +739,7 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
 
 @admin.register(GenericAsset)
 class GenericAssetModelADmin(PolymorphicParentModelAdmin):
-    list_display = ["id", "internal_name", "get_value", "content_object"]
+    list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
     list_filter = [AssetTypeListFilter, AssociatedBenefitListFilter]
 
     def get_child_models(self, *args, **kwargs):
@@ -747,7 +747,20 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
 
     def get_queryset(self, *args, **kwargs):
         classes = self.get_child_models(*args, **kwargs)
-        return self.model.objects.prefetch_related("content_object").instance_of(*classes)
+        return self.model.objects.select_related("content_type").instance_of(*classes)
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+    @cached_property
+    def all_sponsors(self):
+        qs = Sponsor.objects.all()
+        return {sp.id: sp for sp in qs}
+
+    @cached_property
+    def all_sponsorships(self):
+        qs = Sponsorship.objects.all().select_related("package", "sponsor")
+        return {sp.id: sp for sp in qs}
 
     def get_value(self, obj):
         html = obj.value
@@ -757,8 +770,24 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
 
     get_value.short_description = "Value"
 
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    def get_related_object(self, obj):
+        """
+        Returns the content_object as an URL and performs better because
+        of sponsors and sponsorship cached properties
+        """
+        content_object = None
+        if obj.content_type.name == "sponsorship":
+            content_object = self.all_sponsorships[obj.object_id]
+        elif obj.content_type.name == "sponsor":
+            content_object = self.all_sponsors[obj.object_id]
+
+        if not content_object:  # safety belt
+            return obj.content_object
+
+        html = f"<a href='{content_object.admin_url}' target='_blank'>{content_object}</a>"
+        return mark_safe(html)
+
+    get_related_object.short_description = "Associated with"
 
 
 class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):

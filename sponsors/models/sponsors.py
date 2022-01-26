@@ -4,6 +4,7 @@ This module holds models related to the Sponsor entity.
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.db import models
+from django.urls import reverse
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -100,6 +101,10 @@ class Sponsor(ContentManageable):
             return SponsorContact.objects.get_primary_contact(self)
         except SponsorContact.DoesNotExist:
             return None
+
+    @property
+    def admin_url(self):
+        return reverse("admin:sponsors_sponsor_change", args=[self.pk])
 
 
 class SponsorContact(models.Model):
