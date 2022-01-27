@@ -1,5 +1,8 @@
+import io, zipfile
+
 from django import forms
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -330,3 +333,16 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
         "queryset": queryset,
     }
     return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)
+
+
+def export_assets_as_zipfile(ModelAdmin, request, queryset):
+    buffer = io.BytesIO()
+    zip_file = zipfile.ZipFile(buffer, 'w')
+    zip_file.writestr("sample.txt", "sample content")
+    zip_file.close()
+
+    response = HttpResponse(buffer.getvalue())
+    response['Content-Type'] = 'application/x-zip-compressed'
+    response['Content-Disposition'] = 'attachment; filename=assets.zip'
+
+    return response

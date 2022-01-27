@@ -779,6 +779,7 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
     list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssetWithOrWithoutValueFilter,
                    AssociatedBenefitListFilter]
+    actions = ["export_assets_as_zipfile"]
 
     def get_child_models(self, *args, **kwargs):
         return GenericAsset.all_asset_types()
@@ -829,6 +830,10 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
         return mark_safe(html)
 
     get_related_object.short_description = "Associated with"
+
+    def export_assets_as_zipfile(self, request, queryset):
+        return views_admin.export_assets_as_zipfile(self, request, queryset)
+    export_assets_as_zipfile.short_description = "Export selected"
 
 
 class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):
