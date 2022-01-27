@@ -58,6 +58,8 @@ class Story(NameSlugModel, ContentManageable):
     featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
+    submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
+
     objects = StoryManager()
 
     class Meta:

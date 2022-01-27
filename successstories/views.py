@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
@@ -17,7 +18,7 @@ class ContextMixin:
         return context
 
 
-class StoryCreate(ContextMixin, CreateView):
+class StoryCreate(LoginRequiredMixin, ContextMixin, CreateView):
     model = Story
     form_class = StoryForm
     template_name = 'successstories/story_form.html'
@@ -34,6 +35,8 @@ class StoryCreate(ContextMixin, CreateView):
         return reverse('success_story_create')
 
     def form_valid(self, form):
+        obj = form.save(commit=False)
+        obj.submitted_by = self.request.user
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super().form_valid(form)
 
