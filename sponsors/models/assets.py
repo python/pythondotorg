@@ -8,6 +8,7 @@ from pathlib import Path
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields.files import ImageFieldFile, FileField
 from polymorphic.models import PolymorphicModel
 
 
@@ -48,6 +49,10 @@ class GenericAsset(PolymorphicModel):
     @property
     def value(self):
         return None
+
+    @property
+    def is_file(self):
+        return isinstance(self.value, FileField) or isinstance(self.value, ImageFieldFile)
 
     @property
     def from_sponsorship(self):
