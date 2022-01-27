@@ -10,7 +10,8 @@ from django.db.models import Q
 from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
+    SendSponsorshipNotificationForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
 from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature
@@ -328,7 +329,7 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     context = {
         "to_notify": to_notify,
         "to_ignore": to_ignore,
-        "form":form,
+        "form": form,
         "email_preview": email_preview,
         "queryset": queryset,
     }
@@ -336,6 +337,15 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
 
 
 def export_assets_as_zipfile(ModelAdmin, request, queryset):
+    assets_without_values = [asset for asset in queryset if not asset.value]
+    if any(assets_without_values):
+        ModelAdmin.message_user(
+            request,
+            f"{len(assets_without_values)} assets from the selection doesn't have data to export. Please review your selection!",
+            messages.WARNING
+        )
+        return redirect(request.path)
+
     buffer = io.BytesIO()
     zip_file = zipfile.ZipFile(buffer, 'w')
     zip_file.writestr("sample.txt", "sample content")
