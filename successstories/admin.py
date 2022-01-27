@@ -13,7 +13,7 @@ class StoryCategoryAdmin(NameSlugAdmin):
 @admin.register(Story)
 class StoryAdmin(ContentManageableModelAdmin):
     prepopulated_fields = {'slug': ('name',)}
-    raw_id_fields = ['category']
+    raw_id_fields = ['category', 'submitted_by']
     search_fields = ['name']
 
     def get_list_filter(self, request):
