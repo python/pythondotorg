@@ -356,6 +356,10 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
 
     for asset in queryset:
         zipdir = "unknown"  # safety belt
+        if asset.from_sponsorship:
+            zipdir = asset.content_object.sponsor.name
+        elif asset.from_sponsor:
+            zipdir = asset.content_object.name
 
         if not asset.is_file:
             zip_file.writestr(f"{zipdir}/{asset.internal_name}.txt", asset.value)
