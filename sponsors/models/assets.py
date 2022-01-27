@@ -49,6 +49,13 @@ class GenericAsset(PolymorphicModel):
     def value(self):
         return None
 
+    @property
+    def has_value(self):
+        if self.is_file:
+            return self.value and getattr(self.value, "url", None)
+        else:
+            return bool(self.value)
+
     @classmethod
     def all_asset_types(cls):
         return cls.__subclasses__()

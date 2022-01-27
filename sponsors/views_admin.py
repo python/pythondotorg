@@ -337,7 +337,7 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
 
 
 def export_assets_as_zipfile(ModelAdmin, request, queryset):
-    assets_without_values = [asset for asset in queryset if not asset.value]
+    assets_without_values = [asset for asset in queryset if not asset.has_value]
     if any(assets_without_values):
         ModelAdmin.message_user(
             request,
