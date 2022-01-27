@@ -818,9 +818,9 @@ class GenericAssetModelADmin(PolymorphicParentModelAdmin):
         of sponsors and sponsorship cached properties
         """
         content_object = None
-        if obj.content_type.name == "sponsorship":
+        if obj.from_sponsorship:
             content_object = self.all_sponsorships[obj.object_id]
-        elif obj.content_type.name == "sponsor":
+        elif obj.from_sponsor:
             content_object = self.all_sponsors[obj.object_id]
 
         if not content_object:  # safety belt

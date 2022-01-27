@@ -50,6 +50,14 @@ class GenericAsset(PolymorphicModel):
         return None
 
     @property
+    def from_sponsorship(self):
+        return self.content_type.name == "sponsorship"
+
+    @property
+    def from_sponsor(self):
+        return self.content_type.name == "sponsor"
+
+    @property
     def has_value(self):
         if self.is_file:
             return self.value and getattr(self.value, "url", None)
