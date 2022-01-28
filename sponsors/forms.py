@@ -22,6 +22,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
+    SPONSOR_TEMPLATE_HELP_TEXT,
 )
 
 
@@ -487,7 +488,11 @@ class SendSponsorshipNotificationForm(forms.Form):
         required=False,
     )
     subject = forms.CharField(max_length=140, required=False)
-    content = forms.CharField(widget=forms.widgets.Textarea(), required=False)
+    content = forms.CharField(
+        widget=forms.widgets.Textarea(),
+        required=False,
+        help_text=SPONSOR_TEMPLATE_HELP_TEXT,
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -629,9 +634,9 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(f"{field.label} <b>(Required by {required_asset.due_date})</b>")
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>")
             if bool(value):
-                field.label = mark_safe(f"{field.label} <small>(Fulfilled, thank you!)</small>")
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
 
             fields[f_name] = field
 

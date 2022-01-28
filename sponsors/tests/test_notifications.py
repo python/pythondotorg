@@ -455,11 +455,11 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         self.content_template = "sponsors/email/sponsor_expiring_assets.txt"
 
     def test_send_email_using_correct_templates(self):
-        context = {"sponsorship": self.sponsorship}
+        context = {"sponsorship": self.sponsorship, "days": 7}
         expected_subject = render_to_string(self.subject_template, context).strip()
         expected_content = render_to_string(self.content_template, context).strip()
 
-        self.notification.notify(sponsorship=self.sponsorship)
+        self.notification.notify(sponsorship=self.sponsorship, days=7)
         self.assertTrue(mail.outbox)
 
         email = mail.outbox[0]
@@ -479,9 +479,9 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
         benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
         asset = cfg.create_benefit_feature(benefit)
-        base_context = {"sponsorship": self.sponsorship, "due_date": date.today()}
+        base_context = {"sponsorship": self.sponsorship, "due_date": date.today(), "days": 7}
         context = self.notification.get_email_context(**base_context)
-        self.assertEqual(3, len(context))
+        self.assertEqual(4, len(context))
         self.assertEqual(self.sponsorship, context["sponsorship"])
         self.assertEqual(1, len(context["required_assets"]))
         self.assertEqual(date.today(), context["due_date"])

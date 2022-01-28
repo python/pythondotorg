@@ -75,6 +75,9 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = RequiredTextAssetConfiguration
 
+    class RequiredResponseAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredResponseAssetConfiguration
+
     class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = ProvidedTextAssetConfiguration
 
@@ -88,6 +91,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
+        RequiredResponseAssetConfigurationInline,
         ProvidedTextAssetConfigurationInline,
         ProvidedFileAssetConfigurationInline,
     ]
@@ -692,4 +696,9 @@ class ContractModelAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorEmailNotificationTemplate)
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
-    pass
+    def get_form(self, request, obj=None, **kwargs):
+        help_texts = {
+            "content": SPONSOR_TEMPLATE_HELP_TEXT,
+        }
+        kwargs.update({"help_texts": help_texts})
+        return super().get_form(request, obj, **kwargs)
