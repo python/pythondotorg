@@ -342,6 +342,14 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
     Exports a zip file with data associated with the assets. The sponsor names are used as
     directories to group assets from a same sponsor.
     """
+    if not queryset.exists():
+        ModelAdmin.message_user(
+            request,
+            f"You have to select at least one asset to export.",
+            messages.WARNING
+        )
+        return redirect(request.path)
+
     assets_without_values = [asset for asset in queryset if not asset.has_value]
     if any(assets_without_values):
         ModelAdmin.message_user(
@@ -372,7 +380,7 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
 
     zip_file.close()
     response = HttpResponse(buffer.getvalue())
-    response['Content-Type'] = 'application/x-zip-compressed'
-    response['Content-Disposition'] = 'attachment; filename=assets.zip'
+    response["Content-Type"] = "application/x-zip-compressed"
+    response["Content-Disposition"] = "attachment; filename=assets.zip"
 
     return response
