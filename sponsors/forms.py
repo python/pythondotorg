@@ -1,3 +1,4 @@
+import datetime
 from itertools import chain
 from django import forms
 from django.conf import settings
@@ -5,6 +6,7 @@ from django.contrib.admin.widgets import AdminDateWidget
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
+from django.utils.safestring import mark_safe
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
@@ -20,6 +22,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
+    SPONSOR_TEMPLATE_HELP_TEXT,
 )
 
 
@@ -485,7 +488,11 @@ class SendSponsorshipNotificationForm(forms.Form):
         required=False,
     )
     subject = forms.CharField(max_length=140, required=False)
-    content = forms.CharField(widget=forms.widgets.Textarea(), required=False)
+    content = forms.CharField(
+        widget=forms.widgets.Textarea(),
+        required=False,
+        help_text=SPONSOR_TEMPLATE_HELP_TEXT,
+    )
 
     def clean(self):
         cleaned_data = super().clean()
@@ -614,11 +621,24 @@ class SponsorRequiredAssetsForm(forms.Form):
             self.required_assets = self.required_assets.filter(pk__in=required_assets_ids)
 
         fields = {}
-        for required_asset in self.required_assets:
+        ordered_assets = sorted(
+            self.required_assets,
+            key=lambda x: (-int(bool(x.value)), x.due_date if x.due_date else datetime.date.min),
+            reverse=True,
+        )
+
+        for required_asset in ordered_assets:
             value = required_asset.value
             f_name = self._get_field_name(required_asset)
             required = bool(value)
-            fields[f_name] = required_asset.as_form_field(required=required, initial=value)
+            field = required_asset.as_form_field(required=required, initial=value)
+
+            if required_asset.due_date and not bool(value):
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>")
+            if bool(value):
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
+
+            fields[f_name] = field
 
         self.fields.update(fields)
 

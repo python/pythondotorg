@@ -238,16 +238,23 @@ class SponsorshipDetailView(DetailView):
         context = super().get_context_data(*args, **kwargs)
 
         sponsorship = context["sponsorship"]
-        assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
         fulfilled, pending = [], []
-        for asset in assets:
+        for asset in required_assets:
             if bool(asset.value):
                 fulfilled.append(asset)
             else:
                 pending.append(asset)
 
-        context["assets"] = pending
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(sponsorship)
+        provided = []
+        for asset in provided_assets:
+            if bool(asset.value):
+                provided.append(asset)
+
+        context["required_assets"] = pending
         context["fulfilled_assets"] = fulfilled
+        context["provided_assets"] = provided
         context["sponsor"] = sponsorship.sponsor
         return context
 
@@ -295,3 +302,23 @@ class UpdateSponsorshipAssetsView(UpdateView):
     def form_valid(self, form):
         form.update_assets()
         return redirect(self.get_success_url())
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class ProvidedSponsorshipAssetsView(DetailView):
+    object_name = "sponsorship"
+    template_name = 'users/sponsorship_assets_view.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
+        provided = []
+        for asset in provided_assets:
+            if bool(asset.value):
+                provided.append(asset)
+        context["provided_assets"] = provided
+        context["provided_asset_id"] = self.request.GET.get("provided_asset", None)
+        return context

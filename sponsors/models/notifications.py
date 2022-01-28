@@ -2,6 +2,16 @@ from django.conf import settings
 
 from mailing.models import BaseEmailTemplate
 
+SPONSOR_TEMPLATE_HELP_TEXT = (
+    "<br>"
+    "You can use the following template variables in the Subject and Content:"
+    "  <pre>{{ sponsor_name }}</pre>"
+    "  <pre>{{ sponsorship_level }}</pre>"
+    "  <pre>{{ sponsorship_start_date }}</pre>"
+    "  <pre>{{ sponsorship_end_date }}</pre>"
+    "  <pre>{{ sponsorship_status }}</pre>"
+)
+
 
 #################################
 # Sponsor Email Notifications

@@ -8,6 +8,7 @@ from django.db.models import Subquery
 from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
+from django.forms import ModelForm
 from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
@@ -51,7 +52,14 @@ class SponsorshipProgramAdmin(OrderedModelAdmin):
     ]
 
 
+class MultiPartForceForm(ModelForm):
+    def is_multipart(self):
+        return True
+
+
 class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
+    form = MultiPartForceForm
+
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
@@ -72,6 +80,15 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = RequiredTextAssetConfiguration
 
+    class RequiredResponseAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredResponseAssetConfiguration
+
+    class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = ProvidedTextAssetConfiguration
+
+    class ProvidedFileAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = ProvidedFileAssetConfiguration
+
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
@@ -79,8 +96,10 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
+        RequiredResponseAssetConfigurationInline,
+        ProvidedTextAssetConfigurationInline,
+        ProvidedFileAssetConfigurationInline,
     ]
-
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
@@ -691,7 +710,13 @@ class ContractModelAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorEmailNotificationTemplate)
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
-    pass
+
+    def get_form(self, request, obj=None, **kwargs):
+        help_texts = {
+            "content": SPONSOR_TEMPLATE_HELP_TEXT,
+        }
+        kwargs.update({"help_texts": help_texts})
+        return super().get_form(request, obj, **kwargs)
 
 
 class AssetTypeListFilter(admin.SimpleListFilter):
@@ -775,7 +800,7 @@ class AssetWithOrWithoutValueFilter(admin.SimpleListFilter):
 
 
 @admin.register(GenericAsset)
-class GenericAssetModelADmin(PolymorphicParentModelAdmin):
+class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
     list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
     list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssetWithOrWithoutValueFilter,
                    AssociatedBenefitListFilter]
@@ -848,5 +873,5 @@ class TextAssetModelAdmin(GenericAssetChildModelAdmin):
 
 
 @admin.register(ImgAsset)
-class TextAssetModelAdmin(GenericAssetChildModelAdmin):
+class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
     base_model = ImgAsset

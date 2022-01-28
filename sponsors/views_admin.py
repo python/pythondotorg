@@ -245,7 +245,8 @@ def update_related_sponsorships(ModelAdmin, request, pk):
     Given a SponsorshipBeneefit, update all releated SponsorBenefit from
     the Sponsorship listed in the post payload
     """
-    benefit = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    qs = ModelAdmin.get_queryset(request).select_related("program")
+    benefit = get_object_or_404(qs, pk=pk)
     initial = {"sponsorships": [sp.pk for sp in benefit.related_sponsorships]}
     form = SponsorshipsListForm.with_benefit(benefit, initial=initial)
 
@@ -257,14 +258,7 @@ def update_related_sponsorships(ModelAdmin, request, pk):
             related_benefits = benefit.sponsorbenefit_set.all()
             for sp in sponsorships:
                 sponsor_benefit = related_benefits.get(sponsorship=sp)
-                sponsor_benefit.delete()
-
-                # recreate sponsor benefit considering updated benefit/feature configs
-                SponsorBenefit.new_copy(
-                    benefit,
-                    sponsorship=sp,
-                    added_by_user=sponsor_benefit.added_by_user
-                )
+                sponsor_benefit.reset_attributes(benefit)
 
             ModelAdmin.message_user(
                 request, f"{len(sponsorships)} related sponsorships updated!", messages.SUCCESS

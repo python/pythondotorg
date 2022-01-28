@@ -837,16 +837,10 @@ class UpdateRelatedSponsorshipsTests(TestCase):
 
         response = self.client.post(self.url, data=self.data)
 
-        # delete existing sponsor benefit
-        self.assertFalse(SponsorBenefit.objects.filter(id=self.sponsor_benefit.id).exists())
-        # make sure a new one was created
-        new_sponsor_benefit = SponsorBenefit.objects.get(
-            sponsorship=self.sponsor_benefit.sponsorship,
-            sponsorship_benefit=self.benefit,
-        )
-        self.assertEqual(new_sponsor_benefit.name, "New name")
-        self.assertEqual(new_sponsor_benefit.description, "New description")
-        self.assertTrue(new_sponsor_benefit.added_by_user)
+        self.sponsor_benefit.refresh_from_db()
+        self.assertEqual(self.sponsor_benefit.name, "New name")
+        self.assertEqual(self.sponsor_benefit.description, "New description")
+        self.assertTrue(self.sponsor_benefit.added_by_user)
         # make sure sponsor benefit from unselected sponsorships wasn't deleted
         other_sponsor_benefit.refresh_from_db()
         self.assertEqual(other_sponsor_benefit.name, prev_name)

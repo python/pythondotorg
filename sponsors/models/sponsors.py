@@ -257,5 +257,29 @@ class SponsorBenefit(OrderedModel):
             name = feature.display_modifier(name)
         return name
 
+    def reset_attributes(self, benefit):
+        """
+        This method resets all the sponsor benefit information
+        fetching new data from the sponsorship benefit.
+        """
+        self.program_name = benefit.program.name
+        self.name = benefit.name
+        self.description = benefit.description
+        self.program = benefit.program
+        self.benefit_internal_value = benefit.internal_value
+        self.a_la_carte = benefit.a_la_carte
+        self.added_by_user = self.added_by_user or self.a_la_carte
+
+        # generate benefit features from benefit features configurations
+        features = self.features.all().delete()
+        for feature_config in benefit.features_config.all():
+            feature_config.create_benefit_feature(self)
+
+        self.save()
+
+    def delete(self):
+        self.features.all().delete()
+        super().delete()
+
     class Meta(OrderedModel.Meta):
         pass

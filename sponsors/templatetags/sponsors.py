@@ -1,3 +1,5 @@
+import math
+
 from collections import OrderedDict
 from django import template
 from django.conf import settings
@@ -69,3 +71,11 @@ def benefit_quantity_for_package(benefit, package):
 @register.simple_tag
 def benefit_name_for_display(benefit, package):
     return benefit.name_for_display(package=package)
+
+
+@register.filter
+def ideal_size(image, ideal_dimension):
+    ideal_dimension = int(ideal_dimension)
+    return int(
+        image.width * math.sqrt((100 * ideal_dimension) / (image.width * image.height))
+    )
