@@ -58,7 +58,7 @@ class Command(BaseCommand):
 
         notification = AssetCloseToDueDateNotificationToSponsors()
         for sponsorship in sponsorships_to_notify:
-            kwargs = {"sponsorship": sponsorship, "due_date": target_date}
+            kwargs = {"sponsorship": sponsorship, "days": num_days, "due_date": target_date}
             notification.notify(**kwargs)
 
         print("Notifications sent!")

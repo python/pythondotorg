@@ -221,7 +221,7 @@ class RefreshSponsorshipsCache:
 class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/sponsor_expiring_assets_subject.txt"
     message_template = "sponsors/email/sponsor_expiring_assets.txt"
-    email_context_keys = ["sponsorship", "required_assets", "due_date"]
+    email_context_keys = ["sponsorship", "required_assets", "due_date", "days"]
 
     def get_recipient_list(self, context):
         return context["sponsorship"].verified_emails

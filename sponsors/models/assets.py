@@ -3,6 +3,7 @@ This module holds models to store generic assets
 from Sponsors or Sponsorships
 """
 import uuid
+from enum import Enum
 from pathlib import Path
 
 from django.db import models
@@ -25,13 +26,14 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
+
     # UUID can't be the object ID because Polymorphic expects default django integer ID
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     # The next 3 fields are required by Django to enable and set up generic relations
     # pointing the asset to a Sponsor or Sponsorship object
     content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
     object_id = models.PositiveIntegerField()
-    content_object = GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey("content_type", "object_id")
 
     # must match with internal_name from benefits configuration which describe assets
     internal_name = models.CharField(
@@ -113,3 +115,33 @@ class FileAsset(GenericAsset):
     @value.setter
     def value(self, value):
         self.file = value
+
+
+class Response(Enum):
+    YES = "Yes"
+    NO = "No"
+
+    @classmethod
+    def choices(cls):
+        return tuple((i.name, i.value) for i in cls)
+
+
+class ResponseAsset(GenericAsset):
+    response = models.CharField(
+        max_length=32, choices=Response.choices(), blank=False, null=True
+    )
+
+    def __str__(self):
+        return f"Response Asset: {self.internal_name}"
+
+    class Meta:
+        verbose_name = "Response Asset"
+        verbose_name_plural = "Response Assets"
+
+    @property
+    def value(self):
+        return self.response
+
+    @value.setter
+    def value(self, value):
+        self.response = value
