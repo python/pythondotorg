@@ -22,6 +22,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
+    SPONSOR_TEMPLATE_HELP_TEXT,
 )
 
 
@@ -487,7 +488,11 @@ class SendSponsorshipNotificationForm(forms.Form):
         required=False,
     )
     subject = forms.CharField(max_length=140, required=False)
-    content = forms.CharField(widget=forms.widgets.Textarea(), required=False)
+    content = forms.CharField(
+        widget=forms.widgets.Textarea(),
+        required=False,
+        help_text=SPONSOR_TEMPLATE_HELP_TEXT,
+    )
 
     def clean(self):
         cleaned_data = super().clean()

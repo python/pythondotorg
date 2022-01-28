@@ -5,7 +5,7 @@ structured as a python package.
 """
 
 from .assets import GenericAsset, ImgAsset, TextAsset
-from .notifications import SponsorEmailNotificationTemplate
+from .notifications import SponsorEmailNotificationTemplate, SPONSOR_TEMPLATE_HELP_TEXT
 from .sponsors import Sponsor, SponsorContact, SponsorBenefit
 from .benefits import BaseLogoPlacement, BaseTieredQuantity, BaseEmailTargetable, BenefitFeatureConfiguration, \
     LogoPlacementConfiguration, TieredQuantityConfiguration, EmailTargetableConfiguration, BenefitFeature, \

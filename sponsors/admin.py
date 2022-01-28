@@ -692,4 +692,9 @@ class ContractModelAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorEmailNotificationTemplate)
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
-    pass
+    def get_form(self, request, obj=None, **kwargs):
+        help_texts = {
+            "content": SPONSOR_TEMPLATE_HELP_TEXT,
+        }
+        kwargs.update({"help_texts": help_texts})
+        return super().get_form(request, obj, **kwargs)
