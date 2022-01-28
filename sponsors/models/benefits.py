@@ -7,8 +7,12 @@ from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from sponsors.models.assets import ImgAsset, TextAsset, FileAsset
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
+from sponsors.models.assets import ImgAsset, TextAsset, FileAsset, ResponseAsset, Response
+from sponsors.models.enums import (
+    PublisherChoices,
+    LogoPlacementChoices,
+    AssetsRelatedTo,
+)
 
 ########################################
 # Benefit features abstract classes
@@ -169,6 +173,13 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
         null=True,
         blank=True,
     )
+
+    class Meta(BaseRequiredAsset.Meta):
+        abstract = True
+
+
+class BaseRequiredResponseAsset(BaseRequiredAsset):
+    ASSET_CLASS = ResponseAsset
 
     class Meta(BaseRequiredAsset.Meta):
         abstract = True
@@ -423,8 +434,27 @@ class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAs
         return RequiredTextAsset
 
 
-class ProvidedTextAssetConfiguration(AssetConfigurationMixin, BaseProvidedTextAsset,
-                                     BenefitFeatureConfiguration):
+class RequiredResponseAssetConfiguration(
+    AssetConfigurationMixin, BaseRequiredResponseAsset, BenefitFeatureConfiguration
+):
+    class Meta(BaseRequiredResponseAsset.Meta, BenefitFeatureConfiguration.Meta):
+        verbose_name = "Require Response Configuration"
+        verbose_name_plural = "Require Response Configurations"
+        constraints = [
+            UniqueConstraint(fields=["internal_name"], name="uniq_response_asset_cfg")
+        ]
+
+    def __str__(self):
+        return f"Require response configuration"
+
+    @property
+    def benefit_feature_class(self):
+        return RequiredResponseAsset
+
+
+class ProvidedTextAssetConfiguration(
+    AssetConfigurationMixin, BaseProvidedTextAsset, BenefitFeatureConfiguration
+):
     class Meta(BaseProvidedTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided Text Configuration"
         verbose_name_plural = "Provided Text Configurations"
@@ -545,6 +575,21 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         if max_length is None or max_length > 256:
             widget = forms.Textarea
         return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
+
+
+class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature):
+    class Meta(BaseRequiredTextAsset.Meta, BenefitFeature.Meta):
+        verbose_name = "Require Response"
+        verbose_name_plural = "Required Responses"
+
+    def __str__(self):
+        return f"Require response"
+
+    def as_form_field(self, **kwargs):
+        help_text = kwargs.pop("help_text", self.help_text)
+        label = kwargs.pop("label", self.label)
+        required = kwargs.pop("required", False)
+        return forms.ChoiceField(required=required, choices=Response.choices(), widget=forms.RadioSelect, help_text=help_text, label=label, **kwargs)
 
 
 class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):

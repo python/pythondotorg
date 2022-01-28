@@ -10,7 +10,7 @@ from .sponsors import Sponsor, SponsorContact, SponsorBenefit
 from .benefits import BaseLogoPlacement, BaseTieredQuantity, BaseEmailTargetable, BenefitFeatureConfiguration, \
     LogoPlacementConfiguration, TieredQuantityConfiguration, EmailTargetableConfiguration, BenefitFeature, \
     LogoPlacement, EmailTargetable, TieredQuantity, RequiredImgAsset, RequiredImgAssetConfiguration, \
-    RequiredTextAssetConfiguration, RequiredTextAsset, ProvidedTextAssetConfiguration, ProvidedTextAsset, \
-    ProvidedFileAssetConfiguration, ProvidedFileAsset
+    RequiredTextAssetConfiguration, RequiredTextAsset, RequiredResponseAssetConfiguration, RequiredResponseAsset, \
+    ProvidedTextAssetConfiguration, ProvidedTextAsset, ProvidedFileAssetConfiguration, ProvidedFileAsset
 from .sponsorship import Sponsorship, SponsorshipProgram, SponsorshipBenefit, Sponsorship, SponsorshipPackage
 from .contract import LegalClause, Contract, signed_contract_random_path

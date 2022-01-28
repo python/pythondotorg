@@ -75,6 +75,9 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class RequiredTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = RequiredTextAssetConfiguration
 
+    class RequiredResponseAssetConfigurationInline(StackedPolymorphicInline.Child):
+        model = RequiredResponseAssetConfiguration
+
     class ProvidedTextAssetConfigurationInline(StackedPolymorphicInline.Child):
         model = ProvidedTextAssetConfiguration
 
@@ -88,6 +91,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
+        RequiredResponseAssetConfigurationInline,
         ProvidedTextAssetConfigurationInline,
         ProvidedFileAssetConfigurationInline,
     ]
