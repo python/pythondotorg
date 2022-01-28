@@ -629,9 +629,9 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(f"{field.label} <b>(Required by {required_asset.due_date})</b>")
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>")
             if bool(value):
-                field.label = mark_safe(f"{field.label} <small>(Fulfilled, thank you!)</small>")
+                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
 
             fields[f_name] = field
 
