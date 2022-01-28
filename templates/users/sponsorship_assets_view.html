@@ -22,6 +22,8 @@
       <p><b>{{ asset.sponsor_benefit }}</b> benefit provides you with {{ asset.label }}:</p>
       {% if asset.polymorphic_ctype.name == "Provided Text" %}
       <pre>{{ asset.value }}</pre>
+      {% elif asset.polymorphic_ctype.name == "Provided File" %}
+      <a href="{{ asset.value.url }}">View File</a>
       {% else %}
         {{ asset.value }}
       {% endif %}
