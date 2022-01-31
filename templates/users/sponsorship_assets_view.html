@@ -27,6 +27,8 @@
       {% else %}
         {{ asset.value }}
       {% endif %}
+      <small>{{ asset.help_text }}</small>
+      <br><br>
     {% endfor %}
 
   </div>
