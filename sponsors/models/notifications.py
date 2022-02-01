@@ -44,5 +44,8 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
             return
 
         recipients = contacts.values_list("email", flat=True)
-        return self.get_email(from_email=settings.DEFAULT_FROM_EMAIL, to=recipients,
-                              context={"sponsorship": sponsorship})
+        return self.get_email(
+            from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            to=recipients,
+            context={"sponsorship": sponsorship},
+        )
