@@ -232,6 +232,8 @@ class SponsorshipDetailView(DetailView):
     template_name = 'users/sponsorship_detail.html'
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_context_data(self, *args, **kwargs):
@@ -266,6 +268,8 @@ class UpdateSponsorInfoView(UpdateView):
     form_class = SponsorUpdateForm
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsor.objects.all()
         sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
         return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
 
@@ -281,6 +285,8 @@ class UpdateSponsorshipAssetsView(UpdateView):
     form_class = SponsorRequiredAssetsForm
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_form_kwargs(self):
@@ -310,6 +316,8 @@ class ProvidedSponsorshipAssetsView(DetailView):
     template_name = 'users/sponsorship_assets_view.html'
 
     def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_context_data(self, **kwargs):
