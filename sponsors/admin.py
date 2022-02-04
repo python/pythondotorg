@@ -185,9 +185,22 @@ class SponsorContactInline(admin.TabularInline):
     extra = 0
 
 
+class SponsorshipsInline(admin.TabularInline):
+    model = Sponsorship
+    fields = ["link", "status", "applied_on", "start_date", "end_date"]
+    readonly_fields = ["link", "status", "applied_on", "start_date", "end_date"]
+    can_delete = False
+    extra = 0
+
+    def link(self, obj):
+        url = reverse("admin:sponsors_sponsorship_change", args=[obj.id])
+        return mark_safe(f"<a href={url}>{obj.id}</a>")
+    link.short_description = "ID"
+
+
 @admin.register(Sponsor)
 class SponsorAdmin(ContentManageableModelAdmin):
-    inlines = [SponsorContactInline, AssetsInline]
+    inlines = [SponsorContactInline, SponsorshipsInline, AssetsInline]
     search_fields = ["name"]
 
 
@@ -268,7 +281,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             {
                 "fields": (
                     "for_modified_package",
-                    "sponsor",
+                    "sponsor_link",
                     "status",
                     "package",
                     "sponsorship_fee",
@@ -340,7 +353,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
             "for_modified_package",
-            "sponsor",
+            "sponsor_link",
             "status",
             "applied_on",
             "rejected_on",
@@ -367,6 +380,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
             readonly_fields.extend(extra)
 
         return readonly_fields
+
+    def sponsor_link(self, obj):
+        url = reverse("admin:sponsors_sponsor_change", args=[obj.sponsor.id])
+        return mark_safe(f"<a href={url}>{obj.sponsor.name}</a>")
+    sponsor_link.short_description = "Sponsor"
 
     def get_estimated_cost(self, obj):
         cost = None
