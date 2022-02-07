@@ -757,7 +757,7 @@ class SponsorEmailNotificationTemplateTests(TestCase):
         self.assertIsInstance(email, EmailMessage)
         self.assertEqual("Subject - Foo", email.subject)
         self.assertEqual("Hi Foo, how are you?", email.body)
-        self.assertEqual(settings.DEFAULT_FROM_EMAIL, email.from_email)
+        self.assertEqual(settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL, email.from_email)
         self.assertEqual(2, len(email.to))
         self.assertIn(self.contact.email, email.to)
         self.assertIn(manager.email, email.to)

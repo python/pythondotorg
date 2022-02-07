@@ -4,6 +4,10 @@
 {% block object-tools-items %}
   {% with original as sp %}
 
+    <li>
+        <a href="{% url 'users:sponsorship_application_detail' sp.pk %}" style="background: #70bf2b">View Dashboard</a>
+    </li>
+
     {% if sp.APPROVED in sp.next_status %}
     <li>
         <a href="{% url 'admin:sponsors_sponsorship_approve' sp.pk %}" style="background: #70bf2b">Generate Contract for Signing</a>
