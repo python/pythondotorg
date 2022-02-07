@@ -33,7 +33,7 @@
         <span class="error-message">The form has one or more errors</span>
         {{ form.non_field_errors }}
       {% endif %}
-      <form id="upodate-assets-form" action="." method="POST" enctype="multipart/form-data">
+      <form id="upodate-assets-form" action=".{% if required_asset_id %}?required_asset={{ required_asset_id }}{% endif %}" method="POST" enctype="multipart/form-data">
         {% csrf_token %}
 
         <h2>Required Assets</h2>

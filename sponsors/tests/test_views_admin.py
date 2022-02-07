@@ -1,5 +1,8 @@
 import io
 import json
+import tempfile
+import zipfile
+from uuid import uuid4
 
 from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
@@ -15,10 +18,11 @@ from django.http import HttpResponse
 from django.test import TestCase, RequestFactory
 from django.urls import reverse
 
-from .utils import assertMessage
-from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate
+from .utils import assertMessage, get_static_image_file_as_upload
+from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate, \
+    GenericAsset, ImgAsset, TextAsset
 from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
-from sponsors.views_admin import send_sponsorship_notifications_action
+from sponsors.views_admin import send_sponsorship_notifications_action, export_assets_as_zipfile
 from sponsors.use_cases import SendSponsorshipNotificationUseCase
 
 
@@ -1012,3 +1016,73 @@ class SendSponsorshipNotificationTests(TestCase):
         self.assertEqual(notification, kwargs["notification"])
         self.assertEqual(list(self.queryset), list(kwargs["sponsorships"]))
         self.assertEqual(["primary"], kwargs["contact_types"])
+
+
+class ExportAssetsAsZipTests(TestCase):
+
+    def setUp(self):
+        self.request_factory = RequestFactory()
+        self.request = self.request_factory.get("/")
+        self.request.user = baker.make("users.User")
+        self.sponsorship = baker.make(Sponsorship, sponsor__name='Sponsor Name')
+        self.ModelAdmin = Mock()
+        self.text_asset = TextAsset.objects.create(
+            uuid=uuid4(),
+            content_object=self.sponsorship,
+            internal_name="text_input",
+        )
+        self.img_asset = ImgAsset.objects.create(
+            uuid=uuid4(),
+            content_object=self.sponsorship.sponsor,
+            internal_name="img_input",
+        )
+
+    def test_display_same_page_with_warning_message_if_no_query(self):
+        queryset = GenericAsset.objects.none()
+        response = export_assets_as_zipfile(self.ModelAdmin, self.request, queryset)
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(self.request.path, response["Location"])
+        msg = "You have to select at least one asset to export."
+        self.ModelAdmin.message_user.assert_called_once_with(self.request, msg, messages.WARNING)
+
+    def test_display_same_page_with_warning_message_if_any_asset_without_value(self):
+        self.text_asset.value = "Foo"
+        self.text_asset.save()
+
+        queryset = GenericAsset.objects.all()
+        response = export_assets_as_zipfile(self.ModelAdmin, self.request, queryset)
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual(self.request.path, response["Location"])
+        msg = "1 assets from the selection doesn't have data to export. Please review your selection!"
+        self.ModelAdmin.message_user.assert_called_once_with(self.request, msg, messages.WARNING)
+
+    def test_response_is_configured_to_be_zip_file(self):
+        self.text_asset.value = "foo"
+        self.img_asset.value = SimpleUploadedFile(name='test_image.jpg', content=b"content", content_type='image/jpeg')
+        self.text_asset.save()
+        self.img_asset.save()
+
+        queryset = GenericAsset.objects.all()
+        response = export_assets_as_zipfile(self.ModelAdmin, self.request, queryset)
+
+        self.assertEqual("application/x-zip-compressed", response["Content-Type"])
+        self.assertEqual("attachment; filename=assets.zip", response["Content-Disposition"])
+
+    def test_zip_file_organize_assets_within_sponsors_directories(self):
+        self.text_asset.value = "foo"
+        self.img_asset.value = get_static_image_file_as_upload("psf-logo.png")
+        self.text_asset.save()
+        self.img_asset.save()
+
+        queryset = GenericAsset.objects.all()
+        response = export_assets_as_zipfile(self.ModelAdmin, self.request, queryset)
+        content = io.BytesIO(response.content)
+
+        with zipfile.ZipFile(content, "r") as zip_file:
+            self.assertEqual(2, len(zip_file.infolist()))
+            with zip_file.open("Sponsor Name/text_input.txt") as cur_file:
+                self.assertEqual("foo", cur_file.read().decode())
+            with zip_file.open("Sponsor Name/img_input.png") as cur_file:
+                self.assertEqual(self.img_asset.value.read(), cur_file.read())
