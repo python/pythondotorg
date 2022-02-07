@@ -893,3 +893,13 @@ class TextAssetModelAdmin(GenericAssetChildModelAdmin):
 @admin.register(ImgAsset)
 class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
     base_model = ImgAsset
+
+
+@admin.register(FileAsset)
+class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = FileAsset
+
+
+@admin.register(ResponseAsset)
+class ResponseAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = ResponseAsset
