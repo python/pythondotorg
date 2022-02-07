@@ -1,6 +1,8 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
+from django.contrib.contenttypes.models import ContentType
 from ordered_model.admin import OrderedModelAdmin
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline
+from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
+    PolymorphicChildModelAdmin
 
 from django.db.models import Subquery
 from django.template import Context, Template
@@ -13,6 +15,7 @@ from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
+from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
     SponsorshipBenefitAdminForm
@@ -26,14 +29,16 @@ class AssetsInline(GenericTabularInline):
     has_delete_permission = lambda self, request, obj: False
     readonly_fields = ["internal_name", "user_submitted_info", "value"]
 
-    def value(self, request, obj=None):
+    def value(self, obj=None):
         if not obj or not obj.value:
             return ""
         return obj.value
+
     value.short_description = "Submitted information"
 
-    def user_submitted_info(self, request, obj=None):
-        return bool(self.value(request, obj))
+    def user_submitted_info(self, obj=None):
+        return bool(self.value(obj))
+
     user_submitted_info.short_description = "Fullfilled data?"
     user_submitted_info.boolean = True
 
@@ -348,6 +353,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
+
     send_notifications.short_description = 'Send notifications to selected'
 
     def get_readonly_fields(self, request, obj):
@@ -430,6 +436,11 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 "<int:pk>/enable-edit",
                 self.admin_site.admin_view(self.rollback_to_editing_view),
                 name="sponsors_sponsorship_rollback_to_edit",
+            ),
+            path(
+                "<int:pk>/list-assets",
+                self.admin_site.admin_view(self.list_uploaded_assets_view),
+                name="sponsors_sponsorship_list_uploaded_assets",
             ),
         ]
         return my_urls + urls
@@ -550,6 +561,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def approve_signed_sponsorship_view(self, request, pk):
         return views_admin.approve_signed_sponsorship_view(self, request, pk)
+
+    def list_uploaded_assets_view(self, request, pk):
+        return views_admin.list_uploaded_assets(self, request, pk)
 
 
 @admin.register(LegalClause)
@@ -714,9 +728,178 @@ class ContractModelAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorEmailNotificationTemplate)
 class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
+
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
             "content": SPONSOR_TEMPLATE_HELP_TEXT,
         }
         kwargs.update({"help_texts": help_texts})
         return super().get_form(request, obj, **kwargs)
+
+
+class AssetTypeListFilter(admin.SimpleListFilter):
+    title = "Asset Type"
+    parameter_name = 'type'
+
+    @property
+    def assets_types_mapping(self):
+        return {asset_type.__name__: asset_type for asset_type in GenericAsset.all_asset_types()}
+
+    def lookups(self, request, model_admin):
+        return [(k, v._meta.verbose_name_plural) for k, v in self.assets_types_mapping.items()]
+
+    def queryset(self, request, queryset):
+        asset_type = self.assets_types_mapping.get(self.value())
+        if not asset_type:
+            return queryset
+        return queryset.instance_of(asset_type)
+
+
+class AssociatedBenefitListFilter(admin.SimpleListFilter):
+    title = "From Benefit Which Requires Asset"
+    parameter_name = 'from_benefit'
+
+    @property
+    def benefits_with_assets(self):
+        qs = BenefitFeature.objects.required_assets().values_list("sponsor_benefit__sponsorship_benefit",
+                                                                  flat=True).distinct()
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        return {str(b.id): b for b in benefits}
+
+    def lookups(self, request, model_admin):
+        return [(k, b.name) for k, b in self.benefits_with_assets.items()]
+
+    def queryset(self, request, queryset):
+        benefit = self.benefits_with_assets.get(self.value())
+        if not benefit:
+            return queryset
+        internal_names = [
+            cfg.internal_name
+            for cfg in benefit.features_config.all()
+            if hasattr(cfg, "internal_name")
+        ]
+        return queryset.filter(internal_name__in=internal_names)
+
+
+class AssetContentTypeFilter(admin.SimpleListFilter):
+    title = "Related Object"
+    parameter_name = 'content_type'
+
+    def lookups(self, request, model_admin):
+        qs = ContentType.objects.filter(model__in=["sponsorship", "sponsor"])
+        return [(c_type.pk, c_type.model.title()) for c_type in qs]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        return queryset.filter(content_type=value)
+
+
+class AssetWithOrWithoutValueFilter(admin.SimpleListFilter):
+    title = "Value"
+    parameter_name = "value"
+
+    def lookups(self, request, model_admin):
+        return [
+            ("with-value", "With value"),
+            ("no-value", "Without value"),
+        ]
+
+    def queryset(self, request, queryset):
+        value = self.value()
+        if not value:
+            return queryset
+        with_value_id = [asset.pk for asset in queryset if asset.value]
+        if value == "with-value":
+            return queryset.filter(pk__in=with_value_id)
+        else:
+            return queryset.exclude(pk__in=with_value_id)
+
+
+@admin.register(GenericAsset)
+class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
+    list_display = ["id", "internal_name", "get_value", "content_type", "get_related_object"]
+    list_filter = [AssetContentTypeFilter, AssetTypeListFilter, AssetWithOrWithoutValueFilter,
+                   AssociatedBenefitListFilter]
+    actions = ["export_assets_as_zipfile"]
+
+    def get_child_models(self, *args, **kwargs):
+        return GenericAsset.all_asset_types()
+
+    def get_queryset(self, *args, **kwargs):
+        classes = self.get_child_models(*args, **kwargs)
+        return self.model.objects.select_related("content_type").instance_of(*classes)
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    @cached_property
+    def all_sponsors(self):
+        qs = Sponsor.objects.all()
+        return {sp.id: sp for sp in qs}
+
+    @cached_property
+    def all_sponsorships(self):
+        qs = Sponsorship.objects.all().select_related("package", "sponsor")
+        return {sp.id: sp for sp in qs}
+
+    def get_value(self, obj):
+        html = obj.value
+        if obj.value and getattr(obj.value, "url", None):
+            html = f"<a href='{obj.value.url}' target='_blank'>{obj.value}</a>"
+        return mark_safe(html)
+
+    get_value.short_description = "Value"
+
+    def get_related_object(self, obj):
+        """
+        Returns the content_object as an URL and performs better because
+        of sponsors and sponsorship cached properties
+        """
+        content_object = None
+        if obj.from_sponsorship:
+            content_object = self.all_sponsorships[obj.object_id]
+        elif obj.from_sponsor:
+            content_object = self.all_sponsors[obj.object_id]
+
+        if not content_object:  # safety belt
+            return obj.content_object
+
+        html = f"<a href='{content_object.admin_url}' target='_blank'>{content_object}</a>"
+        return mark_safe(html)
+
+    get_related_object.short_description = "Associated with"
+
+    def export_assets_as_zipfile(self, request, queryset):
+        return views_admin.export_assets_as_zipfile(self, request, queryset)
+    export_assets_as_zipfile.short_description = "Export selected"
+
+
+class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):
+    """ Base admin class for all GenericAsset child models """
+    base_model = GenericAsset
+    readonly_fields = ["uuid", "content_type", "object_id", "content_object", "internal_name"]
+
+
+@admin.register(TextAsset)
+class TextAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = TextAsset
+
+
+@admin.register(ImgAsset)
+class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = ImgAsset
+
+
+@admin.register(FileAsset)
+class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = FileAsset
+
+
+@admin.register(ResponseAsset)
+class ResponseAssetModelAdmin(GenericAssetChildModelAdmin):
+    base_model = ResponseAsset

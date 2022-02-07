@@ -1,5 +1,9 @@
+import io, zipfile
+from tempfile import NamedTemporaryFile
+
 from django import forms
 from django.contrib import messages
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
@@ -7,10 +11,11 @@ from django.db.models import Q
 from django.db import transaction
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
+from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
+    SendSponsorshipNotificationForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact
+from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -267,6 +272,16 @@ def update_related_sponsorships(ModelAdmin, request, pk):
     return render(request, "sponsors/admin/update_related_sponsorships.html", context=context)
 
 
+def list_uploaded_assets(ModelAdmin, request, pk):
+    """
+    List and export assets uploaded by the user
+    """
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+    assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+    context = {"sponsorship": sponsorship, "assets": assets}
+    return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
+
+
 ##################
 ### CUSTOM ACTIONS
 def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
@@ -309,8 +324,57 @@ def send_sponsorship_notifications_action(ModelAdmin, request, queryset):
     context = {
         "to_notify": to_notify,
         "to_ignore": to_ignore,
-        "form":form,
+        "form": form,
         "email_preview": email_preview,
         "queryset": queryset,
     }
     return render(request, "sponsors/admin/send_sponsors_notification.html", context=context)
+
+
+def export_assets_as_zipfile(ModelAdmin, request, queryset):
+    """
+    Exports a zip file with data associated with the assets. The sponsor names are used as
+    directories to group assets from a same sponsor.
+    """
+    if not queryset.exists():
+        ModelAdmin.message_user(
+            request,
+            f"You have to select at least one asset to export.",
+            messages.WARNING
+        )
+        return redirect(request.path)
+
+    assets_without_values = [asset for asset in queryset if not asset.has_value]
+    if any(assets_without_values):
+        ModelAdmin.message_user(
+            request,
+            f"{len(assets_without_values)} assets from the selection doesn't have data to export. Please review your selection!",
+            messages.WARNING
+        )
+        return redirect(request.path)
+
+    buffer = io.BytesIO()
+    zip_file = zipfile.ZipFile(buffer, 'w')
+
+    for asset in queryset:
+        zipdir = "unknown"  # safety belt
+        if asset.from_sponsorship:
+            zipdir = asset.content_object.sponsor.name
+        elif asset.from_sponsor:
+            zipdir = asset.content_object.name
+
+        if not asset.is_file:
+            zip_file.writestr(f"{zipdir}/{asset.internal_name}.txt", asset.value)
+        else:
+            suffix = "." + asset.value.name.split(".")[-1]
+            prefix = asset.internal_name
+            temp_file = NamedTemporaryFile(suffix=suffix, prefix=prefix)
+            temp_file.write(asset.value.read())
+            zip_file.write(temp_file.name, arcname=f"{zipdir}/{prefix}{suffix}")
+
+    zip_file.close()
+    response = HttpResponse(buffer.getvalue())
+    response["Content-Type"] = "application/x-zip-compressed"
+    response["Content-Disposition"] = "attachment; filename=assets.zip"
+
+    return response
