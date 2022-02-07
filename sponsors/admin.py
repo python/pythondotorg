@@ -29,15 +29,15 @@ class AssetsInline(GenericTabularInline):
     has_delete_permission = lambda self, request, obj: False
     readonly_fields = ["internal_name", "user_submitted_info", "value"]
 
-    def value(self, request, obj=None):
+    def value(self, obj=None):
         if not obj or not obj.value:
             return ""
         return obj.value
 
     value.short_description = "Submitted information"
 
-    def user_submitted_info(self, request, obj=None):
-        return bool(self.value(request, obj))
+    def user_submitted_info(self, obj=None):
+        return bool(self.value(obj))
 
     user_submitted_info.short_description = "Fullfilled data?"
     user_submitted_info.boolean = True
