@@ -831,8 +831,11 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         classes = self.get_child_models(*args, **kwargs)
         return self.model.objects.select_related("content_type").instance_of(*classes)
 
-    def has_delete_permission(self, *args, **kwargs):
-        return False
+    def get_actions(self, request):
+        actions = super().get_actions(request)
+        if 'delete_selected' in actions:
+            del actions['delete_selected']
+        return actions
 
     def has_add_permission(self, *args, **kwargs):
         return False
