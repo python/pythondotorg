@@ -490,12 +490,14 @@ class BenefitFeature(PolymorphicModel):
     Base class for sponsor benefits features.
     """
     objects = BenefitFeatureQuerySet.as_manager()
+    non_polymorphic = models.Manager()
 
     sponsor_benefit = models.ForeignKey("sponsors.SponsorBenefit", on_delete=models.CASCADE)
 
     class Meta:
         verbose_name = "Benefit Feature"
         verbose_name_plural = "Benefit Features"
+        base_manager_name = 'non_polymorphic'
 
     def display_modifier(self, name, **kwargs):
         return name
