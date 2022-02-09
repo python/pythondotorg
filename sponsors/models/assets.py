@@ -28,7 +28,7 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
-    polymorphic = PolymorphicManager()
+    objects = PolymorphicManager()
     non_polymorphic = models.Manager()
 
     # UUID can't be the object ID because Polymorphic expects default django integer ID
