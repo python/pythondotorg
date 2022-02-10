@@ -9,6 +9,8 @@ from pathlib import Path
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.fields.files import ImageFieldFile, FileField
+from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 
 
@@ -26,6 +28,8 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
+    objects = PolymorphicManager()
+    non_polymorphic = models.Manager()
 
     # UUID can't be the object ID because Polymorphic expects default django integer ID
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
@@ -46,10 +50,34 @@ class GenericAsset(PolymorphicModel):
         verbose_name = "Asset"
         verbose_name_plural = "Assets"
         unique_together = ["content_type", "object_id", "internal_name"]
+        base_manager_name = 'non_polymorphic'
 
     @property
     def value(self):
         return None
+
+    @property
+    def is_file(self):
+        return isinstance(self.value, FileField) or isinstance(self.value, ImageFieldFile)
+
+    @property
+    def from_sponsorship(self):
+        return self.content_type.name == "sponsorship"
+
+    @property
+    def from_sponsor(self):
+        return self.content_type.name == "sponsor"
+
+    @property
+    def has_value(self):
+        if self.is_file:
+            return self.value and getattr(self.value, "url", None)
+        else:
+            return bool(self.value)
+
+    @classmethod
+    def all_asset_types(cls):
+        return cls.__subclasses__()
 
 
 class ImgAsset(GenericAsset):

@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -106,6 +107,10 @@ class Sponsor(ContentManageable):
     @property
     def slug(self):
         return slugify(self.name)
+
+    @property
+    def admin_url(self):
+        return reverse("admin:sponsors_sponsor_change", args=[self.pk])
 
 
 class SponsorContact(models.Model):
