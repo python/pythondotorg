@@ -46,7 +46,7 @@
         <div
             data-ea-publisher="psf"
             data-ea-type="psf-image-only"
-            data-ea-force-ad="{{ sponsorship.sponsor.name|slugify }}-psf-sponsors"
+            data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
             style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
         ></div>
       {% endfor %}

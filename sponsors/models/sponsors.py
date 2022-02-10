@@ -5,6 +5,7 @@ from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
+from django.template.defaultfilters import slugify
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
 from django.contrib.contenttypes.fields import GenericRelation
@@ -101,6 +102,10 @@ class Sponsor(ContentManageable):
             return SponsorContact.objects.get_primary_contact(self)
         except SponsorContact.DoesNotExist:
             return None
+
+    @property
+    def slug(self):
+        return slugify(self.name)
 
 
 class SponsorContact(models.Model):
