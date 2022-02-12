@@ -33,7 +33,6 @@ class SponsorPublisherPermission(permissions.BasePermission):
 
 
 class LogoPlacementeAPIList(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [SponsorPublisherPermission]
     serializer_class = LogoPlacementSerializer
 
