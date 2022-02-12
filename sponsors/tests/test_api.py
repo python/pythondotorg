@@ -20,6 +20,15 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.authorization = f'Token {token.key}'
         self.sponsors = baker.make(Sponsor, _create_files=True, _quantity=3)
 
+        sponsorships = baker.make_recipe("sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors),
+                                         _quantity=3)
+        self.sp1, self.sp2, self.sp3 = sponsorships
+        baker.make_recipe("sponsors.tests.logo_at_download_feature", sponsor_benefit__sponsorship=self.sp1)
+        baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=self.sp1)
+        baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=self.sp2)
+        baker.make_recipe("sponsors.tests.logo_at_pypi_feature", sponsor_benefit__sponsorship=self.sp3,
+                          link_to_sponsors_page=True, describe_as_sponsor=True)
+
     def tearDown(self):
         for sponsor in Sponsor.objects.all():
             if sponsor.web_logo:
@@ -28,12 +37,6 @@ class LogoPlacementeAPIListTests(APITestCase):
                 sponsor.print_logo.delete()
 
     def test_list_logo_placement_as_expected(self):
-        sp1, sp2, sp3 = baker.make_recipe("sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors), _quantity=3)
-        baker.make_recipe("sponsors.tests.logo_at_download_feature", sponsor_benefit__sponsorship=sp1)
-        baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=sp1)
-        baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=sp2)
-        baker.make_recipe("sponsors.tests.logo_at_pypi_feature", sponsor_benefit__sponsorship=sp3, link_to_sponsors_page=True, describe_as_sponsor=True)
-
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         data = response.json()
 
@@ -50,15 +53,15 @@ class LogoPlacementeAPIListTests(APITestCase):
             [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]['sponsor_url']
         )
         self.assertEqual(
-            f"http://testserver/psf/sponsors/#{slugify(sp3.sponsor.name)}",
+            f"http://testserver/psf/sponsors/#{slugify(self.sp3.sponsor.name)}",
             [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]['sponsor_url']
         )
         self.assertCountEqual(
-            [sp1.sponsor.description, sp1.sponsor.description, sp2.sponsor.description],
+            [self.sp1.sponsor.description, self.sp1.sponsor.description, self.sp2.sponsor.description],
             [p['description'] for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value]
         )
         self.assertEqual(
-            [f"{sp3.sponsor.name} is a {sp3.level_name} sponsor of the Python Software Foundation."],
+            [f"{self.sp3.sponsor.name} is a {self.sp3.level_name} sponsor of the Python Software Foundation."],
             [p['description'] for p in data if p["publisher"] == PublisherChoices.PYPI.value]
         )
 
