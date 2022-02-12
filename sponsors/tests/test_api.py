@@ -1,3 +1,5 @@
+from urllib.parse import urlencode
+
 from django.contrib.auth.models import Permission
 from django.urls import reverse_lazy
 from django.utils.text import slugify
@@ -89,3 +91,40 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.user.user_permissions.remove(self.permission)
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         self.assertEqual(403, response.status_code)
+
+    def test_filter_sponsorship_by_publisher(self):
+        querystring = urlencode({
+            "publisher": PublisherChoices.PYPI.value,
+        })
+        url = f"{self.url}?{querystring}"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, len(data))
+        self.assertEqual(self.sp3.sponsor.name, data[0]["sponsor"])
+
+    def test_filter_sponsorship_by_flight(self):
+        querystring = urlencode({
+            "flight": LogoPlacementChoices.SIDEBAR.value,
+        })
+        url = f"{self.url}?{querystring}"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(1, len(data))
+        self.assertEqual(self.sp3.sponsor.name, data[0]["sponsor"])
+
+    def test_bad_request_for_invalid_filters(self):
+        querystring = urlencode({
+            "flight": "invalid-flight",
+            "publisher": "invalid-publisher"
+        })
+        url = f"{self.url}?{querystring}"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+
+        self.assertEqual(400, response.status_code)
+        self.assertIn("flight", data)
+        self.assertIn("publisher", data)
