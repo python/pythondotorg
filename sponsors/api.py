@@ -14,6 +14,7 @@ class LogoPlacementSerializer(serializers.Serializer):
     publisher = serializers.CharField()
     flight = serializers.CharField()
     sponsor = serializers.CharField()
+    sponsor_slug = serializers.CharField()
     description = serializers.CharField()
     logo = serializers.URLField()
     start_date = serializers.DateField()
@@ -75,6 +76,7 @@ class LogoPlacementeAPIList(APIView):
             sponsor = sponsorship.sponsor
             base_data = {
                 "sponsor": sponsor.name,
+                "sponsor_slug": sponsor.slug,
                 "level_name": sponsorship.level_name,
                 "level_order": sponsorship.package.order,
                 "description": sponsor.description,

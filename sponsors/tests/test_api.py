@@ -115,6 +115,7 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(200, response.status_code)
         self.assertEqual(1, len(data))
         self.assertEqual(self.sp3.sponsor.name, data[0]["sponsor"])
+        self.assertEqual(self.sp3.sponsor.slug, data[0]["sponsor_slug"])
 
     def test_bad_request_for_invalid_filters(self):
         querystring = urlencode({
