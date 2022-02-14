@@ -76,6 +76,13 @@ def benefit_name_for_display(benefit, package):
 @register.filter
 def ideal_size(image, ideal_dimension):
     ideal_dimension = int(ideal_dimension)
+    try:
+        w, h = image.width, image.height
+    except FileNotFoundError:
+        # local dev doesn't have all images if DB is a copy from prod environment
+        # this is just a fallback to return ideal_dimension instead
+        w, h = ideal_dimension, ideal_dimension
+
     return int(
-        image.width * math.sqrt((100 * ideal_dimension) / (image.width * image.height))
+        w * math.sqrt((100 * ideal_dimension) / (w * h))
     )
