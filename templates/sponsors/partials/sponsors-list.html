@@ -43,12 +43,15 @@
 
     <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
-        <div
-            data-ea-publisher="psf"
-            data-ea-type="psf-image-only"
-            data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
-            style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
-        ></div>
+        <div id="{{ sponsorship.sponsor.slug }}">
+            <div
+                data-ea-publisher="psf"
+                data-ea-type="psf-image-only"
+                data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
+                style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
+            ></div>
+            <p>{{ sponsorship.sponsor.name }}</p>
+        </div>
       {% endfor %}
     </div>
 
