@@ -198,6 +198,10 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
         default="",
         blank=True
     )
+    shared_text = models.TextField(blank=True, null=True)
+
+    def shared_value(self):
+        return self.shared_text
 
     class Meta(BaseProvidedAsset.Meta):
         abstract = True
