@@ -7,12 +7,14 @@ from rest_framework.authentication import TokenAuthentication
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship
+from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 
 class LogoPlacementSerializer(serializers.Serializer):
     publisher = serializers.CharField()
     flight = serializers.CharField()
     sponsor = serializers.CharField()
+    sponsor_slug = serializers.CharField()
     description = serializers.CharField()
     logo = serializers.URLField()
     start_date = serializers.DateField()
@@ -20,6 +22,33 @@ class LogoPlacementSerializer(serializers.Serializer):
     sponsor_url = serializers.URLField()
     level_name = serializers.CharField()
     level_order = serializers.IntegerField()
+
+
+class FilterLogoPlacementsSerializer(serializers.Serializer):
+    publisher = serializers.ChoiceField(
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
+        required=False,
+    )
+    flight = serializers.ChoiceField(
+        choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
+        required=False,
+    )
+
+    @property
+    def by_publisher(self):
+        return self.validated_data.get("publisher")
+
+    @property
+    def by_flight(self):
+        return self.validated_data.get("flight")
+
+    def skip_logo(self, logo):
+        if self.by_publisher and self.by_publisher != logo.publisher:
+            return True
+        if self.by_flight and self.by_flight != logo.logo_place:
+            return True
+        else:
+            return False
 
 
 class SponsorPublisherPermission(permissions.BasePermission):
@@ -33,18 +62,21 @@ class SponsorPublisherPermission(permissions.BasePermission):
 
 
 class LogoPlacementeAPIList(APIView):
-    authentication_classes = [TokenAuthentication]
     permission_classes = [SponsorPublisherPermission]
     serializer_class = LogoPlacementSerializer
 
     def get(self, request, *args, **kwargs):
         placements = []
+        logo_filters = FilterLogoPlacementsSerializer(data=request.GET)
+        if not logo_filters.is_valid():
+            return Response(logo_filters.errors, status=400)
 
         sponsorships = Sponsorship.objects.enabled().with_logo_placement()
         for sponsorship in sponsorships.select_related("sponsor").iterator():
             sponsor = sponsorship.sponsor
             base_data = {
                 "sponsor": sponsor.name,
+                "sponsor_slug": sponsor.slug,
                 "level_name": sponsorship.level_name,
                 "level_order": sponsorship.package.order,
                 "description": sponsor.description,
@@ -55,7 +87,8 @@ class LogoPlacementeAPIList(APIView):
             }
 
             benefits = BenefitFeature.objects.filter(sponsor_benefit__sponsorship_id=sponsorship.pk)
-            for logo in benefits.instance_of(LogoPlacement):
+            logos = [l for l in benefits.instance_of(LogoPlacement) if not logo_filters.skip_logo(l)]
+            for logo in logos:
                 placement = base_data.copy()
                 placement["publisher"] = logo.publisher
                 placement["flight"] = logo.logo_place
