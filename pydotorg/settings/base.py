@@ -166,6 +166,7 @@ INSTALLED_APPS = [
     'django_countries',
     'easy_pdf',
     'sorl.thumbnail',
+    'django_extensions',
 
     'banners',
     'blogs',
