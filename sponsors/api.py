@@ -25,8 +25,7 @@ class LogoPlacementeAPIList(APIView):
     def get(self, request, *args, **kwargs):
         placements = []
         logo_filters = FilterLogoPlacementsSerializer(data=request.GET)
-        if not logo_filters.is_valid():
-            return Response(logo_filters.errors, status=400)
+        logo_filters.is_valid(raise_exception=True)
 
         sponsorships = Sponsorship.objects.enabled().with_logo_placement()
         for sponsorship in sponsorships.select_related("sponsor").iterator():
