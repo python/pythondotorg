@@ -129,3 +129,39 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(400, response.status_code)
         self.assertIn("flight", data)
         self.assertIn("publisher", data)
+
+
+class SponsorshipAssetsAPIListTests(APITestCase):
+    url = reverse_lazy("assets_list")
+
+    def setUp(self):
+        self.user = baker.make('users.User')
+        token = Token.objects.get(user=self.user)
+        self.permission = Permission.objects.get(name='Can access sponsor placement API')
+        self.user.user_permissions.add(self.permission)
+        self.authorization = f'Token {token.key}'
+
+    def test_invalid_token(self):
+        Token.objects.all().delete()
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        self.assertEqual(401, response.status_code)
+
+    def test_superuser_user_have_permission_by_default(self):
+        self.user.user_permissions.remove(self.permission)
+        self.user.is_superuser = True
+        self.user.is_staff = True
+        self.user.save()
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        self.assertEqual(200, response.status_code)
+
+    def test_staff_have_permission_by_default(self):
+        self.user.user_permissions.remove(self.permission)
+        self.user.is_staff = True
+        self.user.save()
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        self.assertEqual(200, response.status_code)
+
+    def test_user_must_have_required_permission(self):
+        self.user.user_permissions.remove(self.permission)
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        self.assertEqual(403, response.status_code)

@@ -57,3 +57,10 @@ class LogoPlacementeAPIList(APIView):
 
         serializer = LogoPlacementSerializer(placements, many=True)
         return Response(serializer.data)
+
+
+class SponsorshipAssetsAPIList(APIView):
+    permission_classes = [SponsorPublisherPermission]
+
+    def get(self, request, *args, **kwargs):
+        return Response("ok")
