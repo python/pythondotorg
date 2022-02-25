@@ -7,7 +7,7 @@ from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
 from downloads.api import OSViewSet, ReleaseViewSet, ReleaseFileViewSet
 from pages.api import PageResource
 from pages.api import PageViewSet
-from sponsors.api import LogoPlacementeAPIList
+from sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
 
 v1_api = Api(api_name='v1')
 v1_api.register(PageResource())
@@ -23,4 +23,5 @@ router.register(r'downloads/release_file', ReleaseFileViewSet)
 
 urlpatterns = [
     url(r'sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
+    url(r'sponsors/sponsorship-assets/', SponsorshipAssetsAPIList.as_view(), name="assets_list"),
 ]

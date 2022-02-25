@@ -828,8 +828,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         return GenericAsset.all_asset_types()
 
     def get_queryset(self, *args, **kwargs):
-        classes = self.get_child_models(*args, **kwargs)
-        return self.model.objects.select_related("content_type").instance_of(*classes)
+        return GenericAsset.objects.all_assets()
 
     def get_actions(self, request):
         actions = super().get_actions(request)
