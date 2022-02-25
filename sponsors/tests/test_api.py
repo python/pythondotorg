@@ -2,6 +2,7 @@ import uuid
 from urllib.parse import urlencode
 
 from django.contrib.auth.models import Permission
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.urls import reverse_lazy
 from django.utils.text import slugify
 from model_bakery import baker
@@ -155,6 +156,10 @@ class SponsorshipAssetsAPIListTests(APITestCase):
             content_object=self.sponsorship,
         )
 
+    def tearDown(self):
+        if self.img_asset.has_value:
+            self.img_asset.value.delete()
+
     def test_invalid_token(self):
         Token.objects.all().delete()
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
@@ -192,11 +197,14 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         data = response.json()
         self.assertEqual(200, response.status_code)
         self.assertEqual(0, len(data))
+
         # update asset to have a value
         self.txt_asset.value = "Text Content"
         self.txt_asset.save()
+
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         data = response.json()
+
         self.assertEqual(1, len(data))
         self.assertEqual(data[0]["internal_name"], self.internal_name)
         self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
@@ -205,8 +213,22 @@ class SponsorshipAssetsAPIListTests(APITestCase):
 
     def test_enable_to_filter_by_assets_with_no_value_via_querystring(self):
         self.url += "&list_empty=true"
+
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         data = response.json()
+
         self.assertEqual(1, len(data))
         self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
         self.assertEqual(data[0]["value"], "")
+
+    def test_serialize_img_value_as_url_to_image(self):
+        self.img_asset.value = SimpleUploadedFile(name='test_image.jpg', content=b"content", content_type='image/jpeg')
+        self.img_asset.save()
+
+        url = reverse_lazy("assets_list") + f"?internal_name={self.img_asset.internal_name}"
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+
+        self.assertEqual(1, len(data))
+        self.assertEqual(data[0]["uuid"], str(self.img_asset.uuid))
+        self.assertEqual(data[0]["value"], self.img_asset.value.url)

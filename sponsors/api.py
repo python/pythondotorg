@@ -68,7 +68,7 @@ class SponsorshipAssetsAPIList(APIView):
 
         assets = GenericAsset.objects.all_assets().filter(
             internal_name=assets_filter.by_internal_name).iterator()
-        assets = (a for a in assets if a.has_value or assets_filter.accept_empty)
+        assets = (a for a in assets if assets_filter.accept_empty or a.has_value)
         serializer = AssetSerializer(assets, many=True)
 
         return Response(serializer.data)

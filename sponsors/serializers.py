@@ -20,6 +20,7 @@ class LogoPlacementSerializer(serializers.Serializer):
 
 class AssetSerializer(serializers.ModelSerializer):
     content_type = serializers.SerializerMethodField()
+    value = serializers.SerializerMethodField()
 
     class Meta:
         model = GenericAsset
@@ -27,6 +28,11 @@ class AssetSerializer(serializers.ModelSerializer):
 
     def get_content_type(self, asset):
         return asset.content_type.name.title()
+
+    def get_value(self, asset):
+        if not asset.has_value:
+            return ""
+        return asset.value if not asset.is_file else asset.value.url
 
 
 class FilterLogoPlacementsSerializer(serializers.Serializer):
