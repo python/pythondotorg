@@ -153,7 +153,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.img_asset = ImgAsset.objects.create(
             internal_name="img_assets",
             uuid=uuid.uuid4(),
-            content_object=self.sponsorship,
+            content_object=self.sponsor,
         )
 
     def tearDown(self):
@@ -210,6 +210,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
         self.assertEqual(data[0]["value"], "Text Content")
         self.assertEqual(data[0]["content_type"], "Sponsorship")
+        self.assertEqual(data[0]["sponsor"], "Sponsor 1")
 
     def test_enable_to_filter_by_assets_with_no_value_via_querystring(self):
         self.url += "&list_empty=true"
@@ -220,6 +221,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.assertEqual(1, len(data))
         self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
         self.assertEqual(data[0]["value"], "")
+        self.assertEqual(data[0]["sponsor"], "Sponsor 1")
 
     def test_serialize_img_value_as_url_to_image(self):
         self.img_asset.value = SimpleUploadedFile(name='test_image.jpg', content=b"content", content_type='image/jpeg')
@@ -232,3 +234,4 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.assertEqual(1, len(data))
         self.assertEqual(data[0]["uuid"], str(self.img_asset.uuid))
         self.assertEqual(data[0]["value"], self.img_asset.value.url)
+        self.assertEqual(data[0]["sponsor"], "Sponsor 2")

@@ -21,10 +21,11 @@ class LogoPlacementSerializer(serializers.Serializer):
 class AssetSerializer(serializers.ModelSerializer):
     content_type = serializers.SerializerMethodField()
     value = serializers.SerializerMethodField()
+    sponsor = serializers.SerializerMethodField()
 
     class Meta:
         model = GenericAsset
-        fields = ["internal_name", "uuid", "value", "content_type"]
+        fields = ["internal_name", "uuid", "value", "content_type", "sponsor"]
 
     def get_content_type(self, asset):
         return asset.content_type.name.title()
@@ -33,6 +34,12 @@ class AssetSerializer(serializers.ModelSerializer):
         if not asset.has_value:
             return ""
         return asset.value if not asset.is_file else asset.value.url
+
+    def get_sponsor(self, asset):
+        if asset.from_sponsorship:
+            return asset.content_object.sponsor.name
+        else:
+            return asset.content_object.name
 
 
 class FilterLogoPlacementsSerializer(serializers.Serializer):
