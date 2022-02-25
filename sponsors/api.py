@@ -4,8 +4,9 @@ from django.urls import reverse
 from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
-from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship
-from sponsors.serializers import LogoPlacementSerializer, FilterLogoPlacementsSerializer
+from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship, GenericAsset
+from sponsors.serializers import LogoPlacementSerializer, FilterLogoPlacementsSerializer, FilterAssetsSerializer, \
+    AssetSerializer
 
 
 class SponsorPublisherPermission(permissions.BasePermission):
@@ -62,4 +63,12 @@ class SponsorshipAssetsAPIList(APIView):
     permission_classes = [SponsorPublisherPermission]
 
     def get(self, request, *args, **kwargs):
-        return Response("ok")
+        assets_filter = FilterAssetsSerializer(data=request.GET)
+        assets_filter.is_valid(raise_exception=True)
+
+        assets = GenericAsset.objects.all_assets().filter(
+            internal_name=assets_filter.by_internal_name).iterator()
+        assets = (a for a in assets if a.has_value or assets_filter.accept_empty)
+        serializer = AssetSerializer(assets, many=True)
+
+        return Response(serializer.data)

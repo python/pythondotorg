@@ -1,5 +1,7 @@
 
 from rest_framework import serializers
+
+from sponsors.models import GenericAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 class LogoPlacementSerializer(serializers.Serializer):
@@ -14,6 +16,17 @@ class LogoPlacementSerializer(serializers.Serializer):
     sponsor_url = serializers.URLField()
     level_name = serializers.CharField()
     level_order = serializers.IntegerField()
+
+
+class AssetSerializer(serializers.ModelSerializer):
+    content_type = serializers.SerializerMethodField()
+
+    class Meta:
+        model = GenericAsset
+        fields = ["internal_name", "uuid", "value", "content_type"]
+
+    def get_content_type(self, asset):
+        return asset.content_type.name.title()
 
 
 class FilterLogoPlacementsSerializer(serializers.Serializer):
@@ -41,3 +54,16 @@ class FilterLogoPlacementsSerializer(serializers.Serializer):
             return True
         else:
             return False
+
+
+class FilterAssetsSerializer(serializers.Serializer):
+    internal_name = serializers.CharField(max_length=128)
+    list_empty = serializers.BooleanField(required=False, default=False)
+
+    @property
+    def by_internal_name(self):
+        return self.validated_data["internal_name"]
+
+    @property
+    def accept_empty(self):
+        return self.validated_data.get("list_empty", False)

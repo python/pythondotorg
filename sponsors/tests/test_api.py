@@ -1,3 +1,4 @@
+import uuid
 from urllib.parse import urlencode
 
 from django.contrib.auth.models import Permission
@@ -7,7 +8,7 @@ from model_bakery import baker
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from sponsors.models import Sponsor
+from sponsors.models import Sponsor, Sponsorship, TextAsset, ImgAsset
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -132,7 +133,6 @@ class LogoPlacementeAPIListTests(APITestCase):
 
 
 class SponsorshipAssetsAPIListTests(APITestCase):
-    url = reverse_lazy("assets_list")
 
     def setUp(self):
         self.user = baker.make('users.User')
@@ -140,6 +140,20 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.permission = Permission.objects.get(name='Can access sponsor placement API')
         self.user.user_permissions.add(self.permission)
         self.authorization = f'Token {token.key}'
+        self.internal_name = "txt_assets"
+        self.url = reverse_lazy("assets_list") + f"?internal_name={self.internal_name}"
+        self.sponsorship = baker.make(Sponsorship, sponsor__name='Sponsor 1')
+        self.sponsor = baker.make(Sponsor, name='Sponsor 2')
+        self.txt_asset = TextAsset.objects.create(
+            internal_name=self.internal_name,
+            uuid=uuid.uuid4(),
+            content_object=self.sponsorship,
+        )
+        self.img_asset = ImgAsset.objects.create(
+            internal_name="img_assets",
+            uuid=uuid.uuid4(),
+            content_object=self.sponsorship,
+        )
 
     def test_invalid_token(self):
         Token.objects.all().delete()
@@ -165,3 +179,34 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.user.user_permissions.remove(self.permission)
         response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
         self.assertEqual(403, response.status_code)
+
+    def test_bad_request_if_no_internal_name(self):
+        url = reverse_lazy("assets_list")
+        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        self.assertEqual(400, response.status_code)
+        self.assertIn("internal_name", response.json())
+
+    def test_list_assets_by_internal_name(self):
+        # by default exclude assets with no value
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+        self.assertEqual(200, response.status_code)
+        self.assertEqual(0, len(data))
+        # update asset to have a value
+        self.txt_asset.value = "Text Content"
+        self.txt_asset.save()
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+        self.assertEqual(1, len(data))
+        self.assertEqual(data[0]["internal_name"], self.internal_name)
+        self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
+        self.assertEqual(data[0]["value"], "Text Content")
+        self.assertEqual(data[0]["content_type"], "Sponsorship")
+
+    def test_enable_to_filter_by_assets_with_no_value_via_querystring(self):
+        self.url += "&list_empty=true"
+        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        data = response.json()
+        self.assertEqual(1, len(data))
+        self.assertEqual(data[0]["uuid"], str(self.txt_asset.uuid))
+        self.assertEqual(data[0]["value"], "")
