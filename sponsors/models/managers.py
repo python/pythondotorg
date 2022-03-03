@@ -31,7 +31,7 @@ class SponsorshipQuerySet(QuerySet):
     def enabled(self):
         """Sponsorship which are finalized and enabled"""
         today = timezone.now().date()
-        return self.finalized().active_on_date(today)
+        return self.finalized().active_on_date(today).exclude(overlapped_by__isnull=False)
 
     def with_logo_placement(self, logo_place=None, publisher=None):
         from sponsors.models import LogoPlacement, SponsorBenefit

@@ -63,6 +63,14 @@ class SponsorshipQuerySetTests(TestCase):
             start_date=today - 2 * two_days,
             end_date=today - two_days
         )
+        # shouldn't list overlapped sponsorships
+        baker.make(
+            Sponsorship,
+            status=Sponsorship.FINALIZED,
+            start_date=today - two_days,
+            end_date=today + two_days,
+            overlapped_by=enabled,
+        )
 
         qs = Sponsorship.objects.enabled()
 
