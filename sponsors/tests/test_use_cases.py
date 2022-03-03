@@ -12,7 +12,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate
+from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate, Sponsor
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -220,7 +220,7 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertEqual(b"Contract content", self.contract.signed_document.read())
         self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
 
-    def test_build_use_case_with_default_notificationss(self):
+    def test_build_use_case_with_default_notifications(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(
@@ -229,6 +229,63 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[1], RefreshSponsorshipsCache,
         )
+
+    def test_execute_contract_flag_overlapping_sponsorships(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=sponsorship.sponsor,
+            sponsorship__start_date=sponsorship.start_date + timedelta(days=5),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertEqual(sponsorship.overlapped_by, recent_contract.sponsorship)
+
+    def test_execute_contract_do_not_flag_overlap_if_no_date_range_conflict(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=sponsorship.sponsor,
+            sponsorship__start_date=sponsorship.end_date + timedelta(days=1),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertIsNone(sponsorship.overlapped_by)
+
+    def test_execute_contract_do_not_flag_overlap_if_from_other_sponsor(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=baker.make(Sponsor),
+            sponsorship__start_date=sponsorship.start_date + timedelta(days=5),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertIsNone(sponsorship.overlapped_by)
 
 
 class NullifyContractUseCaseTests(TestCase):
