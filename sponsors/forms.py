@@ -380,6 +380,9 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
         super().__init__(*args, **kwargs)
+        if self.instance:
+            qs = self.fields["overlapped_by"].queryset.exclude(id=self.instance.id)
+            self.fields["overlapped_by"].queryset = qs.filter(sponsor_id=self.instance.sponsor_id)
         if force_required:
             for field_name in self.fields:
                 self.fields[field_name].required = True
