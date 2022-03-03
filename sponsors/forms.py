@@ -384,6 +384,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             qs = self.fields["overlapped_by"].queryset.exclude(id=self.instance.id)
             self.fields["overlapped_by"].queryset = qs.filter(sponsor_id=self.instance.sponsor_id)
         if force_required:
+            self.fields.pop("overlapped_by")  # overlapped should never be displayed on approval
             for field_name in self.fields:
                 self.fields[field_name].required = True
 
