@@ -269,11 +269,11 @@ http {
                 }
 
                 location ~ ^/dev/peps/?(.*)$ {
-                  return 302 https://peps.python.org/$1/;
+                  return 302 https://peps.python.org/$1;
                 }
 
                 location ~ ^/peps/(.*)\.html$ {
-                  return 302 https://peps.python.org/$1/;
+                  return 302 https://peps.python.org/$1;
                 }
 
                 location ^/(dev/)?peps(/.*)?$ {
