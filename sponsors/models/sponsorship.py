@@ -151,6 +151,7 @@ class Sponsorship(models.Model):
                                                                                                               "name")
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
+    overlapped_by = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
 
     assets = GenericRelation(GenericAsset)
 

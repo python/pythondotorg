@@ -375,11 +375,16 @@ class SponsorshipApplicationForm(forms.Form):
 class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
+    overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
 
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
         super().__init__(*args, **kwargs)
+        if self.instance:
+            qs = self.fields["overlapped_by"].queryset.exclude(id=self.instance.id)
+            self.fields["overlapped_by"].queryset = qs.filter(sponsor_id=self.instance.sponsor_id)
         if force_required:
+            self.fields.pop("overlapped_by")  # overlapped should never be displayed on approval
             for field_name in self.fields:
                 self.fields[field_name].required = True
 

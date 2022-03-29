@@ -24,3 +24,4 @@ __pycache__
 .coverage
 .env
 .DS_Store
+.envrc

@@ -101,6 +101,12 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
     def execute(self, contract, contract_file, **kwargs):
         contract.signed_document = contract_file
         contract.execute(force=self.force_execute)
+        overlapping_sponsorship = Sponsorship.objects.filter(
+            sponsor=contract.sponsorship.sponsor,
+        ).exclude(
+            id=contract.sponsorship.id
+        ).enabled().active_on_date(contract.sponsorship.start_date)
+        overlapping_sponsorship.update(overlapped_by=contract.sponsorship)
         self.notify(
             request=kwargs.get("request"),
             contract=contract,

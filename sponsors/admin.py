@@ -295,6 +295,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
                     "end_date",
                     "get_contract",
                     "level_name",
+                    "overlapped_by",
                 ),
             },
         ),
