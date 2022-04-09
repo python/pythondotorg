@@ -182,21 +182,17 @@ class Event(ContentManageable):
             return None
 
     def is_scheduled_to_start_this_year(self) -> bool:
-        current_year: int = datetime.datetime.now().year
-        try:
+        if self.next_time:
+            current_year: int = datetime.datetime.now().year
             if self.next_time.dt_start.year == current_year:
                 return True
-        except Exception:
-            pass
         return False
 
     def is_scheduled_to_end_this_year(self) -> bool:
-        current_year: int = datetime.datetime.now().year
-        try:
+        if self.next_time:
+            current_year: int = datetime.datetime.now().year
             if self.next_time.dt_end.year == current_year:
                 return True
-        except Exception:
-            pass
         return False
 
     @property
