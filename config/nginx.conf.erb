@@ -260,6 +260,10 @@ http {
                   return 301 https://pypi.python.org/pypi$1?$args;
                 }
 
+                location ~ ^/dev/peps/peps.rss/?$ {
+                  return 301 https://peps.python.org/peps.rss/;
+                }
+
                 location ~ ^/peps/pep-(.*)\.html$ {
                   return 301 https://www.python.org/dev/peps/pep-$1/;
                 }
