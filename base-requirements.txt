@@ -1,7 +1,7 @@
 dj-database-url==0.5.0
 django-pipeline==2.0.6
 django-sitetree==1.17.0
-Django==2.2.24
+Django==4.0.5
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
