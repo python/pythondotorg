@@ -1,0 +1,40 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
+| {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations nominations_view"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+  <header class="article-header">
+    <h1 class="page-title">Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election</h1>
+  </header>
+  <div>
+    <ul>
+      <li><b>Name</b>: {{ nomination.name }}</li>
+      <li><b>Employer</b>: {{ nomination.employer }}</li>
+      <li><b>Other Affiliations</b>: {{ nomination.other_affiliations }}</li>
+      <li><b>Previous Board Service</b>: {{ nomination.previous_board_service }}</li>
+      <li><b>Nominated By</b>: {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}</li>
+      {% if nomination.nominee.user == request.user %}
+      <li><b>Accepted:</b> {{ nomination.accepted }}</li>
+      {% endif %}
+    </ul>
+  </div>
+  <div>
+    <h2><b>Nomination Statement</b></h2>
+    {{ nomination.nomination_statement.rendered|safe }}
+  </div>
+  <div>
+        <form method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Update">
+        </form>
+  </div>
+</article>
+{% endblock content %}
