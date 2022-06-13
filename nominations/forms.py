@@ -51,3 +51,14 @@ class NominationCreateForm(NominationForm):
                 )
 
         return data
+
+
+class NominationAcceptForm(forms.ModelForm):
+    class Meta:
+        model = Nomination
+        fields = (
+            "accepted",
+        )
+        help_texts = {
+            "accepted": "If selected, this nomination will be considered accepted and displayed once nominations are public.",
+        }

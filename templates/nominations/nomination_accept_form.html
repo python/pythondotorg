@@ -14,30 +14,6 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
   <header class="article-header">
     <h1 class="page-title">Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election</h1>
   </header>
-{% if nomination.nominee.user == request.user %}
-  <center>
-    <i>You are the nominee for this nomination.</i><br>
-    <i>It is currently accepted!</i></br>
-  {% if editable %}
-    <a href="{{ nomination.get_accept_url }}">Change Acceptance</a>
-  {% else %}
-    <i>It is no longer editable as nominations are closed.</i>
-  {% endif %}
-  </center>
-{% elif nomination.nominator == request.user %}
-  <center>
-    <i>You made this nomination.</i>
-  {% if editable %}
-    <a href="{{ nomination.get_edit_url }}">Edit</a>
-  {% else %}
-    {% if nomination.election.nominations_open %}
-    <i>It is no longer editable as it has been accepted.</i>
-    {% else %}
-    <i>It is no longer editable as nominations are closed.</i>
-    {% endif %}
-  {% endif %}
-  </center>
-{% endif %}
   <div>
     <ul>
       <li><b>Name</b>: {{ nomination.name }}</li>
@@ -53,6 +29,12 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
   <div>
     <h2><b>Nomination Statement</b></h2>
     {{ nomination.nomination_statement.rendered|safe }}
+  </div>
+  <div>
+        <form method="post">{% csrf_token %}
+            {{ form.as_p }}
+            <input type="submit" value="Update">
+        </form>
   </div>
 </article>
 {% endblock content %}
