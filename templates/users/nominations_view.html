@@ -30,7 +30,11 @@
     {% endif %}
     <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
-      View / Manage
+          {% if nomination.nominator == request.user %}
+          View / Edit
+          {% else %}
+          View / Manage Acceptance
+          {% endif %}
       {% else %}
       View
       {% endif %}
