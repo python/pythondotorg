@@ -84,7 +84,7 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # Requires login now
 
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -105,7 +105,7 @@ class UsersViewsTestCase(TestCase):
     def test_membership_update_404(self):
         url = reverse('users:user_membership_edit')
         self.assertFalse(self.user.has_membership)
-        self.client.login(username=self.user, password='password')
+        self.client.login(username=self.user.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -114,7 +114,7 @@ class UsersViewsTestCase(TestCase):
         # has membership.
         url = reverse('users:user_membership_create')
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertRedirects(response, reverse('users:user_membership_edit'))
 
@@ -139,6 +139,7 @@ class UsersViewsTestCase(TestCase):
 
         # should return 200 if the user does want to see their user profile
         post_data = {
+            'username': 'username',
             'search_visibility': 0,
             'email_privacy': 1,
             'public_profile': False,
