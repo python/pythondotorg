@@ -1,7 +1,7 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.urls import reverse
 from django.db import models
 from django.utils import timezone
@@ -13,6 +13,12 @@ from rest_framework.authtoken.models import Token
 from .managers import UserManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
+
+
+class CustomUserManager(UserManager):
+    def get_by_natural_key(self, username):
+        case_insensitive_username_field = '{}__iexact'.format(self.model.USERNAME_FIELD)
+        return self.get(**{case_insensitive_username_field: username})
 
 
 class User(AbstractUser):
@@ -38,7 +44,7 @@ class User(AbstractUser):
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})
