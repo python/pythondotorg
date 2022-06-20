@@ -139,6 +139,7 @@ class UsersViewsTestCase(TestCase):
 
         # should return 200 if the user does want to see their user profile
         post_data = {
+            'username': 'username',
             'search_visibility': 0,
             'email_privacy': 1,
             'public_profile': False,
