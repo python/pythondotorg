@@ -53,7 +53,7 @@ Pages are individual entire pages of markup content.  They are require ``Title``
 Boxes
 -----
 
-Boxes are re-usable bits of HTML markup that are used throughout the site.  Things like sidebar info and specific areas of areas of pages with a richer design (i.e. landing pages) that would be cumbersome to edit as one large content textarea.
+Boxes are re-usable bits of HTML markup that are used throughout the site.  Things like sidebar info and specific areas of pages with a richer design (i.e. landing pages) that would be cumbersome to edit as one large content textarea.
 
 .. note:: There are *special boxes* that are automatically rebuilt using templates, see :ref:`supernav`.
 
