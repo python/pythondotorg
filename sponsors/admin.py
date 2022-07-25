@@ -263,6 +263,27 @@ class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
         return queryset.filter(id__in=Subquery(qs))
 
 
+class SponsorshipStatusListFilter(admin.SimpleListFilter):
+    title = "status"
+    parameter_name = "status"
+
+    def lookups(self, request, model_admin):
+        return Sponsorship.STATUS_CHOICES
+
+    def queryset(self, request, queryset):
+        status = self.value()
+        # exclude rejected ones by default
+        if not status:
+            return queryset.exclude(status=Sponsorship.REJECTED)
+        return queryset.filter(status=status)
+
+    def choices(self, changelist):
+        choices = list(super().choices(changelist))
+        # replaces django default "All" text by a custom text
+        choices[0]['display'] = "Applied / Approved / Finalized"
+        return choices
+
+
 @admin.register(Sponsorship)
 class SponsorshipAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
@@ -278,7 +299,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "start_date",
         "end_date",
     ]
-    list_filter = ["status", "package", TargetableEmailBenefitsFilter]
+    list_filter = [SponsorshipStatusListFilter, "package", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
     fieldsets = [
         (

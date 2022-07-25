@@ -3898,6 +3898,8 @@ span.highlighted {
   #select_sponsorship_benefits_container .submit-row .btn {
     width: 218px;
     height: 47px;
+    font-weight: bold;
+    color: black !important;
     background: #ffd343;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
     border-radius: 20px;
