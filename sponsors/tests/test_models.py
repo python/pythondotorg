@@ -20,7 +20,7 @@ from ..models import (
     SponsorshipPackage,
     TieredQuantity,
     TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
-    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset
+    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset, SponsorshipCurrentYear
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -293,6 +293,13 @@ class SponsorshipModelTests(TestCase):
 
             self.assertEqual(sponsorship.agreed_fee, 2000)
 
+
+class SponsorshipCurrentYearTests(TestCase):
+
+    def test_singleton_object_is_loaded_by_default(self):
+        curr_year = SponsorshipCurrentYear.objects.get()
+        self.assertEqual(1, curr_year.pk)
+        self.assertEqual(2023, curr_year.year)
 
 class SponsorshipPackageTests(TestCase):
     def setUp(self):
