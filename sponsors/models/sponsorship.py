@@ -7,6 +7,7 @@ from itertools import chain
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction
 from django.db.models import Subquery, Sum
 from django.template.defaultfilters import truncatechars
@@ -491,3 +492,15 @@ class SponsorshipBenefit(OrderedModel):
 
     class Meta(OrderedModel.Meta):
         pass
+
+
+class SponsorshipCurrentYear(models.Model):
+    """
+    This model is a singleton and is used to control the active year to be used for new sponsorship applications
+    """
+    year = models.PositiveIntegerField(
+        validators=[
+            MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+            MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+        ],
+    )
