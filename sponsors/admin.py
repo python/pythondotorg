@@ -588,6 +588,17 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return views_admin.list_uploaded_assets(self, request, pk)
 
 
+@admin.register(SponsorshipCurrentYear)
+class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
+    list_display = ["year"]
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
     list_display = ["internal_name"]

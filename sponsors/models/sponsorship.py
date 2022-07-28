@@ -508,7 +508,15 @@ class SponsorshipCurrentYear(models.Model):
             MinValueValidator(limit_value=2022, message="The min year value is 2022."),
             MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
         ],
+        help_text="Every new sponsorship application will be considered as an application from to the active year."
     )
+
+    def __str__(self):
+        return f"Active year: {self.year}."
 
     def delete(self, *args, **kwargs):
         raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
+
+    class Meta:
+        verbose_name = "Active Year"
+        verbose_name_plural = "Active Year"
