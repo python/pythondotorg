@@ -1,4 +1,6 @@
 from datetime import date, timedelta
+
+from django.db import IntegrityError
 from model_bakery import baker, seq
 
 from django import forms
@@ -300,6 +302,14 @@ class SponsorshipCurrentYearTests(TestCase):
         curr_year = SponsorshipCurrentYear.objects.get()
         self.assertEqual(1, curr_year.pk)
         self.assertEqual(2023, curr_year.year)
+
+    def test_make_sure_we_cannot_add_new_current_years(self):
+        self.assertTrue(SponsorshipCurrentYear.objects.get())
+        with self.assertRaises(IntegrityError) as context:
+            baker.make(SponsorshipCurrentYear, id=2)
+
+        self.assertIn("sponsorship_current_year_singleton_idx", str(context.exception))
+
 
 class SponsorshipPackageTests(TestCase):
     def setUp(self):

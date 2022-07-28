@@ -496,7 +496,9 @@ class SponsorshipBenefit(OrderedModel):
 
 class SponsorshipCurrentYear(models.Model):
     """
-    This model is a singleton and is used to control the active year to be used for new sponsorship applications
+    This model is a singleton and is used to control the active year to be used for new sponsorship applications.
+    The sponsorship_current_year_singleton_idx introduced by migration 0079 in sponsors app
+    enforces the singleton at DB level.
     """
     year = models.PositiveIntegerField(
         validators=[
