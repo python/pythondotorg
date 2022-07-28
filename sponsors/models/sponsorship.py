@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from django.db.models import Subquery, Sum
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
@@ -21,7 +21,8 @@ from ordered_model.models import OrderedModel
 from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
     SponsorshipInvalidDateRangeException
 from sponsors.models.assets import GenericAsset
-from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenefitManager, SponsorshipQuerySet
+from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenefitManager, \
+    SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
 from sponsors.models.benefits import TieredQuantityConfiguration
 from sponsors.models.sponsors import SponsorBenefit
 
@@ -500,9 +501,14 @@ class SponsorshipCurrentYear(models.Model):
     The sponsorship_current_year_singleton_idx introduced by migration 0079 in sponsors app
     enforces the singleton at DB level.
     """
+    objects = SponsorshipCurrentYearQuerySet.as_manager()
+
     year = models.PositiveIntegerField(
         validators=[
             MinValueValidator(limit_value=2022, message="The min year value is 2022."),
             MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
         ],
     )
+
+    def delete(self, *args, **kwargs):
+        raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")

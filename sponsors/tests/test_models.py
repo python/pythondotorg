@@ -310,6 +310,18 @@ class SponsorshipCurrentYearTests(TestCase):
 
         self.assertIn("sponsorship_current_year_singleton_idx", str(context.exception))
 
+    def test_singleton_object_cannot_be_deleted(self):
+        curr_year = SponsorshipCurrentYear.objects.get()
+        with self.assertRaises(IntegrityError) as context:
+            curr_year.delete()
+
+        self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
+
+        with self.assertRaises(IntegrityError) as context:
+            SponsorshipCurrentYear.objects.all().delete()
+
+        self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
+
 
 class SponsorshipPackageTests(TestCase):
     def setUp(self):

@@ -1,3 +1,4 @@
+from django.db import IntegrityError
 from django.db.models import Count
 from ordered_model.models import OrderedModelManager
 from django.db.models import Q, Subquery
@@ -48,6 +49,12 @@ class SponsorshipQuerySet(QuerySet):
         feature_qs = feature_model.objects.all()
         benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+
+
+class SponsorshipCurrentYearQuerySet(QuerySet):
+
+    def delete(self):
+        raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
 
 
 class SponsorContactQuerySet(QuerySet):
