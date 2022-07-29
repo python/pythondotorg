@@ -294,13 +294,13 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "sponsor",
         "status",
         "package",
-        "application_year",
+        "year",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
     ]
-    list_filter = [SponsorshipStatusListFilter, "package", "application_year", TargetableEmailBenefitsFilter]
+    list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
     fieldsets = [
         (
@@ -312,7 +312,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
                     "status",
                     "package",
                     "sponsorship_fee",
-                    "application_year",
+                    "year",
                     "get_estimated_cost",
                     "start_date",
                     "end_date",
@@ -409,8 +409,8 @@ class SponsorshipAdmin(admin.ModelAdmin):
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
-        if obj.application_year:
-            readonly_fields.append("application_year")
+        if obj.year:
+            readonly_fields.append("year")
 
         return readonly_fields
 

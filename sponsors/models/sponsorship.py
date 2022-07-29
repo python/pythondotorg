@@ -142,7 +142,7 @@ class Sponsorship(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
-    application_year = models.PositiveIntegerField(
+    year = models.PositiveIntegerField(
         null=True,
         validators=[
             MinValueValidator(limit_value=2022, message="The min year value is 2022."),
@@ -218,7 +218,7 @@ class Sponsorship(models.Model):
             package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
-            application_year=current_year,
+            year=current_year,
         )
 
         for benefit in benefits:

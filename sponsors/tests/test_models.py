@@ -129,7 +129,7 @@ class SponsorshipModelTests(TestCase):
         self.assertIsNone(sponsorship.agreed_fee)
         self.assertIsNone(sponsorship.package)
         self.assertTrue(sponsorship.for_modified_package)
-        self.assertEqual(sponsorship.application_year, current_year)
+        self.assertEqual(sponsorship.year, current_year)
 
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
         for benefit in self.benefits:
