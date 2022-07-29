@@ -56,23 +56,23 @@ class SponsorshipsBenefitsForm(forms.Form):
     the sponsorship application submission.
     """
     package = forms.ModelChoiceField(
-        queryset=SponsorshipPackage.objects.list_advertisables(),
+        queryset=SponsorshipPackage.objects.from_current_year().list_advertisables(),
         widget=forms.RadioSelect(),
         required=False,
         empty_label=None,
     )
     add_ons_benefits = PickSponsorshipBenefitsField(
         required=False,
-        queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
+        queryset=SponsorshipBenefit.objects.from_current_year().add_ons().select_related("program"),
     )
     a_la_carte_benefits = PickSponsorshipBenefitsField(
         required=False,
-        queryset=SponsorshipBenefit.objects.a_la_carte().select_related("program"),
+        queryset=SponsorshipBenefit.objects.from_current_year().a_la_carte().select_related("program"),
     )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related(
+        benefits_qs = SponsorshipBenefit.objects.from_current_year().with_packages().select_related(
             "program"
         )
 

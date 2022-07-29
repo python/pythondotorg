@@ -16,30 +16,37 @@ from sponsors.forms import (
     SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage
+    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage, SponsorshipCurrentYear
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 
 
 class SponsorshipsBenefitsFormTests(TestCase):
     def setUp(self):
+        self.current_year = SponsorshipCurrentYear.objects.get().year
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
         )
         self.program_2_benefits = baker.make(
-            SponsorshipBenefit, program=self.wk, _quantity=5
+            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        self.package = baker.make(
+            "sponsors.SponsorshipPackage", advertise=True, year=self.current_year
+        )
         self.package.benefits.add(*self.program_1_benefits)
         self.package.benefits.add(*self.program_2_benefits)
 
         # packages without associated packages
-        self.add_ons = baker.make(SponsorshipBenefit, program=self.psf, _quantity=2)
+        self.add_ons = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
+        )
 
         # a la carte benefits
-        self.a_la_carte = baker.make(SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2)
+        self.a_la_carte = baker.make(
+            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year
+        )
 
     def test_specific_field_to_select_add_ons(self):
         form = SponsorshipsBenefitsForm()
@@ -79,7 +86,9 @@ class SponsorshipsBenefitsFormTests(TestCase):
             self.assertIn(benefit.id, [c[0] for c in choices])
 
     def test_package_list_only_advertisable_ones(self):
-        ads_pkgs = baker.make('SponsorshipPackage', advertise=True, _quantity=2)
+        ads_pkgs = baker.make(
+            'SponsorshipPackage', advertise=True, _quantity=2, year=self.current_year
+        )
         baker.make('SponsorshipPackage', advertise=False)
 
         form = SponsorshipsBenefitsForm()
@@ -140,7 +149,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
             self.assertEqual(map[b.id], [benefit_2.id])
 
     def test_invalid_form_if_any_conflict(self):
-        benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk)
+        benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk, year=self.current_year)
         benefit_1.conflicts.add(*self.program_1_benefits)
         self.package.benefits.add(benefit_1)
 
@@ -189,12 +198,12 @@ class SponsorshipsBenefitsFormTests(TestCase):
 
     def test_package_only_benefit_with_wrong_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)
-        package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
         package.benefits.add(*SponsorshipBenefit.objects.all())
 
         data = {
             "benefits_psf": [self.program_1_benefits[0]],
-            "package": baker.make("sponsors.SponsorshipPackage", advertise=True).id,  # other package
+            "package": baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year).id,  # other package
         }
 
         form = SponsorshipsBenefitsForm(data=data)

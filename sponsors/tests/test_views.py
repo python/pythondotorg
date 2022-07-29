@@ -15,7 +15,7 @@ from ..models import (
     Sponsor,
     SponsorshipBenefit,
     SponsorContact,
-    Sponsorship,
+    Sponsorship, SponsorshipCurrentYear,
 )
 from sponsors.forms import (
     SponsorshipsBenefitsForm,
@@ -27,23 +27,24 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
     url = reverse_lazy("select_sponsorship_application_benefits")
 
     def setUp(self):
+        self.current_year = SponsorshipCurrentYear.objects.get().year
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
         )
         self.program_2_benefits = baker.make(
-            SponsorshipBenefit, program=self.wk, _quantity=5
+            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
         self.package.benefits.add(*self.program_1_benefits)
-        package_2 = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        package_2 = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
         package_2.benefits.add(*self.program_2_benefits)
         self.add_on_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=2
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
         )
         self.a_la_carte_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=2, a_la_carte=True,
+            SponsorshipBenefit, program=self.psf, _quantity=2, a_la_carte=True, year=self.current_year
         )
 
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
@@ -162,22 +163,23 @@ class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
 
     def setUp(self):
+        self.current_year = SponsorshipCurrentYear.objects.get().year
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, email="bernardo@companyemail.com"
         )
         self.client.force_login(self.user)
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
         for benefit in self.program_1_benefits:
             benefit.packages.add(self.package)
 
         # packages without associated packages
-        self.add_on = baker.make(SponsorshipBenefit)
+        self.add_on = baker.make(SponsorshipBenefit, year=self.current_year)
         # a la carte benefit
-        self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True)
+        self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True, year=self.current_year)
 
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
