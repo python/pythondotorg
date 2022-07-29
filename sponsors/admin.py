@@ -612,6 +612,7 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
 @admin.register(Contract)
 class ContractModelAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/contract_change_form.html"
+    list_filter = ["sponsorship__year"]
     list_display = [
         "id",
         "sponsorship",
