@@ -210,6 +210,7 @@ class Sponsorship(models.Model):
         if cls.objects.in_progress().filter(sponsor=sponsor).exists():
             raise SponsorWithExistingApplicationException(f"Sponsor pk: {sponsor.pk}")
 
+        current_year = SponsorshipCurrentYear.objects.get().year
         sponsorship = cls.objects.create(
             submited_by=submited_by,
             sponsor=sponsor,
@@ -217,6 +218,7 @@ class Sponsorship(models.Model):
             package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
+            application_year=current_year,
         )
 
         for benefit in benefits:
