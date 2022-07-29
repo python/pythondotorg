@@ -26,6 +26,11 @@ from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenef
 from sponsors.models.benefits import TieredQuantityConfiguration
 from sponsors.models.sponsors import SponsorBenefit
 
+YEAR_VALIDATORS = [
+     MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+     MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+]
+
 
 class SponsorshipPackage(OrderedModel):
     """
@@ -142,13 +147,7 @@ class Sponsorship(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
-    year = models.PositiveIntegerField(
-        null=True,
-        validators=[
-            MinValueValidator(limit_value=2022, message="The min year value is 2022."),
-            MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
-        ],
-    )
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
 
     for_modified_package = models.BooleanField(
         default=False,
@@ -513,10 +512,7 @@ class SponsorshipCurrentYear(models.Model):
     objects = SponsorshipCurrentYearQuerySet.as_manager()
 
     year = models.PositiveIntegerField(
-        validators=[
-            MinValueValidator(limit_value=2022, message="The min year value is 2022."),
-            MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
-        ],
+        validators=YEAR_VALIDATORS,
         help_text="Every new sponsorship application will be considered as an application from to the active year."
     )
 
