@@ -113,7 +113,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "package_only", "packages", "new", "a_la_carte", "unavailable"]
+    list_filter = ["program", "year", "package_only", "packages", "new", "a_la_carte", "unavailable"]
     search_fields = ["name"]
     form = SponsorshipBenefitAdminForm
 
@@ -167,7 +167,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
     list_display = ["name", "advertise", "move_up_down_links"]
-    list_filter = ["advertise"]
+    list_filter = ["advertise", "year"]
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
