@@ -747,13 +747,13 @@ class SponsorshipBenefitAdminFormTests(TestCase):
         self.program = baker.make("sponsors.SponsorshipProgram")
 
     def test_required_fields(self):
-        required = {"name", "program"}
+        required = {"name", "program", "year"}
         form = SponsorshipBenefitAdminForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(set(form.errors), required)
 
     def test_a_la_carte_benefit_cannot_have_package(self):
-        data = {"name": "benefit", "program": self.program.pk, "a_la_carte": True}
+        data = {"name": "benefit", "program": self.program.pk, "a_la_carte": True, "year": 2023}
         form = SponsorshipBenefitAdminForm(data=data)
         self.assertTrue(form.is_valid())
 
