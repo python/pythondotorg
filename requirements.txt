@@ -1,3 +1,2 @@
 -r base-requirements.txt
 -r prod-requirements.txt
-django-extensions==3.1.4
