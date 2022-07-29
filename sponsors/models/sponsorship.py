@@ -21,7 +21,7 @@ from ordered_model.models import OrderedModel
 from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
     SponsorshipInvalidDateRangeException
 from sponsors.models.assets import GenericAsset
-from sponsors.models.managers import SponsorshipPackageManager, SponsorshipBenefitManager, \
+from sponsors.models.managers import SponsorshipPackageQuerySet, SponsorshipBenefitQuerySet, \
     SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
 from sponsors.models.benefits import TieredQuantityConfiguration
 from sponsors.models.sponsors import SponsorBenefit
@@ -36,7 +36,7 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
-    objects = SponsorshipPackageManager()
+    objects = SponsorshipPackageQuerySet.as_manager()
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
@@ -353,7 +353,7 @@ class SponsorshipBenefit(OrderedModel):
     package and program.
     """
 
-    objects = SponsorshipBenefitManager()
+    objects = SponsorshipBenefitQuerySet.as_manager()
 
     # Public facing
     name = models.CharField(

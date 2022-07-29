@@ -1,6 +1,6 @@
 from django.db import IntegrityError
 from django.db.models import Count
-from ordered_model.models import OrderedModelManager
+from ordered_model.models import OrderedModelManager, OrderedModelQuerySet
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -81,7 +81,7 @@ class SponsorContactQuerySet(QuerySet):
         return self.filter(query)
 
 
-class SponsorshipBenefitManager(OrderedModelManager):
+class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
     def with_conflicts(self):
         return self.exclude(conflicts__isnull=True)
 
@@ -102,7 +102,7 @@ class SponsorshipBenefitManager(OrderedModelManager):
         )
 
 
-class SponsorshipPackageManager(OrderedModelManager):
+class SponsorshipPackageQuerySet(OrderedModelQuerySet):
     def list_advertisables(self):
         return self.filter(advertise=True)
 
