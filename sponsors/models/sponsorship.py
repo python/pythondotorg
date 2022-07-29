@@ -47,6 +47,7 @@ class SponsorshipPackage(OrderedModel):
                                                                                     "page")
     slug = models.SlugField(db_index=True, blank=False, null=False, help_text="Internal identifier used "
                                                                               "to reference this package.")
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
 
     def __str__(self):
         return self.name
@@ -443,6 +444,7 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Conflicts",
         help_text="For benefits that conflict with one another,",
     )
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
 
     NEW_MESSAGE = "New benefit this year!"
     PACKAGE_ONLY_MESSAGE = "Benefit only available as part of a sponsor package"
