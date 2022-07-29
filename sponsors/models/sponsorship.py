@@ -142,6 +142,13 @@ class Sponsorship(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
+    application_year = models.PositiveIntegerField(
+        null=True,
+        validators=[
+            MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+            MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+        ],
+    )
 
     for_modified_package = models.BooleanField(
         default=False,
