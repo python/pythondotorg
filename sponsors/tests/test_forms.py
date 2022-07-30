@@ -48,7 +48,10 @@ class SponsorshipsBenefitsFormTests(TestCase):
             SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year
         )
 
-    def test_specific_field_to_select_add_ons(self):
+    def test_specific_field_to_select_add_ons_from_current_year(self):
+        baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year - 1
+        )
         form = SponsorshipsBenefitsForm()
 
         choices = list(form.fields["add_ons_benefits"].choices)
@@ -57,9 +60,17 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.add_ons:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_benefits_organized_by_program(self):
-        form = SponsorshipsBenefitsForm()
+    def test_benefits_from_current_year_organized_by_program(self):
+        older_psf = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year - 1
+        )
+        older_wk = baker.make(
+            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year - 1
+        )
+        self.package.benefits.add(*older_psf)
+        self.package.benefits.add(*older_wk)
 
+        form = SponsorshipsBenefitsForm()
         field1, field2 = sorted(form.benefits_programs, key=lambda f: f.name)
 
         self.assertEqual("benefits_psf", field1.name)
@@ -76,7 +87,11 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.program_2_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_specific_field_to_select_a_la_carte_benefits(self):
+    def test_specific_field_to_select_a_la_carte_benefits_from_current_year(self):
+        # a la carte benefits
+        baker.make(
+            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year - 1
+        )
         form = SponsorshipsBenefitsForm()
 
         choices = list(form.fields["a_la_carte_benefits"].choices)
@@ -85,11 +100,12 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.a_la_carte:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_package_list_only_advertisable_ones(self):
+    def test_package_list_only_advertisable_ones_from_current_year(self):
         ads_pkgs = baker.make(
             'SponsorshipPackage', advertise=True, _quantity=2, year=self.current_year
         )
         baker.make('SponsorshipPackage', advertise=False)
+        baker.make('SponsorshipPackage', advertise=False, year=self.current_year)
 
         form = SponsorshipsBenefitsForm()
         field = form.fields.get("package")
