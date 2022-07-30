@@ -48,7 +48,7 @@ class SponsorshipPackage(OrderedModel):
                                                                                     "page")
     slug = models.SlugField(db_index=True, blank=False, null=False, help_text="Internal identifier used "
                                                                               "to reference this package.")
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
     def __str__(self):
         return self.name
@@ -149,7 +149,7 @@ class Sponsorship(models.Model):
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
     for_modified_package = models.BooleanField(
         default=False,
@@ -444,7 +444,7 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Conflicts",
         help_text="For benefits that conflict with one another,",
     )
-    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS)
+    year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
     NEW_MESSAGE = "New benefit this year!"
     PACKAGE_ONLY_MESSAGE = "Benefit only available as part of a sponsor package"
