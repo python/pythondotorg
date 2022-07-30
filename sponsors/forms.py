@@ -55,23 +55,24 @@ class SponsorshipsBenefitsForm(forms.Form):
     Form to enable user to select packages, benefits and add-ons during
     the sponsorship application submission.
     """
-    package = forms.ModelChoiceField(
-        queryset=SponsorshipPackage.objects.from_current_year().list_advertisables(),
-        widget=forms.RadioSelect(),
-        required=False,
-        empty_label=None,
-    )
-    add_ons_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.from_current_year().add_ons().select_related("program"),
-    )
-    a_la_carte_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.from_current_year().a_la_carte().select_related("program"),
-    )
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["package"] = forms.ModelChoiceField(
+            queryset=SponsorshipPackage.objects.from_current_year().list_advertisables(),
+            widget=forms.RadioSelect(),
+            required=False,
+            empty_label=None,
+        )
+        self.fields["add_ons_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_current_year().add_ons().select_related("program"),
+        )
+        self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_current_year().a_la_carte().select_related("program"),
+        )
+
         benefits_qs = SponsorshipBenefit.objects.from_current_year().with_packages().select_related(
             "program"
         )
