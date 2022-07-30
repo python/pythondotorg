@@ -23,7 +23,7 @@ from ..models.enums import AssetsRelatedTo
 
 class SponsorshipsBenefitsFormTests(TestCase):
     def setUp(self):
-        self.current_year = SponsorshipCurrentYear.objects.get().year
+        self.current_year = SponsorshipCurrentYear.get_year()
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(

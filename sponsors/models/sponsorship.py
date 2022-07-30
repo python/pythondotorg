@@ -210,7 +210,6 @@ class Sponsorship(models.Model):
         if cls.objects.in_progress().filter(sponsor=sponsor).exists():
             raise SponsorWithExistingApplicationException(f"Sponsor pk: {sponsor.pk}")
 
-        current_year = SponsorshipCurrentYear.objects.get().year
         sponsorship = cls.objects.create(
             submited_by=submited_by,
             sponsor=sponsor,
@@ -218,7 +217,7 @@ class Sponsorship(models.Model):
             package=package,
             sponsorship_fee=None if not package else package.sponsorship_amount,
             for_modified_package=for_modified_package,
-            year=current_year,
+            year=SponsorshipCurrentYear.get_year(),
         )
 
         for benefit in benefits:
@@ -523,6 +522,10 @@ class SponsorshipCurrentYear(models.Model):
 
     def delete(self, *args, **kwargs):
         raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
+
+    @classmethod
+    def get_year(cls):
+        return cls.objects.get().year
 
     class Meta:
         verbose_name = "Active Year"

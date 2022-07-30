@@ -149,7 +149,7 @@ class SponsorshipBenefitManagerTests(TestCase):
 
     def setUp(self):
         package = baker.make(SponsorshipPackage)
-        current_year = SponsorshipCurrentYear.objects.get().year
+        current_year = SponsorshipCurrentYear.get_year()
         self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
         self.regular_benefit.packages.add(package)
         self.add_on = baker.make(SponsorshipBenefit, year=current_year-1)
@@ -174,7 +174,7 @@ class SponsorshipBenefitManagerTests(TestCase):
 class SponsorshipPackageManagerTests(TestCase):
 
     def test_filter_packages_by_current_year(self):
-        current_year = SponsorshipCurrentYear.objects.get().year
+        current_year = SponsorshipCurrentYear.get_year()
         active_package = baker.make(SponsorshipPackage, year=current_year)
         baker.make(SponsorshipPackage, year=current_year - 1)
 

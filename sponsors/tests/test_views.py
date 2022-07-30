@@ -27,7 +27,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
     url = reverse_lazy("select_sponsorship_application_benefits")
 
     def setUp(self):
-        self.current_year = SponsorshipCurrentYear.objects.get().year
+        self.current_year = SponsorshipCurrentYear.get_year()
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(
@@ -163,7 +163,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
 
     def setUp(self):
-        self.current_year = SponsorshipCurrentYear.objects.get().year
+        self.current_year = SponsorshipCurrentYear.get_year()
         self.user = baker.make(
             settings.AUTH_USER_MODEL, is_staff=True, email="bernardo@companyemail.com"
         )

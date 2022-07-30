@@ -103,7 +103,7 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
 
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
-        current_year = SponsorshipCurrentYear.objects.get().year
+        current_year = SponsorshipCurrentYear.get_year()
         return self.filter(year=current_year)
 
 
@@ -113,7 +113,7 @@ class SponsorshipPackageQuerySet(OrderedModelQuerySet):
 
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
-        current_year = SponsorshipCurrentYear.objects.get().year
+        current_year = SponsorshipCurrentYear.get_year()
         return self.filter(year=current_year)
 
 

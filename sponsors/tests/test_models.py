@@ -113,7 +113,7 @@ class SponsorshipModelTests(TestCase):
         )
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
-        current_year = SponsorshipCurrentYear.objects.get().year
+        current_year = SponsorshipCurrentYear.get_year()
 
         self.assertEqual(sponsorship.submited_by, self.user)
         self.assertEqual(sponsorship.sponsor, self.sponsor)
