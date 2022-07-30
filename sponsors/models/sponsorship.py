@@ -6,6 +6,7 @@ from itertools import chain
 
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
+from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models, transaction, IntegrityError
@@ -510,6 +511,7 @@ class SponsorshipCurrentYear(models.Model):
     The sponsorship_current_year_singleton_idx introduced by migration 0079 in sponsors app
     enforces the singleton at DB level.
     """
+    CACHE_KEY = "current_year"
     objects = SponsorshipCurrentYearQuerySet.as_manager()
 
     year = models.PositiveIntegerField(
@@ -523,9 +525,17 @@ class SponsorshipCurrentYear(models.Model):
     def delete(self, *args, **kwargs):
         raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
 
+    def save(self, *args, **kwargs):
+        cache.delete(self.CACHE_KEY)
+        return super().save(*args, **kwargs)
+
     @classmethod
     def get_year(cls):
-        return cls.objects.get().year
+        year = cache.get(cls.CACHE_KEY)
+        if not year:
+            year = cls.objects.get().year
+            cache.set(cls.CACHE_KEY, year, timeout=None)
+        return year
 
     class Meta:
         verbose_name = "Active Year"

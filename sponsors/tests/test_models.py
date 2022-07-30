@@ -1,5 +1,6 @@
 from datetime import date, timedelta
 
+from django.core.cache import cache
 from django.db import IntegrityError
 from model_bakery import baker, seq
 
@@ -323,6 +324,29 @@ class SponsorshipCurrentYearTests(TestCase):
             SponsorshipCurrentYear.objects.all().delete()
 
         self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
+
+    def test_current_year_is_cached(self):
+        # cleans cached from previous test runs
+        cache.clear()
+
+        # first time: no cache
+        with self.assertNumQueries(1):
+            year = SponsorshipCurrentYear.get_year()
+
+        self.assertEqual(year, cache.get(SponsorshipCurrentYear.CACHE_KEY))
+        # second time: cache hit
+        with self.assertNumQueries(0):
+            SponsorshipCurrentYear.get_year()
+
+        curr_year = SponsorshipCurrentYear.objects.get()
+        # update should clear cache
+        curr_year.year = 2024
+        curr_year.save()
+        with self.assertNumQueries(1):
+            self.assertEqual(2024, SponsorshipCurrentYear.get_year())
+
+        # cleans cached for next test runs
+        cache.clear()
 
 
 class SponsorshipPackageTests(TestCase):
