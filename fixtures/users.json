@@ -1,0 +1,74 @@
+[
+{
+  "model": "users.user",
+  "pk": 1,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$TAqxQ4O0uzV2$3lgFMdRiaBnaUfXtjSRlA/9HzMwYa2ThD38AmTzGYEs=",
+    "last_login": "2022-08-01T18:52:54.206Z",
+    "is_superuser": true,
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "email": "admin@example.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2022-08-01T18:52:39.307Z",
+    "bio": "",
+    "bio_markup_type": "markdown",
+    "search_visibility": 1,
+    "_bio_rendered": "",
+    "email_privacy": 2,
+    "public_profile": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "users.user",
+  "pk": 2,
+  "fields": {
+    "password": "pbkdf2_sha256$150000$TAqxQ4O0uzV2$3lgFMdRiaBnaUfXtjSRlA/9HzMwYa2ThD38AmTzGYEs=",
+    "last_login": "2022-08-01T18:54:51.727Z",
+    "is_superuser": false,
+    "username": "user",
+    "first_name": "",
+    "last_name": "",
+    "email": "user@example.com",
+    "is_staff": false,
+    "is_active": true,
+    "date_joined": "2022-08-01T18:54:10.023Z",
+    "bio": "",
+    "bio_markup_type": "markdown",
+    "search_visibility": 1,
+    "_bio_rendered": "",
+    "email_privacy": 2,
+    "public_profile": true,
+    "groups": [],
+    "user_permissions": []
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 1,
+  "fields": {
+    "user": [
+      "admin"
+    ],
+    "email": "admin@example.com",
+    "verified": true,
+    "primary": true
+  }
+},
+{
+  "model": "account.emailaddress",
+  "pk": 2,
+  "fields": {
+    "user": [
+      "user"
+    ],
+    "email": "user@example.com",
+    "verified": true,
+    "primary": true
+  }
+}
+]

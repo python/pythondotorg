@@ -304,7 +304,7 @@ class SponsorshipCurrentYearTests(TestCase):
     def test_singleton_object_is_loaded_by_default(self):
         curr_year = SponsorshipCurrentYear.objects.get()
         self.assertEqual(1, curr_year.pk)
-        self.assertEqual(2023, curr_year.year)
+        self.assertEqual(2022, curr_year.year)
 
     def test_make_sure_we_cannot_add_new_current_years(self):
         self.assertTrue(SponsorshipCurrentYear.objects.get())
