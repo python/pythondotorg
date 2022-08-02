@@ -166,7 +166,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
-    list_display = ["name", "advertise", "move_up_down_links"]
+    list_display = ["name", "year", "advertise", "move_up_down_links"]
     list_filter = ["advertise", "year"]
     search_fields = ["name"]
 

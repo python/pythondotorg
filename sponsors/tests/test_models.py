@@ -413,6 +413,24 @@ class SponsorshipPackageTests(TestCase):
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
 
+    def test_clone_package_to_next_year(self):
+        pkg = baker.make(SponsorshipPackage, year=2022, advertise=True, logo_dimension=300)
+        pkg_2023, created = pkg.clone(year=2023)
+        self.assertTrue(created)
+        self.assertTrue(pkg_2023.pk)
+        self.assertEqual(2023, pkg_2023.year)
+        self.assertEqual(pkg.name, pkg_2023.name)
+        self.assertEqual(pkg.order, pkg_2023.order)
+        self.assertEqual(pkg.sponsorship_amount, pkg_2023.sponsorship_amount)
+        self.assertEqual(True, pkg_2023.advertise)
+        self.assertEqual(300, pkg_2023.logo_dimension)
+        self.assertEqual(pkg.slug, pkg_2023.slug)
+
+    def test_clone_does_not_repeate_already_cloned_package(self):
+        pkg_2023, created = self.package.clone(year=2023)
+        repeated_pkg_2023, created = self.package.clone(year=2023)
+        self.assertFalse(created)
+        self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
 
 class SponsorContactModelTests(TestCase):
     def test_get_primary_contact_for_sponsor(self):
@@ -770,6 +788,69 @@ class SponsorBenefitModelTests(TestCase):
         asset = benefit.features.required_assets().get()
         self.assertEqual(asset.label, "New text")
         self.assertEqual(asset.value, "foo")
+
+    def test_clone_benefit_regular_attributes_to_a_new_year(self):
+        benefit = baker.make(
+            SponsorshipBenefit,
+            name='Benefit',
+            description="desc",
+            program__name="prog",
+            package_only=False,
+            new=True,
+            unavailable=True,
+            a_la_carte=True,
+            internal_description="internal desc",
+            internal_value=300,
+            capacity=100,
+            soft_capacity=True,
+            year=2022
+        )
+        benefit_2023, created = benefit.clone(year=2023)
+        self.assertTrue(created)
+        self.assertEqual("Benefit", benefit_2023.name)
+        self.assertEqual("desc", benefit_2023.description)
+        self.assertEqual(benefit.program, benefit_2023.program)
+        self.assertFalse(benefit_2023.package_only)
+        self.assertTrue(benefit_2023.new)
+        self.assertTrue(benefit_2023.unavailable)
+        self.assertTrue(benefit_2023.a_la_carte)
+        self.assertEqual("internal desc", benefit_2023.internal_description)
+        self.assertEqual(300, benefit_2023.internal_value)
+        self.assertEqual(100, benefit_2023.capacity)
+        self.assertTrue(benefit_2023.soft_capacity)
+        self.assertEqual(2023, benefit_2023.year)
+        self.assertEqual(benefit.order, benefit_2023.order)
+
+    def test_clone_benefit_should_be_idempotent(self):
+        benefit_2023, created = self.sponsorship_benefit.clone(year=2023)
+        repeated, created = self.sponsorship_benefit.clone(year=2023)
+        self.assertFalse(created)
+        self.assertEqual(benefit_2023.pk, repeated.pk)
+
+    def test_clone_related_objects_as_well(self):
+        pkgs = baker.make(SponsorshipPackage, _quantity=2)
+        clauses = baker.make(LegalClause, _quantity=2)
+        self.sponsorship_benefit.legal_clauses.add(*clauses)
+        self.sponsorship_benefit.packages.add(*pkgs)
+
+        benefit_2023, _ = self.sponsorship_benefit.clone(2023)
+        benefit_2023.refresh_from_db()
+
+        self.assertEqual(4, SponsorshipPackage.objects.count())
+        self.assertEqual(2023, benefit_2023.packages.values_list("year", flat=True).distinct().first())
+        self.assertEqual(4, LegalClause.objects.count())
+        self.assertEqual(2, benefit_2023.legal_clauses.count())
+
+
+class LegalClauseTests(TestCase):
+
+    def test_clone_legal_clause(self):
+        clause = baker.make(LegalClause)
+        new_clause = clause.clone()
+        self.assertEqual(clause.internal_name, new_clause.internal_name)
+        self.assertEqual(clause.clause, new_clause.clause)
+        self.assertEqual(clause.notes, new_clause.notes)
+        self.assertEqual(clause.order, new_clause.order)
 
 
 ###########

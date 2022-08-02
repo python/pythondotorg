@@ -98,6 +98,21 @@ class SponsorshipPackage(OrderedModel):
           "removed_by_user": pkg_benefits - benefits,
         }
 
+    def clone(self, year: int):
+        """
+        Generate a clone of the current package, but for a custom year
+        """
+        defaults = {
+            "name": self.name,
+            "sponsorship_amount": self.sponsorship_amount,
+            "advertise": self.advertise,
+            "logo_dimension": self.logo_dimension,
+            "order": self.order,
+        }
+        return SponsorshipPackage.objects.get_or_create(
+            slug=self.slug, year=year, defaults=defaults
+        )
+
 
 class SponsorshipProgram(OrderedModel):
     """
@@ -500,6 +515,35 @@ class SponsorshipBenefit(OrderedModel):
     @cached_property
     def has_tiers(self):
         return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
+
+    @transaction.atomic
+    def clone(self, year: int):
+        """
+        Generate a clone of the current benefit and its related objects,
+        but for a custom year
+        """
+        defaults = {
+            "description": self.description,
+            "program": self.program,
+            "package_only": self.package_only,
+            "new": self.new,
+            "unavailable": self.unavailable,
+            "a_la_carte": self.a_la_carte,
+            "internal_description": self.internal_description,
+            "internal_value": self.internal_value,
+            "capacity": self.capacity,
+            "soft_capacity": self.soft_capacity,
+            "order": self.order,
+        }
+        new_benefit, created = SponsorshipBenefit.objects.get_or_create(
+            name=self.name, year=year, defaults=defaults
+        )
+        if created:
+            pkgs = [p.clone(year)[0] for p in self.packages.all()]
+            new_benefit.packages.add(*pkgs)
+            clauses = [lc.clone() for lc in self.legal_clauses.all()]
+            new_benefit.legal_clauses.add(*clauses)
+        return new_benefit, created
 
     class Meta(OrderedModel.Meta):
         pass

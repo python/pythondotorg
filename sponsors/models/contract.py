@@ -39,6 +39,14 @@ class LegalClause(OrderedModel):
     def __str__(self):
         return f"Clause: {self.internal_name}"
 
+    def clone(self):
+        return LegalClause.objects.create(
+            internal_name=self.internal_name,
+            clause=self.clause,
+            notes=self.notes,
+            order=self.order,
+        )
+
     class Meta(OrderedModel.Meta):
         pass
 
