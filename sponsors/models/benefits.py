@@ -347,6 +347,13 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             feature.save()
         return feature
 
+    def clone(self, sponsorship_benefit):
+        """
+        Clones this configuration for another sponsorship benefit
+        """
+        cfg_kwargs = self.get_benefit_feature_kwargs()
+        return self.__class__.objects.get_or_create(benefit=sponsorship_benefit, **cfg_kwargs)
+
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
     """

@@ -934,6 +934,21 @@ class LogoPlacementConfigurationModelTests(TestCase):
         name = 'Benefit'
         self.assertEqual(name, self.config.display_modifier(name))
 
+    def test_clone_configuration_for_new_sponsorship_benefit(self):
+        sp_benefit = baker.make(SponsorshipBenefit)
+
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, LogoPlacementConfiguration.objects.count())
+        self.assertEqual(PublisherChoices.FOUNDATION, new_cfg.publisher)
+        self.assertEqual(LogoPlacementChoices.FOOTER, new_cfg.logo_place)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
+
 
 class TieredQuantityConfigurationModelTests(TestCase):
 
