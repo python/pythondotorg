@@ -22,6 +22,10 @@ from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInline
 from cms.admin import ContentManageableModelAdmin
 
 
+def get_url_base_name(Model):
+    return f"{Model._meta.app_label}_{Model._meta.model_name}"
+
+
 class AssetsInline(GenericTabularInline):
     model = GenericAsset
     extra = 0
@@ -150,11 +154,12 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/update-related-sponsorships",
                 self.admin_site.admin_view(self.update_related_sponsorships),
-                name="sponsors_sponsorshipbenefit_update_related",
+                name=f"{base_name}_update_related",
             ),
         ]
         return my_urls + urls
@@ -441,33 +446,34 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/reject",
                 # TODO: maybe it would be better to create a specific
                 # group or permission to review sponsorship applications
                 self.admin_site.admin_view(self.reject_sponsorship_view),
-                name="sponsors_sponsorship_reject",
+                name=f"{base_name}_reject",
             ),
             path(
                 "<int:pk>/approve-existing",
                 self.admin_site.admin_view(self.approve_signed_sponsorship_view),
-                name="sponsors_sponsorship_approve_existing_contract",
+                name=f"{base_name}_approve_existing_contract",
             ),
             path(
                 "<int:pk>/approve",
                 self.admin_site.admin_view(self.approve_sponsorship_view),
-                name="sponsors_sponsorship_approve",
+                name=f"{base_name}_approve",
             ),
             path(
                 "<int:pk>/enable-edit",
                 self.admin_site.admin_view(self.rollback_to_editing_view),
-                name="sponsors_sponsorship_rollback_to_edit",
+                name=f"{base_name}_rollback_to_edit",
             ),
             path(
                 "<int:pk>/list-assets",
                 self.admin_site.admin_view(self.list_uploaded_assets_view),
-                name="sponsors_sponsorship_list_uploaded_assets",
+                name=f"{base_name}_list_uploaded_assets",
             ),
         ]
         return my_urls + urls
@@ -728,26 +734,27 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/preview",
                 self.admin_site.admin_view(self.preview_contract_view),
-                name="sponsors_contract_preview",
+                name=f"{base_name}_preview",
             ),
             path(
                 "<int:pk>/send",
                 self.admin_site.admin_view(self.send_contract_view),
-                name="sponsors_contract_send",
+                name=f"{base_name}_send",
             ),
             path(
                 "<int:pk>/execute",
                 self.admin_site.admin_view(self.execute_contract_view),
-                name="sponsors_contract_execute",
+                name=f"{base_name}_execute",
             ),
             path(
                 "<int:pk>/nullify",
                 self.admin_site.admin_view(self.nullify_contract_view),
-                name="sponsors_contract_nullify",
+                name=f"{base_name}_nullify",
             ),
         ]
         return my_urls + urls
