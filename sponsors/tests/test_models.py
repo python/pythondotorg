@@ -31,7 +31,8 @@ from ..exceptions import (
     InvalidStatusException,
 )
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
-from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset
+from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset, \
+    EmailTargetableConfiguration
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -1213,3 +1214,21 @@ class RequiredImgAssetTests(TestCase):
         self.assertEqual(text_asset.help_text, field.help_text)
         self.assertEqual(text_asset.label, field.label)
         self.assertIsInstance(field.widget, forms.ClearableFileInput)
+
+
+
+class EmailTargetableConfigurationTest(TestCase):
+
+    def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
+        config = baker.make(EmailTargetableConfiguration)
+        benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = config.clone(benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, EmailTargetableConfiguration.objects.count())
+        self.assertEqual(benefit, new_cfg.benefit)
+
+        repeated, created = config.clone(benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
