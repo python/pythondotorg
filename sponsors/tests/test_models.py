@@ -841,6 +841,9 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(4, LegalClause.objects.count())
         self.assertEqual(2, benefit_2023.legal_clauses.count())
 
+    # TODO: clone benefit feature configuration
+    # TODO: clone conflicts
+
 
 class LegalClauseTests(TestCase):
 
@@ -953,7 +956,7 @@ class LogoPlacementConfigurationModelTests(TestCase):
 class TieredQuantityConfigurationModelTests(TestCase):
 
     def setUp(self):
-        self.package = baker.make(SponsorshipPackage)
+        self.package = baker.make(SponsorshipPackage, year=2022)
         self.config = baker.make(
             TieredQuantityConfiguration,
             package=self.package,
@@ -987,6 +990,23 @@ class TieredQuantityConfigurationModelTests(TestCase):
         # for a package different from the config's one
         modified_name = self.config.display_modifier(name, package=other_package)
         self.assertEqual(modified_name, name)
+
+    def test_clone_tiered_quantity_configuration(self):
+        benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = self.config.clone(benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, TieredQuantityConfiguration.objects.count())
+        self.assertEqual(self.config.quantity, new_cfg.quantity)
+        self.assertNotEqual(self.package, new_cfg.package)
+        self.assertEqual(self.package.slug, new_cfg.package.slug)
+        self.assertEqual(2023, new_cfg.package.year)
+        self.assertEqual(benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
 
 
 class LogoPlacementTests(TestCase):

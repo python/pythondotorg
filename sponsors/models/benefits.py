@@ -307,10 +307,9 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature_kwargs(self, **kwargs):
+    def get_cfg_kwargs(self, **kwargs):
         """
-        Return kwargs dict to initialize the benefit feature.
-        If the benefit should not be created, return None instead.
+        Return kwargs dict with default config data
         """
         # Get all fields from benefit feature configuration base model
         base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
@@ -322,8 +321,18 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             # since this field only exists in child models
             if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
                 continue
+            # Skip if field config is being externally overwritten
+            elif field.name in kwargs:
+                continue
             kwargs[field.name] = getattr(self, field.name)
         return kwargs
+
+    def get_benefit_feature_kwargs(self, **kwargs):
+        """
+        Return kwargs dict to initialize the benefit feature.
+        If the benefit should not be created, return None instead.
+        """
+        return self.get_cfg_kwargs(**kwargs)
 
     def get_benefit_feature(self, **kwargs):
         """
@@ -351,8 +360,8 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         Clones this configuration for another sponsorship benefit
         """
-        cfg_kwargs = self.get_benefit_feature_kwargs()
-        return self.__class__.objects.get_or_create(benefit=sponsorship_benefit, **cfg_kwargs)
+        cfg_kwargs = self.get_cfg_kwargs(benefit=sponsorship_benefit)
+        return self.__class__.objects.get_or_create(**cfg_kwargs)
 
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
@@ -397,6 +406,14 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         if kwargs.get("package") != self.package:
             return name
         return f"{name} ({self.quantity})"
+
+    def clone(self, sponsorship_benefit):
+        """
+        Clones this configuration for another sponsorship benefit
+        """
+        package, _ = self.package.clone(year=sponsorship_benefit.year)
+        cfg_kwargs = self.get_cfg_kwargs(package=package, benefit=sponsorship_benefit)
+        return self.__class__.objects.get_or_create(**cfg_kwargs)
 
 
 class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfiguration):
