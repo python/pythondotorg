@@ -842,6 +842,27 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(4, LegalClause.objects.count())
         self.assertEqual(2, benefit_2023.legal_clauses.count())
 
+    def test_clone_benefit_feature_configurations(self):
+        cfg_1 = baker.make(
+            LogoPlacementConfiguration,
+            publisher = PublisherChoices.FOUNDATION,
+            logo_place = LogoPlacementChoices.FOOTER,
+            benefit=self.sponsorship_benefit
+        )
+        cfg_2 = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+            benefit=self.sponsorship_benefit
+        )
+
+        benefit_2023, _ = self.sponsorship_benefit.clone(2023)
+
+        self.assertEqual(2, LogoPlacementConfiguration.objects.count())
+        self.assertEqual(2, RequiredTextAssetConfiguration.objects.count())
+        self.assertEqual(1, RequiredTextAssetConfiguration.objects.filter(benefit=benefit_2023).count())
+        self.assertEqual(1, RequiredTextAssetConfiguration.objects.filter(benefit=benefit_2023).count())
+
 
 class LegalClauseTests(TestCase):
 
@@ -1214,7 +1235,6 @@ class RequiredImgAssetTests(TestCase):
         self.assertEqual(text_asset.help_text, field.help_text)
         self.assertEqual(text_asset.label, field.label)
         self.assertIsInstance(field.widget, forms.ClearableFileInput)
-
 
 
 class EmailTargetableConfigurationTest(TestCase):

@@ -538,11 +538,16 @@ class SponsorshipBenefit(OrderedModel):
         new_benefit, created = SponsorshipBenefit.objects.get_or_create(
             name=self.name, year=year, defaults=defaults
         )
+
+        # if new, all related objects should be cloned too
         if created:
             pkgs = [p.clone(year)[0] for p in self.packages.all()]
             new_benefit.packages.add(*pkgs)
             clauses = [lc.clone() for lc in self.legal_clauses.all()]
             new_benefit.legal_clauses.add(*clauses)
+            for cfg in self.features_config.all():
+                cfg.clone(new_benefit)
+
         return new_benefit, created
 
     class Meta(OrderedModel.Meta):
