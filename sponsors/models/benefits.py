@@ -138,6 +138,14 @@ class AssetConfigurationMixin:
 
         return benefit_feature
 
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = super().get_clone_kwargs(new_benefit)
+        kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
+        due_date = kwargs.get("due_date")
+        if due_date:
+            kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+        return kwargs
+
     class Meta:
         abstract = True
 
@@ -334,6 +342,11 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         return self.get_cfg_kwargs(**kwargs)
 
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = self.get_cfg_kwargs()
+        kwargs["benefit"] = new_benefit
+        return kwargs
+
     def get_benefit_feature(self, **kwargs):
         """
         Returns an instance of a configured type of BenefitFeature
@@ -360,7 +373,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         Clones this configuration for another sponsorship benefit
         """
-        cfg_kwargs = self.get_cfg_kwargs(benefit=sponsorship_benefit)
+        cfg_kwargs = self.get_clone_kwargs(sponsorship_benefit)
         return self.__class__.objects.get_or_create(**cfg_kwargs)
 
 
@@ -407,13 +420,10 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
             return name
         return f"{name} ({self.quantity})"
 
-    def clone(self, sponsorship_benefit):
-        """
-        Clones this configuration for another sponsorship benefit
-        """
-        package, _ = self.package.clone(year=sponsorship_benefit.year)
-        cfg_kwargs = self.get_cfg_kwargs(package=package, benefit=sponsorship_benefit)
-        return self.__class__.objects.get_or_create(**cfg_kwargs)
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = super().get_clone_kwargs(new_benefit)
+        kwargs["package"], _ = self.package.clone(year=new_benefit.year)
+        return kwargs
 
 
 class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfiguration):

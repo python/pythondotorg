@@ -841,9 +841,6 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(4, LegalClause.objects.count())
         self.assertEqual(2, benefit_2023.legal_clauses.count())
 
-    # TODO: clone benefit feature configuration
-    # TODO: clone conflicts
-
 
 class LegalClauseTests(TestCase):
 
@@ -1056,6 +1053,25 @@ class RequiredImgAssetConfigurationTests(TestCase):
         self.assertEqual(sponsor, asset.content_object)
         self.assertFalse(asset.image.name)
 
+    def test_clone_configuration_for_new_sponsorship_benefit_without_due_date(self):
+        sp_benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, RequiredImgAssetConfiguration.objects.count())
+        self.assertEqual(new_cfg.internal_name, f"{self.config.internal_name}_2023")
+        self.assertEqual(new_cfg.max_width, self.config.max_width)
+        self.assertEqual(new_cfg.min_width, self.config.min_width)
+        self.assertEqual(new_cfg.max_height, self.config.max_height)
+        self.assertEqual(new_cfg.min_height, self.config.min_height)
+        self.assertEqual(new_cfg.due_date, new_cfg.due_date)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
+
 
 class RequiredTextAssetConfigurationTests(TestCase):
 
@@ -1102,6 +1118,28 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.sponsor_benefit.refresh_from_db()
         self.config.create_benefit_feature(self.sponsor_benefit)
         self.assertEqual(1, TextAsset.objects.count())
+
+    def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
+        sp_benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        self.config.due_date = timezone.now().replace(year=2022)
+        self.config.save()
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, RequiredTextAssetConfiguration.objects.count())
+        self.assertEqual(new_cfg.internal_name, f"{self.config.internal_name}_2023")
+        self.assertEqual(new_cfg.label, self.config.label)
+        self.assertEqual(new_cfg.help_text, self.config.help_text)
+        self.assertEqual(new_cfg.max_length, self.config.max_length)
+        self.assertEqual(new_cfg.due_date.day, self.config.due_date.day)
+        self.assertEqual(new_cfg.due_date.month, self.config.due_date.month)
+        self.assertEqual(new_cfg.due_date.year, 2023)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
 
 
 class RequiredTextAssetTests(TestCase):
