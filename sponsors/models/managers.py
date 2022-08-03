@@ -101,20 +101,26 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
             .order_by("-num_packages", "order")
         )
 
+    def from_year(self, year):
+        return self.filter(year=year)
+
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
         current_year = SponsorshipCurrentYear.get_year()
-        return self.filter(year=current_year)
+        return self.from_year(current_year)
 
 
 class SponsorshipPackageQuerySet(OrderedModelQuerySet):
     def list_advertisables(self):
         return self.filter(advertise=True)
 
+    def from_year(self, year):
+        return self.filter(year=year)
+
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
         current_year = SponsorshipCurrentYear.get_year()
-        return self.filter(year=current_year)
+        return self.from_year(current_year)
 
 
 class BenefitFeatureQuerySet(PolymorphicQuerySet):

@@ -1,5 +1,8 @@
+from django.db import transaction
+
 from sponsors import notifications
-from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate
+from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate, SponsorshipBenefit, \
+    SponsorshipPackage
 from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
 
 
@@ -160,3 +163,18 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                 contact_types=contact_types,
                 request=kwargs.get("request"),
             )
+
+
+class CloneSponsorshipYearUseCase(BaseUseCaseWithNotifications):
+
+    @transaction.atomic
+    def execute(self, clone_from_year, target_year):
+        with transaction.atomic():
+            source_packages = SponsorshipPackage.objects.from_year(clone_from_year)
+            for package in source_packages:
+                package.clone(target_year)
+
+        with transaction.atomic():
+            source_benefits = SponsorshipBenefit.objects.from_year(clone_from_year)
+            for benefit in source_benefits:
+                benefit.clone(target_year)
