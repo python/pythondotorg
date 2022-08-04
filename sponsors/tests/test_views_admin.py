@@ -989,7 +989,7 @@ class ClonsSponsorshipYearConfigurationTests(TestCase):
         self.assertTemplateUsed(response, template)
         self.assertIsInstance(response.context["form"], CloneApplicationConfigForm)
         self.assertEqual(response.context["current_year"], curr_year)
-        self.assertEqual(response.context["configured_years"], [2022, 2023])
+        self.assertEqual(response.context["configured_years"], [2023, 2022])
         self.assertIsNone(response.context["new_year"])
 
     def test_display_form_errors_if_invalid_post(self):
@@ -1007,7 +1007,7 @@ class ClonsSponsorshipYearConfigurationTests(TestCase):
         template = "sponsors/admin/clone_application_config_form.html"
         self.assertTemplateUsed(response, template)
         self.assertEqual(response.context["new_year"], 2023)
-        self.assertEqual(response.context["configured_years"], [2022, 2023])
+        self.assertEqual(response.context["configured_years"], [2023, 2022])
 
 
 #######################

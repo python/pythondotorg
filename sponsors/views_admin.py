@@ -285,12 +285,9 @@ def list_uploaded_assets(ModelAdmin, request, pk):
 
 def clone_application_config(ModelAdmin, request):
     form = CloneApplicationConfigForm()
-    benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
-    packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
-    configured_years = [y for y in sorted(set(benefits_years + packages_years)) if y]
     context = {
         "current_year": SponsorshipCurrentYear.get_year(),
-        "configured_years": configured_years,
+        "configured_years": form.configured_years,
         "new_year": None
     }
     if request.method == "POST":
@@ -301,7 +298,7 @@ def clone_application_config(ModelAdmin, request):
             from_year = form.cleaned_data["from_year"]
             use_case.execute(from_year, target_year )
 
-            context["configured_years"].append(target_year)
+            context["configured_years"].insert(0, target_year)
             context["new_year"] = target_year
             ModelAdmin.message_user(
                 request,

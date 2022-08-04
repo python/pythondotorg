@@ -702,7 +702,7 @@ class CloneApplicationConfigForm(forms.Form):
         super().__init__(*args, **kwargs)
         benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
         packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
-        choices = [(y, y) for y in sorted(set(benefits_years + packages_years)) if y]
+        choices = [(y, y) for y in sorted(set(benefits_years + packages_years), reverse=True) if y]
         self.fields["from_year"].choices = choices
 
     @property

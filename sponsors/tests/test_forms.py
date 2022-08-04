@@ -802,11 +802,11 @@ class CloneApplicationConfigFormTests(TestCase):
         self.assertEqual(req_fields, set(form.errors))
 
     def test_from_year_should_list_configured_years_as_possible_choices(self):
-        expected = [(2022, 2022), (2023, 2023)]
+        expected = [(2023, 2023), (2022, 2022)]
         form = CloneApplicationConfigForm()
         from_years = form.fields["from_year"].choices
         self.assertEqual(expected, from_years)
-        self.assertEqual([2022, 2023], form.configured_years)
+        self.assertEqual([2023, 2022], form.configured_years)
 
     def test_target_must_be_greater_than_from_year(self):
         # lower
