@@ -685,3 +685,14 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
             raise forms.ValidationError(error)
 
         return cleaned_data
+
+
+class CloneApplicationConfigForm(forms.Form):
+    from_year = forms.IntegerField(
+        required=True,
+        help_text="From which year you want to clone the benefits and packages."
+    )
+    target_year = forms.IntegerField(
+        required=True,
+        help_text="The year of the resulting new sponsorship application configuration."
+    )

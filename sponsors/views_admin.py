@@ -12,10 +12,11 @@ from django.db import transaction
 
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm
+    SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.exceptions import InvalidStatusException
 from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature
+from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
+    SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -280,6 +281,32 @@ def list_uploaded_assets(ModelAdmin, request, pk):
     assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
     context = {"sponsorship": sponsorship, "assets": assets}
     return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
+
+
+def clone_application_config(ModelAdmin, request):
+    form = CloneApplicationConfigForm()
+    benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
+    packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
+    configured_years = [y for y in sorted(set(benefits_years + packages_years)) if y]
+    context = {
+        "current_year": SponsorshipCurrentYear.get_year(),
+        "configured_years": configured_years,
+        "new_year": None
+    }
+    if request.method == "POST":
+        form = CloneApplicationConfigForm(data=request.POST)
+        if form.is_valid():
+            use_case = use_cases.CloneSponsorshipYearUseCase.build()
+            target_year = form.cleaned_data["target_year"]
+            use_case.execute(
+                form.cleaned_data["from_year"], target_year
+            )
+            context["configured_years"].append(target_year)
+            context["new_year"] = target_year
+
+    context["form"] = form
+    template = "sponsors/admin/clone_application_config_form.html"
+    return render(request, template, context)
 
 
 ##################

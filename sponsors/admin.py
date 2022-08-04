@@ -609,6 +609,20 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
     def has_delete_permission(self, *args, **kwargs):
         return False
 
+    def get_urls(self):
+        urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
+        my_urls = [
+            path(
+                "clone-year-config",
+                self.admin_site.admin_view(self.clone_application_config),
+                name=f"{base_name}_clone",
+            ),
+        ]
+        return my_urls + urls
+
+    def clone_application_config(self, request):
+        return views_admin.clone_application_config(self, request)
 
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
