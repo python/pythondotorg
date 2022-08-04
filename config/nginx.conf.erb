@@ -284,6 +284,10 @@ http {
                   return 302 https://peps.python.org/;
                 }
 
+                location ~ ^/sf/(.*)$ {
+                  return 302 https://bugs.python.org/issue$1;
+                }
+
                 location ~ ^/sf(.*)$ {
                   if ($is_args != "") {
                       return 302 http://legacy.python.org/sf?$args;
