@@ -296,7 +296,7 @@ def clone_application_config(ModelAdmin, request):
             use_case = use_cases.CloneSponsorshipYearUseCase.build()
             target_year = form.cleaned_data["target_year"]
             from_year = form.cleaned_data["from_year"]
-            use_case.execute(from_year, target_year )
+            use_case.execute(from_year, target_year, request=request)
 
             context["configured_years"].insert(0, target_year)
             context["new_year"] = target_year

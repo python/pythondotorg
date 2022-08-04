@@ -192,3 +192,10 @@ class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification
         context = super().get_email_context(**kwargs)
         context["required_assets"] = BenefitFeature.objects.from_sponsorship(context["sponsorship"]).required_assets()
         return context
+
+
+class ClonedResourcesLogger:
+
+    def notify(self, request, resource, from_year, **kwargs):
+        msg = f"Cloned from {from_year} sponsorship application config"
+        add_log_entry(request, resource, ADDITION, msg)
