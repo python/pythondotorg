@@ -48,16 +48,22 @@ class SponsorshipsBenefitsFormTests(TestCase):
             SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year
         )
 
-    def test_specific_field_to_select_add_ons_from_current_year(self):
-        baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year - 1
+    def test_specific_field_to_select_add_ons_by_year(self):
+        prev_year = self.current_year - 1
+        from_prev_year = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=prev_year
         )
+        # current year by default
         form = SponsorshipsBenefitsForm()
-
         choices = list(form.fields["add_ons_benefits"].choices)
-
         self.assertEqual(len(self.add_ons), len(choices))
         for benefit in self.add_ons:
+            self.assertIn(benefit.id, [c[0] for c in choices])
+
+        form = SponsorshipsBenefitsForm(year=prev_year)
+        choices = list(form.fields["add_ons_benefits"].choices)
+        self.assertEqual(len(self.add_ons), len(choices))
+        for benefit in from_prev_year:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
     def test_benefits_from_current_year_organized_by_program(self):
@@ -87,17 +93,25 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.program_2_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_specific_field_to_select_a_la_carte_benefits_from_current_year(self):
+    def test_specific_field_to_select_a_la_carte_benefits_by_year(self):
+        prev_year = self.current_year - 1
         # a la carte benefits
-        baker.make(
-            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year - 1
+        prev_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=prev_year
         )
+
+        # Current year by default
         form = SponsorshipsBenefitsForm()
-
         choices = list(form.fields["a_la_carte_benefits"].choices)
-
         self.assertEqual(len(self.a_la_carte), len(choices))
         for benefit in self.a_la_carte:
+            self.assertIn(benefit.id, [c[0] for c in choices])
+
+        # Current year by default
+        form = SponsorshipsBenefitsForm(year=prev_year)
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+        self.assertEqual(len(self.a_la_carte), len(choices))
+        for benefit in prev_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
     def test_package_list_only_advertisable_ones_from_current_year(self):

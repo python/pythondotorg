@@ -22,7 +22,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT,
+    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
 
@@ -57,23 +57,24 @@ class SponsorshipsBenefitsForm(forms.Form):
     """
 
     def __init__(self, *args, **kwargs):
+        year = kwargs.pop("year", SponsorshipCurrentYear.get_year())
         super().__init__(*args, **kwargs)
         self.fields["package"] = forms.ModelChoiceField(
-            queryset=SponsorshipPackage.objects.from_current_year().list_advertisables(),
+            queryset=SponsorshipPackage.objects.from_year(year).list_advertisables(),
             widget=forms.RadioSelect(),
             required=False,
             empty_label=None,
         )
         self.fields["add_ons_benefits"] = PickSponsorshipBenefitsField(
             required=False,
-            queryset=SponsorshipBenefit.objects.from_current_year().add_ons().select_related("program"),
+            queryset=SponsorshipBenefit.objects.from_year(year).add_ons().select_related("program"),
         )
         self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
             required=False,
-            queryset=SponsorshipBenefit.objects.from_current_year().a_la_carte().select_related("program"),
+            queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
         )
 
-        benefits_qs = SponsorshipBenefit.objects.from_current_year().with_packages().select_related(
+        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
             "program"
         )
 
