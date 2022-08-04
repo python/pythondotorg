@@ -298,11 +298,16 @@ def clone_application_config(ModelAdmin, request):
         if form.is_valid():
             use_case = use_cases.CloneSponsorshipYearUseCase.build()
             target_year = form.cleaned_data["target_year"]
-            use_case.execute(
-                form.cleaned_data["from_year"], target_year
-            )
+            from_year = form.cleaned_data["from_year"]
+            use_case.execute(from_year, target_year )
+
             context["configured_years"].append(target_year)
             context["new_year"] = target_year
+            ModelAdmin.message_user(
+                request,
+                f"Benefits and Packages for {target_year} copied with sucess from {from_year}!",
+                messages.SUCCESS
+            )
 
     context["form"] = form
     template = "sponsors/admin/clone_application_config_form.html"

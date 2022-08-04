@@ -602,6 +602,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 @admin.register(SponsorshipCurrentYear)
 class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
     list_display = ["year"]
+    change_list_template = "sponsors/admin/sponsors_sponsorshipcurrentyear_changelist.html"
 
     def has_add_permission(self, *args, **kwargs):
         return False
