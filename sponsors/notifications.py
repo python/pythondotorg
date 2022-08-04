@@ -125,91 +125,53 @@ class ContractNotificationToSponsors(BaseEmailSponsorshipNotification):
         return [(f"Contract.{ext}", content, f"application/{app_type}")]
 
 
-class SponsorshipApprovalLogger():
+def add_log_entry(request, object, acton_flag, message):
+    return LogEntry.objects.log_action(
+        user_id=request.user.id,
+        content_type_id=ContentType.objects.get_for_model(type(object)).pk,
+        object_id=object.pk,
+        object_repr=str(object),
+        action_flag=acton_flag,
+        change_message=message
+    )
+
+
+class SponsorshipApprovalLogger:
 
     def notify(self, request, sponsorship, contract, **kwargs):
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Sponsorship).pk,
-            object_id=sponsorship.pk,
-            object_repr=str(sponsorship),
-            action_flag=CHANGE,
-            change_message="Sponsorship Approval"
-        )
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Contract).pk,
-            object_id=contract.pk,
-            object_repr=str(contract),
-            action_flag=ADDITION,
-            change_message="Created After Sponsorship Approval"
-        )
+        add_log_entry(request, sponsorship, CHANGE, "Sponsorship Approval")
+        add_log_entry(request, contract, ADDITION, "Created After Sponsorship Approval")
 
 
-class SentContractLogger():
+class SentContractLogger:
 
     def notify(self, request, contract, **kwargs):
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Contract).pk,
-            object_id=contract.pk,
-            object_repr=str(contract),
-            action_flag=CHANGE,
-            change_message="Contract Sent"
-        )
+        add_log_entry(request, contract, CHANGE, "Contract Sent")
 
 
-class ExecutedContractLogger():
+class ExecutedContractLogger:
 
     def notify(self, request, contract, **kwargs):
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Contract).pk,
-            object_id=contract.pk,
-            object_repr=str(contract),
-            action_flag=CHANGE,
-            change_message="Contract Executed"
-        )
+        add_log_entry(request, contract, CHANGE, "Contract Executed")
 
 
-class ExecutedExistingContractLogger():
+class ExecutedExistingContractLogger:
 
     def notify(self, request, contract, **kwargs):
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Contract).pk,
-            object_id=contract.pk,
-            object_repr=str(contract),
-            action_flag=CHANGE,
-            change_message="Existing Contract Uploaded and Executed"
-        )
+        add_log_entry(request, contract, CHANGE, "Existing Contract Uploaded and Executed")
 
 
-class NullifiedContractLogger():
+class NullifiedContractLogger:
 
     def notify(self, request, contract, **kwargs):
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Contract).pk,
-            object_id=contract.pk,
-            object_repr=str(contract),
-            action_flag=CHANGE,
-            change_message="Contract Nullified"
-        )
+        add_log_entry(request, contract, CHANGE, "Contract Nullified")
 
 
-class SendSponsorNotificationLogger():
+class SendSponsorNotificationLogger:
     def notify(self, notification, sponsorship, contact_types, request, **kwargs):
         contacts = ", ".join(contact_types)
         msg = f"Notification '{notification.internal_name}' was sent to contacts: {contacts}"
-        LogEntry.objects.log_action(
-            user_id=request.user.id,
-            content_type_id=ContentType.objects.get_for_model(Sponsorship).pk,
-            object_id=sponsorship.pk,
-            object_repr=str(sponsorship),
-            action_flag=CHANGE,
-            change_message=msg
-        )
+        add_log_entry(request, sponsorship, CHANGE, msg)
 
 
 class RefreshSponsorshipsCache:
