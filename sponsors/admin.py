@@ -18,7 +18,7 @@ from sponsors.models import *
 from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
-    SponsorshipBenefitAdminForm
+    SponsorshipBenefitAdminForm, CloneApplicationConfigForm
 from cms.admin import ContentManageableModelAdmin
 
 
@@ -601,7 +601,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorshipCurrentYear)
 class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
-    list_display = ["year"]
+    list_display = ["year", "other_years"]
     change_list_template = "sponsors/admin/sponsors_sponsorshipcurrentyear_changelist.html"
 
     def has_add_permission(self, *args, **kwargs):
@@ -621,6 +621,27 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             ),
         ]
         return my_urls + urls
+
+    def other_years(self, obj):
+        clone_form = CloneApplicationConfigForm()
+        configured_years = clone_form.configured_years
+        try:
+            configured_years.remove(obj.year)
+        except ValueError:
+            pass
+        if not configured_years:
+            return "---"
+
+        application_url = reverse("select_sponsorship_application_benefits")
+        preview_label = 'View sponsorship application form for this year'
+        html = "<ul>"
+        for year in configured_years:
+            querystring = f"config_year={year}"
+            preview_url = f"{application_url}?{querystring}"
+            html += f"<li><b>{year}</b>: <a href='{preview_url}'>{preview_label}</a>"
+        html += "</ul>"
+        return mark_safe(html)
+    other_years.short_description = "Other configured years"
 
     def clone_application_config(self, request):
         return views_admin.clone_application_config(self, request)
