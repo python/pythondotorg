@@ -23,6 +23,7 @@
 {% block content %}
   <h1>Clone Sponsorsihp Application Configuration</h1>
   <p>You can use this form to generate a new sponsorship application year by copying it from an already configured year.</p>
+  {% if configured_years %}
   <p>There are already valid configuraiton for the following years:</p>
   <uL>
     {% for year in configured_years %}
@@ -33,6 +34,7 @@
       </li>
     {% endfor %}
   </uL>
+  {% endif %}
 
   {% if not new_year %}
     <hr>
