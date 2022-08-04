@@ -601,7 +601,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
 @admin.register(SponsorshipCurrentYear)
 class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
-    list_display = ["year", "other_years"]
+    list_display = ["year", "links", "other_years"]
     change_list_template = "sponsors/admin/sponsors_sponsorshipcurrentyear_changelist.html"
 
     def has_add_permission(self, *args, **kwargs):
@@ -621,6 +621,29 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             ),
         ]
         return my_urls + urls
+
+    def links(self, obj):
+        clone_form = CloneApplicationConfigForm()
+        configured_years = clone_form.configured_years
+
+        application_url = reverse("select_sponsorship_application_benefits")
+        benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
+        preview_label = 'View sponsorship application'
+        year = obj.year
+        html = "<ul>"
+        preview_querystring = f"config_year={year}"
+        preview_url = f"{application_url}?{preview_querystring}"
+        filter_querystring = f"year={year}"
+        year_benefits_url = f"{benefits_url}?{filter_querystring}"
+        year_packages_url = f"{benefits_url}?{filter_querystring}"
+
+        html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
+        html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
+        html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
+        html += "</ul>"
+        return mark_safe(html)
+    links.short_description = "Links"
 
     def other_years(self, obj):
         clone_form = CloneApplicationConfigForm()
