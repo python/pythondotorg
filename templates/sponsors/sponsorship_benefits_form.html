@@ -16,7 +16,6 @@
         <p>You're seeing this message because you're a staff user!</p>
         <p>You're are currently previewing how the sponsorship application using the configuration from <b>{{ custom_year }}</b>.</p>
         <p>This should be used only for preview before updating the <a href="{% url "admin:sponsors_sponsorshipcurrentyear_changelist" %}">Sponsorship Current Active</a> year to {{ custom_year }}.</p>
-        <p><b>Do not submit the form.</b></p>
       </div>
     {% endif %}
 
@@ -219,7 +218,7 @@
           <li><p>Submit your contact information</p></li>
         </ol>
         <div>
-          <input class="btn btn-sponsorship-submit" type="submit" value="Submit">
+          <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}>
         </div>
         <span></span>
       </div>
