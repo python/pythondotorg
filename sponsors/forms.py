@@ -688,11 +688,44 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
 
 
 class CloneApplicationConfigForm(forms.Form):
-    from_year = forms.IntegerField(
+    from_year = forms.ChoiceField(
         required=True,
-        help_text="From which year you want to clone the benefits and packages."
+        help_text="From which year you want to clone the benefits and packages.",
+        choices=[]
     )
     target_year = forms.IntegerField(
         required=True,
         help_text="The year of the resulting new sponsorship application configuration."
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
+        packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
+        choices = [(y, y) for y in sorted(set(benefits_years + packages_years)) if y]
+        self.fields["from_year"].choices = choices
+
+    @property
+    def configured_years(self):
+        return [c[0] for c in self.fields["from_year"].choices]
+
+    def clean_target_year(self):
+        data = self.cleaned_data["target_year"]
+        if data > 2050:
+            raise forms.ValidationError("The target year can't be bigger than 2050.")
+        return data
+
+    def clean_from_year(self):
+        return int(self.cleaned_data["from_year"])
+
+    def clean(self):
+        from_year = self.cleaned_data.get("from_year")
+        target_year = self.cleaned_data.get("target_year")
+
+        if from_year and target_year:
+            if target_year < from_year:
+                raise forms.ValidationError("The target year must be greater the one used as source.")
+            elif target_year in self.configured_years:
+                raise forms.ValidationError(f"The year {target_year} already have a valid confguration.")
+
+        return self.cleaned_data

@@ -13,7 +13,7 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm,
+    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm, CloneApplicationConfigForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
     RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage, SponsorshipCurrentYear
@@ -787,3 +787,53 @@ class SponsorshipBenefitAdminFormTests(TestCase):
         form = SponsorshipBenefitAdminForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn("__all__", form.errors)
+
+
+class CloneApplicationConfigFormTests(TestCase):
+
+    def setUp(self):
+        baker.make(SponsorshipBenefit, year=2022)
+        baker.make(SponsorshipPackage, year=2023)
+
+    def test_required_fields(self):
+        req_fields = {"from_year", "target_year"}
+        form = CloneApplicationConfigForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(req_fields, set(form.errors))
+
+    def test_from_year_should_list_configured_years_as_possible_choices(self):
+        expected = [(2022, 2022), (2023, 2023)]
+        form = CloneApplicationConfigForm()
+        from_years = form.fields["from_year"].choices
+        self.assertEqual(expected, from_years)
+        self.assertEqual([2022, 2023], form.configured_years)
+
+    def test_target_must_be_greater_than_from_year(self):
+        # lower
+        data = {"from_year": 2023, "target_year": 2020}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+        # greater
+        data = {"from_year": 2023, "target_year": 2024}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(2023, form.cleaned_data["from_year"])
+        self.assertEqual(2024, form.cleaned_data["target_year"])
+
+    def test_target_cannot_be_an_already_configured_year(self):
+        # the same
+        data = {"from_year": 2022, "target_year": 2023}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_target_year_has_2050_as_an_upper_boundary(self):
+        data = {"from_year": 2023, "target_year": 2050}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        data = {"from_year": 2023, "target_year": 2051}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("target_year", form.errors)
