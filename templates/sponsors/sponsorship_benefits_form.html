@@ -10,9 +10,20 @@
 
 {% block content %}
   {% flag "sponsorship-applications-open" %}
+    {% if custom_year %}
+      <div class="admin-alert">
+        <h1>Important!</h1>
+        <p>You're seeing this message because you're a staff user!</p>
+        <p>You're are currently previewing how the sponsorship application using the configuration from <b>{{ custom_year }}</b>.</p>
+        <p>This should be used only for preview before updating the <a href="{% url "admin:sponsors_sponsorshipcurrentyear_changelist" %}">Sponsorship Current Active</a> year to {{ custom_year }}.</p>
+        <p><b>Do not submit the form.</b></p>
+      </div>
+    {% endif %}
+
   <article class="text">
     {% box 'sponsorship-application' %}
   </article>
+
   <form id="application_form" action="" method="POST">
     {% csrf_token %}
     <div id="select_sponsorship_benefits_container">

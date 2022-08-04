@@ -16,6 +16,7 @@ from ..models import (
     SponsorshipBenefit,
     SponsorContact,
     Sponsorship, SponsorshipCurrentYear,
+    SponsorshipPackage
 )
 from sponsors.forms import (
     SponsorshipsBenefitsForm,
@@ -36,9 +37,9 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.program_2_benefits = baker.make(
             SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
+        self.package = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
         self.package.benefits.add(*self.program_1_benefits)
-        package_2 = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
+        package_2 = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
         package_2.benefits.add(*self.program_2_benefits)
         self.add_on_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
@@ -47,7 +48,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
             SponsorshipBenefit, program=self.psf, _quantity=2, a_la_carte=True, year=self.current_year
         )
 
-        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_active=True)
+        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=False, is_active=True)
         self.client.force_login(self.user)
 
         self.group = Group(name="Sponsorship Preview")
@@ -66,8 +67,8 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         session.save()
 
     def test_display_template_with_form_and_context(self):
-        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
-        extra_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        psf_package = baker.make(SponsorshipPackage, advertise=True)
+        extra_package = baker.make(SponsorshipPackage, advertise=True)
 
         r = self.client.get(self.url)
         packages = r.context["sponsorship_packages"]
@@ -108,7 +109,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertEqual(self.data, r.context["form"].initial)
 
     def test_capacity_flag(self):
-        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        psf_package = baker.make(SponsorshipPackage, advertise=True)
         r = self.client.get(self.url)
         self.assertEqual(False, r.context["capacities_met"])
 
@@ -116,7 +117,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         at_capacity_benefit = baker.make(
             SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
         )
-        psf_package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        psf_package = baker.make(SponsorshipPackage, advertise=True)
 
         r = self.client.get(self.url)
         self.assertEqual(True, r.context["capacities_met"])
@@ -158,6 +159,37 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         )
         self.assertEqual(self.data, cookie_value)
 
+    def test_do_not_display_application_form_by_year_if_staff_user(self):
+        custom_year = self.current_year + 1
+        # move all obects to a new year instead of using the active one
+        SponsorshipBenefit.objects.all().update(year=custom_year)
+        SponsorshipPackage.objects.all().update(year=custom_year)
+
+        querystring = f"config_year={custom_year}"
+        response = self.client.get(self.url + f"?{querystring}")
+
+        form = response.context["form"]
+        self.assertIsNone(response.context["custom_year"])
+        self.assertFalse(list(form.fields["benefits_psf"].choices))
+        self.assertFalse(list(form.fields["benefits_working_group"].choices))
+
+    def test_display_application_form_by_year_if_staff_user_and_querystring(self):
+        self.user.is_staff = True
+        self.user.save()
+        self.client.force_login(self.user)
+        custom_year = self.current_year + 1
+        # move all obects to a new year instead of using the active one
+        SponsorshipBenefit.objects.all().update(year=custom_year)
+        SponsorshipPackage.objects.all().update(year=custom_year)
+
+        querystring = f"config_year={custom_year}"
+        response = self.client.get(self.url + f"?{querystring}")
+
+        form = response.context["form"]
+        self.assertEqual(custom_year, response.context["custom_year"])
+        self.assertTrue(list(form.fields["benefits_psf"].choices))
+        self.assertTrue(list(form.fields["benefits_working_group"].choices))
+
 
 class NewSponsorshipApplicationViewTests(TestCase):
     url = reverse_lazy("new_sponsorship_application")
@@ -172,7 +204,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.program_1_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
+        self.package = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
         for benefit in self.program_1_benefits:
             benefit.packages.add(self.package)
 
