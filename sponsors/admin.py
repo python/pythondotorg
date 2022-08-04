@@ -633,12 +633,23 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             return "---"
 
         application_url = reverse("select_sponsorship_application_benefits")
+        benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
         preview_label = 'View sponsorship application form for this year'
         html = "<ul>"
         for year in configured_years:
-            querystring = f"config_year={year}"
-            preview_url = f"{application_url}?{querystring}"
-            html += f"<li><b>{year}</b>: <a href='{preview_url}'>{preview_label}</a>"
+            preview_querystring = f"config_year={year}"
+            preview_url = f"{application_url}?{preview_querystring}"
+            filter_querystring = f"year={year}"
+            year_benefits_url = f"{benefits_url}?{filter_querystring}"
+            year_packages_url = f"{benefits_url}?{filter_querystring}"
+
+            html += f"<li><b>{year}</b>:"
+            html += "<ul>"
+            html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
+            html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
+            html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
+            html += "</ul></li>"
         html += "</ul>"
         return mark_safe(html)
     other_years.short_description = "Other configured years"
