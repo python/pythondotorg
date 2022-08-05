@@ -20,8 +20,9 @@ from django.urls import reverse
 
 from .utils import assertMessage, get_static_image_file_as_upload
 from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate, \
-    GenericAsset, ImgAsset, TextAsset
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, SendSponsorshipNotificationForm
+    GenericAsset, ImgAsset, TextAsset, SponsorshipCurrentYear, SponsorshipPackage
+from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
+    SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.views_admin import send_sponsorship_notifications_action, export_assets_as_zipfile
 from sponsors.use_cases import SendSponsorshipNotificationUseCase
 
@@ -950,6 +951,63 @@ class PreviewSponsorEmailNotificationTemplateTests(TestCase):
         r = self.client.get(self.url)
 
         self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+
+class ClonsSponsorshipYearConfigurationTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(
+            settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True
+        )
+        self.client.force_login(self.user)
+        self.url = reverse("admin:sponsors_sponsorshipcurrentyear_clone")
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+        r = self.client.get(self.url)
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+        r = self.client.get(self.url)
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_correct_template_and_form_on_get(self):
+        baker.make(SponsorshipBenefit, year=2022)
+        baker.make(SponsorshipPackage, year=2023)
+        response = self.client.get(self.url)
+
+        template = "sponsors/admin/clone_application_config_form.html"
+        curr_year = SponsorshipCurrentYear.get_year()
+
+        self.assertTemplateUsed(response, template)
+        self.assertIsInstance(response.context["form"], CloneApplicationConfigForm)
+        self.assertEqual(response.context["current_year"], curr_year)
+        self.assertEqual(response.context["configured_years"], [2023, 2022])
+        self.assertIsNone(response.context["new_year"])
+
+    def test_display_form_errors_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(response.context["form"].errors)
+
+    def test_clone_sponsorship_application_config_with_valid_post(self):
+        baker.make(SponsorshipBenefit, year=2022)
+        data = {"from_year": 2022, "target_year": 2023}
+        response = self.client.post(self.url, data=data)
+
+        self.assertEqual(SponsorshipBenefit.objects.from_year(2022).count(), 1)
+        self.assertEqual(SponsorshipBenefit.objects.from_year(2023).count(), 1)
+        template = "sponsors/admin/clone_application_config_form.html"
+        self.assertTemplateUsed(response, template)
+        self.assertEqual(response.context["new_year"], 2023)
+        self.assertEqual(response.context["configured_years"], [2023, 2022])
 
 
 #######################

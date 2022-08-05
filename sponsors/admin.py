@@ -18,8 +18,12 @@ from sponsors.models import *
 from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
-    SponsorshipBenefitAdminForm
+    SponsorshipBenefitAdminForm, CloneApplicationConfigForm
 from cms.admin import ContentManageableModelAdmin
+
+
+def get_url_base_name(Model):
+    return f"{Model._meta.app_label}_{Model._meta.model_name}"
 
 
 class AssetsInline(GenericTabularInline):
@@ -113,7 +117,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "package_only", "packages", "new", "a_la_carte", "unavailable"]
+    list_filter = ["program", "year", "package_only", "packages", "new", "a_la_carte", "unavailable"]
     search_fields = ["name"]
     form = SponsorshipBenefitAdminForm
 
@@ -150,11 +154,12 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/update-related-sponsorships",
                 self.admin_site.admin_view(self.update_related_sponsorships),
-                name="sponsors_sponsorshipbenefit_update_related",
+                name=f"{base_name}_update_related",
             ),
         ]
         return my_urls + urls
@@ -166,8 +171,8 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("order",)
-    list_display = ["name", "advertise", "move_up_down_links"]
-    list_filter = ["advertise"]
+    list_display = ["name", "year", "advertise", "move_up_down_links"]
+    list_filter = ["advertise", "year"]
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
@@ -294,12 +299,13 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "sponsor",
         "status",
         "package",
+        "year",
         "applied_on",
         "approved_on",
         "start_date",
         "end_date",
     ]
-    list_filter = [SponsorshipStatusListFilter, "package", TargetableEmailBenefitsFilter]
+    list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
     fieldsets = [
         (
@@ -311,6 +317,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
                     "status",
                     "package",
                     "sponsorship_fee",
+                    "year",
                     "get_estimated_cost",
                     "start_date",
                     "end_date",
@@ -407,6 +414,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
+        if obj.year:
+            readonly_fields.append("year")
+
         return readonly_fields
 
     def sponsor_link(self, obj):
@@ -436,33 +446,34 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/reject",
                 # TODO: maybe it would be better to create a specific
                 # group or permission to review sponsorship applications
                 self.admin_site.admin_view(self.reject_sponsorship_view),
-                name="sponsors_sponsorship_reject",
+                name=f"{base_name}_reject",
             ),
             path(
                 "<int:pk>/approve-existing",
                 self.admin_site.admin_view(self.approve_signed_sponsorship_view),
-                name="sponsors_sponsorship_approve_existing_contract",
+                name=f"{base_name}_approve_existing_contract",
             ),
             path(
                 "<int:pk>/approve",
                 self.admin_site.admin_view(self.approve_sponsorship_view),
-                name="sponsors_sponsorship_approve",
+                name=f"{base_name}_approve",
             ),
             path(
                 "<int:pk>/enable-edit",
                 self.admin_site.admin_view(self.rollback_to_editing_view),
-                name="sponsors_sponsorship_rollback_to_edit",
+                name=f"{base_name}_rollback_to_edit",
             ),
             path(
                 "<int:pk>/list-assets",
                 self.admin_site.admin_view(self.list_uploaded_assets_view),
-                name="sponsors_sponsorship_list_uploaded_assets",
+                name=f"{base_name}_list_uploaded_assets",
             ),
         ]
         return my_urls + urls
@@ -588,6 +599,87 @@ class SponsorshipAdmin(admin.ModelAdmin):
         return views_admin.list_uploaded_assets(self, request, pk)
 
 
+@admin.register(SponsorshipCurrentYear)
+class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
+    list_display = ["year", "links", "other_years"]
+    change_list_template = "sponsors/admin/sponsors_sponsorshipcurrentyear_changelist.html"
+
+    def has_add_permission(self, *args, **kwargs):
+        return False
+
+    def has_delete_permission(self, *args, **kwargs):
+        return False
+
+    def get_urls(self):
+        urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
+        my_urls = [
+            path(
+                "clone-year-config",
+                self.admin_site.admin_view(self.clone_application_config),
+                name=f"{base_name}_clone",
+            ),
+        ]
+        return my_urls + urls
+
+    def links(self, obj):
+        clone_form = CloneApplicationConfigForm()
+        configured_years = clone_form.configured_years
+
+        application_url = reverse("select_sponsorship_application_benefits")
+        benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
+        preview_label = 'View sponsorship application'
+        year = obj.year
+        html = "<ul>"
+        preview_querystring = f"config_year={year}"
+        preview_url = f"{application_url}?{preview_querystring}"
+        filter_querystring = f"year={year}"
+        year_benefits_url = f"{benefits_url}?{filter_querystring}"
+        year_packages_url = f"{benefits_url}?{filter_querystring}"
+
+        html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
+        html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
+        html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
+        html += "</ul>"
+        return mark_safe(html)
+    links.short_description = "Links"
+
+    def other_years(self, obj):
+        clone_form = CloneApplicationConfigForm()
+        configured_years = clone_form.configured_years
+        try:
+            configured_years.remove(obj.year)
+        except ValueError:
+            pass
+        if not configured_years:
+            return "---"
+
+        application_url = reverse("select_sponsorship_application_benefits")
+        benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
+        preview_label = 'View sponsorship application form for this year'
+        html = "<ul>"
+        for year in configured_years:
+            preview_querystring = f"config_year={year}"
+            preview_url = f"{application_url}?{preview_querystring}"
+            filter_querystring = f"year={year}"
+            year_benefits_url = f"{benefits_url}?{filter_querystring}"
+            year_packages_url = f"{benefits_url}?{filter_querystring}"
+
+            html += f"<li><b>{year}</b>:"
+            html += "<ul>"
+            html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
+            html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
+            html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
+            html += "</ul></li>"
+        html += "</ul>"
+        return mark_safe(html)
+    other_years.short_description = "Other configured years"
+
+    def clone_application_config(self, request):
+        return views_admin.clone_application_config(self, request)
+
 @admin.register(LegalClause)
 class LegalClauseModelAdmin(OrderedModelAdmin):
     list_display = ["internal_name"]
@@ -596,6 +688,7 @@ class LegalClauseModelAdmin(OrderedModelAdmin):
 @admin.register(Contract)
 class ContractModelAdmin(admin.ModelAdmin):
     change_form_template = "sponsors/admin/contract_change_form.html"
+    list_filter = ["sponsorship__year"]
     list_display = [
         "id",
         "sponsorship",
@@ -711,26 +804,27 @@ class ContractModelAdmin(admin.ModelAdmin):
 
     def get_urls(self):
         urls = super().get_urls()
+        base_name = get_url_base_name(self.model)
         my_urls = [
             path(
                 "<int:pk>/preview",
                 self.admin_site.admin_view(self.preview_contract_view),
-                name="sponsors_contract_preview",
+                name=f"{base_name}_preview",
             ),
             path(
                 "<int:pk>/send",
                 self.admin_site.admin_view(self.send_contract_view),
-                name="sponsors_contract_send",
+                name=f"{base_name}_send",
             ),
             path(
                 "<int:pk>/execute",
                 self.admin_site.admin_view(self.execute_contract_view),
-                name="sponsors_contract_execute",
+                name=f"{base_name}_execute",
             ),
             path(
                 "<int:pk>/nullify",
                 self.admin_site.admin_view(self.nullify_contract_view),
-                name="sponsors_contract_nullify",
+                name=f"{base_name}_nullify",
             ),
         ]
         return my_urls + urls
