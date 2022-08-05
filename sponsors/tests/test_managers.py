@@ -5,7 +5,7 @@ from django.conf import settings
 from django.test import TestCase
 
 from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity, RequiredTextAsset, RequiredImgAsset, \
-    BenefitFeature, SponsorshipPackage, SponsorshipBenefit
+    BenefitFeature, SponsorshipPackage, SponsorshipBenefit, SponsorshipCurrentYear
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -149,9 +149,10 @@ class SponsorshipBenefitManagerTests(TestCase):
 
     def setUp(self):
         package = baker.make(SponsorshipPackage)
-        self.regular_benefit = baker.make(SponsorshipBenefit)
+        current_year = SponsorshipCurrentYear.get_year()
+        self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
         self.regular_benefit.packages.add(package)
-        self.add_on = baker.make(SponsorshipBenefit)
+        self.add_on = baker.make(SponsorshipBenefit, year=current_year-1)
         self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True)
 
     def test_add_ons_queryset(self):
@@ -163,3 +164,21 @@ class SponsorshipBenefitManagerTests(TestCase):
         qs = SponsorshipBenefit.objects.a_la_carte()
         self.assertEqual(1, qs.count())
         self.assertIn(self.a_la_carte, qs)
+
+    def test_filter_benefits_by_current_year(self):
+        qs = SponsorshipBenefit.objects.all().from_current_year()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.regular_benefit, qs)
+
+
+class SponsorshipPackageManagerTests(TestCase):
+
+    def test_filter_packages_by_current_year(self):
+        current_year = SponsorshipCurrentYear.get_year()
+        active_package = baker.make(SponsorshipPackage, year=current_year)
+        baker.make(SponsorshipPackage, year=current_year - 1)
+
+        qs = SponsorshipPackage.objects.all().from_current_year()
+
+        self.assertEqual(1, qs.count())
+        self.assertIn(active_package, qs)

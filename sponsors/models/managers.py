@@ -1,5 +1,6 @@
+from django.db import IntegrityError
 from django.db.models import Count
-from ordered_model.models import OrderedModelManager
+from ordered_model.models import OrderedModelManager, OrderedModelQuerySet
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -50,6 +51,12 @@ class SponsorshipQuerySet(QuerySet):
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
 
+class SponsorshipCurrentYearQuerySet(QuerySet):
+
+    def delete(self):
+        raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
+
+
 class SponsorContactQuerySet(QuerySet):
     def get_primary_contact(self, sponsor):
         contact = self.filter(sponsor=sponsor, primary=True).first()
@@ -74,7 +81,7 @@ class SponsorContactQuerySet(QuerySet):
         return self.filter(query)
 
 
-class SponsorshipBenefitManager(OrderedModelManager):
+class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
     def with_conflicts(self):
         return self.exclude(conflicts__isnull=True)
 
@@ -94,10 +101,26 @@ class SponsorshipBenefitManager(OrderedModelManager):
             .order_by("-num_packages", "order")
         )
 
+    def from_year(self, year):
+        return self.filter(year=year)
 
-class SponsorshipPackageManager(OrderedModelManager):
+    def from_current_year(self):
+        from sponsors.models import SponsorshipCurrentYear
+        current_year = SponsorshipCurrentYear.get_year()
+        return self.from_year(current_year)
+
+
+class SponsorshipPackageQuerySet(OrderedModelQuerySet):
     def list_advertisables(self):
         return self.filter(advertise=True)
+
+    def from_year(self, year):
+        return self.filter(year=year)
+
+    def from_current_year(self):
+        from sponsors.models import SponsorshipCurrentYear
+        current_year = SponsorshipCurrentYear.get_year()
+        return self.from_year(current_year)
 
 
 class BenefitFeatureQuerySet(PolymorphicQuerySet):

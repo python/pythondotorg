@@ -12,5 +12,6 @@ from .benefits import BaseLogoPlacement, BaseTieredQuantity, BaseEmailTargetable
     LogoPlacement, EmailTargetable, TieredQuantity, RequiredImgAsset, RequiredImgAssetConfiguration, \
     RequiredTextAssetConfiguration, RequiredTextAsset, RequiredResponseAssetConfiguration, RequiredResponseAsset, \
     ProvidedTextAssetConfiguration, ProvidedTextAsset, ProvidedFileAssetConfiguration, ProvidedFileAsset
-from .sponsorship import Sponsorship, SponsorshipProgram, SponsorshipBenefit, Sponsorship, SponsorshipPackage
+from .sponsorship import Sponsorship, SponsorshipProgram, SponsorshipBenefit, Sponsorship, SponsorshipPackage, \
+    SponsorshipCurrentYear
 from .contract import LegalClause, Contract, signed_contract_random_path

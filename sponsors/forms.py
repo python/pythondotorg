@@ -22,7 +22,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT,
+    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
 
@@ -55,24 +55,26 @@ class SponsorshipsBenefitsForm(forms.Form):
     Form to enable user to select packages, benefits and add-ons during
     the sponsorship application submission.
     """
-    package = forms.ModelChoiceField(
-        queryset=SponsorshipPackage.objects.list_advertisables(),
-        widget=forms.RadioSelect(),
-        required=False,
-        empty_label=None,
-    )
-    add_ons_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
-    )
-    a_la_carte_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.a_la_carte().select_related("program"),
-    )
 
     def __init__(self, *args, **kwargs):
+        year = kwargs.pop("year", SponsorshipCurrentYear.get_year())
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related(
+        self.fields["package"] = forms.ModelChoiceField(
+            queryset=SponsorshipPackage.objects.from_year(year).list_advertisables(),
+            widget=forms.RadioSelect(),
+            required=False,
+            empty_label=None,
+        )
+        self.fields["add_ons_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_year(year).add_ons().select_related("program"),
+        )
+        self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
+        )
+
+        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
             "program"
         )
 
@@ -684,3 +686,47 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
             raise forms.ValidationError(error)
 
         return cleaned_data
+
+
+class CloneApplicationConfigForm(forms.Form):
+    from_year = forms.ChoiceField(
+        required=True,
+        help_text="From which year you want to clone the benefits and packages.",
+        choices=[]
+    )
+    target_year = forms.IntegerField(
+        required=True,
+        help_text="The year of the resulting new sponsorship application configuration."
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
+        packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
+        choices = [(y, y) for y in sorted(set(benefits_years + packages_years), reverse=True) if y]
+        self.fields["from_year"].choices = choices
+
+    @property
+    def configured_years(self):
+        return [c[0] for c in self.fields["from_year"].choices]
+
+    def clean_target_year(self):
+        data = self.cleaned_data["target_year"]
+        if data > 2050:
+            raise forms.ValidationError("The target year can't be bigger than 2050.")
+        return data
+
+    def clean_from_year(self):
+        return int(self.cleaned_data["from_year"])
+
+    def clean(self):
+        from_year = self.cleaned_data.get("from_year")
+        target_year = self.cleaned_data.get("target_year")
+
+        if from_year and target_year:
+            if target_year < from_year:
+                raise forms.ValidationError("The target year must be greater the one used as source.")
+            elif target_year in self.configured_years:
+                raise forms.ValidationError(f"The year {target_year} already have a valid confguration.")
+
+        return self.cleaned_data
