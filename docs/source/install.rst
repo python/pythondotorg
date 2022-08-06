@@ -81,6 +81,12 @@ To compile and compress static media, you will need *compass* and
    To install *yui-compressor*, use your OS's package manager or download it
    directly then add the executable to your ``PATH``.
 
+.. note::
+
+   You may need to have Ruby developer headers installed. Use your OS's
+   package manager to install them (usually named as ``ruby-dev`` or
+   ``ruby-devel``).
+
 To create initial data for the most used applications, run::
 
     $ ./manage.py create_initial_data
@@ -112,8 +118,12 @@ Due to performance issues of django-pipeline_, we are using a dummy compiler
 ``pydotorg.compilers.DummySASSCompiler`` in development mode. To generate CSS
 files, use ``sass`` itself in a separate terminal window::
 
-    $ cd static
-    $ sass --compass --scss -I $(dirname $(dirname $(gem which susy))) --trace --watch sass/style.scss:sass/style.css
+    $ make sass
+
+Or, if you want to run both ``manage.py runserver`` and ``sass`` in the same
+terminal window, use::
+
+    $ make run
 
 .. _django-pipeline: https://github.com/cyberdelia/django-pipeline/issues/313
 
