@@ -51,10 +51,10 @@ class SponsorshipPackage(OrderedModel):
     year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
     def __str__(self):
-        return self.name
+        return f'{self.name} ({self.year})'
 
-    class Meta(OrderedModel.Meta):
-        pass
+    class Meta:
+        ordering = ('-year', 'order',)
 
     def has_user_customization(self, benefits):
         """
@@ -199,7 +199,7 @@ class Sponsorship(models.Model):
         return self.package.get_user_customization(benefits)
 
     def __str__(self):
-        repr = f"{self.level_name} ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        repr = f"{self.level_name} - {self.year} - ({self.get_status_display()}) for sponsor {self.sponsor.name}"
         if self.start_date and self.end_date:
             fmt = "%m/%d/%Y"
             start = self.start_date.strftime(fmt)
@@ -498,7 +498,7 @@ class SponsorshipBenefit(OrderedModel):
         return Sponsorship.objects.filter(id__in=Subquery(ids_qs))
 
     def __str__(self):
-        return f"{self.program} > {self.name}"
+        return f"{self.program} > {self.name} ({self.year})"
 
     def _short_name(self):
         return truncatechars(self.name, 42)
