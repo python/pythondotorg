@@ -109,9 +109,10 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
     change_form_template = "sponsors/admin/sponsorshipbenefit_change_form.html"
     inlines = [BenefitFeatureConfigurationInline]
-    ordering = ("program", "order")
+    ordering = ("-year", "program", "order")
     list_display = [
         "program",
+        "year",
         "short_name",
         "package_only",
         "internal_value",
@@ -170,7 +171,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
-    ordering = ("order",)
+    ordering = ("-year", "order",)
     list_display = ["name", "year", "advertise", "move_up_down_links"]
     list_filter = ["advertise", "year"]
     search_fields = ["name"]
@@ -197,8 +198,8 @@ class SponsorContactInline(admin.TabularInline):
 
 class SponsorshipsInline(admin.TabularInline):
     model = Sponsorship
-    fields = ["link", "status", "applied_on", "start_date", "end_date"]
-    readonly_fields = ["link", "status", "applied_on", "start_date", "end_date"]
+    fields = ["link", "status", "year", "applied_on", "start_date", "end_date"]
+    readonly_fields = ["link", "status", "year", "applied_on", "start_date", "end_date"]
     can_delete = False
     extra = 0
 
