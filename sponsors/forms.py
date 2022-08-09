@@ -25,6 +25,10 @@ from sponsors.models import (
     SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
+SPONSORSHIP_YEAR_SELECT = forms.Select(
+    choices=(((None, '---'),) + tuple(((y, str(y)) for y in range(2021, datetime.date.today().year + 2))))
+)
+
 
 class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
     widget = forms.CheckboxSelectMultiple
@@ -393,6 +397,9 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "package", "sponsorship_fee"]
+        widgets = {
+            'year': SPONSORSHIP_YEAR_SELECT,
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -673,6 +680,9 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
 
     class Meta:
         model = SponsorshipBenefit
+        widgets = {
+            'year': SPONSORSHIP_YEAR_SELECT,
+        }
         fields = "__all__"
 
     def clean(self):
