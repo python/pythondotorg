@@ -130,6 +130,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
                     "name",
                     "description",
                     "program",
+                    "year",
                     "packages",
                     "package_only",
                     "new",
