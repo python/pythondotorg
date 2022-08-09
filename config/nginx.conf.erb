@@ -288,13 +288,6 @@ http {
                   return 302 https://bugs.python.org/issue$1;
                 }
 
-                location ~ ^/sf(.*)$ {
-                  if ($is_args != "") {
-                      return 302 http://legacy.python.org/sf?$args;
-                  }
-                  return 302 http://legacy.python.org/sf$1;
-                }
-
                 location /news/ {
                   return 302 /blogs/;
                 }
