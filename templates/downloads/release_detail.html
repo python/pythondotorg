@@ -40,6 +40,13 @@
             <h1 class="page-title">Files</h1>
         </header>
 
+        {% set has_sigstore_materials = false %}
+        {% for f in release_files %}
+          {% if f.sigstore_cert_file or f.sigstore_signature_file %}
+            {% set has_sigstore_materials = true %}
+          {% endif %}
+        {% endfor %}
+
         <table>
           <thead>
             <tr>
@@ -49,6 +56,9 @@
               <th>MD5 Sum</th>
               <th>File Size</th>
               <th>GPG</th>
+              {% if has_sigstore_materials %}
+              <th colspan="2">Sigstore</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -60,6 +70,10 @@
                 <td>{{ f.md5_sum }}</td>
                 <td>{{ f.filesize }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
+                {% if has_sigstore_materials %}
+                <td>{% if f.sigstore_cert_file %}<a href="{{ f.sigstore_cert_file}}">CRT</a>{% endif %}</td>
+                <td>{% if f.sigstore_signature_file %}<a href="{{ f.sigstore_signature_file }}">SIG</a>{% endif %}</td>
+                {% endif %}
               </tr>
             {% endfor %}
           </tbody>
