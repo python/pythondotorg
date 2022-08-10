@@ -65,7 +65,7 @@ def benefit_quantity_for_package(benefit, package):
     ).first()
     if quantity_configuration is None:
         return ""
-    return quantity_configuration.quantity
+    return quantity_configuration.display_label or quantity_configuration.quantity
 
 
 @register.simple_tag
