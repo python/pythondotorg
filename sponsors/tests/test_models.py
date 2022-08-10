@@ -979,6 +979,7 @@ class TieredBenefitConfigurationModelTests(TestCase):
         self.config = baker.make(
             TieredBenefitConfiguration,
             package=self.package,
+            display_label="Foo",
             quantity=10,
         )
 
@@ -990,6 +991,7 @@ class TieredBenefitConfigurationModelTests(TestCase):
         self.assertIsInstance(benefit_feature, TieredBenefit)
         self.assertEqual(benefit_feature.package, self.package)
         self.assertEqual(benefit_feature.quantity, self.config.quantity)
+        self.assertEqual(benefit_feature.display_label, "Foo")
 
     def test_do_not_return_feature_if_benefit_from_other_package(self):
         sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name='Other')
@@ -1018,6 +1020,7 @@ class TieredBenefitConfigurationModelTests(TestCase):
         self.assertTrue(created)
         self.assertEqual(2, TieredBenefitConfiguration.objects.count())
         self.assertEqual(self.config.quantity, new_cfg.quantity)
+        self.assertEqual("Foo", new_cfg.display_label)
         self.assertNotEqual(self.package, new_cfg.package)
         self.assertEqual(self.package.slug, new_cfg.package.slug)
         self.assertEqual(2023, new_cfg.package.year)
