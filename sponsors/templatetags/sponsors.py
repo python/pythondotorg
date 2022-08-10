@@ -5,7 +5,7 @@ from django import template
 from django.conf import settings
 from django.core.cache import cache
 
-from ..models import Sponsorship, SponsorshipPackage, TieredQuantityConfiguration
+from ..models import Sponsorship, SponsorshipPackage, TieredBenefitConfiguration
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 
@@ -60,7 +60,7 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
 
 @register.simple_tag
 def benefit_quantity_for_package(benefit, package):
-    quantity_configuration = TieredQuantityConfiguration.objects.filter(
+    quantity_configuration = TieredBenefitConfiguration.objects.filter(
         benefit=benefit, package=package
     ).first()
     if quantity_configuration is None:

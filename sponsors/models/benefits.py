@@ -47,7 +47,7 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
-class BaseTieredQuantity(models.Model):
+class BaseTieredBenefit(models.Model):
     package = models.ForeignKey("sponsors.SponsorshipPackage", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
 
@@ -394,18 +394,18 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
-class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguration):
+class TieredBenefitConfiguration(BaseTieredBenefit, BenefitFeatureConfiguration):
     """
     Configuration for tiered quantities among packages
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Tiered Benefit Configuration"
         verbose_name_plural = "Tiered Benefit Configurations"
 
     @property
     def benefit_feature_class(self):
-        return TieredQuantity
+        return TieredBenefit
 
     def get_benefit_feature_kwargs(self, **kwargs):
         if kwargs["sponsor_benefit"].sponsorship.package == self.package:
@@ -413,7 +413,7 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return None
 
     def __str__(self):
-        return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
+        return f"Tiered Benefit Configuration for {self.benefit} and {self.package} ({self.quantity})"
 
     def display_modifier(self, name, **kwargs):
         if kwargs.get("package") != self.package:
@@ -431,7 +431,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
     Configuration for email targeatable benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Email Targetable Configuration"
         verbose_name_plural = "Email Targetable Configurations"
 
@@ -554,14 +554,14 @@ class LogoPlacement(BaseLogoPlacement, BenefitFeature):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
-class TieredQuantity(BaseTieredQuantity, BenefitFeature):
+class TieredBenefit(BaseTieredBenefit, BenefitFeature):
     """
-    Tiered Quantity feature for sponsor benefits
+    Tiered Benefit feature for sponsor benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
-        verbose_name = "Tiered Quantity"
-        verbose_name_plural = "Tiered Quantities"
+    class Meta(BaseTieredBenefit.Meta, BenefitFeature.Meta):
+        verbose_name = "Tiered Benefit"
+        verbose_name_plural = "Tiered Benefits"
 
     def display_modifier(self, name, **kwargs):
         return f"{name} ({self.quantity})"
@@ -575,7 +575,7 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
     For email targeatable benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeature.Meta):
         verbose_name = "Email Targetable Benefit"
         verbose_name_plural = "Email Targetable Benefits"
 

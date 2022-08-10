@@ -24,7 +24,7 @@ from sponsors.exceptions import SponsorWithExistingApplicationException, Invalid
 from sponsors.models.assets import GenericAsset
 from sponsors.models.managers import SponsorshipPackageQuerySet, SponsorshipBenefitQuerySet, \
     SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
-from sponsors.models.benefits import TieredQuantityConfiguration
+from sponsors.models.benefits import TieredBenefitConfiguration
 from sponsors.models.sponsors import SponsorBenefit
 
 YEAR_VALIDATORS = [
@@ -514,7 +514,7 @@ class SponsorshipBenefit(OrderedModel):
 
     @cached_property
     def has_tiers(self):
-        return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
+        return self.features_config.instance_of(TieredBenefitConfiguration).count() > 0
 
     @transaction.atomic
     def clone(self, year: int):

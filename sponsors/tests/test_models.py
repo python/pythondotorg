@@ -21,8 +21,8 @@ from ..models import (
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipPackage,
-    TieredQuantity,
-    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
+    TieredBenefit,
+    TieredBenefitConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
     RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset, SponsorshipCurrentYear
 )
 from ..exceptions import (
@@ -74,7 +74,7 @@ class SponsorshipBenefitModelTests(TestCase):
     def test_name_for_display_without_specifying_package(self):
         benefit = baker.make(SponsorshipBenefit, name='Benefit')
         benefit_config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package__name='Package',
             benefit=benefit,
             quantity=10
@@ -674,17 +674,17 @@ class SponsorBenefitModelTests(TestCase):
 
     def test_new_copy_do_not_save_unexisting_features(self):
         benefit_config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package__name='Another package',
             benefit=self.sponsorship_benefit,
         )
-        self.assertEqual(0, TieredQuantity.objects.count())
+        self.assertEqual(0, TieredBenefit.objects.count())
 
         sponsor_benefit = SponsorBenefit.new_copy(
             self.sponsorship_benefit, sponsorship=self.sponsorship
         )
 
-        self.assertEqual(0, TieredQuantity.objects.count())
+        self.assertEqual(0, TieredBenefit.objects.count())
         self.assertFalse(sponsor_benefit.features.exists())
 
     def test_sponsor_benefit_name_for_display(self):
@@ -694,7 +694,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(sponsor_benefit.name_for_display, name)
         # apply display modifier from features
         benefit_config = baker.make(
-            TieredQuantity,
+            TieredBenefit,
             sponsor_benefit=sponsor_benefit,
             quantity=10
         )
@@ -972,12 +972,12 @@ class LogoPlacementConfigurationModelTests(TestCase):
         self.assertEqual(new_cfg.pk, repeated.pk)
 
 
-class TieredQuantityConfigurationModelTests(TestCase):
+class TieredBenefitConfigurationModelTests(TestCase):
 
     def setUp(self):
         self.package = baker.make(SponsorshipPackage, year=2022)
         self.config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package=self.package,
             quantity=10,
         )
@@ -987,7 +987,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
-        self.assertIsInstance(benefit_feature, TieredQuantity)
+        self.assertIsInstance(benefit_feature, TieredBenefit)
         self.assertEqual(benefit_feature.package, self.package)
         self.assertEqual(benefit_feature.quantity, self.config.quantity)
 
@@ -1016,7 +1016,7 @@ class TieredQuantityConfigurationModelTests(TestCase):
         new_cfg, created = self.config.clone(benefit)
 
         self.assertTrue(created)
-        self.assertEqual(2, TieredQuantityConfiguration.objects.count())
+        self.assertEqual(2, TieredBenefitConfiguration.objects.count())
         self.assertEqual(self.config.quantity, new_cfg.quantity)
         self.assertNotEqual(self.package, new_cfg.package)
         self.assertEqual(self.package.slug, new_cfg.package.slug)
@@ -1036,10 +1036,10 @@ class LogoPlacementTests(TestCase):
         self.assertEqual(placement.display_modifier(name), name)
 
 
-class TieredQuantityTests(TestCase):
+class TieredBenefitTests(TestCase):
 
     def test_display_modifier_adds_quantity_to_the_name(self):
-        placement = baker.make(TieredQuantity, quantity=10)
+        placement = baker.make(TieredBenefit, quantity=10)
         name = 'Benefit'
         self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
 

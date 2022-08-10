@@ -8,7 +8,7 @@ from ..models import (
     Sponsor,
     SponsorBenefit,
     SponsorshipBenefit,
-    TieredQuantityConfiguration,
+    TieredBenefitConfiguration,
 )
 from ..templatetags.sponsors import (
     benefit_name_for_display,
@@ -69,7 +69,7 @@ class BenefitQuantityForPackageTests(TestCase):
         self.benefit = baker.make(SponsorshipBenefit)
         self.package = baker.make("sponsors.SponsorshipPackage")
         self.config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             benefit=self.benefit,
             package=self.package,
         )
