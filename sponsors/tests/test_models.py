@@ -1004,7 +1004,14 @@ class TieredBenefitConfigurationModelTests(TestCase):
         name = "Benefit"
         other_package = baker.make(SponsorshipPackage)
 
+        # modifies for the same package as the config + label prioritized
+        self.config.save(update_fields=["display_label"])
+        modified_name = self.config.display_modifier(name, package=self.package)
+        self.assertEqual(modified_name, f"{name} (Foo)")
+
         # modifies for the same package as the config
+        self.config.display_label = ""
+        self.config.save(update_fields=["display_label"])
         modified_name = self.config.display_modifier(name, package=self.package)
         self.assertEqual(modified_name, f"{name} (10)")
 
@@ -1045,6 +1052,11 @@ class TieredBenefitTests(TestCase):
         placement = baker.make(TieredBenefit, quantity=10)
         name = 'Benefit'
         self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
+
+    def test_display_modifier_adds_display_label_to_the_name(self):
+        placement = baker.make(TieredBenefit, quantity=10, display_label="Foo")
+        name = 'Benefit'
+        self.assertEqual(placement.display_modifier(name), 'Benefit (Foo)')
 
 
 class RequiredImgAssetConfigurationTests(TestCase):

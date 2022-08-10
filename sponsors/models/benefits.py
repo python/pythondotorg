@@ -424,7 +424,7 @@ class TieredBenefitConfiguration(BaseTieredBenefit, BenefitFeatureConfiguration)
     def display_modifier(self, name, **kwargs):
         if kwargs.get("package") != self.package:
             return name
-        return f"{name} ({self.quantity})"
+        return f"{name} ({self.display_label or self.quantity})"
 
     def get_clone_kwargs(self, new_benefit):
         kwargs = super().get_clone_kwargs(new_benefit)
@@ -570,7 +570,7 @@ class TieredBenefit(BaseTieredBenefit, BenefitFeature):
         verbose_name_plural = "Tiered Benefits"
 
     def display_modifier(self, name, **kwargs):
-        return f"{name} ({self.quantity})"
+        return f"{name} ({self.display_label or self.quantity})"
 
     def __str__(self):
         return f"{self.quantity} of {self.sponsor_benefit} for {self.package}"
