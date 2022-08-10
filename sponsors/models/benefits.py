@@ -50,6 +50,12 @@ class BaseLogoPlacement(models.Model):
 class BaseTieredBenefit(models.Model):
     package = models.ForeignKey("sponsors.SponsorshipPackage", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    display_label = models.CharField(
+        blank=True,
+        default="",
+        help_text="If populated, this will be displayed instead of the quantity value.",
+        max_length=32,
+    )
 
     class Meta:
         abstract = True
