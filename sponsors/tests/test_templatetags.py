@@ -8,7 +8,7 @@ from ..models import (
     Sponsor,
     SponsorBenefit,
     SponsorshipBenefit,
-    TieredQuantityConfiguration,
+    TieredBenefitConfiguration,
 )
 from ..templatetags.sponsors import (
     benefit_name_for_display,
@@ -69,14 +69,20 @@ class BenefitQuantityForPackageTests(TestCase):
         self.benefit = baker.make(SponsorshipBenefit)
         self.package = baker.make("sponsors.SponsorshipPackage")
         self.config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             benefit=self.benefit,
             package=self.package,
         )
 
     def test_return_config_quantity(self):
-        quantity = benefit_quantity_for_package(self.benefit.pk, self.package.pk)
-        self.assertEqual(quantity, self.config.quantity)
+        display = benefit_quantity_for_package(self.benefit.pk, self.package.pk)
+        self.assertEqual(display, self.config.quantity)
+
+    def test_return_config_label_if_configured(self):
+        self.config.display_label = "Custom label"
+        self.config.save(update_fields=["display_label"])
+        display = benefit_quantity_for_package(self.benefit.pk, self.package.pk)
+        self.assertEqual(display, self.config.display_label)
 
     def test_return_empty_string_if_mismatching_benefit_or_package(self):
         other_benefit = baker.make(SponsorshipBenefit)

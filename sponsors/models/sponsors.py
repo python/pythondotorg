@@ -217,8 +217,8 @@ class SponsorBenefit(OrderedModel):
     added_by_user = models.BooleanField(
         blank=True, default=False, verbose_name="Added by user?"
     )
-    a_la_carte = models.BooleanField(
-        blank=True, default=False, verbose_name="Added as a la carte benefit?"
+    standalone = models.BooleanField(
+        blank=True, default=False, verbose_name="Added as standalone benefit?"
     )
 
     def __str__(self):
@@ -232,8 +232,8 @@ class SponsorBenefit(OrderedModel):
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
-        kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.a_la_carte
-        kwargs["a_la_carte"] = benefit.a_la_carte
+        kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.standalone
+        kwargs["standalone"] = benefit.standalone
         sponsor_benefit = cls.objects.create(
             sponsorship_benefit=benefit,
             program_name=benefit.program.name,
@@ -273,8 +273,8 @@ class SponsorBenefit(OrderedModel):
         self.description = benefit.description
         self.program = benefit.program
         self.benefit_internal_value = benefit.internal_value
-        self.a_la_carte = benefit.a_la_carte
-        self.added_by_user = self.added_by_user or self.a_la_carte
+        self.standalone = benefit.standalone
+        self.added_by_user = self.added_by_user or self.standalone
 
         # generate benefit features from benefit features configurations
         features = self.features.all().delete()

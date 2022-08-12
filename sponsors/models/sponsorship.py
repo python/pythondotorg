@@ -24,7 +24,7 @@ from sponsors.exceptions import SponsorWithExistingApplicationException, Invalid
 from sponsors.models.assets import GenericAsset
 from sponsors.models.managers import SponsorshipPackageQuerySet, SponsorshipBenefitQuerySet, \
     SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
-from sponsors.models.benefits import TieredQuantityConfiguration
+from sponsors.models.benefits import TieredBenefitConfiguration
 from sponsors.models.sponsors import SponsorBenefit
 
 YEAR_VALIDATORS = [
@@ -412,10 +412,10 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Benefit is unavailable",
         help_text="If selected, this benefit will not be available to applicants.",
     )
-    a_la_carte = models.BooleanField(
+    standalone = models.BooleanField(
         default=False,
-        verbose_name="À La Carte",
-        help_text="À la carte benefits can be selected without the need of a package.",
+        verbose_name="Standalone",
+        help_text="Standalone benefits can be selected without the need of a package.",
     )
 
     # Internal
@@ -514,7 +514,7 @@ class SponsorshipBenefit(OrderedModel):
 
     @cached_property
     def has_tiers(self):
-        return self.features_config.instance_of(TieredQuantityConfiguration).count() > 0
+        return self.features_config.instance_of(TieredBenefitConfiguration).count() > 0
 
     @transaction.atomic
     def clone(self, year: int):
@@ -528,7 +528,7 @@ class SponsorshipBenefit(OrderedModel):
             "package_only": self.package_only,
             "new": self.new,
             "unavailable": self.unavailable,
-            "a_la_carte": self.a_la_carte,
+            "standalone": self.standalone,
             "internal_description": self.internal_description,
             "internal_value": self.internal_value,
             "capacity": self.capacity,

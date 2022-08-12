@@ -3,7 +3,8 @@ Installing
 
 Manual setup
 ------------
-First, install PostgreSQL_ on your machine and run it.
+First, install PostgreSQL_ on your machine and run it. *pythondotorg* currently
+uses Postgres 10.21.
 
 .. _PostgreSQL: https://www.postgresql.org/download/
 
@@ -85,7 +86,7 @@ To create initial data for the most used applications, run::
 
     $ ./manage.py create_initial_data
 
-See :ref:`command-create-initial-data` for the command options to specify 
+See :ref:`command-create-initial-data` for the command options to specify
 while creating initial data.
 
 Finally, start the development server::

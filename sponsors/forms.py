@@ -56,7 +56,7 @@ SponsorContactFormSet = forms.formset_factory(
 
 class SponsorshipsBenefitsForm(forms.Form):
     """
-    Form to enable user to select packages, benefits and add-ons during
+    Form to enable user to select packages, benefits and a la carte during
     the sponsorship application submission.
     """
 
@@ -69,13 +69,13 @@ class SponsorshipsBenefitsForm(forms.Form):
             required=False,
             empty_label=None,
         )
-        self.fields["add_ons_benefits"] = PickSponsorshipBenefitsField(
-            required=False,
-            queryset=SponsorshipBenefit.objects.from_year(year).add_ons().select_related("program"),
-        )
         self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
             required=False,
             queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
+        )
+        self.fields["standalone_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_year(year).standalone().select_related("program"),
         )
 
         benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
@@ -106,28 +106,28 @@ class SponsorshipsBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None, include_add_ons=False, include_a_la_carte=False):
+    def get_benefits(self, cleaned_data=None, include_a_la_carte=False, include_standalone=False):
         cleaned_data = cleaned_data or self.cleaned_data
         benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
-        add_ons = cleaned_data.get("add_ons_benefits", [])
-        if include_add_ons:
-            benefits.extend([b for b in add_ons])
         a_la_carte = cleaned_data.get("a_la_carte_benefits", [])
         if include_a_la_carte:
             benefits.extend([b for b in a_la_carte])
+        standalone = cleaned_data.get("standalone_benefits", [])
+        if include_standalone:
+            benefits.extend([b for b in standalone])
         return benefits
 
     def get_package(self):
         pkg = self.cleaned_data.get("package")
 
-        pkg_benefits = self.get_benefits(include_add_ons=True)
-        a_la_carte = self.cleaned_data.get("a_la_carte_benefits")
-        if not pkg_benefits and a_la_carte:  # a la carte only
+        pkg_benefits = self.get_benefits(include_a_la_carte=True)
+        standalone = self.cleaned_data.get("standalone_benefits")
+        if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
-                slug="a-la-carte-only",
-                defaults={"name": "A La Carte Only", "sponsorship_amount": 0},
+                slug="standalone-only",
+                defaults={"name": "Standalone Only", "sponsorship_amount": 0},
             )
 
         return pkg
@@ -140,10 +140,10 @@ class SponsorshipsBenefitsForm(forms.Form):
         - benefit with no capacity, except if soft
         """
         package = cleaned_data.get("package")
-        benefits = self.get_benefits(cleaned_data, include_add_ons=True)
-        a_la_carte = cleaned_data.get("a_la_carte_benefits")
+        benefits = self.get_benefits(cleaned_data, include_a_la_carte=True)
+        standalone = cleaned_data.get("standalone_benefits")
 
-        if not benefits and not a_la_carte:
+        if not benefits and not standalone:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
             )
@@ -452,8 +452,8 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
             self.instance.name = benefit.name
             self.instance.description = benefit.description
             self.instance.program = benefit.program
-            self.instance.added_by_user = self.instance.added_by_user or benefit.a_la_carte
-            self.instance.a_la_carte = benefit.a_la_carte
+            self.instance.added_by_user = self.instance.added_by_user or benefit.standalone
+            self.instance.standalone = benefit.standalone
 
         if commit:
             self.instance.save()
@@ -687,12 +687,12 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
 
     def clean(self):
         cleaned_data = super().clean()
-        a_la_carte = cleaned_data.get("a_la_carte")
+        standalone = cleaned_data.get("standalone")
         packages = cleaned_data.get("packages")
 
-        # a la carte benefit cannot be associated with a package
-        if a_la_carte and packages:
-            error = "À la carte benefits must not belong to any package."
+        # standalone benefit cannot be associated with a package
+        if standalone and packages:
+            error = "Standalone benefits must not belong to any package."
             raise forms.ValidationError(error)
 
         return cleaned_data
