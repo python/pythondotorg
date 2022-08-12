@@ -1239,7 +1239,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 62
   }
@@ -1250,7 +1250,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 62
   }
@@ -1261,7 +1261,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 62
   }
@@ -1272,7 +1272,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1283,7 +1283,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1294,7 +1294,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1305,7 +1305,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1316,7 +1316,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1327,7 +1327,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1338,7 +1338,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1349,7 +1349,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1360,7 +1360,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1371,7 +1371,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1382,7 +1382,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1393,7 +1393,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1404,7 +1404,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1415,7 +1415,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1426,7 +1426,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1437,7 +1437,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1448,7 +1448,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1459,7 +1459,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1470,7 +1470,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1481,7 +1481,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1492,7 +1492,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 75
   }
@@ -1580,7 +1580,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 24
   }
@@ -1591,7 +1591,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 24
   }
@@ -1602,7 +1602,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 24
   }
@@ -1624,7 +1624,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1635,7 +1635,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1646,7 +1646,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1657,7 +1657,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1668,7 +1668,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1679,7 +1679,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 73
   }
@@ -1690,7 +1690,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1701,7 +1701,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1712,7 +1712,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1723,7 +1723,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1734,7 +1734,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1745,7 +1745,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1756,7 +1756,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -1943,7 +1943,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -1954,7 +1954,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -1998,7 +1998,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 64
   }
@@ -2009,7 +2009,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 65
   }
@@ -2020,7 +2020,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -2031,7 +2031,7 @@
   "fields": {
     "polymorphic_ctype": [
       "sponsors",
-      "tieredquantityconfiguration"
+      "tieredbenefitconfiguration"
     ],
     "benefit": 77
   }
@@ -2152,7 +2152,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 26,
   "fields": {
     "package": 1,
@@ -2160,7 +2160,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 27,
   "fields": {
     "package": 2,
@@ -2168,7 +2168,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 28,
   "fields": {
     "package": 3,
@@ -2176,7 +2176,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 29,
   "fields": {
     "package": 1,
@@ -2184,7 +2184,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 30,
   "fields": {
     "package": 2,
@@ -2192,7 +2192,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 31,
   "fields": {
     "package": 3,
@@ -2200,7 +2200,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 32,
   "fields": {
     "package": 4,
@@ -2208,7 +2208,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 33,
   "fields": {
     "package": 5,
@@ -2216,7 +2216,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 34,
   "fields": {
     "package": 6,
@@ -2224,7 +2224,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 35,
   "fields": {
     "package": 7,
@@ -2232,7 +2232,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 36,
   "fields": {
     "package": 8,
@@ -2240,7 +2240,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 37,
   "fields": {
     "package": 1,
@@ -2248,7 +2248,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 38,
   "fields": {
     "package": 2,
@@ -2256,7 +2256,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 39,
   "fields": {
     "package": 3,
@@ -2264,7 +2264,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 40,
   "fields": {
     "package": 4,
@@ -2272,7 +2272,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 41,
   "fields": {
     "package": 5,
@@ -2280,7 +2280,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 42,
   "fields": {
     "package": 6,
@@ -2288,7 +2288,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 43,
   "fields": {
     "package": 1,
@@ -2296,7 +2296,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 44,
   "fields": {
     "package": 2,
@@ -2304,7 +2304,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 45,
   "fields": {
     "package": 3,
@@ -2312,7 +2312,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 46,
   "fields": {
     "package": 4,
@@ -2320,7 +2320,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 47,
   "fields": {
     "package": 5,
@@ -2328,7 +2328,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 48,
   "fields": {
     "package": 6,
@@ -2336,7 +2336,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 49,
   "fields": {
     "package": 7,
@@ -2344,7 +2344,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 89,
   "fields": {
     "package": 1,
@@ -2352,7 +2352,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 90,
   "fields": {
     "package": 2,
@@ -2360,7 +2360,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 91,
   "fields": {
     "package": 3,
@@ -2368,7 +2368,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 93,
   "fields": {
     "package": 1,
@@ -2376,7 +2376,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 94,
   "fields": {
     "package": 2,
@@ -2384,7 +2384,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 95,
   "fields": {
     "package": 3,
@@ -2392,7 +2392,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 96,
   "fields": {
     "package": 4,
@@ -2400,7 +2400,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 97,
   "fields": {
     "package": 5,
@@ -2408,7 +2408,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 98,
   "fields": {
     "package": 6,
@@ -2416,7 +2416,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 99,
   "fields": {
     "package": 1,
@@ -2424,7 +2424,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 100,
   "fields": {
     "package": 2,
@@ -2432,7 +2432,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 101,
   "fields": {
     "package": 3,
@@ -2440,7 +2440,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 102,
   "fields": {
     "package": 4,
@@ -2448,7 +2448,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 103,
   "fields": {
     "package": 5,
@@ -2456,7 +2456,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 104,
   "fields": {
     "package": 6,
@@ -2464,7 +2464,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 105,
   "fields": {
     "package": 7,
@@ -2472,7 +2472,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 122,
   "fields": {
     "package": 9,
@@ -2480,7 +2480,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 123,
   "fields": {
     "package": 9,
@@ -2488,7 +2488,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 128,
   "fields": {
     "package": 11,
@@ -2496,7 +2496,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 129,
   "fields": {
     "package": 11,
@@ -2504,7 +2504,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 130,
   "fields": {
     "package": 9,
@@ -2512,7 +2512,7 @@
   }
 },
 {
-  "model": "sponsors.tieredquantityconfiguration",
+  "model": "sponsors.tieredbenefitconfiguration",
   "pk": 131,
   "fields": {
     "package": 11,
