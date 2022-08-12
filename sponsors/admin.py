@@ -118,7 +118,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "internal_value",
         "move_up_down_links",
     ]
-    list_filter = ["program", "year", "package_only", "packages", "new", "a_la_carte", "unavailable"]
+    list_filter = ["program", "year", "package_only", "packages", "new", "standalone", "unavailable"]
     search_fields = ["name"]
     form = SponsorshipBenefitAdminForm
 
@@ -135,7 +135,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
                     "package_only",
                     "new",
                     "unavailable",
-                    "a_la_carte",
+                    "standalone",
                 ),
             },
         ),

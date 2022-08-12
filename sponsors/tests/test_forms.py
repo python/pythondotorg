@@ -43,9 +43,9 @@ class SponsorshipsBenefitsFormTests(TestCase):
             SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
         )
 
-        # a la carte benefits
-        self.a_la_carte = baker.make(
-            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=self.current_year
+        # standalone benefits
+        self.standalone = baker.make(
+            SponsorshipBenefit, program=self.psf, standalone=True, _quantity=2, year=self.current_year
         )
 
     def test_specific_field_to_select_add_ons_by_year(self):
@@ -93,24 +93,24 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.program_2_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_specific_field_to_select_a_la_carte_benefits_by_year(self):
+    def test_specific_field_to_select_standalone_benefits_by_year(self):
         prev_year = self.current_year - 1
-        # a la carte benefits
+        # standalone benefits
         prev_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2, year=prev_year
+            SponsorshipBenefit, program=self.psf, standalone=True, _quantity=2, year=prev_year
         )
 
         # Current year by default
         form = SponsorshipsBenefitsForm()
-        choices = list(form.fields["a_la_carte_benefits"].choices)
-        self.assertEqual(len(self.a_la_carte), len(choices))
-        for benefit in self.a_la_carte:
+        choices = list(form.fields["standalone_benefits"].choices)
+        self.assertEqual(len(self.standalone), len(choices))
+        for benefit in self.standalone:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
         # Current year by default
         form = SponsorshipsBenefitsForm(year=prev_year)
-        choices = list(form.fields["a_la_carte_benefits"].choices)
-        self.assertEqual(len(self.a_la_carte), len(choices))
+        choices = list(form.fields["standalone_benefits"].choices)
+        self.assertEqual(len(self.standalone), len(choices))
         for benefit in prev_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
@@ -136,18 +136,18 @@ class SponsorshipsBenefitsFormTests(TestCase):
         )
         self.assertTrue(form.is_valid())
 
-    def test_validate_form_without_package_but_with_a_la_carte_benefits(self):
-        benefit = self.a_la_carte[0]
+    def test_validate_form_without_package_but_with_standalone_benefits(self):
+        benefit = self.standalone[0]
         form = SponsorshipsBenefitsForm(
-            data={"a_la_carte_benefits": [benefit.id]}
+            data={"standalone_benefits": [benefit.id]}
         )
         self.assertTrue(form.is_valid())
         self.assertEqual([], form.get_benefits())
-        self.assertEqual([benefit], form.get_benefits(include_a_la_carte=True))
+        self.assertEqual([benefit], form.get_benefits(include_standalone=True))
 
-    def test_should_not_validate_form_without_package_with_add_ons_and_a_la_carte_benefits(self):
+    def test_should_not_validate_form_without_package_with_add_ons_and_standalone_benefits(self):
         data = {
-            "a_la_carte_benefits": [self.a_la_carte[0]],
+            "standalone_benefits": [self.standalone[0]],
             "add_ons_benefits": [self.add_ons[0]],
         }
 
@@ -276,23 +276,23 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(self.package, form.get_package())
 
-    def test_get_package_get_or_create_a_la_carte_only_package(self):
-        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+    def test_get_package_get_or_create_standalone_only_package(self):
+        data = {"standalone_benefits": [self.standalone[0].id]}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertEqual(1, SponsorshipPackage.objects.count())
 
         # should create package if it doesn't exist yet
         package = form.get_package()
-        self.assertEqual("A La Carte Only", package.name)
-        self.assertEqual("a-la-carte-only", package.slug)
+        self.assertEqual("Standalone Only", package.name)
+        self.assertEqual("standalone-only", package.slug)
         self.assertEqual(175, package.logo_dimension)
         self.assertEqual(0, package.sponsorship_amount)
         self.assertFalse(package.advertise)
         self.assertEqual(2, SponsorshipPackage.objects.count())
 
         # re-use previously created package for subsequent applications
-        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+        data = {"standalone_benefits": [self.standalone[0].id]}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertEqual(package, form.get_package())
@@ -550,7 +550,7 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
             sponsorship=self.sponsorship,
             sponsorship_benefit=self.benefit,
         )
-        new_benefit = baker.make(SponsorshipBenefit, a_la_carte=True)
+        new_benefit = baker.make(SponsorshipBenefit, standalone=True)
         self.data["sponsorship_benefit"] = new_benefit.pk
 
         form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
@@ -566,7 +566,7 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
         self.assertEqual(sponsor_benefit.program, new_benefit.program)
         self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
         self.assertTrue(sponsor_benefit.added_by_user)
-        self.assertTrue(sponsor_benefit.a_la_carte)
+        self.assertTrue(sponsor_benefit.standalone)
 
     def test_do_not_update_sponsorship_if_it_doesn_change(self):
         sponsor_benefit = baker.make(
@@ -791,8 +791,8 @@ class SponsorshipBenefitAdminFormTests(TestCase):
         self.assertFalse(form.is_valid())
         self.assertEqual(set(form.errors), required)
 
-    def test_a_la_carte_benefit_cannot_have_package(self):
-        data = {"name": "benefit", "program": self.program.pk, "a_la_carte": True, "year": 2023}
+    def test_standalone_benefit_cannot_have_package(self):
+        data = {"name": "benefit", "program": self.program.pk, "standalone": True, "year": 2023}
         form = SponsorshipBenefitAdminForm(data=data)
         self.assertTrue(form.is_valid())
 
