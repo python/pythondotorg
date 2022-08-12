@@ -412,10 +412,10 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Benefit is unavailable",
         help_text="If selected, this benefit will not be available to applicants.",
     )
-    a_la_carte = models.BooleanField(
+    standalone = models.BooleanField(
         default=False,
-        verbose_name="À La Carte",
-        help_text="À la carte benefits can be selected without the need of a package.",
+        verbose_name="Standalone",
+        help_text="Standalone benefits can be selected without the need of a package.",
     )
 
     # Internal
@@ -528,7 +528,7 @@ class SponsorshipBenefit(OrderedModel):
             "package_only": self.package_only,
             "new": self.new,
             "unavailable": self.unavailable,
-            "a_la_carte": self.a_la_carte,
+            "standalone": self.standalone,
             "internal_description": self.internal_description,
             "internal_value": self.internal_value,
             "capacity": self.capacity,

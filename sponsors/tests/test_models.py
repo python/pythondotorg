@@ -700,15 +700,15 @@ class SponsorBenefitModelTests(TestCase):
         )
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
-    def test_sponsor_benefit_from_a_la_carte_one(self):
-        self.sponsorship_benefit.a_la_carte = True
+    def test_sponsor_benefit_from_standalone_one(self):
+        self.sponsorship_benefit.standalone = True
         self.sponsorship_benefit.save()
         sponsor_benefit = SponsorBenefit.new_copy(
             self.sponsorship_benefit, sponsorship=self.sponsorship
         )
 
         self.assertTrue(sponsor_benefit.added_by_user)
-        self.assertTrue(sponsor_benefit.a_la_carte)
+        self.assertTrue(sponsor_benefit.standalone)
 
     def test_reset_attributes_updates_all_basic_information(self):
         benefit = baker.make(
@@ -725,7 +725,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(benefit.program_name, self.sponsorship_benefit.program.name)
         self.assertEqual(benefit.program, self.sponsorship_benefit.program)
         self.assertEqual(benefit.benefit_internal_value, self.sponsorship_benefit.internal_value)
-        self.assertEqual(benefit.a_la_carte, self.sponsorship_benefit.a_la_carte)
+        self.assertEqual(benefit.standalone, self.sponsorship_benefit.standalone)
 
     def test_reset_attributes_add_new_features(self):
         RequiredTextAssetConfiguration.objects.create(
@@ -799,7 +799,7 @@ class SponsorBenefitModelTests(TestCase):
             package_only=False,
             new=True,
             unavailable=True,
-            a_la_carte=True,
+            standalone=True,
             internal_description="internal desc",
             internal_value=300,
             capacity=100,
@@ -814,7 +814,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertFalse(benefit_2023.package_only)
         self.assertTrue(benefit_2023.new)
         self.assertTrue(benefit_2023.unavailable)
-        self.assertTrue(benefit_2023.a_la_carte)
+        self.assertTrue(benefit_2023.standalone)
         self.assertEqual("internal desc", benefit_2023.internal_description)
         self.assertEqual(300, benefit_2023.internal_value)
         self.assertEqual(100, benefit_2023.capacity)

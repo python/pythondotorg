@@ -152,18 +152,18 @@ class SponsorshipBenefitManagerTests(TestCase):
         current_year = SponsorshipCurrentYear.get_year()
         self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
         self.regular_benefit.packages.add(package)
-        self.add_on = baker.make(SponsorshipBenefit, year=current_year-1)
-        self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True)
-
-    def test_add_ons_queryset(self):
-        qs = SponsorshipBenefit.objects.add_ons()
-        self.assertEqual(1, qs.count())
-        self.assertIn(self.add_on, qs)
+        self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year-1)
+        self.standalone = baker.make(SponsorshipBenefit, standalone=True)
 
     def test_a_la_carte_queryset(self):
         qs = SponsorshipBenefit.objects.a_la_carte()
         self.assertEqual(1, qs.count())
         self.assertIn(self.a_la_carte, qs)
+
+    def test_standalone_queryset(self):
+        qs = SponsorshipBenefit.objects.standalone()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.standalone, qs)
 
     def test_filter_benefits_by_current_year(self):
         qs = SponsorshipBenefit.objects.all().from_current_year()

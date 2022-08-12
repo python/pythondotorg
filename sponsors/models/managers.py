@@ -88,16 +88,16 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
     def without_conflicts(self):
         return self.filter(conflicts__isnull=True)
 
-    def add_ons(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, a_la_carte=False)
-
     def a_la_carte(self):
-        return self.filter(a_la_carte=True)
+        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False)
+
+    def standalone(self):
+        return self.filter(standalone=True)
 
     def with_packages(self):
         return (
             self.annotate(num_packages=Count("packages"))
-            .exclude(Q(num_packages=0) | Q(a_la_carte=True))
+            .exclude(Q(num_packages=0) | Q(standalone=True))
             .order_by("-num_packages", "order")
         )
 
