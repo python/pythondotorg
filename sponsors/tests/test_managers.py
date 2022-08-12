@@ -4,7 +4,7 @@ from model_bakery import baker
 from django.conf import settings
 from django.test import TestCase
 
-from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity, RequiredTextAsset, RequiredImgAsset, \
+from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredBenefit, RequiredTextAsset, RequiredImgAsset, \
     BenefitFeature, SponsorshipPackage, SponsorshipBenefit, SponsorshipCurrentYear
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
@@ -109,7 +109,7 @@ class SponsorshipQuerySetTests(TestCase):
         sponsorship_feature_1 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
         sponsorship_feature_2 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
         baker.make(LogoPlacement, sponsor_benefit__sponsorship=sponsorship_feature_1)
-        baker.make(TieredQuantity, sponsor_benefit__sponsorship=sponsorship_feature_2)
+        baker.make(TieredBenefit, sponsor_benefit__sponsorship=sponsorship_feature_2)
 
         with self.assertNumQueries(1):
             qs = list(Sponsorship.objects.includes_benefit_feature(LogoPlacement))
@@ -124,7 +124,7 @@ class BenefitFeatureQuerySet(TestCase):
         self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
 
     def test_filter_benefits_from_sponsorship(self):
-        feature_1 = baker.make(TieredQuantity, sponsor_benefit=self.benefit)
+        feature_1 = baker.make(TieredBenefit, sponsor_benefit=self.benefit)
         feature_2 = baker.make(LogoPlacement, sponsor_benefit=self.benefit)
         baker.make(LogoPlacement)  # benefit from other sponsor benefit
 
@@ -135,7 +135,7 @@ class BenefitFeatureQuerySet(TestCase):
         self.assertIn(feature_2, qs)
 
     def test_filter_only_for_required_assets(self):
-        baker.make(TieredQuantity)
+        baker.make(TieredBenefit)
         text_asset = baker.make(RequiredTextAsset)
         img_asset = baker.make(RequiredImgAsset)
 

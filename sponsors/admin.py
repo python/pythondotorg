@@ -67,8 +67,8 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     class LogoPlacementConfigurationInline(StackedPolymorphicInline.Child):
         model = LogoPlacementConfiguration
 
-    class TieredQuantityConfigurationInline(StackedPolymorphicInline.Child):
-        model = TieredQuantityConfiguration
+    class TieredBenefitConfigurationInline(StackedPolymorphicInline.Child):
+        model = TieredBenefitConfiguration
 
     class EmailTargetableConfigurationInline(StackedPolymorphicInline.Child):
         model = EmailTargetableConfiguration
@@ -96,7 +96,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
     model = BenefitFeatureConfiguration
     child_inlines = [
         LogoPlacementConfigurationInline,
-        TieredQuantityConfigurationInline,
+        TieredBenefitConfigurationInline,
         EmailTargetableConfigurationInline,
         RequiredImgAssetConfigurationInline,
         RequiredTextAssetConfigurationInline,
