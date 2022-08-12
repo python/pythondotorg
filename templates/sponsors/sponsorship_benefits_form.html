@@ -123,7 +123,7 @@
                   data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}"
                 />
                 <br/>
-                <small>Potential add-on</small>
+                <small>Potential a la carte</small>
               {% endif %}
               {% if benefit.has_tiers %}
                 <div><small>{% benefit_quantity_for_package benefit package %}</small></div>
@@ -139,21 +139,21 @@
         {% endfor %}
       </div>
 
-      {% if form.fields.add_ons_benefits.queryset.exists %}
+      {% if form.fields.a_la_carte_benefits.queryset.exists %}
         <div class="row section-title">
           <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
           <div class="col with-description">
-            <h4>Select add-on benefits</h4>
+            <h4>Select a la carte benefits</h4>
             <span>Available at any level of sponsorship</span>
           </div>
         </div>
 
-        <div id="add-on-benefits" class="custom-benefits">
+        <div id="a-la-carte-benefits" class="custom-benefits">
           <div class="row">
-          {% for benefit in form.fields.add_ons_benefits.queryset %}
+          {% for benefit in form.fields.a_la_carte_benefits.queryset %}
             <div class="col col-items">
-              <input type="checkbox" name="add_ons_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.add_ons_benefits|default:"" %}checked{% endif %}/>
-              <div class="add-on-description">
+              <input type="checkbox" name="a_la_carte_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
+              <div class="a-la-carte-description">
                 <span class="benefit-program">{{ benefit.program }}</span> -
                 <span class="benefit-title">{{ benefit.name }}</span>
                 <span class="benefit-description">{{ benefit.description }}</span>
@@ -170,7 +170,7 @@
 
       {% if form.fields.standalone_benefits.queryset.exists %}
         <div class="row section-title">
-          {% if not form.fields.add_ons_benefits.queryset.exists %}
+          {% if not form.fields.a_la_carte_benefits.queryset.exists %}
           <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
           {% else %}
           <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
@@ -186,7 +186,7 @@
             {% for benefit in form.fields.standalone_benefits.queryset %}
               <div class="col col-items">
                 <input type="checkbox" name="standalone_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.standalone_benefits|default:"" %}checked{% endif %}/>
-                <div class="add-on-description">
+                <div class="a-la-carte-description">
                   <span class="benefit-program">{{ benefit.program }}</span> -
                   <span class="benefit-title">{{ benefit.name }}</span>
                   <span class="benefit-description">{{ benefit.description }}</span>
@@ -202,9 +202,9 @@
       {% endif %}
 
       <div class="row section-title">
-        {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
+        {% if form.fields.a_la_carte_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
         <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
-        {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
+        {% elif form.fields.a_la_carte_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
         <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
         {% else %}
         <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
@@ -224,9 +224,9 @@
       </div>
 
       <div class="row section-title">
-        {% if form.fields.add_ons_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
+        {% if form.fields.a_la_carte_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
           <img class="col" src='{% static "img/sponsors/title-5.svg" %}'/>
-        {% elif form.fields.add_ons_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
+        {% elif form.fields.a_la_carte_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
           <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
         {% else %}
           <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>

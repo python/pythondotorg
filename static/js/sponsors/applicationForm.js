@@ -69,7 +69,7 @@ function mobileUpdate(packageId) {
     || document.body.clientWidth;
   const mobileVersion = width <= DESKTOP_WIDTH_LIMIT;
   if (!mobileVersion) return;
-  $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
+  $(".benefit-within-package").hide();  // hide all ticks and potential a la carte inputs
   $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
 }
 

@@ -90,7 +90,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f in ['add_ons_benefits', 'standalone_benefits']
+            if f.startswith("benefits_") or f in ['a_la_carte_benefits', 'standalone_benefits']
         ]:
             data[fname] = sorted(b.id for b in benefits)
 
@@ -170,7 +170,7 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(include_add_ons=True, include_standalone=True),
+            benefits_form.get_benefits(include_a_la_carte=True, include_standalone=True),
             benefits_form.get_package(),
             request=self.request,
         )

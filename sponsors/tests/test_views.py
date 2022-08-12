@@ -41,7 +41,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.package.benefits.add(*self.program_1_benefits)
         package_2 = baker.make(SponsorshipPackage, advertise=True, year=self.current_year)
         package_2.benefits.add(*self.program_2_benefits)
-        self.add_on_benefits = baker.make(
+        self.a_la_carte_benefits = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
         )
         self.standalone_benefits = baker.make(
@@ -56,7 +56,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.data = {
             "benefits_psf": [b.id for b in self.program_1_benefits],
             "benefits_working_group": [b.id for b in self.program_2_benefits],
-            "add_ons_benefits": [b.id for b in self.add_on_benefits],
+            "a_la_carte_benefits": [b.id for b in self.a_la_carte_benefits],
             "standalone_benefits": [b.id for b in self.standalone_benefits],
             "package": self.package.id,
         }
@@ -148,7 +148,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         # update data dict to have only standalone
         self.data["benefits_psf"] = []
         self.data["benefits_working_group"] = []
-        self.data["add_ons_benefits"] = []
+        self.data["a_la_carte_benefits"] = []
         self.data["package"] = ""
 
         response = self.client.post(self.url, data=self.data)
@@ -209,7 +209,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             benefit.packages.add(self.package)
 
         # packages without associated packages
-        self.add_on = baker.make(SponsorshipBenefit, year=self.current_year)
+        self.a_la_carte = baker.make(SponsorshipBenefit, year=self.current_year)
         # standalone benefit
         self.standalone = baker.make(SponsorshipBenefit, standalone=True, year=self.current_year)
 
@@ -217,7 +217,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             {
                 "package": self.package.id,
                 "benefits_psf": [b.id for b in self.program_1_benefits],
-                "add_ons_benefits": [self.add_on.id],
+                "a_la_carte_benefits": [self.a_la_carte.id],
                 "standalone_benefits": [self.standalone.id],
             }
         )
@@ -239,8 +239,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
             "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
         }
 
-    def test_display_template_with_form_and_context_without_add_ons(self):
-        self.add_on.delete()
+    def test_display_template_with_form_and_context_without_a_la_carte(self):
+        self.a_la_carte.delete()
         self.standalone.delete()
         r = self.client.get(self.url)
 
@@ -258,11 +258,11 @@ class NewSponsorshipApplicationViewTests(TestCase):
         for benefit in self.program_1_benefits:
             self.assertIn(benefit, r.context["sponsorship_benefits"])
 
-    def test_display_template_with_form_and_context_with_add_ons(self):
+    def test_display_template_with_form_and_context_with_a_la_carte(self):
         r = self.client.get(self.url)
 
         self.assertEqual(r.status_code, 200)
-        self.assertIn(self.add_on, r.context["added_benefits"])
+        self.assertIn(self.a_la_carte, r.context["added_benefits"])
         self.assertIsNone(r.context["sponsorship_price"])
 
     def test_return_package_as_none_if_not_previously_selected(self):
@@ -349,7 +349,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         )
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
-        # 3 benefits + 1 add-on + 1 standalone
+        # 3 benefits + 1 a-la-carte + 1 standalone
         self.assertEqual(5, sponsorship.benefits.count())
         self.assertTrue(sponsorship.level_name)
         self.assertTrue(sponsorship.submited_by, self.user)
@@ -398,7 +398,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
             {
                 "package": "",
                 "benefits_psf": [],
-                "add_ons_benefits": [],
+                "a_la_carte_benefits": [],
                 "standalone_benefits": [self.standalone.id],
             }
         )

@@ -39,7 +39,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.package.benefits.add(*self.program_2_benefits)
 
         # packages without associated packages
-        self.add_ons = baker.make(
+        self.a_la_carte = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
         )
 
@@ -48,21 +48,21 @@ class SponsorshipsBenefitsFormTests(TestCase):
             SponsorshipBenefit, program=self.psf, standalone=True, _quantity=2, year=self.current_year
         )
 
-    def test_specific_field_to_select_add_ons_by_year(self):
+    def test_specific_field_to_select_a_la_carte_by_year(self):
         prev_year = self.current_year - 1
         from_prev_year = baker.make(
             SponsorshipBenefit, program=self.psf, _quantity=2, year=prev_year
         )
         # current year by default
         form = SponsorshipsBenefitsForm()
-        choices = list(form.fields["add_ons_benefits"].choices)
-        self.assertEqual(len(self.add_ons), len(choices))
-        for benefit in self.add_ons:
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+        self.assertEqual(len(self.a_la_carte), len(choices))
+        for benefit in self.a_la_carte:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
         form = SponsorshipsBenefitsForm(year=prev_year)
-        choices = list(form.fields["add_ons_benefits"].choices)
-        self.assertEqual(len(self.add_ons), len(choices))
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+        self.assertEqual(len(self.a_la_carte), len(choices))
         for benefit in from_prev_year:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
@@ -145,10 +145,10 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertEqual([], form.get_benefits())
         self.assertEqual([benefit], form.get_benefits(include_standalone=True))
 
-    def test_should_not_validate_form_without_package_with_add_ons_and_standalone_benefits(self):
+    def test_should_not_validate_form_without_package_with_a_la_carte_and_standalone_benefits(self):
         data = {
             "standalone_benefits": [self.standalone[0]],
-            "add_ons_benefits": [self.add_ons[0]],
+            "a_la_carte_benefits": [self.a_la_carte[0]],
         }
 
         form = SponsorshipsBenefitsForm(data=data)
@@ -199,7 +199,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         benefit = self.program_1_benefits[0]
 
         data = {"benefits_psf": [benefit.id],
-                "add_ons_benefits": [b.id for b in self.add_ons],
+                "a_la_carte_benefits": [b.id for b in self.a_la_carte],
                 "package": self.package.id}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
@@ -208,11 +208,11 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertEqual(1, len(benefits))
         self.assertIn(benefit, benefits)
 
-        benefits = form.get_benefits(include_add_ons=True)
+        benefits = form.get_benefits(include_a_la_carte=True)
         self.assertEqual(3, len(benefits))
         self.assertIn(benefit, benefits)
-        for add_on in self.add_ons:
-            self.assertIn(add_on, benefits)
+        for a_la_carte in self.a_la_carte:
+            self.assertIn(a_la_carte, benefits)
 
     def test_package_only_benefit_without_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)

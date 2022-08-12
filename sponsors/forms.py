@@ -56,7 +56,7 @@ SponsorContactFormSet = forms.formset_factory(
 
 class SponsorshipsBenefitsForm(forms.Form):
     """
-    Form to enable user to select packages, benefits and add-ons during
+    Form to enable user to select packages, benefits and a la carte during
     the sponsorship application submission.
     """
 
@@ -69,9 +69,9 @@ class SponsorshipsBenefitsForm(forms.Form):
             required=False,
             empty_label=None,
         )
-        self.fields["add_ons_benefits"] = PickSponsorshipBenefitsField(
+        self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
             required=False,
-            queryset=SponsorshipBenefit.objects.from_year(year).add_ons().select_related("program"),
+            queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
         )
         self.fields["standalone_benefits"] = PickSponsorshipBenefitsField(
             required=False,
@@ -106,14 +106,14 @@ class SponsorshipsBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None, include_add_ons=False, include_standalone=False):
+    def get_benefits(self, cleaned_data=None, include_a_la_carte=False, include_standalone=False):
         cleaned_data = cleaned_data or self.cleaned_data
         benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
-        add_ons = cleaned_data.get("add_ons_benefits", [])
-        if include_add_ons:
-            benefits.extend([b for b in add_ons])
+        a_la_carte = cleaned_data.get("a_la_carte_benefits", [])
+        if include_a_la_carte:
+            benefits.extend([b for b in a_la_carte])
         standalone = cleaned_data.get("standalone_benefits", [])
         if include_standalone:
             benefits.extend([b for b in standalone])
@@ -122,7 +122,7 @@ class SponsorshipsBenefitsForm(forms.Form):
     def get_package(self):
         pkg = self.cleaned_data.get("package")
 
-        pkg_benefits = self.get_benefits(include_add_ons=True)
+        pkg_benefits = self.get_benefits(include_a_la_carte=True)
         standalone = self.cleaned_data.get("standalone_benefits")
         if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
@@ -140,7 +140,7 @@ class SponsorshipsBenefitsForm(forms.Form):
         - benefit with no capacity, except if soft
         """
         package = cleaned_data.get("package")
-        benefits = self.get_benefits(cleaned_data, include_add_ons=True)
+        benefits = self.get_benefits(cleaned_data, include_a_la_carte=True)
         standalone = cleaned_data.get("standalone_benefits")
 
         if not benefits and not standalone:
