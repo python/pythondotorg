@@ -57,7 +57,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
             "benefits_psf": [b.id for b in self.program_1_benefits],
             "benefits_working_group": [b.id for b in self.program_2_benefits],
             "a_la_carte_benefits": [b.id for b in self.a_la_carte_benefits],
-            "standalone_benefits": [b.id for b in self.standalone_benefits],
+            "standalone_benefits": [],
             "package": self.package.id,
         }
 
@@ -150,6 +150,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.data["benefits_working_group"] = []
         self.data["a_la_carte_benefits"] = []
         self.data["package"] = ""
+        self.data["standalone_benefits"] = [b.id for b in self.standalone_benefits]
 
         response = self.client.post(self.url, data=self.data)
 
@@ -218,7 +219,6 @@ class NewSponsorshipApplicationViewTests(TestCase):
                 "package": self.package.id,
                 "benefits_psf": [b.id for b in self.program_1_benefits],
                 "a_la_carte_benefits": [self.a_la_carte.id],
-                "standalone_benefits": [self.standalone.id],
             }
         )
         self.data = {
@@ -349,8 +349,8 @@ class NewSponsorshipApplicationViewTests(TestCase):
         )
         sponsorship = Sponsorship.objects.get(sponsor__name="CompanyX")
         self.assertTrue(sponsorship.benefits.exists())
-        # 3 benefits + 1 a-la-carte + 1 standalone
-        self.assertEqual(5, sponsorship.benefits.count())
+        # 3 benefits + 1 a-la-carte + 0 standalone
+        self.assertEqual(4, sponsorship.benefits.count())
         self.assertTrue(sponsorship.level_name)
         self.assertTrue(sponsorship.submited_by, self.user)
         self.assertEqual(
