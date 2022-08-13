@@ -101,7 +101,7 @@
                     {% endif %}
                     data-initial-state="{% static 'img/sponsors/tick.svg' %}"
                 />
-              {% elif not benefit.package_only %}
+              {% elif not benefit.package_only and package.allow_a_la_carte%}
                 <img
                   id="benefit-{{ benefit.id }}-package-{{ package.id }}"
                   onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
