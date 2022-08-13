@@ -9,7 +9,9 @@ $(document).ready(function(){
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
     tickImages: function() { return $(`.benefit-within-package img`) },
-    sectionToggleBtns: function() { return $(".toggle_btn")}
+    sectionToggleBtns: function() { return $(".toggle_btn")},
+    aLaCarteInputs:  function() { return $("input[name=a_la_carte_benefits]"); },
+    standaloneInputs:  function() { return $("input[name=standalone_benefits]"); },
   }
 
   const initialPackage = $("input[name=package]:checked").val();
@@ -23,7 +25,10 @@ $(document).ready(function(){
 
   SELECTORS.packageInput().click(function(){
     let package = this.value;
-    if (package.length == 0) return;
+    if (package.length == 0) {
+      SELECTORS.standaloneInputs().prop("disabled", false);
+      return;
+    }
 
     // clear previous customizations
     SELECTORS.tickImages().each((i, img) => {
@@ -47,6 +52,10 @@ $(document).ready(function(){
     $(`#pkg_container_${package}`).addClass("selected");
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
+
+    SELECTORS.standaloneInputs().prop( "checked", false );
+    SELECTORS.standaloneInputs().prop("disabled", true);
+    SELECTORS.aLaCarteInputs().prop("disabled", false);
 
     // populate hidden inputs according to package's benefits
     SELECTORS.getPackageBenefits(package).each(function(){
