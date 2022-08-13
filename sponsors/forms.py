@@ -151,6 +151,10 @@ class SponsorshipsBenefitsForm(forms.Form):
             raise forms.ValidationError(
                 _("You must pick a package to include the selected benefits.")
             )
+        elif standalone and package:
+            raise forms.ValidationError(
+                _("Application with package cannot have standalone benefits.")
+            )
 
         benefits_ids = [b.id for b in benefits]
         for benefit in benefits:
