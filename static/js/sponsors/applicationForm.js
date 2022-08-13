@@ -55,7 +55,13 @@ $(document).ready(function(){
 
     SELECTORS.standaloneInputs().prop( "checked", false );
     SELECTORS.standaloneInputs().prop("disabled", true);
-    SELECTORS.aLaCarteInputs().prop("disabled", false);
+
+    // Disable a la carte benefits if package disables it
+    if ($(this).attr("allow_a_la_carte") !== "true") {
+      SELECTORS.aLaCarteInputs().prop("disabled", true);
+    } else {
+      SELECTORS.aLaCarteInputs().prop("disabled", false);
+    }
 
     // populate hidden inputs according to package's benefits
     SELECTORS.getPackageBenefits(package).each(function(){

@@ -56,7 +56,15 @@
              <div id="pkg_container_{{ package.id }}" class="col col-items package-input {% if package.id == form.initial.package %}selected{% endif %}" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
                <h4>{{ package.name|upper }}</h4>
                <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
-               <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
+               <input
+                   type="radio"
+                   name="package"
+                   value="{{ package.id }}"
+                   id="id_package_{{ forloop.counter0 }}"
+                   {% if package.id == form.initial.package %}checked="checked"{% endif %}
+                   data-pos={{ forloop.counter0 }}
+                   {% if package.allow_a_la_carte %}allow_a_la_carte="true"{% endif %}
+               />
                <span class="custom-fee-{{ package.id }} custom-fee">* Subject to change</span>
              </div>
              {% endfor %}
