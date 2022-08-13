@@ -141,6 +141,7 @@ class SponsorshipsBenefitsForm(forms.Form):
         """
         package = cleaned_data.get("package")
         benefits = self.get_benefits(cleaned_data, include_a_la_carte=True)
+        a_la_carte = cleaned_data.get("a_la_carte_benefits")
         standalone = cleaned_data.get("standalone_benefits")
 
         if not benefits and not standalone:
@@ -154,6 +155,10 @@ class SponsorshipsBenefitsForm(forms.Form):
         elif standalone and package:
             raise forms.ValidationError(
                 _("Application with package cannot have standalone benefits.")
+            )
+        elif package and a_la_carte and not package.allow_a_la_carte:
+            raise forms.ValidationError(
+                _("Package does not accept a la carte benefits.")
             )
 
         benefits_ids = [b.id for b in benefits]

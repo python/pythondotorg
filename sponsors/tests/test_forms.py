@@ -178,6 +178,24 @@ class SponsorshipsBenefitsFormTests(TestCase):
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
 
+    def test_do_not_validate_package_package_with_disabled_a_la_carte_benefits(self):
+        self.package.allow_a_la_carte = False
+        self.package.save()
+        data = {
+            "package": self.package.id,
+            "benefits_psf": [self.program_1_benefits[0].id],
+            "a_la_carte_benefits": [self.a_la_carte[0].id],
+        }
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Package does not accept a la carte benefits.",
+            form.errors["__all__"]
+        )
+        data.pop("a_la_carte_benefits")
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
+
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
         benefit_1.conflicts.add(*self.program_1_benefits)
