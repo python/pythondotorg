@@ -53,7 +53,14 @@
                {% endif %}
              </span>
              {% for package in form.fields.package.queryset %}
-             <div id="pkg_container_{{ package.id }}" class="col col-items package-input {% if package.id == form.initial.package %}selected{% endif %}" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
+             <div
+                 id="pkg_container_{{ package.id }}"
+                 class="col col-items package-input
+                 {% if package.id == form.initial.package %}selected{% endif %}"
+                 data-package-id="{{ package.id}}"
+                 onclick="updatePackageInput({{forloop.counter0}})"
+                 {% if not package.allow_a_la_carte %}title="This package does not accept customization with a la carte benefits."{% endif %}
+             >
                <h4>{{ package.name|upper }}</h4>
                <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
                <input

@@ -58,13 +58,18 @@ $(document).ready(function(){
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
 
-    SELECTORS.standaloneInputs().prop( "checked", false );
+    SELECTORS.standaloneInputs().prop("checked", false);
     SELECTORS.standaloneInputs().prop("disabled", true);
+    let msg ="Cannot apply for standalone benefit with the selected package.";
+    SELECTORS.standaloneInputs().attr("title", msg);
 
     // Disable a la carte benefits if package disables it
     if ($(this).attr("allow_a_la_carte") !== "true") {
+      msg ="Cannot add a la carte benefit with the selected package.";
+      SELECTORS.aLaCarteInputs().attr("title", msg);
       SELECTORS.aLaCarteInputs().prop("disabled", true);
     } else {
+      SELECTORS.aLaCarteInputs().attr("title", "");
       SELECTORS.aLaCarteInputs().prop("disabled", false);
     }
 
