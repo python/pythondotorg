@@ -15,7 +15,12 @@ $(document).ready(function(){
   }
 
   const initialPackage = $("input[name=package]:checked").val();
-  if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
+  if (initialPackage && initialPackage.length > 0) {
+    mobileUpdate(initialPackage);
+  } else {
+    // disable a la carte if no package selected at the first step
+    SELECTORS.aLaCarteInputs().prop("disabled", true);
+  }
 
   SELECTORS.sectionToggleBtns().click(function(){
     const section = $(this).data('section');
