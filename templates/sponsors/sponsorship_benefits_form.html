@@ -157,7 +157,7 @@
         </div>
 
         <div id="a-la-carte-benefits" class="custom-benefits">
-          <div class="row">
+          <div class="row" style="justify-content: start;">
           {% for benefit in form.fields.a_la_carte_benefits.queryset %}
             <div class="col col-items">
               <input type="checkbox" name="a_la_carte_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
@@ -169,7 +169,7 @@
             </div>
           {% if forloop.counter|divisibleby:4 %}
           </div>
-          <div class="row">
+          <div class="row" style="justify-content: start;">
           {% endif %}
           {% endfor %}
           </div>
@@ -190,7 +190,7 @@
         </div>
 
         <div id="standalone-benefits" class="custom-benefits">
-          <div class="row">
+          <div class="row" style="justify-content: start;">
             {% for benefit in form.fields.standalone_benefits.queryset %}
               <div class="col col-items">
                 <input type="checkbox" name="standalone_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.standalone_benefits|default:"" %}checked{% endif %}/>
