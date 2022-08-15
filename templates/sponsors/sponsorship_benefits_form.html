@@ -235,9 +235,11 @@
           <li><p>Submit your contact information</p></li>
         </ol>
         <div>
-          <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}>
+          <label>
+            <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}/>
+             | <a href="#package-selection" class="" id="clear_form_btn">Clear form</a>
+          </label>
         </div>
-        <span></span>
       </div>
 
       <div class="row section-title">
