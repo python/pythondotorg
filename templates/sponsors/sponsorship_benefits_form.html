@@ -167,7 +167,7 @@
           <div class="row" style="justify-content: start;">
           {% for benefit in form.fields.a_la_carte_benefits.queryset %}
             <div class="col col-items">
-              <input type="checkbox" name="a_la_carte_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
+              <input type="checkbox" name="a_la_carte_benefits" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} class="{% if benefit.unavailability_message or not benefit.has_capacity %}soldout{% endif %}" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
               <div class="a-la-carte-description">
                 <span class="benefit-program">{{ benefit.program }}</span> -
                 <span class="benefit-title">{{ benefit.name }}</span>

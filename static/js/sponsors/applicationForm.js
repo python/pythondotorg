@@ -70,7 +70,7 @@ $(document).ready(function(){
       SELECTORS.aLaCarteInputs().prop("disabled", true);
     } else {
       SELECTORS.aLaCarteInputs().attr("title", "");
-      SELECTORS.aLaCarteInputs().prop("disabled", false);
+      SELECTORS.aLaCarteInputs().not('.soldout').prop("disabled", false);
     }
 
     // populate hidden inputs according to package's benefits
