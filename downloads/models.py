@@ -322,6 +322,12 @@ class ReleaseFile(ContentManageable, NameSlugModel):
         blank=True,
         help_text="GPG Signature URL"
     )
+    sigstore_signature_file = models.URLField(
+        "Sigstore Signature URL", blank=True, help_text="Sigstore Signature URL"
+    )
+    sigstore_cert_file = models.URLField(
+        "Sigstore Cert URL", blank=True, help_text="Sigstore Cert URL"
+    )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
