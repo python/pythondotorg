@@ -67,6 +67,7 @@ $(document).ready(function(){
     if ($(this).attr("allow_a_la_carte") !== "true") {
       msg ="Cannot add a la carte benefit with the selected package.";
       SELECTORS.aLaCarteInputs().attr("title", msg);
+      SELECTORS.aLaCarteInputs().prop("checked", false);
       SELECTORS.aLaCarteInputs().prop("disabled", true);
     } else {
       SELECTORS.aLaCarteInputs().attr("title", "");
