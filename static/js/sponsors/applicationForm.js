@@ -16,9 +16,28 @@ $(document).ready(function(){
     standaloneMessage: function() { return $("#standalone-benefits-disallowed"); },
   }
 
-  const initialPackage = $("input[name=package]:checked").val();
-  if (initialPackage && initialPackage.length > 0) {
-    mobileUpdate(initialPackage);
+  const pkgInputs = $("input[name=package]:checked");
+  if (pkgInputs.length > 0 && pkgInputs.val()) {
+
+    // Disable A La Carte inputs based on initial package value
+    if (pkgInputs.attr("allow_a_la_carte") !== "true"){
+      let msg = "Cannot add a la carte benefit with the selected package.";
+      SELECTORS.aLaCarteInputs().attr("title", msg);
+      SELECTORS.aLaCarteMessage().removeClass("hidden");
+      SELECTORS.aLaCarteInputs().prop("checked", false);
+      SELECTORS.aLaCarteInputs().prop("disabled", true);
+
+    }
+
+    // Disable Standalone benefits inputs
+    let msg ="Cannot apply for standalone benefit with the selected package.";
+    SELECTORS.standaloneInputs().prop("checked", false);
+    SELECTORS.standaloneInputs().prop("disabled", true);
+    SELECTORS.standaloneMessage().removeClass("hidden");
+    SELECTORS.standaloneInputs().attr("title", msg);
+
+    // Update mobile selection
+    mobileUpdate(pkgInputs.val());
   } else {
     // disable a la carte if no package selected at the first step
     SELECTORS.aLaCarteInputs().prop("disabled", true);
@@ -61,10 +80,10 @@ $(document).ready(function(){
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
 
+    let msg ="Cannot apply for standalone benefit with the selected package.";
     SELECTORS.standaloneInputs().prop("checked", false);
     SELECTORS.standaloneInputs().prop("disabled", true);
     SELECTORS.standaloneMessage().removeClass("hidden");
-    let msg ="Cannot apply for standalone benefit with the selected package.";
     SELECTORS.standaloneInputs().attr("title", msg);
 
     // Disable a la carte benefits if package disables it
