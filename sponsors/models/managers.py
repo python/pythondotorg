@@ -89,20 +89,21 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
         return self.filter(conflicts__isnull=True)
 
     def a_la_carte(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False)
+        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False).exclude(unavailable=True)
 
     def standalone(self):
-        return self.filter(standalone=True)
+        return self.filter(standalone=True).exclude(unavailable=True)
 
     def with_packages(self):
         return (
             self.annotate(num_packages=Count("packages"))
             .exclude(Q(num_packages=0) | Q(standalone=True))
+            .exclude(unavailable=True)
             .order_by("-num_packages", "order")
         )
 
     def from_year(self, year):
-        return self.filter(year=year)
+        return self.filter(year=year).exclude(unavailable=True)
 
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
