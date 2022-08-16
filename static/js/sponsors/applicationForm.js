@@ -14,6 +14,8 @@ $(document).ready(function(){
     standaloneInputs:  function() { return $("input[name=standalone_benefits]"); },
     aLaCarteMessage: function() { return $("#a-la-cart-benefits-disallowed"); },
     standaloneMessage: function() { return $("#standalone-benefits-disallowed"); },
+    clearFormButton: function() { return $("#clear_form_btn"); },
+    applicationForm: function() { return $("#application_form"); },
   }
 
   const pkgInputs = $("input[name=package]:checked");
@@ -47,6 +49,27 @@ $(document).ready(function(){
     const section = $(this).data('section');
     const className = ".section-" + section + "-content";
     $(className).toggle();
+  });
+
+  SELECTORS.clearFormButton().click(function(){
+    SELECTORS.aLaCarteInputs().prop('checked', false).prop('selected', false);
+    SELECTORS.benefitsInputs().prop('checked', false).prop('selected', false);
+    SELECTORS.packageInput().prop('checked', false).prop('selected', false);
+    SELECTORS.standaloneInputs()
+      .prop('checked', false).prop('selected', false).prop("disabled", false);
+
+    SELECTORS.tickImages().each((i, img) => {
+      const initImg = img.getAttribute('data-initial-state');
+      const src = img.getAttribute('src');
+
+      if (src !== initImg) {
+        img.setAttribute('data-next-state', src);
+      }
+
+      img.setAttribute('src', initImg);
+    });
+    $(".selected").removeClass("selected");
+    $('.custom-fee').hide();
   });
 
   SELECTORS.packageInput().click(function(){
