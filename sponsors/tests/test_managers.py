@@ -151,9 +151,13 @@ class SponsorshipBenefitManagerTests(TestCase):
         package = baker.make(SponsorshipPackage)
         current_year = SponsorshipCurrentYear.get_year()
         self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
+        self.regular_benefit_unavailable = baker.make(SponsorshipBenefit, year=current_year, unavailable=True)
+        self.regular_benefit.packages.add(package)
         self.regular_benefit.packages.add(package)
         self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year-1)
+        self.a_la_carte_unavail = baker.make(SponsorshipBenefit, year=current_year-1, unavailable=True)
         self.standalone = baker.make(SponsorshipBenefit, standalone=True)
+        self.standalone_unavail = baker.make(SponsorshipBenefit, standalone=True, unavailable=True)
 
     def test_a_la_carte_queryset(self):
         qs = SponsorshipBenefit.objects.a_la_carte()

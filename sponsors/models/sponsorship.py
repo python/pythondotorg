@@ -414,7 +414,7 @@ class SponsorshipBenefit(OrderedModel):
     unavailable = models.BooleanField(
         default=False,
         verbose_name="Benefit is unavailable",
-        help_text="If selected, this benefit will not be available to applicants.",
+        help_text="If selected, this benefit will not be visible or available to applicants.",
     )
     standalone = models.BooleanField(
         default=False,
