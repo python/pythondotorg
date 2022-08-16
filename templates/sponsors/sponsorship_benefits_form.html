@@ -79,6 +79,7 @@
         </div>
 
         {% for field in form.benefits_programs %}
+        {% if field.field.queryset|length > 0 %}
         {% with forloop.counter as sectionNum %}
         <div class="row separator">
            <h4>{{ field.label }}</h4>
@@ -151,6 +152,7 @@
         {% endfor %}
 
         {% endwith %}
+        {% endif %}
         {% endfor %}
       </div>
 
