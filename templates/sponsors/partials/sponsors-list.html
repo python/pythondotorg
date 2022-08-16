@@ -36,14 +36,14 @@
 
   {% for package, placement_info in sponsorships_by_package.items %}
   {% if placement_info.sponsorships %}
-  <div title="{{ package.name }} Sponsors" align="center">
+  <div title="{{ package }} Sponsors" align="center">
     {% with dimension=placement_info.logo_dimension %}
 
-    <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ package }} Sponsors</h1>
+    <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ placement_info.label }} Sponsors</h1>
 
     <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
-        <div id="{{ sponsorship.sponsor.slug }}">
+        <div id="{{ sponsorship.sponsor.slug }}" data-internal-year={{ sponsorship.year }}>
             <div
                 data-ea-publisher="psf"
                 data-ea-type="psf-image-only"
