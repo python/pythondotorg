@@ -41,12 +41,13 @@ def list_sponsors(logo_place, publisher=PublisherChoices.FOUNDATION.value):
     if logo_place == LogoPlacementChoices.SPONSORS_PAGE.value:
         sponsorships_by_package = OrderedDict()
         for pkg in packages:
-            sponsorships_by_package[pkg] = {
+            sponsorships_by_package[pkg.slug] = {
+                "label": pkg.name,
                 "logo_dimension": str(pkg.logo_dimension),
                 "sponsorships": [
                     sp
                     for sp in sponsorships
-                    if sp.package == pkg
+                    if sp.package.slug == pkg.slug
                 ]
             }
 

@@ -404,7 +404,7 @@ class SponsorshipBenefit(OrderedModel):
     package_only = models.BooleanField(
         default=False,
         verbose_name="Sponsor Package Only Benefit",
-        help_text="If a benefit is only available via a sponsorship package, select this option.",
+        help_text="If a benefit is only available via a sponsorship package and not as an add-on, select this option.",
     )
     new = models.BooleanField(
         default=False,
