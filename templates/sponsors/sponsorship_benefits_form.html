@@ -53,10 +53,25 @@
                {% endif %}
              </span>
              {% for package in form.fields.package.queryset %}
-             <div id="pkg_container_{{ package.id }}" class="col col-items package-input {% if package.id == form.initial.package %}selected{% endif %}" data-package-id="{{ package.id}}" onclick="updatePackageInput({{forloop.counter0}})">
+             <div
+                 id="pkg_container_{{ package.id }}"
+                 class="col col-items package-input
+                 {% if package.id == form.initial.package %}selected{% endif %}"
+                 data-package-id="{{ package.id}}"
+                 onclick="updatePackageInput({{forloop.counter0}})"
+                 {% if not package.allow_a_la_carte %}title="This package does not accept customization with a la carte benefits."{% endif %}
+             >
                <h4>{{ package.name|upper }}</h4>
                <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
-               <input type="radio" name="package" value="{{ package.id }}" id="id_package_{{ forloop.counter0 }}" {% if package.id == form.initial.package %}checked="checked"{% endif %} data-pos={{ forloop.counter0 }} />
+               <input
+                   type="radio"
+                   name="package"
+                   value="{{ package.id }}"
+                   id="id_package_{{ forloop.counter0 }}"
+                   {% if package.id == form.initial.package %}checked="checked"{% endif %}
+                   data-pos={{ forloop.counter0 }}
+                   {% if package.allow_a_la_carte %}allow_a_la_carte="true"{% endif %}
+               />
                <span class="custom-fee-{{ package.id }} custom-fee">* Subject to change</span>
              </div>
              {% endfor %}
@@ -101,7 +116,7 @@
                     {% endif %}
                     data-initial-state="{% static 'img/sponsors/tick.svg' %}"
                 />
-              {% elif not benefit.package_only %}
+              {% elif not benefit.package_only and package.allow_a_la_carte%}
                 <img
                   id="benefit-{{ benefit.id }}-package-{{ package.id }}"
                   onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
@@ -144,15 +159,16 @@
           <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
           <div class="col with-description">
             <h4>Select a la carte benefits</h4>
-            <span>Available at any level of sponsorship</span>
+            <div>Available to add to sponsorship packages.</div>
+            <div id="a-la-cart-benefits-disallowed" class="hidden"><b>Selected sponsorship package does not allow a la carte benefit additions.</b></div>
           </div>
         </div>
 
         <div id="a-la-carte-benefits" class="custom-benefits">
-          <div class="row">
+          <div class="row" style="justify-content: start;">
           {% for benefit in form.fields.a_la_carte_benefits.queryset %}
             <div class="col col-items">
-              <input type="checkbox" name="a_la_carte_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
+              <input type="checkbox" name="a_la_carte_benefits" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} class="{% if benefit.unavailability_message or not benefit.has_capacity %}soldout{% endif %}" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
               <div class="a-la-carte-description">
                 <span class="benefit-program">{{ benefit.program }}</span> -
                 <span class="benefit-title">{{ benefit.name }}</span>
@@ -161,7 +177,7 @@
             </div>
           {% if forloop.counter|divisibleby:4 %}
           </div>
-          <div class="row">
+          <div class="row" style="justify-content: start;">
           {% endif %}
           {% endfor %}
           </div>
@@ -178,11 +194,12 @@
           <div class="col with-description">
             <h4>Select standalone benefits</h4>
             <span>Available to be selected without package</span>
+            <div id="standalone-benefits-disallowed" class="hidden"><b>Standalone benefits are not available when selecting a package.</b></div>
           </div>
         </div>
 
         <div id="standalone-benefits" class="custom-benefits">
-          <div class="row">
+          <div class="row" style="justify-content: start;">
             {% for benefit in form.fields.standalone_benefits.queryset %}
               <div class="col col-items">
                 <input type="checkbox" name="standalone_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.standalone_benefits|default:"" %}checked{% endif %}/>
@@ -218,9 +235,11 @@
           <li><p>Submit your contact information</p></li>
         </ol>
         <div>
-          <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}>
+          <label>
+            <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}/>
+             | <a id="clear_form_btn" href="#package-selection">Clear form</a>
+          </label>
         </div>
-        <span></span>
       </div>
 
       <div class="row section-title">

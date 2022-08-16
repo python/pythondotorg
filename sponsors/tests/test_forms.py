@@ -145,15 +145,56 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertEqual([], form.get_benefits())
         self.assertEqual([benefit], form.get_benefits(include_standalone=True))
 
-    def test_should_not_validate_form_without_package_with_a_la_carte_and_standalone_benefits(self):
+    def test_do_not_validate_form_with_package_and_standalone_benefits(self):
+        benefit = self.standalone[0]
         data = {
-            "standalone_benefits": [self.standalone[0]],
-            "a_la_carte_benefits": [self.a_la_carte[0]],
+            "standalone_benefits": [benefit.id],
+            "package": self.package.id,
+            "benefits_psf": [self.program_1_benefits[0].id],
+        }
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Application with package cannot have standalone benefits.",
+            form.errors["__all__"]
+        )
+
+    def test_should_not_validate_form_without_package_with_a_la_carte_benefits(self):
+        data = {
+            "a_la_carte_benefits": [self.a_la_carte[0].id],
         }
 
         form = SponsorshipsBenefitsForm(data=data)
 
         self.assertFalse(form.is_valid())
+        self.assertIn(
+            "You must pick a package to include the selected benefits.",
+            form.errors["__all__"]
+        )
+
+        data.update({
+            "package": self.package.id,
+        })
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_do_not_validate_package_package_with_disabled_a_la_carte_benefits(self):
+        self.package.allow_a_la_carte = False
+        self.package.save()
+        data = {
+            "package": self.package.id,
+            "benefits_psf": [self.program_1_benefits[0].id],
+            "a_la_carte_benefits": [self.a_la_carte[0].id],
+        }
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Package does not accept a la carte benefits.",
+            form.errors["__all__"]
+        )
+        data.pop("a_la_carte_benefits")
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)

@@ -50,6 +50,10 @@ class SponsorshipPackage(OrderedModel):
                                                                               "to reference this package.")
     year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
+    allow_a_la_carte = models.BooleanField(
+        default=True, help_text="If disabled, a la carte benefits will be disabled in application form"
+    )
+
     def __str__(self):
         return f'{self.name} ({self.year})'
 
