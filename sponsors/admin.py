@@ -116,6 +116,7 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
         "short_name",
         "package_only",
         "internal_value",
+        "unavailable",
         "move_up_down_links",
     ]
     list_filter = ["program", "year", "package_only", "packages", "new", "standalone", "unavailable"]
