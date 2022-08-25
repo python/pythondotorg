@@ -10,7 +10,7 @@ default:
 
 .state/docker-build-web: Dockerfile dev-requirements.txt base-requirements.txt
 	#Build web container for this project 
-	docker-compose build --build-arg IPYTHON=$(IPYTHON) --force-rm web
+	docker-compose build --force-rm web
 
 	#Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state
@@ -28,9 +28,9 @@ default:
 
 
 serve: .state/db-initialized
-	docker-compose up -d
+	docker-compose up --remove-orphans
 
 
 clean:
-	docker container rm $$(docker ps -aq) -f
-	rm -f .state/*
+	docker-compose down -v
+	rm -f .state/docker-build-web .state/db-initialized 
