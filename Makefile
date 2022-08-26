@@ -32,7 +32,7 @@ default:
 serve: .state/db-initialized
 	docker-compose up --remove-orphans
 
-migrations: .state/db-initialized .state/docker-build-web
+migrations: .state/db-initialized 
 	# Run Django makemigrations
 	docker-compose run --rm web ./manage.py makemigrations  
 	
@@ -44,7 +44,7 @@ manage: .state/db-initialized
 	# Run Django manage to accept arbitrary arguments
 	docker-compose run --rm web ./manage.py $(filter-out $@,$(MAKECMDGOALS))
 
-shell: .state/db-initialized .state/docker-build-web
+shell: .state/db-initialized 
 	docker-compose run --rm web ./manage.py shell
 
 clean:
