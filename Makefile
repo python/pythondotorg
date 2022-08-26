@@ -9,42 +9,42 @@ default:
 	@exit 1
 
 .state/docker-build-web: Dockerfile dev-requirements.txt base-requirements.txt
-	#Build web container for this project 
+	# Build web container for this project
 	docker-compose build --force-rm web
 
-	#Mark the state so we don't rebuild this needlessly.
+	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/docker-build-web
 
 .state/db-migrated:
-	#Call migrate target
+	# Call migrate target
 	make migrate 
 
-	#Mark the state so we don't rebuild this needlessly.
+	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/db-migrated
 
 .state/db-initialized: .state/docker-build-web .state/db-migrated
-	#Load all fixtures 
+	# Load all fixtures
 	docker-compose run --rm web ./manage.py loaddata fixtures/*.json
 
-	#Mark the state so we don't rebuild this needlessly.
+	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/db-initialized
 
 serve: .state/db-initialized
 	docker-compose up --remove-orphans
 
-migrations: .state/docker-build-web
-	#Run Django makemigrations
+migrations: .state/db-initialized .state/docker-build-web
+	# Run Django makemigrations
 	docker-compose run --rm web ./manage.py makemigrations  
 	
 migrate: .state/docker-build-web
-	#Run Django migrate 
+	# Run Django migrate
 	docker-compose run --rm web ./manage.py migrate 
 
 manage: .state/db-initialized
-	#Run Django manage to accept arbitrary arguments
+	# Run Django manage to accept arbitrary arguments
 	docker-compose run --rm web ./manage.py $(filter-out $@,$(MAKECMDGOALS))
 
-shell: .state/docker-build-web
+shell: .state/db-initialized .state/docker-build-web
 	docker-compose run --rm web ./manage.py shell
 
 clean:
