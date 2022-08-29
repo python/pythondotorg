@@ -46,7 +46,7 @@ Once you have Docker and Docker Compose installed, run:
 make serve
 ```
 
-This will pull down all the required docker containers, build Pythondotorg and establish all of the neccessary services. 
+This will pull down all the required docker containers, build the environment for pythondotorg, run migrations, load development fixtures, and start all of the necessary services. 
 
 ```
 web_1       | Starting development server at http://0.0.0.0:8000/
