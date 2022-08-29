@@ -23,7 +23,7 @@ Contents:
    :maxdepth: 2
    :glob:
 
-   install
+   install.md
    contributing
    administration
    pep_generation
