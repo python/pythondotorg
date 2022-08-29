@@ -1,6 +1,69 @@
 Installing
 ==========
 
+Prerequisite
+------------
+
+As a prerequisite to working on Pythondotorg, Docker, Docker Compose and `make` will need to be installed locally.
+
+```{note}
+Docker Compose will be installed by [Docker Mac](https://docs.docker.com/desktop/install/mac-install/) and [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/) automatically.
+
+`make` 	is a build automation tool that automatically builds executebale programs and libraries from source code by reading files called Makefiles. The [`make`](https://www.gnu.org/software/make/) utility comes defaulted with most unix distributions.  
+```
+
+Getting started
+---------------
+
+To get the Pythondotorg source code, [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repository on [GitHub](https://github.com/python/pythondotorg) and [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) it to your local machine: 
+
+```
+git clone git@github.com:YOUR-USERNAME/pythondotorg.git
+```
+
+Add a [remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork) and [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) regularly to stay current with the repository. 
+
+```
+git remote add upstream https://github.com/python/pythondotorg
+git checkout main
+git fetch upstream 
+git merge upstream/main 
+```
+
+Installing Docker
+-----------------
+
+Install [Docker Engine](https://docs.docker.com/engine/install/) 
+
+```{note}
+The best experience for building Pythondotorg on Windows is to use the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)(WSL) in combination with both [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/) and [Docker for Linux](https://docs.docker.com/engine/install/).
+```
+
+Verify that the Docker installation is successful by running: `docker -v`
+
+Building the Pythondotorg Container
+-----------------------------------
+Once you have Docker and Docker Compose installed, run:
+
+```
+make serve
+```
+
+This will pull down all the required docker containers, build Pythondotorg and establish all of the neccessary services. 
+
+To reset your local environment, run:
+
+```
+make clean
+```
+
+To create or apply new migrations, run: 
+
+``` 
+make migrate
+```
+
+   
 Manual setup
 ------------
 
