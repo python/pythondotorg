@@ -63,7 +63,7 @@ To reset your local environment, run:
 make clean
 ```
 
-To apply new migrations, run: 
+To apply migrations, run: 
 
 ``` 
 make migrate
