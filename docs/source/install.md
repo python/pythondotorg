@@ -69,7 +69,7 @@ To apply migrations, run:
 make migrate
 ```
 
-To create new migrations, run: 
+To generate new migrations, run: 
 
 ```
 make migrations
