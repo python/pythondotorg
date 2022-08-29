@@ -1,9 +1,6 @@
 Installing
 ==========
 
-Prerequisite
-------------
-
 As a prerequisite to working on Pythondotorg, Docker, Docker Compose and `make` will need to be installed locally.
 
 ```{note}
@@ -41,8 +38,8 @@ The best experience for building Pythondotorg on Windows is to use the [Windows 
 
 Verify that the Docker installation is successful by running: `docker -v`
 
-Building the Pythondotorg Container
------------------------------------
+Running pythondotorg locally 
+----------------------------
 Once you have Docker and Docker Compose installed, run:
 
 ```
@@ -51,17 +48,31 @@ make serve
 
 This will pull down all the required docker containers, build Pythondotorg and establish all of the neccessary services. 
 
+```
+web_1       | Starting development server at http://0.0.0.0:8000/
+web_1       | Quit the server with CONTROL-C.
+``` 
+
+You can view these results in your local web browser at: `http://localhost:8000`
+
 To reset your local environment, run:
 
 ```
 make clean
 ```
 
-To create or apply new migrations, run: 
+To apply new migrations, run: 
 
 ``` 
 make migrate
 ```
+
+To create new migrations, run: 
+
+```
+make migrations
+```
+
 
    
 Manual setup
