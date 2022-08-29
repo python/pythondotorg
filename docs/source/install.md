@@ -75,6 +75,14 @@ To generate new migrations, run:
 make migrations
 ```
 
+You can also run arbitrary Django management commands via:
+
+```
+make manage <NAME_OF_COMMAND>
+```
+
+This is a simple wrapper around running `python manage.py` in the container, all arguments passed to `make manage` will be passed through.
+
 
    
 Manual setup
