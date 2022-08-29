@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:10-bullseye
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: pythondotorg
+      POSTGRES_PASSWORD: pythondotorg
+      POSTGRES_DB: pythondotorg
+      POSTGRES_HOST_AUTH_METHOD: trust  # never do this in production!
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "pythondotorg", "-d", "pythondotorg"]
+      interval: 1s
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/code
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
+      DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+    depends_on:
+      postgres:
+        condition: service_healthy
