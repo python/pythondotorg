@@ -58,21 +58,21 @@
             </div>
 
         {% if events_ongoing %}
-            <h3 class="widget-title just-missed">Ongoing Events</h3>
+            <h3 class="widget-title">Ongoing Events</h3>
             <ul class="list-recent-events menu">
                 {% for object in events_ongoing %}
-                <li>
-                    <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
-                    <p>
-                        {% with object.current_time as next_time %}
-                        {% include "events/includes/time_tag.html" %}
-                        {% endwith %}
+                    <li>
+                        <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
+                        <p>
+                            {% with object.current_time as next_time %}
+                            {% include "events/includes/time_tag.html" %}
+                            {% endwith %}
 
-                        {% if object.venue %}
-                        <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
-                        {% endif %}
-                    </p>
-                </li>
+                            {% if object.venue %}
+                            <span class="event-location">{% if object.venue.url %}<a href="{{ object.venue.url }}">{% endif %}{{ object.venue.name }}{% if object.venue.url %}</a>{% endif %}{% if object.venue.address %}, {{ object.venue.address }}{% endif %}</span>
+                            {% endif %}
+                        </p>
+                    </li>
                 {% endfor %}
             </ul>
             {% endif %}

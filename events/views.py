@@ -74,7 +74,7 @@ class EventList(EventListBase):
         context = super().get_context_data(**kwargs)
         context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(
             calendar__slug=self.kwargs['calendar_slug']
-        )[:5]
+        )[:2]
         context['events_ongoing'] = Event.objects.ongoing_datetime(timezone.now()).filter(
             calendar__slug=self.kwargs['calendar_slug']
         )
