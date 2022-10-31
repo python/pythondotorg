@@ -8,11 +8,10 @@ This is the repository and issue tracker for https://www.python.org
 website.
 
 If you're looking to file an issue with CPython itself, please go to
-https://bugs.python.org
+https://github.com/python/cpython/issues/new/choose
 
 Issues related to Python's documentation (https://docs.python.org) can
-also be filed in https://bugs.python.org, by selecting the
-"Documentation" component.
+also be filed at https://github.com/python/cpython/issues/new?assignees=&labels=docs&template=documentation.md.
 -->
 
 **Describe the bug**
