@@ -195,7 +195,7 @@ $().ready(function() {
     });
 
     $("#back-to-top-1, #back-to-top-2").click(function() {
-        $("body").animate({ scrollTop: $('#python-network').offset().top }, 500);
+        $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 500);
         return false;
     });
 
