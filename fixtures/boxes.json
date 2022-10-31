@@ -6,9 +6,9 @@
       "created": "2013-03-11T22:38:14.817Z",
       "updated": "2014-06-25T19:01:06.268Z",
       "label": "supernav-python-about",
-      "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python.</a>.\r\n                            </li>",
+      "content": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python</a>.\r\n                            </li>",
       "content_markup_type": "html",
-      "_content_rendered": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python.</a>.\r\n                            </li>"
+      "_content_rendered": "\r\n                            <li class=\"tier-2 super-navigation\">\r\n                                <h4>Python is a programming language that lets you work more quickly and integrate your systems more effectively.</h4>\r\n                                <p>You can learn to use Python and see almost immediate gains in productivity and lower maintenance costs.  <a href=\"/about\">Learn more about Python</a>.\r\n                            </li>"
     }
   },
   {
