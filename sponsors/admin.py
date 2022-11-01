@@ -1,5 +1,8 @@
+import csv
+
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
+from django.http import HttpResponse
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
     PolymorphicChildModelAdmin
@@ -9,13 +12,12 @@ from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.forms import ModelForm
-from django.urls import path, reverse, resolve
+from django.urls import path, reverse
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
-from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
     SponsorshipBenefitAdminForm, CloneApplicationConfigForm
@@ -309,7 +311,8 @@ class SponsorshipAdmin(admin.ModelAdmin):
         "end_date",
     ]
     list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
-    actions = ["send_notifications"]
+    actions = ["send_notifications", "csv_export"]
+    list_select_related = ["sponsor", "package"]
     fieldsets = [
         (
             "Sponsorship Data",
@@ -388,6 +391,67 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     send_notifications.short_description = 'Send notifications to selected'
 
+    def csv_export(self, request, queryset):
+        """Export selected sponsorships to CSV file."""
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = "attachment; filename=sponsorship.csv"
+
+        field_names = [
+            "sponsor_name",
+            "status",
+            "year",
+            "sponsorship_fee",
+            "sponsor_primary_phone",
+            "landing_page_url",
+            "full_address",
+            "contact_names",
+            "contact_emails",
+            "package_name",
+            "package_sponsorship_amount",
+            "start_date",
+            "end_date",
+            "applied_on",
+            "approved_on",
+            "rejected_on",
+            "finalized_on",
+        ]
+        writer = csv.DictWriter(response, fieldnames=field_names)
+        writer.writeheader()
+
+        queryset = queryset.select_related("package", "sponsor").prefetch_related(
+            "sponsor__contacts",
+        )
+
+        for obj in queryset:
+            writer.writerow(
+                {
+                    "sponsor_name": obj.sponsor.name,
+                    "status": obj.get_status_display(),
+                    "year": obj.year,
+                    "sponsorship_fee": obj.sponsorship_fee,
+                    "sponsor_primary_phone": obj.sponsor.primary_phone,
+                    "landing_page_url": obj.sponsor.landing_page_url,
+                    "full_address": obj.sponsor.full_address,
+                    "contact_names": ", ".join(
+                        contact.name for contact in obj.sponsor.contacts.all()
+                    ),
+                    "contact_emails": ", ".join(
+                        contact.email for contact in obj.sponsor.contacts.all()
+                    ),
+                    "package_name": obj.package.name,
+                    "package_sponsorship_amount": obj.package.sponsorship_amount,
+                    "start_date": obj.start_date,
+                    "end_date": obj.end_date,
+                    "applied_on": obj.applied_on,
+                    "approved_on": obj.approved_on,
+                    "rejected_on": obj.rejected_on,
+                    "finalized_on": obj.finalized_on,
+                }
+            )
+        return response
+
+    csv_export.short_description = 'Export selected to CSV'
+
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
             "for_modified_package",
@@ -417,7 +481,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
-        if obj.year:
+        if obj and obj.year:
             readonly_fields.append("year")
 
         return readonly_fields
