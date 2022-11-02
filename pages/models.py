@@ -21,6 +21,7 @@ from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 import cmarkgfm
+from cmarkgfm.cmark import Options as cmarkgfmOptions
 
 from cms.models import ContentManageable
 from fastly.utils import purge_url
@@ -57,6 +58,39 @@ RENDERERS[markdown_index] = (
     'markdown',
     cmarkgfm.github_flavored_markdown_to_html,
     'Markdown'
+)
+
+# Add our own Github style Markdown parser, which doesn't apply the default
+# tagfilter used by Github (we can be more liberal, since we know our page
+# editors).
+
+def unsafe_markdown_to_html(text, options=0):
+
+    """Render the given GitHub-flavored Makrdown to HTML.
+
+    This function is similar to cmarkgfm.github_flavored_markdown_to_html(),
+    except that it allows raw HTML to get rendered, which is useful when
+    using jQuery UI script extensions on pages.
+
+    """
+    # Set options for cmarkgfm for "unsafe" renderer, see
+    # https://github.com/theacodes/cmarkgfm#advanced-usage
+    options = options | (
+        cmarkgfmOptions.CMARK_OPT_UNSAFE |
+        cmarkgfmOptions.CMARK_OPT_GITHUB_PRE_LANG
+    )
+    return cmarkgfm.markdown_to_html_with_extensions(
+        text, options=options,
+        extensions=[
+            'table', 'autolink', 'strikethrough', 'tasklist'
+        ])
+
+RENDERERS.append(
+    (
+        "markdown_unsafe",
+        unsafe_markdown_to_html,
+        "Markdown (unsafe)",
+    )
 )
 
 
