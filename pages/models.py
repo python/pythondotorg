@@ -21,6 +21,7 @@ from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 import cmarkgfm
+from cmarkgfm.cmark import Options as cmarkgfmOptions
 
 from cms.models import ContentManageable
 from fastly.utils import purge_url
@@ -28,6 +29,11 @@ from fastly.utils import purge_url
 from .managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+
+# Set options for cmarkgfm for "unsafe" renderer, see https://github.com/theacodes/cmarkgfm#advanced-usage
+CMARKGFM_UNSAFE_OPTIONS = (
+    cmarkgfmOptions.CMARK_OPT_UNSAFE
+)
 
 PAGE_PATH_RE = re.compile(r"""
     ^
@@ -57,6 +63,14 @@ RENDERERS[markdown_index] = (
     'markdown',
     cmarkgfm.github_flavored_markdown_to_html,
     'Markdown'
+)
+
+RENDERERS.append(
+    (
+        "markdown_unsafe",
+        lambda markdown_text: cmarkgfm.github_flavored_markdown_to_html(markdown_text, options=CMARKGFM_UNSAFE_OPTIONS),
+        "Markdown (unsafe)",
+    )
 )
 
 
