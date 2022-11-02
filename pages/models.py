@@ -30,8 +30,8 @@ from .managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
-# Set options for cmarkgfm, see https://github.com/theacodes/cmarkgfm#advanced-usage
-CMARKGFM_OPTIONS = (
+# Set options for cmarkgfm for "unsafe" renderer, see https://github.com/theacodes/cmarkgfm#advanced-usage
+CMARKGFM_UNSAFE_OPTIONS = (
     cmarkgfmOptions.CMARK_OPT_UNSAFE
 )
 
@@ -61,8 +61,16 @@ for i, renderer in enumerate(RENDERERS):
 
 RENDERERS[markdown_index] = (
     'markdown',
-    lambda markdown_text: cmarkgfm.github_flavored_markdown_to_html(markdown_text, options=CMARKGFM_OPTIONS),
+    cmarkgfm.github_flavored_markdown_to_html,
     'Markdown'
+)
+
+RENDERERS.append(
+    (
+        "markdown_unsafe",
+        lambda markdown_text: cmarkgfm.github_flavored_markdown_to_html(markdown_text, options=CMARKGFM_UNSAFE_OPTIONS),
+        "Markdown (unsafe)",
+    )
 )
 
 
