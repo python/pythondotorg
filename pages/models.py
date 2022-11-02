@@ -32,7 +32,8 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext
 
 # Set options for cmarkgfm for "unsafe" renderer, see https://github.com/theacodes/cmarkgfm#advanced-usage
 CMARKGFM_UNSAFE_OPTIONS = (
-    cmarkgfmOptions.CMARK_OPT_UNSAFE
+    cmarkgfmOptions.CMARK_OPT_UNSAFE |
+    cmarkgfmOptions.CMARK_OPT_GITHUB_PRE_LANG
 )
 
 PAGE_PATH_RE = re.compile(r"""
@@ -65,10 +66,29 @@ RENDERERS[markdown_index] = (
     'Markdown'
 )
 
+# Add out own Github style Markdown parser, which doesn't apply the default
+# tagfilter used by Github (we can be more liberal, since we know our page
+# editors).
+
+def unsafe_markdown_to_html(text, options=0):
+    """Render the given GitHub-flavored Makrdown to HTML.
+
+    This function is similar to cmarkgfm.github_flavored_markdown_to_html(),
+    except that it allows raw HTML to get rendered, which is useful when
+    using jQuery UI script extensions on pages.
+
+    """
+    return cmarkgfm.markdown_to_html_with_extensions(
+        text, options=options | CMARKGFM_UNSAFE_OPTIONS,
+        extensions=[
+            'table', 'autolink', # 'tagfilter',
+            'strikethrough', 'tasklist'
+        ])
+
 RENDERERS.append(
     (
         "markdown_unsafe",
-        lambda markdown_text: cmarkgfm.github_flavored_markdown_to_html(markdown_text, options=CMARKGFM_UNSAFE_OPTIONS),
+        lambda markdown_text: unsafe_markdown_to_html(markdown_text),
         "Markdown (unsafe)",
     )
 )
