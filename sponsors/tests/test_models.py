@@ -80,7 +80,7 @@ class SponsorshipBenefitModelTests(TestCase):
             quantity=10
         )
 
-        expected_name = f"Benefit (10)"
+        expected_name = "Benefit (10)"
         name = benefit.name_for_display(package=benefit_config.package)
         self.assertEqual(name, expected_name)
         self.assertTrue(benefit.has_tiers)
@@ -432,6 +432,7 @@ class SponsorshipPackageTests(TestCase):
         repeated_pkg_2023, created = self.package.clone(year=2023)
         self.assertFalse(created)
         self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
+
 
 class SponsorContactModelTests(TestCase):
     def test_get_primary_contact_for_sponsor(self):
@@ -845,8 +846,8 @@ class SponsorBenefitModelTests(TestCase):
     def test_clone_benefit_feature_configurations(self):
         cfg_1 = baker.make(
             LogoPlacementConfiguration,
-            publisher = PublisherChoices.FOUNDATION,
-            logo_place = LogoPlacementChoices.FOOTER,
+            publisher=PublisherChoices.FOUNDATION,
+            logo_place=LogoPlacementChoices.FOOTER,
             benefit=self.sponsorship_benefit
         )
         cfg_2 = baker.make(

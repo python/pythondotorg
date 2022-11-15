@@ -63,7 +63,6 @@ class BlogTemplateTagTest(TestCase):
         )
         fa.feeds.add(f1, f2)
 
-
         t = Template("""
         {% load blogs %}
         {% feed_list 'test' as entries %}

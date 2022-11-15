@@ -347,6 +347,6 @@ class ReleaseFile(ContentManageable, NameSlugModel):
 
         constraints = [
             models.UniqueConstraint(fields=['os', 'release'],
-            condition=models.Q(download_button=True),
-            name="only_one_download_per_os_per_release"),
+                                    condition=models.Q(download_button=True),
+                                    name="only_one_download_per_os_per_release"),
         ]

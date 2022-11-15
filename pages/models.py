@@ -38,8 +38,8 @@ PAGE_PATH_RE = re.compile(r"""
     /?                      # Possibly ending with a slash
     $
     """,
-    re.X
-)
+                          re.X
+                          )
 
 is_valid_page_path = validators.RegexValidator(
     regex=PAGE_PATH_RE,
@@ -64,8 +64,8 @@ RENDERERS[markdown_index] = (
 # tagfilter used by Github (we can be more liberal, since we know our page
 # editors).
 
-def unsafe_markdown_to_html(text, options=0):
 
+def unsafe_markdown_to_html(text, options=0):
     """Render the given GitHub-flavored Makrdown to HTML.
 
     This function is similar to cmarkgfm.github_flavored_markdown_to_html(),
@@ -84,6 +84,7 @@ def unsafe_markdown_to_html(text, options=0):
         extensions=[
             'table', 'autolink', 'strikethrough', 'tasklist'
         ])
+
 
 RENDERERS.append(
     (
@@ -157,4 +158,3 @@ class DocumentFile(models.Model):
 
     def __str__(self):
         return self.document.url
-

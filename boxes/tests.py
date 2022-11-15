@@ -5,9 +5,11 @@ from .models import Box
 
 logging.disable(logging.CRITICAL)
 
+
 class BaseTestCase(TestCase):
     def setUp(self):
         self.box = Box.objects.create(label='test', content='test content')
+
 
 class TemplateTagTests(BaseTestCase):
     def render(self, tmpl, **context):
@@ -21,6 +23,7 @@ class TemplateTagTests(BaseTestCase):
     def test_tag_invalid_label(self):
         r = self.render('{% load boxes %}{% box "missing" %}')
         self.assertEqual(r, '')
+
 
 class ViewTests(BaseTestCase):
 

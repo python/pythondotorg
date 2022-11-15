@@ -82,7 +82,8 @@ class Command(BaseCommand):
                     )
                 except BenefitFeature.DoesNotExist:
                     print(
-                        f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code_type}"
+                        f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} "
+                        f"and {code_type}"
                     )
                     continue
                 try:
@@ -91,7 +92,8 @@ class Command(BaseCommand):
                     ).get(internal_name=f"{code_type}_code")
                 except ProvidedTextAsset.DoesNotExist:
                     print(
-                        f"No provided asset found for {sponsorbenefit.sponsorship.sponsor.name} with internal name {code_type}_code"
+                        f"No provided asset found for {sponsorbenefit.sponsorship.sponsor.name} "
+                        f"with internal name {code_type}_code"
                     )
                     continue
 
@@ -105,13 +107,15 @@ class Command(BaseCommand):
                 )
                 if result["code"] == 200:
                     print(
-                        f"Fullfilling {code_type} for {sponsorbenefit.sponsorship.sponsor.name}: {quantity.quantity}"
+                        f"Fullfilling {code_type} for "
+                        f"{sponsorbenefit.sponsorship.sponsor.name}: {quantity.quantity}"
                     )
                     promo_code = result["data"]["promo_code"]
                     asset.value = promo_code
                     asset.save()
                 else:
                     print(
-                        f"Error from PyCon when fullfilling {code_type} for {sponsorbenefit.sponsorship.sponsor.name}: {result}"
+                        f"Error from PyCon when fullfilling {code_type} for "
+                        f"{sponsorbenefit.sponsorship.sponsor.name}: {result}"
                     )
-        print(f"Done!")
+        print("Done!")

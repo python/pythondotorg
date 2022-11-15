@@ -51,7 +51,7 @@ urlpatterns = [
     # Override /accounts/password/change/ to add Honeypot
     # and change success URL.
     path('accounts/password/change/', CustomPasswordChangeView.as_view(),
-        name='account_change_password'),
+         name='account_change_password'),
     path('accounts/', include('allauth.urls')),
     path('box/', include('boxes.urls')),
     path('community/', include('community.urls', namespace='community')),

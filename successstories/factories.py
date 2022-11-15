@@ -21,6 +21,7 @@ class StoryProvider(BaseProvider):
     def story_category(self):
         return self.random_element(self.story_categories)
 
+
 factory.Faker.add_provider(StoryProvider)
 
 

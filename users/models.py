@@ -40,7 +40,11 @@ class User(AbstractUser):
         (EMAIL_PRIVATE, 'Only logged-in users can see my e-mail address'),
         (EMAIL_NEVER, 'No one can ever see my e-mail address'),
     )
-    email_privacy = models.IntegerField('E-mail privacy', choices=EMAIL_CHOICES, default=EMAIL_NEVER)
+    email_privacy = models.IntegerField(
+        'E-mail privacy',
+        choices=EMAIL_CHOICES,
+        default=EMAIL_NEVER
+    )
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
@@ -100,8 +104,16 @@ class Membership(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
 
     # PSF fields
-    psf_code_of_conduct = models.BooleanField('I agree to the PSF Code of Conduct', blank=True, null=True)
-    psf_announcements = models.BooleanField('I would like to receive occasional PSF email announcements', blank=True, null=True)
+    psf_code_of_conduct = models.BooleanField(
+        'I agree to the PSF Code of Conduct',
+        blank=True,
+        null=True
+    )
+    psf_announcements = models.BooleanField(
+        'I would like to receive occasional PSF email announcements',
+        blank=True,
+        null=True
+    )
 
     # Voting
     votes = models.BooleanField("I would like to be a PSF Voting Member", default=False)

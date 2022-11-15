@@ -11,6 +11,7 @@ from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
 
 register = template.Library()
 
+
 @register.inclusion_tag("sponsors/partials/full_sponsorship.txt")
 def full_sponsorship(sponsorship, display_fee=False):
     if not display_fee:

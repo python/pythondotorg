@@ -284,7 +284,10 @@ class RecurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return f'{self.event.title} every {timedelta_nice_repr(self.interval)} since {date(self.dt_start.strftime, strftime)}'
+        return (
+            f'{self.event.title} every {timedelta_nice_repr(self.interval)} '
+            f'since {date(self.dt_start.strftime, strftime)}'
+        )
 
     def to_rrule(self):
         return rrule(

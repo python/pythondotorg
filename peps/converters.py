@@ -76,7 +76,7 @@ def fix_headers(soup, data):
             if t.next_sibling.text == '':
                 t.parent.extract()
         if 'Last-Modified:' in t.text:
-            if '$Date$'in t.next_sibling.text:
+            if '$Date$' in t.next_sibling.text:
                 t.parent.extract()
             if t.next_sibling.text == '':
                 t.parent.extract()

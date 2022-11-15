@@ -40,6 +40,7 @@ class StoryCreate(LoginRequiredMixin, ContextMixin, CreateView):
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super().form_valid(form)
 
+
 class StoryDetail(ContextMixin, DetailView):
     template_name = 'successstories/story_detail.html'
     context_object_name = 'story'

@@ -12,6 +12,7 @@ from sponsors.models import Sponsorship, Contract
 # The same limitation is true for the SponsorshipQuerySet's approved method and for
 # the sponsorship.contract reverse lookup.
 
+
 class Command(BaseCommand):
     """
     Create Contract objects for existing approved Sponsorships.
@@ -31,4 +32,4 @@ class Command(BaseCommand):
         for sponsorship in qs:
             Contract.new(sponsorship)
 
-        print(f"Done!")
+        print("Done!")

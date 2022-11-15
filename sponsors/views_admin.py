@@ -1,4 +1,5 @@
-import io, zipfile
+import io
+import zipfile
 from tempfile import NamedTemporaryFile
 
 from django import forms
@@ -368,16 +369,20 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
     if not queryset.exists():
         ModelAdmin.message_user(
             request,
-            f"You have to select at least one asset to export.",
+            "You have to select at least one asset to export.",
             messages.WARNING
         )
         return redirect(request.path)
 
     assets_without_values = [asset for asset in queryset if not asset.has_value]
     if any(assets_without_values):
+        _message = (
+            f"{len(assets_without_values)} assets from the "
+            "selection doesn't have data to export. Please review your selection!"
+        )
         ModelAdmin.message_user(
             request,
-            f"{len(assets_without_values)} assets from the selection doesn't have data to export. Please review your selection!",
+            _message,
             messages.WARNING
         )
         return redirect(request.path)

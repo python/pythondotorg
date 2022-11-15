@@ -44,15 +44,22 @@ class LogoPlacementeAPIList(APIView):
             }
 
             benefits = BenefitFeature.objects.filter(sponsor_benefit__sponsorship_id=sponsorship.pk)
-            logos = [l for l in benefits.instance_of(LogoPlacement) if not logo_filters.skip_logo(l)]
+            logos = [
+                logo_ for logo_ in benefits.instance_of(LogoPlacement)
+                if not logo_filters.skip_logo(logo_)
+            ]
             for logo in logos:
                 placement = base_data.copy()
                 placement["publisher"] = logo.publisher
                 placement["flight"] = logo.logo_place
                 if logo.describe_as_sponsor:
-                    placement["description"] = f"{sponsor.name} is a {sponsorship.level_name} sponsor of the Python Software Foundation."
+                    placement["description"] = (
+                        f"{sponsor.name} is a {sponsorship.level_name} sponsor of "
+                        f"the Python Software Foundation."
+                    )
                 if logo.link_to_sponsors_page:
-                    placement["sponsor_url"] = request.build_absolute_uri(reverse('psf-sponsors') + f"#{slugify(sponsor.name)}")
+                    sponsor_relative_url = reverse('psf-sponsors') + f"#{slugify(sponsor.name)}"
+                    placement["sponsor_url"] = request.build_absolute_uri(sponsor_relative_url)
                 placements.append(placement)
 
         serializer = LogoPlacementSerializer(placements, many=True)

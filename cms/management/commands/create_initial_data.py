@@ -60,7 +60,7 @@ class Command(BaseCommand):
                 'You have provided the --flush argument, this will cleanup '
                 'the database before creating new data.\n'
                 'Type \'y\' or \'yes\' to continue, \'n\' or \'no\' to cancel: '
-                )
+            )
         else:
             msg = (
                 'Note that this command won\'t cleanup the database before '

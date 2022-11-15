@@ -15,6 +15,7 @@ from cms.models import ContentManageable
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
+
 class Box(ContentManageable):
     label = models.SlugField(max_length=100, unique=True)
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)

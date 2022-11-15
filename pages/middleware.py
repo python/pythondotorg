@@ -36,7 +36,7 @@ class PageFallbackMiddleware:
             except Page.DoesNotExist:
                 pass
         if (settings.APPEND_SLASH and page is not None and
-            not request.path.endswith('/')):
+                not request.path.endswith('/')):
             scheme = "https" if request.is_secure() else "http"
             new_path = request.path + '/'
             new_url = f"{scheme}://{request.get_host()}{new_path}"

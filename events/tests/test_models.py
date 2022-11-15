@@ -62,7 +62,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
 
-
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
         rt.save()

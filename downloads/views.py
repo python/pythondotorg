@@ -40,6 +40,7 @@ class DownloadLatestPython3(RedirectView):
 
 class DownloadBase:
     """ Include latest releases in all views """
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update({

@@ -22,19 +22,32 @@ class WorkGroup(ContentManageable, NameSlugModel):
 
     purpose = MarkupField(
         default_markup_type=DEFAULT_MARKUP_TYPE,
-        help_text="State what the mission of the group is. List all (if any) common goals that will be shared amongst the workgroup.",
+        help_text=(
+            "State what the mission of the group is. List all (if any) "
+            "common goals that will be shared amongst the workgroup."
+        ),
     )
     active_time = MarkupField(
         default_markup_type=DEFAULT_MARKUP_TYPE,
-        help_text="How long will this workgroup exist? If the mission is not complete by the stated time, is it extendable? Is so, for how long?",
+        help_text=(
+            "How long will this workgroup exist? If the mission is "
+            "not complete by the stated time, is it extendable? Is so, for how long?"
+        ),
     )
     core_values = MarkupField(
         default_markup_type=DEFAULT_MARKUP_TYPE,
-        help_text="List the core values that the workgroup will adhere to throughout its existence. Will the workgroup adopt any statements? If so, which statement?",
+        help_text=(
+            "List the core values that the workgroup will adhere to "
+            "throughout its existence. Will the workgroup adopt any "
+            "statements? If so, which statement?"
+        ),
     )
     rules = MarkupField(
         default_markup_type=DEFAULT_MARKUP_TYPE,
-        help_text="Give a comprehensive explanation of how the decision making will work within the workgroup and list the rules that accompany these procedures.",
+        help_text=(
+            "Give a comprehensive explanation of how the decision making "
+            "will work within the workgroup and list the rules that accompany these procedures."
+        ),
     )
     communication = MarkupField(
         default_markup_type=DEFAULT_MARKUP_TYPE,
@@ -43,7 +56,10 @@ class WorkGroup(ContentManageable, NameSlugModel):
     support = MarkupField(
         blank=True,
         default_markup_type=DEFAULT_MARKUP_TYPE,
-        help_text="What resources will you need from the PSF in order to have a functional and effective workgroup?",
+        help_text=(
+            "What resources will you need from the PSF "
+            "in order to have a functional and effective workgroup?"
+        ),
     )
 
     url = models.URLField('URL', blank=True, help_text="Main URL for Group")

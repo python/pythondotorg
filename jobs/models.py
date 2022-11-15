@@ -222,7 +222,7 @@ class Job(ContentManageable):
     @property
     def display_location(self):
         location_parts = [part for part in (self.city, self.region, self.country)
-                            if part]
+                          if part]
         location_str = ', '.join(location_parts)
         return location_str
 

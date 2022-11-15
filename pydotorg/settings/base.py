@@ -191,10 +191,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.github',
+    # 'allauth.socialaccount.providers.openid',
+    # 'allauth.socialaccount.providers.twitter',
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
@@ -254,8 +254,7 @@ PEP_REPO_PATH = None
 PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 ### Fastly ###
-FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
-                        # be purged on save
+FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to be purged on save
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90
