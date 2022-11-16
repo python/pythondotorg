@@ -1,11 +1,9 @@
 from django.conf import settings
-from django.urls import reverse
 from django.db import models
-
+from django.urls import reverse
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-
 from .managers import MinutesQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')

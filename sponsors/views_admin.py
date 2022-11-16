@@ -2,22 +2,34 @@ import io
 import zipfile
 from tempfile import NamedTemporaryFile
 
-from django import forms
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
-from django.utils import timezone
-from django.db.models import Q
 from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+from django.urls import reverse
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
-    SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
+from sponsors.forms import (
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
+    SignedSponsorshipReviewAdminForm,
+    SponsorshipReviewAdminForm,
+    SponsorshipsListForm,
+)
+from sponsors.models import (
+    BenefitFeature,
+    EmailTargetable,
+    SponsorshipCurrentYear,
+)
+from sponsors.pdf import (
+    render_contract_to_docx_response,
+    render_contract_to_pdf_response,
+)
 
 
 def preview_contract_view(ModelAdmin, request, pk):

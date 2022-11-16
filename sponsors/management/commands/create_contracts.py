@@ -1,6 +1,10 @@
 from django.core.management import BaseCommand
 
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import (
+    Contract,
+    Sponsorship,
+)
+
 
 # The reason to not use a data migration but a django management command
 # to deal with pre existing approved Sponsorships is due to migrations

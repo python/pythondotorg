@@ -1,13 +1,16 @@
 import re
 
 from django.conf import settings
-from django.core import mail
-from django.urls import reverse
 from django.contrib.auth import get_user_model
+from django.core import mail
 from django.test import TestCase
+from django.urls import reverse
 
 from users.factories import UserFactory
-from ..factories import StoryFactory, StoryCategoryFactory
+from ..factories import (
+    StoryCategoryFactory,
+    StoryFactory,
+)
 from ..models import Story
 
 User = get_user_model()

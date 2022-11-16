@@ -4,7 +4,10 @@ from django.core.management import BaseCommand
 from django.db.models import Subquery
 from django.utils import timezone
 
-from sponsors.models import Sponsorship, Contract, BenefitFeature
+from sponsors.models import (
+    BenefitFeature,
+    Sponsorship,
+)
 from sponsors.notifications import AssetCloseToDueDateNotificationToSponsors
 
 

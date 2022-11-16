@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from . import admin     # coverage FTW
+from . import admin  # noqa: F401 coverage FTW
 from .templatetags.companies import render_email
 
 

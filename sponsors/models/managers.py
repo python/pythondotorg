@@ -1,9 +1,12 @@
 from django.db import IntegrityError
-from django.db.models import Count
-from ordered_model.models import OrderedModelManager, OrderedModelQuerySet
-from django.db.models import Q, Subquery
+from django.db.models import (
+    Count,
+    Q,
+    Subquery,
+)
 from django.db.models.query import QuerySet
 from django.utils import timezone
+from ordered_model.models import OrderedModelQuerySet
 from polymorphic.query import PolymorphicQuerySet
 
 

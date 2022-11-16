@@ -4,7 +4,11 @@ from django.test import TestCase
 from django.utils import timezone
 
 from pages.models import Page
-from ..models import OS, Release, ReleaseFile
+from ..models import (
+    OS,
+    Release,
+    ReleaseFile,
+)
 
 
 class DownloadMixin:

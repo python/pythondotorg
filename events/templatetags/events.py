@@ -3,7 +3,6 @@ from django.utils import timezone
 
 from ..models import Event
 
-
 register = template.Library()
 
 

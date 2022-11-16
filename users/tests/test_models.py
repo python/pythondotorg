@@ -4,8 +4,14 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from ..factories import UserFactory, MembershipFactory
-from ..models import Membership, UserGroup
+from ..factories import (
+    MembershipFactory,
+    UserFactory,
+)
+from ..models import (
+    Membership,
+    UserGroup,
+)
 
 User = get_user_model()
 

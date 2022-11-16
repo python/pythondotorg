@@ -1,30 +1,38 @@
+from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
-from ordered_model.admin import OrderedModelAdmin
-from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
-    PolymorphicChildModelAdmin
-
-from django.db.models import Subquery
-from django.template import Context, Template
-from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
+from django.db.models import Subquery
 from django.forms import ModelForm
-from django.urls import path, reverse, resolve
+from django.template import (
+    Context,
+    Template,
+)
+from django.urls import (
+    path,
+    reverse,
+)
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
+from ordered_model.admin import OrderedModelAdmin
+from polymorphic.admin import (
+    PolymorphicChildModelAdmin,
+    PolymorphicInlineSupportMixin,
+    PolymorphicParentModelAdmin,
+    StackedPolymorphicInline,
+)
 
+from cms.admin import ContentManageableModelAdmin
 from mailing.admin import BaseEmailTemplateAdmin
-from sponsors.models import *
-from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import (
-    SponsorshipReviewAdminForm,
-    SponsorBenefitAdminInlineForm,
-    RequiredImgAssetConfigurationForm,
-    SponsorshipBenefitAdminForm,
     CloneApplicationConfigForm,
+    RequiredImgAssetConfigurationForm,
+    SponsorBenefitAdminInlineForm,
+    SponsorshipBenefitAdminForm,
+    SponsorshipReviewAdminForm,
 )
-from cms.admin import ContentManageableModelAdmin
+from sponsors.models import *  # noqa: F403
 
 
 def get_url_base_name(Model):

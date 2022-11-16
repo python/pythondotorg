@@ -1,6 +1,6 @@
-import os
+import os  # noqa: F401
 
-from .base import BASE
+from .base import BASE  # noqa: F401
 
 PIPELINE_CSS = {
     'style': {

@@ -1,12 +1,21 @@
-from django.utils.text import slugify
 from django.urls import reverse
-
+from django.utils.text import slugify
 from rest_framework import permissions
-from rest_framework.views import APIView
 from rest_framework.response import Response
-from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship, GenericAsset
-from sponsors.serializers import LogoPlacementSerializer, FilterLogoPlacementsSerializer, FilterAssetsSerializer, \
-    AssetSerializer
+from rest_framework.views import APIView
+
+from sponsors.models import (
+    BenefitFeature,
+    GenericAsset,
+    LogoPlacement,
+    Sponsorship,
+)
+from sponsors.serializers import (
+    AssetSerializer,
+    FilterAssetsSerializer,
+    FilterLogoPlacementsSerializer,
+    LogoPlacementSerializer,
+)
 
 
 class SponsorPublisherPermission(permissions.BasePermission):

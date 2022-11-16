@@ -1,23 +1,23 @@
 import re
 
-from django.urls import reverse
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
-
 from markupfield.fields import MarkupField
 
 from boxes.models import Box
-from cms.models import ContentManageable, NameSlugModel
+from cms.models import (
+    ContentManageable,
+    NameSlugModel,
+)
 from fastly.utils import purge_url
 from pages.models import Page
-
 from .managers import ReleaseManager
-
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 

@@ -1,7 +1,15 @@
 from django.contrib import admin
 
-from .models import Link, Photo, Post, Video
-from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
+from cms.admin import (
+    ContentManageableModelAdmin,
+    ContentManageableStackedInline,
+)
+from .models import (
+    Link,
+    Photo,
+    Post,
+    Video,
+)
 
 
 class LinkInline(ContentManageableStackedInline):

@@ -2,13 +2,22 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.urls import reverse, reverse_lazy
 from django.test import TestCase
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
 from django.utils import timezone
 
-from ..models import Calendar, Event, EventCategory, EventLocation, RecurringRule
-from ..templatetags.events import get_events_upcoming
 from users.factories import UserFactory
+from ..models import (
+    Calendar,
+    Event,
+    EventCategory,
+    EventLocation,
+    RecurringRule,
+)
+from ..templatetags.events import get_events_upcoming
 
 
 class EventsViewsTests(TestCase):

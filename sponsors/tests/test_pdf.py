@@ -1,18 +1,26 @@
 from datetime import date
+from pathlib import Path
+from unittest.mock import (
+    Mock,
+    patch,
+)
+
+from django.conf import settings
+from django.http import (
+    HttpRequest,
+    HttpResponse,
+)
+from django.test import TestCase
+from django.utils.dateformat import format
 from docxtpl import DocxTemplate
 from markupfield_helpers.helpers import render_md
 from model_bakery import baker
-from pathlib import Path
-from unittest.mock import patch, Mock
 
-from django.conf import settings
-from django.http import HttpResponse, HttpRequest
-from django.template.loader import render_to_string
-from django.test import TestCase
-from django.utils.html import mark_safe
-from django.utils.dateformat import format
-
-from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_pdf_response, render_contract_to_docx_response
+from sponsors.pdf import (
+    render_contract_to_docx_response,
+    render_contract_to_pdf_file,
+    render_contract_to_pdf_response,
+)
 
 
 class TestRenderContract(TestCase):

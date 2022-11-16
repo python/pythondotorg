@@ -1,7 +1,11 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
-from .models import Page, Image, DocumentFile
+from .models import (
+    DocumentFile,
+    Image,
+    Page,
+)
 
 
 class ImageInlineAdmin(admin.StackedInline):

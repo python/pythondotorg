@@ -1,10 +1,6 @@
-import os
-
-import dj_database_url
-import raven
 from decouple import Csv
 
-from .base import *
+from .base import *  # noqa: F403
 
 DEBUG = TEMPLATE_DEBUG = False
 

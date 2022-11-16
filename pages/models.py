@@ -8,24 +8,20 @@ positioned into the URL structure using the nav app.
 
 import os
 import re
-
 from copy import deepcopy
 
+import cmarkgfm
+from cmarkgfm.cmark import Options as cmarkgfmOptions
 from django.conf import settings
 from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
-import cmarkgfm
-from cmarkgfm.cmark import Options as cmarkgfmOptions
-
 from cms.models import ContentManageable
 from fastly.utils import purge_url
-
 from .managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')

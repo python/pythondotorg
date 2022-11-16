@@ -1,12 +1,15 @@
+import datetime
 import unittest
 from unittest import mock
 
-from django.template import Template, Context
+from django.template import (
+    Context,
+    Template,
+)
 from django.test import TestCase
 
 from .admin import ContentManageableModelAdmin
 from .views import legacy_path
-import datetime
 
 
 class ContentManageableAdminTests(unittest.TestCase):

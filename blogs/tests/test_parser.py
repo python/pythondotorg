@@ -1,8 +1,8 @@
 import datetime
 import unittest
 
-from ..parser import get_all_entries
 from .utils import get_test_rss_path
+from ..parser import get_all_entries
 
 
 class BlogParserTest(unittest.TestCase):

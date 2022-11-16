@@ -1,6 +1,5 @@
 from django import forms
 from django.utils.safestring import mark_safe
-
 from markupfield.widgets import MarkupTextarea
 
 from .models import Nomination

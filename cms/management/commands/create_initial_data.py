@@ -3,7 +3,10 @@ import inspect
 import pprint
 
 from django.apps import apps
-from django.core.management import BaseCommand, call_command
+from django.core.management import (
+    BaseCommand,
+    call_command,
+)
 
 
 class Command(BaseCommand):

@@ -3,13 +3,12 @@ This module holds models related to the Sponsor entity.
 """
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
-from django.contrib.contenttypes.fields import GenericRelation
 
 from cms.models import ContentManageable
 from sponsors.models.assets import GenericAsset

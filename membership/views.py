@@ -2,6 +2,7 @@ from django.views.generic import TemplateView
 
 from pydotorg.mixins import FlagMixin
 
+
 # NOTE: Many aspects of 'membership' such as adjusting a user profile, signup,
 #       etc are handled in the users app
 

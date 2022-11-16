@@ -1,5 +1,8 @@
 from django.conf import settings
-from django.views.generic.base import RedirectView, TemplateView
+from django.views.generic.base import (
+    RedirectView,
+    TemplateView,
+)
 
 from codesamples.models import CodeSample
 from downloads.models import Release

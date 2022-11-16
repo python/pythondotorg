@@ -1,21 +1,21 @@
 from django.conf import settings
 from django.contrib.sites.models import Site
-from django.core.exceptions import ValidationError
 from django.core.mail import EmailMessage
-from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
-
+from django.urls import reverse
 from markupfield.fields import MarkupField
 
-from .managers import StoryManager
 from boxes.models import Box
-from cms.models import ContentManageable, NameSlugModel
+from cms.models import (
+    ContentManageable,
+    NameSlugModel,
+)
 from companies.models import Company
 from fastly.utils import purge_url
-
+from .managers import StoryManager
 
 PSF_TO_EMAILS = ['psf-staff@python.org']
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')

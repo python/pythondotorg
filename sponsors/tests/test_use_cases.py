@@ -1,19 +1,32 @@
 import os
-from unittest.mock import Mock, patch, call
-from model_bakery import baker
-from datetime import timedelta, date
+from datetime import (
+    date,
+    timedelta,
+)
 from pathlib import Path
+from unittest.mock import (
+    Mock,
+    call,
+    patch,
+)
 
 from django.conf import settings
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.mail import EmailMessage
 from django.test import TestCase
 from django.utils import timezone
-from django.core.mail import EmailMessage
-from django.core.files.uploadedfile import SimpleUploadedFile
+from model_bakery import baker
 
 from sponsors import use_cases
-from sponsors.notifications import *
-from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate, Sponsor, SponsorshipBenefit, \
-    SponsorshipPackage
+from sponsors.models import (
+    Contract,
+    Sponsor,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+)
+from sponsors.notifications import *  # noqa: F403
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -334,7 +347,12 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
             kwargs = dict(to_accounting=False, to_administrative=True, to_manager=False, to_primary=False)
             mock_get_email_message.assert_has_calls([call(sponsorship, **kwargs)])
             self.notifications[0].notify.assert_has_calls([
-                call(notification=self.notification, sponsorship=sponsorship, contact_types=contact_types, request='request')
+                call(
+                    notification=self.notification,
+                    sponsorship=sponsorship,
+                    contact_types=contact_types,
+                    request='request'
+                )
             ])
         for email in emails:
             email.send.assert_called_once_with()

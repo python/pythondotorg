@@ -1,5 +1,6 @@
 import datetime
 from itertools import chain
+
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
@@ -12,17 +13,18 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from sponsors.models import (
+    BenefitFeature,
+    RequiredImgAssetConfiguration,
+    SPONSOR_TEMPLATE_HELP_TEXT,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
-    Sponsor,
-    SponsorContact,
-    Sponsorship,
-    SponsorBenefit,
-    SponsorEmailNotificationTemplate,
-    RequiredImgAssetConfiguration,
-    BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
 SELECTABLE_DATES = tuple((

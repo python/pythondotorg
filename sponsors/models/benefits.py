@@ -7,13 +7,18 @@ from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from sponsors.models.assets import ImgAsset, TextAsset, FileAsset, ResponseAsset, Response
-from sponsors.models.enums import (
-    PublisherChoices,
-    LogoPlacementChoices,
-    AssetsRelatedTo,
+from sponsors.models.assets import (
+    FileAsset,
+    ImgAsset,
+    Response,
+    ResponseAsset,
+    TextAsset,
 )
-
+from sponsors.models.enums import (
+    AssetsRelatedTo,
+    LogoPlacementChoices,
+    PublisherChoices,
+)
 ########################################
 # Benefit features abstract classes
 from sponsors.models.managers import BenefitFeatureQuerySet

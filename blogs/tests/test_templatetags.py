@@ -1,11 +1,18 @@
 from django.core.management import call_command
+from django.template import (
+    Context,
+    Template,
+)
 from django.test import TestCase
-from django.template import Template, Context
 from django.utils.timezone import now
 
-from ..templatetags.blogs import get_latest_blog_entries
-from ..models import BlogEntry, Feed, FeedAggregate
 from .utils import get_test_rss_path
+from ..models import (
+    BlogEntry,
+    Feed,
+    FeedAggregate,
+)
+from ..templatetags.blogs import get_latest_blog_entries
 
 
 class BlogTemplateTagTest(TestCase):

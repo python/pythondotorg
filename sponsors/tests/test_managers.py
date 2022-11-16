@@ -1,12 +1,28 @@
-from datetime import date, timedelta
-from model_bakery import baker
+from datetime import (
+    date,
+    timedelta,
+)
 
 from django.conf import settings
 from django.test import TestCase
+from model_bakery import baker
 
-from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredBenefit, RequiredTextAsset, RequiredImgAsset, \
-    BenefitFeature, SponsorshipPackage, SponsorshipBenefit, SponsorshipCurrentYear
-from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models.enums import (
+    LogoPlacementChoices,
+    PublisherChoices,
+)
+from ..models import (
+    BenefitFeature,
+    LogoPlacement,
+    RequiredImgAsset,
+    RequiredTextAsset,
+    SponsorBenefit,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    TieredBenefit,
+)
 
 
 class SponsorshipQuerySetTests(TestCase):

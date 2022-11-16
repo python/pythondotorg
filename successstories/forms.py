@@ -2,8 +2,8 @@ from django import forms
 from django.db.models import Q
 from django.utils.text import slugify
 
-from .models import Story
 from cms.forms import ContentManageableModelForm
+from .models import Story
 
 
 class StoryForm(ContentManageableModelForm):

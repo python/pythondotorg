@@ -1,7 +1,15 @@
 from django.contrib import admin
 
-from .models import JobType, JobCategory, Job, JobReviewComment
-from cms.admin import NameSlugAdmin, ContentManageableModelAdmin
+from cms.admin import (
+    ContentManageableModelAdmin,
+    NameSlugAdmin,
+)
+from .models import (
+    Job,
+    JobCategory,
+    JobReviewComment,
+    JobType,
+)
 
 
 @admin.register(Job)

@@ -1,15 +1,26 @@
-from django.conf.urls import handler404, include
+from django.conf import settings
+from django.conf.urls import include
+from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.conf.urls.static import static
-from django.urls import path, re_path
-from django.views.generic.base import TemplateView, RedirectView
-from django.conf import settings
+from django.urls import (
+    path,
+    re_path,
+)
+from django.views.generic.base import (
+    RedirectView,
+    TemplateView,
+)
 
 from cms.views import custom_404
-from users.views import HoneypotSignupView, CustomPasswordChangeView
-
-from . import views, urls_api
+from users.views import (
+    CustomPasswordChangeView,
+    HoneypotSignupView,
+)
+from . import (
+    urls_api,
+    views,
+)
 
 handler404 = custom_404
 

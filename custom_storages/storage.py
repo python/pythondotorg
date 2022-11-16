@@ -1,14 +1,18 @@
 import os
 import posixpath
 import re
-
-from urllib.parse import unquote, urldefrag
+from urllib.parse import (
+    unquote,
+    urldefrag,
+)
 
 from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestFilesMixin, StaticFilesStorage
+from django.contrib.staticfiles.storage import (
+    ManifestFilesMixin,
+    StaticFilesStorage,
+)
 from django.contrib.staticfiles.utils import matches_patterns
 from django.core.files.base import ContentFile
-
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage
 

@@ -1,14 +1,20 @@
 import json
+from urllib.parse import (
+    urlencode,
+    urljoin,
+)
 
-from urllib.parse import urlencode, urljoin
-
-from django.db.models.constants import LOOKUP_SEP
 from django.core.exceptions import ImproperlyConfigured
-
+from django.db.models.constants import LOOKUP_SEP
 from django_filters import rest_framework as filters
-from rest_framework import serializers
-from rest_framework import viewsets
-from rest_framework.permissions import SAFE_METHODS, IsAuthenticatedOrReadOnly
+from rest_framework import (
+    serializers,
+    viewsets,
+)
+from rest_framework.permissions import (
+    IsAuthenticatedOrReadOnly,
+    SAFE_METHODS,
+)
 
 
 class IsStaffOrReadOnly(IsAuthenticatedOrReadOnly):

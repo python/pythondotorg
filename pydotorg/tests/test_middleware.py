@@ -1,7 +1,6 @@
-from django.test import TestCase
-
-from django.contrib.sites.models import Site
 from django.contrib.redirects.models import Redirect
+from django.contrib.sites.models import Site
+from django.test import TestCase
 
 
 class MiddlewareTests(TestCase):

@@ -1,8 +1,10 @@
 import datetime
 
-from django.template.defaultfilters import truncatewords_html, striptags
+from django.template.defaultfilters import (
+    striptags,
+    truncatewords_html,
+)
 from django.utils import timezone
-
 from haystack import indexes
 
 from .models import Release

@@ -1,18 +1,17 @@
 import io
 
+import responses
 from bs4 import BeautifulSoup
-
-from django.test import TestCase, override_settings
 from django.conf import settings
 from django.core import serializers
 from django.core.management import call_command
-
-import responses
+from django.test import (
+    TestCase,
+    override_settings,
+)
 
 from pages.models import Image
-
 from . import FAKE_PEP_ARTIFACT
-
 
 PEP_ARTIFACT_URL = 'https://example.net/fake-peps.tar.gz'
 

@@ -8,23 +8,39 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models, transaction, IntegrityError
-from django.db.models import Subquery, Sum
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
+from django.db import (
+    IntegrityError,
+    models,
+    transaction,
+)
+from django.db.models import (
+    Subquery,
+    Sum,
+)
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from num2words import num2words
-
 from ordered_model.models import OrderedModel
 
-from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
-    SponsorshipInvalidDateRangeException
+from sponsors.exceptions import (
+    InvalidStatusException,
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidDateRangeException,
+)
 from sponsors.models.assets import GenericAsset
-from sponsors.models.managers import SponsorshipPackageQuerySet, SponsorshipBenefitQuerySet, \
-    SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
 from sponsors.models.benefits import TieredBenefitConfiguration
+from sponsors.models.managers import (
+    SponsorshipBenefitQuerySet,
+    SponsorshipCurrentYearQuerySet,
+    SponsorshipPackageQuerySet,
+    SponsorshipQuerySet,
+)
 from sponsors.models.sponsors import SponsorBenefit
 
 YEAR_VALIDATORS = [

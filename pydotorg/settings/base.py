@@ -1,7 +1,7 @@
 import os
-from dj_database_url import parse as dj_database_url_parser
-from decouple import config
 
+from decouple import config
+from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
 ### Basic config
@@ -277,7 +277,7 @@ DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import PIPELINE
+from .pipeline import PIPELINE  # noqa
 
 ### contrib.messages
 

@@ -1,11 +1,10 @@
+from django.contrib.auth import get_user_model
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
 from tastypie.http import HttpUnauthorized
 from tastypie.resources import ModelResource
 from tastypie.throttle import CacheThrottle
-
-from django.contrib.auth import get_user_model
 
 
 class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):

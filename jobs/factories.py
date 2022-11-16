@@ -1,15 +1,17 @@
 import datetime
-import factory
 
+import factory
 from django.contrib.auth.models import Group
 from django.utils import timezone
 from factory.django import DjangoModelFactory
-
 from faker.providers import BaseProvider
 
 from users.factories import UserFactory
-
-from .models import JobType, JobCategory, Job
+from .models import (
+    Job,
+    JobCategory,
+    JobType,
+)
 
 
 class JobProvider(BaseProvider):

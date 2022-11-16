@@ -1,13 +1,23 @@
 from django.conf.urls import url
-
 from rest_framework import routers
 from tastypie.api import Api
 
-from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
-from downloads.api import OSViewSet, ReleaseViewSet, ReleaseFileViewSet
-from pages.api import PageResource
-from pages.api import PageViewSet
-from sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
+from downloads.api import (
+    OSResource,
+    OSViewSet,
+    ReleaseFileResource,
+    ReleaseFileViewSet,
+    ReleaseResource,
+    ReleaseViewSet,
+)
+from pages.api import (
+    PageResource,
+    PageViewSet,
+)
+from sponsors.api import (
+    LogoPlacementeAPIList,
+    SponsorshipAssetsAPIList,
+)
 
 v1_api = Api(api_name='v1')
 v1_api.register(PageResource())

@@ -1,15 +1,17 @@
+import os
 import re
 import shutil
-import os
 import traceback
 
-from django.core.management.base import BaseCommand
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management.base import BaseCommand
 
-from bs4 import BeautifulSoup
-
-from ...models import Page, Image
+from ...models import (
+    Image,
+    Page,
+)
 from ...parser import parse_page
 
 

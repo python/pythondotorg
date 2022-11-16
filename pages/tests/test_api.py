@@ -1,8 +1,7 @@
 from rest_framework.test import APITestCase
 
-from pydotorg.drf import BaseAPITestCase
-
 from pages.factories import PageFactory
+from pydotorg.drf import BaseAPITestCase
 from users.factories import UserFactory
 
 

@@ -1,14 +1,17 @@
-import re
 import os
-import requests
-
+import re
 from urllib.parse import urlparse
 
-from django.core.management.base import BaseCommand
+import requests
 from django.conf import settings
 from django.core.files import File
+from django.core.management.base import BaseCommand
 
-from ...models import Page, Image, page_image_path
+from ...models import (
+    Image,
+    Page,
+    page_image_path,
+)
 
 
 class Command(BaseCommand):

@@ -1,8 +1,13 @@
 from datetime import timedelta
-from icalendar import Calendar as ICalendar
-import requests
 
-from .models import EventLocation, Event, OccurringRule
+import requests
+from icalendar import Calendar as ICalendar
+
+from .models import (
+    Event,
+    EventLocation,
+    OccurringRule,
+)
 from .utils import extract_date_or_datetime
 
 DATE_RESOLUTION = timedelta(1)

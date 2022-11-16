@@ -1,5 +1,9 @@
 from django.conf import settings
-from django.urls import resolve, Resolver404, reverse
+from django.urls import (
+    Resolver404,
+    resolve,
+    reverse,
+)
 
 
 def site_info(request):

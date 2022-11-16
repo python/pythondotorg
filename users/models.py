@@ -1,14 +1,13 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.urls import reverse
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
-
 from markupfield.fields import MarkupField
-from tastypie.models import create_api_key
 from rest_framework.authtoken.models import Token
+from tastypie.models import create_api_key
 
 from .managers import UserManager
 

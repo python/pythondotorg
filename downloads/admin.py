@@ -1,7 +1,14 @@
 from django.contrib import admin
 
-from .models import OS, Release, ReleaseFile
-from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
+from cms.admin import (
+    ContentManageableModelAdmin,
+    ContentManageableStackedInline,
+)
+from .models import (
+    OS,
+    Release,
+    ReleaseFile,
+)
 
 
 @admin.register(OS)

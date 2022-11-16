@@ -1,9 +1,18 @@
 from django.db.models import Prefetch
-from django.urls import reverse
-from django.views.generic import DetailView, TemplateView, ListView, RedirectView
 from django.http import Http404
+from django.urls import reverse
+from django.views.generic import (
+    DetailView,
+    ListView,
+    RedirectView,
+    TemplateView,
+)
 
-from .models import OS, Release, ReleaseFile
+from .models import (
+    OS,
+    Release,
+    ReleaseFile,
+)
 
 
 class DownloadLatestPython2(RedirectView):

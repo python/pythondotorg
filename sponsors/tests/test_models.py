@@ -1,38 +1,58 @@
-from datetime import date, timedelta
-
-from django.core.cache import cache
-from django.db import IntegrityError
-from model_bakery import baker, seq
+from datetime import (
+    date,
+    timedelta,
+)
 
 from django import forms
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import EmailMessage
+from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
+from model_bakery import (
+    baker,
+    seq,
+)
 
+from sponsors.models.enums import (
+    AssetsRelatedTo,
+    LogoPlacementChoices,
+    PublisherChoices,
+)
+from ..exceptions import (
+    InvalidStatusException,
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidDateRangeException,
+)
 from ..models import (
     Contract,
+    ImgAsset,
     LegalClause,
     LogoPlacement,
     LogoPlacementConfiguration,
+    RequiredImgAsset,
+    RequiredImgAssetConfiguration,
+    RequiredTextAsset,
+    RequiredTextAssetConfiguration,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
+    TextAsset,
     TieredBenefit,
-    TieredBenefitConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
-    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset, SponsorshipCurrentYear
+    TieredBenefitConfiguration,
 )
-from ..exceptions import (
-    SponsorWithExistingApplicationException,
-    SponsorshipInvalidDateRangeException,
-    InvalidStatusException,
+from ..models.benefits import (
+    BaseRequiredImgAsset,
+    BaseRequiredTextAsset,
+    BenefitFeature,
+    EmailTargetableConfiguration,
+    RequiredAssetMixin,
 )
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
-from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset, \
-    EmailTargetableConfiguration
 
 
 class SponsorshipBenefitModelTests(TestCase):

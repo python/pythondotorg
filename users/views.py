@@ -1,33 +1,50 @@
 from collections import defaultdict
 
+from allauth.account.views import (
+    PasswordChangeView,
+    SignupView,
+)
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Subquery
-from django.urls import reverse, reverse_lazy
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView, FormView
+    CreateView,
+    DeleteView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
 )
-
-from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
-from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
-from sponsors.models import Sponsor, BenefitFeature
-
+from sponsors.forms import (
+    SponsorRequiredAssetsForm,
+    SponsorUpdateForm,
+)
+from sponsors.models import (
+    BenefitFeature,
+    Sponsor,
+    Sponsorship,
+)
 from .forms import (
-    UserProfileForm, MembershipForm, MembershipUpdateForm,
+    MembershipForm,
+    MembershipUpdateForm,
+    UserProfileForm,
 )
 from .models import Membership
-from sponsors.models import Sponsorship
 
 User = get_user_model()
 

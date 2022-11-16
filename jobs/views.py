@@ -1,14 +1,37 @@
 from django.contrib import messages
+from django.http import (
+    Http404,
+    HttpResponse,
+    HttpResponseRedirect,
+)
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
 from django.urls import reverse
-from django.db.models import Q
-from django.http import Http404, HttpResponse, HttpResponseRedirect
-from django.shortcuts import get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView, TemplateView, View
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    TemplateView,
+    UpdateView,
+    View,
+)
 
-from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
-
-from .forms import JobForm, JobReviewCommentForm
-from .models import Job, JobType, JobCategory, JobReviewComment
+from pydotorg.mixins import (
+    GroupRequiredMixin,
+    LoginRequiredMixin,
+)
+from .forms import (
+    JobForm,
+    JobReviewCommentForm,
+)
+from .models import (
+    Job,
+    JobCategory,
+    JobReviewComment,
+    JobType,
+)
 
 
 class JobListMenu:

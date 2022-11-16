@@ -1,10 +1,13 @@
+from django.conf import settings
+from django.contrib.auth.models import AnonymousUser
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
+from django.urls import reverse
 from model_bakery import baker
 
-from django.urls import reverse
-from django.conf import settings
 from pydotorg import context_processors
-from django.test import TestCase, RequestFactory
-from django.contrib.auth.models import AnonymousUser
 
 
 class TemplateProcessorsTestCase(TestCase):

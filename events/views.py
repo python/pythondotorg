@@ -2,15 +2,26 @@ import datetime
 
 from django.contrib import messages
 from django.core.mail import BadHeaderError
-from django.shortcuts import get_object_or_404, redirect
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+)
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, ListView, FormView
+from django.views.generic import (
+    DetailView,
+    FormView,
+    ListView,
+)
 
 from pydotorg.mixins import LoginRequiredMixin
-
-from .models import Calendar, Event, EventCategory, EventLocation
 from .forms import EventForm
+from .models import (
+    Calendar,
+    Event,
+    EventCategory,
+    EventLocation,
+)
 
 
 class CalendarList(ListView):

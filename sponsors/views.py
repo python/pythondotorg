@@ -1,23 +1,35 @@
 from itertools import chain
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.forms.utils import ErrorList
-from django.shortcuts import redirect, render
-from django.urls import reverse_lazy, reverse
+from django.shortcuts import (
+    redirect,
+    render,
+)
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, DetailView, RedirectView
+from django.views.generic import FormView
 
+from sponsors import (
+    cookies,
+    use_cases,
+)
+from sponsors.forms import (
+    SponsorshipApplicationForm,
+    SponsorshipsBenefitsForm,
+)
 from .models import (
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
-    SponsorshipProgram, SponsorshipCurrentYear,
+    SponsorshipProgram,
 )
-
-from sponsors import cookies
-from sponsors import use_cases
-from sponsors.forms import SponsorshipsBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):

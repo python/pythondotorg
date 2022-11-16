@@ -2,14 +2,17 @@ from django.db import transaction
 
 from sponsors import notifications
 from sponsors.models import (
-    Sponsorship,
     Contract,
     SponsorContact,
     SponsorEmailNotificationTemplate,
+    Sponsorship,
     SponsorshipBenefit,
     SponsorshipPackage,
 )
-from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
+from sponsors.pdf import (
+    render_contract_to_docx_file,
+    render_contract_to_pdf_file,
+)
 
 
 class BaseUseCaseWithNotifications:

@@ -1,14 +1,18 @@
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
 
-from ..models import Job
-from ..factories import (
-    ApprovedJobFactory, DraftJobFactory, JobCategoryFactory, JobTypeFactory,
-    ReviewJobFactory, JobsBoardAdminGroupFactory,
-)
 from users.factories import UserFactory
+from ..factories import (
+    ApprovedJobFactory,
+    DraftJobFactory,
+    JobCategoryFactory,
+    JobTypeFactory,
+    JobsBoardAdminGroupFactory,
+    ReviewJobFactory,
+)
+from ..models import Job
 
 
 class JobsViewTests(TestCase):

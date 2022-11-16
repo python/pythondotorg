@@ -1,18 +1,29 @@
 from datetime import date
 from unittest.mock import Mock
 
-from model_bakery import baker
-
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib.admin.models import (
+    ADDITION,
+    CHANGE,
+    LogEntry,
+)
+from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.template.loader import render_to_string
-from django.test import TestCase, RequestFactory
-from django.contrib.admin.models import LogEntry, CHANGE, ADDITION
-from django.contrib.contenttypes.models import ContentType
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
+from model_bakery import baker
 
 from sponsors import notifications
-from sponsors.models import Sponsorship, Contract, RequiredTextAssetConfiguration, SponsorBenefit
+from sponsors.models import (
+    Contract,
+    RequiredTextAssetConfiguration,
+    SponsorBenefit,
+    Sponsorship,
+)
 
 
 class AppliedSponsorshipNotificationToPSFTests(TestCase):

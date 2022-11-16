@@ -1,14 +1,15 @@
 from django.conf import settings
-from django.core.mail import send_mail
-from django.db import models
-from django.dispatch import receiver
 from django.contrib.sites.models import Site
+from django.core.mail import send_mail
+from django.dispatch import receiver
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
 
-from .models import Job
 from .signals import (
-    job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted,
+    comment_was_posted,
+    job_was_approved,
+    job_was_rejected,
+    job_was_submitted,
 )
 
 # Python job board team email address

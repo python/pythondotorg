@@ -1,5 +1,5 @@
-from ..models import Release
 from .base import BaseDownloadTests
+from ..models import Release
 
 
 class DownloadModelTests(BaseDownloadTests):

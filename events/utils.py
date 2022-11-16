@@ -2,8 +2,10 @@ import datetime
 import re
 
 import pytz
-
-from django.utils.timezone import is_aware, make_aware
+from django.utils.timezone import (
+    is_aware,
+    make_aware,
+)
 
 
 def seconds_resolution(dt):

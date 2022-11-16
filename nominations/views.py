@@ -1,14 +1,25 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-
-from django.views.generic import CreateView, UpdateView, DetailView, ListView
-from django.urls import reverse
 from django.http import Http404
+from django.urls import reverse
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+    UpdateView,
+)
 
 from pydotorg.mixins import LoginRequiredMixin
-
-from .models import Nomination, Nominee, Election
-from .forms import NominationForm, NominationCreateForm, NominationAcceptForm
+from .forms import (
+    NominationAcceptForm,
+    NominationCreateForm,
+    NominationForm,
+)
+from .models import (
+    Election,
+    Nomination,
+    Nominee,
+)
 
 
 class ElectionsList(ListView):

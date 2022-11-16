@@ -2,17 +2,21 @@ import unittest.mock as mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.test import (
+    TestCase,
+    override_settings,
+)
 from django.urls import reverse
-from django.test import TestCase, override_settings
-
-from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from .base import BaseDownloadTests, DownloadMixin
-from ..models import OS, Release
 from pages.factories import PageFactory
 from pydotorg.drf import BaseAPITestCase
 from users.factories import UserFactory
+from .base import (
+    BaseDownloadTests,
+    DownloadMixin,
+)
+from ..models import Release
 
 User = get_user_model()
 

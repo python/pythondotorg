@@ -1,30 +1,58 @@
 import io
-import json
-import tempfile
 import zipfile
+from datetime import (
+    date,
+    timedelta,
+)
+from unittest.mock import (
+    Mock,
+    PropertyMock,
+    patch,
+)
 from uuid import uuid4
-
-from django.core.files.uploadedfile import SimpleUploadedFile
-from model_bakery import baker
-from datetime import date, timedelta
-from unittest.mock import patch, PropertyMock, Mock
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.messages import get_messages
 from django.core import mail
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
-from django.test import TestCase, RequestFactory
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
 from django.urls import reverse
+from model_bakery import baker
 
-from .utils import assertMessage, get_static_image_file_as_upload
-from ..models import Sponsorship, Contract, SponsorshipBenefit, SponsorBenefit, SponsorEmailNotificationTemplate, \
-    GenericAsset, ImgAsset, TextAsset, SponsorshipCurrentYear, SponsorshipPackage
-from ..forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm, CloneApplicationConfigForm
-from sponsors.views_admin import send_sponsorship_notifications_action, export_assets_as_zipfile
 from sponsors.use_cases import SendSponsorshipNotificationUseCase
+from sponsors.views_admin import (
+    export_assets_as_zipfile,
+    send_sponsorship_notifications_action,
+)
+from .utils import (
+    assertMessage,
+    get_static_image_file_as_upload,
+)
+from ..forms import (
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
+    SignedSponsorshipReviewAdminForm,
+    SponsorshipReviewAdminForm,
+    SponsorshipsListForm,
+)
+from ..models import (
+    Contract,
+    GenericAsset,
+    ImgAsset,
+    SponsorBenefit,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    TextAsset,
+)
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):

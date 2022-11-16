@@ -1,7 +1,10 @@
-from .feeds import MinutesFeed
-from . import views
-from django.urls import path, re_path
+from django.urls import (
+    path,
+    re_path,
+)
 
+from . import views
+from .feeds import MinutesFeed
 
 urlpatterns = [
     path('', views.MinutesList.as_view(), name='minutes_list'),

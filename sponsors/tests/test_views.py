@@ -1,5 +1,4 @@
 import json
-from model_bakery import baker
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,19 +7,27 @@ from django.contrib.messages import get_messages
 from django.contrib.sessions.backends.base import SessionBase
 from django.core import mail
 from django.test import TestCase
-from django.urls import reverse, reverse_lazy
+from django.urls import (
+    reverse,
+    reverse_lazy,
+)
+from model_bakery import baker
 
-from .utils import get_static_image_file_as_upload, assertMessage
+from sponsors.forms import (
+    SponsorshipApplicationForm,
+    SponsorshipsBenefitsForm,
+)
+from .utils import (
+    assertMessage,
+    get_static_image_file_as_upload,
+)
 from ..models import (
     Sponsor,
-    SponsorshipBenefit,
     SponsorContact,
-    Sponsorship, SponsorshipCurrentYear,
-    SponsorshipPackage
-)
-from sponsors.forms import (
-    SponsorshipsBenefitsForm,
-    SponsorshipApplicationForm,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
 )
 
 

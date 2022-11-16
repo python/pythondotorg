@@ -1,6 +1,10 @@
 from rest_framework import serializers
 
-from downloads.models import OS, Release, ReleaseFile
+from downloads.models import (
+    OS,
+    Release,
+    ReleaseFile,
+)
 
 
 class OSSerializer(serializers.HyperlinkedModelSerializer):

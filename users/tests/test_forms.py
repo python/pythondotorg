@@ -1,9 +1,11 @@
+from allauth.account.forms import SignupForm
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
-from allauth.account.forms import SignupForm
-
-from users.forms import UserProfileForm, MembershipForm
+from users.forms import (
+    MembershipForm,
+    UserProfileForm,
+)
 
 User = get_user_model()
 

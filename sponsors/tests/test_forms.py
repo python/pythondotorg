@@ -1,22 +1,32 @@
-from model_bakery import baker
-
 from django.conf import settings
 from django.test import TestCase
+from model_bakery import baker
 
 from sponsors.forms import (
-    SponsorshipsBenefitsForm,
-    SponsorshipApplicationForm,
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
     Sponsor,
+    SponsorBenefit,
+    SponsorBenefitAdminInlineForm,
     SponsorContactForm,
     SponsorContactFormSet,
-    SponsorBenefitAdminInlineForm,
-    SponsorBenefit,
+    SponsorRequiredAssetsForm,
     Sponsorship,
+    SponsorshipApplicationForm,
+    SponsorshipBenefitAdminForm,
+    SponsorshipsBenefitsForm,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm, CloneApplicationConfigForm,
 )
-from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage, SponsorshipCurrentYear
+from sponsors.models import (
+    ImgAsset,
+    RequiredImgAssetConfiguration,
+    RequiredTextAsset,
+    RequiredTextAssetConfiguration,
+    SponsorContact,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+)
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 

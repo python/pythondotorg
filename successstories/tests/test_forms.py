@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..factories import StoryFactory, StoryCategoryFactory
+from ..factories import StoryCategoryFactory
 from ..forms import StoryForm
 
 

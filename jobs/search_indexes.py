@@ -1,9 +1,15 @@
+from django.template.defaultfilters import (
+    striptags,
+    truncatewords_html,
+)
 from django.urls import reverse
-from django.template.defaultfilters import truncatewords_html, striptags
-
 from haystack import indexes
 
-from .models import JobType, JobCategory, Job
+from .models import (
+    Job,
+    JobCategory,
+    JobType,
+)
 
 
 class JobTypeIndex(indexes.SearchIndex, indexes.Indexable):
