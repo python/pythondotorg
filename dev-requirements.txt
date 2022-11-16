@@ -1,4 +1,5 @@
 -r base-requirements.txt
+-r prod-requirements.txt
 
 # Required for running tests
 
