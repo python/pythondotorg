@@ -490,7 +490,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(contract.revision, 0)
 
         num_updates = 5
-        for i in range(num_updates):
+        for __ in range(num_updates):
             contract.save()
             contract.refresh_from_db()
 
@@ -527,7 +527,6 @@ class ContractModelTests(TestCase):
     def test_create_new_contract_from_sponsorship_sets_sponsor_contact_and_primary(
         self,
     ):
-        sponsor = self.sponsorship.sponsor
         contact = baker.make(
             SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
         )
@@ -694,7 +693,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(benefit_feature.logo_place, benefit_config.logo_place)
 
     def test_new_copy_do_not_save_unexisting_features(self):
-        benefit_config = baker.make(
+        baker.make(
             TieredBenefitConfiguration,
             package__name='Another package',
             benefit=self.sponsorship_benefit,
@@ -714,7 +713,7 @@ class SponsorBenefitModelTests(TestCase):
         # benefit name if no features
         self.assertEqual(sponsor_benefit.name_for_display, name)
         # apply display modifier from features
-        benefit_config = baker.make(
+        baker.make(
             TieredBenefit,
             sponsor_benefit=sponsor_benefit,
             quantity=10
@@ -864,13 +863,13 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(2, benefit_2023.legal_clauses.count())
 
     def test_clone_benefit_feature_configurations(self):
-        cfg_1 = baker.make(
+        baker.make(
             LogoPlacementConfiguration,
             publisher=PublisherChoices.FOUNDATION,
             logo_place=LogoPlacementChoices.FOOTER,
             benefit=self.sponsorship_benefit
         )
-        cfg_2 = baker.make(
+        baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSOR.value,
             internal_name="config_name",

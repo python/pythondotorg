@@ -27,7 +27,7 @@ class TestRenderContract(TestCase):
     def setUp(self):
         self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__start_date=date.today())
         text = f"{self.contract.benefits_list.raw}\n\n**Legal Clauses**\n{self.contract.legal_clauses.raw}"
-        html = render_md(text)
+        self.html = render_md(text)
         self.context = {
             "contract": self.contract,
             "start_date": self.contract.sponsorship.start_date,

@@ -1,0 +1,19 @@
+repos:
+  - repo: https://github.com/pre-commit/mirrors-autopep8
+    rev: 'v2.0.0'
+    hooks:
+      - id: autopep8
+        args: ['--in-place', '--select', 'E101,E112,E113,E115,E116,E117,E121,E122,E123,E124,E125,E126,E127,E128,E129,E131,E133,E201,E202,E203,E211,E221,E222,E223,E224,E225,E226,E227,E228,E231,E231,E241,E242,E251,E252,E261,E262,E265,E271,E272,E273,E274,E275,E301,E302,E303,E304,E305,E306,W391']
+  - repo: https://github.com/asottile/pyupgrade
+    rev: v3.3.1
+    hooks:
+      - id: pyupgrade
+        args: ['--py3-plus', '--py39-plus']
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        additional_dependencies: [
+            'flake8-bugbear==22.12.6',
+            'flake8-no-pep420==2.3.0'
+        ]

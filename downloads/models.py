@@ -338,7 +338,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
             qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
             if qs.count() > 0:
                 raise ValidationError("Only one Release File per OS can have \"Download button\" enabled")
-        super(ReleaseFile, self).validate_unique(exclude=exclude)
+        super().validate_unique(exclude=exclude)
 
     class Meta:
         verbose_name = 'Release File'

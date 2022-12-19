@@ -116,15 +116,15 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.assertEqual(self.data, r.context["form"].initial)
 
     def test_capacity_flag(self):
-        psf_package = baker.make(SponsorshipPackage, advertise=True)
+        baker.make(SponsorshipPackage, advertise=True)
         r = self.client.get(self.url)
         self.assertEqual(False, r.context["capacities_met"])
 
     def test_capacity_flag_when_needed(self):
-        at_capacity_benefit = baker.make(
+        baker.make(
             SponsorshipBenefit, program=self.psf, capacity=0, soft_capacity=False
         )
-        psf_package = baker.make(SponsorshipPackage, advertise=True)
+        baker.make(SponsorshipPackage, advertise=True)
 
         r = self.client.get(self.url)
         self.assertEqual(True, r.context["capacities_met"])
@@ -169,7 +169,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
 
     def test_do_not_display_application_form_by_year_if_staff_user(self):
         custom_year = self.current_year + 1
-        # move all obects to a new year instead of using the active one
+        # move all objects to a new year instead of using the active one
         SponsorshipBenefit.objects.all().update(year=custom_year)
         SponsorshipPackage.objects.all().update(year=custom_year)
 
@@ -186,7 +186,7 @@ class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
         self.user.save()
         self.client.force_login(self.user)
         custom_year = self.current_year + 1
-        # move all obects to a new year instead of using the active one
+        # move all objects to a new year instead of using the active one
         SponsorshipBenefit.objects.all().update(year=custom_year)
         SponsorshipPackage.objects.all().update(year=custom_year)
 

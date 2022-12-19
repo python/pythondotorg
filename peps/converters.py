@@ -12,7 +12,10 @@ from pages.models import (
 )
 
 PEP_TEMPLATE = 'pages/pep-page.html'
-pep_url = lambda num: f'dev/peps/pep-{num}/'
+
+
+def pep_url(num):
+    return f'dev/peps/pep-{num}/'
 
 
 def get_peps_last_updated():

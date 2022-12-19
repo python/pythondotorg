@@ -102,7 +102,7 @@ class SponsorshipQuerySetTests(TestCase):
         baker.make_recipe('sponsors.tests.logo_at_download_feature', sponsor_benefit=download_logo_benefit)
         sponsors_logo_benefit = baker.make(SponsorBenefit, sponsorship=sponsorship_with_sponsors_logo)
         baker.make_recipe('sponsors.tests.logo_at_sponsors_feature', sponsor_benefit=sponsors_logo_benefit)
-        regular_benefit = baker.make(SponsorBenefit, sponsorship=simple_sponsorship)
+        baker.make(SponsorBenefit, sponsorship=simple_sponsorship)
 
         with self.assertNumQueries(1):
             qs = list(Sponsorship.objects.with_logo_placement())
@@ -153,7 +153,7 @@ class BenefitFeatureQuerySet(TestCase):
     def test_filter_only_for_required_assets(self):
         baker.make(TieredBenefit)
         text_asset = baker.make(RequiredTextAsset)
-        img_asset = baker.make(RequiredImgAsset)
+        baker.make(RequiredImgAsset)
 
         qs = BenefitFeature.objects.required_assets()
 

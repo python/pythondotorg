@@ -366,6 +366,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_job_create_prepopulate_email(self):
+        # TODO: Refactor
         create_url = reverse('jobs:job_create')
         user_data = {
             'username': 'phrasebook',
@@ -374,12 +375,12 @@ class JobsViewTests(TestCase):
         }
 
         User = get_user_model()
-        creator = User.objects.create_user(**user_data)
+        User.objects.create_user(**user_data)
 
         # Logged in, email address is prepopulated.
         self.client.login(username=user_data['username'],
                           password=user_data['password'])
-        response = self.client.get(create_url)
+        self.client.get(create_url)
 
     def test_job_types(self):
         job_type2 = JobTypeFactory(

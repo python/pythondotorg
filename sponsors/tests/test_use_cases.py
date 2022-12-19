@@ -26,7 +26,21 @@ from sponsors.models import (
     SponsorshipBenefit,
     SponsorshipPackage,
 )
-from sponsors.notifications import *  # noqa: F403
+from sponsors.notifications import (
+    AppliedSponsorshipNotificationToPSF,
+    AppliedSponsorshipNotificationToSponsors,
+    ClonedResourcesLogger,
+    ContractNotificationToPSF,
+    ExecutedContractLogger,
+    ExecutedExistingContractLogger,
+    NullifiedContractLogger,
+    RefreshSponsorshipsCache,
+    RejectedSponsorshipNotificationToPSF,
+    RejectedSponsorshipNotificationToSponsors,
+    SendSponsorNotificationLogger,
+    SentContractLogger,
+    SponsorshipApprovalLogger,
+)
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -382,7 +396,7 @@ class CloneSponsorshipYearUseCaseTests(TestCase):
         baker.make(SponsorshipPackage, year=2021)  # package from another year
         baker.make(SponsorshipPackage, year=2022, _quantity=2)
         baker.make(SponsorshipBenefit, year=2021)  # benefit from another year
-        benefits_2022 = baker.make(SponsorshipBenefit, year=2022, _quantity=3)
+        baker.make(SponsorshipBenefit, year=2022, _quantity=3)
 
         created_objects = self.use_case.execute(clone_from_year=2022, target_year=2023, request=self.request)
 

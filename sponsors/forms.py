@@ -27,10 +27,10 @@ from sponsors.models import (
     SponsorshipProgram,
 )
 
-SELECTABLE_DATES = tuple((
+SELECTABLE_DATES = tuple(
     (y, str(y))
     for y in range(2021, datetime.date.today().year + 2)
-))
+)
 SPONSORSHIP_YEAR_SELECT = forms.Select(
     choices=(
             ((None, '---'),) + SELECTABLE_DATES
@@ -291,7 +291,10 @@ class SponsorshipApplicationForm(forms.Form):
             self.contacts_formset = SponsorContactFormSet(**formset_kwargs)
 
     def clean(self):
-        cleaned_data = super().clean()
+        # TODO: Refactor.
+        # why does this method not return a value
+        # as expected by the original implementation?
+        cleaned_data = super().clean()  # noqa
         sponsor = self.data.get("sponsor")
         if not sponsor and not self.contacts_formset.is_valid():
             msg = "Errors with contact(s) information"
@@ -612,7 +615,10 @@ class SponsorUpdateForm(forms.ModelForm):
         model = Sponsor
 
     def clean(self):
-        cleaned_data = super().clean()
+        # TODO: Refactor.
+        # why does this method not return a value
+        # as expected by the original implementation?
+        cleaned_data = super().clean()  # noqa
 
         if not self.contacts_formset.is_valid():
             msg = "Errors with contact(s) information"

@@ -278,12 +278,9 @@ class Sponsorship(models.Model):
 
     @property
     def estimated_cost(self):
-        return (
-            self.benefits.aggregate(Sum("benefit_internal_value"))[
-                "benefit_internal_value__sum"
-            ]
-            or 0
-        )
+        return self.benefits.aggregate(
+            Sum("benefit_internal_value")
+        )["benefit_internal_value__sum"] or 0
 
     @property
     def verbose_sponsorship_fee(self):
@@ -307,8 +304,8 @@ class Sponsorship(models.Model):
             return None
 
     @property
-    def is_active(self):
-        conditions = [
+    def is_active(self):  # TODO: Fix
+        conditions = [  # noqa: F841
             self.status == self.FINALIZED,
             self.end_date and self.end_date > date.today()
         ]
@@ -513,9 +510,9 @@ class SponsorshipBenefit(OrderedModel):
         if self.unavailable:
             return False
         return not (
-            self.remaining_capacity is not None
-            and self.remaining_capacity <= 0
-            and not self.soft_capacity
+            self.remaining_capacity is not None and
+            self.remaining_capacity <= 0 and
+            not self.soft_capacity
         )
 
     @property

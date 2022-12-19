@@ -864,7 +864,7 @@ class UpdateRelatedSponsorshipsTests(TestCase):
         self.benefit.description = 'New description'
         self.benefit.save()
 
-        response = self.client.post(self.url, data=self.data)
+        self.client.post(self.url, data=self.data)
 
         self.sponsor_benefit.refresh_from_db()
         self.assertEqual(self.sponsor_benefit.name, "New name")
@@ -1075,7 +1075,7 @@ class SendSponsorshipNotificationTests(TestCase):
         request = self.request_factory.post("/", data={"confirm": "yes"})
         request.user = self.user
 
-        resp = send_sponsorship_notifications_action(Mock(), request, self.queryset)
+        send_sponsorship_notifications_action(Mock(), request, self.queryset)
         context = mocked_render.call_args[1]["context"]
         form = context["form"]
 

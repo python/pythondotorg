@@ -572,7 +572,6 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
 
     def test_update_assets_information_with_valid_post(self):
         response = self.client.post(self.url, data={"text_input": "information"})
-        context = response.context
 
         self.assertRedirects(response, reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk]))
         self.assertEqual(self.required_asset.value, "information")

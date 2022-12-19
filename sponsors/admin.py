@@ -32,7 +32,35 @@ from sponsors.forms import (
     SponsorshipBenefitAdminForm,
     SponsorshipReviewAdminForm,
 )
-from sponsors.models import *  # noqa: F403
+from sponsors.models import (
+    BenefitFeature,
+    BenefitFeatureConfiguration,
+    Contract,
+    EmailTargetableConfiguration,
+    FileAsset,
+    GenericAsset,
+    ImgAsset,
+    LegalClause,
+    LogoPlacementConfiguration,
+    ProvidedFileAssetConfiguration,
+    ProvidedTextAssetConfiguration,
+    RequiredImgAssetConfiguration,
+    RequiredResponseAssetConfiguration,
+    RequiredTextAssetConfiguration,
+    ResponseAsset,
+    SPONSOR_TEMPLATE_HELP_TEXT,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    SponsorshipProgram,
+    TextAsset,
+    TieredBenefitConfiguration,
+)
 
 
 def get_url_base_name(Model):
@@ -43,8 +71,10 @@ class AssetsInline(GenericTabularInline):
     model = GenericAsset
     extra = 0
     max_num = 0
-    has_delete_permission = lambda self, request, obj: False
     readonly_fields = ["internal_name", "user_submitted_info", "value"]
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
     def value(self, obj=None):
         if not obj or not obj.value:
@@ -204,7 +234,9 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
 
     def get_prepopulated_fields(self, request, obj=None):
         if not obj:
-            return {'slug': ['name']}
+            return {
+                'slug': ['name']
+            }
         return {}
 
 
@@ -224,6 +256,7 @@ class SponsorshipsInline(admin.TabularInline):
     def link(self, obj):
         url = reverse("admin:sponsors_sponsorship_change", args=[obj.id])
         return mark_safe(f"<a href={url}>{obj.id}</a>")
+
     link.short_description = "ID"
 
 
@@ -407,7 +440,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     send_notifications.short_description = 'Send notifications to selected'
 
-    def get_readonly_fields(self, request, obj):
+    def get_readonly_fields(self, request, obj=None):
         readonly_fields = [
             "for_modified_package",
             "sponsor_link",
@@ -444,10 +477,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
     def sponsor_link(self, obj):
         url = reverse("admin:sponsors_sponsor_change", args=[obj.sponsor.id])
         return mark_safe(f"<a href={url}>{obj.sponsor.name}</a>")
+
     sponsor_link.short_description = "Sponsor"
 
     def get_estimated_cost(self, obj):
-        cost = None
         html = "This sponsorship has not customizations so there's no estimated cost"
         if obj.for_modified_package:
             msg = (
@@ -524,7 +557,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
         )
         template = Template(html)
-        context = Context({'sponsor': obj.sponsor})
+        context = Context({
+            'sponsor': obj.sponsor
+        })
         html = template.render(context)
         return mark_safe(html)
 
@@ -539,7 +574,9 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 "<img src='{{ im.url}}'/>{% endthumbnail %}"
             )
             template = Template(html)
-            context = Context({'img': img})
+            context = Context({
+                'img': img
+            })
             html = template.render(context)
         return mark_safe(html) if html else "---"
 
@@ -658,11 +695,11 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
     def links(self, obj):
         clone_form = CloneApplicationConfigForm()
-        configured_years = clone_form.configured_years
+        configured_years = clone_form.configured_years  # TODO: not used  # noqa: F841
 
         application_url = reverse("select_sponsorship_application_benefits")
         benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
-        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")  # TODO: not used  # noqa: F841
         preview_label = 'View sponsorship application'
         year = obj.year
         html = "<ul>"
@@ -677,6 +714,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
         html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
         html += "</ul>"
         return mark_safe(html)
+
     links.short_description = "Links"
 
     def other_years(self, obj):
@@ -691,7 +729,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
         application_url = reverse("select_sponsorship_application_benefits")
         benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
-        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")
+        packages_url = reverse("admin:sponsors_sponsorshippackage_changelist")  # TODO: not used  # noqa: F841
         preview_label = 'View sponsorship application form for this year'
         html = "<ul>"
         for year in configured_years:
@@ -709,6 +747,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             html += "</ul></li>"
         html += "</ul>"
         return mark_safe(html)
+
     other_years.short_description = "Other configured years"
 
     def clone_application_config(self, request):
@@ -784,7 +823,7 @@ class ContractModelAdmin(admin.ModelAdmin):
         ),
     ]
 
-    def get_readonly_fields(self, request, obj):
+    def get_readonly_fields(self, request, obj=None):
         readonly_fields = [
             "status",
             "created_on",
@@ -884,7 +923,9 @@ class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
         help_texts = {
             "content": SPONSOR_TEMPLATE_HELP_TEXT,
         }
-        kwargs.update({"help_texts": help_texts})
+        kwargs.update({
+            "help_texts": help_texts
+        })
         return super().get_form(request, obj, **kwargs)
 
 
@@ -1031,6 +1072,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
 
     def export_assets_as_zipfile(self, request, queryset):
         return views_admin.export_assets_as_zipfile(self, request, queryset)
+
     export_assets_as_zipfile.short_description = "Export selected"
 
 
@@ -1051,7 +1093,7 @@ class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
 
 
 @admin.register(FileAsset)
-class ImgAssetModelAdmin(GenericAssetChildModelAdmin):
+class FileAssetModelAdmin(GenericAssetChildModelAdmin):
     base_model = FileAsset
 
 

@@ -1,0 +1,13 @@
+[flake8]
+max-line-length = 120
+ignore =
+    D100,D101,D102,D103,D105,D205,D400,
+    E305,E266,E231
+    W504,W606,X100
+exclude = ./node_modules/*,*/migrations/*,./venv/*,./env/*,./_personal/*,.tox/*
+per-file-ignores =
+    manage.py:INP001
+    docs/source/conf.py:INP001
+    */test_*.py: E501,W605
+    custom_storages/__init__.py:F401
+    sponsors/models/__init__.py:F401

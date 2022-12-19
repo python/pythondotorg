@@ -276,15 +276,15 @@ class SponsorBenefit(OrderedModel):
         self.added_by_user = self.added_by_user or self.standalone
 
         # generate benefit features from benefit features configurations
-        features = self.features.all().delete()
+        self.features.all().delete()
         for feature_config in benefit.features_config.all():
             feature_config.create_benefit_feature(self)
 
         self.save()
 
-    def delete(self):
+    def delete(self, *args, extra_update=None, **kwargs):
         self.features.all().delete()
-        super().delete()
+        super().delete(*args, extra_update=extra_update, **kwargs)
 
     class Meta(OrderedModel.Meta):
         pass
