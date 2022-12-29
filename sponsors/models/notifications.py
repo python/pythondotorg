@@ -2,7 +2,7 @@ from django.conf import settings
 
 from mailing.models import BaseEmailTemplate
 
-SPONSOR_TEMPLATE_HELP_TEXT = (
+SPONSOR_TEMPLATE_CONTENT_HELP_TEXT = (
     "<br>"
     "You can use the following template variables in the Subject and Content:"
     "  <pre>{{ sponsor_name }}</pre>"
@@ -12,6 +12,7 @@ SPONSOR_TEMPLATE_HELP_TEXT = (
     "  <pre>{{ sponsorship_status }}</pre>"
 )
 
+SPONSOR_TEMPLATE_ACTIVE_HELP_TEXT = "Only active templates will be shown on the admin page by default."
 
 #################################
 # Sponsor Email Notifications

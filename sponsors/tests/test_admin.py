@@ -5,8 +5,9 @@ from model_bakery import baker
 
 from django.test import TestCase, RequestFactory
 
-from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
-from sponsors.models import Sponsorship
+from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin, SponsorEmailNotificationTemplateAdmin
+from mailing.admin import EmailTemplateIsActiveListFilter
+from sponsors.models import Sponsorship, SponsorEmailNotificationTemplate
 
 class TestCustomSponsorshipStatusListFilter(TestCase):
 
@@ -63,3 +64,52 @@ class TestCustomSponsorshipStatusListFilter(TestCase):
         self.assertEqual(choices[0]["display"], "Applied / Approved / Finalized")
         for i, choice in enumerate(choices[1:]):
             self.assertEqual(choice["display"], lookups[i][1])
+
+
+class TestEmailTemplateIsActiveListFilter(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get("/")
+        self.model_admin = SponsorEmailNotificationTemplateAdmin
+        self.filter = EmailTemplateIsActiveListFilter(
+            request=self.request,
+            params={},
+            model=SponsorEmailNotificationTemplate,
+            model_admin=self.model_admin
+        )
+
+    def test_basic_configuration(self):
+        self.assertEqual("Active", self.filter.title)
+        self.assertEqual("active", self.filter.parameter_name)
+        self.assertIn(EmailTemplateIsActiveListFilter, self.model_admin.list_filter)
+
+    def test_lookups(self):
+        expected = (
+            ("all", "All"),
+            (None, "Yes"),
+            ("no", "No"),
+        )
+        self.assertEqual(expected, self.filter.lookups(self.request, self.model_admin))
+
+    def test_filter_queryset(self):
+        sponsor_email_templates = [
+            baker.make(SponsorEmailNotificationTemplate, active=True),
+            baker.make(SponsorEmailNotificationTemplate, active=False)
+        ]
+
+        # filter active by default
+        qs = self.filter.queryset(self.request, SponsorEmailNotificationTemplate.objects.all())
+        self.assertEqual(1, qs.count())
+        self.assertNotIn(sponsor_email_templates[1], qs)
+
+        # Expected object count by filter
+        filter_count = {
+            "all": 2,
+            "no": 1
+        }
+
+        for filter_name in filter_count.keys():
+            self.filter.used_parameters[self.filter.parameter_name] = filter_name
+            qs = self.filter.queryset(self.request, SponsorEmailNotificationTemplate.objects.all())
+            self.assertEqual(filter_count[filter_name], qs.count())
+

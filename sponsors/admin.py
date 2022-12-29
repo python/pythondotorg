@@ -9,17 +9,17 @@ from django.template import Context, Template
 from django.contrib import admin
 from django.contrib.humanize.templatetags.humanize import intcomma
 from django.forms import ModelForm
-from django.urls import path, reverse, resolve
+from django.urls import path, reverse
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
-from sponsors.models.benefits import RequiredAssetMixin
 from sponsors import views_admin
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorBenefitAdminInlineForm, RequiredImgAssetConfigurationForm, \
     SponsorshipBenefitAdminForm, CloneApplicationConfigForm
 from cms.admin import ContentManageableModelAdmin
+from sponsors.models.notifications import SPONSOR_TEMPLATE_ACTIVE_HELP_TEXT, SPONSOR_TEMPLATE_CONTENT_HELP_TEXT
 
 
 def get_url_base_name(Model):
@@ -850,7 +850,8 @@ class SponsorEmailNotificationTemplateAdmin(BaseEmailTemplateAdmin):
 
     def get_form(self, request, obj=None, **kwargs):
         help_texts = {
-            "content": SPONSOR_TEMPLATE_HELP_TEXT,
+            "content": SPONSOR_TEMPLATE_CONTENT_HELP_TEXT,
+            "active": SPONSOR_TEMPLATE_ACTIVE_HELP_TEXT
         }
         kwargs.update({"help_texts": help_texts})
         return super().get_form(request, obj, **kwargs)
