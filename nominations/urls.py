@@ -20,4 +20,7 @@ urlpatterns = [
     path('<slug:election>/<int:pk>/edit/', views.NominationEdit.as_view(),
         name="nomination_edit",
     ),
+    path('<slug:election>/<int:pk>/accept/', views.NominationAccept.as_view(),
+        name="nomination_accept",
+    ),
 ]

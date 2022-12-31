@@ -4,8 +4,8 @@ from model_bakery import baker
 from django.conf import settings
 from django.test import TestCase
 
-from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredQuantity, RequiredTextAsset, RequiredImgAsset, \
-    BenefitFeature, SponsorshipPackage, SponsorshipBenefit
+from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredBenefit, RequiredTextAsset, RequiredImgAsset, \
+    BenefitFeature, SponsorshipPackage, SponsorshipBenefit, SponsorshipCurrentYear
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
@@ -109,7 +109,7 @@ class SponsorshipQuerySetTests(TestCase):
         sponsorship_feature_1 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
         sponsorship_feature_2 = baker.make_recipe('sponsors.tests.finalized_sponsorship')
         baker.make(LogoPlacement, sponsor_benefit__sponsorship=sponsorship_feature_1)
-        baker.make(TieredQuantity, sponsor_benefit__sponsorship=sponsorship_feature_2)
+        baker.make(TieredBenefit, sponsor_benefit__sponsorship=sponsorship_feature_2)
 
         with self.assertNumQueries(1):
             qs = list(Sponsorship.objects.includes_benefit_feature(LogoPlacement))
@@ -124,7 +124,7 @@ class BenefitFeatureQuerySet(TestCase):
         self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
 
     def test_filter_benefits_from_sponsorship(self):
-        feature_1 = baker.make(TieredQuantity, sponsor_benefit=self.benefit)
+        feature_1 = baker.make(TieredBenefit, sponsor_benefit=self.benefit)
         feature_2 = baker.make(LogoPlacement, sponsor_benefit=self.benefit)
         baker.make(LogoPlacement)  # benefit from other sponsor benefit
 
@@ -135,7 +135,7 @@ class BenefitFeatureQuerySet(TestCase):
         self.assertIn(feature_2, qs)
 
     def test_filter_only_for_required_assets(self):
-        baker.make(TieredQuantity)
+        baker.make(TieredBenefit)
         text_asset = baker.make(RequiredTextAsset)
         img_asset = baker.make(RequiredImgAsset)
 
@@ -149,17 +149,40 @@ class SponsorshipBenefitManagerTests(TestCase):
 
     def setUp(self):
         package = baker.make(SponsorshipPackage)
-        self.regular_benefit = baker.make(SponsorshipBenefit)
+        current_year = SponsorshipCurrentYear.get_year()
+        self.regular_benefit = baker.make(SponsorshipBenefit, year=current_year)
+        self.regular_benefit_unavailable = baker.make(SponsorshipBenefit, year=current_year, unavailable=True)
         self.regular_benefit.packages.add(package)
-        self.add_on = baker.make(SponsorshipBenefit)
-        self.a_la_carte = baker.make(SponsorshipBenefit, a_la_carte=True)
-
-    def test_add_ons_queryset(self):
-        qs = SponsorshipBenefit.objects.add_ons()
-        self.assertEqual(1, qs.count())
-        self.assertIn(self.add_on, qs)
+        self.regular_benefit.packages.add(package)
+        self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year-1)
+        self.a_la_carte_unavail = baker.make(SponsorshipBenefit, year=current_year-1, unavailable=True)
+        self.standalone = baker.make(SponsorshipBenefit, standalone=True)
+        self.standalone_unavail = baker.make(SponsorshipBenefit, standalone=True, unavailable=True)
 
     def test_a_la_carte_queryset(self):
         qs = SponsorshipBenefit.objects.a_la_carte()
         self.assertEqual(1, qs.count())
         self.assertIn(self.a_la_carte, qs)
+
+    def test_standalone_queryset(self):
+        qs = SponsorshipBenefit.objects.standalone()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.standalone, qs)
+
+    def test_filter_benefits_by_current_year(self):
+        qs = SponsorshipBenefit.objects.all().from_current_year()
+        self.assertEqual(1, qs.count())
+        self.assertIn(self.regular_benefit, qs)
+
+
+class SponsorshipPackageManagerTests(TestCase):
+
+    def test_filter_packages_by_current_year(self):
+        current_year = SponsorshipCurrentYear.get_year()
+        active_package = baker.make(SponsorshipPackage, year=current_year)
+        baker.make(SponsorshipPackage, year=current_year - 1)
+
+        qs = SponsorshipPackage.objects.all().from_current_year()
+
+        self.assertEqual(1, qs.count())
+        self.assertIn(active_package, qs)

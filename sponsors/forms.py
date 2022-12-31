@@ -22,7 +22,11 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT,
+    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
+)
+
+SPONSORSHIP_YEAR_SELECT = forms.Select(
+    choices=(((None, '---'),) + tuple(((y, str(y)) for y in range(2021, datetime.date.today().year + 2))))
 )
 
 
@@ -52,27 +56,29 @@ SponsorContactFormSet = forms.formset_factory(
 
 class SponsorshipsBenefitsForm(forms.Form):
     """
-    Form to enable user to select packages, benefits and add-ons during
+    Form to enable user to select packages, benefits and a la carte during
     the sponsorship application submission.
     """
-    package = forms.ModelChoiceField(
-        queryset=SponsorshipPackage.objects.list_advertisables(),
-        widget=forms.RadioSelect(),
-        required=False,
-        empty_label=None,
-    )
-    add_ons_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.add_ons().select_related("program"),
-    )
-    a_la_carte_benefits = PickSponsorshipBenefitsField(
-        required=False,
-        queryset=SponsorshipBenefit.objects.a_la_carte().select_related("program"),
-    )
 
     def __init__(self, *args, **kwargs):
+        year = kwargs.pop("year", SponsorshipCurrentYear.get_year())
         super().__init__(*args, **kwargs)
-        benefits_qs = SponsorshipBenefit.objects.with_packages().select_related(
+        self.fields["package"] = forms.ModelChoiceField(
+            queryset=SponsorshipPackage.objects.from_year(year).list_advertisables(),
+            widget=forms.RadioSelect(),
+            required=False,
+            empty_label=None,
+        )
+        self.fields["a_la_carte_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_year(year).a_la_carte().select_related("program"),
+        )
+        self.fields["standalone_benefits"] = PickSponsorshipBenefitsField(
+            required=False,
+            queryset=SponsorshipBenefit.objects.from_year(year).standalone().select_related("program"),
+        )
+
+        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
             "program"
         )
 
@@ -100,28 +106,28 @@ class SponsorshipsBenefitsForm(forms.Form):
                 conflicts[benefit.id] = list(benefits_conflicts)
         return conflicts
 
-    def get_benefits(self, cleaned_data=None, include_add_ons=False, include_a_la_carte=False):
+    def get_benefits(self, cleaned_data=None, include_a_la_carte=False, include_standalone=False):
         cleaned_data = cleaned_data or self.cleaned_data
         benefits = list(
             chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
         )
-        add_ons = cleaned_data.get("add_ons_benefits", [])
-        if include_add_ons:
-            benefits.extend([b for b in add_ons])
         a_la_carte = cleaned_data.get("a_la_carte_benefits", [])
         if include_a_la_carte:
             benefits.extend([b for b in a_la_carte])
+        standalone = cleaned_data.get("standalone_benefits", [])
+        if include_standalone:
+            benefits.extend([b for b in standalone])
         return benefits
 
     def get_package(self):
         pkg = self.cleaned_data.get("package")
 
-        pkg_benefits = self.get_benefits(include_add_ons=True)
-        a_la_carte = self.cleaned_data.get("a_la_carte_benefits")
-        if not pkg_benefits and a_la_carte:  # a la carte only
+        pkg_benefits = self.get_benefits(include_a_la_carte=True)
+        standalone = self.cleaned_data.get("standalone_benefits")
+        if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
-                slug="a-la-carte-only",
-                defaults={"name": "A La Carte Only", "sponsorship_amount": 0},
+                slug="standalone-only",
+                defaults={"name": "Standalone Only", "sponsorship_amount": 0},
             )
 
         return pkg
@@ -134,16 +140,25 @@ class SponsorshipsBenefitsForm(forms.Form):
         - benefit with no capacity, except if soft
         """
         package = cleaned_data.get("package")
-        benefits = self.get_benefits(cleaned_data, include_add_ons=True)
+        benefits = self.get_benefits(cleaned_data, include_a_la_carte=True)
         a_la_carte = cleaned_data.get("a_la_carte_benefits")
+        standalone = cleaned_data.get("standalone_benefits")
 
-        if not benefits and not a_la_carte:
+        if not benefits and not standalone:
             raise forms.ValidationError(
                 _("You have to pick a minimum number of benefits.")
             )
         elif benefits and not package:
             raise forms.ValidationError(
                 _("You must pick a package to include the selected benefits.")
+            )
+        elif standalone and package:
+            raise forms.ValidationError(
+                _("Application with package cannot have standalone benefits.")
+            )
+        elif package and a_la_carte and not package.allow_a_la_carte:
+            raise forms.ValidationError(
+                _("Package does not accept a la carte benefits.")
             )
 
         benefits_ids = [b.id for b in benefits]
@@ -391,6 +406,9 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "package", "sponsorship_fee"]
+        widgets = {
+            'year': SPONSORSHIP_YEAR_SELECT,
+        }
 
     def clean(self):
         cleaned_data = super().clean()
@@ -443,8 +461,8 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
             self.instance.name = benefit.name
             self.instance.description = benefit.description
             self.instance.program = benefit.program
-            self.instance.added_by_user = self.instance.added_by_user or benefit.a_la_carte
-            self.instance.a_la_carte = benefit.a_la_carte
+            self.instance.added_by_user = self.instance.added_by_user or benefit.standalone
+            self.instance.standalone = benefit.standalone
 
         if commit:
             self.instance.save()
@@ -671,16 +689,63 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
 
     class Meta:
         model = SponsorshipBenefit
+        widgets = {
+            'year': SPONSORSHIP_YEAR_SELECT,
+        }
         fields = "__all__"
 
     def clean(self):
         cleaned_data = super().clean()
-        a_la_carte = cleaned_data.get("a_la_carte")
+        standalone = cleaned_data.get("standalone")
         packages = cleaned_data.get("packages")
 
-        # a la carte benefit cannot be associated with a package
-        if a_la_carte and packages:
-            error = "À la carte benefits must not belong to any package."
+        # standalone benefit cannot be associated with a package
+        if standalone and packages:
+            error = "Standalone benefits must not belong to any package."
             raise forms.ValidationError(error)
 
         return cleaned_data
+
+
+class CloneApplicationConfigForm(forms.Form):
+    from_year = forms.ChoiceField(
+        required=True,
+        help_text="From which year you want to clone the benefits and packages.",
+        choices=[]
+    )
+    target_year = forms.IntegerField(
+        required=True,
+        help_text="The year of the resulting new sponsorship application configuration."
+    )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
+        packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
+        choices = [(y, y) for y in sorted(set(benefits_years + packages_years), reverse=True) if y]
+        self.fields["from_year"].choices = choices
+
+    @property
+    def configured_years(self):
+        return [c[0] for c in self.fields["from_year"].choices]
+
+    def clean_target_year(self):
+        data = self.cleaned_data["target_year"]
+        if data > 2050:
+            raise forms.ValidationError("The target year can't be bigger than 2050.")
+        return data
+
+    def clean_from_year(self):
+        return int(self.cleaned_data["from_year"])
+
+    def clean(self):
+        from_year = self.cleaned_data.get("from_year")
+        target_year = self.cleaned_data.get("target_year")
+
+        if from_year and target_year:
+            if target_year < from_year:
+                raise forms.ValidationError("The target year must be greater the one used as source.")
+            elif target_year in self.configured_years:
+                raise forms.ValidationError(f"The year {target_year} already have a valid confguration.")
+
+        return self.cleaned_data

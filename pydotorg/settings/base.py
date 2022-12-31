@@ -202,6 +202,7 @@ INSTALLED_APPS = [
     'rest_framework.authtoken',
     'django_filters',
     'polymorphic',
+    'django_extensions',
 ]
 
 # Fixtures

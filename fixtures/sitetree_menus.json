@@ -2341,7 +2341,7 @@
     "fields": {
         "title": "Issue Tracker",
         "hint": "",
-        "url": "https://bugs.python.org/",
+        "url": "https://github.com/python/cpython/issues/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,

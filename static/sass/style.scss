@@ -2802,7 +2802,7 @@ $breakpoint-desktop: 1200px;
         align-items: baseline;
       }
 
-      .add-on-description {
+      .a-la-carte-description {
         text-align: left;
         padding-right: 1em;
       }
@@ -2817,6 +2817,8 @@ $breakpoint-desktop: 1200px;
       width: 218px;
       height: 47px;
 
+      font-weight: bold;
+      color: black !important;
       background: $yellow;
       box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
       border-radius: 20px;

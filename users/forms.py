@@ -9,6 +9,7 @@ class UserProfileForm(ModelForm):
     class Meta:
         model = User
         fields = [
+            'username',
             'first_name',
             'last_name',
             'email',
@@ -21,6 +22,17 @@ class UserProfileForm(ModelForm):
             'search_visibility': forms.RadioSelect,
             'email_privacy': forms.RadioSelect,
         }
+
+    def clean_username(self):
+        try:
+            user = User.objects.get_by_natural_key(self.cleaned_data.get('username'))
+        except User.MultipleObjectsReturned:
+            raise forms.ValidationError('A user with that username already exists.')
+        except User.DoesNotExist:
+            return self.cleaned_data.get('username')
+        if user == self.instance:
+            return self.cleaned_data.get('username')
+        raise forms.ValidationError('A user with that username already exists.')
 
     def clean_email(self):
         email = self.cleaned_data.get('email')
@@ -56,10 +68,6 @@ class MembershipForm(ModelForm):
         code_of_conduct = self.fields['psf_code_of_conduct']
         code_of_conduct.widget = forms.Select(choices=self.COC_CHOICES)
 
-        announcements = self.fields['psf_announcements']
-        announcements.widget = forms.CheckboxInput()
-        announcements.initial = False
-
     class Meta:
         model = Membership
         fields = [
@@ -71,7 +79,6 @@ class MembershipForm(ModelForm):
             'country',
             'postal_code',
             'psf_code_of_conduct',
-            'psf_announcements',
         ]
 
     def clean_psf_code_of_conduct(self):
@@ -93,4 +100,3 @@ class MembershipUpdateForm(MembershipForm):
         super().__init__(*args, **kwargs)
 
         del(self.fields['psf_code_of_conduct'])
-        del(self.fields['psf_announcements'])

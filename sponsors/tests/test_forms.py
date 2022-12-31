@@ -13,46 +13,70 @@ from sponsors.forms import (
     SponsorBenefit,
     Sponsorship,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm,
+    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm, CloneApplicationConfigForm,
 )
 from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage
+    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage, SponsorshipCurrentYear
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 
 
 class SponsorshipsBenefitsFormTests(TestCase):
     def setUp(self):
+        self.current_year = SponsorshipCurrentYear.get_year()
         self.psf = baker.make("sponsors.SponsorshipProgram", name="PSF")
         self.wk = baker.make("sponsors.SponsorshipProgram", name="Working Group")
         self.program_1_benefits = baker.make(
-            SponsorshipBenefit, program=self.psf, _quantity=3
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year
         )
         self.program_2_benefits = baker.make(
-            SponsorshipBenefit, program=self.wk, _quantity=5
+            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year
         )
-        self.package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        self.package = baker.make(
+            "sponsors.SponsorshipPackage", advertise=True, year=self.current_year
+        )
         self.package.benefits.add(*self.program_1_benefits)
         self.package.benefits.add(*self.program_2_benefits)
 
         # packages without associated packages
-        self.add_ons = baker.make(SponsorshipBenefit, program=self.psf, _quantity=2)
+        self.a_la_carte = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=self.current_year
+        )
 
-        # a la carte benefits
-        self.a_la_carte = baker.make(SponsorshipBenefit, program=self.psf, a_la_carte=True, _quantity=2)
+        # standalone benefits
+        self.standalone = baker.make(
+            SponsorshipBenefit, program=self.psf, standalone=True, _quantity=2, year=self.current_year
+        )
 
-    def test_specific_field_to_select_add_ons(self):
+    def test_specific_field_to_select_a_la_carte_by_year(self):
+        prev_year = self.current_year - 1
+        from_prev_year = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=2, year=prev_year
+        )
+        # current year by default
         form = SponsorshipsBenefitsForm()
-
-        choices = list(form.fields["add_ons_benefits"].choices)
-
-        self.assertEqual(len(self.add_ons), len(choices))
-        for benefit in self.add_ons:
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+        self.assertEqual(len(self.a_la_carte), len(choices))
+        for benefit in self.a_la_carte:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_benefits_organized_by_program(self):
-        form = SponsorshipsBenefitsForm()
+        form = SponsorshipsBenefitsForm(year=prev_year)
+        choices = list(form.fields["a_la_carte_benefits"].choices)
+        self.assertEqual(len(self.a_la_carte), len(choices))
+        for benefit in from_prev_year:
+            self.assertIn(benefit.id, [c[0] for c in choices])
 
+    def test_benefits_from_current_year_organized_by_program(self):
+        older_psf = baker.make(
+            SponsorshipBenefit, program=self.psf, _quantity=3, year=self.current_year - 1
+        )
+        older_wk = baker.make(
+            SponsorshipBenefit, program=self.wk, _quantity=5, year=self.current_year - 1
+        )
+        self.package.benefits.add(*older_psf)
+        self.package.benefits.add(*older_wk)
+
+        form = SponsorshipsBenefitsForm()
         field1, field2 = sorted(form.benefits_programs, key=lambda f: f.name)
 
         self.assertEqual("benefits_psf", field1.name)
@@ -69,18 +93,33 @@ class SponsorshipsBenefitsFormTests(TestCase):
         for benefit in self.program_2_benefits:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_specific_field_to_select_a_la_carte_benefits(self):
+    def test_specific_field_to_select_standalone_benefits_by_year(self):
+        prev_year = self.current_year - 1
+        # standalone benefits
+        prev_benefits = baker.make(
+            SponsorshipBenefit, program=self.psf, standalone=True, _quantity=2, year=prev_year
+        )
+
+        # Current year by default
         form = SponsorshipsBenefitsForm()
-
-        choices = list(form.fields["a_la_carte_benefits"].choices)
-
-        self.assertEqual(len(self.a_la_carte), len(choices))
-        for benefit in self.a_la_carte:
+        choices = list(form.fields["standalone_benefits"].choices)
+        self.assertEqual(len(self.standalone), len(choices))
+        for benefit in self.standalone:
             self.assertIn(benefit.id, [c[0] for c in choices])
 
-    def test_package_list_only_advertisable_ones(self):
-        ads_pkgs = baker.make('SponsorshipPackage', advertise=True, _quantity=2)
+        # Current year by default
+        form = SponsorshipsBenefitsForm(year=prev_year)
+        choices = list(form.fields["standalone_benefits"].choices)
+        self.assertEqual(len(self.standalone), len(choices))
+        for benefit in prev_benefits:
+            self.assertIn(benefit.id, [c[0] for c in choices])
+
+    def test_package_list_only_advertisable_ones_from_current_year(self):
+        ads_pkgs = baker.make(
+            'SponsorshipPackage', advertise=True, _quantity=2, year=self.current_year
+        )
         baker.make('SponsorshipPackage', advertise=False)
+        baker.make('SponsorshipPackage', advertise=False, year=self.current_year)
 
         form = SponsorshipsBenefitsForm()
         field = form.fields.get("package")
@@ -97,24 +136,65 @@ class SponsorshipsBenefitsFormTests(TestCase):
         )
         self.assertTrue(form.is_valid())
 
-    def test_validate_form_without_package_but_with_a_la_carte_benefits(self):
-        benefit = self.a_la_carte[0]
+    def test_validate_form_without_package_but_with_standalone_benefits(self):
+        benefit = self.standalone[0]
         form = SponsorshipsBenefitsForm(
-            data={"a_la_carte_benefits": [benefit.id]}
+            data={"standalone_benefits": [benefit.id]}
         )
         self.assertTrue(form.is_valid())
         self.assertEqual([], form.get_benefits())
-        self.assertEqual([benefit], form.get_benefits(include_a_la_carte=True))
+        self.assertEqual([benefit], form.get_benefits(include_standalone=True))
 
-    def test_should_not_validate_form_without_package_with_add_ons_and_a_la_carte_benefits(self):
+    def test_do_not_validate_form_with_package_and_standalone_benefits(self):
+        benefit = self.standalone[0]
         data = {
-            "a_la_carte_benefits": [self.a_la_carte[0]],
-            "add_ons_benefits": [self.add_ons[0]],
+            "standalone_benefits": [benefit.id],
+            "package": self.package.id,
+            "benefits_psf": [self.program_1_benefits[0].id],
+        }
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Application with package cannot have standalone benefits.",
+            form.errors["__all__"]
+        )
+
+    def test_should_not_validate_form_without_package_with_a_la_carte_benefits(self):
+        data = {
+            "a_la_carte_benefits": [self.a_la_carte[0].id],
         }
 
         form = SponsorshipsBenefitsForm(data=data)
 
         self.assertFalse(form.is_valid())
+        self.assertIn(
+            "You must pick a package to include the selected benefits.",
+            form.errors["__all__"]
+        )
+
+        data.update({
+            "package": self.package.id,
+        })
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid())
+
+    def test_do_not_validate_package_package_with_disabled_a_la_carte_benefits(self):
+        self.package.allow_a_la_carte = False
+        self.package.save()
+        data = {
+            "package": self.package.id,
+            "benefits_psf": [self.program_1_benefits[0].id],
+            "a_la_carte_benefits": [self.a_la_carte[0].id],
+        }
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn(
+            "Package does not accept a la carte benefits.",
+            form.errors["__all__"]
+        )
+        data.pop("a_la_carte_benefits")
+        form = SponsorshipsBenefitsForm(data=data)
+        self.assertTrue(form.is_valid(), form.errors)
 
     def test_benefits_conflicts_helper_property(self):
         benefit_1, benefit_2 = baker.make("sponsors.SponsorshipBenefit", _quantity=2)
@@ -140,7 +220,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
             self.assertEqual(map[b.id], [benefit_2.id])
 
     def test_invalid_form_if_any_conflict(self):
-        benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk)
+        benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk, year=self.current_year)
         benefit_1.conflicts.add(*self.program_1_benefits)
         self.package.benefits.add(benefit_1)
 
@@ -160,7 +240,7 @@ class SponsorshipsBenefitsFormTests(TestCase):
         benefit = self.program_1_benefits[0]
 
         data = {"benefits_psf": [benefit.id],
-                "add_ons_benefits": [b.id for b in self.add_ons],
+                "a_la_carte_benefits": [b.id for b in self.a_la_carte],
                 "package": self.package.id}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
@@ -169,11 +249,11 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertEqual(1, len(benefits))
         self.assertIn(benefit, benefits)
 
-        benefits = form.get_benefits(include_add_ons=True)
+        benefits = form.get_benefits(include_a_la_carte=True)
         self.assertEqual(3, len(benefits))
         self.assertIn(benefit, benefits)
-        for add_on in self.add_ons:
-            self.assertIn(add_on, benefits)
+        for a_la_carte in self.a_la_carte:
+            self.assertIn(a_la_carte, benefits)
 
     def test_package_only_benefit_without_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)
@@ -189,12 +269,12 @@ class SponsorshipsBenefitsFormTests(TestCase):
 
     def test_package_only_benefit_with_wrong_package_should_not_validate(self):
         SponsorshipBenefit.objects.all().update(package_only=True)
-        package = baker.make("sponsors.SponsorshipPackage", advertise=True)
+        package = baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year)
         package.benefits.add(*SponsorshipBenefit.objects.all())
 
         data = {
             "benefits_psf": [self.program_1_benefits[0]],
-            "package": baker.make("sponsors.SponsorshipPackage", advertise=True).id,  # other package
+            "package": baker.make("sponsors.SponsorshipPackage", advertise=True, year=self.current_year).id,  # other package
         }
 
         form = SponsorshipsBenefitsForm(data=data)
@@ -237,23 +317,23 @@ class SponsorshipsBenefitsFormTests(TestCase):
         self.assertTrue(form.is_valid())
         self.assertEqual(self.package, form.get_package())
 
-    def test_get_package_get_or_create_a_la_carte_only_package(self):
-        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+    def test_get_package_get_or_create_standalone_only_package(self):
+        data = {"standalone_benefits": [self.standalone[0].id]}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertEqual(1, SponsorshipPackage.objects.count())
 
         # should create package if it doesn't exist yet
         package = form.get_package()
-        self.assertEqual("A La Carte Only", package.name)
-        self.assertEqual("a-la-carte-only", package.slug)
+        self.assertEqual("Standalone Only", package.name)
+        self.assertEqual("standalone-only", package.slug)
         self.assertEqual(175, package.logo_dimension)
         self.assertEqual(0, package.sponsorship_amount)
         self.assertFalse(package.advertise)
         self.assertEqual(2, SponsorshipPackage.objects.count())
 
         # re-use previously created package for subsequent applications
-        data = {"a_la_carte_benefits": [self.a_la_carte[0].id]}
+        data = {"standalone_benefits": [self.standalone[0].id]}
         form = SponsorshipsBenefitsForm(data=data)
         self.assertTrue(form.is_valid())
         self.assertEqual(package, form.get_package())
@@ -511,7 +591,7 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
             sponsorship=self.sponsorship,
             sponsorship_benefit=self.benefit,
         )
-        new_benefit = baker.make(SponsorshipBenefit, a_la_carte=True)
+        new_benefit = baker.make(SponsorshipBenefit, standalone=True)
         self.data["sponsorship_benefit"] = new_benefit.pk
 
         form = SponsorBenefitAdminInlineForm(data=self.data, instance=sponsor_benefit)
@@ -527,7 +607,7 @@ class SponsorBenefitAdminInlineFormTests(TestCase):
         self.assertEqual(sponsor_benefit.program, new_benefit.program)
         self.assertEqual(sponsor_benefit.benefit_internal_value, 200)
         self.assertTrue(sponsor_benefit.added_by_user)
-        self.assertTrue(sponsor_benefit.a_la_carte)
+        self.assertTrue(sponsor_benefit.standalone)
 
     def test_do_not_update_sponsorship_if_it_doesn_change(self):
         sponsor_benefit = baker.make(
@@ -747,13 +827,13 @@ class SponsorshipBenefitAdminFormTests(TestCase):
         self.program = baker.make("sponsors.SponsorshipProgram")
 
     def test_required_fields(self):
-        required = {"name", "program"}
+        required = {"name", "program", "year"}
         form = SponsorshipBenefitAdminForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(set(form.errors), required)
 
-    def test_a_la_carte_benefit_cannot_have_package(self):
-        data = {"name": "benefit", "program": self.program.pk, "a_la_carte": True}
+    def test_standalone_benefit_cannot_have_package(self):
+        data = {"name": "benefit", "program": self.program.pk, "standalone": True, "year": 2023}
         form = SponsorshipBenefitAdminForm(data=data)
         self.assertTrue(form.is_valid())
 
@@ -762,3 +842,53 @@ class SponsorshipBenefitAdminFormTests(TestCase):
         form = SponsorshipBenefitAdminForm(data=data)
         self.assertFalse(form.is_valid())
         self.assertIn("__all__", form.errors)
+
+
+class CloneApplicationConfigFormTests(TestCase):
+
+    def setUp(self):
+        baker.make(SponsorshipBenefit, year=2022)
+        baker.make(SponsorshipPackage, year=2023)
+
+    def test_required_fields(self):
+        req_fields = {"from_year", "target_year"}
+        form = CloneApplicationConfigForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(req_fields, set(form.errors))
+
+    def test_from_year_should_list_configured_years_as_possible_choices(self):
+        expected = [(2023, 2023), (2022, 2022)]
+        form = CloneApplicationConfigForm()
+        from_years = form.fields["from_year"].choices
+        self.assertEqual(expected, from_years)
+        self.assertEqual([2023, 2022], form.configured_years)
+
+    def test_target_must_be_greater_than_from_year(self):
+        # lower
+        data = {"from_year": 2023, "target_year": 2020}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+        # greater
+        data = {"from_year": 2023, "target_year": 2024}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertTrue(form.is_valid())
+        self.assertEqual(2023, form.cleaned_data["from_year"])
+        self.assertEqual(2024, form.cleaned_data["target_year"])
+
+    def test_target_cannot_be_an_already_configured_year(self):
+        # the same
+        data = {"from_year": 2022, "target_year": 2023}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("__all__", form.errors)
+
+    def test_target_year_has_2050_as_an_upper_boundary(self):
+        data = {"from_year": 2023, "target_year": 2050}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertTrue(form.is_valid())
+
+        data = {"from_year": 2023, "target_year": 2051}
+        form = CloneApplicationConfigForm(data=data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("target_year", form.errors)
