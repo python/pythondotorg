@@ -2,7 +2,7 @@
 {% load boxes %}
 {% load honeypot %}
 
-{% block page_title %}Edit Membership | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}Edit Basic Membership | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="psf signup default-page"{% endblock %}
 
@@ -13,10 +13,14 @@
 
 <article class="text">
     {% if request.user.has_membership %}
-    <h1 class="default-title">Edit your PSF Membership</h1>
+    <h1 class="default-title">Edit your PSF Basic Membership</h1>
     {% else %}
-    <h1 class="default-title">Register to become a PSF Member</h1>
+    <h1 class="default-title">Register to become a PSF Basic Member</h1>
     {% endif %}
+
+    <div class="info">
+      <p>For more information and to sign up for other kinds of PSF membership, visit our <a href="https://www.python.org/psf/membership/">Membership Page</a>.</p>
+    </div>
 
     {% if form.errors %}
     <div class="user-feedback level-error">
@@ -104,12 +108,7 @@
           class="deletion-form"
           onsubmit="return confirm('Are you sure?');">
         {% csrf_token %}
-        <p>
-            <label for="id_delete_membership">
-                You can delete your PSF membership if you don't want to get emails from the PSF.
-            </label>
-            <button type="submit" id="id_delete_membership">Delete your PSF membership</button>
-        </p>
+        <button type="submit" id="id_delete_membership">Delete your PSF Basic Membership</button>
     </form>
     {% endif %}
 
