@@ -1,12 +1,9 @@
-from model_bakery import baker
-from django.test import TestCase
-from unittest.mock import patch, Mock
+from unittest.mock import patch
 
-from companies.models import Company
+from django.test import TestCase
+from model_bakery import baker
 
 from ..models import (
-    Sponsor,
-    SponsorBenefit,
     SponsorshipBenefit,
     TieredBenefitConfiguration,
 )

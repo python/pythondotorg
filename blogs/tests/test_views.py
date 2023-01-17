@@ -1,10 +1,12 @@
 from django.core.management import call_command
-from django.urls import reverse
 from django.test import TestCase
-
-from ..models import BlogEntry, Feed
+from django.urls import reverse
 
 from .utils import get_test_rss_path
+from ..models import (
+    BlogEntry,
+    Feed,
+)
 
 
 class BlogViewTest(TestCase):

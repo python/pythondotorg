@@ -1,7 +1,10 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from .models import User, Membership
+from .models import (
+    Membership,
+    User,
+)
 
 
 class UserFactory(DjangoModelFactory):

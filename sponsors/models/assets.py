@@ -6,11 +6,13 @@ import uuid
 from enum import Enum
 from pathlib import Path
 
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.fields.files import ImageFieldFile, FileField
-from polymorphic.managers import PolymorphicManager
+from django.db import models
+from django.db.models.fields.files import (
+    FileField,
+    ImageFieldFile,
+)
 from polymorphic.models import PolymorphicModel
 
 from sponsors.models.managers import GenericAssetQuerySet

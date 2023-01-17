@@ -1,9 +1,11 @@
 import factory
 from factory.django import DjangoModelFactory
-
 from faker.providers import BaseProvider
 
-from .models import StoryCategory, Story
+from .models import (
+    Story,
+    StoryCategory,
+)
 
 
 class StoryProvider(BaseProvider):
@@ -20,6 +22,7 @@ class StoryProvider(BaseProvider):
 
     def story_category(self):
         return self.random_element(self.story_categories)
+
 
 factory.Faker.add_provider(StoryProvider)
 

@@ -1,7 +1,7 @@
-from .base import BasePageTests
-
-from django.contrib.sites.models import Site
 from django.contrib.redirects.models import Redirect
+from django.contrib.sites.models import Site
+
+from .base import BasePageTests
 
 
 class PageViewTests(BasePageTests):

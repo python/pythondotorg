@@ -1,22 +1,32 @@
-from model_bakery import baker
-
 from django.conf import settings
 from django.test import TestCase
+from model_bakery import baker
 
 from sponsors.forms import (
-    SponsorshipsBenefitsForm,
-    SponsorshipApplicationForm,
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
     Sponsor,
+    SponsorBenefit,
+    SponsorBenefitAdminInlineForm,
     SponsorContactForm,
     SponsorContactFormSet,
-    SponsorBenefitAdminInlineForm,
-    SponsorBenefit,
+    SponsorRequiredAssetsForm,
     Sponsorship,
+    SponsorshipApplicationForm,
+    SponsorshipBenefitAdminForm,
+    SponsorshipsBenefitsForm,
     SponsorshipsListForm,
-    SendSponsorshipNotificationForm, SponsorRequiredAssetsForm, SponsorshipBenefitAdminForm, CloneApplicationConfigForm,
 )
-from sponsors.models import SponsorshipBenefit, SponsorContact, RequiredTextAssetConfiguration, \
-    RequiredImgAssetConfiguration, ImgAsset, RequiredTextAsset, SponsorshipPackage, SponsorshipCurrentYear
+from sponsors.models import (
+    ImgAsset,
+    RequiredImgAssetConfiguration,
+    RequiredTextAsset,
+    RequiredTextAssetConfiguration,
+    SponsorContact,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+)
 from .utils import get_static_image_file_as_upload
 from ..models.enums import AssetsRelatedTo
 
@@ -115,7 +125,8 @@ class SponsorshipsBenefitsFormTests(TestCase):
             self.assertIn(benefit.id, [c[0] for c in choices])
 
     def test_package_list_only_advertisable_ones_from_current_year(self):
-        ads_pkgs = baker.make(
+        # TODO: Refactor
+        baker.make(
             'SponsorshipPackage', advertise=True, _quantity=2, year=self.current_year
         )
         baker.make('SponsorshipPackage', advertise=False)
@@ -700,7 +711,7 @@ class SendSponsorshipNotificationFormTests(TestCase):
         }
 
     def test_required_fields(self):
-        required_fields = set(["__all__", "contact_types"])
+        required_fields = {"__all__", "contact_types"}
         form = SendSponsorshipNotificationForm({})
         self.assertFalse(form.is_valid())
         self.assertEqual(required_fields, set(form.errors))
@@ -772,8 +783,9 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.assertTrue(form.has_input)
 
     def test_build_form_fields_from_specific_list_of_required_assets(self):
+        # TODO: Refactor
         text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
-        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[1])
+        self.required_img_cfg.create_benefit_feature(self.benefits[1])
 
         form = SponsorRequiredAssetsForm(instance=self.sponsorship, required_assets_ids=[text_asset.pk])
         fields = dict(form.fields)
@@ -804,8 +816,9 @@ class SponsorRequiredAssetsFormTest(TestCase):
         self.assertEqual(expected_url, img_asset.value.url)
 
     def test_load_initial_from_assets_and_force_field_if_previous_Data(self):
-        img_asset = self.required_img_cfg.create_benefit_feature(self.benefits[0])
-        text_asset = self.required_text_cfg.create_benefit_feature(self.benefits[0])
+        # TODO: Refactor
+        self.required_img_cfg.create_benefit_feature(self.benefits[0])
+        self.required_text_cfg.create_benefit_feature(self.benefits[0])
         files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}
         form = SponsorRequiredAssetsForm(instance=self.sponsorship, data={"text_input": "data"}, files=files)
         self.assertTrue(form.is_valid())

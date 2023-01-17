@@ -1,7 +1,7 @@
 import os
-from dj_database_url import parse as dj_database_url_parser
-from decouple import config
 
+from decouple import config
+from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
 ### Basic config
@@ -45,6 +45,7 @@ DATE_FORMAT = 'Y-m-d'
 
 MEDIA_ROOT = os.path.join(BASE, 'media')
 MEDIA_URL = '/media/'
+MEDIAFILES_LOCATION = 'media'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -190,10 +191,10 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-    #'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.twitter',
+    # 'allauth.socialaccount.providers.facebook',
+    # 'allauth.socialaccount.providers.github',
+    # 'allauth.socialaccount.providers.openid',
+    # 'allauth.socialaccount.providers.twitter',
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
@@ -253,8 +254,7 @@ PEP_REPO_PATH = None
 PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 ### Fastly ###
-FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
-                        # be purged on save
+FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to be purged on save
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90
@@ -277,7 +277,7 @@ DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import PIPELINE
+from .pipeline import PIPELINE  # noqa
 
 ### contrib.messages
 

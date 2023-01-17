@@ -1,8 +1,13 @@
-from django.template.defaultfilters import truncatewords_html, striptags
-
+from django.template.defaultfilters import (
+    striptags,
+    truncatewords_html,
+)
 from haystack import indexes
 
-from .models import Event, Calendar
+from .models import (
+    Calendar,
+    Event,
+)
 
 
 class CalendarIndex(indexes.SearchIndex, indexes.Indexable):

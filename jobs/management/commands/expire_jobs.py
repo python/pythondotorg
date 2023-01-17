@@ -1,7 +1,7 @@
 import datetime
 
-from django.core.management import BaseCommand
 from django.conf import settings
+from django.core.management import BaseCommand
 from django.utils import timezone
 
 from jobs.models import Job

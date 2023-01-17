@@ -1,10 +1,13 @@
 import datetime
 
-from django.utils import timezone
 from django.test import TestCase
+from django.utils import timezone
 
 from ..utils import (
-    seconds_resolution, minutes_resolution, timedelta_nice_repr, timedelta_parse,
+    minutes_resolution,
+    seconds_resolution,
+    timedelta_nice_repr,
+    timedelta_parse,
 )
 
 

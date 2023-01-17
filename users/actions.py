@@ -26,4 +26,5 @@ def export_csv(modeladmin, request, queryset):
         })
     return response
 
+
 export_csv.short_description = 'Export CSV'

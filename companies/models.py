@@ -5,7 +5,6 @@ from markupfield.fields import MarkupField
 
 from cms.models import NameSlugModel
 
-
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
 

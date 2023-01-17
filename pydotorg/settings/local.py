@@ -1,5 +1,6 @@
-from .base import *
 import os
+
+from .base import *  # noqa: F403
 
 DEBUG = True
 
@@ -12,14 +13,14 @@ INTERNAL_IPS = ['127.0.0.1']
 PYTHON_ORG_CONTENT_SVN_PATH = ''
 
 DATABASES = {
-    'default': config(
+    'default': config(  # noqa: F405
         'DATABASE_URL',
         default='postgres:///pythondotorg',
-        cast=dj_database_url_parser
+        cast=dj_database_url_parser  # noqa: F405
     )
 }
 
-HAYSTACK_SEARCHBOX_SSL_URL = config(
+HAYSTACK_SEARCHBOX_SSL_URL = config(  # noqa: F405
     'SEARCHBOX_SSL_URL',
     default='http://127.0.0.1:9200/'
 )
@@ -36,12 +37,12 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Set the local pep repository path to fetch PEPs from,
 # or none to fallback to the tarball specified by PEP_ARTIFACT_URL.
-PEP_REPO_PATH = config('PEP_REPO_PATH', default=None)  # directory path or None
+PEP_REPO_PATH = config('PEP_REPO_PATH', default=None)  # directory path or None  # noqa: F405
 
 # Set the path to where to fetch PEP artifacts from.
 # The value can be a local path or a remote URL.
 # Ignored if PEP_REPO_PATH is set.
-PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')
+PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')  # noqa: F405
 
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
 # have a sass compiler installed at all during local development if you aren't
@@ -54,11 +55,11 @@ PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')
 # yui-compressor.
 # PIPELINE['YUI_BINARY'] = '/usr/bin/java -Xss200048k -jar /usr/share/yui-compressor/yui-compressor.jar'
 
-INSTALLED_APPS += [
+INSTALLED_APPS += [  # noqa: F405
     'debug_toolbar',
 ]
 
-MIDDLEWARE += [
+MIDDLEWARE += [  # noqa: F405
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -69,6 +70,6 @@ CACHES = {
     }
 }
 
-REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] += (
+REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] += (  # noqa: F405
     'rest_framework.renderers.BrowsableAPIRenderer',
 )

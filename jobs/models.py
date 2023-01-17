@@ -1,25 +1,31 @@
 import datetime
 
 from django.conf import settings
-from django.urls import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.defaultfilters import slugify
+from django.urls import reverse
 from django.utils import timezone
-
 from markupfield.fields import MarkupField
 
-from cms.models import ContentManageable, NameSlugModel
-from fastly.utils import purge_url
-
-from users.models import User
-
-from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
-from .signals import (
-    job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted
+from cms.models import (
+    ContentManageable,
+    NameSlugModel,
 )
-
+from fastly.utils import purge_url
+from users.models import User
+from .managers import (
+    JobCategoryQuerySet,
+    JobQuerySet,
+    JobTypeQuerySet,
+)
+from .signals import (
+    comment_was_posted,
+    job_was_approved,
+    job_was_rejected,
+    job_was_submitted,
+)
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -222,7 +228,7 @@ class Job(ContentManageable):
     @property
     def display_location(self):
         location_parts = [part for part in (self.city, self.region, self.country)
-                            if part]
+                          if part]
         location_str = ', '.join(location_parts)
         return location_str
 

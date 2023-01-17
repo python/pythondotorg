@@ -23,4 +23,3 @@ def feed_list(slug, limit=10):
     """
     return BlogEntry.objects.filter(
         feed__feedaggregate__slug=slug).order_by('-pub_date')[:limit]
-

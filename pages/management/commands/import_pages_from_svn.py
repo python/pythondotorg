@@ -1,15 +1,17 @@
+import os
 import re
 import shutil
-import os
 import traceback
 
-from django.core.management.base import BaseCommand
+from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
+from django.core.management.base import BaseCommand
 
-from bs4 import BeautifulSoup
-
-from ...models import Page, Image
+from ...models import (
+    Image,
+    Page,
+)
 from ...parser import parse_page
 
 
@@ -49,7 +51,7 @@ class Command(BaseCommand):
             pass
         try:
             shutil.copyfile(src, dst)
-        except Exception as e:
+        except Exception:  # noqa
             pass
 
     def save_images(self, content_path, page):
@@ -77,7 +79,7 @@ class Command(BaseCommand):
             raise ImproperlyConfigured("PYTHON_ORG_CONTENT_SVN_PATH not defined in settings")
 
         matches = []
-        for root, dirnames, filenames in os.walk(self.SVN_REPO_PATH):
+        for root, __dirnames, filenames in os.walk(self.SVN_REPO_PATH):
             for filename in filenames:
                 if re.match(r'(content\.(ht|rst)|body\.html)$', filename):
                     matches.append(os.path.join(root, filename))
@@ -91,7 +93,7 @@ class Command(BaseCommand):
 
             try:
                 data = parse_page(os.path.dirname(match))
-            except Exception as e:
+            except Exception:  # noqa
                 print(f"Unable to parse {match}")
                 traceback.print_exc()
                 continue
@@ -107,7 +109,7 @@ class Command(BaseCommand):
 
                 page_obj, _ = Page.objects.get_or_create(path=path, defaults=defaults)
                 self.save_images(path, page_obj)
-            except Exception as e:
+            except Exception:  # noqa
                 print(f"Unable to create Page object for {match}")
                 traceback.print_exc()
                 continue

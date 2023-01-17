@@ -1,17 +1,36 @@
-from rest_framework import status, viewsets
+from rest_framework import (
+    status,
+    viewsets,
+)
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
-
 from tastypie import fields
-from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.constants import (
+    ALL,
+    ALL_WITH_RELATIONS,
+)
 
 from pages.api import PageResource
-from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
-from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
-
-from .models import OS, Release, ReleaseFile
-from .serializers import OSSerializer, ReleaseSerializer, ReleaseFileSerializer
+from pydotorg.drf import (
+    BaseAPIViewSet,
+    BaseFilterSet,
+    IsStaffOrReadOnly,
+)
+from pydotorg.resources import (
+    GenericResource,
+    OnlyPublishedAuthorization,
+)
+from .models import (
+    OS,
+    Release,
+    ReleaseFile,
+)
+from .serializers import (
+    OSSerializer,
+    ReleaseFileSerializer,
+    ReleaseSerializer,
+)
 
 
 class OSResource(GenericResource):

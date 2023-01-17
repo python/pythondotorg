@@ -1,6 +1,7 @@
-from django.urls import reverse
-from django.shortcuts import render
 from urllib.parse import urljoin
+
+from django.shortcuts import render
+from django.urls import reverse
 
 LEGACY_PYTHON_DOMAIN = 'http://legacy.python.org'
 PYPI_URL = 'https://pypi.org/'

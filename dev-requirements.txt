@@ -1,4 +1,5 @@
 -r base-requirements.txt
+-r prod-requirements.txt
 
 # Required for running tests
 
@@ -13,3 +14,5 @@ django-debug-toolbar==3.2.1
 coverage
 ddt
 model-bakery==1.4.0
+flake8
+pre-commit

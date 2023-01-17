@@ -1,14 +1,11 @@
 from django.contrib.postgres.fields import JSONField
-from django.urls import reverse
 from django.db import models
+from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-
 from .managers import PostQuerySet
-
 
 DEFAULT_MARKUP_TYPE = 'html'
 

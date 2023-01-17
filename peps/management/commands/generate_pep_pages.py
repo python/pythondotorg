@@ -1,19 +1,23 @@
-import re
 import os
-
+import re
 from contextlib import ExitStack
 from tarfile import TarFile
-from tempfile import TemporaryDirectory, TemporaryFile
+from tempfile import (
+    TemporaryDirectory,
+    TemporaryFile,
+)
 
 import requests
-
-from django.core.management import BaseCommand
-from django.conf import settings
-
 from dateutil.parser import parse as parsedate
+from django.conf import settings
+from django.core.management import BaseCommand
 
 from peps.converters import (
-    get_pep0_page, get_pep_page, add_pep_image, get_peps_rss, get_peps_last_updated
+    add_pep_image,
+    get_pep0_page,
+    get_pep_page,
+    get_peps_last_updated,
+    get_peps_rss,
 )
 
 pep_number_re = re.compile(r'pep-(\d+)')

@@ -1,12 +1,15 @@
+import datetime
 import unittest
 from unittest import mock
 
-from django.template import Template, Context
+from django.template import (
+    Context,
+    Template,
+)
 from django.test import TestCase
 
 from .admin import ContentManageableModelAdmin
 from .views import legacy_path
-import datetime
 
 
 class ContentManageableAdminTests(unittest.TestCase):
@@ -48,7 +51,10 @@ class ContentManageableAdminTests(unittest.TestCase):
         self.assertEqual(
             fieldsets,
             [(None, {'fields': ['foo']}),
-             ('CMS metadata', {'fields': [('creator', 'created'), ('last_modified_by', 'updated')], 'classes': ('collapse',)})]
+             ('CMS metadata', {
+                 'fields': [('creator', 'created'), ('last_modified_by', 'updated')],
+                 'classes': ('collapse',)
+             })]
         )
 
     def test_save_model(self):
@@ -56,14 +62,22 @@ class ContentManageableAdminTests(unittest.TestCase):
         request = mock.Mock()
         obj = mock.Mock()
         admin.save_model(request=request, obj=obj, form=None, change=False)
-        self.assertEqual(obj.creator, request.user, "save_model didn't set obj.creator to request.user")
+        self.assertEqual(
+            obj.creator,
+            request.user,
+            "save_model didn't set obj.creator to request.user"
+        )
 
     def test_update_model(self):
         admin = self.make_admin()
         request = mock.Mock()
         obj = mock.Mock()
         admin.save_model(request=request, obj=obj, form=None, change=True)
-        self.assertEqual(obj.last_modified_by, request.user, "save_model didn't set obj.last_modified_by to request.user")
+        self.assertEqual(
+            obj.last_modified_by,
+            request.user,
+            "save_model didn't set obj.last_modified_by to request.user"
+        )
 
 
 class TemplateTagsTest(unittest.TestCase):
@@ -71,7 +85,14 @@ class TemplateTagsTest(unittest.TestCase):
         now = datetime.datetime(2014, 1, 1, 12, 0)
         template = Template("{% load cms %}{% iso_time_tag now %}")
         rendered = template.render(Context({'now': now}))
-        self.assertIn('<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>', rendered)
+        expected = (
+            '<time datetime="2014-01-01T12:00:00">'
+            '<span class="say-no-more">2014-</span>01-01</time>'
+        )
+        self.assertIn(
+            expected,
+            rendered
+        )
 
 
 class Test404(TestCase):

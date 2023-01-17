@@ -1,19 +1,21 @@
-import functools
 import datetime
-import re
 import os
+import re
 
 from bs4 import BeautifulSoup
-
-from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
 from django.core.files import File
 from django.db.models import Max
 
-from pages.models import Page, Image
+from pages.models import (
+    Image,
+    Page,
+)
 
 PEP_TEMPLATE = 'pages/pep-page.html'
-pep_url = lambda num: f'dev/peps/pep-{num}/'
+
+
+def pep_url(num):
+    return f'dev/peps/pep-{num}/'
 
 
 def get_peps_last_updated():
@@ -76,7 +78,7 @@ def fix_headers(soup, data):
             if t.next_sibling.text == '':
                 t.parent.extract()
         if 'Last-Modified:' in t.text:
-            if '$Date$'in t.next_sibling.text:
+            if '$Date$' in t.next_sibling.text:
                 t.parent.extract()
             if t.next_sibling.text == '':
                 t.parent.extract()

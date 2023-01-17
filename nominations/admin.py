@@ -1,8 +1,11 @@
 from django.contrib import admin
-
 from django.db.models.functions import Lower
 
-from nominations.models import Election, Nominee, Nomination
+from nominations.models import (
+    Election,
+    Nomination,
+    Nominee,
+)
 
 
 @admin.register(Election)

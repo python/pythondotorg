@@ -1,14 +1,13 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser, UserManager
-from django.urls import reverse
+from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
-
 from markupfield.fields import MarkupField
-from tastypie.models import create_api_key
 from rest_framework.authtoken.models import Token
+from tastypie.models import create_api_key
 
 from .managers import UserManager
 
@@ -17,7 +16,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
 class CustomUserManager(UserManager):
     def get_by_natural_key(self, username):
-        case_insensitive_username_field = '{}__iexact'.format(self.model.USERNAME_FIELD)
+        case_insensitive_username_field = f'{self.model.USERNAME_FIELD}__iexact'
         return self.get(**{case_insensitive_username_field: username})
 
 
@@ -40,7 +39,11 @@ class User(AbstractUser):
         (EMAIL_PRIVATE, 'Only logged-in users can see my e-mail address'),
         (EMAIL_NEVER, 'No one can ever see my e-mail address'),
     )
-    email_privacy = models.IntegerField('E-mail privacy', choices=EMAIL_CHOICES, default=EMAIL_NEVER)
+    email_privacy = models.IntegerField(
+        'E-mail privacy',
+        choices=EMAIL_CHOICES,
+        default=EMAIL_NEVER
+    )
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
@@ -100,8 +103,16 @@ class Membership(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
 
     # PSF fields
-    psf_code_of_conduct = models.BooleanField('I agree to the PSF Code of Conduct', blank=True, null=True)
-    psf_announcements = models.BooleanField('I would like to receive occasional PSF email announcements', blank=True, null=True)
+    psf_code_of_conduct = models.BooleanField(
+        'I agree to the PSF Code of Conduct',
+        blank=True,
+        null=True
+    )
+    psf_announcements = models.BooleanField(
+        'I would like to receive occasional PSF email announcements',
+        blank=True,
+        null=True
+    )
 
     # Voting
     votes = models.BooleanField("I would like to be a PSF Voting Member", default=False)

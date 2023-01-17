@@ -1,15 +1,20 @@
 import math
-
 from collections import OrderedDict
+
 from django import template
-from django.conf import settings
-from django.core.cache import cache
 
-from ..models import Sponsorship, SponsorshipPackage, TieredBenefitConfiguration
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
-
+from sponsors.models.enums import (
+    LogoPlacementChoices,
+    PublisherChoices,
+)
+from ..models import (
+    Sponsorship,
+    SponsorshipPackage,
+    TieredBenefitConfiguration,
+)
 
 register = template.Library()
+
 
 @register.inclusion_tag("sponsors/partials/full_sponsorship.txt")
 def full_sponsorship(sponsorship, display_fee=False):

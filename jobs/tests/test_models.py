@@ -1,11 +1,14 @@
 import datetime
 
-from django.core import mail
 from django.test import TestCase
 from django.utils import timezone
 
 from .. import factories
-from ..models import Job, JobType, JobCategory
+from ..models import (
+    Job,
+    JobCategory,
+    JobType,
+)
 
 
 class JobsModelsTests(TestCase):

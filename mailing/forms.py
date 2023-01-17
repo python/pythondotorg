@@ -1,5 +1,9 @@
 from django import forms
-from django.template import Template, Context, TemplateSyntaxError
+from django.template import (
+    Context,
+    Template,
+    TemplateSyntaxError,
+)
 
 from mailing.models import BaseEmailTemplate
 

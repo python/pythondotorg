@@ -8,11 +8,13 @@ successstories/migrations/0006_auto_20170726_0824.py:
 """
 
 import datetime
-
 from xml.etree.ElementTree import fromstring
 
+from django.utils.timezone import (
+    get_current_timezone,
+    make_aware,
+)
 from docutils.core import publish_doctree
-from django.utils.timezone import make_aware, get_current_timezone
 
 
 def convert_to_datetime(string):

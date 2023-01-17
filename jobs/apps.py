@@ -7,4 +7,4 @@ class JobsAppConfig(AppConfig):
     verbose_name = 'Jobs Application'
 
     def ready(self):
-        import jobs.listeners
+        import jobs.listeners  # noqa: F401

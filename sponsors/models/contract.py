@@ -12,8 +12,8 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 
 from sponsors.exceptions import InvalidStatusException
-from sponsors.utils import file_from_storage
 from sponsors.models.sponsorship import Sponsorship
+from sponsors.utils import file_from_storage
 
 
 class LegalClause(OrderedModel):

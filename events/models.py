@@ -1,22 +1,32 @@
 import datetime
-from dateutil.rrule import rrule, YEARLY, MONTHLY, WEEKLY, DAILY
 from operator import itemgetter
 
+from dateutil.rrule import (
+    DAILY,
+    MONTHLY,
+    WEEKLY,
+    YEARLY,
+    rrule,
+)
 from django.conf import settings
-from django.urls import reverse
 from django.db import models
 from django.db.models import Q
 from django.template.defaultfilters import date
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-
-from cms.models import ContentManageable, NameSlugModel
-
 from markupfield.fields import MarkupField
 
+from cms.models import (
+    ContentManageable,
+    NameSlugModel,
+)
 from .utils import (
-    minutes_resolution, convert_dt_to_aware, timedelta_nice_repr, timedelta_parse,
+    convert_dt_to_aware,
+    minutes_resolution,
+    timedelta_nice_repr,
+    timedelta_parse,
 )
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -284,7 +294,10 @@ class RecurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return f'{self.event.title} every {timedelta_nice_repr(self.interval)} since {date(self.dt_start.strftime, strftime)}'
+        return (
+            f'{self.event.title} every {timedelta_nice_repr(self.interval)} '
+            f'since {date(self.dt_start.strftime, strftime)}'
+        )
 
     def to_rrule(self):
         return rrule(

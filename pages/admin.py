@@ -1,7 +1,11 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
-from .models import Page, Image, DocumentFile
+from .models import (
+    DocumentFile,
+    Image,
+    Page,
+)
 
 
 class ImageInlineAdmin(admin.StackedInline):
@@ -48,7 +52,20 @@ class PageAdmin(ContentManageableModelAdmin):
     list_filter = [PagePathFilter, 'is_published']
     inlines = [ImageInlineAdmin, DocumentFileInlineAdmin]
     fieldsets = [
-        (None, {'fields': ('title', 'keywords', 'description', 'path', 'content', 'content_markup_type', 'is_published')}),
-        ('Advanced options', {'classes': ('collapse',), 'fields': ('template_name',)}),
+        (None, {
+            'fields': (
+                'title',
+                'keywords',
+                'description',
+                'path',
+                'content',
+                'content_markup_type',
+                'is_published'
+            )
+        }),
+        ('Advanced options', {
+            'classes': ('collapse',),
+            'fields': ('template_name',)
+        }),
     ]
     save_as = True

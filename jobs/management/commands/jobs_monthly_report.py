@@ -1,11 +1,10 @@
 import datetime
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management import BaseCommand
 from django.db.models import Count
-from django.conf import settings
 from django.template import loader
-
 
 from jobs.models import Job
 

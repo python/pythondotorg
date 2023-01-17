@@ -8,28 +8,44 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericRelation
 from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.validators import MinValueValidator, MaxValueValidator
-from django.db import models, transaction, IntegrityError
-from django.db.models import Subquery, Sum
+from django.core.validators import (
+    MaxValueValidator,
+    MinValueValidator,
+)
+from django.db import (
+    IntegrityError,
+    models,
+    transaction,
+)
+from django.db.models import (
+    Subquery,
+    Sum,
+)
 from django.template.defaultfilters import truncatechars
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from num2words import num2words
-
 from ordered_model.models import OrderedModel
 
-from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
-    SponsorshipInvalidDateRangeException
+from sponsors.exceptions import (
+    InvalidStatusException,
+    SponsorWithExistingApplicationException,
+    SponsorshipInvalidDateRangeException,
+)
 from sponsors.models.assets import GenericAsset
-from sponsors.models.managers import SponsorshipPackageQuerySet, SponsorshipBenefitQuerySet, \
-    SponsorshipQuerySet, SponsorshipCurrentYearQuerySet
 from sponsors.models.benefits import TieredBenefitConfiguration
+from sponsors.models.managers import (
+    SponsorshipBenefitQuerySet,
+    SponsorshipCurrentYearQuerySet,
+    SponsorshipPackageQuerySet,
+    SponsorshipQuerySet,
+)
 from sponsors.models.sponsors import SponsorBenefit
 
 YEAR_VALIDATORS = [
-     MinValueValidator(limit_value=2022, message="The min year value is 2022."),
-     MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+    MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+    MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
 ]
 
 
@@ -98,8 +114,8 @@ class SponsorshipPackage(OrderedModel):
         benefits = set(tuple(benefits))
         pkg_benefits = set(tuple(self.benefits.all()))
         return {
-          "added_by_user": benefits - pkg_benefits,
-          "removed_by_user": pkg_benefits - benefits,
+            "added_by_user": benefits - pkg_benefits,
+            "removed_by_user": pkg_benefits - benefits,
         }
 
     def clone(self, year: int):
@@ -172,12 +188,18 @@ class Sponsorship(models.Model):
 
     for_modified_package = models.BooleanField(
         default=False,
-        help_text="If true, it means the user customized the package's benefits. Changes are listed under section 'User Customizations'.",
+        help_text=(
+            "If true, it means the user customized the package's benefits. "
+            "Changes are listed under section 'User Customizations'."
+        ),
     )
-    level_name_old = models.CharField(max_length=64, default="", blank=True, help_text="DEPRECATED: shall be removed "
-                                                                                       "after manual data sanity "
-                                                                                       "check.", verbose_name="Level "
-                                                                                                              "name")
+    level_name_old = models.CharField(
+        max_length=64,
+        default="",
+        blank=True,
+        help_text="DEPRECATED: shall be removed after manual data sanity check.",
+        verbose_name="Level name"
+    )
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
     overlapped_by = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
@@ -199,11 +221,17 @@ class Sponsorship(models.Model):
 
     @cached_property
     def user_customizations(self):
-        benefits = [b.sponsorship_benefit for b in self.benefits.select_related("sponsorship_benefit")]
+        benefits = [
+            b.sponsorship_benefit
+            for b in self.benefits.select_related("sponsorship_benefit")
+        ]
         return self.package.get_user_customization(benefits)
 
     def __str__(self):
-        repr = f"{self.level_name} - {self.year} - ({self.get_status_display()}) for sponsor {self.sponsor.name}"
+        repr = (
+            f"{self.level_name} - {self.year} - ({self.get_status_display()}) "
+            f"for sponsor {self.sponsor.name}"
+        )
         if self.start_date and self.end_date:
             fmt = "%m/%d/%Y"
             start = self.start_date.strftime(fmt)
@@ -250,12 +278,9 @@ class Sponsorship(models.Model):
 
     @property
     def estimated_cost(self):
-        return (
-                self.benefits.aggregate(Sum("benefit_internal_value"))[
-                    "benefit_internal_value__sum"
-                ]
-                or 0
-        )
+        return self.benefits.aggregate(
+            Sum("benefit_internal_value")
+        )["benefit_internal_value__sum"] or 0
 
     @property
     def verbose_sponsorship_fee(self):
@@ -269,15 +294,18 @@ class Sponsorship(models.Model):
         if self.status in valid_status:
             return self.sponsorship_fee
         try:
-            benefits = [sb.sponsorship_benefit for sb in self.package_benefits.all().select_related('sponsorship_benefit')]
+            benefits = [
+                sb.sponsorship_benefit
+                for sb in self.package_benefits.all().select_related('sponsorship_benefit')
+            ]
             if self.package and not self.package.has_user_customization(benefits):
                 return self.sponsorship_fee
         except SponsorshipPackage.DoesNotExist:  # sponsorship level names can change over time
             return None
 
     @property
-    def is_active(self):
-        conditions = [
+    def is_active(self):  # TODO: Fix
+        conditions = [  # noqa: F841
             self.status == self.FINALIZED,
             self.end_date and self.end_date > date.today()
         ]
@@ -294,7 +322,7 @@ class Sponsorship(models.Model):
             msg = f"Can't approve a {self.get_status_display()} sponsorship."
             raise InvalidStatusException(msg)
         if start_date >= end_date:
-            msg = f"Start date greater or equal than end date"
+            msg = "Start date greater or equal than end date"
             raise SponsorshipInvalidDateRangeException(msg)
         self.status = self.APPROVED
         self.start_date = start_date
@@ -482,9 +510,9 @@ class SponsorshipBenefit(OrderedModel):
         if self.unavailable:
             return False
         return not (
-            self.remaining_capacity is not None
-            and self.remaining_capacity <= 0
-            and not self.soft_capacity
+            self.remaining_capacity is not None and
+            self.remaining_capacity <= 0 and
+            not self.soft_capacity
         )
 
     @property

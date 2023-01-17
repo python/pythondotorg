@@ -1,8 +1,7 @@
-from django.urls import reverse
+import factory
 from django.db.models import signals
 from django.test import TestCase
-
-import factory
+from django.urls import reverse
 
 from downloads.models import Release
 

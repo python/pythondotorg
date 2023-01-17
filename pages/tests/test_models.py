@@ -4,7 +4,10 @@ import unittest
 import ddt
 
 from .base import BasePageTests
-from ..models import Page, PAGE_PATH_RE
+from ..models import (
+    PAGE_PATH_RE,
+    Page,
+)
 
 
 class PageModelTests(BasePageTests):

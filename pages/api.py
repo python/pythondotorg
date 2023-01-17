@@ -1,10 +1,14 @@
 from rest_framework.authentication import TokenAuthentication
 
-from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
 from pydotorg.drf import (
-    BaseReadOnlyAPIViewSet, BaseFilterSet, IsStaffOrReadOnly,
+    BaseFilterSet,
+    BaseReadOnlyAPIViewSet,
+    IsStaffOrReadOnly,
 )
-
+from pydotorg.resources import (
+    GenericResource,
+    OnlyPublishedAuthorization,
+)
 from .models import Page
 from .serializers import PageSerializer
 

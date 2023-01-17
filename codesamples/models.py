@@ -1,12 +1,13 @@
 from django.conf import settings
 from django.db import models
-from django.template.defaultfilters import truncatechars, striptags
+from django.template.defaultfilters import (
+    striptags,
+    truncatechars,
+)
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-
 from .managers import CodeSampleQuerySet
-
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'html')
 

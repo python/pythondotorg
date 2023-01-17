@@ -7,4 +7,4 @@ class UsersAppConfig(AppConfig):
     verbose_name = 'Users'
 
     def ready(self):
-        import users.listeners
+        import users.listeners  # noqa: F401

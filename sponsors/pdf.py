@@ -3,15 +3,15 @@ This module is a wrapper around django-easy-pdf so we can reuse code
 """
 import io
 import os
+
 from django.conf import settings
 from django.http import HttpResponse
 from django.utils.dateformat import format
-
 from docxtpl import DocxTemplate
-from easy_pdf.rendering import render_to_pdf_response, render_to_pdf
-
-from markupfield_helpers.helpers import render_md
-from django.utils.html import mark_safe
+from easy_pdf.rendering import (
+    render_to_pdf,
+    render_to_pdf_response,
+)
 
 
 def _clean_split(text, separator='\n'):

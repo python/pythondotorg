@@ -1,12 +1,18 @@
 from unittest.mock import Mock
 
 from django.contrib.admin.views.main import ChangeList
+from django.test import (
+    RequestFactory,
+    TestCase,
+)
 from model_bakery import baker
 
-from django.test import TestCase, RequestFactory
-
-from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
+from sponsors.admin import (
+    SponsorshipAdmin,
+    SponsorshipStatusListFilter,
+)
 from sponsors.models import Sponsorship
+
 
 class TestCustomSponsorshipStatusListFilter(TestCase):
 

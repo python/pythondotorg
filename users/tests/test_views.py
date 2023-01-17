@@ -1,17 +1,22 @@
-from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.urls import reverse
 from django.test import TestCase
+from django.urls import reverse
+from model_bakery import baker
 
-from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
-from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
+from sponsors.forms import (
+    SponsorRequiredAssetsForm,
+    SponsorUpdateForm,
+)
+from sponsors.models import (
+    RequiredTextAssetConfiguration,
+    SponsorBenefit,
+    Sponsorship,
+)
 from sponsors.models.enums import AssetsRelatedTo
 from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
-
-from ..factories import MembershipFactory
 
 User = get_user_model()
 
@@ -567,7 +572,6 @@ class UpdateSponsorshipAssetsViewTests(TestCase):
 
     def test_update_assets_information_with_valid_post(self):
         response = self.client.post(self.url, data={"text_input": "information"})
-        context = response.context
 
         self.assertRedirects(response, reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk]))
         self.assertEqual(self.required_asset.value, "information")

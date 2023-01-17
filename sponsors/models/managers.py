@@ -1,9 +1,12 @@
 from django.db import IntegrityError
-from django.db.models import Count
-from ordered_model.models import OrderedModelManager, OrderedModelQuerySet
-from django.db.models import Q, Subquery
+from django.db.models import (
+    Count,
+    Q,
+    Subquery,
+)
 from django.db.models.query import QuerySet
 from django.utils import timezone
+from ordered_model.models import OrderedModelQuerySet
 from polymorphic.query import PolymorphicQuerySet
 
 
@@ -41,13 +44,17 @@ class SponsorshipQuerySet(QuerySet):
             feature_qs = feature_qs.filter(logo_place=logo_place)
         if publisher:
             feature_qs = feature_qs.filter(publisher=publisher)
-        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
+        benefit_qs = SponsorBenefit.objects.filter(
+            id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True))
+        )
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
     def includes_benefit_feature(self, feature_model):
         from sponsors.models import SponsorBenefit
         feature_qs = feature_model.objects.all()
-        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
+        benefit_qs = SponsorBenefit.objects.filter(
+            id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True))
+        )
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
 
 
@@ -64,7 +71,13 @@ class SponsorContactQuerySet(QuerySet):
             raise self.model.DoesNotExist()
         return contact
 
-    def filter_by_contact_types(self, primary=False, administrative=False, accounting=False, manager=False):
+    def filter_by_contact_types(
+            self,
+            primary=False,
+            administrative=False,
+            accounting=False,
+            manager=False
+    ):
         if not any([primary, administrative, accounting, manager]):
             return self.none()
 
@@ -89,7 +102,12 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
         return self.filter(conflicts__isnull=True)
 
     def a_la_carte(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False).exclude(unavailable=True)
+        return self.annotate(
+            num_packages=Count("packages")
+        ).filter(
+            num_packages=0,
+            standalone=False
+        ).exclude(unavailable=True)
 
     def standalone(self):
         return self.filter(standalone=True).exclude(unavailable=True)
@@ -133,17 +151,23 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
             return super().delete()
 
     def from_sponsorship(self, sponsorship):
-        return self.filter(sponsor_benefit__sponsorship=sponsorship).select_related("sponsor_benefit__sponsorship")
+        return self.filter(
+            sponsor_benefit__sponsorship=sponsorship
+        ).select_related("sponsor_benefit__sponsorship")
 
     def required_assets(self):
         from sponsors.models.benefits import RequiredAssetMixin
         required_assets_classes = RequiredAssetMixin.__subclasses__()
-        return self.instance_of(*required_assets_classes).select_related("sponsor_benefit__sponsorship")
+        return self.instance_of(
+            *required_assets_classes
+        ).select_related("sponsor_benefit__sponsorship")
 
     def provided_assets(self):
         from sponsors.models.benefits import ProvidedAssetMixin
         provided_assets_classes = ProvidedAssetMixin.__subclasses__()
-        return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
+        return self.instance_of(
+            *provided_assets_classes
+        ).select_related("sponsor_benefit__sponsorship")
 
 
 class GenericAssetQuerySet(PolymorphicQuerySet):

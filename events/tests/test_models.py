@@ -1,13 +1,23 @@
 import datetime
 
+from dateutil.rrule import (
+    WEEKLY,
+    rrule,
+)
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from dateutil.rrule import rrule, WEEKLY
-
-from ..models import Calendar, Event, OccurringRule, RecurringRule
-from ..utils import seconds_resolution, convert_dt_to_aware
+from ..models import (
+    Calendar,
+    Event,
+    OccurringRule,
+    RecurringRule,
+)
+from ..utils import (
+    convert_dt_to_aware,
+    seconds_resolution,
+)
 
 
 class EventsModelsTests(TestCase):
@@ -61,7 +71,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
-
 
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)

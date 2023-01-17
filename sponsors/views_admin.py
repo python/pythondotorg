@@ -1,22 +1,35 @@
-import io, zipfile
+import io
+import zipfile
 from tempfile import NamedTemporaryFile
 
-from django import forms
 from django.contrib import messages
-from django.http import HttpResponse
-from django.shortcuts import get_object_or_404, render, redirect
-from django.urls import reverse
-from django.utils import timezone
-from django.db.models import Q
 from django.db import transaction
+from django.http import HttpResponse
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+from django.urls import reverse
 
 from sponsors import use_cases
-from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
-    SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
+from sponsors.forms import (
+    CloneApplicationConfigForm,
+    SendSponsorshipNotificationForm,
+    SignedSponsorshipReviewAdminForm,
+    SponsorshipReviewAdminForm,
+    SponsorshipsListForm,
+)
+from sponsors.models import (
+    BenefitFeature,
+    EmailTargetable,
+    SponsorshipCurrentYear,
+)
+from sponsors.pdf import (
+    render_contract_to_docx_response,
+    render_contract_to_pdf_response,
+)
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -368,16 +381,20 @@ def export_assets_as_zipfile(ModelAdmin, request, queryset):
     if not queryset.exists():
         ModelAdmin.message_user(
             request,
-            f"You have to select at least one asset to export.",
+            "You have to select at least one asset to export.",
             messages.WARNING
         )
         return redirect(request.path)
 
     assets_without_values = [asset for asset in queryset if not asset.has_value]
     if any(assets_without_values):
+        _message = (
+            f"{len(assets_without_values)} assets from the "
+            "selection doesn't have data to export. Please review your selection!"
+        )
         ModelAdmin.message_user(
             request,
-            f"{len(assets_without_values)} assets from the selection doesn't have data to export. Please review your selection!",
+            _message,
             messages.WARNING
         )
         return redirect(request.path)

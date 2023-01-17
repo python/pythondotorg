@@ -1,10 +1,16 @@
 import os
 
 from django.test import TestCase
-from django.utils.timezone import datetime, make_aware
+from django.utils.timezone import (
+    datetime,
+    make_aware,
+)
 
 from events.importer import ICSImporter
-from events.models import Calendar, Event
+from events.models import (
+    Calendar,
+    Event,
+)
 
 CUR_DIR = os.path.dirname(__file__)
 EVENTS_CALENDAR = os.path.join(CUR_DIR, 'events.ics')

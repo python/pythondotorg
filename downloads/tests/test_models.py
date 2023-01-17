@@ -1,5 +1,5 @@
-from ..models import Release
 from .base import BaseDownloadTests
+from ..models import Release
 
 
 class DownloadModelTests(BaseDownloadTests):
@@ -82,8 +82,8 @@ class DownloadModelTests(BaseDownloadTests):
 
         release_38 = Release.objects.create(name='Python 3.8.0')
         self.assertFalse(release_38.is_version_at_least_3_9)
-        self.assert_(release_38.is_version_at_least_3_5)
+        self.assertTrue(release_38.is_version_at_least_3_5)
 
         release_310 = Release.objects.create(name='Python 3.10.0')
-        self.assert_(release_310.is_version_at_least_3_9)
-        self.assert_(release_310.is_version_at_least_3_5)
+        self.assertTrue(release_310.is_version_at_least_3_9)
+        self.assertTrue(release_310.is_version_at_least_3_5)

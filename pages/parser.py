@@ -1,6 +1,7 @@
-import chardet
 import email
 import os
+
+import chardet
 
 
 def read_content_file(dirpath):

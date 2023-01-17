@@ -2,12 +2,18 @@ from django.contrib import messages
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DetailView, ListView
-
+from django.views.generic import (
+    CreateView,
+    DetailView,
+    ListView,
+)
 from honeypot.decorators import check_honeypot
 
 from .forms import StoryForm
-from .models import Story, StoryCategory
+from .models import (
+    Story,
+    StoryCategory,
+)
 
 
 class ContextMixin:
@@ -39,6 +45,7 @@ class StoryCreate(LoginRequiredMixin, ContextMixin, CreateView):
         obj.submitted_by = self.request.user
         messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return super().form_valid(form)
+
 
 class StoryDetail(ContextMixin, DetailView):
     template_name = 'successstories/story_detail.html'

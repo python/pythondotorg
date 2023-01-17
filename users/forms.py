@@ -1,7 +1,10 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import User, Membership
+from .models import (
+    Membership,
+    User,
+)
 
 
 class UserProfileForm(ModelForm):
@@ -99,4 +102,4 @@ class MembershipUpdateForm(MembershipForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        del(self.fields['psf_code_of_conduct'])
+        del (self.fields['psf_code_of_conduct'])

@@ -1,6 +1,10 @@
 from django.core.management import BaseCommand
 
-from sponsors.models import Sponsorship, Contract
+from sponsors.models import (
+    Contract,
+    Sponsorship,
+)
+
 
 # The reason to not use a data migration but a django management command
 # to deal with pre existing approved Sponsorships is due to migrations
@@ -11,6 +15,7 @@ from sponsors.models import Sponsorship, Contract
 # when running, doesn't have access to user defined methods in the models.
 # The same limitation is true for the SponsorshipQuerySet's approved method and for
 # the sponsorship.contract reverse lookup.
+
 
 class Command(BaseCommand):
     """
@@ -31,4 +36,4 @@ class Command(BaseCommand):
         for sponsorship in qs:
             Contract.new(sponsorship)
 
-        print(f"Done!")
+        print("Done!")

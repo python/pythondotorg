@@ -1,12 +1,28 @@
-from datetime import date, timedelta
-from model_bakery import baker
+from datetime import (
+    date,
+    timedelta,
+)
 
 from django.conf import settings
 from django.test import TestCase
+from model_bakery import baker
 
-from ..models import Sponsorship, SponsorBenefit, LogoPlacement, TieredBenefit, RequiredTextAsset, RequiredImgAsset, \
-    BenefitFeature, SponsorshipPackage, SponsorshipBenefit, SponsorshipCurrentYear
-from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models.enums import (
+    LogoPlacementChoices,
+    PublisherChoices,
+)
+from ..models import (
+    BenefitFeature,
+    LogoPlacement,
+    RequiredImgAsset,
+    RequiredTextAsset,
+    SponsorBenefit,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    TieredBenefit,
+)
 
 
 class SponsorshipQuerySetTests(TestCase):
@@ -86,7 +102,7 @@ class SponsorshipQuerySetTests(TestCase):
         baker.make_recipe('sponsors.tests.logo_at_download_feature', sponsor_benefit=download_logo_benefit)
         sponsors_logo_benefit = baker.make(SponsorBenefit, sponsorship=sponsorship_with_sponsors_logo)
         baker.make_recipe('sponsors.tests.logo_at_sponsors_feature', sponsor_benefit=sponsors_logo_benefit)
-        regular_benefit = baker.make(SponsorBenefit, sponsorship=simple_sponsorship)
+        baker.make(SponsorBenefit, sponsorship=simple_sponsorship)
 
         with self.assertNumQueries(1):
             qs = list(Sponsorship.objects.with_logo_placement())
@@ -137,7 +153,7 @@ class BenefitFeatureQuerySet(TestCase):
     def test_filter_only_for_required_assets(self):
         baker.make(TieredBenefit)
         text_asset = baker.make(RequiredTextAsset)
-        img_asset = baker.make(RequiredImgAsset)
+        baker.make(RequiredImgAsset)
 
         qs = BenefitFeature.objects.required_assets()
 
@@ -154,8 +170,8 @@ class SponsorshipBenefitManagerTests(TestCase):
         self.regular_benefit_unavailable = baker.make(SponsorshipBenefit, year=current_year, unavailable=True)
         self.regular_benefit.packages.add(package)
         self.regular_benefit.packages.add(package)
-        self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year-1)
-        self.a_la_carte_unavail = baker.make(SponsorshipBenefit, year=current_year-1, unavailable=True)
+        self.a_la_carte = baker.make(SponsorshipBenefit, year=current_year - 1)
+        self.a_la_carte_unavail = baker.make(SponsorshipBenefit, year=current_year - 1, unavailable=True)
         self.standalone = baker.make(SponsorshipBenefit, standalone=True)
         self.standalone_unavail = baker.make(SponsorshipBenefit, standalone=True, unavailable=True)
 

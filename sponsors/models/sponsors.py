@@ -3,13 +3,12 @@ This module holds models related to the Sponsor entity.
 """
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
-from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
 from django.urls import reverse
 from django_countries.fields import CountryField
 from ordered_model.models import OrderedModel
-from django.contrib.contenttypes.fields import GenericRelation
 
 from cms.models import ContentManageable
 from sponsors.models.assets import GenericAsset
@@ -277,15 +276,15 @@ class SponsorBenefit(OrderedModel):
         self.added_by_user = self.added_by_user or self.standalone
 
         # generate benefit features from benefit features configurations
-        features = self.features.all().delete()
+        self.features.all().delete()
         for feature_config in benefit.features_config.all():
             feature_config.create_benefit_feature(self)
 
         self.save()
 
-    def delete(self):
+    def delete(self, *args, extra_update=None, **kwargs):
         self.features.all().delete()
-        super().delete()
+        super().delete(*args, extra_update=extra_update, **kwargs)
 
     class Meta(OrderedModel.Meta):
         pass

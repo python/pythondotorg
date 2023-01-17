@@ -7,13 +7,18 @@ from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
 
-from sponsors.models.assets import ImgAsset, TextAsset, FileAsset, ResponseAsset, Response
-from sponsors.models.enums import (
-    PublisherChoices,
-    LogoPlacementChoices,
-    AssetsRelatedTo,
+from sponsors.models.assets import (
+    FileAsset,
+    ImgAsset,
+    Response,
+    ResponseAsset,
+    TextAsset,
 )
-
+from sponsors.models.enums import (
+    AssetsRelatedTo,
+    LogoPlacementChoices,
+    PublisherChoices,
+)
 ########################################
 # Benefit features abstract classes
 from sponsors.models.managers import BenefitFeatureQuerySet
@@ -36,11 +41,17 @@ class BaseLogoPlacement(models.Model):
     )
     link_to_sponsors_page = models.BooleanField(
         default=False,
-        help_text="Override URL in placement to the PSF Sponsors Page, rather than the sponsor landing page url.",
+        help_text=(
+            "Override URL in placement to the PSF Sponsors Page, "
+            "rather than the sponsor landing page url."
+        ),
     )
     describe_as_sponsor = models.BooleanField(
         default=False,
-        help_text='Override description with "SPONSOR_NAME is a SPONSOR_LEVEL sponsor of the Python Software Foundation".',
+        help_text=(
+            'Override description with "SPONSOR_NAME is a SPONSOR_LEVEL '
+            'sponsor of the Python Software Foundation".'
+        ),
     )
 
     class Meta:
@@ -78,7 +89,10 @@ class BaseAsset(models.Model):
     internal_name = models.CharField(
         max_length=128,
         verbose_name="Internal Name",
-        help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+        help_text=(
+            "Unique name used internally to control "
+            "if the sponsor/sponsorship already has the asset",
+        ),
         unique=False,
         db_index=True,
     )
@@ -106,7 +120,7 @@ class BaseRequiredAsset(BaseAsset):
 
 class BaseProvidedAsset(BaseAsset):
     shared = models.BooleanField(
-        default = False,
+        default=False,
     )
 
     def shared_value(self):
@@ -220,6 +234,7 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
     class Meta(BaseProvidedAsset.Meta):
         abstract = True
 
+
 class BaseProvidedFileAsset(BaseProvidedAsset):
     ASSET_CLASS = FileAsset
 
@@ -273,11 +288,14 @@ class AssetMixin:
         url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
         return url + f"?required_asset={self.pk}"
 
-
     @property
     def user_view_url(self):
-        url = reverse("users:view_provided_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
+        url = reverse(
+            "users:view_provided_sponsorship_assets",
+            args=[self.sponsor_benefit.sponsorship.pk]
+        )
         return url + f"?provided_asset={self.pk}"
+
 
 class RequiredAssetMixin(AssetMixin):
     """
@@ -286,6 +304,7 @@ class RequiredAssetMixin(AssetMixin):
     and which is stored in the related asset class.
     """
     pass
+
 
 class ProvidedAssetMixin(AssetMixin):
     """
@@ -302,6 +321,8 @@ class ProvidedAssetMixin(AssetMixin):
 
 ######################################################
 # SponsorshipBenefit features configuration models
+
+
 class BenefitFeatureConfiguration(PolymorphicModel):
     """
     Base class for sponsorship benefits configuration.
@@ -397,7 +418,10 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return LogoPlacement
 
     def __str__(self):
-        return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
+        return (
+            f"Logo Configuration for {self.get_publisher_display()} "
+            f"at {self.get_logo_place_display()}"
+        )
 
 
 class TieredBenefitConfiguration(BaseTieredBenefit, BenefitFeatureConfiguration):
@@ -419,7 +443,10 @@ class TieredBenefitConfiguration(BaseTieredBenefit, BenefitFeatureConfiguration)
         return None
 
     def __str__(self):
-        return f"Tiered Benefit Configuration for {self.benefit} and {self.package} ({self.quantity})"
+        return (
+            f"Tiered Benefit Configuration for {self.benefit} "
+            f"and {self.package} ({self.quantity})"
+        )
 
     def display_modifier(self, name, **kwargs):
         if kwargs.get("package") != self.package:
@@ -446,17 +473,21 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
         return EmailTargetable
 
     def __str__(self):
-        return f"Email targeatable configuration"
+        return "Email targeatable configuration"
 
 
-class RequiredImgAssetConfiguration(AssetConfigurationMixin, BaseRequiredImgAsset, BenefitFeatureConfiguration):
+class RequiredImgAssetConfiguration(
+    AssetConfigurationMixin,
+    BaseRequiredImgAsset,
+    BenefitFeatureConfiguration
+):
     class Meta(BaseRequiredImgAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Image Configuration"
         verbose_name_plural = "Require Image Configurations"
         constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_img_asset_cfg")]
 
     def __str__(self):
-        return f"Require image configuration"
+        return "Require image configuration"
 
     @property
     def benefit_feature_class(self):
@@ -471,7 +502,7 @@ class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAs
         constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_text_asset_cfg")]
 
     def __str__(self):
-        return f"Require text configuration"
+        return "Require text configuration"
 
     @property
     def benefit_feature_class(self):
@@ -489,7 +520,7 @@ class RequiredResponseAssetConfiguration(
         ]
 
     def __str__(self):
-        return f"Require response configuration"
+        return "Require response configuration"
 
     @property
     def benefit_feature_class(self):
@@ -502,10 +533,12 @@ class ProvidedTextAssetConfiguration(
     class Meta(BaseProvidedTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided Text Configuration"
         verbose_name_plural = "Provided Text Configurations"
-        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_provided_text_asset_cfg")]
+        constraints = [
+            UniqueConstraint(fields=["internal_name"], name="uniq_provided_text_asset_cfg")
+        ]
 
     def __str__(self):
-        return f"Provided text configuration"
+        return "Provided text configuration"
 
     @property
     def benefit_feature_class(self):
@@ -517,10 +550,12 @@ class ProvidedFileAssetConfiguration(AssetConfigurationMixin, BaseProvidedFileAs
     class Meta(BaseProvidedFileAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided File Configuration"
         verbose_name_plural = "Provided File Configurations"
-        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_provided_file_asset_cfg")]
+        constraints = [
+            UniqueConstraint(fields=["internal_name"], name="uniq_provided_file_asset_cfg")
+        ]
 
     def __str__(self):
-        return f"Provided File configuration"
+        return "Provided File configuration"
 
     @property
     def benefit_feature_class(self):
@@ -586,7 +621,7 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
         verbose_name_plural = "Email Targetable Benefits"
 
     def __str__(self):
-        return f"Email targeatable"
+        return "Email targeatable"
 
 
 class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature):
@@ -595,13 +630,19 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         verbose_name_plural = "Require Images"
 
     def __str__(self):
-        return f"Require image"
+        return "Require image"
 
     def as_form_field(self, **kwargs):
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.ImageField(required=required, help_text=help_text, label=label, widget=forms.ClearableFileInput, **kwargs)
+        return forms.ImageField(
+            required=required,
+            help_text=help_text,
+            label=label,
+            widget=forms.ClearableFileInput,
+            **kwargs
+        )
 
 
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
@@ -610,7 +651,7 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         verbose_name_plural = "Require Texts"
 
     def __str__(self):
-        return f"Require text"
+        return "Require text"
 
     def as_form_field(self, **kwargs):
         help_text = kwargs.pop("help_text", self.help_text)
@@ -620,7 +661,13 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         widget = forms.TextInput
         if max_length is None or max_length > 256:
             widget = forms.Textarea
-        return forms.CharField(required=required, help_text=help_text, label=label, widget=widget, **kwargs)
+        return forms.CharField(
+            required=required,
+            help_text=help_text,
+            label=label,
+            widget=widget,
+            **kwargs
+        )
 
 
 class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, BenefitFeature):
@@ -629,13 +676,20 @@ class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, Benef
         verbose_name_plural = "Required Responses"
 
     def __str__(self):
-        return f"Require response"
+        return "Require response"
 
     def as_form_field(self, **kwargs):
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.ChoiceField(required=required, choices=Response.choices(), widget=forms.RadioSelect, help_text=help_text, label=label, **kwargs)
+        return forms.ChoiceField(
+            required=required,
+            choices=Response.choices(),
+            widget=forms.RadioSelect,
+            help_text=help_text,
+            label=label,
+            **kwargs
+        )
 
 
 class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):
@@ -653,4 +707,4 @@ class ProvidedFileAsset(ProvidedAssetMixin, BaseProvidedFileAsset, BenefitFeatur
         verbose_name_plural = "Provided Files"
 
     def __str__(self):
-        return f"Provided file"
+        return "Provided file"

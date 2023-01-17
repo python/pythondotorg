@@ -1,7 +1,11 @@
 from django.contrib import admin
 from django.core.management import call_command
 
-from .models import BlogEntry, Feed, FeedAggregate
+from .models import (
+    BlogEntry,
+    Feed,
+    FeedAggregate,
+)
 
 
 @admin.register(BlogEntry)
@@ -21,5 +25,6 @@ class BlogEntryAdmin(admin.ModelAdmin):
 class FeedAggregateAdmin(admin.ModelAdmin):
     list_display = ['name', 'slug', 'description']
     prepopulated_fields = {'slug': ('name',)}
+
 
 admin.site.register(Feed)

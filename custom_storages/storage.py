@@ -1,14 +1,18 @@
 import os
 import posixpath
 import re
-
-from urllib.parse import unquote, urldefrag
+from urllib.parse import (
+    unquote,
+    urldefrag,
+)
 
 from django.conf import settings
-from django.contrib.staticfiles.storage import ManifestFilesMixin, StaticFilesStorage
+from django.contrib.staticfiles.storage import (
+    ManifestFilesMixin,
+    StaticFilesStorage,
+)
 from django.contrib.staticfiles.utils import matches_patterns
 from django.core.files.base import ContentFile
-
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -32,10 +36,13 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)
         ]
 
-    def url_converter(self, name, hashed_files, template=None, comment_blocks=[]):
+    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
         """
         Return the custom URL converter for the given file name.
         """
+        if comment_blocks is None:
+            comment_blocks = []
+
         if template is None:
             template = self.default_template
 

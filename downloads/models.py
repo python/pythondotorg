@@ -1,23 +1,23 @@
 import re
 
-from django.urls import reverse
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
+from django.urls import reverse
 from django.utils import timezone
-
 from markupfield.fields import MarkupField
 
 from boxes.models import Box
-from cms.models import ContentManageable, NameSlugModel
+from cms.models import (
+    ContentManageable,
+    NameSlugModel,
+)
 from fastly.utils import purge_url
 from pages.models import Page
-
 from .managers import ReleaseManager
-
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -338,7 +338,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
             qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
             if qs.count() > 0:
                 raise ValidationError("Only one Release File per OS can have \"Download button\" enabled")
-        super(ReleaseFile, self).validate_unique(exclude=exclude)
+        super().validate_unique(exclude=exclude)
 
     class Meta:
         verbose_name = 'Release File'
@@ -347,6 +347,6 @@ class ReleaseFile(ContentManageable, NameSlugModel):
 
         constraints = [
             models.UniqueConstraint(fields=['os', 'release'],
-            condition=models.Q(download_button=True),
-            name="only_one_download_per_os_per_release"),
+                                    condition=models.Q(download_button=True),
+                                    name="only_one_download_per_os_per_release"),
         ]

@@ -1,12 +1,18 @@
 import datetime
-import feedparser
 
+import feedparser
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.utils.timezone import make_aware, utc
+from django.utils.timezone import (
+    make_aware,
+    utc,
+)
 
 from boxes.models import Box
-from .models import BlogEntry, Feed
+from .models import (
+    BlogEntry,
+    Feed,
+)
 
 
 def get_all_entries(feed_url):

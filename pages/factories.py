@@ -1,10 +1,8 @@
 import factory
-
 from django.template.defaultfilters import slugify
 from factory.django import DjangoModelFactory
 
 from users.factories import UserFactory
-
 from .models import Page
 
 

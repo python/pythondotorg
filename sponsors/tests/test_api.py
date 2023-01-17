@@ -9,8 +9,16 @@ from model_bakery import baker
 from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
-from sponsors.models import Sponsor, Sponsorship, TextAsset, ImgAsset
-from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
+from sponsors.models import (
+    ImgAsset,
+    Sponsor,
+    Sponsorship,
+    TextAsset,
+)
+from sponsors.models.enums import (
+    LogoPlacementChoices,
+    PublisherChoices,
+)
 
 
 class LogoPlacementeAPIListTests(APITestCase):

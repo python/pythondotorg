@@ -1,13 +1,23 @@
-from django.conf.urls import url
-
+from django.urls import re_path
 from rest_framework import routers
 from tastypie.api import Api
 
-from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
-from downloads.api import OSViewSet, ReleaseViewSet, ReleaseFileViewSet
-from pages.api import PageResource
-from pages.api import PageViewSet
-from sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
+from downloads.api import (
+    OSResource,
+    OSViewSet,
+    ReleaseFileResource,
+    ReleaseFileViewSet,
+    ReleaseResource,
+    ReleaseViewSet,
+)
+from pages.api import (
+    PageResource,
+    PageViewSet,
+)
+from sponsors.api import (
+    LogoPlacementeAPIList,
+    SponsorshipAssetsAPIList,
+)
 
 v1_api = Api(api_name='v1')
 v1_api.register(PageResource())
@@ -22,6 +32,6 @@ router.register(r'downloads/release', ReleaseViewSet, basename='release')
 router.register(r'downloads/release_file', ReleaseFileViewSet)
 
 urlpatterns = [
-    url(r'sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
-    url(r'sponsors/sponsorship-assets/', SponsorshipAssetsAPIList.as_view(), name="assets_list"),
+    re_path(r'sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
+    re_path(r'sponsors/sponsorship-assets/', SponsorshipAssetsAPIList.as_view(), name="assets_list"),
 ]

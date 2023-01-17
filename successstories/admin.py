@@ -1,8 +1,14 @@
 from django.contrib import admin
 from django.utils.html import format_html
 
-from .models import Story, StoryCategory
-from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
+from cms.admin import (
+    ContentManageableModelAdmin,
+    NameSlugAdmin,
+)
+from .models import (
+    Story,
+    StoryCategory,
+)
 
 
 @admin.register(StoryCategory)

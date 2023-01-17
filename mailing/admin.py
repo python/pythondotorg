@@ -1,8 +1,8 @@
 from django.contrib import admin
 from django.forms.models import modelform_factory
 from django.http import HttpResponse
-from django.urls import path
 from django.shortcuts import get_object_or_404
+from django.urls import path
 
 from mailing.forms import BaseEmailTemplateForm
 

@@ -1,0 +1,10 @@
+exclude_dirs:
+    - /tests/
+    - ./venv/
+    - ./env/
+    - ./node_modules/
+    - .tox
+    - pydotorg/settings/local.py
+skips:
+    - B101  # B101: assert
+    - B311  # B311: random

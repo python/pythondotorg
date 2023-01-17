@@ -8,24 +8,20 @@ positioned into the URL structure using the nav app.
 
 import os
 import re
-
 from copy import deepcopy
 
+import cmarkgfm
+from cmarkgfm.cmark import Options as cmarkgfmOptions
 from django.conf import settings
 from django.core import validators
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-
 from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
-import cmarkgfm
-from cmarkgfm.cmark import Options as cmarkgfmOptions
-
 from cms.models import ContentManageable
 from fastly.utils import purge_url
-
 from .managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
@@ -38,8 +34,8 @@ PAGE_PATH_RE = re.compile(r"""
     /?                      # Possibly ending with a slash
     $
     """,
-    re.X
-)
+                          re.X
+                          )
 
 is_valid_page_path = validators.RegexValidator(
     regex=PAGE_PATH_RE,
@@ -64,8 +60,8 @@ RENDERERS[markdown_index] = (
 # tagfilter used by Github (we can be more liberal, since we know our page
 # editors).
 
-def unsafe_markdown_to_html(text, options=0):
 
+def unsafe_markdown_to_html(text, options=0):
     """Render the given GitHub-flavored Makrdown to HTML.
 
     This function is similar to cmarkgfm.github_flavored_markdown_to_html(),
@@ -84,6 +80,7 @@ def unsafe_markdown_to_html(text, options=0):
         extensions=[
             'table', 'autolink', 'strikethrough', 'tasklist'
         ])
+
 
 RENDERERS.append(
     (
@@ -157,4 +154,3 @@ class DocumentFile(models.Model):
 
     def __str__(self):
         return self.document.url
-
