@@ -164,6 +164,19 @@ class SponsorContact(models.Model):
         if self.user is not None and (self.primary or self.manager):
             return True
 
+    @property
+    def type(self):
+        types=[]
+        if self.primary:
+            types.append('Primary')
+        if self.administrative:
+            types.append('Administrative')
+        if self.manager:
+            types.append('Manager')
+        if self.accounting:
+            types.append('Accounting')
+        return ", ".join(types)
+
     def __str__(self):
         return f"Contact {self.name} from {self.sponsor}"
 
