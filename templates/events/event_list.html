@@ -45,7 +45,11 @@
                         <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
                         <p>
                             {% with object.next_time as next_time %}
+                            {% with object.is_scheduled_to_start_this_year as scheduled_start_this_year %}
+                            {% with object.is_scheduled_to_end_this_year as scheduled_end_this_year %}
                             {% include "events/includes/time_tag.html" %}
+                            {% endwith %}
+                            {% endwith %}
                             {% endwith %}
 
                             {% if object.venue %}
@@ -65,7 +69,11 @@
                     <h3 class="event-title"><a href="{{ object.get_absolute_url }}">{{ object.title|striptags }}</a></h3>
                     <p>
                         {% with object.previous_time as next_time %}
+                        {% with object.is_scheduled_to_start_this_year as scheduled_start_this_year %}
+                        {% with object.is_scheduled_to_end_this_year as scheduled_end_this_year %}
                         {% include "events/includes/time_tag.html" %}
+                        {% endwith %}
+                        {% endwith %}
                         {% endwith %}
 
                         {% if object.venue %}

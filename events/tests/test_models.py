@@ -62,7 +62,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
 
-
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
         rt.save()
@@ -186,3 +185,25 @@ class EventsModelsTests(TestCase):
         # 'Event.previous_event' can return None if there is no
         # OccurringRule or RecurringRule found.
         self.assertIsNone(self.event.previous_event)
+
+    def test_scheduled_to_start_this_year_method(self):
+        now = seconds_resolution(timezone.now())
+
+        occurring_time_dtstart = now + datetime.timedelta(days=3)
+        OccurringRule.objects.create(
+            event=self.event,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart
+        )
+        self.assertTrue(self.event.is_scheduled_to_start_this_year())
+
+    def test_scheduled_to_end_this_year_method(self):
+        now = seconds_resolution(timezone.now())
+
+        occurring_time_dtstart = now + datetime.timedelta(days=3)
+        OccurringRule.objects.create(
+            event=self.event,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart
+        )
+        self.assertTrue(self.event.is_scheduled_to_end_this_year())
