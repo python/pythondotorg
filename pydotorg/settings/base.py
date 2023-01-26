@@ -203,6 +203,7 @@ INSTALLED_APPS = [
     'django_filters',
     'polymorphic',
     'django_extensions',
+    'import_export',
 ]
 
 # Fixtures

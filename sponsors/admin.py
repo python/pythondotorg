@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
     PolymorphicChildModelAdmin
@@ -12,6 +13,10 @@ from django.forms import ModelForm
 from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
+
+from import_export import resources
+from import_export.fields import Field
+from import_export.admin import ImportExportActionModelAdmin
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
@@ -292,8 +297,78 @@ class SponsorshipStatusListFilter(admin.SimpleListFilter):
         return choices
 
 
+class SponsorshipResource(resources.ModelResource):
+
+    sponsor_name = Field(attribute='sponsor__name', column_name='Company Name')
+    contact_name = Field(column_name='Contact Name(s)')
+    contact_email = Field(column_name='Contact Email(s)')
+    contact_phone = Field(column_name='Contact phone number')
+    contact_type = Field(column_name='Contact Type(s)')
+    start_date = Field(attribute='start_date', column_name='Start Date')
+    end_date = Field(attribute='end_date', column_name='End Date')
+    web_logo = Field(column_name='Logo')
+    landing_page_url = Field(attribute='sponsor__landing_page_url', column_name='Webpage link')
+    level = Field(attribute='package__name', column_name='Sponsorship Level')
+    cost = Field(attribute='sponsorship_fee', column_name='Sponsorship Cost')
+    admin_url = Field(attribute='admin_url', column_name='Admin Link')
+
+    class Meta:
+        model = Sponsorship
+        fields = (
+            'sponsor_name',
+            'contact_name',
+            'contact_email',
+            'contact_phone',
+            'contact_type',
+            'start_date',
+            'end_date',
+            'web_logo',
+            'landing_page_url',
+            'level',
+            'cost',
+            'admin_url',
+        )
+        export_order = (
+            "sponsor_name",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
+            "contact_type",
+            "start_date",
+            "end_date",
+            "web_logo",
+            "landing_page_url",
+            "level",
+            "cost",
+            "admin_url",
+        )
+
+    def get_sponsorship_url(self, sponsorship):
+        domain = Site.objects.get_current().domain
+        url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.id])
+        return f'https://{domain}{url}'
+
+    def dehydrate_web_logo(self, sponsorship):
+        return sponsorship.sponsor.web_logo.url
+
+    def dehydrate_contact_type(self, sponsorship):
+        return "\n".join([contact.type for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_name(self, sponsorship):
+        return "\n".join([contact.name for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_email(self, sponsorship):
+        return "\n".join([contact.email for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_phone(self, sponsorship):
+        return "\n".join([contact.phone for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_admin_url(self, sponsorship):
+        return self.get_sponsorship_url(sponsorship)
+
+
 @admin.register(Sponsorship)
-class SponsorshipAdmin(admin.ModelAdmin):
+class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline, AssetsInline]
@@ -310,6 +385,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     ]
     list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
+    resource_class = SponsorshipResource
     fieldsets = [
         (
             "Sponsorship Data",
