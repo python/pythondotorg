@@ -46,7 +46,7 @@ def api_call(uri, query):
     timestamp = timegm(datetime.utcnow().timetuple())
     base_string = "".join(
         (
-            settings.PYCON_API_SETTINGS,
+            settings. PYCON_API_SECRET,
             str(timestamp),
             method.upper(),
             f"{uri}?{urlencode(query)}",
