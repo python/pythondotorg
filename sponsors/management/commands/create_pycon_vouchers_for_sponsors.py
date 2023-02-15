@@ -30,7 +30,7 @@ BENEFITS = {
     },
     148: {
         "internal_name": "additional_full_conference_passes_2023_code",
-        "voucher_type": "SPNS_EXPO_DISC_",
+        "voucher_type": "SPNS_ADDL_DISC_REG_",
     },
     166: {
         "internal_name": "online_only_conference_passes_2023_code",
