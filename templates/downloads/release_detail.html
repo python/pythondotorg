@@ -65,8 +65,12 @@
                 <td>{{ f.filesize }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% if release_files|has_sigstore_materials %}
-                <td>{% if f.sigstore_cert_file %}<a href="{{ f.sigstore_cert_file}}">CRT</a>{% endif %}</td>
-                <td>{% if f.sigstore_signature_file %}<a href="{{ f.sigstore_signature_file }}">SIG</a>{% endif %}</td>
+                  {% if f.sigstore_bundle_file %}
+                  <td colspan="2">{% if f.sigstore_bundle_file %}<a href="{{ f.sigstore_bundle_file}}">.sigstore</a>{% endif %}</td>
+                  {% else %}
+                  <td>{% if f.sigstore_cert_file %}<a href="{{ f.sigstore_cert_file}}">CRT</a>{% endif %}</td>
+                  <td>{% if f.sigstore_signature_file %}<a href="{{ f.sigstore_signature_file }}">SIG</a>{% endif %}</td>
+                  {% endif %}
                 {% endif %}
               </tr>
             {% endfor %}

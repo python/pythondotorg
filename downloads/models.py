@@ -329,6 +329,9 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     sigstore_cert_file = models.URLField(
         "Sigstore Cert URL", blank=True, help_text="Sigstore Cert URL"
     )
+    sigstore_bundle_file = models.URLField(
+        "Sigstore Bundle URL", blank=True, help_text="Sigstore Bundle URL"
+    )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
