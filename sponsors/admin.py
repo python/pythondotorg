@@ -489,7 +489,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
             "get_custom_benefits_removed_by_user",
         ]
 
-        if obj and obj.status != Sponsorship.APPLIED:
+        if obj and not obj.open_for_editing:
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
@@ -553,6 +553,16 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                 "<int:pk>/list-assets",
                 self.admin_site.admin_view(self.list_uploaded_assets_view),
                 name=f"{base_name}_list_uploaded_assets",
+            ),
+            path(
+                "<int:pk>/unlock",
+                self.admin_site.admin_view(self.unlock_view),
+                name=f"{base_name}_unlock",
+            ),
+            path(
+                "<int:pk>/lock",
+                self.admin_site.admin_view(self.lock_view),
+                name=f"{base_name}_lock",
             ),
         ]
         return my_urls + urls
@@ -676,6 +686,12 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
     def list_uploaded_assets_view(self, request, pk):
         return views_admin.list_uploaded_assets(self, request, pk)
+
+    def unlock_view(self, request, pk):
+        return views_admin.unlock_view(self, request, pk)
+
+    def lock_view(self, request, pk):
+        return views_admin.lock_view(self, request, pk)
 
 
 @admin.register(SponsorshipCurrentYear)

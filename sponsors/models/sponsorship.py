@@ -161,6 +161,7 @@ class Sponsorship(models.Model):
     status = models.CharField(
         max_length=20, choices=STATUS_CHOICES, default=APPLIED, db_index=True
     )
+    locked = models.BooleanField(default=False)
 
     start_date = models.DateField(null=True, blank=True)
     end_date = models.DateField(null=True, blank=True)
@@ -210,6 +211,12 @@ class Sponsorship(models.Model):
             end = self.end_date.strftime(fmt)
             repr += f" [{start} - {end}]"
         return repr
+
+    def save(self, *args, **kwargs):
+        if "locked" not in kwargs.get("update_fields", []):
+            if self.status != self.APPLIED:
+                self.locked = True
+        return super().save(*args, **kwargs)
 
     @classmethod
     @transaction.atomic
@@ -287,6 +294,7 @@ class Sponsorship(models.Model):
             msg = f"Can't reject a {self.get_status_display()} sponsorship."
             raise InvalidStatusException(msg)
         self.status = self.REJECTED
+        self.locked = True
         self.rejected_on = timezone.now().date()
 
     def approve(self, start_date, end_date):
@@ -297,6 +305,7 @@ class Sponsorship(models.Model):
             msg = f"Start date greater or equal than end date"
             raise SponsorshipInvalidDateRangeException(msg)
         self.status = self.APPROVED
+        self.locked = True
         self.start_date = start_date
         self.end_date = end_date
         self.approved_on = timezone.now().date()
@@ -319,6 +328,10 @@ class Sponsorship(models.Model):
         self.status = self.APPLIED
         self.approved_on = None
         self.rejected_on = None
+
+    @property
+    def unlocked(self):
+        return not self.locked
 
     @property
     def verified_emails(self):
@@ -353,7 +366,7 @@ class Sponsorship(models.Model):
 
     @property
     def open_for_editing(self):
-        return self.status == self.APPLIED
+        return (self.status == self.APPLIED) or (self.unlocked)
 
     @property
     def next_status(self):
