@@ -1,5 +1,5 @@
 {% extends "admin/change_form.html" %}
-{% load i18n admin_urls %}
+{% load i18n admin_urls admin_modify %}
 
 {% block object-tools-items %}
   {% with original as sp %}
@@ -38,6 +38,18 @@
     <li>
       <a href="{% url 'admin:sponsors_sponsorship_list_uploaded_assets' sp.pk %}">Uploaded Assets</a>
     </li>
+
+    {% if sp.unlocked and sp.status != sp.APPLIED %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_lock' sp.pk %}" style="background: #70bf2b">Lock</a>
+    </li>
+    {% endif %}
+
+    {% if sp.locked and sp.status == sp.FINALIZED  %}
+    <li>
+      <a href="{% url 'admin:sponsors_sponsorship_unlock' sp.pk %}">Unlock</a>
+    </li>
+    {% endif %}
 
   {% endwith %}
 

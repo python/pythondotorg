@@ -182,6 +182,44 @@ def rollback_to_editing_view(ModelAdmin, request, pk):
     )
 
 
+def unlock_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        try:
+            sponsorship.locked = False
+            sponsorship.save(update_fields=['locked'])
+            ModelAdmin.message_user(
+                request, "Sponsorship is now unlocked!", messages.SUCCESS
+            )
+        except InvalidStatusException as e:
+            ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+        redirect_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+        )
+        return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship}
+    return render(
+        request,
+        "sponsors/admin/unlock.html",
+        context=context,
+    )
+
+
+def lock_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    sponsorship.locked = True
+    sponsorship.save()
+
+    redirect_url = reverse(
+        "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+    )
+    return redirect(redirect_url)
+
+
 def execute_contract_view(ModelAdmin, request, pk):
     contract = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
 
