@@ -43,7 +43,7 @@ Running pythondotorg locally
 Once you have Docker and Docker Compose installed, run:
 
 ```
-make serve
+docker compose up
 ```
 
 This will pull down all the required docker containers, build the environment for pythondotorg, run migrations, load development fixtures, and start all of the necessary services. 
