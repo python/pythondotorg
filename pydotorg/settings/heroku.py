@@ -20,18 +20,6 @@ CACHES = {
     }
 }
 
-HAYSTACK_SEARCHBOX_SSL_URL = config(
-    'SEARCHBOX_SSL_URL'
-)
-
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
-        'URL': HAYSTACK_SEARCHBOX_SSL_URL,
-        'INDEX_NAME': 'haystack-prod',
-    },
-}
-
 SECRET_KEY = config('SECRET_KEY')
 
 ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
