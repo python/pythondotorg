@@ -1,11 +1,14 @@
 dj-database-url==0.5.0
 django-pipeline==2.0.6
 django-sitetree==1.17.0
+django-apptemplates==1.5
+django-admin-interface==0.24.2
+django-translation-aliases==0.1.0
 Django==2.2.24
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
-Pillow==8.3.1
+Pillow==9.4.0
 psycopg2-binary==2.8.6
 python3-openid==3.2.0
 python-decouple==3.4
