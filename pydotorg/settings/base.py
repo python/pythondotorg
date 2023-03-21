@@ -94,8 +94,12 @@ TEMPLATES = [
         'DIRS': [
             TEMPLATES_DIR,
         ],
-        'APP_DIRS': True,
         'OPTIONS': {
+            'loaders': [
+                'apptemplates.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -151,10 +155,14 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
     'django.contrib.humanize',
 
+    'admin_interface',
+    'colorfield',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+
+    'django_translation_aliases',
     'pipeline',
     'sitetree',
     'imagekit',
@@ -288,7 +296,8 @@ MESSAGE_TAGS = {
 
 ### SecurityMiddleware
 
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 ### django-rest-framework
 
