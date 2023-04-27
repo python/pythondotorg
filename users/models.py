@@ -58,6 +58,13 @@ class User(AbstractUser):
             return False
 
     @property
+    def membership_type(self):
+        try:
+            return self.membership.get_membership_type_display()
+        except Membership.DoesNotExist:
+            return None
+
+    @property
     def sponsorships(self):
         from sponsors.models import Sponsorship
         return Sponsorship.objects.visible_to(self)

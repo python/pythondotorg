@@ -21,7 +21,7 @@
                 <p><span class="profile-label">Name:</span> {% firstof object.get_full_name object %}</p>
             </div>
             <div class="user-profile-membership">
-                <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span> PSF Member?</span> {{ object.has_membership|yesno|capfirst }}</p>
+                <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span> PSF Member?</span> {{ object.membership_type|default:"No" }}</p>
             </div>
             {% comment %}
             <div class="user-profile-location">
