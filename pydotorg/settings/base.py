@@ -212,6 +212,7 @@ INSTALLED_APPS = [
     'polymorphic',
     'django_extensions',
     'import_export',
+    'django_dbml',
 ]
 
 # Fixtures

@@ -53,3 +53,4 @@ docxtpl==0.12.0
 reportlab==3.6.6
 django-extensions==3.1.4
 django-import-export==2.7.1
+git+https://github.com/ewdurbin/django-dbml.git@0cc95cc44c9b7f4c9ff16c2ff236a79d3811ef90#egg=django-dbml
