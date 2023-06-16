@@ -65,7 +65,7 @@ Downloads and Releases
 The ``downloads`` app stores all of the structured data regarding Python releases.  Each ``Release`` object has associated ``ReleaseFile`` objects that contain information on the various download formats Python.org
 supports.
 
-If the version you are creating should be considered the "latest" release for the major version in question (Python 2.x.x, 3.x.x, etc)
+If the version you are creating should be considered the "latest" release for the minor version in question (Python 2.x.x, 3.x.x, etc)
 then check the 'Is this the latest release' checkbox.  When the ``Release`` is saved, the previous version will be automatically
 demoted for you and the new version will be used prominently on the site.  For example the download buttons and supernav links.
 
