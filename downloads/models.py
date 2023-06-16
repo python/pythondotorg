@@ -56,7 +56,7 @@ class Release(ContentManageable, NameSlugModel):
         default=False,
         db_index=True,
         help_text="Set this if this should be considered the latest release "
-                  "for the minor version. Previous 'latest' versions will "
+                  "for the major version. Previous 'latest' versions will "
                   "automatically have this flag turned off.",
     )
     is_published = models.BooleanField(
