@@ -35,7 +35,6 @@ jobs:
         run: |
           pip install -U pip setuptools wheel
           pip install -r dev-requirements.txt
-          pip install -r prod-requirements.txt
       - name: Check for ungenerated database migrations
         run: |
           python manage.py makemigrations --check --dry-run
