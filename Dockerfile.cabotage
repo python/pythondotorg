@@ -1,4 +1,5 @@
 FROM python:3.9-bullseye
+COPY --from=ewdurbin/nginx-static:1.25.x /usr/bin/nginx /usr/bin/nginx
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 RUN mkdir /code
