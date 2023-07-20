@@ -29,13 +29,16 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
         """
         return [
             (match.start(), match.end())
-            for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)
+            for match in re.finditer(r'\/\*.*?\*\/', content, flags=re.DOTALL)
         ]
 
-    def url_converter(self, name, hashed_files, template=None, comment_blocks=[]):
+    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
         """
         Return the custom URL converter for the given file name.
         """
+        if comment_blocks is None:
+            comment_blocks = []
+
         if template is None:
             template = self.default_template
 
