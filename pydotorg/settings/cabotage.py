@@ -68,7 +68,7 @@ INSTALLED_APPS += [
 
 RAVEN_CONFIG = {
     "dsn": config('SENTRY_DSN'),
-    "release": config('SOURCE_VERSION'),
+    "release": config('SOURCE_COMMIT'),
 }
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
