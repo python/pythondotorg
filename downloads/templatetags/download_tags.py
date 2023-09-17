@@ -31,4 +31,14 @@ def prioritise_64bit_over_32bit(files):
             new.append(current)
         previous = current
 
-    return new
+    # Put embeddable packages at the end
+    embeddable_packages = []
+    others = []
+
+    for file in new:
+        if file.name.startswith('Windows embeddable package'):
+            embeddable_packages.append(file)
+        else:
+            others.append(file)
+
+    return others + embeddable_packages
