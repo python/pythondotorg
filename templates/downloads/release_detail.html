@@ -2,7 +2,7 @@
 {% load boxes %}
 {% load sitetree %}
 {% load has_sigstore_materials from download_tags %}
-{% load prioritise_64bit_over_32bit from download_tags %}
+{% load sort_windows from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -57,7 +57,7 @@
             </tr>
           </thead>
           <tbody>
-            {% for f in release_files|prioritise_64bit_over_32bit %}
+            {% for f in release_files|sort_windows %}
               <tr>
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>

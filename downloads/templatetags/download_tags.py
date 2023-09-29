@@ -17,28 +17,34 @@ def has_sigstore_materials(files):
 
 
 @register.filter
-def prioritise_64bit_over_32bit(files):
+def sort_windows(files):
     if not files:
         return files
 
-    # Put 64-bit files before 32-bit
-    new = []
-    previous = files[0]
-    for i, current in enumerate(files):
-        if i >= 1 and '(64-bit)' in current.name and '(32-bit)' in previous.name:
-            new.insert(-1, current)
+    # Put Windows files in preferred order
+    files = list(files)
+    windows_files = []
+    other_files = []
+    for preferred in (
+        'Windows installer (64-bit)',
+        'Windows installer (32-bit)',
+        'Windows installer (ARM64)',
+        'Windows help file',
+        'Windows embeddable package (64-bit)',
+        'Windows embeddable package (32-bit)',
+        'Windows embeddable package (ARM64)',
+    ):
+        for file in files:
+            if file.name == preferred:
+                windows_files.append(file)
+                files.remove(file)
+                break
+
+    # Then append any remaining Windows files
+    for file in files:
+        if file.name.startswith('Windows'):
+            windows_files.append(file)
         else:
-            new.append(current)
-        previous = current
+            other_files.append(file)
 
-    # Put embeddable packages at the end
-    embeddable_packages = []
-    others = []
-
-    for file in new:
-        if file.name.startswith('Windows embeddable package'):
-            embeddable_packages.append(file)
-        else:
-            others.append(file)
-
-    return others + embeddable_packages
+    return other_files + windows_files
