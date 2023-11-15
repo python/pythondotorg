@@ -183,7 +183,7 @@ $().ready(function() {
     }
     /* Animate some scrolling for smoother transitions */
 
-    /* ! Not currently working in IE10/Windows 8, Chrome for Android, Firefox (all versions)... something about the animate() function */
+    /* ! Not currently working in IE10/Windows 8, Firefox (all versions)... something about the animate() function */
     $("#close-python-network").click(function() {
         $('body, html').animate({ scrollTop: $('#python-network').offset().top }, 300);
         return false;
