@@ -13,7 +13,6 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
     name = indexes.CharField(model_attr='name')
     description = indexes.CharField()
     path = indexes.CharField()
-    version = indexes.CharField(model_attr='version')
     release_notes_url = indexes.CharField(model_attr='release_notes_url')
     release_date = indexes.DateTimeField(model_attr='release_date')
 
