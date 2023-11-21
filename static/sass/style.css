@@ -2771,10 +2771,6 @@ p.quote-by-organization {
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/
 .left-sidebar .sidebar-widget {
   margin-bottom: 0.875em; }
-.left-sidebar .twitter-widget {
-  padding: 0; }
-.left-sidebar .twtr-doc {
-  padding: .75em; }
 
 .jobs-form p {
   padding: 0 0.3125em; }
