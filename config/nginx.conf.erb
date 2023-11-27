@@ -12,6 +12,7 @@ http {
         gzip on;
         gzip_comp_level 2;
         gzip_min_length 512;
+	gzip_proxied any; # Heroku router sends Via header
 
 	server_tokens off;
 
