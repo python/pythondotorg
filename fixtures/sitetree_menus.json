@@ -2557,7 +2557,7 @@
     "fields": {
         "title": "PSF Sponsors",
         "hint": "",
-        "url": "/psf/sponsorship/sponsors/",
+        "url": "/psf/sponsors/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
