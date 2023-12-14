@@ -258,7 +258,7 @@ class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
     @cached_property
     def benefits(self):
         qs = EmailTargetableConfiguration.objects.all().values_list("benefit_id", flat=True)
-        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs), year=SponsorshipCurrentYear.get_year())
         return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
