@@ -146,6 +146,15 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
         return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
 
 
+class BenefitFeatureConfigurationQuerySet(PolymorphicQuerySet):
+
+    def delete(self):
+        if not self.polymorphic_disabled:
+            return self.non_polymorphic().delete()
+        else:
+            return super().delete()
+
+
 class GenericAssetQuerySet(PolymorphicQuerySet):
 
     def all_assets(self):
