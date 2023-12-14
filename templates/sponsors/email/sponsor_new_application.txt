@@ -1,9 +1,11 @@
 {% load sponsors %}
 Dear {{ sponsorship.sponsor.name }}
 {% if sponsorship.for_modified_package %}
-Thank you for submitting your sponsorship application. We will contact you to discuss finalizing the customized sponsorship package within 2 business days.
+Thank you for submitting your sponsorship application.
+We will contact you to discuss finalizing the customized sponsorship package within 5 business days.
 {% else %}
-Thank you for submitting your sponsorship application. We will be sending a Contract reflecting the sponsorship contract details.
+Thank you for submitting your sponsorship application.
+We will be sending a Contract reflecting the sponsorship contract details within 5 business days.
 {% endif %}
 You can review your full application and a list of benefits you will receive below.
 
