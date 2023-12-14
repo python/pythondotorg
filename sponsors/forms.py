@@ -127,6 +127,7 @@ class SponsorshipsBenefitsForm(forms.Form):
         if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
                 slug="standalone-only",
+                year=SponsorshipCurrentYear.get_year(),
                 defaults={"name": "Standalone Only", "sponsorship_amount": 0},
             )
 
