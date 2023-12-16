@@ -392,6 +392,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
     overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
+    renewal = forms.CheckboxInput()
 
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
@@ -415,6 +416,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        renewal = cleaned_data.get("renewal")
 
         if start_date and end_date and end_date <= start_date:
             raise forms.ValidationError("End date must be greater than start date")

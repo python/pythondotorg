@@ -28,6 +28,7 @@ class TestRenderContract(TestCase):
             "sponsorship": self.contract.sponsorship,
             "benefits": [],
             "legal_clauses": [],
+            "renewal": False,
         }
         self.template = "sponsors/admin/preview-contract.html"
 
@@ -56,6 +57,26 @@ class TestRenderContract(TestCase):
     @patch("sponsors.pdf.DocxTemplate")
     def test_render_response_with_docx_attachment(self, MockDocxTemplate):
         template = Path(settings.TEMPLATES_DIR) / "sponsors" / "admin" / "contract-template.docx"
+        self.assertTrue(template.exists())
+        mocked_doc = Mock(DocxTemplate)
+        MockDocxTemplate.return_value = mocked_doc
+
+        request = Mock(HttpRequest)
+        response = render_contract_to_docx_response(request, self.contract)
+
+        MockDocxTemplate.assert_called_once_with(str(template.resolve()))
+        mocked_doc.render.assert_called_once_with(self.context)
+        mocked_doc.save.assert_called_once_with(response)
+        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=contract.docx")
+        self.assertEqual(
+            response.get("Content-Type"),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+
+    @patch("sponsors.pdf.DocxTemplate")
+    def test_render_response_with_docx_attachment__renewal(self, MockDocxTemplate):
+        self.context.update({"renewal": True})
+        template = Path(settings.TEMPLATES_DIR) / "sponsors" / "admin" / "contract-renewal-template.docx"
         self.assertTrue(template.exists())
         mocked_doc = Mock(DocxTemplate)
         MockDocxTemplate.return_value = mocked_doc

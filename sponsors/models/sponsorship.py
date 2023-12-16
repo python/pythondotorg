@@ -135,7 +135,7 @@ class SponsorshipProgram(OrderedModel):
 
 class Sponsorship(models.Model):
     """
-    Represente a sponsorship application by a sponsor.
+    Represents a sponsorship application by a sponsor.
     It's responsible to group the set of selected benefits and
     link it to sponsor
     """
@@ -182,6 +182,7 @@ class Sponsorship(models.Model):
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
     overlapped_by = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
+    renewal = models.BooleanField(default=False)
 
     assets = GenericRelation(GenericAsset)
 
