@@ -405,6 +405,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             for field_name in self.fields:
                 self.fields[field_name].required = True
 
+
     class Meta:
         model = Sponsorship
         fields = ["start_date", "end_date", "package", "sponsorship_fee"]

@@ -62,7 +62,7 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         if fee:
             sponsorship.sponsorship_fee = fee
         if renewal:
-            sponsorship.renewal = renewal
+            sponsorship.renewal = True
 
         sponsorship.save()
         contract = Contract.new(sponsorship)

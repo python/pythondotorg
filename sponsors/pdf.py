@@ -57,7 +57,6 @@ def _gen_docx_contract(output, contract, **context):
     else:
         template = os.path.join(settings.TEMPLATES_DIR, "sponsors", "admin", "contract-template.docx")
     doc = DocxTemplate(template)
-    # context = _contract_context(contract, **context)
     doc.render(context)
     doc.save(output)
     return output
