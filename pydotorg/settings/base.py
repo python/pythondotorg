@@ -173,7 +173,6 @@ INSTALLED_APPS = [
     'ordered_model',
     'widget_tweaks',
     'django_countries',
-    'easy_pdf',
     'sorl.thumbnail',
 
     'banners',
