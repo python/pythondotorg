@@ -28,7 +28,7 @@ class TestRenderContract(TestCase):
             "sponsorship": self.contract.sponsorship,
             "benefits": [],
             "legal_clauses": [],
-            "renewal": False,
+            "renewal": None,
         }
         self.template = "sponsors/admin/preview-contract.html"
 

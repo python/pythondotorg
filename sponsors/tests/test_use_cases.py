@@ -118,7 +118,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
         self.assertEqual(self.sponsorship.package, self.package)
         self.assertEqual(self.sponsorship.level_name, self.package.name)
-        self.assertEqual(self.sponsorship.renewal, False)
+        self.assertFalse(self.sponsorship.renewal)
 
 
     def test_update_renewal_sponsorship_as_approved_and_create_contract(self):
