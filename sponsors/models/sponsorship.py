@@ -383,6 +383,12 @@ class Sponsorship(models.Model):
         }
         return states_map[self.status]
 
+    @property
+    def previous_effective_date(self):
+        if len(self.sponsor.sponsorship_set.all().order_by('-year')) > 1:
+                return self.sponsor.sponsorship_set.all().order_by('-year')[1].start_date
+        return None
+
 
 class SponsorshipBenefit(OrderedModel):
     """
