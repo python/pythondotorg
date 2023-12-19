@@ -402,6 +402,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                     "end_date",
                     "get_contract",
                     "level_name",
+                    "renewal",
                     "overlapped_by",
                 ),
             },
