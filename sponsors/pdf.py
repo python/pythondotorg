@@ -34,7 +34,9 @@ def _contract_context(contract, **context):
         "legal_clauses": _clean_split(contract.legal_clauses.raw),
         "renewal": contract.sponsorship.renewal,
     })
-    context["previous_effective"] = contract.sponsorship.previous_effective_date if contract.sponsorship.previous_effective_date else "UNKNOWN"
+    previous_effective = contract.sponsorship.previous_effective_date
+    context["previous_effective"] = previous_effective if previous_effective else "UNKNOWN"
+    context["previous_effective_english_suffix"] = format(previous_effective, "S") if previous_effective else None
     return context
 
 
