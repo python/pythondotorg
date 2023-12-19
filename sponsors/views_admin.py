@@ -85,7 +85,11 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
             )
             return redirect(redirect_url)
 
-    context = {"sponsorship": sponsorship, "form": form}
+    context = {
+        "sponsorship": sponsorship,
+        "form": form,
+        "previous_effective": sponsorship.previous_effective_date if sponsorship.previous_effective_date else "UNKNOWN",
+    }
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 

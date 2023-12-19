@@ -28,6 +28,8 @@ class TestRenderContract(TestCase):
             "sponsorship": self.contract.sponsorship,
             "benefits": [],
             "legal_clauses": [],
+            "renewal": None,
+            "previous_effective": "UNKNOWN",
         }
         self.template = "sponsors/admin/preview-contract.html"
 
@@ -65,6 +67,42 @@ class TestRenderContract(TestCase):
 
         MockDocxTemplate.assert_called_once_with(str(template.resolve()))
         mocked_doc.render.assert_called_once_with(self.context)
+        mocked_doc.save.assert_called_once_with(response)
+        self.assertEqual(response.get("Content-Disposition"), "attachment; filename=contract.docx")
+        self.assertEqual(
+            response.get("Content-Type"),
+            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+
+    @patch("sponsors.pdf.DocxTemplate")
+    def test_render_response_with_docx_attachment__renewal(self, MockDocxTemplate):
+        renewal_contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__start_date=date.today(),
+                                             sponsorship__renewal=True)
+        text = f"{renewal_contract.benefits_list.raw}\n\n**Legal Clauses**\n{renewal_contract.legal_clauses.raw}"
+        html = render_md(text)
+        renewal_context = {
+            "contract": renewal_contract,
+            "start_date": renewal_contract.sponsorship.start_date,
+            "start_day_english_suffix": format(self.contract.sponsorship.start_date, "S"),
+            "sponsor": renewal_contract.sponsorship.sponsor,
+            "sponsorship": renewal_contract.sponsorship,
+            "benefits": [],
+            "legal_clauses": [],
+            "renewal": True,
+            "previous_effective": "UNKNOWN",
+        }
+        renewal_template = "sponsors/admin/preview-contract.html"
+
+        template = Path(settings.TEMPLATES_DIR) / "sponsors" / "admin" / "renewal-contract-template.docx"
+        self.assertTrue(template.exists())
+        mocked_doc = Mock(DocxTemplate)
+        MockDocxTemplate.return_value = mocked_doc
+
+        request = Mock(HttpRequest)
+        response = render_contract_to_docx_response(request, renewal_contract)
+
+        MockDocxTemplate.assert_called_once_with(str(template.resolve()))
+        mocked_doc.render.assert_called_once_with(renewal_context)
         mocked_doc.save.assert_called_once_with(response)
         self.assertEqual(response.get("Content-Disposition"), "attachment; filename=contract.docx")
         self.assertEqual(

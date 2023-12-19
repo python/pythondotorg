@@ -32,7 +32,9 @@ def _contract_context(contract, **context):
         "sponsorship": contract.sponsorship,
         "benefits": _clean_split(contract.benefits_list.raw),
         "legal_clauses": _clean_split(contract.legal_clauses.raw),
+        "renewal": contract.sponsorship.renewal,
     })
+    context["previous_effective"] = contract.sponsorship.previous_effective_date if contract.sponsorship.previous_effective_date else "UNKNOWN"
     return context
 
 
@@ -49,9 +51,13 @@ def render_contract_to_pdf_file(contract, **context):
 
 
 def _gen_docx_contract(output, contract, **context):
-    template = os.path.join(settings.TEMPLATES_DIR, "sponsors", "admin", "contract-template.docx")
-    doc = DocxTemplate(template)
     context = _contract_context(contract, **context)
+    renewal = context["renewal"]
+    if renewal:
+        template = os.path.join(settings.TEMPLATES_DIR, "sponsors", "admin", "renewal-contract-template.docx")
+    else:
+        template = os.path.join(settings.TEMPLATES_DIR, "sponsors", "admin", "contract-template.docx")
+    doc = DocxTemplate(template)
     doc.render(context)
     doc.save(output)
     return output
