@@ -654,9 +654,9 @@
       "created": "2014-11-13T21:49:22.048Z",
       "updated": "2021-07-29T21:40:21.030Z",
       "label": "download-dev",
-      "content": "<h2>Information about specific ports, and developer info</h2>\r\n\r\n<ul>\r\n   <li><a href=\"/downloads/windows/\">Windows</a></li>\r\n   <li><a href=\"/downloads/macos/\">Macintosh</a></li>\r\n   <li><a href=\"/download/other/\">Other platforms</a></li>\r\n   <li><a href=\"/downloads/source/\">Source</a></li>\r\n   <li><a href=\"/dev/\">Python Developer's Guide</a></li>\r\n   <li><a href=\"http://bugs.python.org\">Python Issue Tracker</a></li>\r\n</ul>",
+      "content": "<h2>Information about specific ports, and developer info</h2>\r\n\r\n<ul>\r\n   <li><a href=\"/downloads/windows/\">Windows</a></li>\r\n   <li><a href=\"/downloads/macos/\">Macintosh</a></li>\r\n   <li><a href=\"/download/other/\">Other platforms</a></li>\r\n   <li><a href=\"/downloads/source/\">Source</a></li>\r\n   <li><a href=\"/dev/\">Python Developer's Guide</a></li>\r\n   <li><a href=\"https://github.com/python/cpython/issues\">Python Issue Tracker</a></li>\r\n</ul>",
       "content_markup_type": "html",
-      "_content_rendered": "<h2>Information about specific ports, and developer info</h2>\r\n\r\n<ul>\r\n   <li><a href=\"/downloads/windows/\">Windows</a></li>\r\n   <li><a href=\"/downloads/macos/\">Macintosh</a></li>\r\n   <li><a href=\"/download/other/\">Other platforms</a></li>\r\n   <li><a href=\"/downloads/source/\">Source</a></li>\r\n   <li><a href=\"/dev/\">Python Developer's Guide</a></li>\r\n   <li><a href=\"http://bugs.python.org\">Python Issue Tracker</a></li>\r\n</ul>"
+      "_content_rendered": "<h2>Information about specific ports, and developer info</h2>\r\n\r\n<ul>\r\n   <li><a href=\"/downloads/windows/\">Windows</a></li>\r\n   <li><a href=\"/downloads/macos/\">Macintosh</a></li>\r\n   <li><a href=\"/download/other/\">Other platforms</a></li>\r\n   <li><a href=\"/downloads/source/\">Source</a></li>\r\n   <li><a href=\"/dev/\">Python Developer's Guide</a></li>\r\n   <li><a href=\"https://github.com/python/cpython/issues\">Python Issue Tracker</a></li>\r\n</ul>"
     }
   },
   {
