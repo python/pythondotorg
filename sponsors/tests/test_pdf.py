@@ -29,6 +29,7 @@ class TestRenderContract(TestCase):
             "benefits": [],
             "legal_clauses": [],
             "renewal": None,
+            "previous_effective": "UNKNOWN",
         }
         self.template = "sponsors/admin/preview-contract.html"
 
@@ -88,6 +89,7 @@ class TestRenderContract(TestCase):
             "benefits": [],
             "legal_clauses": [],
             "renewal": True,
+            "previous_effective": "UNKNOWN",
         }
         renewal_template = "sponsors/admin/preview-contract.html"
 
