@@ -8,7 +8,7 @@ pagestyle: empty
 
 **THIS SPONSORSHIP AGREEMENT** (the **"Agreement"**)
 is entered into and made effective as of the
-{{start_date|time:"d"}}{{start_day_english_suffix}} of {{start_date|time:"B Y"}}
+{{start_date|date:"j"}}{{start_day_english_suffix}} of {{start_date|date:"F Y"}}
 (the **"Effective Date"**),
 by and between the **Python Software Foundation** (the **"PSF"**),
 a Delaware nonprofit corporation,
@@ -21,7 +21,8 @@ referred to as a **"Party"** and collectively as the **"Parties"**.
 
 **WHEREAS**, the PSF is a tax-exempt charitable organization (EIN 04-3594598)
 whose mission is to promote, protect, and advance the Python programming language,
-and to support and facilitate the growth of a diverse and international community of Python programmers (the **"Programs"**);
+and to support and facilitate the growth of a diverse
+and international community of Python programmers (the **"Programs"**);
 
 **WHEREAS**, Sponsor is {{contract.sponsor_info}}; and
 

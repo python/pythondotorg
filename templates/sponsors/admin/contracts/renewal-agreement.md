@@ -24,6 +24,8 @@ whose mission is to promote, protect, and advance the Python programming languag
 and to support and facilitate the growth of a diverse
 and international community of Python programmers (the **"Programs"**);
 
+**WHEREAS**, Sponsor is {{contract.sponsor_info}}; and
+
 **WHEREAS**, Sponsor and the PSF previously entered into a Sponsorship Agreement
 with the effective date of the
 {{ previous_effective|date:"j" }}{{ previous_effective_english_suffix }} of {{ previous_effective|date:"F Y" }}
