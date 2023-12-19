@@ -182,7 +182,11 @@ class Sponsorship(models.Model):
     package = models.ForeignKey(SponsorshipPackage, null=True, on_delete=models.SET_NULL)
     sponsorship_fee = models.PositiveIntegerField(null=True, blank=True)
     overlapped_by = models.ForeignKey("self", null=True, on_delete=models.SET_NULL)
-    renewal = models.BooleanField(null=True, blank=True)
+    renewal = models.BooleanField(
+        null=True,
+        blank=True,
+        help_text="If true, it means the sponsorship is a renewal of a previous sponsorship and will use the renewal template for contracting."
+    )
 
     assets = GenericRelation(GenericAsset)
 
