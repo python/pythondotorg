@@ -392,6 +392,10 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
     overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
+    renewal = forms.BooleanField(
+        help_text="If true, it means the sponsorship is a renewal of a previous sponsorship and will use the renewal template for contracting.",
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
@@ -403,10 +407,12 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             self.fields.pop("overlapped_by")  # overlapped should never be displayed on approval
             for field_name in self.fields:
                 self.fields[field_name].required = True
+        self.fields["renewal"].required = False
+
 
     class Meta:
         model = Sponsorship
-        fields = ["start_date", "end_date", "package", "sponsorship_fee"]
+        fields = ["start_date", "end_date", "package", "sponsorship_fee", "renewal"]
         widgets = {
             'year': SPONSORSHIP_YEAR_SELECT,
         }
@@ -415,6 +421,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        renewal = cleaned_data.get("renewal")
 
         if start_date and end_date and end_date <= start_date:
             raise forms.ValidationError("End date must be greater than start date")

@@ -55,11 +55,14 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         sponsorship.approve(start_date, end_date)
         package = kwargs.get("package")
         fee = kwargs.get("sponsorship_fee")
+        renewal = kwargs.get("renewal", False)
         if package:
             sponsorship.package = package
             sponsorship.level_name = package.name
         if fee:
             sponsorship.sponsorship_fee = fee
+        if renewal:
+            sponsorship.renewal = True
 
         sponsorship.save()
         contract = Contract.new(sponsorship)
