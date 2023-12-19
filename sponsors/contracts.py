@@ -33,11 +33,16 @@ def _contract_context(contract, **context):
             "legal_clauses": _clean_split(contract.legal_clauses.raw),
         }
     )
+    previous_effective = contract.sponsorship.previous_effective_date
+    context["previous_effective"] = previous_effective if previous_effective else "UNKNOWN"
+    context["previous_effective_english_suffix"] = format(previous_effective, "S") if previous_effective else "UNKNOWN"
     return context
 
 
 def render_markdown_from_template(contract, **context):
     template = "sponsors/admin/contracts/sponsorship-agreement.md"
+    if contract.sponsorship.renewal:
+        template = "sponsors/admin/contracts/renewal-agreement.md"
     context = _contract_context(contract, **context)
     return render_to_string(template, context)
 
@@ -66,7 +71,7 @@ def render_contract_to_docx_response(request, contract, **context):
     )
     response[
         "Content-Disposition"
-    ] = f"attachment; filename=sponsorship-contract-{contract.sponsorship.sponsor.name.replace(' ', '-')}.docx"
+    ] = f"attachment; filename={'sponsorship-renewal' if contract.sponsorship.renewal else 'sponsorship-contract'}-{contract.sponsorship.sponsor.name.replace(' ', '-')}.docx"
     return response
 
 
