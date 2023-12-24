@@ -3,6 +3,7 @@ from itertools import chain
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
+from django.core.validators import FileExtensionValidator
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -225,10 +226,11 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.ImageField(
+    print_logo = forms.FileField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg'])],
     )
 
     primary_phone = forms.CharField(
@@ -557,10 +559,11 @@ class SponsorUpdateForm(forms.ModelForm):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.ImageField(
+    print_logo = forms.FileField(
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg'])],
     )
 
     def __init__(self, *args, **kwargs):
