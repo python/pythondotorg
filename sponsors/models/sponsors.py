@@ -71,8 +71,15 @@ class Sponsor(ContentManageable):
     postal_code = models.CharField(
         verbose_name="Zip/Postal Code", max_length=64, default=""
     )
-    country = CountryField(default="")
+    country = CountryField(default="", help_text="For mailing/contact purposes")
     assets = GenericRelation(GenericAsset)
+    country_of_incorporation = CountryField(
+        verbose_name="Country of incorporation (If different)",  blank=True, null=True
+    )
+    state_of_incorporation = models.CharField(
+        verbose_name="US only: State of incorporation (If different)",
+        max_length=64, blank=True, null=True, default=""
+    )
 
     class Meta:
         verbose_name = "sponsor"

@@ -69,16 +69,29 @@
           </p>
         </div>
       </div>
-
+            <div class="inline_fields">
+              <div>
       <p class="form_field">
         <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}
           {{ form.country.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.country %}
         {% if form.country.help_text %}
-          <br/>
           <span class="helptext">{{ form.country.help_text }}</span>
         {% endif %}
       </p>
+                </div>
+                <div>
+                        <p class="form_field">
+        <label>{{ form.country_of_incorporation.label }} <span class="error-message">{% if form.country_of_incorporation.errors %}
+          {{ form.country.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.country_of_incorporation %}
+        {% if form.country_of_incorporation.help_text %}
+          <br/>
+          <span class="helptext">{{ form.country_of_incorporation.help_text }}</span>
+        {% endif %}
+        </p>
+                    </div>
+            </div>
 
       <div class="inline_fields">
         <div>
@@ -131,8 +144,19 @@
               <span class="helptext">{{ form.state.help_text }}</span>
             {% endif %}
           </p>
+          </div>
+          <div>
+                    <p class="form_field">
+            <label>{{ form.state_of_incorporation.label }} <span class="error-message">{% if form.state_of_incorporation.errors %}
+              {{ form.state_of_incorporation.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.state %}
+            {% if form.state_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state_of_incorporation.help_text }}</span>
+            {% endif %}
+          </p>
+            </div>
         </div>
-      </div>
 
 
       <div class="inline_fields">
