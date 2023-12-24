@@ -230,7 +230,7 @@ class SponsorshipApplicationForm(forms.Form):
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg'])],
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
     )
 
     primary_phone = forms.CharField(
@@ -563,7 +563,7 @@ class SponsorUpdateForm(forms.ModelForm):
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg'])],
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
     )
 
     def __init__(self, *args, **kwargs):

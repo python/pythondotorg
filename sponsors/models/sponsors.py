@@ -52,7 +52,7 @@ class Sponsor(ContentManageable):
     )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg'])],
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
         blank=True,
         null=True,
         verbose_name="Print logo",
