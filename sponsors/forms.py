@@ -252,15 +252,15 @@ class SponsorshipApplicationForm(forms.Form):
         label="State/Province/Region", max_length=64, required=False
     )
     state_of_incorporation = forms.CharField(
-        label="State of incorporation", help_text="US only, if different from registered state", max_length=64, required=False
+        label="State of incorporation", help_text="US only, If different", max_length=64, required=False
     )
     postal_code = forms.CharField(
         label="Zip/Postal Code", max_length=64, required=False
     )
-    country = CountryField().formfield(required=False)
+    country = CountryField().formfield(required=False, help_text="For mailing/contact purposes")
 
     country_of_incorporation = CountryField().formfield(
-        label="Country of incorporation", help_text="If different from registered country", required=False
+        label="Country of incorporation", help_text="For contractual purposes", required=False
     )
 
     def __init__(self, *args, **kwargs):

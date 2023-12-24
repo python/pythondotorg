@@ -74,7 +74,7 @@ class Sponsor(ContentManageable):
     country = CountryField(default="", help_text="For mailing/contact purposes")
     assets = GenericRelation(GenericAsset)
     country_of_incorporation = CountryField(
-        verbose_name="Country of incorporation (If different)",  blank=True, null=True
+        verbose_name="Country of incorporation (If different)", help_text="For contractual purposes", blank=True, null=True
     )
     state_of_incorporation = models.CharField(
         verbose_name="US only: State of incorporation (If different)",
