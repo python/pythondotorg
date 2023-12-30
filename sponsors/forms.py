@@ -378,6 +378,8 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
             print_logo=self.cleaned_data.get("print_logo"),
+            country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
+            state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
         for contact in contacts:
