@@ -62,7 +62,7 @@
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
-                <td>{{ f.filesize }}</td>
+                <td>{{ f.filesize|filesizeformat }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
