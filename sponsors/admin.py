@@ -247,8 +247,15 @@ class SponsorBenefitInline(admin.TabularInline):
         return obj.open_for_editing
 
     def get_queryset(self, *args, **kwargs):
+        match = request.resolver_match
+        sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+
+        year = sponsorship.year
+        # available_packages = SponsorshipPackage.objects.from_year(year)
         qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsorship_benefit__program", "program")
+        filtered = qs.filter(sponsorship_benefit__packages__year=year)
+
+        return filtered.select_related("sponsorship_benefit__program", "program")
 
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):

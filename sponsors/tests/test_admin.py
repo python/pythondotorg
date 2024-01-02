@@ -8,6 +8,13 @@ from django.test import TestCase, RequestFactory
 from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
 from sponsors.models import Sponsorship
 
+class TestSponsorshipAdmin(TestCase):
+    def setUp(self):
+        self.request = RequestFactory().get("/")
+        self.model_admin = SponsorshipAdmin
+    def test_get_benefits_for_current_year(self):
+
+
 class TestCustomSponsorshipStatusListFilter(TestCase):
 
     def setUp(self):
