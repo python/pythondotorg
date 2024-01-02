@@ -252,7 +252,7 @@ class SponsorshipApplicationForm(forms.Form):
         label="State/Province/Region", max_length=64, required=False
     )
     state_of_incorporation = forms.CharField(
-        label="State of incorporation", help_text="US only, If different", max_length=64, required=False
+        label="State of incorporation", help_text="US only, If different than mailing address", max_length=64, required=False
     )
     postal_code = forms.CharField(
         label="Zip/Postal Code", max_length=64, required=False
