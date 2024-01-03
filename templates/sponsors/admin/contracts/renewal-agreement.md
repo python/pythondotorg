@@ -4,6 +4,8 @@ geometry:
 - margin=1.25in
 font-size: 12pt
 pagestyle: empty
+header-includes:
+- \pagenumbering{gobble}
 ---
 
 **THIS SPONSORSHIP AGREEMENT RENEWAL** (the **"Agreement"**)
