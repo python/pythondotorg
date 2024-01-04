@@ -71,7 +71,7 @@ def render_contract_to_docx_response(request, contract, **context):
     )
     response[
         "Content-Disposition"
-    ] = f"attachment; filename={'sponsorship-renewal' if contract.sponsorship.renewal else 'sponsorship-contract'}-{contract.sponsorship.sponsor.name.replace(' ', '-')}.docx"
+    ] = f"attachment; filename={'sponsorship-renewal' if contract.sponsorship.renewal else 'sponsorship-contract'}-{contract.sponsorship.sponsor.name.replace(' ', '-').replace('.', '')}.docx"
     return response
 
 
