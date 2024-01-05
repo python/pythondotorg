@@ -685,7 +685,7 @@
     "fields": {
         "title": "PEP Index",
         "hint": "",
-        "url": "http://python.org/dev/peps/",
+        "url": "https://peps.python.org",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
