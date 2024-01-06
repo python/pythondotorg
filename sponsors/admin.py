@@ -253,7 +253,7 @@ class SponsorBenefitInline(admin.TabularInline):
         year = sponsorship.year
         # available_packages = SponsorshipPackage.objects.from_year(year)
         qs = super().get_queryset(*args, **kwargs)
-        filtered = qs.filter(sponsorship_benefit__packages__year=year)
+        filtered = qs.filter(sponsorship_benefit__year=year)
 
         return filtered.select_related("sponsorship_benefit__program", "program")
 
