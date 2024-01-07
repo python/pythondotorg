@@ -1,3 +1,6 @@
+from pathlib import Path
+
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 
 from django.conf import settings
@@ -443,6 +446,21 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertEqual(sponsor.twitter_handle, "@companyx")
         self.assertEqual(sponsor.country_of_incorporation, "US")
         self.assertEqual(sponsor.state_of_incorporation, "NY")
+
+    def test_create_sponsor_with_svg_for_print_logo(
+            self,
+    ):
+        tick_svg = Path(settings.STATICFILES_DIRS[0]) / "img"/"sponsors"/"tick.svg"
+        with tick_svg.open("rb") as fd:
+            uploaded_svg = SimpleUploadedFile("tick.svg", fd.read())
+        self.files["print_logo"] = uploaded_svg
+
+        form = SponsorshipApplicationForm(self.data, self.files)
+        self.assertTrue(form.is_valid(), form.errors)
+
+        sponsor = form.save()
+
+        self.assertTrue(sponsor.print_logo)
 
     def test_use_previous_user_sponsor(self):
         contact = baker.make(SponsorContact, user__email="foo@foo.com")
