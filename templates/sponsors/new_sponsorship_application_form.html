@@ -2,15 +2,19 @@
 {% load boxes widget_tweaks %}
 {% load humanize %}
 {% load sponsors %}
+{% block page_title %}Sponsorship Information{% endblock %}
 
 
-{% block page_title %}Submit Sponsorship Information{% endblock %}
 
 {% block content %}
   <article id="new_sponsorship_application_container" class="text">
-    <h1>Submit Sponsorship Information</h1>
 
-    <div id="sponsorship-info-container" class="user-feedback level-general">
+{% if sponsor %}
+<div>
+<h1> Edit {{sponsor}}</h1>
+</div>
+{% else %}
+        <div id="sponsorship-info-container" class="user-feedback level-general">
       {% if sponsorship_package %}
       <p>
         You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
@@ -33,6 +37,10 @@
       <p><i>Please complete the form below.</i></p>
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
     </div>
+
+    <h1>Submit Sponsorship Information</h1>
+{% endif %}
+
 
     {% if form.errors %}
     <span class="error-message">The form has one or more errors</span>
@@ -129,6 +137,9 @@
           <p class="form_field">
           <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.web_logo %}
+            {% if sponsor.web_logo %}
+          <p>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></p>
+        {% endif %}
             {% if form.web_logo.help_text %}
             <br/>
             <span class="helptext">{{ form.web_logo.help_text }}</span>
@@ -140,6 +151,9 @@
           <p class="form_field">
             <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.print_logo %}
+            {% if sponsor.print_logo %}
+          <p>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></p>
+        {% endif %}
             {% if form.print_logo.help_text %}
             <br/>
             <span class="helptext">{{ form.print_logo.help_text }}</span>
@@ -253,11 +267,16 @@
 
           <button class="formset-btn add-form-row" type="button">Extra contact</button>
         </div>
-
+{% if sponsor %}
+              <div class="form-actions">
+        <input type="submit" name="submit-btn" value="Save"/>
+      </div>
+        {% else %}
       </div>
 
       <input id="submit-btn" type="submit" value="Apply">
     </form>
+    {% endif %}
   </article>
 
 {% endblock content %}
