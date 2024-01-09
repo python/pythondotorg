@@ -253,10 +253,17 @@ class SponsorshipApplicationForm(forms.Form):
     state = forms.CharField(
         label="State/Province/Region", max_length=64, required=False
     )
+    state_of_incorporation = forms.CharField(
+        label="State of incorporation", help_text="US only, If different than mailing address", max_length=64, required=False
+    )
     postal_code = forms.CharField(
         label="Zip/Postal Code", max_length=64, required=False
     )
-    country = CountryField().formfield(required=False)
+    country = CountryField().formfield(required=False, help_text="For mailing/contact purposes")
+
+    country_of_incorporation = CountryField().formfield(
+        label="Country of incorporation", help_text="For contractual purposes", required=False
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -373,6 +380,8 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
             print_logo=self.cleaned_data.get("print_logo"),
+            country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
+            state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
         for contact in contacts:
