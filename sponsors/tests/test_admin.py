@@ -6,7 +6,6 @@ from model_bakery import baker
 from django.test import TestCase, RequestFactory
 
 from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
-from sponsors.forms import SponsorBenefitAdminInlineForm
 from sponsors.models import Sponsorship
 
 class TestCustomSponsorshipStatusListFilter(TestCase):
