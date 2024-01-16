@@ -44,9 +44,9 @@ and international community of Python programmers (the **"Programs"**);
 
 1. [**Intellectual Property**]{.underline} The PSF is the sole owner of all right, title, and interest to all the PSF information, including the PSF’s logo, trademarks, trade names, and copyrighted information, unless otherwise provided.
 
-    1. [Grant of License by the PSF]{.underline} The PSF hereby grants to Sponsor a limited, non- exclusive license to use certain of the PSF’s intellectual property, including the PSF’s name, acronym, and logo (collectively, the "PSF Intellectual Property"), solely in connection with promotion of Sponsor’s sponsorship of the Programs. Sponsor agrees that it shall not use the PSF’s Property in a manner that states or implies that the PSF endorses Sponsor (or Sponsor’s products or services). The PSF retains the right, in its sole and absolute discretion, to review and approve in advance all uses of the PSF Intellectual Property, which approval shall not be unreasonably withheld.
+    (a) [Grant of License by the PSF]{.underline} The PSF hereby grants to Sponsor a limited, non- exclusive license to use certain of the PSF’s intellectual property, including the PSF’s name, acronym, and logo (collectively, the "PSF Intellectual Property"), solely in connection with promotion of Sponsor’s sponsorship of the Programs. Sponsor agrees that it shall not use the PSF’s Property in a manner that states or implies that the PSF endorses Sponsor (or Sponsor’s products or services). The PSF retains the right, in its sole and absolute discretion, to review and approve in advance all uses of the PSF Intellectual Property, which approval shall not be unreasonably withheld.
 
-    1. [Grant of License by Sponsor]{.underline} Sponsor hereby grants to the PSF a limited, non-exclusive license to use certain of Sponsor’s intellectual property, including names, trademarks, and copyrights (collectively, "Sponsor Intellectual Property"), solely to identify Sponsor as a sponsor of the Programs and the PSF. Sponsor retains the right to review and approve in advance all uses of the Sponsor Intellectual Property, which approval shall not be unreasonably withheld.
+    (a) [Grant of License by Sponsor]{.underline} Sponsor hereby grants to the PSF a limited, non-exclusive license to use certain of Sponsor’s intellectual property, including names, trademarks, and copyrights (collectively, "Sponsor Intellectual Property"), solely to identify Sponsor as a sponsor of the Programs and the PSF. Sponsor retains the right to review and approve in advance all uses of the Sponsor Intellectual Property, which approval shall not be unreasonably withheld.
 
 1. [**Term**]{.underline} The Term of this Agreement will begin on the Effective Date and continue for a period of one (1) year. The Agreement may be renewed for one (1) year by written notice from Sponsor to the PSF.
 
@@ -76,35 +76,42 @@ and international community of Python programmers (the **"Programs"**);
 
 1. [**Notices**]{.underline} All notices or other communications to be given or delivered under the provisions of this Agreement shall be in writing and shall be mailed by certified or registered mail, return receipt requested, or given or delivered by reputable courier, facsimile, or electronic mail to the Party to receive notice at the following addresses or at such other address as any Party may by notice direct in accordance with this Section:
 
-    If to Sponsor:  
 
-    > {{sponsor.primary_contact.name}}  
-    > {{sponsor.name}}  
-    > {{sponsor.mailing_address_line_1}}{%if sponsor.mailing_address_line_2%}  
-    > {{sponsor.mailing_address_line_2 }}{% endif %}  
-    > {{sponsor.city}}, {{sponsor.state}} {{sponsor.postal_code}} {{sponsor.country}}  
-    > Facsimile: {{sponsor.primary_contact.phone}}  
-    > Email: {{sponsor.primary_contact.email}}  
+    If to Sponsor:  
+    
+    >       {{sponsor.primary_contact.name}}  
+    >       {{sponsor.name}}  
+    >       {{sponsor.mailing_address_line_1}}{%if sponsor.mailing_address_line_2%}  
+    >       {{sponsor.mailing_address_line_2 }}{% endif %}  
+    >       {{sponsor.city}}, {{sponsor.state}} {{sponsor.postal_code}} {{sponsor.country}}  
+    >       Facsimile: {{sponsor.primary_contact.phone}}  
+    >       Email: {{sponsor.primary_contact.email}}  
+
+    &nbsp;
 
     If to the PSF:
+    
+    >       Deb Nicholson  
+    >       Executive Director  
+    >       Python Software Foundation  
+    >       9450 SW Gemini Dr. ECM # 90772  
+    >       Beaverton, OR 97008 USA  
+    >       Facsimile: +1 (858) 712-8966  
+    >       Email: deb@python.org  
 
-    > Deb Nicholson  
-    > Executive Director  
-    > Python Software Foundation  
-    > 9450 SW Gemini Dr. ECM # 90772  
-    > Beaverton, OR 97008 USA  
-    > Facsimile: +1 (858) 712-8966  
-    > Email: deb@python.org  
+    &nbsp;
 
     With a copy to:
+    
+    >       Archer & Greiner, P.C.  
+    >       Attention: Noel Fleming  
+    >       Three Logan Square  
+    >       1717 Arch Street, Suite 3500  
+    >       Philadelphia, PA 19103 USA  
+    >       Facsimile: (215) 963-9999  
+    >       Email: nfleming@archerlaw.com  
 
-    > Archer & Greiner, P.C.  
-    > Attention: Noel Fleming  
-    > Three Logan Square  
-    > 1717 Arch Street, Suite 3500  
-    > Philadelphia, PA 19103 USA  
-    > Facsimile: (215) 963-9999  
-    > Email: nfleming@archerlaw.com  
+    &nbsp;
 
     Notices given by registered or certified mail shall be deemed as given on the delivery date shown on the return receipt, and notices given in any other manner shall be deemed as given when received.
 
@@ -141,29 +148,29 @@ and international community of Python programmers (the **"Programs"**);
 
 &nbsp;
 
-**PSF**:  
-**PYTHON SOFTWARE FOUNDATION**,  
-a Delaware non profit corporation
+>    **PSF**:  
+>    **PYTHON SOFTWARE FOUNDATION**,  
+>    a Delaware non profit corporation
 
 &nbsp;
 
-By:        ________________________________  
-Name:   Loren Crary  
-Title:     Director of Resource Development
+>    By:        ________________________________  
+>    Name:   Loren Crary  
+>    Title:     Director of Resource Development
 
 &nbsp;  
 
 &nbsp;
 
-**SPONSOR**:  
-**{{sponsor.name|upper}}**,  
-a {{sponsor.state}} entity
+>    **SPONSOR**:  
+>    **{{sponsor.name|upper}}**,  
+>    a {{sponsor.state}} entity
 
 &nbsp;
 
-By:        ________________________________  
-Name:   ________________________________  
-Title:     ________________________________
+>    By:        ________________________________  
+>    Name:   ________________________________  
+>    Title:     ________________________________
 
 ::: {.page-break}
 \newpage
@@ -179,9 +186,9 @@ Title:     ________________________________
 
     The PSF’s acknowledgment may include the following:
 
-    - [**Display of Logo**]{.underline} The PSF will display Sponsor’s logo and other agreed-upon identifying information on www.python.org, and on any marketing and promotional media made by the PSF in connection with the Programs, solely for the purpose of acknowledging Sponsor as a sponsor of the Programs in a manner (placement, form, content, etc.) reasonably determined by the PSF in its sole discretion. Sponsor agrees to provide all the necessary content and materials for use in connection with such display.
+    (a) [**Display of Logo**]{.underline} The PSF will display Sponsor’s logo and other agreed-upon identifying information on www.python.org, and on any marketing and promotional media made by the PSF in connection with the Programs, solely for the purpose of acknowledging Sponsor as a sponsor of the Programs in a manner (placement, form, content, etc.) reasonably determined by the PSF in its sole discretion. Sponsor agrees to provide all the necessary content and materials for use in connection with such display.
 
-    - Additional acknowledgment as provided in Sponsor Benefits.
+    (a) Additional acknowledgment as provided in Sponsor Benefits.
 
 1. [**Sponsorship Payment**]{.underline} The amount of Sponsorship Payment shall be {{sponsorship.verbose_sponsorship_fee|title}} USD ($ {{sponsorship.sponsorship_fee}}). The Sponsorship Payment is due within thirty (30) days of the Effective Date. To the extent that any portion of a payment under this section would not (if made as a Separate payment) be deemed a qualified sponsorship payment under IRC § 513(i), such portion shall be deemed and treated as separate from the qualified sponsorship payment.
 
