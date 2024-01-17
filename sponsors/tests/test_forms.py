@@ -423,14 +423,18 @@ class SponsorshipApplicationFormTests(TestCase):
     def test_create_sponsor_with_valid_data_for_non_required_inputs(
             self,
     ):
+        user = baker.make(settings.AUTH_USER_MODEL)
+
         self.data["description"] = "Important company"
         self.data["landing_page_url"] = "https://companyx.com"
         self.data["twitter_handle"] = "@companyx"
+        self.data["country_of_incorporation"] = "US"
+        self.data["state_of_incorporation"] = "NY"
         self.files["print_logo"] = get_static_image_file_as_upload(
             "psf-logo_print.png", "logo_print.png"
         )
 
-        form = SponsorshipApplicationForm(self.data, self.files)
+        form = SponsorshipApplicationForm(self.data, self.files, user=user)
         self.assertTrue(form.is_valid(), form.errors)
 
         sponsor = form.save()
@@ -440,6 +444,8 @@ class SponsorshipApplicationFormTests(TestCase):
         self.assertFalse(form.user_with_previous_sponsors)
         self.assertEqual(sponsor.landing_page_url, "https://companyx.com")
         self.assertEqual(sponsor.twitter_handle, "@companyx")
+        self.assertEqual(sponsor.country_of_incorporation, "US")
+        self.assertEqual(sponsor.state_of_incorporation, "NY")
 
     def test_create_sponsor_with_svg_for_print_logo(
             self,
