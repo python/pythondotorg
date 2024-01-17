@@ -14,3 +14,8 @@ def has_sigstore_materials(files):
         f.sigstore_bundle_file or f.sigstore_cert_file or f.sigstore_signature_file
         for f in files
     )
+
+
+@register.filter
+def has_sbom(files):
+    return any(f.sbom_spdx2_file for f in files)
