@@ -16,6 +16,7 @@ def has_sigstore_materials(files):
     )
 
 
+@register.filter
 def has_sbom(files):
     return any(f.sbom_spdx2_file for f in files)
 
