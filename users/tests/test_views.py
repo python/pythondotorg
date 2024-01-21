@@ -489,7 +489,7 @@ class UpdateSponsorInfoViewTests(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "users/sponsor_info_update.html")
+        self.assertTemplateUsed(response, "sponsors/new_sponsorship_application_form.html")
         self.assertEqual(context["sponsor"], self.sponsor)
         self.assertIsInstance(context["form"], SponsorUpdateForm)
 

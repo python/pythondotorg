@@ -3,6 +3,7 @@ This module holds models related to the Sponsor entity.
 """
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
@@ -51,6 +52,7 @@ class Sponsor(ContentManageable):
     )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
         blank=True,
         null=True,
         verbose_name="Print logo",
@@ -71,8 +73,15 @@ class Sponsor(ContentManageable):
     postal_code = models.CharField(
         verbose_name="Zip/Postal Code", max_length=64, default=""
     )
-    country = CountryField(default="")
+    country = CountryField(default="", help_text="For mailing/contact purposes")
     assets = GenericRelation(GenericAsset)
+    country_of_incorporation = CountryField(
+        verbose_name="Country of incorporation (If different)", help_text="For contractual purposes", blank=True, null=True
+    )
+    state_of_incorporation = models.CharField(
+        verbose_name="US only: State of incorporation (If different)",
+        max_length=64, blank=True, null=True, default=""
+    )
 
     class Meta:
         verbose_name = "sponsor"

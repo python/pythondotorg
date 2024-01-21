@@ -2,6 +2,7 @@
 {% load boxes %}
 {% load sitetree %}
 {% load has_sigstore_materials from download_tags %}
+{% load has_sbom from download_tags %}
 {% load sort_windows from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
@@ -54,6 +55,9 @@
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
+              {% if release_files|has_sbom %}
+              <th>SBOM</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -72,6 +76,9 @@
                   <td>{% if f.sigstore_cert_file %}<a href="{{ f.sigstore_cert_file}}">CRT</a>{% endif %}</td>
                   <td>{% if f.sigstore_signature_file %}<a href="{{ f.sigstore_signature_file }}">SIG</a>{% endif %}</td>
                   {% endif %}
+                {% endif %}
+                {% if release_files|has_sbom %}
+                  <td>{% if f.sbom_spdx2_file %}<a href="{{ f.sbom_spdx2_file }}">SPDX</a>{% endif %}</td>
                 {% endif %}
               </tr>
             {% endfor %}

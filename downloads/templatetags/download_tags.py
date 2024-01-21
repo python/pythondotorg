@@ -16,6 +16,10 @@ def has_sigstore_materials(files):
     )
 
 
+def has_sbom(files):
+    return any(f.sbom_spdx2_file for f in files)
+
+
 @register.filter
 def sort_windows(files):
     if not files:

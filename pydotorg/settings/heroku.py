@@ -26,9 +26,9 @@ HAYSTACK_SEARCHBOX_SSL_URL = config(
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
+        'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
         'URL': HAYSTACK_SEARCHBOX_SSL_URL,
-        'INDEX_NAME': 'haystack-prod',
+        'INDEX_NAME': config('HAYSTACK_INDEX', default='haystack-prod'),
     },
 }
 

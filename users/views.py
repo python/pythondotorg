@@ -264,7 +264,7 @@ class SponsorshipDetailView(DetailView):
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorInfoView(UpdateView):
     object_name = "sponsor"
-    template_name = 'users/sponsor_info_update.html'
+    template_name = 'sponsors/new_sponsorship_application_form.html'
     form_class = SponsorUpdateForm
 
     def get_queryset(self):
