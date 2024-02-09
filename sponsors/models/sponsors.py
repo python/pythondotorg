@@ -44,6 +44,12 @@ class Sponsor(ContentManageable):
         null=True,
         verbose_name="Twitter handle",
     )
+    linked_in_page_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="LinkedIn page URL",
+        help_text="URL for your LinkedIn page."
+    )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
         verbose_name="Web logo",

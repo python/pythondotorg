@@ -3405,6 +3405,23 @@ span.highlighted {
   .icon-megaphone span, .icon-python-alt span, .icon-pypi span, .icon-news span, .icon-moderate span, .icon-mercurial span, .icon-jobs span, .icon-help span, .icon-download span, .icon-documentation span, .icon-community span, .icon-code span, .icon-close span, .icon-calendar span, .icon-beginner span, .icon-advanced span, .icon-sitemap span, .icon-search span, .icon-search-alt span, .icon-python span, .icon-github span, .icon-get-started span, .icon-feed span, .icon-facebook span, .icon-email span, .icon-arrow-up span, .icon-arrow-right span, .icon-arrow-left span, .icon-arrow-down span, .errorlist:before span, .icon-freenode span, .icon-alert span, .icon-versions span, .icon-twitter span, .icon-thumbs-up span, .icon-thumbs-down span, .icon-text-resize span, .icon-success-stories span, .icon-statistics span, .icon-stack-overflow span, .icon-mastodon span {
     display: none; }
 
+.fa {
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  margin-right: .5em;
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /* Hide a unicode fallback character when we supply it by default.
+   * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
+   */ }
+  .fa {
+    display: none; }
+
 /* Keep this at the bottom since it will create a huge set of data */
 /* 
  * Would have liked to use Compass' built-in font-face mixin with the inline-font-files() helper, but it seems to be BROKEN in older versions!

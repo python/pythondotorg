@@ -2426,6 +2426,24 @@ span.highlighted {
 	 */
 	span { display: none; }
 }
+.fa {
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+    margin-right: .5em;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        /* Hide a unicode fallback character when we supply it by default.
+         * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
+         */
+        span { display: none; }
+}
 
 /* Keep this at the bottom since it will create a huge set of data */
 @import "fonts";
