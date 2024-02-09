@@ -221,6 +221,11 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For promotion of your sponsorship on social media.",
         required=False,
     )
+    linked_in_page_url = forms.URLField(
+        label="LinkedIn page URL",
+        help_text="URL for your LinkedIn page.",
+        required=False,
+    )
     web_logo = forms.ImageField(
         label="Sponsor web logo",
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
@@ -379,6 +384,7 @@ class SponsorshipApplicationForm(forms.Form):
             description=self.cleaned_data.get("description", ""),
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
+            linked_in_page_url=self.cleaned_data["linked_in_page_url"],
             print_logo=self.cleaned_data.get("print_logo"),
             country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
             state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
