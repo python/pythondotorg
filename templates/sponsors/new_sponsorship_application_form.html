@@ -130,6 +130,17 @@
               {% endif %}
             </p>
           </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}{{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.linked_in_page_url%}
+              {% if form.linked_in_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
         </div>
 
         <div class="inline_fields">
