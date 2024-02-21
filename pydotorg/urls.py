@@ -54,6 +54,7 @@ urlpatterns = [
         name='account_change_password'),
     path('accounts/', include('allauth.urls')),
     path('box/', include('boxes.urls')),
+    re_path(r'^community-landing(/.*)?$', RedirectView.as_view(url='/community/', permanent=True)),
     path('community/', include('community.urls', namespace='community')),
     path('community/microbit/', TemplateView.as_view(template_name="community/microbit.html"), name='microbit'),
     path('events/', include('events.urls', namespace='events')),
