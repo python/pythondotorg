@@ -50,6 +50,6 @@ num2words==0.5.10
 django-polymorphic==3.0.0
 sorl-thumbnail==12.7.0
 docxtpl==0.12.0
-reportlab==3.6.6
+reportlab==3.6.13
 django-extensions==3.1.4
 django-import-export==2.7.1
