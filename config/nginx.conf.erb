@@ -84,7 +84,7 @@ http {
                   return 301 https://www.python.org/psf;
                 }
 
-                location /community-landing {
+                location ~ ^/community-landing/?(.*)$ {
                   return 301 https://www.python.org/community/;
                 }
 
