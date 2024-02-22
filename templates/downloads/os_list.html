@@ -1,6 +1,7 @@
 {% extends "downloads/base.html" %}
 {% load boxes %}
 {% load sitetree %}
+{% load sort_windows from download_tags %}
 
 {% block body_attributes %}class="python download"{% endblock %}
 
@@ -45,7 +46,7 @@
                             {% endif %}
                         {% endif %}
                         <ul>
-                            {% for f in r.files.all %}
+                            {% for f in r.files.all|sort_windows %}
                                 <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
                             {% empty %}
                                 <li>No files for this release.</li>
@@ -63,7 +64,7 @@
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         <ul>
-                            {% for f in r.files.all %}
+                            {% for f in r.files.all|sort_windows %}
                                 <li>Download <a href="{{ f.url }}">{{ f.name }}</a></li>
                             {% empty %}
                                 <li>No files for this release.</li>

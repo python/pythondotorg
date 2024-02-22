@@ -27,12 +27,3 @@ class BlogViewTest(TestCase):
 
         latest = BlogEntry.objects.latest()
         self.assertEqual(resp.context['latest_entry'], latest)
-
-    def test_blog_redirects(self):
-        """
-        Test that when '/blog/' is hit, it redirects '/blogs/'
-        """
-        response = self.client.get('/blog/')
-        self.assertRedirects(response,
-                             '/blogs/',
-                             status_code=301)

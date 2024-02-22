@@ -3,6 +3,7 @@
 {% load sitetree %}
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
+{% load sort_windows from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -60,13 +61,13 @@
             </tr>
           </thead>
           <tbody>
-            {% for f in release_files %}
+            {% for f in release_files|sort_windows %}
               <tr>
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
-                <td>{{ f.filesize }}</td>
+                <td>{{ f.filesize|filesizeformat }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
