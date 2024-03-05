@@ -208,19 +208,19 @@ http {
                   return 301 https://www.python.org/download/windows/;
                 }
 
-                location /download/ {
+                location ~ ^/download/$ {
                   return 301 https://www.python.org/downloads/;
                 }
 
-                location /download/source/ {
+                location ~ ^/download/source/$ {
                   return 301 https://www.python.org/downloads/source/;
                 }
 
-                location /download/mac/ {
+                location ~ ^/download/mac/$ {
                   return 301 https://www.python.org/downloads/macos/;
                 }
 
-                location /download/windows/ {
+                location ~ ^/download/windows/$ {
                   return 301 https://www.python.org/downloads/windows/;
                 }
 
