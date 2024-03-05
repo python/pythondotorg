@@ -1,6 +1,6 @@
 {% load humanize %}
 ---
-title: SPONSORSHIP AGREEMENT
+title: SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
 geometry:
 - margin=1.25in
 font-size: 12pt
@@ -9,7 +9,7 @@ header-includes:
 - \pagenumbering{gobble}
 ---
 
-**THIS SPONSORSHIP AGREEMENT** (the **"Agreement"**)
+**THIS SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}** (the **"Agreement"**)
 is entered into and made effective as of the
 {{start_date|date:"j"}}{{start_day_english_suffix}} of {{start_date|date:"F Y"}}
 (the **"Effective Date"**),
@@ -29,12 +29,26 @@ and international community of Python programmers (the **"Programs"**);
 
 **WHEREAS**, Sponsor is {{contract.sponsor_info}}; and
 
-**WHEREAS**, Sponsor wishes to support the Programs by making a contribution to the PSF.
+**WHEREAS**, Sponsor {% if renewal %}
+and the PSF previously entered into a Sponsorship Agreement
+with the effective date of the
+{{ previous_effective|date:"j" }}{{ previous_effective_english_suffix }} of {{ previous_effective|date:"F Y" }}
+
+**WHEREAS**, Sponsor wishes to renew its support the Programs by making a contribution to the PSF.
+and a term of one year (the “Sponsorship Agreement”).
+{% else %}
+wishes to support the Programs by making a contribution to the PSF.
+{% endif %}
 
 ## AGREEMENT
 
 **NOW, THEREFORE**, in consideration of the foregoing and the mutual covenants contained herein, and for other good and valuable consideration, the receipt and sufficiency of which are hereby acknowledged, the Parties hereto agree as follows: 
 
+{% if renewal %}
+1. [**Replacement of the Exhibit**]{.underline} Exhibit A to the Sponsorship Agreement is replaced with Exhibit A below.
+
+1. [**Renewal**]{.underline} Approval and incorporation of this new exhibit with the previous Sponsor Benefits shall be considered written notice by Sponsor to the PSF that you wish to continue the terms of the Sponsorship Agreement for an additional year and to contribute the new Sponsorship Payment specified in Exhibit A, beginning on the Effective Date, as contemplated by Section 6 of the Sponsorship Agreement.
+{% else %}
 1. [**Recitals Incorporated**]{.underline}. Each of the above Recitals is incorporated into and is made a part of this Agreement.
 
 1. [**Exhibits Incorporated by Reference**]{.underline}. All exhibits referenced in this Agreement are incorporated herein as integral parts of this Agreement and shall be considered reiterated herein as fully as if such provisions had been set forth verbatim in this Agreement.
@@ -134,6 +148,7 @@ and international community of Python programmers (the **"Programs"**);
 
 1. [**Entire Agreement**]{.underline}. This Agreement (including the Exhibits) sets forth the entire agreement of the Parties and supersedes all prior oral or written agreements or understandings between the Parties as to the subject matter of this Agreement. Except as otherwise expressly provided herein, neither Party is relying upon any warranties, representations, assurances, or inducements of the other Party.
 
+{% endif %}
 &nbsp;  
   
 
@@ -143,9 +158,9 @@ and international community of Python programmers (the **"Programs"**);
 \newpage
 :::
 
-## SPONSORSHIP AGREEMENT
+## SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
 
-**IN WITNESS WHEREOF**, the Parties hereto have duly executed this **Sponsorship Agreement** as of the **Effective Date**.
+**IN WITNESS WHEREOF**, the Parties hereto have duly executed this **Sponsorship Agreement{% if renewal %} Renewal{% endif %}** as of the **Effective Date**.
 
 &nbsp;
 
@@ -177,7 +192,7 @@ and international community of Python programmers (the **"Programs"**);
 \newpage
 :::
 
-## SPONSORSHIP AGREEMENT
+## SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
 
 ### EXHIBIT A
 
