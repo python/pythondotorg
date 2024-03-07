@@ -277,6 +277,18 @@ class UpdateSponsorInfoView(UpdateView):
         messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
         return self.request.path
 
+@login_required(login_url=settings.LOGIN_URL)
+def edit_sponsor_info_implicit(request):
+    sponsors = Sponsor.objects.filter(contacts__user=request.user).all()
+    if len(sponsors) == 0:
+        messages.add_message(request, messages.INFO, "No Sponsors associated with your user.")
+        return redirect('users:user_profile_edit')
+    elif len(sponsors) == 1:
+        return redirect('users:edit_sponsor_info', pk=sponsors[0].id)
+    else:
+        messages.add_message(request, messages.INFO, "Multiple Sponsors associated with your user.")
+        return render(request, 'users/sponsor_select.html', context={"sponsors": sponsors})
+
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorshipAssetsView(UpdateView):
