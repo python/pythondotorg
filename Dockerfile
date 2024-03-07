@@ -16,7 +16,6 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     set -x \
     && apt-get update \
     && apt-get install --no-install-recommends -y \
-        pandoc \
         texlive-latex-base \
         texlive-latex-recommended \
         texlive-fonts-recommended \
@@ -35,6 +34,8 @@ WORKDIR /code
 
 COPY dev-requirements.txt /code/
 COPY base-requirements.txt /code/
+COPY prod-requirements.txt /code/
+COPY requirements.txt /code/
 
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
 
