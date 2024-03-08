@@ -4,16 +4,16 @@ django-sitetree==1.17.0
 django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
-Django==2.2.24
+Django==3.2.25
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
-Pillow==9.4.0
+Pillow==10.2.0
 psycopg2-binary==2.8.6
 python3-openid==3.2.0
 python-decouple==3.4
 # lxml used by BeautifulSoup.
-lxml==4.6.3
+lxml==4.9.1
 cssselect==1.1.0
 feedparser==6.0.8
 beautifulsoup4==4.9.3
@@ -35,7 +35,7 @@ django-honeypot==1.0.1
 django-markupfield==2.0.0
 django-markupfield-helpers==0.1.1
 
-django-allauth==0.41.0
+django-allauth==0.54.0
 
 django-waffle==2.2.1
 
@@ -50,6 +50,7 @@ num2words==0.5.10
 django-polymorphic==3.0.0
 sorl-thumbnail==12.7.0
 docxtpl==0.12.0
-reportlab==3.6.6
+reportlab==3.6.13
 django-extensions==3.1.4
 django-import-export==2.7.1
+setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
