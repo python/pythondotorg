@@ -29,6 +29,9 @@ HAYSTACK_CONNECTIONS = {
         'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
         'URL': HAYSTACK_SEARCHBOX_SSL_URL,
         'INDEX_NAME': config('HAYSTACK_INDEX', default='haystack-prod'),
+        'KWARGS': {
+            'ca_certs': '/var/run/secrets/cabotage.io/ca.crt',
+        }
     },
 }
 
@@ -68,7 +71,7 @@ INSTALLED_APPS += [
 
 RAVEN_CONFIG = {
     "dsn": config('SENTRY_DSN'),
-    "release": config('SOURCE_VERSION'),
+    "release": config('SOURCE_COMMIT'),
 }
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
