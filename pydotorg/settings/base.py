@@ -31,6 +31,23 @@ DATABASES = {
     )
 }
 
+# celery settings
+_REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
+
+CELERY_BROKER_URL = _REDIS_URL
+CELERY_RESULT_BACKEND = _REDIS_URL
+
+CELERY_BEAT_SCHEDULE = {
+    # "example-management-command": {
+    #    "task": "pydotorg.celery.run_management_command",
+    #    "schedule": crontab(hour=12, minute=0),
+    #    "args": ("daily_volunteer_reminder", [], {}),
+    # },
+    # 'example-task': {
+    #     'task': 'users.tasks.example_task',
+    # },
+}
+
 ### Locale settings
 
 TIME_ZONE = 'UTC'
@@ -163,6 +180,7 @@ INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'django_celery_beat',
     'django_translation_aliases',
     'pipeline',
     'sitetree',
@@ -173,7 +191,6 @@ INSTALLED_APPS = [
     'ordered_model',
     'widget_tweaks',
     'django_countries',
-    'easy_pdf',
     'sorl.thumbnail',
 
     'banners',

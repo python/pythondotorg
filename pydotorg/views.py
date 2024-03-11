@@ -1,8 +1,13 @@
 from django.conf import settings
+from django.http import HttpResponse
 from django.views.generic.base import RedirectView, TemplateView
 
 from codesamples.models import CodeSample
 from downloads.models import Release
+
+
+def health(request):
+    return HttpResponse('OK')
 
 
 class IndexView(TemplateView):
