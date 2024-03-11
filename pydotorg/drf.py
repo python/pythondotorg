@@ -57,7 +57,7 @@ class BaseFilterSet(filters.FilterSet):
                     *field_parts, filter = params
                     field = LOOKUP_SEP.join(field_parts)
             errors.append(
-                '{!r} is not an allowed filter on the {!r} field.'.format(filter, field)
+                f'{filter!r} is not an allowed filter on the {field!r} field.'
             )
         if errors:
             raise serializers.ValidationError({'error': errors})
@@ -65,6 +65,10 @@ class BaseFilterSet(filters.FilterSet):
 
 
 class BaseAPITestCase:
+    """
+    This is mixin base class to be combined with a real Django's TestCase or
+    DRF's APITestCase implementation in order to run the tests.
+    """
 
     api_version = 'v2'
     app_label = None
@@ -83,7 +87,7 @@ class BaseAPITestCase:
         self._check_testcase_config()
         if app_label is None:
             app_label = self.app_label
-        base_url = '/api/%s/%s/%s/' % (self.api_version, app_label, model)
+        base_url = f'/api/{self.api_version}/{app_label}/{model}/'
         if pk is not None:
             base_url += '%d/' % pk
         if filters is not None:

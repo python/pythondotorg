@@ -1,8 +1,7 @@
-from django.conf.urls import url
-
 from . import views
+from django.urls import path
 
 
 urlpatterns = [
-    url(r'^$', views.Membership.as_view(), name='membership'),
+    path('', views.Membership.as_view(), name='membership'),
 ]

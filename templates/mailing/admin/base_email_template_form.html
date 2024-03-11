@@ -1,0 +1,16 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls %}
+
+{% block object-tools-items %}
+  {% with original as email_template %}
+
+    {% if email_template %}
+    <li>
+        <a href="{{ email_template.preview_content_url }}" target="_blank" style="background: #417690">Preview</a>
+    </li>
+    {% endif %}
+
+  {% endwith %}
+
+  {{ block.super }}
+{% endblock %}

@@ -125,6 +125,7 @@ class UserProfileFormTestCase(TestCase):
         User.objects.create_user('test42', 'test42@example.com', 'testpass')
 
         form = UserProfileForm({
+            'username': 'stanne',
             'email': 'test42@example.com',
             'search_visibility': 0,
             'email_privacy': 0,
@@ -133,4 +134,20 @@ class UserProfileFormTestCase(TestCase):
         self.assertEqual(
             form.errors,
             {'email': ['Please use a unique email address.']}
+        )
+
+    def test_case_insensitive_unique_username(self):
+        User.objects.create_user('stanne', 'mikael@darktranquillity.com', 'testpass')
+        User.objects.create_user('test42', 'test42@example.com', 'testpass')
+
+        form = UserProfileForm({
+            'username': 'Test42',
+            'email': 'mikael@darktranquillity.com',
+            'search_visibility': 0,
+            'email_privacy': 0,
+        }, instance=User.objects.get(username='stanne'))
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {'username': ['A user with that username already exists.']}
         )

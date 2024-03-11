@@ -41,8 +41,8 @@ def render_template_for(obj, template=None, template_directory=None):
     template_dirs.append('community/types')
 
     for directory in template_dirs:
-        template_list.append('{}/{}.html'.format(directory, obj.get_media_type_display()))
-        template_list.append('{}/default.html'.format(directory))
+        template_list.append(f'{directory}/{obj.get_media_type_display()}.html')
+        template_list.append(f'{directory}/default.html')
 
     output = render_to_string(template_list, context)
     return output

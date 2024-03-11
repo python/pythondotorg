@@ -1,0 +1,145 @@
+{% extends "users/base.html" %}
+{% load humanize pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}
+  {{ sponsorship.sponsor.name }} Sponsorship Application | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="psf signup default-page"{% endblock %}
+
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block user_content %}
+  <div id="sponsorship-detail-container">
+    <h1>{{ sponsorship.sponsor.name }} Sponsorship Application</h1>
+
+    <div class="info-cards">
+
+      <div class="card">
+        <div id="sponsor-info" class="card-info">
+          <h3>Sponsor: {{ sponsor.name }}</h3>
+          <ul>
+            <li>
+              <b>URL:</b> <a href="{{ sponsor.landing_page_url }}" target="_blank">landing page</a>
+            </li>
+            <li>
+              <b>Description:</b> {{ sponsor.description }}
+            </li>
+            <li>
+              <b>Twitter:</b> {{ sponsor.twitter_handle }}
+            </li>
+            <li>
+              <b>Phone:</b> {{ sponsor.primary_phone }}
+            </li>
+            <li>
+              <b>Mailing Address:</b> {{ sponsor.mailing_address_line_1 }}{% if sponsor.mailing_address_line_2 %} - {{ sponsor.mailing_address_line_2 }}{% endif %}
+            </li>
+            <li>
+              <b>City:</b> {{ sponsor.city }}
+            </li>
+            <li>
+              <b>State:</b> {{ sponsor.state }}
+            </li>
+            <li>
+              <b>Country:</b> {{ sponsor.country }}
+            </li>
+          </ul>
+          <br/>
+          <small><a href="{% url 'users:edit_sponsor_info' sponsorship.sponsor.pk %}">Click here</a> if you want to edit sponsor information.</small>
+        </div>
+
+        <div id="application-info" class="card-info">
+          <h3>Application Data</h3>
+          <ul>
+            <li>
+              <b>Status:</b> {{ sponsorship.get_status_display }}
+            </li>
+            <li>
+              <b>Application date:</b> {{ sponsorship.applied_on|default_if_none:"---" }}
+            </li>
+            <li>
+              <b>Approval date:</b> {{ sponsorship.approved_on|default_if_none:"---" }}
+            </li>
+            <li>
+              <b>Start date:</b> {{ sponsorship.start_date|default_if_none:"---" }}
+            </li>
+            <li>
+              <b>End date:</b> {{ sponsorship.end_date|default_if_none:"---" }}
+            </li>
+            {% if sponsorship.finalized_on %}
+              <li>
+                <b>Finalized date:</b> {{ sponsorship.finalized_on }}
+              </li>
+            {% endif %}
+            <li>
+              <b>Level:</b> {{ sponsorship.level_name }}
+            </li>
+            <li>
+              <b>Agreed sponsorship fee:</b> {% if sponsorship.agreed_fee %}${{ sponsorship.agreed_fee|intcomma }}{% else %}
+              To
+              be determined{% endif %}
+            </li>
+          </ul>
+        </div>
+
+      </div>
+
+      <div id="sponsorship-info" class="card">
+        {% if required_assets or fulfilled_assets %}
+        <div id="assets-info" class="card-info">
+          <h3>Required Assets</h3>
+          <p><small>You've selected benefits which requires extra assets (logos, slides etc) in order to be fulfilled.</small></p>
+          <br/>
+          <ul>
+            {% for asset in required_assets %}
+              <li><b>{{ asset.label }}</b><br>Incomplete{% if asset.due_date %} <b>Required by {{ asset.due_date }}</b>{% endif %}: <a href="{{ asset.user_edit_url }}">Add asset</a>.</li>
+            {% endfor %}
+          {% for asset in fulfilled_assets %}
+            <li><b>{{ asset.label }}</b><br>Fulfilled: <a href="{{ asset.user_edit_url }}">Edit asset</a>.</li>
+          {% endfor %}
+          </ul>
+          <br/>
+          <small>Or you can also <a href="{% url 'users:update_sponsorship_assets' sponsorship.pk %}">click here</a> to edit all the assets under the same page.</small>
+        </div>
+        {% endif %}
+
+        {% if provided_assets %}
+        <div id="provided-assets-info" class="card-info">
+          <h3>Provided Assets</h3>
+          <p><small>Assets from the PSF related to your sponsorship.</small></p>
+          <br/>
+          <ul>
+            {% for asset in provided_assets %}
+              <li><b>{{ asset.label }}</b>: <a href="{{ asset.user_view_url }}">View asset</a>.</li>
+            {% endfor %}
+          </ul>
+          <br/>
+          <small>Or you can also <a href="{% url 'users:view_provided_sponsorship_assets' sponsorship.pk %}">click here</a> to view all the assets under the same page.</small>
+        </div>
+        {% endif %}
+
+        <div class="card-info">
+          <h3>Sponsorship Benefits</h3>
+          <ul style="list-style-type:none; margin-left: 0.5em">
+            {% for benefit in sponsorship.benefits.all %}
+              <li>
+                {% if benefit.description %}<i class="fa fa-info" title="{{ benefit.description }}"></i>
+                  - {% endif %} {{ benefit.name_for_display }}
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% javascript 'sponsors' %}
+{% endblock %}

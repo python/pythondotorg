@@ -48,8 +48,12 @@ class TemplateProcessorsTestCase(TestCase):
                 "label": "Membership",
                 "urls": [
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
-                    {"url": reverse("users:user_membership_create"), "label": "Become a PSF member"},
+                    {"url": reverse("users:user_membership_create"), "label": "Become a PSF Basic member"},
                 ],
+            },
+            "sponsorships": {
+                "label": "Sponsorships Dashboard",
+                "url": None,
             }
         }
 
@@ -76,14 +80,33 @@ class TemplateProcessorsTestCase(TestCase):
                 "label": "Membership",
                 "urls": [
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
-                    {"url": reverse("users:user_membership_edit"), "label": "Edit PSF membership"},
+                    {"url": reverse("users:user_membership_edit"), "label": "Edit PSF Basic membership"},
                 ],
+            },
+            "sponsorships": {
+                "label": "Sponsorships Dashboard",
+                "url": None,
             }
         }
 
         self.assertEqual(
             {"USER_NAV_BAR": expected_nav},
             context_processors.user_nav_bar_links(request)
+        )
+
+    def test_user_nav_bar_sponsorship_links(self):
+        request = self.factory.get('/about/')
+        request.user = baker.make(settings.AUTH_USER_MODEL, username='foo')
+        baker.make("sponsors.Sponsorship", submited_by=request.user, _quantity=2, _fill_optional=True)
+
+        expected_section = {
+            "label": "Sponsorships Dashboard",
+            "url": reverse("users:user_sponsorships_dashboard")
+        }
+
+        self.assertEqual(
+            expected_section,
+            context_processors.user_nav_bar_links(request)['USER_NAV_BAR']['sponsorships']
         )
 
     def test_user_nav_bar_links_for_anonymous_user(self):

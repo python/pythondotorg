@@ -1,5 +1,6 @@
 import os
-import dj_database_url
+from dj_database_url import parse as dj_database_url_parser
+from decouple import config
 
 from django.contrib.messages import constants
 
@@ -23,7 +24,28 @@ SITE_VARIABLES = {
 ### Databases
 
 DATABASES = {
-    'default': dj_database_url.config(default='postgres:///python.org')
+    'default': config(
+        'DATABASE_URL',
+        default='postgres:///python.org',
+        cast=dj_database_url_parser
+    )
+}
+
+# celery settings
+_REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
+
+CELERY_BROKER_URL = _REDIS_URL
+CELERY_RESULT_BACKEND = _REDIS_URL
+
+CELERY_BEAT_SCHEDULE = {
+    # "example-management-command": {
+    #    "task": "pydotorg.celery.run_management_command",
+    #    "schedule": crontab(hour=12, minute=0),
+    #    "args": ("daily_volunteer_reminder", [], {}),
+    # },
+    # 'example-task': {
+    #     'task': 'users.tasks.example_task',
+    # },
 }
 
 ### Locale settings
@@ -40,6 +62,7 @@ DATE_FORMAT = 'Y-m-d'
 
 MEDIA_ROOT = os.path.join(BASE, 'media')
 MEDIA_URL = '/media/'
+MEDIAFILES_LOCATION = 'media'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -82,14 +105,19 @@ ACCOUNT_USERNAME_VALIDATORS = 'users.validators.username_validators'
 
 ### Templates
 
+TEMPLATES_DIR = os.path.join(BASE, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(BASE, 'templates'),
+            TEMPLATES_DIR,
         ],
-        'APP_DIRS': True,
         'OPTIONS': {
+            'loaders': [
+                'apptemplates.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -108,6 +136,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = 'django.forms.renderers.DjangoTemplates'
 
 ### URLs, WSGI, middleware, etc.
 
@@ -143,10 +173,15 @@ INSTALLED_APPS = [
     'django.contrib.redirects',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.admin',
-    'django.contrib.admindocs',
     'django.contrib.humanize',
 
+    'admin_interface',
+    'colorfield',
+    'django.contrib.admin',
+    'django.contrib.admindocs',
+
+    'django_celery_beat',
+    'django_translation_aliases',
     'pipeline',
     'sitetree',
     'imagekit',
@@ -156,25 +191,27 @@ INSTALLED_APPS = [
     'ordered_model',
     'widget_tweaks',
     'django_countries',
+    'sorl.thumbnail',
 
-    'users',
+    'banners',
+    'blogs',
     'boxes',
     'cms',
-    'companies',
+    'codesamples',
     'community',
+    'companies',
+    'downloads',
+    'events',
     'jobs',
+    'mailing',
+    'minutes',
+    'nominations',
     'pages',
+    'peps',
     'sponsors',
     'successstories',
-    'events',
-    'minutes',
-    'peps',
-    'blogs',
-    'downloads',
-    'codesamples',
+    'users',
     'work_groups',
-    'nominations',
-    'banners',
 
     'allauth',
     'allauth.account',
@@ -190,6 +227,9 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'django_filters',
+    'polymorphic',
+    'django_extensions',
+    'import_export',
 ]
 
 # Fixtures
@@ -251,12 +291,13 @@ JOB_FROM_EMAIL = 'jobs@python.org'
 EVENTS_TO_EMAIL = 'events@python.org'
 
 # Sponsors
-SPONSORSHIP_NOTIFICATION_FROM_EMAIL = os.environ.get(
-    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL", "sponsors@python.org"
+SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config(
+    "SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org"
 )
-SPONSORSHIP_NOTIFICATION_TO_EMAIL = os.environ.get(
-    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", "psf-sponsors@python.org"
+SPONSORSHIP_NOTIFICATION_TO_EMAIL = config(
+    "SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org"
 )
+PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'
@@ -273,7 +314,8 @@ MESSAGE_TAGS = {
 
 ### SecurityMiddleware
 
-X_FRAME_OPTIONS = 'DENY'
+X_FRAME_OPTIONS = 'SAMEORIGIN'
+SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 ### django-rest-framework
 
@@ -294,10 +336,15 @@ REST_FRAMEWORK = {
     ),
     'DEFAULT_THROTTLE_RATES': {
         'anon': '100/day',
-        'user': '1000/day',
+        'user': '3000/day',
     },
 }
 
 ### pydotorg.middleware.GlobalSurrogateKey
 
 GLOBAL_SURROGATE_KEY = 'pydotorg-app'
+
+### PyCon Integration for Sponsor Voucher Codes
+PYCON_API_KEY = config("PYCON_API_KEY", default="deadbeef-dead-beef-dead-beefdeadbeef")
+PYCON_API_SECRET = config("PYCON_API_SECRET", default="deadbeef-dead-beef-dead-beefdeadbeef")
+PYCON_API_HOST = config("PYCON_API_HOST", default="localhost:8000")

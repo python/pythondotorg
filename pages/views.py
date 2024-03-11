@@ -38,8 +38,8 @@ class PageView(DetailView):
     def content_type(self):
         return self.object.content_type
 
-    def get_extra_context(self, *args, **kwargs):
-        context = self.super().get_extra_context(*args, **kwargs)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         context['in_pages_app'] = True
         return context
 

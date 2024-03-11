@@ -13,7 +13,7 @@ from django.db.models import Max
 from pages.models import Page, Image
 
 PEP_TEMPLATE = 'pages/pep-page.html'
-pep_url = lambda num: 'dev/peps/pep-{}/'.format(num)
+pep_url = lambda num: f'dev/peps/pep-{num}/'
 
 
 def get_peps_last_updated():
@@ -127,7 +127,7 @@ def convert_pep_page(pep_number, content):
 
         soup, data = fix_headers(soup, data)
         if not data['title']:
-            data['title'] = "PEP {} -- ".format(pep_number_humanize)
+            data['title'] = f"PEP {pep_number_humanize} -- "
         else:
             if not re.search(r'PEP \d+', data['title']):
                 data['title'] = "PEP {} -- {}".format(
@@ -150,7 +150,7 @@ def convert_pep_page(pep_number, content):
         if not m:
             continue
 
-        b.attrs['href'] = '/dev/peps/pep-{}/'.format(m.group(1))
+        b.attrs['href'] = f'/dev/peps/pep-{m.group(1)}/'
 
     # Return early if 'html' or 'body' return None.
     if pep_content.html is None or pep_content.body is None:
@@ -169,16 +169,16 @@ def get_pep_page(artifact_path, pep_number, commit=True):
     Given a pep_number retrieve original PEP source text, rst, or html.
     Get or create the associated Page and return it
     """
-    pep_path = os.path.join(artifact_path, 'pep-{}.html'.format(pep_number))
+    pep_path = os.path.join(artifact_path, f'pep-{pep_number}.html')
     if not os.path.exists(pep_path):
-        print("PEP Path '{}' does not exist, skipping".format(pep_path))
+        print(f"PEP Path '{pep_path}' does not exist, skipping")
         return
 
     pep_content = convert_pep_page(pep_number, open(pep_path).read())
     if pep_content is None:
         return None
     pep_rst_source = os.path.join(
-        artifact_path, 'pep-{}.rst'.format(pep_number),
+        artifact_path, f'pep-{pep_number}.rst',
     )
     pep_ext = '.rst' if os.path.exists(pep_rst_source) else '.txt'
     source_link = 'https://github.com/python/peps/blob/master/pep-{}{}'.format(
@@ -202,13 +202,13 @@ def get_pep_page(artifact_path, pep_number, commit=True):
 def add_pep_image(artifact_path, pep_number, path):
     image_path = os.path.join(artifact_path, path)
     if not os.path.exists(image_path):
-        print("Image Path '{}' does not exist, skipping".format(image_path))
+        print(f"Image Path '{image_path}' does not exist, skipping")
         return
 
     try:
         page = Page.objects.get(path=pep_url(pep_number))
     except Page.DoesNotExist:
-        print("Could not find backing PEP {}".format(pep_number))
+        print(f"Could not find backing PEP {pep_number}")
         return
 
     # Find existing images, we have to loop here as we can't use the ORM
@@ -251,7 +251,7 @@ def get_peps_rss(artifact_path):
         template_name="pages/raw.html",
     )
 
-    with open(rss_feed, "r") as rss_content:
+    with open(rss_feed) as rss_content:
         content = rss_content.read()
 
     page.content = content

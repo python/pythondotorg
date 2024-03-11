@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 from django.apps import apps as global_apps
 from django.contrib.contenttypes.management import create_contenttypes
 from django.db import models, migrations

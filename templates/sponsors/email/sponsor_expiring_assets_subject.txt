@@ -1,0 +1,1 @@
+[Action Required] PSF Sponsor deadline approaching in {{ days }} days

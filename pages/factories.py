@@ -1,13 +1,14 @@
 import factory
 
 from django.template.defaultfilters import slugify
+from factory.django import DjangoModelFactory
 
 from users.factories import UserFactory
 
 from .models import Page
 
 
-class PageFactory(factory.DjangoModelFactory):
+class PageFactory(DjangoModelFactory):
 
     class Meta:
         model = Page

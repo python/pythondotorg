@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from rest_framework.authtoken.admin import TokenAdmin
 
@@ -61,16 +61,3 @@ class MembershipAdmin(admin.ModelAdmin):
     search_fields = ['creator__username']
     list_filter = ['membership_type']
     raw_id_fields = ['creator']
-
-
-class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created', )
-    date_hierarchy = 'created'
-
-
-try:
-    admin.site.unregister(ApiKey)
-except admin.sites.NotRegistered:
-    pass
-finally:
-    admin.site.register(ApiKey, ApiKeyAdmin)

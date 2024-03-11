@@ -22,7 +22,7 @@ Here is an example of what that looks like on the site.
 .. image:: _images/supernav-example.png
     :alt: Example Supernav image
 
-The sub-nav items on the left are simply nested :ref:`navigation` links in SiteTree relative to the 'Download' item in the tree.  The larger *Download for Mac OSX* box however is what we refer to as the *supernav*.
+The sub-nav items on the left are simply nested :ref:`navigation` links in SiteTree relative to the 'Download' item in the tree.  The larger *Download for macOS* box however is what we refer to as the *supernav*.
 
 Most supernavs are updated automatically based on the underlying Django application content using signals.
 By convention the application will have a template named ``supernav.html``. For example, upon saving any published :ref:`Release <downloads>` a Django signal is fired to update the ``supernav-python-downloads`` box with the most current Python2 and Python3 releases.  In this case the markup is structured in a way to allow for the automatic OS detection Javascript to show the user the appropriate download links for the OS they are browsing with.
@@ -91,12 +91,21 @@ The jobs application is using to display Python jobs on the site. The data items
 Sponsors
 --------
 
-The Sponsors app is a place to store PSF Sponsors. Sponsors have to be associated to a Company model from
-the companies app.  If they are marked as `is_published` they will be shown on the main sponsor page which
-is located at /sponsors/.
+The Sponsors app is a place to store PSF Sponsors and Sponsorships. This is the most complex app in the
+project due to the multiple possibilities on how to configure a sponsorship and, to support this, the
+app has a lot of models that are grouped by context. Here's a list of the group of models and what do
+they represent:
 
-If a Sponsor is marked as `featured` they will be included in the sponsor rotation on the main PSF landing
-page.  In the fourth "Sponsors" column.
+:sponsorship.py: The `Sponsorship` model and all the related information to configure a new sponsorship
+                 application like programs, packages and benefits;
+:benefits.py: List models that are used to configure benefits. Here you'll find models that forces a
+              benefit to have an asset or controls it maximum quantity;
+:assets.py: Models that are used to configure the type of assets that a benefit can have;
+:sponsors.py: Has the `Sponsor` model and all related information such as their contacts and benefits;
+:notifications.py: Any type of sponsor notification that's configurable via admin;
+:contract.py: The `Contract` model which is used to generate the final contract document and other
+              support models;
+
 
 Events
 ------

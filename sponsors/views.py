@@ -1,32 +1,27 @@
-import json
 from itertools import chain
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import transaction
 from django.forms.utils import ErrorList
-from django.utils.decorators import method_decorator
-from django.http import JsonResponse
-from django.views.generic import ListView, FormView
-from django.urls import reverse_lazy, reverse
 from django.shortcuts import redirect, render
+from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.views.generic import FormView, DetailView, RedirectView
 
 from .models import (
-    Sponsor,
     SponsorshipBenefit,
     SponsorshipPackage,
-    SponsorshipProgram,
-    Sponsorship,
+    SponsorshipProgram, SponsorshipCurrentYear,
 )
 
 from sponsors import cookies
 from sponsors import use_cases
-from sponsors.forms import SponsorshiptBenefitsForm, SponsorshipApplicationForm
+from sponsors.forms import SponsorshipsBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
-    form_class = SponsorshiptBenefitsForm
+    form_class = SponsorshipsBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"
 
     def get_context_data(self, *args, **kwargs):
@@ -44,6 +39,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
                 "benefit_model": SponsorshipBenefit,
                 "sponsorship_packages": packages,
                 "capacities_met": capacities_met,
+                "custom_year": self.get_form_custom_year(),
             }
         )
         return super().get_context_data(*args, **kwargs)
@@ -56,6 +52,20 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
 
     def get_initial(self):
         return cookies.get_sponsorship_selected_benefits(self.request)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        custom_year = self.get_form_custom_year()
+        if custom_year:
+            kwargs["year"] = custom_year
+        return kwargs
+
+    def get_form_custom_year(self):
+        custom_year = self.request.GET.get("config_year")
+        if self.request.user.is_staff and custom_year:
+            custom_year = int(custom_year)
+            if custom_year != SponsorshipCurrentYear.get_year():
+                return custom_year
 
     def form_valid(self, form):
         if not self.request.session.test_cookie_worked():
@@ -73,15 +83,16 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return super().get(request, *args, **kwargs)
 
     def _set_form_data_cookie(self, form, response):
+        pkg = form.cleaned_data.get("package", "")
         data = {
-            "package": "" if not form.get_package() else form.get_package().id,
+            "package": "" if not pkg else pkg.id,
         }
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f == 'add_ons_benefits'
+            if f.startswith("benefits_") or f in ['a_la_carte_benefits', 'standalone_benefits']
         ]:
-            data[fname] = sorted([b.id for b in benefits])
+            data[fname] = sorted(b.id for b in benefits)
 
         cookies.set_sponsorship_selected_benefits(response, data)
 
@@ -116,7 +127,7 @@ class NewSponsorshipApplicationView(FormView):
             None if not package_id else SponsorshipPackage.objects.get(id=package_id)
         )
         benefits_ids = chain(
-            *[self.benefits_data[k] for k in self.benefits_data if k != "package"]
+            *(self.benefits_data[k] for k in self.benefits_data if k != "package")
         )
         benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
 
@@ -149,7 +160,7 @@ class NewSponsorshipApplicationView(FormView):
 
     @transaction.atomic
     def form_valid(self, form):
-        benefits_form = SponsorshiptBenefitsForm(data=self.benefits_data)
+        benefits_form = SponsorshipsBenefitsForm(data=self.benefits_data)
         if not benefits_form.is_valid():
             return self._redirect_back_to_benefits()
 
@@ -159,7 +170,7 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(),
+            benefits_form.get_benefits(include_a_la_carte=True, include_standalone=True),
             benefits_form.get_package(),
             request=self.request,
         )

@@ -11,7 +11,7 @@ class BlogParserTest(unittest.TestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.test_file_path = get_test_rss_path()
-        cls.entries = get_all_entries("file://{}".format(cls.test_file_path))
+        cls.entries = get_all_entries(f"file://{cls.test_file_path}")
 
     def test_entries(self):
         self.assertEqual(len(self.entries), 25)

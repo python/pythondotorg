@@ -68,7 +68,8 @@ class ReleaseFileResource(GenericResource):
             'name', 'slug',
             'creator', 'last_modified_by',
             'os', 'release', 'description', 'is_source', 'url', 'gpg_signature_file',
-            'md5_sum', 'filesize', 'download_button',
+            'md5_sum', 'filesize', 'download_button', 'sigstore_signature_file',
+            'sigstore_cert_file', 'sigstore_bundle_file', 'sbom_spdx2_file',
         ]
         filtering = {
             'name': ('exact',),
@@ -87,7 +88,7 @@ class OSViewSet(viewsets.ModelViewSet):
     serializer_class = OSSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_fields = ('name', 'slug')
+    filterset_fields = ('name', 'slug')
 
 
 class ReleaseViewSet(BaseAPIViewSet):
@@ -95,7 +96,7 @@ class ReleaseViewSet(BaseAPIViewSet):
     serializer_class = ReleaseSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_fields = (
+    filterset_fields = (
         'name',
         'slug',
         'is_published',
@@ -123,7 +124,7 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     serializer_class = ReleaseFileSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filter_class = ReleaseFileFilter
+    filterset_class = ReleaseFileFilter
 
     @action(detail=False, methods=['delete'])
     def delete_by_release(self, request):

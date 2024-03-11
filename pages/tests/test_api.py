@@ -19,7 +19,7 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
             password='passworduser',
             is_staff=True,
         )
-        cls.Authorization = 'Token {}'.format(cls.staff_user.auth_token.key)
+        cls.Authorization = f'Token {cls.staff_user.auth_token.key}'
 
     def test_get_published_pages(self):
         url = self.create_url('page')
