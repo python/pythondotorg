@@ -16,7 +16,7 @@ from sponsors.models.enums import (
 
 ########################################
 # Benefit features abstract classes
-from sponsors.models.managers import BenefitFeatureQuerySet
+from sponsors.models.managers import BenefitFeatureQuerySet, BenefitFeatureConfigurationQuerySet
 
 
 ########################################
@@ -307,11 +307,14 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     Base class for sponsorship benefits configuration.
     """
 
+    objects = BenefitFeatureQuerySet.as_manager()
     benefit = models.ForeignKey("sponsors.SponsorshipBenefit", on_delete=models.CASCADE)
+    non_polymorphic = models.Manager()
 
     class Meta:
         verbose_name = "Benefit Feature Configuration"
         verbose_name_plural = "Benefit Feature Configurations"
+        base_manager_name = 'non_polymorphic'
 
     @property
     def benefit_feature_class(self):

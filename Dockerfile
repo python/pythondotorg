@@ -1,9 +1,48 @@
-FROM python:3.9-bullseye
+FROM python:3.9-bookworm
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
+
+# By default, Docker has special steps to avoid keeping APT caches in the layers, which
+# is good, but in our case, we're going to mount a special cache volume (kept between
+# builds), so we WANT the cache to persist.
+RUN set -eux; \
+    rm -f /etc/apt/apt.conf.d/docker-clean; \
+    echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' > /etc/apt/apt.conf.d/keep-cache;
+
+# Install System level build requirements, this is done before
+# everything else because these are rarely ever going to change.
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked \
+    set -x \
+    && apt-get update \
+    && apt-get install --no-install-recommends -y \
+        texlive-latex-base \
+        texlive-latex-recommended \
+        texlive-fonts-recommended \
+        texlive-plain-generic \
+        lmodern
+
+RUN case $(uname -m) in \
+         "x86_64")  ARCH=amd64 ;; \
+         "aarch64")  ARCH=arm64 ;; \
+    esac \
+    && wget --quiet https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-${ARCH}.deb \
+    && dpkg -i pandoc-2.17.1.1-1-${ARCH}.deb
+
 RUN mkdir /code
 WORKDIR /code
+
 COPY dev-requirements.txt /code/
 COPY base-requirements.txt /code/
-RUN pip install -r dev-requirements.txt
+COPY prod-requirements.txt /code/
+COPY requirements.txt /code/
+
+RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
+
+RUN --mount=type=cache,target=/root/.cache/pip \
+    set -x \
+    && pip --disable-pip-version-check \
+        install \
+        -r dev-requirements.txt
+
 COPY . /code/

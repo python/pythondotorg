@@ -40,6 +40,9 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+        with self.subTest("Release file sizes should be human-readable"):
+            self.assertInHTML("<td>11.8 MB</td>", response.content.decode())
+
         url = reverse('download:download_release_detail', kwargs={'release_slug': 'fake_slug'})
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
