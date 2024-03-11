@@ -17,6 +17,7 @@
 {% block user_content %}
   <div id="edit-sponsor-information">
     <h1>Edit {{ sponsor }}</h1>
+    <h2>Basics</h2>
 
     {% if form.errors %}
       <span class="error-message">The form has one or more errors</span>
@@ -36,7 +37,31 @@
         {% endif %}
         {% render_field form.name %}
       </p>
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+            <label>{{ form.country_of_incorporation.label }} <span class="error-message">{% if form.country_of_incorporation.errors %}
+              {{ form.country.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.country_of_incorporation %}
+            {% if form.country_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.country_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
 
+          <div>
+            <p class="form_field">
+            <label>{{ form.state_of_incorporation.label }} <span class="error-message">{% if form.state_of_incorporation.errors %}
+              {{ form.state_of_incorporation.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.state %}
+            {% if form.state_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
+        </div>
       <p class="form_field">
         <label>{{ form.description.label }} <span class="error-message">{% if form.description.errors %}
           {{ form.description.errors.as_text }}</span>{% endif %}</label>
@@ -68,17 +93,42 @@
             {% endif %}
           </p>
         </div>
-      </div>
 
+        <div>
+          <p class="form_field">
+            <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}
+              {{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.linked_in_page_url%}
+            {% if form.linked_in_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
+            {% endif %}
+          </p>
+        </div>
+      </div>
+            <div class="inline_fields">
+              <div>
       <p class="form_field">
         <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}
           {{ form.country.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.country %}
         {% if form.country.help_text %}
-          <br/>
           <span class="helptext">{{ form.country.help_text }}</span>
         {% endif %}
       </p>
+                </div>
+                <div>
+                        <p class="form_field">
+        <label>{{ form.country_of_incorporation.label }} <span class="error-message">{% if form.country_of_incorporation.errors %}
+          {{ form.country.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.country_of_incorporation %}
+        {% if form.country_of_incorporation.help_text %}
+          <br/>
+          <span class="helptext">{{ form.country_of_incorporation.help_text }}</span>
+        {% endif %}
+        </p>
+                    </div>
+            </div>
 
       <div class="inline_fields">
         <div>
@@ -131,8 +181,19 @@
               <span class="helptext">{{ form.state.help_text }}</span>
             {% endif %}
           </p>
+          </div>
+          <div>
+                    <p class="form_field">
+            <label>{{ form.state_of_incorporation.label }} <span class="error-message">{% if form.state_of_incorporation.errors %}
+              {{ form.state_of_incorporation.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.state %}
+            {% if form.state_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state_of_incorporation.help_text }}</span>
+            {% endif %}
+          </p>
+            </div>
         </div>
-      </div>
 
 
       <div class="inline_fields">

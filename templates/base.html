@@ -41,6 +41,7 @@
 
     {% stylesheet 'style' %}
     {% stylesheet 'mq' %}
+    {% stylesheet 'font-awesome' %}
     {% comment %}
     {# equivalent to: #}
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/style.css" title="default">
@@ -86,7 +87,7 @@
     <link rel="author" href="/humans.txt">
 
     <link rel="alternate" type="application/rss+xml" title="Python Enhancement Proposals"
-          href="https://www.python.org/dev/peps/peps.rss/">
+          href="https://peps.python.org/peps.rss">
     <link rel="alternate" type="application/rss+xml" title="Python Job Opportunities"
           href="https://www.python.org/jobs/feed/rss/">
     <link rel="alternate" type="application/rss+xml" title="Python Software Foundation News"
@@ -235,9 +236,10 @@
                                 <li class="tier-1 last" aria-haspopup="true">
                                     <a href="#" class="action-trigger">Socialize</a>
                                     <ul class="subnav menu">
-                                        <li class="tier-2 element-1" role="treeitem"><a href="https://www.facebook.com/pythonlang?fref=ts"><span aria-hidden="true" class="icon-facebook"></span>Facebook</a></li>
-                                        <li class="tier-2 element-2" role="treeitem"><a href="https://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
+                                        <li class="tier-2 element-1" role="treeitem"><a href="https://www.linkedin.com/company/python-software-foundation/"><i aria-hidden="true" class="fa fa-linkedin-square"></i>LinkedIn</a></li>
+                                        <li class="tier-2 element-2" role="treeitem"><a href="https://fosstodon.org/@ThePSF"><span aria-hidden="true" class="icon-mastodon"></span>Mastodon</a></li>
                                         <li class="tier-2 element-3" role="treeitem"><a href="/community/irc/"><span aria-hidden="true" class="icon-freenode"></span>Chat on IRC</a></li>
+                                        <li class="tier-2 element-4" role="treeitem"><a href="https://twitter.com/ThePSF"><span aria-hidden="true" class="icon-twitter"></span>Twitter</a></li>
                                     </ul>
                                 </li>
                             </ul>
@@ -330,7 +332,7 @@
                             &nbsp;<span class="pre"><a href="/psf-landing/">Python Software Foundation</a></span>
                             &nbsp;<span class="pre"><a href="/about/legal/">Legal Statements</a></span>
                             &nbsp;<span class="pre"><a href="/privacy/">Privacy Policy</a></span>
-                            &nbsp;<span class="pre"><a href="/psf/sponsorship/sponsors/#heroku">Powered by Heroku</a></span>
+                            <!--&nbsp;<span class="pre"><a href="/psf/community-infrastructure">Powered by PSF Community Infrastructure</a></span>-->
                         </small></p>
                     </div>
 

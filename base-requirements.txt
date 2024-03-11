@@ -13,16 +13,18 @@ psycopg2-binary==2.8.6
 python3-openid==3.2.0
 python-decouple==3.4
 # lxml used by BeautifulSoup.
-lxml==4.6.3
+lxml==4.9.2
 cssselect==1.1.0
 feedparser==6.0.8
-beautifulsoup4==4.9.3
+beautifulsoup4==4.11.2
 icalendar==4.0.7
 chardet==4.0.0
+celery[redis]==5.3.6
+django-celery-beat==2.5.0
 # TODO: We may drop 'django-imagekit' completely.
 django-imagekit==4.0.2
-django-haystack==3.0
-elasticsearch>=5,<6
+django-haystack==3.2.1
+elasticsearch>=7,<8
 # TODO: 0.14.0 only supports Django 1.8 and 1.11.
 django-tastypie==0.14.3
 
@@ -44,12 +46,11 @@ django-filter==2.4.0
 django-ordered-model==3.4.3
 django-widget-tweaks==1.4.8
 django-countries==7.2.1
-xhtml2pdf==0.2.5
-django-easy-pdf3==0.1.2
 num2words==0.5.10
 django-polymorphic==3.0.0
 sorl-thumbnail==12.7.0
-docxtpl==0.12.0
-reportlab==3.6.6
 django-extensions==3.1.4
 django-import-export==2.7.1
+
+pypandoc==1.12
+panflute==2.3.0

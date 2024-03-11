@@ -2,6 +2,8 @@
 {% load boxes %}
 {% load sitetree %}
 {% load has_sigstore_materials from download_tags %}
+{% load has_sbom from download_tags %}
+{% load sort_windows from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -53,16 +55,19 @@
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
+              {% if release_files|has_sbom %}
+              <th><a href="https://www.python.org/download/sbom/">SBOM</a></th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
-            {% for f in release_files %}
+            {% for f in release_files|sort_windows %}
               <tr>
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
-                <td>{{ f.filesize }}</td>
+                <td>{{ f.filesize|filesizeformat }}</td>
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
@@ -71,6 +76,9 @@
                   <td>{% if f.sigstore_cert_file %}<a href="{{ f.sigstore_cert_file}}">CRT</a>{% endif %}</td>
                   <td>{% if f.sigstore_signature_file %}<a href="{{ f.sigstore_signature_file }}">SIG</a>{% endif %}</td>
                   {% endif %}
+                {% endif %}
+                {% if release_files|has_sbom %}
+                  <td>{% if f.sbom_spdx2_file %}<a href="{{ f.sbom_spdx2_file }}">SPDX</a>{% endif %}</td>
                 {% endif %}
               </tr>
             {% endfor %}

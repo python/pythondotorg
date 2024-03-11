@@ -21,12 +21,11 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
     <i>It is currently accepted!</i></br>
     {% else %}
     <b>It is not currently accepted!</b></br>
+    <a href="{{ nomination.get_accept_url }}">Change Acceptance</a><br>
     {% endif %}
   {% if editable %}
     {% if nomination.nominator == request.user %}
     <a href="{{ nomination.get_edit_url }}">Edit</a>
-    {% else %}
-    <a href="{{ nomination.get_accept_url }}">Change Acceptance</a>
     {% endif %}
   {% else %}
     <i>It is no longer editable as nominations are closed.</i>

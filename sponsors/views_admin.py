@@ -14,7 +14,7 @@ from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
     SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
+from sponsors.contracts import render_contract_to_pdf_response, render_contract_to_docx_response
 from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
     SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
 
@@ -85,7 +85,11 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
             )
             return redirect(redirect_url)
 
-    context = {"sponsorship": sponsorship, "form": form}
+    context = {
+        "sponsorship": sponsorship,
+        "form": form,
+        "previous_effective": sponsorship.previous_effective_date if sponsorship.previous_effective_date else "UNKNOWN",
+    }
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 

@@ -64,6 +64,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_source=True,
             description='Gzipped source',
             url='ftp/python/2.7.5/Python-2.7.5.tgz',
+            filesize=12345678,
         )
 
         self.draft_release = Release.objects.create(

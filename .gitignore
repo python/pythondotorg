@@ -10,6 +10,7 @@
 # $ git config --global core.excludesfile ~/.gitignore_global
 
 .sass-cache/
+docs/build
 media/*
 static-root/
 static/stylesheets/mq.css

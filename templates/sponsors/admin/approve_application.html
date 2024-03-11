@@ -2,7 +2,18 @@
 {% extends 'admin/change_form.html' %}
 {% load i18n static sponsors %}
 
-{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">
+  <style>
+    .helptext {
+      font-size: smaller;
+      display: block;
+      padding-top: .5em;
+      color: #999;
+    }
+  </style>
+{% endblock %}
 
 {% block title %}Accept {{ sponsorship }} | python.org{% endblock %}
 
@@ -33,8 +44,15 @@
 {{ form.media }}
 {{ form.as_p }}
 
-<input name="confirm" value="yes" style="display:none">
+<p>
+  <label for="id_renewal_previous_effective_date">
+    Previous Effective Contract:
+  </label>
+  <span><b>{{ previous_effective }}</b></span>
+  <span class="helptext">The last known contract effective date for this sponsor. This will <i>only</i> impact renewals. If UNKNOWN, you <strong>MUST</strong> update the resulting docx with the correct effective date.</span>
+</p>
 
+<input name="confirm" value="yes" style="display:none">
 <div class="submit-row">
     <input type="submit" value="Approve" class="default">
 </div>
