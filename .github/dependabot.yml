@@ -20,10 +20,10 @@ updates:
     versions:
     - 4.6.2
 - package-ecosystem: github-actions
-  directory: /
+  directory: "/"
   groups:
     github-actions:
       patterns:
         - "*"  # Group all Actions updates into a single larger pull request
   schedule:
-    interval: weekly
+    interval: monthly
