@@ -2,7 +2,7 @@
 
 # Required for running tests
 
-factory-boy==3.1.0
+factory-boy==3.2.1
 Faker==0.8.1
 tblib==1.7.0
 responses==0.13.3
