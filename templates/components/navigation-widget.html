@@ -14,6 +14,6 @@ URL, ie: 'event_list'.
 
 {% if URL_NAMESPACE %}
     {% sitetree_tree from URL_NAMESPACE template "sitetree/sidebar_menu_root.html" %}
-{% endif %}
-
+{% elif URL_NAME %}
     {% sitetree_tree from URL_NAME template "sitetree/sidebar_menu_root.html" %}
+{% endif %}

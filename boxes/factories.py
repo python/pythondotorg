@@ -4,13 +4,14 @@ import pathlib
 import factory
 
 from django.conf import settings
+from factory.django import DjangoModelFactory
 
 from .models import Box
 
 from users.factories import UserFactory
 
 
-class BoxFactory(factory.DjangoModelFactory):
+class BoxFactory(DjangoModelFactory):
 
     class Meta:
         model = Box

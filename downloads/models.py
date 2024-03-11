@@ -2,6 +2,7 @@ import re
 
 from django.urls import reverse
 from django.conf import settings
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -123,6 +124,27 @@ class Release(ContentManageable, NameSlugModel):
         if version is not None:
             return version.group(1)
         return None
+
+    def is_version_at_least(self, min_version_tuple):
+        v1 = []
+        for b in self.get_version().split('.'):
+            try:
+                v1.append(int(b))
+            except ValueError:
+                break
+        # If v1 (us) is shorter than v2 (the comparand), it will always fail.
+        # Add zeros for the comparison.
+        while len(min_version_tuple) > len(v1):
+            v1.append(0)
+        return tuple(v1) >= min_version_tuple
+
+    @property
+    def is_version_at_least_3_5(self):
+        return self.is_version_at_least((3, 5))
+
+    @property
+    def is_version_at_least_3_9(self):
+        return self.is_version_at_least((3, 9))
 
 
 def update_supernav():
@@ -252,11 +274,12 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
-        purge_url('/downloads/mac-osx/')
+        purge_url('/downloads/macos/')
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
+        purge_url('/ftp/python/')
         if instance.get_version() is not None:
-            purge_url('/ftp/python/{}/'.format(instance.get_version()))
+            purge_url(f'/ftp/python/{instance.get_version()}/')
         # See issue #584 for details
         purge_url('/box/supernav-python-downloads/')
         purge_url('/box/homepage-downloads/')
@@ -300,11 +323,36 @@ class ReleaseFile(ContentManageable, NameSlugModel):
         blank=True,
         help_text="GPG Signature URL"
     )
+    sigstore_signature_file = models.URLField(
+        "Sigstore Signature URL", blank=True, help_text="Sigstore Signature URL"
+    )
+    sigstore_cert_file = models.URLField(
+        "Sigstore Cert URL", blank=True, help_text="Sigstore Cert URL"
+    )
+    sigstore_bundle_file = models.URLField(
+        "Sigstore Bundle URL", blank=True, help_text="Sigstore Bundle URL"
+    )
+    sbom_spdx2_file = models.URLField(
+        "SPDX-2 SBOM URL", blank=True, help_text="SPDX-2 SBOM URL"
+    )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
+
+    def validate_unique(self, exclude=None):
+        if self.download_button:
+            qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
+            if qs.count() > 0:
+                raise ValidationError("Only one Release File per OS can have \"Download button\" enabled")
+        super(ReleaseFile, self).validate_unique(exclude=exclude)
 
     class Meta:
         verbose_name = 'Release File'
         verbose_name_plural = 'Release Files'
         ordering = ('-release__is_published', 'release__name', 'os__name', 'name')
+
+        constraints = [
+            models.UniqueConstraint(fields=['os', 'release'],
+            condition=models.Q(download_button=True),
+            name="only_one_download_per_os_per_release"),
+        ]

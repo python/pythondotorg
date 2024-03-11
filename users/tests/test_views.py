@@ -1,8 +1,13 @@
+from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from django.test import TestCase
 
+from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
+from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
+from sponsors.models.enums import AssetsRelatedTo
+from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
 
@@ -79,7 +84,7 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # Requires login now
 
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -100,7 +105,7 @@ class UsersViewsTestCase(TestCase):
     def test_membership_update_404(self):
         url = reverse('users:user_membership_edit')
         self.assertFalse(self.user.has_membership)
-        self.client.login(username=self.user, password='password')
+        self.client.login(username=self.user.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -109,7 +114,7 @@ class UsersViewsTestCase(TestCase):
         # has membership.
         url = reverse('users:user_membership_create')
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertRedirects(response, reverse('users:user_membership_edit'))
 
@@ -134,6 +139,7 @@ class UsersViewsTestCase(TestCase):
 
         # should return 200 if the user does want to see their user profile
         post_data = {
+            'username': 'username',
             'search_visibility': 0,
             'email_privacy': 1,
             'public_profile': False,
@@ -259,7 +265,7 @@ class UsersViewsTestCase(TestCase):
             with self.subTest(i=i, username=username):
                 post_data.update({
                     'username': username,
-                    'email': 'foo{}@example.com'.format(i)
+                    'email': f'foo{i}@example.com'
                 })
                 response = self.client.post(url, post_data, follow=True)
                 self.assertEqual(response.status_code, 200)
@@ -376,3 +382,214 @@ class UsersViewsTestCase(TestCase):
         logged_in = self.client.login(username=self.user.username,
                                       password='newpassword')
         self.assertTrue(logged_in)
+
+
+class SponsorshipDetailViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.url = reverse(
+            "users:sponsorship_application_detail", args=[self.sponsorship.pk]
+        )
+
+    def test_display_template_with_sponsorship_info(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "users/sponsorship_detail.html")
+        self.assertEqual(context["sponsorship"], self.sponsorship)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = settings.LOGIN_URL
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_404_if_sponsorship_does_not_belong_to_user(self):
+        self.client.force_login(baker.make(settings.AUTH_USER_MODEL))  # log in with a new user
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_list_assets(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(1, len(context["required_assets"]))
+        self.assertIn(asset, context["required_assets"])
+        self.assertEqual(0, len(context["fulfilled_assets"]))
+
+    def test_fulfilled_assets(self):
+        cfg = baker.make(RequiredTextAssetConfiguration, internal_name='input')
+        benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+        asset.value = "information"
+        asset.save()
+
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(0, len(context["required_assets"]))
+        self.assertEqual(1, len(context["fulfilled_assets"]))
+        self.assertIn(asset, context["fulfilled_assets"])
+
+
+class UpdateSponsorInfoViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship, submited_by=self.user, status=Sponsorship.APPLIED, _fill_optional=True
+        )
+        self.sponsor = self.sponsorship.sponsor
+        self.contact = baker.make("sponsors.SponsorContact", sponsor=self.sponsor)
+        self.url = reverse(
+            "users:edit_sponsor_info", args=[self.sponsor.pk]
+        )
+        self.data = {
+            "description": "desc",
+            "name": "CompanyX",
+            "primary_phone": "+14141413131",
+            "mailing_address_line_1": "4th street",
+            "city": "New York",
+            "postal_code": "10212",
+            "country": "US",
+            "contact-0-id": self.contact.pk,
+            "contact-0-name": "John",
+            "contact-0-email": "email@email.com",
+            "contact-0-phone": "+1999999999",
+            "contact-0-primary": True,
+            "contact-TOTAL_FORMS": 1,
+            "contact-MAX_NUM_FORMS": 5,
+            "contact-MIN_NUM_FORMS": 1,
+            "contact-INITIAL_FORMS": 1,
+            "web_logo": get_static_image_file_as_upload("psf-logo.png", "logo.png"),
+            "print_logo": get_static_image_file_as_upload("psf-logo_print.png", "logo_print.png"),
+        }
+
+    def test_display_template_with_sponsor_info(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertTemplateUsed(response, "sponsors/new_sponsorship_application_form.html")
+        self.assertEqual(context["sponsor"], self.sponsor)
+        self.assertIsInstance(context["form"], SponsorUpdateForm)
+
+    def test_404_if_sponsor_does_not_exist(self):
+        self.sponsor.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_404_if_sponsor_from_sponsorship_from_another_user(self):
+        sponsorship = baker.make(Sponsorship, _fill_optional=True)
+        self.url = reverse(
+            "users:edit_sponsor_info", args=[sponsorship.sponsor.pk]
+        )
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_render_form_with_errors(self):
+        self.data = {}
+        response = self.client.post(self.url, data=self.data)
+        form = response.context["form"]
+        self.assertEqual(200, response.status_code)
+        self.assertTrue(form.errors)
+
+    def test_update_sponsor_and_contact(self):
+        response = self.client.post(self.url, data=self.data)
+
+        self.sponsor.refresh_from_db()
+        self.contact.refresh_from_db()
+
+        self.assertEqual(302, response.status_code)
+        self.assertEqual("desc", self.sponsor.description)
+        self.assertEqual("John", self.contact.name)
+
+
+class UpdateSponsorshipAssetsViewTests(TestCase):
+
+    def setUp(self):
+        self.user = baker.make(User)
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="foo", submited_by=self.user)
+        self.required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Text Input",
+            _fill_optional=True,
+        )
+        self.benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
+        self.required_asset = self.required_text_cfg.create_benefit_feature(self.benefit)
+        self.client.force_login(self.user)
+        self.url = reverse("users:update_sponsorship_assets", args=[self.sponsorship.pk])
+
+    def test_render_expected_html_and_context(self):
+        response = self.client.get(self.url)
+        context = response.context
+
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, "users/sponsorship_assets_update.html")
+        self.assertEqual(self.sponsorship, context["sponsorship"])
+        self.assertEqual(self.sponsorship, context["form"].sponsorship)
+        self.assertIsInstance(context["form"], SponsorRequiredAssetsForm)
+
+    def test_render_form_for_specific_asset_if_informed_via_querystring(self):
+        extra_required_text_cfg = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSORSHIP.value,
+            internal_name="Second Text Input",
+            _fill_optional=True,
+        )
+        req_asset = extra_required_text_cfg.create_benefit_feature(self.benefit)
+
+        response = self.client.get(self.url + f"?required_asset={req_asset.pk}")
+        form = response.context["form"]
+
+        self.assertEqual(1, len(form.fields))
+        self.assertIn("second_text_input", form.fields)
+
+    def test_update_assets_information_with_valid_post(self):
+        response = self.client.post(self.url, data={"text_input": "information"})
+        context = response.context
+
+        self.assertRedirects(response, reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk]))
+        self.assertEqual(self.required_asset.value, "information")
+
+    def test_render_form_with_errors_when_updating_info_with_invalid_post(self):
+        self.client.post(self.url, data={"text_input": "information"})  # first post updates the asset value
+
+        response = self.client.post(self.url, {})
+        context = response.context
+
+        self.assertEqual(200, response.status_code)
+        self.assertTemplateUsed(response, "users/sponsorship_assets_update.html")
+        self.assertFalse(context["form"].is_valid())
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(404, response.status_code)
+
+    def test_404_if_sponsorship_does_not_belong_to_user(self):
+        other_user = baker.make(User)
+        self.client.force_login(other_user)
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(404, response.status_code)

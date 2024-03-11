@@ -24,7 +24,7 @@ class Election(models.Model):
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(
-        escape_html=True, markup_type="markdown", blank=False, null=True
+        escape_html=False, markup_type="markdown", blank=False, null=True
     )
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
@@ -51,17 +51,22 @@ class Election(models.Model):
 
     @property
     def status(self):
-        if not self.nominations_open:
-            if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
-                return "Nominations Not Yet Open"
+        if self.nominations_open_at is not None and self.nominations_close_at is not None:
+            if not self.nominations_open:
+                if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
+                    return "Nominations Not Yet Open"
 
-            return "Nominations Closed"
+                return "Nominations Closed"
 
-        return "Nominations Open"
+            return "Nominations Open"
+        else:
+            if self.date >= datetime.date.today():
+                return "Commenced"
+            return "Voting Not Yet Begun"
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Election, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nominee(models.Model):
@@ -159,7 +164,7 @@ class Nominee(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Nominee, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nomination(models.Model):
@@ -200,6 +205,12 @@ class Nomination(models.Model):
     def get_edit_url(self):
         return reverse(
             "nominations:nomination_edit",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
+    def get_accept_url(self):
+        return reverse(
+            "nominations:nomination_accept",
             kwargs={"election": self.election.slug, "pk": self.pk},
         )
 

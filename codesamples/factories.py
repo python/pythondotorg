@@ -1,13 +1,14 @@
 import textwrap
 
 import factory
+from factory.django import DjangoModelFactory
 
 from .models import CodeSample
 
 from users.factories import UserFactory
 
 
-class CodeSampleFactory(factory.DjangoModelFactory):
+class CodeSampleFactory(DjangoModelFactory):
 
     class Meta:
         model = CodeSample
@@ -26,15 +27,15 @@ def initial_data():
         (
             """\
             <pre><code><span class=\"comment\"># Simple output (with Unicode)</span>
-            >>> print(\"Hello, I'm Python!\")
+            >>> print("Hello, I'm Python!")
             <span class=\"output\">Hello, I'm Python!</span>
 
             <span class=\"comment\"># Input, assignment</span>
-            >>> name = input('What is your name?\\n')
-            >>> print('Hi, %s.' % name)
+            >>> name = input('What is your name?\n')
             <span class=\"output\">What is your name?
-            Python
-            Hi, Python.</span></code>
+            Python</span>
+            >>> print(f'Hi, {name}.')
+            <span class=\"output\">Hi, Python.</span></code>
             </pre>
             """,
             """\

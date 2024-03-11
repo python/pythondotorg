@@ -1,0 +1,82 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n static sponsors %}
+
+{% block extrastyle %}{{ block.super }}<link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Send notifications | python.org{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+  <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+  <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+  <a href="{% url 'admin:sponsors_sponsorship_changelist' %}">{% trans 'Sponsorship' %}</a> &gt
+  {% trans 'Send notifications' %}
+</div>
+{% endblock %}
+
+{% block content %}
+<h1>Send notifications</h1>
+<p>Please review the sponsorships application list bellow, select a notification template to use and click in the Send button to dispatch the emails.</p>
+
+<div id="content-main">
+
+  <form action="" method="post" id="id_form">
+    {% csrf_token %}
+    <input name="action" value="send_notifications" type="hidden"/>
+
+    {% for obj in to_notify %}
+      <input name="_selected_action" value="{{ obj.pk }}" type="checkbox" checked/><label>  {{ obj }}</label><br>
+    {% endfor %}
+    {% for obj in to_ignore %}
+      <input name="_selected_action" value="{{ obj.pk }}" type="checkbox"/><label>  * {{ obj }}</label><br>
+    {% endfor %}
+
+    {% if to_ignore %}
+    <p><small><b>* Important:</b> the selected sponsorship doesn't have benefits which enable it as email targetable ones. You must manually select it again to send notification.
+    {% endif %}
+
+    <p>
+      <a onclick="selectAll()" href="#">Select all</a> -
+      <a onclick="clearAll()" href="#">Clear selected</a>
+    </p>
+
+    <br/>
+
+    {{ form.as_p }}
+
+    <br/>
+
+    {% if email_preview %}
+    <h1><b>Email Preview</b></h1>
+    <p><b>Subject:</b> {{ email_preview.subject }}</p>
+    <p>{{ email_preview.body|linebreaks }}</p>
+    <small>This sample preview is based on the first sponsorship: {{ queryset.first }}</small>
+    {% endif %}
+
+    <div class="submit-row">
+      <input type="submit" name="confirm" value="Send" class="default">
+      <input type="submit" name="preview" value="Preview" class="default">
+    </div>
+
+  </form>
+  <div>
+</div>
+
+<script type="text/javascript">
+
+function selectAll() {
+  const checkboxes = document.getElementsByName('_selected_action');
+  for(checkbox of checkboxes) {
+    checkbox.checked = true;
+  }
+}
+
+function clearAll() {
+  const checkboxes = document.getElementsByName('_selected_action');
+  for(checkbox of checkboxes) {
+    checkbox.checked = false;
+  }
+}
+
+</script>
+{% endblock %}

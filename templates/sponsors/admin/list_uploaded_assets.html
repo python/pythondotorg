@@ -1,0 +1,48 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n static sponsors %}
+
+{% block extrastyle %}{{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "admin/css/forms.css" %}">{% endblock %}
+
+{% block title %}Uploaded Assets for {{ sponsorship }} | python.org{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+    <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+    <a href="{% url 'admin:sponsors_sponsorship_changelist' %}">{% trans 'Sponsorship' %}</a> &gt
+    <a href="{% url 'admin:sponsors_sponsorship_change' sponsorship.pk %}">{{ sponsorship }}</a> &gt
+    {% trans 'Uploaded Assets' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Uploaded Assets by User</h1>
+  <p>For sponsorship: {{ sponsorship }}</p>
+  <div id="content-main">
+    {% if assets %}
+      <table>
+        <tr>
+          <th>Type</th>
+          <th>For benefit</th>
+          <th>Label</th>
+          <th>Value</th>
+        </tr>
+        {% for asset in assets %}
+        <tr>
+          <td>{{ asset|title }}</td>
+          <td>{{ asset.sponsor_benefit.name }}</td>
+          <td>{{ asset.label }}</td>
+          {% if asset.value.url %}
+          <td><a href="{{ asset.value.url }}">Click to open file</a></td>
+          {% else %}
+          <td>{{ asset.value|default:"---" }}</td>
+          {% endif %}
+        </tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p>This sponsorship does not require for any asset.</p>
+    {% endif %}
+  </div>
+{% endblock %}

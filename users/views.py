@@ -1,27 +1,33 @@
 from collections import defaultdict
 
+from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.conf import settings
 from django.core.mail import send_mail
+from django.db.models import Subquery
 from django.urls import reverse, reverse_lazy
 from django.http import Http404
 from django.shortcuts import render, redirect
 from django.utils import timezone
 from django.utils.decorators import method_decorator
+from django.contrib.auth.decorators import login_required
 from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView,
+    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView, FormView
 )
 
 from allauth.account.views import SignupView, PasswordChangeView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
+from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
+from sponsors.models import Sponsor, BenefitFeature
 
 from .forms import (
     UserProfileForm, MembershipForm, MembershipUpdateForm,
 )
 from .models import Membership
+from sponsors.models import Sponsorship
 
 User = get_user_model()
 
@@ -190,4 +196,149 @@ class UserNominationsView(LoginRequiredMixin, TemplateView):
             nomination.is_editable = nomination.editable(user=self.request.user)
             elections[nomination.election]['nominations_made'].append(nomination)
         context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
+        return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UserSponsorshipsDashboard(ListView):
+    context_object_name = 'sponsorships'
+    template_name = 'users/list_user_sponsorships.html'
+
+    def get_queryset(self):
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+        sponsorships = context["sponsorships"]
+        context["active"] = [sp for sp in sponsorships if sp.is_active]
+
+        by_status = []
+        inactive = [sp for sp in sponsorships if not sp.is_active]
+        for value, label in Sponsorship.STATUS_CHOICES[::-1]:
+            by_status.append((
+                label, [
+                    sp for sp in inactive
+                    if sp.status == value
+                ]
+            ))
+
+        context["by_status"] = by_status
+        return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class SponsorshipDetailView(DetailView):
+    context_object_name = 'sponsorship'
+    template_name = 'users/sponsorship_detail.html'
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, *args, **kwargs):
+        context = super().get_context_data(*args, **kwargs)
+
+        sponsorship = context["sponsorship"]
+        required_assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
+        fulfilled, pending = [], []
+        for asset in required_assets:
+            if bool(asset.value):
+                fulfilled.append(asset)
+            else:
+                pending.append(asset)
+
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(sponsorship)
+        provided = []
+        for asset in provided_assets:
+            if bool(asset.value):
+                provided.append(asset)
+
+        context["required_assets"] = pending
+        context["fulfilled_assets"] = fulfilled
+        context["provided_assets"] = provided
+        context["sponsor"] = sponsorship.sponsor
+        return context
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UpdateSponsorInfoView(UpdateView):
+    object_name = "sponsor"
+    template_name = 'sponsors/new_sponsorship_application_form.html'
+    form_class = SponsorUpdateForm
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsor.objects.all()
+        sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
+        return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
+        return self.request.path
+
+@login_required(login_url=settings.LOGIN_URL)
+def edit_sponsor_info_implicit(request):
+    sponsors = Sponsor.objects.filter(contacts__user=request.user).all()
+    if len(sponsors) == 0:
+        messages.add_message(request, messages.INFO, "No Sponsors associated with your user.")
+        return redirect('users:user_profile_edit')
+    elif len(sponsors) == 1:
+        return redirect('users:edit_sponsor_info', pk=sponsors[0].id)
+    else:
+        messages.add_message(request, messages.INFO, "Multiple Sponsors associated with your user.")
+        return render(request, 'users/sponsor_select.html', context={"sponsors": sponsors})
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class UpdateSponsorshipAssetsView(UpdateView):
+    object_name = "sponsorship"
+    template_name = 'users/sponsorship_assets_update.html'
+    form_class = SponsorRequiredAssetsForm
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        specific_asset = self.request.GET.get("required_asset", None)
+        if specific_asset:
+            kwargs["required_assets_ids"] = [specific_asset]
+        return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["required_asset_id"] = self.request.GET.get("required_asset", None)
+        return context
+
+    def get_success_url(self):
+        messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
+        return reverse("users:sponsorship_application_detail", args=[self.object.pk])
+
+    def form_valid(self, form):
+        form.update_assets()
+        return redirect(self.get_success_url())
+
+
+@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
+class ProvidedSponsorshipAssetsView(DetailView):
+    object_name = "sponsorship"
+    template_name = 'users/sponsorship_assets_view.html'
+
+    def get_queryset(self):
+        if self.request.user.is_superuser:
+            return Sponsorship.objects.select_related("sponsor").all()
+        return self.request.user.sponsorships.select_related("sponsor")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
+        provided = []
+        for asset in provided_assets:
+            if bool(asset.value):
+                provided.append(asset)
+        context["provided_assets"] = provided
+        context["provided_asset_id"] = self.request.GET.get("provided_asset", None)
         return context

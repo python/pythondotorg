@@ -15,7 +15,7 @@ class MinutesFeed(Feed):
         return Minutes.objects.latest()[:20]
 
     def item_title(self, item):
-        return 'PSF Meeting Minutes for {}'.format(item.date)
+        return f'PSF Meeting Minutes for {item.date}'
 
     def item_description(self, item):
         return item.content

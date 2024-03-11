@@ -4,7 +4,7 @@ from django.db import models
 from django.dispatch import receiver
 from django.contrib.sites.models import Site
 from django.template import loader
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from .models import Job
 from .signals import (
@@ -56,7 +56,7 @@ def on_comment_was_posted(sender, comment, **kwargs):
 
     subject = _("Python Job Board: Review comment for: {}").format(
         job.display_name)
-    text_message_template = loader.get_template('jobs/email/{}.txt'.format(template_name))
+    text_message_template = loader.get_template(f'jobs/email/{template_name}.txt')
 
     text_message = text_message_template.render(context)
     send_mail(subject, text_message, settings.JOB_FROM_EMAIL, send_to)

@@ -1,0 +1,62 @@
+name: CI
+on: [push, pull_request]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:10.1
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: pythonorg
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+      - name: Install platform dependencies
+        run: |
+          sudo apt -y update
+          sudo apt -y install --no-install-recommends \
+              texlive-latex-base \
+              texlive-latex-recommended \
+              texlive-plain-generic \
+              lmodern
+      - name: Install pandoc
+        run: |
+          wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
+          sudo dpkg -i pandoc-2.17.1.1-1-amd64.deb
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.9.16
+      - name: Cache Python dependencies
+        uses: actions/cache@v2
+        env:
+          cache-name: pythondotorg-cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
+            ${{ runner.os }}-${{ github.job }}-
+            ${{ runner.os }}-
+      - name: Install Python dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r dev-requirements.txt
+      - name: Check for ungenerated database migrations
+        run: |
+          python manage.py makemigrations --check --dry-run
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+      - name: Run Tests
+        run: |
+          python -Wd -m coverage run manage.py test -v2
+        env:
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+      - name: Coverage
+        run: |
+          coverage report -m --fail-under=75

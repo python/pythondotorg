@@ -1,4 +1,5 @@
 import factory
+from factory.django import DjangoModelFactory
 
 from faker.providers import BaseProvider
 
@@ -23,7 +24,7 @@ class StoryProvider(BaseProvider):
 factory.Faker.add_provider(StoryProvider)
 
 
-class StoryCategoryFactory(factory.DjangoModelFactory):
+class StoryCategoryFactory(DjangoModelFactory):
 
     class Meta:
         model = StoryCategory
@@ -32,14 +33,14 @@ class StoryCategoryFactory(factory.DjangoModelFactory):
     name = factory.Faker('story_category')
 
 
-class StoryFactory(factory.DjangoModelFactory):
+class StoryFactory(DjangoModelFactory):
 
     class Meta:
         model = Story
         django_get_or_create = ('name',)
 
     category = factory.SubFactory(StoryCategoryFactory)
-    name = factory.LazyAttribute(lambda o: 'Success Story of {}'.format(o.company_name))
+    name = factory.LazyAttribute(lambda o: f'Success Story of {o.company_name}')
     company_name = factory.Faker('company')
     company_url = factory.Faker('url')
     author = factory.Faker('name')

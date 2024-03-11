@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load boxes %}
+{% load sponsors %}
 
 {% block body_attributes %}class="jobs"{% endblock %}
 
@@ -82,6 +83,10 @@
 
         <div class="sidebar-widget">
             {% box 'jobs-subscribe' %}
+        </div>
+
+        <div class="sidebar-widget">
+            {% list_sponsors 'jobs' %}
         </div>
 
         {% block right_sidebar_footer %}{% endblock %}

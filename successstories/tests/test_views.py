@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 
+from users.factories import UserFactory
 from ..factories import StoryFactory, StoryCategoryFactory
 from ..models import Story
 
@@ -14,6 +15,7 @@ User = get_user_model()
 
 class StoryViewTests(TestCase):
     def setUp(self):
+        self.user = UserFactory(username='username', password='password')
         self.category = StoryCategoryFactory(name='Arts')
         self.story1 = StoryFactory(category=self.category, featured=True)
         self.story2 = StoryFactory(category=self.category, is_published=False)
@@ -59,6 +61,7 @@ class StoryViewTests(TestCase):
         mail.outbox = []
 
         url = reverse('success_story_create')
+        self.client.login(username='username', password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -114,6 +117,7 @@ class StoryViewTests(TestCase):
         self.assertIsNotNone(story.created)
         self.assertIsNotNone(story.updated)
         self.assertIsNone(story.creator)
+        self.assertEqual(story.submitted_by, self.user)
 
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
@@ -138,6 +142,7 @@ class StoryViewTests(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
+        self.client.login(username='username', password='password')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, url)
@@ -166,6 +171,7 @@ class StoryViewTests(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
+        self.client.login(username='username', password='password')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, url)
@@ -196,6 +202,7 @@ class StoryViewTests(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
+        self.client.login(username='username', password='password')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, url)
@@ -218,6 +225,7 @@ class StoryViewTests(TestCase):
             settings.HONEYPOT_FIELD_NAME: settings.HONEYPOT_VALUE,
         }
 
+        self.client.login(username='username', password='password')
         response = self.client.post(url, post_data)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Null characters are not allowed.')

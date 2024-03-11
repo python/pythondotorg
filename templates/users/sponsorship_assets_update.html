@@ -1,0 +1,49 @@
+{% extends "users/base.html" %}
+{% load widget_tweaks %}
+{% load humanize pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}
+  {{ sponsorship }} assets | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="psf signup default-page"{% endblock %}
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block user_content %}
+  <div id="update-sponsorship-assets">
+    <h1>Update assets for {{ sponsorship.sponsor }} sponsorship</h1>
+
+    {% if not form.has_input %}
+      {% if not required_asset_id %}
+        <p>This sponsorship application does not require for extra assets information.</p>
+      {% else %}
+        <p>This sponsorship application does not have a required asset with ID {{ required_asset_id }}.</p>
+      {% endif %}
+      <p><a href="{% url 'users:sponsorship_application_detail' sponsorship.pk %}">Click here</a> to go back to the sponsorship detail.</p>
+    {% else %}
+      <p>Please, submit all the pending required assets.</p>
+      <p><a href="{% url 'users:sponsorship_application_detail' sponsorship.pk %}">Click here</a> to go back to the sponsorship detail.</p>
+
+      {% if form.errors %}
+        <span class="error-message">The form has one or more errors</span>
+        {{ form.non_field_errors }}
+      {% endif %}
+      <form id="upodate-assets-form" action=".{% if required_asset_id %}?required_asset={{ required_asset_id }}{% endif %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <h2>Required Assets</h2>
+        {{ form.as_p }}
+
+        <div class="form-actions">
+          <input class="btn" type="submit" name="submit-btn" value="Save"/>
+        </div>
+
+      </form>
+    {% endif %}
+  </div>
+{% endblock %}
