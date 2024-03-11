@@ -163,7 +163,7 @@ class Job(ContentManageable):
         permissions = [('can_moderate_jobs', 'Can moderate Job listings')]
 
     def __str__(self):
-        return 'Job Listing #{}'.format(self.pk)
+        return f'Job Listing #{self.pk}'
 
     def save(self, **kwargs):
         location_parts = (self.city, self.region, self.country)
@@ -213,7 +213,7 @@ class Job(ContentManageable):
 
     @property
     def display_name(self):
-        return "%s, %s" % (self.job_title, self.company_name)
+        return f"{self.job_title}, {self.company_name}"
 
     @property
     def display_description(self):
@@ -257,7 +257,7 @@ class JobReviewComment(ContentManageable):
         return super().save(**kwargs)
 
     def __str__(self):
-        return '<Job #{}: {}>'.format(self.job.pk, self.comment.raw[:50])
+        return f'<Job #{self.job.pk}: {self.comment.raw[:50]}>'
 
 
 @receiver(post_save, sender=Job)

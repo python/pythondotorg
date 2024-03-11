@@ -3,7 +3,7 @@ import re
 
 import pytz
 
-from django.utils.timezone import make_aware, is_aware
+from django.utils.timezone import is_aware, make_aware
 
 
 def seconds_resolution(dt):
@@ -94,7 +94,7 @@ def timedelta_parse(string):
     """
     string = string.strip()
     if not string:
-        raise TypeError('{!r} is not a valid time interval'.format(string))
+        raise TypeError(f'{string!r} is not a valid time interval')
     # This is the format we get from sometimes PostgreSQL, sqlite,
     # and from serialization.
     d = re.match(
@@ -119,6 +119,6 @@ def timedelta_parse(string):
             string
         )
         if not d:
-            raise TypeError('{!r} is not a valid time interval'.format(string))
+            raise TypeError(f'{string!r} is not a valid time interval')
         d = d.groupdict(0)
     return datetime.timedelta(**{k: float(v) for k, v in d.items()})

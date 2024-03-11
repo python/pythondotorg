@@ -1,17 +1,24 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.urls import reverse
 from django.db import models
 from django.utils import timezone
 
 from markupfield.fields import MarkupField
 from tastypie.models import create_api_key
+from rest_framework.authtoken.models import Token
 
 from .managers import UserManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
+
+
+class CustomUserManager(UserManager):
+    def get_by_natural_key(self, username):
+        case_insensitive_username_field = '{}__iexact'.format(self.model.USERNAME_FIELD)
+        return self.get(**{case_insensitive_username_field: username})
 
 
 class User(AbstractUser):
@@ -37,7 +44,7 @@ class User(AbstractUser):
 
     public_profile = models.BooleanField('Make my profile public', default=True)
 
-    objects = UserManager()
+    objects = CustomUserManager()
 
     def get_absolute_url(self):
         return reverse('users:user_detail', kwargs={'slug': self.username})
@@ -49,6 +56,19 @@ class User(AbstractUser):
             return True
         except Membership.DoesNotExist:
             return False
+
+    @property
+    def sponsorships(self):
+        from sponsors.models import Sponsorship
+        return Sponsorship.objects.visible_to(self)
+
+    @property
+    def api_v2_token(self):
+        try:
+            return Token.objects.get(user=self).key
+        except Token.DoesNotExist:
+            return ""
+
 
 models.signals.post_save.connect(create_api_key, sender=User)
 
@@ -80,8 +100,8 @@ class Membership(models.Model):
     postal_code = models.CharField(max_length=20, blank=True)
 
     # PSF fields
-    psf_code_of_conduct = models.NullBooleanField('I agree to the PSF Code of Conduct', blank=True)
-    psf_announcements = models.NullBooleanField('I would like to receive occasional PSF email announcements', blank=True)
+    psf_code_of_conduct = models.BooleanField('I agree to the PSF Code of Conduct', blank=True, null=True)
+    psf_announcements = models.BooleanField('I would like to receive occasional PSF email announcements', blank=True, null=True)
 
     # Voting
     votes = models.BooleanField("I would like to be a PSF Voting Member", default=False)

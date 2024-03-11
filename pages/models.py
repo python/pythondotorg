@@ -21,6 +21,7 @@ from markupfield.fields import MarkupField
 from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 import cmarkgfm
+from cmarkgfm.cmark import Options as cmarkgfmOptions
 
 from cms.models import ContentManageable
 from fastly.utils import purge_url
@@ -59,6 +60,39 @@ RENDERERS[markdown_index] = (
     'Markdown'
 )
 
+# Add our own Github style Markdown parser, which doesn't apply the default
+# tagfilter used by Github (we can be more liberal, since we know our page
+# editors).
+
+def unsafe_markdown_to_html(text, options=0):
+
+    """Render the given GitHub-flavored Makrdown to HTML.
+
+    This function is similar to cmarkgfm.github_flavored_markdown_to_html(),
+    except that it allows raw HTML to get rendered, which is useful when
+    using jQuery UI script extensions on pages.
+
+    """
+    # Set options for cmarkgfm for "unsafe" renderer, see
+    # https://github.com/theacodes/cmarkgfm#advanced-usage
+    options = options | (
+        cmarkgfmOptions.CMARK_OPT_UNSAFE |
+        cmarkgfmOptions.CMARK_OPT_GITHUB_PRE_LANG
+    )
+    return cmarkgfm.markdown_to_html_with_extensions(
+        text, options=options,
+        extensions=[
+            'table', 'autolink', 'strikethrough', 'tasklist'
+        ])
+
+RENDERERS.append(
+    (
+        "markdown_unsafe",
+        unsafe_markdown_to_html,
+        "Markdown (unsafe)",
+    )
+)
+
 
 class Page(ContentManageable):
     title = models.CharField(max_length=500)
@@ -93,7 +127,7 @@ class Page(ContentManageable):
         return self.title
 
     def get_absolute_url(self):
-        return "/{}/".format(self.path)
+        return f"/{self.path}/"
 
 
 @receiver(post_save, sender=Page)
@@ -102,7 +136,7 @@ def purge_fastly_cache(sender, instance, **kwargs):
     Purge fastly.com cache if in production and the page is published.
     Requires settings.FASTLY_API_KEY being set
     """
-    purge_url('/{}'.format(instance.path))
+    purge_url(f'/{instance.path}')
 
 
 def page_image_path(instance, filename):

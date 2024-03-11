@@ -1,0 +1,10 @@
+Hello {{ sponsorship.sponsor.name }} team!
+
+Your sponsorship requires one or more submissions by {{ due_date|date }} in order for us to fulfill your benefits:
+
+You can submit your assets via the following link:
+
+https://python.org{% url "users:update_sponsorship_assets" sponsorship.pk %}
+
+Thanks,
+Python Software Foundation

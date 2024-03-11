@@ -2,13 +2,14 @@ from urllib.parse import urljoin
 
 import factory
 import requests
+from factory.django import DjangoModelFactory
 
 from users.factories import UserFactory
 
 from .models import OS, Release, ReleaseFile
 
 
-class OSFactory(factory.DjangoModelFactory):
+class OSFactory(DjangoModelFactory):
 
     class Meta:
         model = OS
@@ -17,7 +18,7 @@ class OSFactory(factory.DjangoModelFactory):
     creator = factory.SubFactory(UserFactory)
 
 
-class ReleaseFactory(factory.DjangoModelFactory):
+class ReleaseFactory(DjangoModelFactory):
 
     class Meta:
         model = Release
@@ -27,7 +28,7 @@ class ReleaseFactory(factory.DjangoModelFactory):
     is_published = True
 
 
-class ReleaseFileFactory(factory.DjangoModelFactory):
+class ReleaseFileFactory(DjangoModelFactory):
 
     class Meta:
         model = ReleaseFile

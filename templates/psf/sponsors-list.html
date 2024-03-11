@@ -1,0 +1,21 @@
+{% extends "psf/full-width.html" %}
+{% load sponsors %}
+
+{% block page_title %}Python Software Foundation Sponsors | Python Software Foundation{% endblock %}
+{% block og_title %}Python Software Foundation Sponsors{% endblock %}
+
+{% block content %}
+
+<article class="text">
+  <h3>
+    The PSF would not be possible without the generous financial help of
+    the following
+    <a href="/psf/sponsorship/">sponsors</a>. While the PSF thanks these sponsors for their support, we don't necessarily endorse nor promote any specific activity of any of its sponsors.
+  </h3>
+
+  <p>Interested in becoming a sponsor? Check out our <a href="{% url 'new_sponsorship_application' %}">sponsor application</a>.</p>
+
+  {% list_sponsors "sponsors" %}
+
+</article>
+{% endblock content %}

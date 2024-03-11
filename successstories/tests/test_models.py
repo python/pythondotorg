@@ -16,11 +16,11 @@ class StoryModelTests(TestCase):
 
     def test_draft(self):
         self.assertQuerysetEqual(Story.objects.draft(),
-                                 ['<Story: {}>'.format(self.story2.name)])
+                                 [f'<Story: {self.story2.name}>'])
 
     def test_featured(self):
         self.assertQuerysetEqual(Story.objects.featured(),
-                                 ['<Story: {}>'.format(self.story3.name)])
+                                 [f'<Story: {self.story3.name}>'])
 
     def test_get_admin_url(self):
         self.assertEqual(self.story1.get_admin_url(),

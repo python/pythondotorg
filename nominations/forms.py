@@ -33,7 +33,7 @@ class NominationForm(forms.ModelForm):
 class NominationCreateForm(NominationForm):
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
-        super(NominationCreateForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
     self_nomination = forms.BooleanField(
         required=False,
@@ -51,3 +51,14 @@ class NominationCreateForm(NominationForm):
                 )
 
         return data
+
+
+class NominationAcceptForm(forms.ModelForm):
+    class Meta:
+        model = Nomination
+        fields = (
+            "accepted",
+        )
+        help_texts = {
+            "accepted": "If selected, this nomination will be considered accepted and displayed once nominations are public.",
+        }

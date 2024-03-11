@@ -5,7 +5,7 @@ from .base import BaseDownloadTests
 class DownloadModelTests(BaseDownloadTests):
 
     def test_stringification(self):
-        self.assertEqual(str(self.osx), 'Mac OSX')
+        self.assertEqual(str(self.osx), 'macOS')
         self.assertEqual(str(self.release_275), 'Python 2.7.5')
 
     def test_published(self):
@@ -75,3 +75,15 @@ class DownloadModelTests(BaseDownloadTests):
                 release = Release.objects.create(name=name)
                 self.assertEqual(release.name, name)
                 self.assertIsNone(release.get_version())
+
+    def test_is_version_at_least(self):
+        self.assertFalse(self.release_275.is_version_at_least_3_5)
+        self.assertFalse(self.release_275.is_version_at_least_3_9)
+
+        release_38 = Release.objects.create(name='Python 3.8.0')
+        self.assertFalse(release_38.is_version_at_least_3_9)
+        self.assert_(release_38.is_version_at_least_3_5)
+
+        release_310 = Release.objects.create(name='Python 3.10.0')
+        self.assert_(release_310.is_version_at_least_3_9)
+        self.assert_(release_310.is_version_at_least_3_5)

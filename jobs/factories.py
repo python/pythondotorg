@@ -3,6 +3,7 @@ import factory
 
 from django.contrib.auth.models import Group
 from django.utils import timezone
+from factory.django import DjangoModelFactory
 
 from faker.providers import BaseProvider
 
@@ -57,7 +58,7 @@ class JobProvider(BaseProvider):
 factory.Faker.add_provider(JobProvider)
 
 
-class JobCategoryFactory(factory.DjangoModelFactory):
+class JobCategoryFactory(DjangoModelFactory):
 
     class Meta:
         model = JobCategory
@@ -66,7 +67,7 @@ class JobCategoryFactory(factory.DjangoModelFactory):
     name = factory.Faker('job_category')
 
 
-class JobTypeFactory(factory.DjangoModelFactory):
+class JobTypeFactory(DjangoModelFactory):
 
     class Meta:
         model = JobType
@@ -75,7 +76,7 @@ class JobTypeFactory(factory.DjangoModelFactory):
     name = factory.Faker('job_type')
 
 
-class JobFactory(factory.DjangoModelFactory):
+class JobFactory(DjangoModelFactory):
 
     class Meta:
         model = Job
@@ -139,7 +140,7 @@ class ReviewJobFactory(JobFactory):
     status = Job.STATUS_REVIEW
 
 
-class JobsBoardAdminGroupFactory(factory.DjangoModelFactory):
+class JobsBoardAdminGroupFactory(DjangoModelFactory):
     class Meta:
         model = Group
         django_get_or_create = ('name',)
