@@ -1,0 +1,30 @@
+{% extends "users/base.html" %}
+{% load humanize pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}
+  Select Sponsor | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="psf signup default-page"{% endblock %}
+
+
+{% block main-nav_attributes %}psf-navigation{% endblock %}
+
+{% block user_content %}
+  <h1>Select Sponsor to edit</h1>
+
+  <br/>
+  <ul>
+    {% for sponsor in sponsors %}
+      <li><a href="{% url 'users:edit_sponsor_info' pk=sponsor.pk %}">{{ sponsor }}</a></li>
+    {% endfor %}
+  </ul>
+{% endblock %}
+
+{% block javascript %}
+  {{ block.super }}
+{% endblock %}
