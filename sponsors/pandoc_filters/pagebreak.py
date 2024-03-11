@@ -62,7 +62,6 @@ class DocxPagebreak(object):
         if isinstance(elem, pf.RawBlock):
             if elem.text == r"\newpage":
                 if (doc.format == "docx"):
-                    pf.debug("Page Break")
                     elem = self.pagebreak
             # elif elem.text == r"\newsection":
             #     if (doc.format == "docx"):

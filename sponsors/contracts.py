@@ -31,6 +31,7 @@ def _contract_context(contract, **context):
             "sponsorship": contract.sponsorship,
             "benefits": _clean_split(contract.benefits_list.raw),
             "legal_clauses": _clean_split(contract.legal_clauses.raw),
+            "renewal": True if contract.sponsorship.renewal else False,
         }
     )
     previous_effective = contract.sponsorship.previous_effective_date
@@ -41,8 +42,6 @@ def _contract_context(contract, **context):
 
 def render_markdown_from_template(contract, **context):
     template = "sponsors/admin/contracts/sponsorship-agreement.md"
-    if contract.sponsorship.renewal:
-        template = "sponsors/admin/contracts/renewal-agreement.md"
     context = _contract_context(contract, **context)
     return render_to_string(template, context)
 
