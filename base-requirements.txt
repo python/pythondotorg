@@ -1,6 +1,6 @@
 dj-database-url==0.5.0
 django-pipeline==2.0.6
-django-sitetree==1.17.0
+django-sitetree==1.18.0
 django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
