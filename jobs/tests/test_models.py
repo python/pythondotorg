@@ -76,7 +76,7 @@ class JobsModelsTests(TestCase):
         j3 = factories.ApprovedJobFactory(expires=past)
 
         visible = Job.objects.visible()
-        self.assertTrue(len(visible), 1)
+        self.assertEqual(len(visible), 1)
         self.assertIn(j1, visible)
         self.assertNotIn(j2, visible)
         self.assertNotIn(j3, visible)
