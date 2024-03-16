@@ -46,7 +46,7 @@ Pages are individual entire pages of markup content.  They are require ``Title``
 :Is Published: Controls whether or not the page is visible on the site.
 :Template Name: By default Pages use the template ``templates/pages/default.html`` to use a different template enter the template path here.
 
-.. note:: Pages are automatically purge from Fastly.com upon save.
+.. note:: Pages are automatically purged from Fastly.com upon save.
 
 .. _boxes:
 
@@ -82,7 +82,7 @@ Release Files have a checkbox named 'Download button' that determines which bina
 Jobs
 ----
 
-The jobs application is using to display Python jobs on the site. The data items should be fairly self explanatory. There are a couple of things to keep in mind. Logged in users of the site can submit jobs for review.
+The jobs application is used to display Python jobs on the site. The data items should be fairly self explanatory. There are a couple of things to keep in mind. Logged in users of the site can submit jobs for review.
 
 :Status: Jobs enter the system in 'review' status after the submitter has entered them. Only jobs in the 'approved' state are displayed on the site.
 :Featured: Featured jobs are displayed more prominently on the landing page.
