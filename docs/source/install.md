@@ -18,7 +18,7 @@ To get the Pythondotorg source code, [fork](https://docs.github.com/en/pull-requ
 git clone git@github.com:YOUR-USERNAME/pythondotorg.git
 ```
 
-Add a [remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork) and [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) regularly to stay current with the repository. 
+Add a [remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork) and [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) regularly to stay current with the repository. 
 
 ```
 git remote add upstream https://github.com/python/pythondotorg
