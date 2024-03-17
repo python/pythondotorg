@@ -1,6 +1,6 @@
 # python.org
 
-[![Build Status](https://travis-ci.org/python/pythondotorg.svg?branch=main)](https://travis-ci.org/python/pythondotorg)
+[![CI](https://github.com/python/pythondotorg/actions/workflows/ci.yml/badge.svg)](https://github.com/python/pythondotorg/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/pythondotorg/badge/?version=latest)](https://pythondotorg.readthedocs.io/?badge=latest)
 
 ### General information

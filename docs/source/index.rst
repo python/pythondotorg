@@ -12,9 +12,9 @@ General information
 :IRC: ``#pydotorg`` on Freenode
 :Staging site: https://staging.python.org/ (``main`` branch)
 :Production configuration: https://github.com/python/psf-salt
-:Travis:
-  .. image:: https://travis-ci.org/python/pythondotorg.svg?branch=main
-       :target: https://travis-ci.org/python/pythondotorg
+:GitHub Actions:
+  .. image:: https://github.com/python/pythondotorg/actions/workflows/ci.yml/badge.svg
+       :target: https://github.com/python/pythondotorg/actions/workflows/ci.yml
 :License: Apache License
 
 Contents:

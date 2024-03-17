@@ -31,4 +31,4 @@ This process runs periodically via cron to keep the PEP pages up to date.
    
 See :ref:`management-commands` for all management commands.
 
-.. _PEP Repository: https://github.com/python/peps.git
+.. _PEP Repository: https://github.com/python/peps
