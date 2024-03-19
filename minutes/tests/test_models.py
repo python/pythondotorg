@@ -21,16 +21,16 @@ class MinutesModelTests(TestCase):
         )
 
     def test_draft(self):
-        self.assertQuerySetEqual(
-            Minutes.objects.draft(),
-            ['<Minutes: PSF Meeting Minutes January 01, 2013>']
-        )
+        expected = ['<Minutes: PSF Meeting Minutes January 01, 2013>']
+        draft_qs = Minutes.objects.draft()
+        actual = [f'<Minutes: {str(obj)}>' for obj in draft_qs]
+        self.assertEqual(actual, expected)
 
     def test_published(self):
-        self.assertQuerySetEqual(
-            Minutes.objects.published(),
-            ['<Minutes: PSF Meeting Minutes January 01, 2012>']
-        )
+        expected = ['<Minutes: PSF Meeting Minutes January 01, 2012>']
+        published_qs = Minutes.objects.published()
+        actual = [f'<Minutes: {str(obj)}>' for obj in published_qs]
+        self.assertEqual(actual, expected)
 
     def test_date_methods(self):
         self.assertEqual(self.m1.get_date_year(), '2012')
