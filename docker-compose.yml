@@ -1,8 +1,21 @@
 version: "3.9"
 
 services:
+#   postgres:
+#     image: postgres:10-bullseye
+#     ports:
+#       - "5433:5432"
+#     environment:
+#       POSTGRES_USER: pythondotorg
+#       POSTGRES_PASSWORD: pythondotorg
+#       POSTGRES_DB: pythondotorg
+#       POSTGRES_HOST_AUTH_METHOD: trust  # never do this in production!
+#     healthcheck:
+#       test: ["CMD", "pg_isready", "-U", "pythondotorg", "-d", "pythondotorg"]
+#       interval: 1s
+
   postgres:
-    image: postgres:10-bullseye
+    image: postgres:12-bullseye  # required for 4.2 upgrades
     ports:
       - "5433:5432"
     environment:

@@ -26,7 +26,7 @@ class ApiKeyInline(TastypieApiKeyInline):
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
+    inlines = BaseUserAdmin.inlines + (ApiKeyInline, MembershipInline,)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': (
