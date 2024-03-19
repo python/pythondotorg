@@ -53,7 +53,6 @@ CELERY_BEAT_SCHEDULE = {
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 DATE_FORMAT = 'Y-m-d'
@@ -74,7 +73,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE, 'static'),
 ]
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": 'pipeline.storage.PipelineStorage',
+    },
+}
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
