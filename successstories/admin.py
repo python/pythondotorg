@@ -24,6 +24,8 @@ class StoryAdmin(ContentManageableModelAdmin):
         fields = list(super().get_list_display(request))
         return fields + ['show_link', 'is_published', 'featured']
 
+    @admin.display(
+        description='View on site'
+    )
     def show_link(self, obj):
         return format_html(f'<a href="{obj.get_absolute_url()}">\U0001F517</a>')
-    show_link.short_description = 'View on site'
