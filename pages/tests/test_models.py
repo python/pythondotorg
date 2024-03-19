@@ -8,11 +8,17 @@ from ..models import Page, PAGE_PATH_RE
 
 
 class PageModelTests(BasePageTests):
-    def test_published(self):
-        self.assertQuerySetEqual(Page.objects.published(), ['<Page: One>'])
-
     def test_draft(self):
-        self.assertQuerySetEqual(Page.objects.draft(), ['<Page: Two>'])
+        expected_pages = ['Two']
+        draft_pages = list(Page.objects.draft())
+        draft_pages_str = [str(page) for page in draft_pages]
+        self.assertEqual(draft_pages_str, expected_pages)
+
+    def test_published(self):
+        expected_pages = ['One']
+        published_pages = list(Page.objects.published())
+        published_pages_str = [str(page) for page in published_pages]
+        self.assertEqual(published_pages_str, expected_pages)
 
     def test_get_title(self):
         one = Page.objects.get(path='one')
