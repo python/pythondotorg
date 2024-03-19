@@ -16,9 +16,13 @@ class CodeSampleModelTests(TestCase):
             is_published=False)
 
     def test_published(self):
-        self.assertQuerySetEqual(CodeSample.objects.published(),
-                                 ['<CodeSample: Copy One>'])
+        expected = ['<CodeSample: Copy One>']
+        published_qs = CodeSample.objects.published()
+        actual = [f'<CodeSample: {str(obj)}>' for obj in published_qs]
+        self.assertEqual(actual, expected)
 
     def test_draft(self):
-        self.assertQuerySetEqual(CodeSample.objects.draft(),
-                                 ['<CodeSample: Copy Two>'])
+        expected = ['<CodeSample: Copy Two>']
+        draft_qs = CodeSample.objects.draft()
+        actual = [f'<CodeSample: {str(obj)}>' for obj in draft_qs]
+        self.assertEqual(actual, expected)
