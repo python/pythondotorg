@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, RequestFactory
 
 from allauth.account.forms import SignupForm
 
@@ -50,16 +50,22 @@ class UsersFormsTestCase(TestCase):
         self.assertIn('username', form.errors)
 
     def test_duplicate_email(self):
+        from django.http import HttpRequest
         User.objects.create_user('test1', 'test@example.com', 'testpass')
+        request = HttpRequest()
 
-        form = SignupForm({
+        form = SignupForm(data={
             'username': 'username2',
             'email': 'test@example.com',
             'password1': 'password',
-            'password2': 'password'
+            'password2': 'password',
         })
-        self.assertFalse(form.is_valid())
-        self.assertIn('email', form.errors)
+
+        self.assertTrue(form.is_valid())
+        with self.assertRaises(ValueError) as e:
+            form.save(request)
+
+        self.assertEqual(str(e.exception), 'test@example.com')
 
     def test_newline_in_username(self):
         # Note that since Django 1.9, forms.CharField().strip is True
@@ -92,13 +98,8 @@ class UsersFormsTestCase(TestCase):
             'password2': 'password',
         })
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['username'],
-            [
-                'Enter a valid username. This value may contain only '
-                'English letters, numbers, and @/./+/-/_ characters.'
-            ]
-        )
+        expected_error = 'Enter a valid username. This value may contain only unaccented lowercase a-z and uppercase A-Z letters, numbers, and @/./+/-/_ characters.'
+        self.assertIn(expected_error, form.errors['username'])
 
     def test_user_membership(self):
         form = MembershipForm({
