@@ -11,8 +11,6 @@ from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
 
-from ..factories import MembershipFactory
-
 User = get_user_model()
 
 
@@ -231,6 +229,7 @@ class UsersViewsTestCase(TestCase):
         })
 
     def test_user_duplicate_username_email(self):
+        settings.ACCOUNT_PREVENT_ENUMERATION = False
         post_data = {
             'username': 'thisusernamedoesntexist',
             'email': 'thereisnoemail@likesthis.com',
@@ -245,7 +244,7 @@ class UsersViewsTestCase(TestCase):
             response, 'A user with that username already exists.'
         )
         self.assertContains(
-            response, 'A user is already registered with this e-mail address.'
+            response, 'A user is already registered with this email address.'
         )
 
     def test_usernames(self):
