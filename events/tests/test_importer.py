@@ -2,6 +2,7 @@ import os
 
 from django.test import TestCase
 from django.utils.timezone import datetime, make_aware
+from django.utils.html import strip_tags
 
 from events.importer import ICSImporter
 from events.models import Calendar, Event
@@ -100,6 +101,9 @@ END:VCALENDAR
         e2 = Event.objects.get(uid='8ceqself979pphq4eu7l5e2db8@google.com')
         self.assertEqual(e.pk, e2.pk)
         self.assertEqual(e2.calendar.url, EVENTS_CALENDAR_URL)
+        print("*" * 80)
+        print(e2.description.rendered)
+        print("*" * 80)
         self.assertEqual(e2.description.rendered, 'Python Istanbul')
         self.assertTrue(e.next_or_previous_time.all_day)
         self.assertEqual(
