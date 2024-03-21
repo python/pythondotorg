@@ -1,7 +1,8 @@
-from django.conf.urls import handler404, include
+from django.conf.urls import handler404
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
+from django.urls import include
 from django.urls import path, re_path
 from django.views.generic.base import TemplateView
 from django.conf import settings
