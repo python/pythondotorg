@@ -2,7 +2,6 @@ import os
 
 from django.test import TestCase
 from django.utils.timezone import datetime, make_aware
-from django.utils.html import strip_tags
 
 from events.importer import ICSImporter
 from events.models import Calendar, Event

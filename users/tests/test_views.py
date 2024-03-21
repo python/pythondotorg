@@ -2,7 +2,7 @@ from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
 from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
@@ -228,8 +228,8 @@ class UsersViewsTestCase(TestCase):
             'password2': 'password',
         })
 
+    @override_settings(ACCOUNT_PREVENT_ENUMERATION=False)
     def test_user_duplicate_username_email(self):
-        settings.ACCOUNT_PREVENT_ENUMERATION = False
         post_data = {
             'username': 'thisusernamedoesntexist',
             'email': 'thereisnoemail@likesthis.com',

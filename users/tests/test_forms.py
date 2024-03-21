@@ -50,9 +50,8 @@ class UsersFormsTestCase(TestCase):
         self.assertIn('username', form.errors)
 
     def test_duplicate_email(self):
-        from django.http import HttpRequest
         User.objects.create_user('test1', 'test@example.com', 'testpass')
-        request = HttpRequest()
+        request = RequestFactory().get('/')
 
         form = SignupForm(data={
             'username': 'username2',
