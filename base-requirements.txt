@@ -8,7 +8,7 @@ Django==3.2.25
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
-Pillow==10.2.0
+Pillow==10.3.0
 psycopg2-binary==2.8.6
 python3-openid==3.2.0
 python-decouple==3.4
