@@ -54,3 +54,4 @@ reportlab==3.6.13
 django-extensions==3.1.4
 django-import-export==2.7.1
 setuptools>=65.5.1 # not directly required, pinned by Snyk to avoid a vulnerability
+sqlparse>=0.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
