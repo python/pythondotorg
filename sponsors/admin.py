@@ -983,7 +983,7 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
         return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
-        return [(k, b.name) for k, b in self.benefits_with_assets.items()]
+        return [(k, f"{b.name} ({b.year})") for k, b in self.benefits_with_assets.items()]
 
     def queryset(self, request, queryset):
         benefit = self.benefits_with_assets.get(self.value())
