@@ -41,7 +41,7 @@ class LogoPlacementeAPIListTests(APITestCase):
                 sponsor.print_logo.delete()
 
     def test_list_logo_placement_as_expected(self):
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(200, response.status_code)
@@ -71,7 +71,7 @@ class LogoPlacementeAPIListTests(APITestCase):
 
     def test_invalid_token(self):
         Token.objects.all().delete()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(401, response.status_code)
 
     def test_superuser_user_have_permission_by_default(self):
@@ -79,19 +79,19 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.user.is_superuser = True
         self.user.is_staff = True
         self.user.save()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(200, response.status_code)
 
     def test_staff_have_permission_by_default(self):
         self.user.user_permissions.remove(self.permission)
         self.user.is_staff = True
         self.user.save()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(200, response.status_code)
 
     def test_user_must_have_required_permission(self):
         self.user.user_permissions.remove(self.permission)
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(403, response.status_code)
 
     def test_filter_sponsorship_by_publisher(self):
@@ -99,7 +99,7 @@ class LogoPlacementeAPIListTests(APITestCase):
             "publisher": PublisherChoices.PYPI.value,
         })
         url = f"{self.url}?{querystring}"
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(200, response.status_code)
@@ -111,7 +111,7 @@ class LogoPlacementeAPIListTests(APITestCase):
             "flight": LogoPlacementChoices.SIDEBAR.value,
         })
         url = f"{self.url}?{querystring}"
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(200, response.status_code)
@@ -125,7 +125,7 @@ class LogoPlacementeAPIListTests(APITestCase):
             "publisher": "invalid-publisher"
         })
         url = f"{self.url}?{querystring}"
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(400, response.status_code)
@@ -162,7 +162,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
 
     def test_invalid_token(self):
         Token.objects.all().delete()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(401, response.status_code)
 
     def test_superuser_user_have_permission_by_default(self):
@@ -170,30 +170,30 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.user.is_superuser = True
         self.user.is_staff = True
         self.user.save()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(200, response.status_code)
 
     def test_staff_have_permission_by_default(self):
         self.user.user_permissions.remove(self.permission)
         self.user.is_staff = True
         self.user.save()
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(200, response.status_code)
 
     def test_user_must_have_required_permission(self):
         self.user.user_permissions.remove(self.permission)
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         self.assertEqual(403, response.status_code)
 
     def test_bad_request_if_no_internal_name(self):
         url = reverse_lazy("assets_list")
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(url, headers={"authorization": self.authorization})
         self.assertEqual(400, response.status_code)
         self.assertIn("internal_name", response.json())
 
     def test_list_assets_by_internal_name(self):
         # by default exclude assets with no value
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         data = response.json()
         self.assertEqual(200, response.status_code)
         self.assertEqual(0, len(data))
@@ -202,7 +202,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.txt_asset.value = "Text Content"
         self.txt_asset.save()
 
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(1, len(data))
@@ -216,7 +216,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
     def test_enable_to_filter_by_assets_with_no_value_via_querystring(self):
         self.url += "&list_empty=true"
 
-        response = self.client.get(self.url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(1, len(data))
@@ -230,7 +230,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.img_asset.save()
 
         url = reverse_lazy("assets_list") + f"?internal_name={self.img_asset.internal_name}"
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.authorization)
+        response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
 
         self.assertEqual(1, len(data))

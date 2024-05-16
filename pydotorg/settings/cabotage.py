@@ -44,8 +44,14 @@ MIDDLEWARE = [
 ] + MIDDLEWARE
 
 MEDIAFILES_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'custom_storages.storages.MediaStorage'
-STATICFILES_STORAGE = 'custom_storages.storages.PipelineManifestStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": 'custom_storages.storages.MediaStorage',
+    },
+    "staticfiles": {
+        "BACKEND": 'custom_storages.storages.PipelineManifestStorage',
+    },
+}
 
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')

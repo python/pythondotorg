@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   postgres:
-    image: postgres:10-bullseye
+    image: postgres:15.3-bullseye
     ports:
       - "5433:5432"
     environment:
