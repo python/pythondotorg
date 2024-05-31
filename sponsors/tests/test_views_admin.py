@@ -5,6 +5,7 @@ import zipfile
 from uuid import uuid4
 
 from django.core.files.uploadedfile import SimpleUploadedFile
+from mailing.admin import archive_selected_email_templates
 from model_bakery import baker
 from datetime import date, timedelta
 from unittest.mock import patch, PropertyMock, Mock
@@ -1144,3 +1145,18 @@ class ExportAssetsAsZipTests(TestCase):
                 self.assertEqual("foo", cur_file.read().decode())
             with zip_file.open("Sponsor Name/img_input.png") as cur_file:
                 self.assertEqual(self.img_asset.value.read(), cur_file.read())
+
+
+class ArchiveSelectedEmailTemplatesTest(TestCase):
+    def setUp(self):
+        self.request_factory = RequestFactory()
+        self.request = self.request_factory.get("/")
+        self.sponsor_email_template = baker.make(SponsorEmailNotificationTemplate, active=True)
+        self.ModelAdmin = Mock()
+
+    def test_action_set_template_inactive(self):
+        queryset = SponsorEmailNotificationTemplate.objects.all()
+        archive_selected_email_templates(self.ModelAdmin, self.request, queryset)
+        self.sponsor_email_template.refresh_from_db()
+
+        self.assertFalse(self.sponsor_email_template.active)

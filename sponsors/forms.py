@@ -23,7 +23,7 @@ from sponsors.models import (
     SponsorEmailNotificationTemplate,
     RequiredImgAssetConfiguration,
     BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
+    SPONSOR_TEMPLATE_CONTENT_HELP_TEXT, SponsorshipCurrentYear,
 )
 
 SPONSORSHIP_YEAR_SELECT = forms.Select(
@@ -539,7 +539,7 @@ class SendSponsorshipNotificationForm(forms.Form):
     content = forms.CharField(
         widget=forms.widgets.Textarea(),
         required=False,
-        help_text=SPONSOR_TEMPLATE_HELP_TEXT,
+        help_text=SPONSOR_TEMPLATE_CONTENT_HELP_TEXT,
     )
 
     def clean(self):
