@@ -332,6 +332,9 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     sigstore_bundle_file = models.URLField(
         "Sigstore Bundle URL", blank=True, help_text="Sigstore Bundle URL"
     )
+    sbom_spdx2_file = models.URLField(
+        "SPDX-2 SBOM URL", blank=True, help_text="SPDX-2 SBOM URL"
+    )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")

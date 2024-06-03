@@ -246,9 +246,13 @@ class SponsorBenefitInline(admin.TabularInline):
             return True
         return obj.open_for_editing
 
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsorship_benefit__program", "program")
+    def get_queryset(self, request):
+        #filters the available benefits by the benefits for the year of the sponsorship
+        match = request.resolver_match
+        sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+        year = sponsorship.year
+
+        return super().get_queryset(request).filter(sponsorship_benefit__year=year)
 
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
@@ -402,6 +406,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                     "end_date",
                     "get_contract",
                     "level_name",
+                    "renewal",
                     "overlapped_by",
                 ),
             },
@@ -978,7 +983,7 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
         return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
-        return [(k, b.name) for k, b in self.benefits_with_assets.items()]
+        return [(k, f"{b.name} ({b.year})") for k, b in self.benefits_with_assets.items()]
 
     def queryset(self, request, queryset):
         benefit = self.benefits_with_assets.get(self.value())
