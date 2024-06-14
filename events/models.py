@@ -93,6 +93,16 @@ class EventManager(models.Manager):
             dt = convert_dt_to_aware(dt)
         return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
 
+    def ongoing_datetime(self, dt=None):
+        if dt is None:
+            dt = timezone.now()
+        else:
+            dt = convert_dt_to_aware(dt)
+        return self.filter(
+            (Q(occurring_rule__dt_start__lt=dt) & Q(occurring_rule__dt_end__gt=dt))
+            | (Q(recurring_rules__begin__lt=dt) & Q(recurring_rules__finish__gt=dt))
+        )
+
     def until_datetime(self, dt=None):
         if dt is None:
             dt = timezone.now()
@@ -182,6 +192,39 @@ class Event(ContentManageable):
             return None
 
     @property
+    def present_time(self):
+        """
+        Return the OccurringRule or RecurringRule that are ongoing now.
+        """
+        now = timezone.now()
+        recurring_start = occurring_start = None
+
+        try:
+            occurring_rule = self.occurring_rule
+        except OccurringRule.DoesNotExist:
+            pass
+        else:
+            if occurring_rule and occurring_rule.dt_start < now and occurring_rule.dt_end > now:
+                occurring_start = (occurring_rule.dt_start, occurring_rule)
+
+        rrules = self.recurring_rules.filter(begin__lt=now, finish__gt=now)
+        recurring_starts = [(rule.dt_start, rule) for rule in rrules if rule.dt_start is not None]
+        recurring_starts.sort(key=itemgetter(0))
+
+        try:
+            recurring_start = recurring_starts[0]
+        except IndexError:
+            pass
+
+        starts = [i for i in (recurring_start, occurring_start) if i is not None]
+        starts.sort(key=itemgetter(0))
+
+        try:
+            return starts[0][1]
+        except IndexError:
+            return None
+
+    @property
     def previous_time(self):
         now = timezone.now()
         recurring_end = occurring_end = None
@@ -216,7 +259,7 @@ class Event(ContentManageable):
 
     @property
     def is_past(self):
-        return self.next_time is None
+        return self.next_time is None and self.present_time is None
 
 
 class RuleMixin:

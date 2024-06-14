@@ -47,6 +47,47 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time, None)
         self.assertTrue(self.event.is_past)
 
+    def test_ongoing_occurring_event(self):
+        now = seconds_resolution(timezone.now())
+
+        # Starts before and ends after now
+        occurring_time_dtstart = now - datetime.timedelta(days=3)
+        occurring_time_dtend = occurring_time_dtstart + datetime.timedelta(days=5)
+
+        ot = OccurringRule.objects.create(
+            event=self.event,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtend,
+        )
+
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 1)
+        self.assertIsNone(self.event.next_time)
+        self.assertIsNone(self.event.previous_time)
+        self.assertIsNotNone(self.event.present_time)
+        self.assertEqual(self.event.present_time.dt_start, occurring_time_dtstart)
+        self.assertEqual(self.event.present_time.dt_end, occurring_time_dtend)
+        self.assertFalse(self.event.is_past)
+
+        # Starts before and ends before now
+        ot.dt_start = now - datetime.timedelta(days=5)
+        ot.dt_end = now - datetime.timedelta(days=3)
+        ot.save()
+
+        event = Event.objects.get(pk=self.event.pk)
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 0)
+        self.assertIsNone(event.present_time)
+        self.assertTrue(event.is_past)
+
+        # Starts after and ends after now
+        ot.dt_start = now + datetime.timedelta(days=3)
+        ot.dt_end = now + datetime.timedelta(days=5)
+        ot.save()
+
+        event = Event.objects.get(pk=self.event.pk)
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 0)
+        self.assertIsNone(event.present_time)
+        self.assertFalse(event.is_past)
+
     def test_recurring_event(self):
         now = seconds_resolution(timezone.now())
 
@@ -70,6 +111,43 @@ class EventsModelsTests(TestCase):
         event = Event.objects.get(pk=self.event.pk)
         self.assertEqual(event.next_time, None)
         self.assertEqual(Event.objects.for_datetime().count(), 0)
+
+    def test_ongoing_recurring_event(self):
+        now = seconds_resolution(timezone.now())
+
+        # Starts before and ends after now
+        recurring_time_dtstart = now - datetime.timedelta(days=3)
+        recurring_time_dtend = recurring_time_dtstart + datetime.timedelta(days=5)
+
+        rt = RecurringRule.objects.create(
+            event=self.event,
+            begin=recurring_time_dtstart,
+            finish=recurring_time_dtend,
+        )
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 1)
+        self.assertGreater(self.event.present_time.dt_start, recurring_time_dtstart)
+        self.assertTrue(rt.valid_dt_end())
+        self.assertFalse(self.event.is_past)
+
+        # Starts before and ends before now
+        rt.begin = now - datetime.timedelta(days=5)
+        rt.finish = now - datetime.timedelta(days=3)
+        rt.save()
+
+        event = Event.objects.get(pk=self.event.pk)
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 0)
+        self.assertIsNone(event.present_time)
+        self.assertTrue(event.is_past)
+
+        # Starts after and ends after now
+        rt.begin = now + datetime.timedelta(days=3)
+        rt.finish = now + datetime.timedelta(days=5)
+        rt.save()
+
+        event = Event.objects.get(pk=self.event.pk)
+        self.assertEqual(Event.objects.ongoing_datetime().count(), 0)
+        self.assertIsNone(event.present_time)
+        self.assertFalse(event.is_past)
 
     def test_rrule(self):
         now = seconds_resolution(timezone.now())
