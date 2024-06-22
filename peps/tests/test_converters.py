@@ -1,8 +1,13 @@
+import os
+import filecmp
+import shutil
+
 from django.test import TestCase, override_settings
 from django.core.exceptions import ImproperlyConfigured
 from django.test.utils import captured_stdout
+from django.conf import settings
 
-from peps.converters import get_pep0_page, get_pep_page, add_pep_image
+from peps.converters import get_pep0_page, get_pep_page, add_pep_image, pep_url
 
 from . import FAKE_PEP_REPO
 
@@ -42,6 +47,41 @@ class PEPConverterTests(TestCase):
             stdout.getvalue(),
             r"Image Path '(.*)/path/that/does/not/exist(.*)' does not exist, skipping"
         )
+
+    def test_add_image_update(self):
+        """Test that image modifications are adopted. """
+        pep = '3001'
+        pep_img_name = 'pep-3001-1.png'
+        pep_img_path_src = os.path.join(FAKE_PEP_REPO, pep_img_name)
+        pep_img_path_src_backup = pep_img_path_src + ".backup"
+        pep_img_path_dst = os.path.join(
+                settings.MEDIA_ROOT, pep_url(pep), pep_img_name)
+
+        # We need to remove a prior uploaded file to fix an inconsistency
+        # between db and filesystem.
+        # TODO: This should be dealt with in page.model or converters module
+        if os.path.exists(pep_img_path_dst):
+            os.remove(pep_img_path_dst)
+
+        # Create a pep page and "upload" a file
+        get_pep_page(FAKE_PEP_REPO, pep)
+        image = add_pep_image(FAKE_PEP_REPO, pep, pep_img_name)
+
+        # The source and destination files should be the same
+        self.assertTrue(filecmp.cmp(pep_img_path_src, pep_img_path_dst))
+
+        # Create a backup, modify the source file and "re-upload"
+        shutil.copyfile(pep_img_path_src, pep_img_path_src_backup)
+        with open(pep_img_path_src, "ab") as f:
+            f.write(b"TEST")
+        image = add_pep_image(FAKE_PEP_REPO, pep, pep_img_name)
+
+        # Again, modified src and re-uploaded dst files should be the same
+        self.assertTrue(filecmp.cmp(pep_img_path_src, pep_img_path_dst))
+
+        # Restore source file
+        shutil.move(pep_img_path_src_backup, pep_img_path_src)
+
 
     def test_html_do_not_prettify(self):
         pep = get_pep_page(FAKE_PEP_REPO, '3001')
