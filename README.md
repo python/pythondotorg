@@ -16,7 +16,7 @@ https://github.com/python/cpython/issues/.
 
 * Source code: https://github.com/python/pythondotorg
 * Issue tracker: https://github.com/python/pythondotorg/issues
-* Documentation: https://pythondotorg.readthedocs.org/
+* Documentation: https://pythondotorg.readthedocs.io/
 * Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
 * IRC: `#pydotorg` on Freenode
 * Staging site: https://staging.python.org/ (`main` branch)
