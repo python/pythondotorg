@@ -35,7 +35,6 @@ requests[security]>=2.26.0
 
 django-honeypot==1.0.4  # 1.0.4 is first version that supports Django 4.2
 django-markupfield==2.0.1
-# django-markupfield-helpers==0.1.1  # this hasnt been moved out of alpha and is last published 2018, we do import it
 
 django-allauth==0.61.1  # 0.55.0 is first version that supports Django 4.2
 
