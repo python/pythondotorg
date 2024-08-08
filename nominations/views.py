@@ -1,4 +1,6 @@
 from django.contrib import messages
+from django.contrib.auth.mixins import UserPassesTestMixin
+
 from django.views.generic import CreateView, UpdateView, DetailView, ListView
 from django.urls import reverse
 from django.http import Http404
@@ -6,7 +8,7 @@ from django.http import Http404
 from pydotorg.mixins import LoginRequiredMixin
 
 from .models import Nomination, Nominee, Election
-from .forms import NominationForm, NominationCreateForm
+from .forms import NominationForm, NominationCreateForm, NominationAcceptForm
 
 
 class ElectionsList(ListView):
@@ -119,9 +121,39 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         return context
 
 
-class NominationEdit(LoginRequiredMixin, NominationMixin, UpdateView):
+class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
     model = Nomination
     form_class = NominationForm
+
+    def test_func(self):
+        return self.request.user == self.get_object().nominator
+
+    def get_success_url(self):
+        next_url = self.request.POST.get("next")
+        if next_url:
+            return next_url
+
+        elif self.object.pk:
+            return reverse(
+                "nominations:nomination_detail",
+                kwargs={"election": self.object.election.slug, "pk": self.object.id},
+            )
+
+        else:
+            return super().get_success_url()
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+
+class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
+    model = Nomination
+    form_class = NominationAcceptForm
+    template_name_suffix = '_accept_form'
+
+    def test_func(self):
+        return self.request.user == self.get_object().nominee.user
 
     def get_success_url(self):
         next_url = self.request.POST.get("next")

@@ -12,10 +12,11 @@ from django.db import transaction
 
 from sponsors import use_cases
 from sponsors.forms import SponsorshipReviewAdminForm, SponsorshipsListForm, SignedSponsorshipReviewAdminForm, \
-    SendSponsorshipNotificationForm
+    SendSponsorshipNotificationForm, CloneApplicationConfigForm
 from sponsors.exceptions import InvalidStatusException
-from sponsors.pdf import render_contract_to_pdf_response, render_contract_to_docx_response
-from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature
+from sponsors.contracts import render_contract_to_pdf_response, render_contract_to_docx_response
+from sponsors.models import Sponsorship, SponsorBenefit, EmailTargetable, SponsorContact, BenefitFeature, \
+    SponsorshipCurrentYear, SponsorshipBenefit, SponsorshipPackage
 
 
 def preview_contract_view(ModelAdmin, request, pk):
@@ -84,7 +85,11 @@ def approve_sponsorship_view(ModelAdmin, request, pk):
             )
             return redirect(redirect_url)
 
-    context = {"sponsorship": sponsorship, "form": form}
+    context = {
+        "sponsorship": sponsorship,
+        "form": form,
+        "previous_effective": sponsorship.previous_effective_date if sponsorship.previous_effective_date else "UNKNOWN",
+    }
     return render(request, "sponsors/admin/approve_application.html", context=context)
 
 
@@ -179,6 +184,44 @@ def rollback_to_editing_view(ModelAdmin, request, pk):
         "sponsors/admin/rollback_sponsorship_to_editing.html",
         context=context,
     )
+
+
+def unlock_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        try:
+            sponsorship.locked = False
+            sponsorship.save(update_fields=['locked'])
+            ModelAdmin.message_user(
+                request, "Sponsorship is now unlocked!", messages.SUCCESS
+            )
+        except InvalidStatusException as e:
+            ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+        redirect_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+        )
+        return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship}
+    return render(
+        request,
+        "sponsors/admin/unlock.html",
+        context=context,
+    )
+
+
+def lock_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    sponsorship.locked = True
+    sponsorship.save()
+
+    redirect_url = reverse(
+        "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+    )
+    return redirect(redirect_url)
 
 
 def execute_contract_view(ModelAdmin, request, pk):
@@ -280,6 +323,34 @@ def list_uploaded_assets(ModelAdmin, request, pk):
     assets = BenefitFeature.objects.required_assets().from_sponsorship(sponsorship)
     context = {"sponsorship": sponsorship, "assets": assets}
     return render(request, "sponsors/admin/list_uploaded_assets.html", context=context)
+
+
+def clone_application_config(ModelAdmin, request):
+    form = CloneApplicationConfigForm()
+    context = {
+        "current_year": SponsorshipCurrentYear.get_year(),
+        "configured_years": form.configured_years,
+        "new_year": None
+    }
+    if request.method == "POST":
+        form = CloneApplicationConfigForm(data=request.POST)
+        if form.is_valid():
+            use_case = use_cases.CloneSponsorshipYearUseCase.build()
+            target_year = form.cleaned_data["target_year"]
+            from_year = form.cleaned_data["from_year"]
+            use_case.execute(from_year, target_year, request=request)
+
+            context["configured_years"].insert(0, target_year)
+            context["new_year"] = target_year
+            ModelAdmin.message_user(
+                request,
+                f"Benefits and Packages for {target_year} copied with sucess from {from_year}!",
+                messages.SUCCESS
+            )
+
+    context["form"] = form
+    template = "sponsors/admin/clone_application_config_form.html"
+    return render(request, template, context)
 
 
 ##################

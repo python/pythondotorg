@@ -16,7 +16,7 @@ from sponsors.models import (
     SponsorBenefit,
     BenefitFeature,
     ProvidedTextAsset,
-    TieredQuantity,
+    TieredBenefit,
 )
 
 API_KEY = settings.PYCON_API_KEY
@@ -77,7 +77,7 @@ class Command(BaseCommand):
                 .all()
             ):
                 try:
-                    quantity = BenefitFeature.objects.instance_of(TieredQuantity).get(
+                    quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(
                         sponsor_benefit=sponsorbenefit
                     )
                 except BenefitFeature.DoesNotExist:

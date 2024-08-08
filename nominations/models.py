@@ -208,6 +208,12 @@ class Nomination(models.Model):
             kwargs={"election": self.election.slug, "pk": self.pk},
         )
 
+    def get_accept_url(self):
+        return reverse(
+            "nominations:nomination_accept",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
     def editable(self, user=None):
         if (
             self.nominee

@@ -486,3 +486,31 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         self.assertEqual(1, len(context["required_assets"]))
         self.assertEqual(date.today(), context["due_date"])
         self.assertIn(asset, context["required_assets"])
+
+
+class ClonedResourceLoggerTests(TestCase):
+
+    def setUp(self):
+        self.request = RequestFactory().get('/')
+        self.request.user = baker.make(settings.AUTH_USER_MODEL)
+        self.logger = notifications.ClonedResourcesLogger()
+        self.package = baker.make("sponsors.SponsorshipPackage", name="Foo")
+        self.kwargs = {
+            "request": self.request,
+            "resource": self.package,
+            "from_year": 2022,
+            "extra": "foo"
+        }
+
+    def test_create_log_entry_for_cloned_resource(self):
+        self.assertEqual(LogEntry.objects.count(), 0)
+
+        self.logger.notify(**self.kwargs)
+
+        self.assertEqual(LogEntry.objects.count(), 1)
+        log_entry = LogEntry.objects.get()
+        self.assertEqual(log_entry.user, self.request.user)
+        self.assertEqual(log_entry.object_id, str(self.package.pk))
+        self.assertEqual(str(self.package), log_entry.object_repr)
+        self.assertEqual(log_entry.action_flag, ADDITION)
+        self.assertEqual(log_entry.change_message, "Cloned from 2022 sponsorship application config")

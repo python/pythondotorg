@@ -61,16 +61,3 @@ class MembershipAdmin(admin.ModelAdmin):
     search_fields = ['creator__username']
     list_filter = ['membership_type']
     raw_id_fields = ['creator']
-
-
-class ApiKeyAdmin(admin.ModelAdmin):
-    list_display = ('user', 'created', )
-    date_hierarchy = 'created'
-
-
-try:
-    admin.site.unregister(ApiKey)
-except admin.sites.NotRegistered:
-    pass
-finally:
-    admin.site.register(ApiKey, ApiKeyAdmin)

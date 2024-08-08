@@ -12,7 +12,7 @@ from django.views.generic import FormView, DetailView, RedirectView
 from .models import (
     SponsorshipBenefit,
     SponsorshipPackage,
-    SponsorshipProgram,
+    SponsorshipProgram, SponsorshipCurrentYear,
 )
 
 from sponsors import cookies
@@ -39,6 +39,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
                 "benefit_model": SponsorshipBenefit,
                 "sponsorship_packages": packages,
                 "capacities_met": capacities_met,
+                "custom_year": self.get_form_custom_year(),
             }
         )
         return super().get_context_data(*args, **kwargs)
@@ -51,6 +52,20 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
 
     def get_initial(self):
         return cookies.get_sponsorship_selected_benefits(self.request)
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        custom_year = self.get_form_custom_year()
+        if custom_year:
+            kwargs["year"] = custom_year
+        return kwargs
+
+    def get_form_custom_year(self):
+        custom_year = self.request.GET.get("config_year")
+        if self.request.user.is_staff and custom_year:
+            custom_year = int(custom_year)
+            if custom_year != SponsorshipCurrentYear.get_year():
+                return custom_year
 
     def form_valid(self, form):
         if not self.request.session.test_cookie_worked():
@@ -75,7 +90,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f in ['add_ons_benefits', 'a_la_carte_benefits']
+            if f.startswith("benefits_") or f in ['a_la_carte_benefits', 'standalone_benefits']
         ]:
             data[fname] = sorted(b.id for b in benefits)
 
@@ -155,7 +170,7 @@ class NewSponsorshipApplicationView(FormView):
         sponsorship = uc.execute(
             self.request.user,
             sponsor,
-            benefits_form.get_benefits(include_add_ons=True, include_a_la_carte=True),
+            benefits_form.get_benefits(include_a_la_carte=True, include_standalone=True),
             benefits_form.get_package(),
             request=self.request,
         )
