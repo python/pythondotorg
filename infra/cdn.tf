@@ -1,24 +1,15 @@
 # TODO: Combine with fastly.tf so that we can layer the ngwaf stuff  for testing
 # terraform import fastly_service_vcl.cdn 1d1Bii4LcJ9joSaowpIdb3 && terraform show:
 resource "fastly_service_vcl" "cdn" {
-    active_version     = 140
-    cloned_version     = 140
-    comment            = null
-    default_host       = null
     default_ttl        = 3600
-    force_refresh      = false
     http3              = false
-    id                 = "z5nOzklFYCXDAUiLeqvS25"
-    imported           = false
     name               = "test.python.org"
     stale_if_error     = false
     stale_if_error_ttl = 43200
-    version_comment    = null
 
     acl {
-        acl_id        = "6Xx3rqKOY0FjQ2CuoS9D8I"
-        force_destroy = false
         name          = "Generated_by_IP_block_list"
+        force_destroy = false
     }
 
     backend {
@@ -152,9 +143,6 @@ resource "fastly_service_vcl" "cdn" {
             "image/vnd.microsoft.icon",
             "text/plain",
             "text/xml",
-        ]
-        extensions      = [
-            null,
         ]
         name            = "Default rules"
     }
@@ -321,8 +309,8 @@ resource "fastly_service_vcl" "cdn" {
       format_version     = 2
       message_type       = "classic"
       compression_codec  = "gzip"
-      access_key         = var.AWS_ACCESS_KEY_ID
-      secret_key         = var.AWS_SECRET_ACCESS_KEY
+      s3_access_key         = var.S3_ACCESS_KEY
+      s3_secret_key         = var.S3_SECRET_KEY
     }
 
     logging_syslog {
@@ -351,7 +339,6 @@ resource "fastly_service_vcl" "cdn" {
         logger_type          = "datadog"
         name                 = "test.python.org backends"
         penalty_box_duration = 2
-        ratelimiter_id       = "..." # TODO: create specific one for ngwaf test service? prod one is 5S7R6aG8KoT6QqtXFd1Nfk
         response_object_name = null
         rps_limit            = 10
         uri_dictionary_name  = null
@@ -379,7 +366,7 @@ resource "fastly_service_vcl" "cdn" {
         default_host      = null
         force_miss        = false
         force_ssl         = true
-        geo_headers       = false # ! DEPRECATED
+#         geo_headers       = false # ! DEPRECATED
         hash_keys         = null
         max_stale_age     = 86400
         name              = "Default cache policy"
@@ -393,7 +380,7 @@ resource "fastly_service_vcl" "cdn" {
         default_host      = null
         force_miss        = false
         force_ssl         = false
-        geo_headers       = false # ! DEPRECATED
+#         geo_headers       = false # ! DEPRECATED
         hash_keys         = null
         max_stale_age     = 60
         name              = "Force Pass"

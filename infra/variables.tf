@@ -65,6 +65,17 @@ variable "AWS_SECRET_ACCESS_KEY" {
   sensitive   = true
 }
 
+variable "S3_ACCESS_KEY" {
+    type        = string
+    description = "Access key for the S3 bucket."
+    sensitive   = true
+}
+variable "S3_SECRET_KEY" {
+    type        = string
+    description = "Secret access key for the S3 bucket."
+    sensitive   = true
+}
+
 variable "route53_zone_id" {
   type        = string
   description = "The Route 53 hosted zone ID"
