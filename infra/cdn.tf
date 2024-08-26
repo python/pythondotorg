@@ -1,3 +1,4 @@
+# TODO: Combine with fastly.tf so that we can layer the ngwaf stuff  for testing
 # terraform import fastly_service_vcl.cdn 1d1Bii4LcJ9joSaowpIdb3 && terraform show:
 resource "fastly_service_vcl" "cdn" {
     active_version     = 140
@@ -9,7 +10,7 @@ resource "fastly_service_vcl" "cdn" {
     http3              = false
     id                 = "1d1Bii4LcJ9joSaowpIdb3"
     imported           = false
-    name               = "www.python.org"
+    name               = "test.python.org"
     stale_if_error     = false
     stale_if_error_ttl = 43200
     version_comment    = null
@@ -20,11 +21,11 @@ resource "fastly_service_vcl" "cdn" {
         name          = "Generated_by_IP_block_list"
     }
 
-    backend {
+    backend { # TODO: add cabo stuffs
       # At least one attribute in this block is (or was) sensitive,
       # so its contents will not be displayed.
     }
-    backend {
+    backend { # TODO: unsure what this onewas,  i think maybe lb?
       # At least one attribute in this block is (or was) sensitive,
       # so its contents will not be displayed.
     }
@@ -52,13 +53,13 @@ resource "fastly_service_vcl" "cdn" {
     condition {
         name      = "HSTS w/ subdomains"
         priority  = 10
-        statement = "req.http.host == \"www.python.org\""
+        statement = "req.http.host == \"test.python.org\""
         type      = "RESPONSE"
     }
     condition {
         name      = "HSTS w/o subdomain"
         priority  = 10
-        statement = "req.http.host == \"python.org\""
+        statement = "req.http.host == \"test.python.org\""
         type      = "RESPONSE"
     }
     condition {
@@ -88,23 +89,23 @@ resource "fastly_service_vcl" "cdn" {
     condition {
         name      = "apex redirect"
         priority  = 10
-        statement = "req.http.Host == \"python.org\""
+        statement = "req.http.Host == \"test.python.org\""
         type      = "RESPONSE"
     }
     condition {
         name      = "apex"
         priority  = 1
-        statement = "req.http.host == \"python.org\""
+        statement = "req.http.host == \"test.python.org\""
         type      = "REQUEST"
     }
 
     domain {
         comment = null
-        name    = "python.org"
+        name    = "test.python.org"
     }
     domain {
         comment = null
-        name    = "www.python.org"
+        name    = "test.python.org"
     }
 
     gzip {
@@ -200,7 +201,7 @@ resource "fastly_service_vcl" "cdn" {
         regex              = null
         request_condition  = null
         response_condition = "apex redirect"
-        source             = "\"https://www.python.org\" + req.url"
+        source             = "\"https://test.python.org\" + req.url"
         substitution       = null
         type               = "response"
     }
@@ -265,7 +266,7 @@ resource "fastly_service_vcl" "cdn" {
         check_interval    = 15000
         expected_response = 200
         headers           = []
-        host              = "python.org"
+        host              = "test.python.org"
         http_version      = "1.1"
         initial           = 4
         method            = "HEAD"
@@ -276,17 +277,17 @@ resource "fastly_service_vcl" "cdn" {
         window            = 5
     }
 
-    logging_datadog {
+    logging_datadog { # TODO
       # At least one attribute in this block is (or was) sensitive,
       # so its contents will not be displayed.
     }
 
-    logging_s3 {
+    logging_s3 { # TODO
       # At least one attribute in this block is (or was) sensitive,
       # so its contents will not be displayed.
     }
 
-    logging_syslog {
+    logging_syslog { # TODO
       # At least one attribute in this block is (or was) sensitive,
       # so its contents will not be displayed.
     }
@@ -307,7 +308,7 @@ resource "fastly_service_vcl" "cdn" {
         feature_revision     = 1
         http_methods         = "GET,PUT,TRACE,POST,HEAD,DELETE,PATCH,OPTIONS"
         logger_type          = "datadog"
-        name                 = "python.org backends"
+        name                 = "test.python.org backends"
         penalty_box_duration = 2
         ratelimiter_id       = "6SnVeRHflsd9pTPPFvhYqX"
         response_object_name = null
@@ -337,7 +338,7 @@ resource "fastly_service_vcl" "cdn" {
         default_host      = null
         force_miss        = false
         force_ssl         = true
-        geo_headers       = false
+        geo_headers       = false # ! DEPRECATED
         hash_keys         = null
         max_stale_age     = 86400
         name              = "Default cache policy"
@@ -351,7 +352,7 @@ resource "fastly_service_vcl" "cdn" {
         default_host      = null
         force_miss        = false
         force_ssl         = false
-        geo_headers       = false
+        geo_headers       = false # ! DEPRECATED
         hash_keys         = null
         max_stale_age     = 60
         name              = "Force Pass"
