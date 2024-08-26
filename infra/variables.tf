@@ -66,14 +66,14 @@ variable "AWS_SECRET_ACCESS_KEY" {
 }
 
 variable "S3_ACCESS_KEY" {
-    type        = string
-    description = "Access key for the S3 bucket."
-    sensitive   = true
+  type        = string
+  description = "Access key for the S3 bucket."
+  sensitive   = true
 }
 variable "S3_SECRET_KEY" {
-    type        = string
-    description = "Secret access key for the S3 bucket."
-    sensitive   = true
+  type        = string
+  description = "Secret access key for the S3 bucket."
+  sensitive   = true
 }
 
 variable "route53_zone_id" {
@@ -96,7 +96,7 @@ variable "route53_record_ttl" {
 
 # dd
 variable "DATADOG_API_KEY" {
-  type = string
+  type        = string
   description = "API key for Datadog"
-  sensitive = true
+  sensitive   = true
 }

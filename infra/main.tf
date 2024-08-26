@@ -1,16 +1,8 @@
 terraform {
-  required_providers {
-    fastly = {
-      source  = "fastly/fastly"
-      version = "5.13.0"
-    }
-    sigsci = {
-      source  = "signalsciences/sigsci"
-      version = "3.3.0"
-    }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
+  cloud {
+    organization = "psf"
+    workspaces {
+      name = "test-pythondotorg"
     }
   }
 }
@@ -27,8 +19,8 @@ provider "aws" {
 }
 
 provider "sigsci" {
-  corp         = var.NGWAF_CORP
-  email        = var.NGWAF_EMAIL
-  auth_token   = var.NGWAF_TOKEN
+  corp           = var.NGWAF_CORP
+  email          = var.NGWAF_EMAIL
+  auth_token     = var.NGWAF_TOKEN
   fastly_api_key = var.FASTLY_API_KEY
 }
