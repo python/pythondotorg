@@ -8,7 +8,7 @@ resource "fastly_service_vcl" "cdn" {
     default_ttl        = 3600
     force_refresh      = false
     http3              = false
-    id                 = "1d1Bii4LcJ9joSaowpIdb3"
+    id                 = "z5nOzklFYCXDAUiLeqvS25"
     imported           = false
     name               = "test.python.org"
     stale_if_error     = false
@@ -277,19 +277,36 @@ resource "fastly_service_vcl" "cdn" {
         window            = 5
     }
 
-    logging_datadog { # TODO
-      # At least one attribute in this block is (or was) sensitive,
-      # so its contents will not be displayed.
+    logging_datadog {
+      name               = "ratelimit-debug"
+      token              = var.DATADOG_API_KEY
+      region             = "US"
     }
 
-    logging_s3 { # TODO
-      # At least one attribute in this block is (or was) sensitive,
-      # so its contents will not be displayed.
+    logging_s3 {
+      name               = "psf-fastly-logs"
+      bucket_name        = "psf-fastly-logs-eu-west-1"
+      domain             = "s3-eu-west-1.amazonaws.com"
+      path               = "/www-python-org/%Y/%m/%d/"
+      period             = 3600
+      gzip_level         = 9
+      # %h "%{now}V" %l "%{req.request}V %{req.url}V" %{req.proto}V %>s %{resp.http.Content-Length}V %{resp.http.age}V "%{resp.http.x-cache}V" "%{resp.http.x-cache-hits}V" "%{req.http.content-type}V" "%{req.http.accept-language}V" "%{cstr_escape(req.http.user-agent)}V"
+      format             = "" # TODO
+      timestamp_format   = "%Y-%m-%dT%H:%M:%S.000"
+      redundancy         = "standard"
+      format_version     = 2
+      message_type       = "classic"
+      compression_codec  = "gzip"
+      access_key         = var.AWS_ACCESS_KEY_ID
+      secret_key         = var.AWS_SECRET_ACCESS_KEY
     }
 
-    logging_syslog { # TODO
-      # At least one attribute in this block is (or was) sensitive,
-      # so its contents will not be displayed.
+    logging_syslog {
+      name               = "syslog"
+      address            = "cdn-logs.nyc1.psf.io"
+      port               = 514
+      # %h "%{now}V" %l "%{req.request}V %{req.url}V" %{req.proto}V %>s %{resp.http.Content-Length}V %{resp.http.age}V "%{resp.http.x-cache}V" "%{resp.http.x-cache-hits}V" "%{req.http.content-type}V" "%{req.http.accept-language}V" "%{cstr_escape(req.http.user-agent)}V"
+      format             = "" # TODO
     }
 
     product_enablement {
@@ -310,7 +327,7 @@ resource "fastly_service_vcl" "cdn" {
         logger_type          = "datadog"
         name                 = "test.python.org backends"
         penalty_box_duration = 2
-        ratelimiter_id       = "6SnVeRHflsd9pTPPFvhYqX"
+        ratelimiter_id       = "..." # TODO: create one for ngwaf test service
         response_object_name = null
         rps_limit            = 10
         uri_dictionary_name  = null

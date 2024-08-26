@@ -1,4 +1,0 @@
-# about
-
-temporary dir holding imports from
-`terraform import fastly_service_vcl.cdn 1d1Bii4LcJ9joSaowpIdb3 && terraform show`

@@ -13,13 +13,13 @@ variable "FASTLY_HEADER_TOKEN" {
 variable "USER_VCL_SERVICE_DOMAIN_NAME" {
   type        = string
   description = "Frontend domain for your service."
-  default     = "ngwaftest.psf.io"
+  default     = "test.python.org"
 }
 
 variable "USER_VCL_SERVICE_BACKEND_HOSTNAME" {
   type        = string
   description = "Hostname used for backend."
-  default     = "test-ngwaf.psf.io"
+  default     = "test.python.org"
 }
 
 variable "Edge_Security_dictionary" {
@@ -74,11 +74,18 @@ variable "route53_zone_id" {
 variable "route53_record_name" {
   type        = string
   description = "The name of the CNAME record"
-  default     = "ngwaftest.psf.io"
+  default     = "test.python.org"
 }
 
 variable "route53_record_ttl" {
   type        = number
   description = "The TTL for the CNAME record"
   default     = 60
+}
+
+# dd
+variable "DATADOG_API_KEY" {
+  type = string
+  description = "API key for Datadog"
+  sensitive = true
 }
