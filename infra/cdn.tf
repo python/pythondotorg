@@ -315,7 +315,7 @@ resource "fastly_service_vcl" "cdn" {
       period             = 3600
       gzip_level         = 9
       # %h "%{now}V" %l "%{req.request}V %{req.url}V" %{req.proto}V %>s %{resp.http.Content-Length}V %{resp.http.age}V "%{resp.http.x-cache}V" "%{resp.http.x-cache-hits}V" "%{req.http.content-type}V" "%{req.http.accept-language}V" "%{cstr_escape(req.http.user-agent)}V"
-      format             = "" # TODO
+      format             = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
       timestamp_format   = "%Y-%m-%dT%H:%M:%S.000"
       redundancy         = "standard"
       format_version     = 2
@@ -330,7 +330,7 @@ resource "fastly_service_vcl" "cdn" {
       address            = "cdn-logs.nyc1.psf.io"
       port               = 514
       # %h "%{now}V" %l "%{req.request}V %{req.url}V" %{req.proto}V %>s %{resp.http.Content-Length}V %{resp.http.age}V "%{resp.http.x-cache}V" "%{resp.http.x-cache-hits}V" "%{req.http.content-type}V" "%{req.http.accept-language}V" "%{cstr_escape(req.http.user-agent)}V"
-      format             = "" # TODO
+      format             = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
     }
 
     product_enablement {
