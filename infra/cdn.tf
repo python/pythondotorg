@@ -21,13 +21,37 @@ resource "fastly_service_vcl" "cdn" {
         name          = "Generated_by_IP_block_list"
     }
 
-    backend { # TODO: add cabo stuffs
-      # At least one attribute in this block is (or was) sensitive,
-      # so its contents will not be displayed.
+    backend {
+      name = "cabotage"
+      address = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
+      port = 443
+      shield = "iad-va-us"
+      auto_loadbalance = false
+      ssl_check_cert = true
+      ssl_cert_hostname = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
+      ssl_sni_hostname = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
+      weight = 100
+      max_conn = 200
+      connect_timeout = 1000
+      first_byte_timeout = 30000
+      between_bytes_timeout = 10000
     }
-    backend { # TODO: unsure what this onewas,  i think maybe lb?
-      # At least one attribute in this block is (or was) sensitive,
-      # so its contents will not be displayed.
+
+    backend {
+      name = "loadbalancer"
+      address = "lb.nyc1.psf.io"
+      shield = "iad-va-us"
+      healthcheck = "HAProxy Status"
+      auto_loadbalance = false
+      ssl_check_cert = true
+      ssl_cert_hostname = "lb.psf.io"
+      ssl_sni_hostname = "lb.psf.io"
+      ssl_ca_cert = "" # TODO(@ee)
+      weight = 100
+      max_conn = 200
+      connect_timeout = 1000
+      first_byte_timeout = 15000
+      between_bytes_timeout = 10000
     }
 
     cache_setting {
@@ -327,7 +351,7 @@ resource "fastly_service_vcl" "cdn" {
         logger_type          = "datadog"
         name                 = "test.python.org backends"
         penalty_box_duration = 2
-        ratelimiter_id       = "..." # TODO: create one for ngwaf test service
+        ratelimiter_id       = "..." # TODO: create specific one for ngwaf test service? prod one is 5S7R6aG8KoT6QqtXFd1Nfk
         response_object_name = null
         rps_limit            = 10
         uri_dictionary_name  = null
