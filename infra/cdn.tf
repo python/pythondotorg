@@ -187,7 +187,7 @@ resource "fastly_service_vcl" "cdn" {
         regex              = null
         request_condition  = null
         response_condition = null
-        source             = "\"bRMyYFEUAtTGmomMj7LKDRFdtGg4cLJXQGPjMYqRiLjLdtewyB\""
+        source             = var.FASTLY_HEADER_TOKEN
         substitution       = null
         type               = "request"
     }
