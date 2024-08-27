@@ -1,4 +1,4 @@
-resource "aws_route53_record" "ngwaf_cname" {
+resource "aws_route53_record" "dns_cname" {
   zone_id = var.route53_zone_id
   name    = var.route53_record_name
   type    = "CNAME"
