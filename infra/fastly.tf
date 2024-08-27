@@ -169,7 +169,7 @@ resource "fastly_service_vcl" "test_python_org" {
     name              = "Is Download Director"
     priority          = 10
     request_condition = "Is Download"
-    source            = "loadbalancer"
+    source            = "F_loadbalancer"
     type              = "request"
   }
   header {
@@ -178,7 +178,7 @@ resource "fastly_service_vcl" "test_python_org" {
     name              = "Is Not Download Backend"
     priority          = 10
     request_condition = "Is Not Download"
-    source            = "cabotage"
+    source            = "F_cabotage"
     type              = "request"
   }
   header {
