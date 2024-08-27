@@ -21,6 +21,7 @@ resource "fastly_service_vcl" "test_python_org" {
     port                  = 443
     shield                = "iad-va-us"
     auto_loadbalance      = false
+    use_ssl               = true
     ssl_check_cert        = true
     ssl_cert_hostname     = "pythondotorg.ingress.us-east-2.psfhosted.computer"
     ssl_sni_hostname      = "pythondotorg.ingress.us-east-2.psfhosted.computer"
@@ -29,6 +30,7 @@ resource "fastly_service_vcl" "test_python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 30000
     between_bytes_timeout = 10000
+    override_host         = "www.python.org"
   }
 
   backend {
@@ -37,6 +39,7 @@ resource "fastly_service_vcl" "test_python_org" {
     shield                = "iad-va-us"
     healthcheck           = "HAProxy Status"
     auto_loadbalance      = false
+    use_ssl               = true
     ssl_check_cert        = true
     ssl_cert_hostname     = "lb.psf.io"
     ssl_sni_hostname      = "lb.psf.io"
@@ -46,6 +49,7 @@ resource "fastly_service_vcl" "test_python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 15000
     between_bytes_timeout = 10000
+    override_host         = "www.python.org"
   }
 
   backend {
