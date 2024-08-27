@@ -5,10 +5,10 @@ resource "fastly_service_vcl" "test_python_org" {
   stale_if_error     = false
   stale_if_error_ttl = 43200
   activate           = true
-#
-#   domain {
-#     name = "test.python.org"
-#   }
+
+  domain {
+    name = "test.python.org"
+  }
 
   domain {
     name    = var.USER_VCL_SERVICE_DOMAIN_NAME
@@ -350,34 +350,34 @@ resource "fastly_service_vcl" "test_python_org" {
     status            = 403
   }
 
-  # NGWAF Dynamic Snippets
-#   dynamicsnippet {
-#     name     = "ngwaf_config_init"
-#     type     = "init"
-#     priority = 0
-#   }
-#
-#   dynamicsnippet {
-#     name     = "ngwaf_config_miss"
-#     type     = "miss"
-#     priority = 9000
-#   }
-#
-#   dynamicsnippet {
-#     name     = "ngwaf_config_pass"
-#     type     = "pass"
-#     priority = 9000
-#   }
-#
-#   dynamicsnippet {
-#     name     = "ngwaf_config_deliver"
-#     type     = "deliver"
-#     priority = 9000
-#   }
+#   NGWAF Dynamic Snippets
+  dynamicsnippet {
+    name     = "ngwaf_config_init"
+    type     = "init"
+    priority = 0
+  }
 
-#   dictionary {
-#     name = var.Edge_Security_dictionary
-#   }
+  dynamicsnippet {
+    name     = "ngwaf_config_miss"
+    type     = "miss"
+    priority = 9000
+  }
+
+  dynamicsnippet {
+    name     = "ngwaf_config_pass"
+    type     = "pass"
+    priority = 9000
+  }
+
+  dynamicsnippet {
+    name     = "ngwaf_config_deliver"
+    type     = "deliver"
+    priority = 9000
+  }
+
+  dictionary {
+    name = var.Edge_Security_dictionary
+  }
 
   lifecycle {
     ignore_changes = [product_enablement]
