@@ -126,13 +126,13 @@ resource "fastly_service_vcl" "test_python_org" {
   condition {
     name      = "apex redirect"
     priority  = 10
-    statement = "req.http.Host == \"test.python.org\""
+    statement = "req.http.Host == \"python.org\""
     type      = "RESPONSE"
   }
   condition {
     name      = "apex"
     priority  = 1
-    statement = "req.http.host == \"test.python.org\""
+    statement = "req.http.host == \"python.org\""
     type      = "REQUEST"
   }
 
@@ -199,7 +199,7 @@ resource "fastly_service_vcl" "test_python_org" {
     name               = "www redirect"
     priority           = 10
     response_condition = "apex redirect"
-    source             = "\"https://test.python.org\" + req.url"
+    source             = "\"https://www.\" + req.http.host + req.url"
     type               = "response"
   }
   header {
