@@ -17,13 +17,13 @@ resource "fastly_service_vcl" "test_python_org" {
 
   backend {
     name                  = "cabotage"
-    address               = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
+    address               = "pythondotorg.ingress.us-east-2.psfhosted.computer"
     port                  = 443
     shield                = "iad-va-us"
     auto_loadbalance      = false
     ssl_check_cert        = true
-    ssl_cert_hostname     = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
-    ssl_sni_hostname      = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
+    ssl_cert_hostname     = "pythondotorg.ingress.us-east-2.psfhosted.computer"
+    ssl_sni_hostname      = "pythondotorg.ingress.us-east-2.psfhosted.computer"
     weight                = 100
     max_conn              = 200
     connect_timeout       = 1000
@@ -40,7 +40,7 @@ resource "fastly_service_vcl" "test_python_org" {
     ssl_check_cert        = true
     ssl_cert_hostname     = "lb.psf.io"
     ssl_sni_hostname      = "lb.psf.io"
-    ssl_ca_cert           = "" # TODO(@ee)
+    ssl_ca_cert           = file("${path.module}/certs/psf.io.pem")
     weight                = 100
     max_conn              = 200
     connect_timeout       = 1000
@@ -169,7 +169,7 @@ resource "fastly_service_vcl" "test_python_org" {
     name              = "Is Download Director"
     priority          = 10
     request_condition = "Is Download"
-    source            = "F_lb_nyc1_psf_io"
+    source            = "loadbalancer"
     type              = "request"
   }
   header {
@@ -178,7 +178,7 @@ resource "fastly_service_vcl" "test_python_org" {
     name              = "Is Not Download Backend"
     priority          = 10
     request_condition = "Is Not Download"
-    source            = "F_cabotage"
+    source            = "cabotage"
     type              = "request"
   }
   header {
@@ -186,7 +186,7 @@ resource "fastly_service_vcl" "test_python_org" {
     destination = "http.Fastly-Token"
     name        = "Fastly Token"
     priority    = 10
-    source      = var.FASTLY_HEADER_TOKEN
+    source      = "\"${var.FASTLY_HEADER_TOKEN}\""
     type        = "request"
   }
   header {
@@ -267,8 +267,8 @@ resource "fastly_service_vcl" "test_python_org" {
     redundancy        = "standard"
     format_version    = 2
     message_type      = "classic"
-    s3_access_key     = var.S3_ACCESS_KEY
-    s3_secret_key     = var.S3_SECRET_KEY
+    s3_access_key     = var.AWS_ACCESS_KEY_ID
+    s3_secret_key     = var.AWS_SECRET_ACCESS_KEY
   }
 
   logging_syslog {
@@ -347,90 +347,37 @@ resource "fastly_service_vcl" "test_python_org" {
   }
 
   # NGWAF Dynamic Snippets
-  dynamicsnippet {
-    name     = "ngwaf_config_init"
-    type     = "init"
-    priority = 0
-  }
+#   dynamicsnippet {
+#     name     = "ngwaf_config_init"
+#     type     = "init"
+#     priority = 0
+#   }
+#
+#   dynamicsnippet {
+#     name     = "ngwaf_config_miss"
+#     type     = "miss"
+#     priority = 9000
+#   }
+#
+#   dynamicsnippet {
+#     name     = "ngwaf_config_pass"
+#     type     = "pass"
+#     priority = 9000
+#   }
+#
+#   dynamicsnippet {
+#     name     = "ngwaf_config_deliver"
+#     type     = "deliver"
+#     priority = 9000
+#   }
 
-  dynamicsnippet {
-    name     = "ngwaf_config_miss"
-    type     = "miss"
-    priority = 9000
-  }
-
-  dynamicsnippet {
-    name     = "ngwaf_config_pass"
-    type     = "pass"
-    priority = 9000
-  }
-
-  dynamicsnippet {
-    name     = "ngwaf_config_deliver"
-    type     = "deliver"
-    priority = 9000
-  }
-
-  dictionary {
-    name = var.Edge_Security_dictionary
-  }
+#   dictionary {
+#     name = var.Edge_Security_dictionary
+#   }
 
   lifecycle {
     ignore_changes = [product_enablement]
   }
 
   force_destroy = true
-}
-
-# Fastly Service Dictionary Items
-resource "fastly_service_dictionary_items" "edge_security_dictionary_items" {
-  for_each = {
-    for d in fastly_service_vcl.test_python_org.dictionary : d.name => d if d.name == var.Edge_Security_dictionary
-  }
-  service_id    = fastly_service_vcl.test_python_org.id
-  dictionary_id = each.value.dictionary_id
-  items = {
-    Enabled : "100"
-  }
-}
-
-# Fastly Service Dynamic Snippet Contents
-resource "fastly_service_dynamic_snippet_content" "ngwaf_config_init" {
-  for_each = {
-    for d in fastly_service_vcl.test_python_org.dynamicsnippet : d.name => d if d.name == "ngwaf_config_init"
-  }
-  service_id      = fastly_service_vcl.test_python_org.id
-  snippet_id      = each.value.snippet_id
-  content         = "### Fastly managed ngwaf_config_init"
-  manage_snippets = false
-}
-
-resource "fastly_service_dynamic_snippet_content" "ngwaf_config_miss" {
-  for_each = {
-    for d in fastly_service_vcl.test_python_org.dynamicsnippet : d.name => d if d.name == "ngwaf_config_miss"
-  }
-  service_id      = fastly_service_vcl.test_python_org.id
-  snippet_id      = each.value.snippet_id
-  content         = "### Fastly managed ngwaf_config_miss"
-  manage_snippets = false
-}
-
-resource "fastly_service_dynamic_snippet_content" "ngwaf_config_pass" {
-  for_each = {
-    for d in fastly_service_vcl.test_python_org.dynamicsnippet : d.name => d if d.name == "ngwaf_config_pass"
-  }
-  service_id      = fastly_service_vcl.test_python_org.id
-  snippet_id      = each.value.snippet_id
-  content         = "### Fastly managed ngwaf_config_pass"
-  manage_snippets = false
-}
-
-resource "fastly_service_dynamic_snippet_content" "ngwaf_config_deliver" {
-  for_each = {
-    for d in fastly_service_vcl.test_python_org.dynamicsnippet : d.name => d if d.name == "ngwaf_config_deliver"
-  }
-  service_id      = fastly_service_vcl.test_python_org.id
-  snippet_id      = each.value.snippet_id
-  content         = "### Fastly managed ngwaf_config_deliver"
-  manage_snippets = false
 }

@@ -1,7 +1,5 @@
 AWS_ACCESS_KEY_ID = "NotARealKey"
 AWS_SECRET_ACCESS_KEY = "NotARealKey"
-S3_ACCESS_KEY_ID = NotARealKey"
-S3_SECRET_KEY = "NotARealKey"
 
 NGWAF_TOKEN = "NotARealKey"
 FASTLY_API_KEY = "NotARealKey"
