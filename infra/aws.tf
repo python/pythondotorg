@@ -4,4 +4,5 @@ resource "aws_route53_record" "dns_cname" {
   type    = "CNAME"
   ttl     = var.route53_record_ttl
   records = ["dualstack.python.map.fastly.net"]
+  allow_overwrite = true
 }
