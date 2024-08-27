@@ -68,7 +68,7 @@ variable "AWS_SECRET_ACCESS_KEY" {
 variable "route53_zone_id" {
   type        = string
   description = "The Route 53 hosted zone ID"
-  default     = "Z2LSM2W8Q3WN11" # psf.io
+  default     = "Z3JUI7A2G39FQL" # python.org
 }
 
 variable "route53_record_name" {
