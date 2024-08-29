@@ -8,9 +8,5 @@ terraform {
       source  = "signalsciences/sigsci"
       version = "3.3.0"
     }
-    aws = {
-      source  = "hashicorp/aws"
-      version = "~> 5.0"
-    }
   }
 }

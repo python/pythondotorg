@@ -1,30 +1,44 @@
-resource "fastly_service_vcl" "test_python_org" {
-  name               = "test.python.org"
-  default_ttl        = 3600
+variable "name" { type = string }
+variable "domain" { type = string }
+variable "extra_domains" { type = list(string) }
+variable "backend_address" { type = string }
+variable "default_ttl" { type = number }
+variable "stale_if_error" { type = bool }
+variable "stale_if_error_ttl" { type = number }
+variable "aws_access_key_id" { type = string }
+variable "aws_secret_access_key" { type = string }
+variable "datadog_api_key" { type = string }
+variable "fastly_header_token" { type = string }
+
+resource "fastly_service_vcl" "python_org" {
+  name               = var.name
+  default_ttl        = var.default_ttl
   http3              = false
   stale_if_error     = false
   stale_if_error_ttl = 43200
   activate           = true
 
   domain {
-    name = "test.python.org"
+    name = var.domain
   }
 
-  domain {
-    name    = var.USER_VCL_SERVICE_DOMAIN_NAME
-    comment = "NGWAF testing domain"
+  dynamic "domain" {
+    for_each = var.extra_domains
+    content {
+      name = domain.value
+    }
   }
 
   backend {
     name                  = "cabotage"
-    address               = "pythondotorg.ingress.us-east-2.psfhosted.computer"
+    address               = var.backend_address
     port                  = 443
     shield                = "iad-va-us"
     auto_loadbalance      = false
     use_ssl               = true
     ssl_check_cert        = true
-    ssl_cert_hostname     = "pythondotorg.ingress.us-east-2.psfhosted.computer"
-    ssl_sni_hostname      = "pythondotorg.ingress.us-east-2.psfhosted.computer"
+    ssl_cert_hostname     = var.backend_address
+    ssl_sni_hostname      = var.backend_address
     weight                = 100
     max_conn              = 200
     connect_timeout       = 1000
@@ -43,23 +57,13 @@ resource "fastly_service_vcl" "test_python_org" {
     ssl_check_cert        = true
     ssl_cert_hostname     = "lb.psf.io"
     ssl_sni_hostname      = "lb.psf.io"
-    ssl_ca_cert           = file("${path.module}/certs/psf.io.pem")
+    ssl_ca_cert           = file("${path.module}/cdn/certs/psf.io.pem")
     weight                = 100
     max_conn              = 200
     connect_timeout       = 1000
     first_byte_timeout    = 15000
     between_bytes_timeout = 10000
-    override_host         = "www.python.org"
-  }
-
-  backend {
-    address           = var.USER_VCL_SERVICE_BACKEND_HOSTNAME
-    name              = "ngwaf_backend"
-    port              = 443
-    use_ssl           = true
-    ssl_cert_hostname = var.USER_VCL_SERVICE_BACKEND_HOSTNAME
-    ssl_sni_hostname  = var.USER_VCL_SERVICE_BACKEND_HOSTNAME
-    override_host     = var.USER_VCL_SERVICE_BACKEND_HOSTNAME
+    override_host         = var.domain == "test.python.org" ? "www.python.org" : null
   }
 
   acl {
@@ -90,13 +94,13 @@ resource "fastly_service_vcl" "test_python_org" {
   condition {
     name      = "HSTS w/ subdomains"
     priority  = 10
-    statement = "req.http.host == \"test.python.org\""
+    statement = "req.http.host == \"${var.domain}\""
     type      = "RESPONSE"
   }
   condition {
     name      = "HSTS w/o subdomain"
     priority  = 10
-    statement = "req.http.host == \"test.python.org\""
+    statement = "req.http.host == \"${var.domain}\""
     type      = "RESPONSE"
   }
   condition {
@@ -242,7 +246,7 @@ resource "fastly_service_vcl" "test_python_org" {
   healthcheck {
     check_interval    = 15000
     expected_response = 200
-    host              = "test.python.org"
+    host              = var.domain
     http_version      = "1.1"
     initial           = 4
     method            = "HEAD"
@@ -260,19 +264,19 @@ resource "fastly_service_vcl" "test_python_org" {
   }
 
   logging_s3 {
-    name              = "psf-fastly-logs"
-    bucket_name       = "psf-fastly-logs-eu-west-1"
-    domain            = "s3-eu-west-1.amazonaws.com"
-    path              = "/www-python-org/%Y/%m/%d/"
-    period            = 3600
-    gzip_level        = 9
-    format            = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
-    timestamp_format  = "%Y-%m-%dT%H:%M:%S.000"
-    redundancy        = "standard"
-    format_version    = 2
-    message_type      = "classic"
-    s3_access_key     = var.AWS_ACCESS_KEY_ID
-    s3_secret_key     = var.AWS_SECRET_ACCESS_KEY
+    name             = "psf-fastly-logs"
+    bucket_name      = "psf-fastly-logs-eu-west-1"
+    domain           = "s3-eu-west-1.amazonaws.com"
+    path             = "/${replace(var.domain, ".", "-")}/%Y/%m/%d/"
+    period           = 3600
+    gzip_level       = 9
+    format           = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
+    timestamp_format = "%Y-%m-%dT%H:%M:%S.000"
+    redundancy       = "standard"
+    format_version   = 2
+    message_type     = "classic"
+    s3_access_key    = var.s3_logging_keys
+    s3_secret_key    = var.s3_logging_keys
   }
 
   logging_syslog {
@@ -297,7 +301,7 @@ resource "fastly_service_vcl" "test_python_org" {
     feature_revision     = 1
     http_methods         = "GET,PUT,TRACE,POST,HEAD,DELETE,PATCH,OPTIONS"
     logger_type          = "datadog"
-    name                 = "test.python.org backends"
+    name                 = "${var.domain} backends"
     penalty_box_duration = 2
     rps_limit            = 10
     window_size          = 10
@@ -348,39 +352,6 @@ resource "fastly_service_vcl" "test_python_org" {
     request_condition = "Generated by IP block list"
     response          = "Forbidden"
     status            = 403
-  }
-
-#   NGWAF Dynamic Snippets
-  dynamicsnippet {
-    name     = "ngwaf_config_init"
-    type     = "init"
-    priority = 0
-  }
-
-  dynamicsnippet {
-    name     = "ngwaf_config_miss"
-    type     = "miss"
-    priority = 9000
-  }
-
-  dynamicsnippet {
-    name     = "ngwaf_config_pass"
-    type     = "pass"
-    priority = 9000
-  }
-
-  dynamicsnippet {
-    name     = "ngwaf_config_deliver"
-    type     = "deliver"
-    priority = 9000
-  }
-
-  dictionary {
-    name = var.Edge_Security_dictionary
-  }
-
-  lifecycle {
-    ignore_changes = [product_enablement]
   }
 
   force_destroy = true
