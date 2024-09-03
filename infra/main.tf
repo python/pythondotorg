@@ -1,5 +1,3 @@
-variable "fastly_s3_logging" { type = map(any) }
-
 locals {
   tags = {
     Application = "Python.org"
@@ -20,12 +18,25 @@ locals {
 }
 
 module "dns" {
+  # TODO: this doesn't accommodate for DNS management splits between environments
   source         = "./dns"
   tags           = local.tags
   primary_domain = "python.org"
+  zone_id         = module.dns.primary_zone_id
+  fastly_endpoints = local.fastly_endpoints
+  domain_map       = local.domain_map
+
+  aws_access_key = var.AWS_ACCESS_KEY_ID
+  aws_secret_key = var.AWS_SECRET_ACCESS_KEY
+
+  # TODO: the below needs to be parameterized or fixed
+  apex_txt = []
+  domain = ""
+  name = ""
+  user_content_domain = ""
 }
 
-module "pythondotorg_production" {
+module "fastly_production" {
   source = "./cdn"
 
   name               = "Python.org"
@@ -33,18 +44,14 @@ module "pythondotorg_production" {
   extra_domains      = ["www.python.org"]
   backend_address    = "pythondotorg.ingress.us-east-2.psfhosted.computer"
   default_ttl        = 3600
-  stale_if_error     = false
-  stale_if_error_ttl = 43200
 
-  zone_id         = module.dns.primary_zone_id
-  backend         = "pythondotorg.ingress.us-east-2.psfhosted.computer"
-  s3_logging_keys = var.fastly_s3_logging
-
-  fastly_endpoints = local.fastly_endpoints
-  domain_map       = local.domain_map
+  datadog_key  = var.DATADOG_API_KEY
+  fastly_key   = var.FASTLY_API_KEY
+  fastly_header_token = var.FASTLY_HEADER_TOKEN
+  fastly_s3_logging = var.fastly_s3_logging
 }
 
-module "pythondotorg_staging" {
+module "fastly_staging" {
   source = "./cdn"
 
   name               = "test.Python.org"
@@ -52,15 +59,11 @@ module "pythondotorg_staging" {
   extra_domains      = []
   backend_address    = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
   default_ttl        = 3600
-  stale_if_error     = false
-  stale_if_error_ttl = 43200
 
-  zone_id         = module.dns.primary_zone_id
-  backend         = "test-pythondotorg.ingress.us-east-2.psfhosted.computer"
-  s3_logging_keys = var.fastly_s3_logging
-
-  fastly_endpoints = local.fastly_endpoints
-  domain_map       = local.domain_map
+  datadog_key  = var.DATADOG_API_KEY
+  fastly_key   = var.FASTLY_API_KEY
+  fastly_header_token = var.FASTLY_HEADER_TOKEN
+  fastly_s3_logging = var.fastly_s3_logging
 }
 
 

@@ -5,16 +5,7 @@
 # Retrieve the current AWS account data (based on secrets provided in .tfvars or TF Cloud)
 data "aws_caller_identity" "current" {}
 
-# Input variables passed in from `$root/infra/main.tf`
-variable "tags" { type = map(any) }
-variable "primary_domain" { type = string }
-variable "user_content_domain" { type = string }
-variable "apex_txt" { type = list(any) }
-variable "name" { type = string }
-variable "zone_id" { type = string }
-variable "domain" { type = string }
-variable "fastly_endpoints" { type = map(any) }
-variable "domain_map" { type = map(any) }
+
 
 # see if we're dealing with an apex domain or subdomain by splitting the domain name and counting the parts
 locals {

@@ -1,14 +1,39 @@
-variable "FASTLY_API_KEY" {
+variable "fastly_key" {
   type        = string
   description = "API key for the Fastly VCL edge configuration."
 }
-variable "FASTLY_HEADER_TOKEN" {
-  description = "Fastly Token for authentication"
+variable "fastly_header_token" {
+  description = "Fastly header token ensure we only allow Fastly to access the service"
   type        = string
   sensitive   = true
 }
-variable "DATADOG_API_KEY" {
+variable "datadog_key" {
   type        = string
   description = "API key for Datadog logging"
   sensitive   = true
+}
+variable "fastly_s3_logging" {
+  type        = string
+  description = "S3 bucket keys for Fastly logging"
+  sensitive   = true
+}
+variable "name" {
+  type        = string
+  description = "The name of the Fastly service."
+}
+variable "domain" {
+  type        = string
+  description = "The domain name of the service."
+}
+variable "extra_domains" {
+  type        = list(string)
+  description = "Extra domains to add to the service."
+}
+variable "backend_address" {
+  type        = string
+  description = "The hostname of the backend service."
+}
+variable "default_ttl" {
+  type        = number
+  description = "The default TTL for the service."
 }

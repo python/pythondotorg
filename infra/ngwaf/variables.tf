@@ -32,11 +32,15 @@ variable "NGWAF_SITE" {
 variable "NGWAF_EMAIL" {
   type        = string
   description = "Email address associated with the token for the NGWAF API."
-  default     = "jacob.coffee@pyfound.org"
 }
 
 variable "NGWAF_TOKEN" {
   type        = string
   description = "Secret token for the NGWAF API."
   sensitive   = true
+}
+
+variable "FASTLY_API_KEY" {
+  type        = string
+  description = "API key for the Fastly VCL edge configuration."
 }

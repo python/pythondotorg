@@ -1,15 +1,3 @@
-variable "name" { type = string }
-variable "domain" { type = string }
-variable "extra_domains" { type = list(string) }
-variable "backend_address" { type = string }
-variable "default_ttl" { type = number }
-variable "stale_if_error" { type = bool }
-variable "stale_if_error_ttl" { type = number }
-variable "aws_access_key_id" { type = string }
-variable "aws_secret_access_key" { type = string }
-variable "datadog_api_key" { type = string }
-variable "fastly_header_token" { type = string }
-
 resource "fastly_service_vcl" "python_org" {
   name               = var.name
   default_ttl        = var.default_ttl
@@ -194,7 +182,7 @@ resource "fastly_service_vcl" "python_org" {
     destination = "http.Fastly-Token"
     name        = "Fastly Token"
     priority    = 10
-    source      = "\"${var.FASTLY_HEADER_TOKEN}\""
+    source      = "\"${var.fastly_header_token}\""
     type        = "request"
   }
   header {
@@ -259,7 +247,7 @@ resource "fastly_service_vcl" "python_org" {
 
   logging_datadog {
     name   = "ratelimit-debug"
-    token  = var.DATADOG_API_KEY
+    token  = var.datadog_key
     region = "US"
   }
 
@@ -275,8 +263,8 @@ resource "fastly_service_vcl" "python_org" {
     redundancy       = "standard"
     format_version   = 2
     message_type     = "classic"
-    s3_access_key    = var.s3_logging_keys
-    s3_secret_key    = var.s3_logging_keys
+    s3_access_key    = var.fastly_s3_logging["access_key"]
+    s3_secret_key    = var.fastly_s3_logging["secret_key"]
   }
 
   logging_syslog {
