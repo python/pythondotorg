@@ -1,23 +1,6 @@
 # Fastly CDN Config
 
-This module creates Fastly services for the Python.org CDN.
-
-## Usage
-# Fastly VCL Terraform Module
-
-This Terraform module configures a Fastly service using VCL (Varnish Configuration Language) for Python.org. It sets up a robust CDN configuration with various features to optimize performance, security, and logging.
-
-## Features
-
-- Configures Fastly VCL service for Python.org
-- Supports multiple domains (primary and extra domains)
-- Sets up backends with health checks
-- Implements caching strategies and TTL configurations
-- Configures HTTPS and HSTS
-- Implements rate limiting
-- Sets up logging to Datadog and S3
-- Configures various headers and request/response manipulations
-- Implements IP blocking capabilities
+This module creates Fastly services for the Python.org staging and production instances.
 
 ## Usage
 
