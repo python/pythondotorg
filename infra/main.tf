@@ -16,7 +16,7 @@ module "fastly_production" {
 module "fastly_staging" {
   source = "./cdn"
 
-  name            = "test.Python.org"
+  name            = "test.python.org"
   domain          = "test.python.org"
   extra_domains   = []
   # TODO: adjust to test-pythondotorg when done testing NGWAF

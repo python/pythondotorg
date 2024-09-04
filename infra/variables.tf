@@ -14,7 +14,7 @@ variable "DATADOG_API_KEY" {
   sensitive   = true
 }
 variable "fastly_s3_logging" {
-  type        = string
+  type        = map(string)
   description = "S3 bucket keys for Fastly logging"
   sensitive   = true
 }

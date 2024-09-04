@@ -34,7 +34,7 @@ module "fastly_production" {
   datadog_key         = var.DATADOG_API_KEY
   fastly_key          = var.FASTLY_API_KEY
   fastly_header_token = var.FASTLY_HEADER_TOKEN
-  fastly_s3_logging   = var.fastly_s3_logging
+  s3_logging_keys     = var.fastly_s3_logging
 }
 ```
 

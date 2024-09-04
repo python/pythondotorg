@@ -45,7 +45,7 @@ resource "fastly_service_vcl" "python_org" {
     ssl_check_cert        = true
     ssl_cert_hostname     = "lb.psf.io"
     ssl_sni_hostname      = "lb.psf.io"
-    ssl_ca_cert           = file("${path.module}/cdn/certs/psf.io.pem")
+    ssl_ca_cert           = file("${path.module}/certs/psf.io.pem")
     weight                = 100
     max_conn              = 200
     connect_timeout       = 1000
