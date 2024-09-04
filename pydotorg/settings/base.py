@@ -31,6 +31,12 @@ DATABASES = {
     )
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+"""The default primary key field type for Django models.
+
+Required during the Django 2.2 -> 4.2 migration.
+"""
+
 # celery settings
 _REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
 
