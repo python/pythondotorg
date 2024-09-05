@@ -10,6 +10,7 @@ module "fastly_production" {
 
   name            = "CoolPythonApp.org"
   domain          = "CoolPythonApp.org"
+  subdomain       = "www.CoolPythonApp.org"
   extra_domains   = ["www.CoolPythonApp.org"]
   backend_address = "service.CoolPythonApp.org"
   default_ttl     = 3600
