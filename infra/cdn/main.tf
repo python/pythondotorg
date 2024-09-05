@@ -32,7 +32,7 @@ resource "fastly_service_vcl" "python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 30000
     between_bytes_timeout = 10000
-    override_host         = var.subdomain == "test.python.org" ? "www.python.org" : null
+    override_host         = var.subdomain == "www.test.python.org" ? "www.python.org" : null
   }
 
   backend {
@@ -52,7 +52,7 @@ resource "fastly_service_vcl" "python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 15000
     between_bytes_timeout = 10000
-    override_host         = var.subdomain == "test.python.org" ? "www.python.org" : null
+    override_host         = var.subdomain == "www.test.python.org" ? "www.python.org" : null
   }
 
   acl {
