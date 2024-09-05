@@ -4,7 +4,7 @@ resource "fastly_service_vcl" "python_org" {
   http3              = false
   stale_if_error     = false
   stale_if_error_ttl = 43200
-  activate           = true
+  activate           = false
 
   domain {
     name = var.domain
@@ -32,13 +32,14 @@ resource "fastly_service_vcl" "python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 30000
     between_bytes_timeout = 10000
-    override_host         = "www.python.org"
+    override_host         = var.subdomain == "test.python.org" ? "www.python.org" : null
   }
 
   backend {
     name                  = "loadbalancer"
     address               = "lb.nyc1.psf.io"
-    shield                = "iad-va-us"
+    port                  = 20004
+    shield                = "lga-ny-us"
     healthcheck           = "HAProxy Status"
     auto_loadbalance      = false
     use_ssl               = true
@@ -51,7 +52,7 @@ resource "fastly_service_vcl" "python_org" {
     connect_timeout       = 1000
     first_byte_timeout    = 15000
     between_bytes_timeout = 10000
-    override_host         = var.domain == "test.python.org" ? "www.python.org" : null
+    override_host         = var.subdomain == "test.python.org" ? "www.python.org" : null
   }
 
   acl {
@@ -82,7 +83,7 @@ resource "fastly_service_vcl" "python_org" {
   condition {
     name      = "HSTS w/ subdomains"
     priority  = 10
-    statement = "req.http.host == \"${var.domain}\""
+    statement = "req.http.host == \"${var.subdomain}\""
     type      = "RESPONSE"
   }
   condition {
@@ -191,7 +192,7 @@ resource "fastly_service_vcl" "python_org" {
     name               = "www redirect"
     priority           = 10
     response_condition = "apex redirect"
-    source             = "\"https://www.\" + req.http.host + req.url"
+    source             = "\"https://${var.subdomain}\" + req.url"
     type               = "response"
   }
   header {
@@ -255,10 +256,10 @@ resource "fastly_service_vcl" "python_org" {
     name             = "psf-fastly-logs"
     bucket_name      = "psf-fastly-logs-eu-west-1"
     domain           = "s3-eu-west-1.amazonaws.com"
-    path             = "/${replace(var.domain, ".", "-")}/%Y/%m/%d/"
+    path             = "/${replace(var.subdomain, ".", "-")}/%Y/%m/%d/"
     period           = 3600
     gzip_level       = 9
-    format           = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
+    format           = "%h \"%%{now}V\" %l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
     timestamp_format = "%Y-%m-%dT%H:%M:%S.000"
     redundancy       = "standard"
     format_version   = 2
@@ -271,7 +272,7 @@ resource "fastly_service_vcl" "python_org" {
     name    = "syslog"
     address = "cdn-logs.nyc1.psf.io"
     port    = 514
-    format  = "%%h \"%%{now}V\" %%l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %%>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
+    format  = "%h \"%%{now}V\" %l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
   }
 
   product_enablement {
@@ -296,15 +297,15 @@ resource "fastly_service_vcl" "python_org" {
 
     response {
       content      = <<-EOT
-                <html>
-                        <head>
-                                <title>Too Many Requests</title>
-                        </head>
-                        <body>
-                                <p>Too Many Requests</p>
-                        </body>
-                </html>
-            EOT
+      <html>
+        <head>
+          <title>Too Many Requests</title>
+        </head>
+        <body>
+          <p>Too Many Requests</p>
+        </body>
+      </html>
+      EOT
       content_type = "text/html"
       status       = 429
     }
@@ -341,6 +342,4 @@ resource "fastly_service_vcl" "python_org" {
     response          = "Forbidden"
     status            = 403
   }
-
-  force_destroy = true
 }

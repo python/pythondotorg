@@ -3,7 +3,7 @@
 
 provider "registry.terraform.io/fastly/fastly" {
   version     = "5.13.0"
-  constraints = "5.13.0"
+  constraints = ">= 5.13.0"
   hashes = [
     "h1:op/7hntTRkfZFIZ5xLNtLb7eBY155ywQIVSy56XCmBE=",
     "zh:04f7405ee22a8ace546b90cc3a08d81f1a49dae8b1050500398d4b0244dcbc86",

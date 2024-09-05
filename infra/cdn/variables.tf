@@ -25,6 +25,10 @@ variable "domain" {
   type        = string
   description = "The domain name of the service."
 }
+variable "subdomain" {
+  type        = string
+  description = "The subdomain of the service."
+}
 variable "extra_domains" {
   type        = list(string)
   description = "Extra domains to add to the service."

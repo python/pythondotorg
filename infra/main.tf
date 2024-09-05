@@ -1,8 +1,9 @@
 module "fastly_production" {
   source = "./cdn"
 
-  name            = "Python.org"
+  name            = "www.python.org"
   domain          = "python.org"
+  subdomain       = "www.python.org"
   extra_domains   = ["www.python.org"]
   backend_address = "pythondotorg.ingress.us-east-2.psfhosted.computer"
   default_ttl     = 3600
@@ -18,7 +19,8 @@ module "fastly_staging" {
 
   name            = "test.python.org"
   domain          = "test.python.org"
-  extra_domains   = []
+  subdomain       = "www.test.python.org"
+  extra_domains   = ["www.test.python.org"]
   # TODO: adjust to test-pythondotorg when done testing NGWAF
   backend_address = "pythondotorg.ingress.us-east-2.psfhosted.computer"
   default_ttl     = 3600
