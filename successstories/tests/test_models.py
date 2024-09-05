@@ -20,7 +20,8 @@ class StoryModelTests(TestCase):
 
     def test_featured(self):
         featured_stories = Story.objects.featured()
-        self.assertTrue(all(story.name == 'Featured Story' for story in featured_stories))
+        expected_repr = [f'<Story: {self.story3.name}>']
+        self.assertQuerysetEqual(featured_stories, expected_repr, transform=repr)
 
     def test_get_admin_url(self):
         self.assertEqual(self.story1.get_admin_url(),
