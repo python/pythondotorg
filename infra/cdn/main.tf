@@ -269,7 +269,7 @@ resource "fastly_service_vcl" "python_org" {
   }
 
   logging_syslog {
-    name    = "syslog"
+    name    = "pythonorg"
     address = "cdn-logs.nyc1.psf.io"
     port    = 514
     format  = "%h \"%%{now}V\" %l \"%%{req.request}V %%{req.url}V\" %%{req.proto}V %>s %%{resp.http.Content-Length}V %%{resp.http.age}V \"%%{resp.http.x-cache}V\" \"%%{resp.http.x-cache-hits}V\" \"%%{req.http.content-type}V\" \"%%{req.http.accept-language}V\" \"%%{cstr_escape(req.http.user-agent)}V\""
