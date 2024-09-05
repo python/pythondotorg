@@ -146,7 +146,10 @@ class AssetConfigurationMixin:
 
     def get_clone_kwargs(self, new_benefit):
         kwargs = super().get_clone_kwargs(new_benefit)
-        kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
+        if str(self.benefit.year) in self.internal_name:
+            kwargs["internal_name"] = self.internal_name.replace(str(self.benefit.year), str(new_benefit.year))
+        else:
+            kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
         due_date = kwargs.get("due_date")
         if due_date:
             kwargs["due_date"] = due_date.replace(year=new_benefit.year)
