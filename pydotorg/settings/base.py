@@ -169,7 +169,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
-    'allauth.account.middleware.AccountMiddleware',
 ]
 
 AUTH_USER_MODEL = 'users.User'
