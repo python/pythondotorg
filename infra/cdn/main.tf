@@ -343,3 +343,23 @@ resource "fastly_service_vcl" "python_org" {
     status            = 403
   }
 }
+
+output "service_id" {
+  value       = fastly_service_vcl.python_org.id
+  description = "The ID of the Fastly service"
+}
+
+output "backend_address" {
+  value       = var.backend_address
+  description = "The backend address for the service."
+}
+
+output "service_name" {
+  value       = var.name
+  description = "The name of the Fastly service"
+}
+
+output "domain" {
+  value       = var.domain
+  description = "The domain of the Fastly service"
+}
