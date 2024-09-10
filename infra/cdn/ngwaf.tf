@@ -62,7 +62,7 @@ output "ngwaf_service_id" {
 
 # Fastly Service Dictionary Items
 resource "fastly_service_dictionary_items" "edge_security_dictionary_items" {
-  count = var.activate_ngwaf_service ? 1 : 0
+  count         = var.activate_ngwaf_service ? 1 : 0
   service_id    = fastly_service_vcl.ngwaf_service[0].id
   dictionary_id = [for d in fastly_service_vcl.ngwaf_service[0].dictionary : d.dictionary_id if d.name == var.edge_security_dictionary][0]
   items = {
@@ -72,7 +72,7 @@ resource "fastly_service_dictionary_items" "edge_security_dictionary_items" {
 
 # Fastly Service Dynamic Snippet Contents
 resource "fastly_service_dynamic_snippet_content" "ngwaf_config_init" {
-  count = var.activate_ngwaf_service ? 1 : 0
+  count           = var.activate_ngwaf_service ? 1 : 0
   service_id      = fastly_service_vcl.ngwaf_service[0].id
   snippet_id      = [for d in fastly_service_vcl.ngwaf_service[0].dynamicsnippet : d.snippet_id if d.name == "ngwaf_config_init"][0]
   content         = "### Fastly managed ngwaf_config_init"
@@ -80,7 +80,7 @@ resource "fastly_service_dynamic_snippet_content" "ngwaf_config_init" {
 }
 
 resource "fastly_service_dynamic_snippet_content" "ngwaf_config_miss" {
-  count = var.activate_ngwaf_service ? 1 : 0
+  count           = var.activate_ngwaf_service ? 1 : 0
   service_id      = fastly_service_vcl.ngwaf_service[0].id
   snippet_id      = [for d in fastly_service_vcl.ngwaf_service[0].dynamicsnippet : d.snippet_id if d.name == "ngwaf_config_miss"][0]
   content         = "### Fastly managed ngwaf_config_miss"
@@ -88,7 +88,7 @@ resource "fastly_service_dynamic_snippet_content" "ngwaf_config_miss" {
 }
 
 resource "fastly_service_dynamic_snippet_content" "ngwaf_config_pass" {
-  count = var.activate_ngwaf_service ? 1 : 0
+  count           = var.activate_ngwaf_service ? 1 : 0
   service_id      = fastly_service_vcl.ngwaf_service[0].id
   snippet_id      = [for d in fastly_service_vcl.ngwaf_service[0].dynamicsnippet : d.snippet_id if d.name == "ngwaf_config_pass"][0]
   content         = "### Fastly managed ngwaf_config_pass"
@@ -96,7 +96,7 @@ resource "fastly_service_dynamic_snippet_content" "ngwaf_config_pass" {
 }
 
 resource "fastly_service_dynamic_snippet_content" "ngwaf_config_deliver" {
-  count = var.activate_ngwaf_service ? 1 : 0
+  count           = var.activate_ngwaf_service ? 1 : 0
   service_id      = fastly_service_vcl.ngwaf_service[0].id
   snippet_id      = [for d in fastly_service_vcl.ngwaf_service[0].dynamicsnippet : d.snippet_id if d.name == "ngwaf_config_deliver"][0]
   content         = "### Fastly managed ngwaf_config_deliver"
