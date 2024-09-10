@@ -44,7 +44,7 @@ module "fastly_production" {
   source = "./cdn"
 
   ...
-  enable_ngwaf = true
+  activate_ngwaf_service = true
   ...
 }
 ```
