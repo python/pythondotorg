@@ -433,6 +433,15 @@ class SponsorshipPackageTests(TestCase):
         self.assertFalse(created)
         self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
 
+    def test_get_default_revenue_split(self):
+        for i in range(3):
+            self.package_benefits[i].internal_value = 1000
+            self.package_benefits[i].save()
+        split = self.package.get_default_revenue_split()
+        total = sum((pct for _, pct in split))
+        self.assertEqual(total, 100)
+
+
 class SponsorContactModelTests(TestCase):
     def test_get_primary_contact_for_sponsor(self):
         sponsor = baker.make(Sponsor)
