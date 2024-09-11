@@ -228,7 +228,6 @@ class UsersViewsTestCase(TestCase):
             'password2': 'password',
         })
 
-    @override_settings(ACCOUNT_PREVENT_ENUMERATION=False)
     def test_user_duplicate_username_email(self):
         post_data = {
             'username': 'thisusernamedoesntexist',

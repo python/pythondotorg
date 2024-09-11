@@ -1,7 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase, RequestFactory
+from django.test import TestCase
 
 from allauth.account.forms import SignupForm
+from allauth.account.models import EmailAddress
 
 from users.forms import UserProfileForm, MembershipForm
 
@@ -50,8 +51,8 @@ class UsersFormsTestCase(TestCase):
         self.assertIn('username', form.errors)
 
     def test_duplicate_email(self):
-        User.objects.create_user('test1', 'test@example.com', 'testpass')
-        request = RequestFactory().get('/')
+        user = User.objects.create_user('test1', 'test@example.com', 'testpass')
+        EmailAddress.objects.create(user=user, email="test@example.com")
 
         form = SignupForm(data={
             'username': 'username2',
@@ -60,11 +61,8 @@ class UsersFormsTestCase(TestCase):
             'password2': 'password',
         })
 
-        self.assertTrue(form.is_valid())
-        with self.assertRaises(ValueError) as e:
-            form.save(request)
-
-        self.assertEqual(str(e.exception), 'test@example.com')
+        self.assertFalse(form.is_valid())
+        self.assertIn('email', form.errors)
 
     def test_newline_in_username(self):
         # Note that since Django 1.9, forms.CharField().strip is True
