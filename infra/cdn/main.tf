@@ -342,6 +342,43 @@ resource "fastly_service_vcl" "python_org" {
     response          = "Forbidden"
     status            = 403
   }
+
+  # NGWAF Configuration
+  dictionary {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    name = var.edge_security_dictionary
+  }
+
+  dynamicsnippet {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    name     = "ngwaf_config_init"
+    type     = "init"
+    priority = 0
+  }
+  dynamicsnippet {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    name     = "ngwaf_config_miss"
+    type     = "miss"
+    priority = 9000
+  }
+  dynamicsnippet {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    name     = "ngwaf_config_pass"
+    type     = "pass"
+    priority = 9000
+  }
+  dynamicsnippet {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    name     = "ngwaf_config_deliver"
+    type     = "deliver"
+    priority = 9000
+  }
+
+  lifecycle {
+    ignore_changes = [
+      product_enablement,
+    ]
+  }
 }
 
 output "service_id" {
