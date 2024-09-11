@@ -29,7 +29,7 @@ resource "sigsci_edge_deployment_service" "ngwaf_edge_service_link" {
   provider         = sigsci.firewall
   site_short_name  = var.ngwaf_site_name
   fastly_sid       = fastly_service_vcl.python_org.id
-  activate_version = true
+  activate_version = var.activate_ngwaf_service
   percent_enabled  = 100
   depends_on = [
     sigsci_edge_deployment.ngwaf_edge_site_service,
