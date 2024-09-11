@@ -345,7 +345,6 @@ resource "fastly_service_vcl" "python_org" {
 
   # NGWAF Configuration
   dictionary {
-    for_each = var.activate_ngwaf_service ? [1] : []
     name     = var.edge_security_dictionary
   }
 
