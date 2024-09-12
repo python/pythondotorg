@@ -14,7 +14,7 @@ module "fastly_production" {
   s3_logging_keys     = var.fastly_s3_logging
 
   ngwaf_site_name        = "prod"
-  ngwaf_email            = "jacob.coffee@pyfound.org" # TODO
+  ngwaf_email            = "infrastructure-staff@python.org"
   ngwaf_token            = var.ngwaf_token
   activate_ngwaf_service = false
 }
@@ -36,7 +36,7 @@ module "fastly_staging" {
   s3_logging_keys     = var.fastly_s3_logging
 
   ngwaf_site_name        = "test"
-  ngwaf_email            = "jacob.coffee@pyfound.org" # TODO
+  ngwaf_email            = "infrastructure-staff@python.org"
   ngwaf_token            = var.ngwaf_token
   activate_ngwaf_service = true
 }
