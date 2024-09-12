@@ -26,7 +26,7 @@ class ApiKeyInline(TastypieApiKeyInline):
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
-    inlines = BaseUserAdmin.inlines + [ApiKeyInline, MembershipInline]
+    inlines = BaseUserAdmin.inlines + (ApiKeyInline, MembershipInline,)
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
         (_('Personal info'), {'fields': (
@@ -44,9 +44,11 @@ class UserAdmin(BaseUserAdmin):
     def has_add_permission(self, request):
         return False
 
+    @admin.display(
+        description='Name'
+    )
     def full_name(self, obj):
         return obj.get_full_name()
-    full_name.short_description = 'Name'
 
 
 @admin.register(Membership)

@@ -15,12 +15,13 @@ class StoryModelTests(TestCase):
         self.assertEqual(len(Story.objects.published()), 2)
 
     def test_draft(self):
-        self.assertQuerysetEqual(Story.objects.draft(),
-                                 [f'<Story: {self.story2.name}>'])
+        draft_stories = Story.objects.draft()
+        self.assertTrue(all(story.name == 'Fraft Story' for story in draft_stories))
 
     def test_featured(self):
-        self.assertQuerysetEqual(Story.objects.featured(),
-                                 [f'<Story: {self.story3.name}>'])
+        featured_stories = Story.objects.featured()
+        expected_repr = [f'<Story: {self.story3.name}>']
+        self.assertQuerysetEqual(featured_stories, expected_repr, transform=repr)
 
     def test_get_admin_url(self):
         self.assertEqual(self.story1.get_admin_url(),

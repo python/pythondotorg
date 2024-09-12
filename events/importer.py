@@ -48,12 +48,13 @@ class ICSImporter:
         )
         defaults = {
             'title': title,
-            'description': description,
-            'description_markup_type': 'html',
             'venue': location,
             'calendar': self.calendar,
         }
         event, _ = Event.objects.update_or_create(uid=uid, defaults=defaults)
+        event.description.raw = description
+        event.description.markup_type = "html"
+        event.save()
         self.import_occurrence(event, event_data)
 
     def fetch(self, url):

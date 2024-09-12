@@ -31,6 +31,12 @@ DATABASES = {
     )
 }
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+"""The default primary key field type for Django models.
+
+Required during the Django 2.2 -> 4.2 migration.
+"""
+
 # celery settings
 _REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
 
@@ -53,7 +59,6 @@ CELERY_BEAT_SCHEDULE = {
 TIME_ZONE = 'UTC'
 LANGUAGE_CODE = 'en-us'
 USE_I18N = True
-USE_L10N = True
 USE_TZ = True
 
 DATE_FORMAT = 'Y-m-d'
@@ -74,7 +79,14 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE, 'static'),
 ]
-STATICFILES_STORAGE = 'pipeline.storage.PipelineStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": 'pipeline.storage.PipelineStorage',
+    },
+}
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -98,6 +110,8 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
 ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+# TODO: Enable enumeration prevention
+ACCOUNT_PREVENT_ENUMERATION = False
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -157,6 +171,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 AUTH_USER_MODEL = 'users.User'

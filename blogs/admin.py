@@ -10,11 +10,13 @@ class BlogEntryAdmin(admin.ModelAdmin):
     date_hierarchy = 'pub_date'
     actions = ['sync_new_entries']
 
+    @admin.action(
+        description="Sync new blog entries"
+    )
     def sync_new_entries(self, request, queryset):
         call_command('update_blogs')
         self.message_user(request, "Blog entries updated.")
 
-    sync_new_entries.short_description = "Sync new blog entries"
 
 
 @admin.register(FeedAggregate)

@@ -11,7 +11,7 @@ already submitted it.
 Code
 ----
 
-The source for python.org is open and licensed under the `Apache 2 license <license>`_.
+The source for python.org is open and licensed under the `Apache 2 license <license_>`_.
 To contribute to either the code or documentation please fork the pythondotorg_
 repository and submit a pull request.
 
