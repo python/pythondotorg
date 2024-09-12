@@ -283,11 +283,8 @@ class RecurringRule(RuleMixin, models.Model):
     all_day = models.BooleanField(default=False)
 
     def __str__(self):
-        return (
-            f'{self.event.title} every '
-            f'{timedelta_nice_repr(self.freq_interval_as_timedelta)} since '
-            f'{date(self.dt_start, settings.SHORT_DATETIME_FORMAT)}'
-        )
+        return (f'{self.event.title} every {timedelta_nice_repr(self.freq_interval_as_timedelta)} since '
+                f'{date(self.dt_start, settings.SHORT_DATETIME_FORMAT)}')
 
     def to_rrule(self):
         return rrule(
