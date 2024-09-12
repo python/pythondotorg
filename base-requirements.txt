@@ -4,7 +4,7 @@ django-sitetree==1.18.0  # >=1.17.1 is (?) first version that supports Django 4.
 django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
-Django==4.2.11
+Django==4.2.16
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
