@@ -1,5 +1,6 @@
 from django.contrib.contenttypes.admin import GenericTabularInline
 from django.contrib.contenttypes.models import ContentType
+from django.contrib.sites.models import Site
 from ordered_model.admin import OrderedModelAdmin
 from polymorphic.admin import PolymorphicInlineSupportMixin, StackedPolymorphicInline, PolymorphicParentModelAdmin, \
     PolymorphicChildModelAdmin
@@ -12,6 +13,10 @@ from django.forms import ModelForm
 from django.urls import path, reverse, resolve
 from django.utils.functional import cached_property
 from django.utils.html import mark_safe
+
+from import_export import resources
+from import_export.fields import Field
+from import_export.admin import ImportExportActionModelAdmin
 
 from mailing.admin import BaseEmailTemplateAdmin
 from sponsors.models import *
@@ -33,18 +38,22 @@ class AssetsInline(GenericTabularInline):
     has_delete_permission = lambda self, request, obj: False
     readonly_fields = ["internal_name", "user_submitted_info", "value"]
 
+    @admin.display(
+        description="Submitted information"
+    )
     def value(self, obj=None):
         if not obj or not obj.value:
             return ""
         return obj.value
 
-    value.short_description = "Submitted information"
 
+    @admin.display(
+        description="Fullfilled data?",
+        boolean=True,
+    )
     def user_submitted_info(self, obj=None):
         return bool(self.value(obj))
 
-    user_submitted_info.short_description = "Fullfilled data?"
-    user_submitted_info.boolean = True
 
 
 @admin.register(SponsorshipProgram)
@@ -104,6 +113,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         ProvidedTextAssetConfigurationInline,
         ProvidedFileAssetConfigurationInline,
     ]
+
 
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
@@ -174,12 +184,12 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("-year", "order",)
-    list_display = ["name", "year", "advertise", "allow_a_la_carte", "move_up_down_links"]
+    list_display = ["name", "year", "advertise", "allow_a_la_carte", "get_benefit_split", "move_up_down_links"]
     list_filter = ["advertise", "year", "allow_a_la_carte"]
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
-        readonly = []
+        readonly = ["get_benefit_split"]
         if obj:
             readonly.append("slug")
         if not request.user.is_superuser:
@@ -190,6 +200,30 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         if not obj:
             return {'slug': ['name']}
         return {}
+
+    def get_benefit_split(self, obj: SponsorshipPackage) -> str:
+        colors = [
+            "#ffde57",  # Python Gold
+            "#4584b6",  # Python Blue
+            "#646464",  # Python Grey
+        ]
+        split = obj.get_default_revenue_split()
+        # rotate colors through our available palette
+        if len(split) > len(colors):
+            colors = colors * (1 + (len(split) // len(colors)))
+        # build some span elements to show the percentages and have the program name in the title (to show on hover)
+        widths, spans = [], []
+        for i, (name, pct) in enumerate(split):
+            pct_str = f"{pct:.0f}%"
+            widths.append(pct_str)
+            spans.append(f"<span title='{name}' style='background-color:{colors[i]}'>{pct_str}</span>")
+        # define a style that will show our span elements like a single horizontal stacked bar chart
+        style = f'color:#fff;text-align:center;cursor:pointer;display:grid;grid-template-columns:{" ".join(widths)}'
+        # wrap it all up and put a bow on it
+        html = f"<div style='{style}'>{''.join(spans)}</div>"
+        return mark_safe(html)
+
+    get_benefit_split.short_description = "Revenue split"
 
 
 class SponsorContactInline(admin.TabularInline):
@@ -205,10 +239,12 @@ class SponsorshipsInline(admin.TabularInline):
     can_delete = False
     extra = 0
 
+    @admin.display(
+        description="ID"
+    )
     def link(self, obj):
         url = reverse("admin:sponsors_sponsorship_change", args=[obj.id])
         return mark_safe(f"<a href={url}>{obj.id}</a>")
-    link.short_description = "ID"
 
 
 @admin.register(Sponsor)
@@ -241,9 +277,13 @@ class SponsorBenefitInline(admin.TabularInline):
             return True
         return obj.open_for_editing
 
-    def get_queryset(self, *args, **kwargs):
-        qs = super().get_queryset(*args, **kwargs)
-        return qs.select_related("sponsorship_benefit__program", "program")
+    def get_queryset(self, request):
+        #filters the available benefits by the benefits for the year of the sponsorship
+        match = request.resolver_match
+        sponsorship = self.parent_model.objects.get(pk=match.kwargs["object_id"])
+        year = sponsorship.year
+
+        return super().get_queryset(request).filter(sponsorship_benefit__year=year)
 
 
 class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
@@ -253,7 +293,7 @@ class TargetableEmailBenefitsFilter(admin.SimpleListFilter):
     @cached_property
     def benefits(self):
         qs = EmailTargetableConfiguration.objects.all().values_list("benefit_id", flat=True)
-        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs))
+        benefits = SponsorshipBenefit.objects.filter(id__in=Subquery(qs), year=SponsorshipCurrentYear.get_year())
         return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
@@ -292,8 +332,78 @@ class SponsorshipStatusListFilter(admin.SimpleListFilter):
         return choices
 
 
+class SponsorshipResource(resources.ModelResource):
+
+    sponsor_name = Field(attribute='sponsor__name', column_name='Company Name')
+    contact_name = Field(column_name='Contact Name(s)')
+    contact_email = Field(column_name='Contact Email(s)')
+    contact_phone = Field(column_name='Contact phone number')
+    contact_type = Field(column_name='Contact Type(s)')
+    start_date = Field(attribute='start_date', column_name='Start Date')
+    end_date = Field(attribute='end_date', column_name='End Date')
+    web_logo = Field(column_name='Logo')
+    landing_page_url = Field(attribute='sponsor__landing_page_url', column_name='Webpage link')
+    level = Field(attribute='package__name', column_name='Sponsorship Level')
+    cost = Field(attribute='sponsorship_fee', column_name='Sponsorship Cost')
+    admin_url = Field(attribute='admin_url', column_name='Admin Link')
+
+    class Meta:
+        model = Sponsorship
+        fields = (
+            'sponsor_name',
+            'contact_name',
+            'contact_email',
+            'contact_phone',
+            'contact_type',
+            'start_date',
+            'end_date',
+            'web_logo',
+            'landing_page_url',
+            'level',
+            'cost',
+            'admin_url',
+        )
+        export_order = (
+            "sponsor_name",
+            "contact_name",
+            "contact_email",
+            "contact_phone",
+            "contact_type",
+            "start_date",
+            "end_date",
+            "web_logo",
+            "landing_page_url",
+            "level",
+            "cost",
+            "admin_url",
+        )
+
+    def get_sponsorship_url(self, sponsorship):
+        domain = Site.objects.get_current().domain
+        url = reverse("admin:sponsors_sponsorship_change", args=[sponsorship.id])
+        return f'https://{domain}{url}'
+
+    def dehydrate_web_logo(self, sponsorship):
+        return sponsorship.sponsor.web_logo.url
+
+    def dehydrate_contact_type(self, sponsorship):
+        return "\n".join([contact.type for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_name(self, sponsorship):
+        return "\n".join([contact.name for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_email(self, sponsorship):
+        return "\n".join([contact.email for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_contact_phone(self, sponsorship):
+        return "\n".join([contact.phone for contact in sponsorship.sponsor.contacts.all()])
+
+    def dehydrate_admin_url(self, sponsorship):
+        return self.get_sponsorship_url(sponsorship)
+
+
 @admin.register(Sponsorship)
-class SponsorshipAdmin(admin.ModelAdmin):
+class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     change_form_template = "sponsors/admin/sponsorship_change_form.html"
     form = SponsorshipReviewAdminForm
     inlines = [SponsorBenefitInline, AssetsInline]
@@ -310,6 +420,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
     ]
     list_filter = [SponsorshipStatusListFilter, "package", "year", TargetableEmailBenefitsFilter]
     actions = ["send_notifications"]
+    resource_class = SponsorshipResource
     fieldsets = [
         (
             "Sponsorship Data",
@@ -326,6 +437,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
                     "end_date",
                     "get_contract",
                     "level_name",
+                    "renewal",
                     "overlapped_by",
                 ),
             },
@@ -383,10 +495,12 @@ class SponsorshipAdmin(admin.ModelAdmin):
         qs = super().get_queryset(*args, **kwargs)
         return qs.select_related("sponsor", "package", "submited_by")
 
+    @admin.action(
+        description='Send notifications to selected'
+    )
     def send_notifications(self, request, queryset):
         return views_admin.send_sponsorship_notifications_action(self, request, queryset)
 
-    send_notifications.short_description = 'Send notifications to selected'
 
     def get_readonly_fields(self, request, obj):
         readonly_fields = [
@@ -413,7 +527,7 @@ class SponsorshipAdmin(admin.ModelAdmin):
             "get_custom_benefits_removed_by_user",
         ]
 
-        if obj and obj.status != Sponsorship.APPLIED:
+        if obj and not obj.open_for_editing:
             extra = ["start_date", "end_date", "package", "level_name", "sponsorship_fee"]
             readonly_fields.extend(extra)
 
@@ -422,11 +536,16 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
         return readonly_fields
 
+    @admin.display(
+        description="Sponsor"
+    )
     def sponsor_link(self, obj):
         url = reverse("admin:sponsors_sponsor_change", args=[obj.sponsor.id])
         return mark_safe(f"<a href={url}>{obj.sponsor.name}</a>")
-    sponsor_link.short_description = "Sponsor"
 
+    @admin.display(
+        description="Estimated cost"
+    )
     def get_estimated_cost(self, obj):
         cost = None
         html = "This sponsorship has not customizations so there's no estimated cost"
@@ -436,8 +555,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             html = f"{cost} USD <br/><b>Important: </b> {msg}"
         return mark_safe(html)
 
-    get_estimated_cost.short_description = "Estimated cost"
 
+    @admin.display(
+        description="Contract"
+    )
     def get_contract(self, obj):
         if not obj.contract:
             return "---"
@@ -445,7 +566,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html = f"<a href='{url}' target='_blank'>{obj.contract}</a>"
         return mark_safe(html)
 
-    get_contract.short_description = "Contract"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -478,24 +598,43 @@ class SponsorshipAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.list_uploaded_assets_view),
                 name=f"{base_name}_list_uploaded_assets",
             ),
+            path(
+                "<int:pk>/unlock",
+                self.admin_site.admin_view(self.unlock_view),
+                name=f"{base_name}_unlock",
+            ),
+            path(
+                "<int:pk>/lock",
+                self.admin_site.admin_view(self.lock_view),
+                name=f"{base_name}_lock",
+            ),
         ]
         return my_urls + urls
 
+    @admin.display(
+        description="Name"
+    )
     def get_sponsor_name(self, obj):
         return obj.sponsor.name
 
-    get_sponsor_name.short_description = "Name"
 
+    @admin.display(
+        description="Description"
+    )
     def get_sponsor_description(self, obj):
         return obj.sponsor.description
 
-    get_sponsor_description.short_description = "Description"
 
+    @admin.display(
+        description="Landing Page URL"
+    )
     def get_sponsor_landing_page_url(self, obj):
         return obj.sponsor.landing_page_url
 
-    get_sponsor_landing_page_url.short_description = "Landing Page URL"
 
+    @admin.display(
+        description="Web Logo"
+    )
     def get_sponsor_web_logo(self, obj):
         html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
         template = Template(html)
@@ -503,8 +642,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html = template.render(context)
         return mark_safe(html)
 
-    get_sponsor_web_logo.short_description = "Web Logo"
 
+    @admin.display(
+        description="Print Logo"
+    )
     def get_sponsor_print_logo(self, obj):
         img = obj.sponsor.print_logo
         html = ""
@@ -515,13 +656,17 @@ class SponsorshipAdmin(admin.ModelAdmin):
             html = template.render(context)
         return mark_safe(html) if html else "---"
 
-    get_sponsor_print_logo.short_description = "Print Logo"
 
+    @admin.display(
+        description="Primary Phone"
+    )
     def get_sponsor_primary_phone(self, obj):
         return obj.sponsor.primary_phone
 
-    get_sponsor_primary_phone.short_description = "Primary Phone"
 
+    @admin.display(
+        description="Mailing/Billing Address"
+    )
     def get_sponsor_mailing_address(self, obj):
         sponsor = obj.sponsor
         city_row = (
@@ -539,8 +684,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
         html += f"<p>{sponsor.postal_code}</p>"
         return mark_safe(html)
 
-    get_sponsor_mailing_address.short_description = "Mailing/Billing Address"
 
+    @admin.display(
+        description="Contacts"
+    )
     def get_sponsor_contacts(self, obj):
         html = ""
         contacts = obj.sponsor.contacts.all()
@@ -560,8 +707,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
             html += "</ul>"
         return mark_safe(html)
 
-    get_sponsor_contacts.short_description = "Contacts"
 
+    @admin.display(
+        description="Added by User"
+    )
     def get_custom_benefits_added_by_user(self, obj):
         benefits = obj.user_customizations["added_by_user"]
         if not benefits:
@@ -572,8 +721,10 @@ class SponsorshipAdmin(admin.ModelAdmin):
         )
         return mark_safe(html)
 
-    get_custom_benefits_added_by_user.short_description = "Added by User"
 
+    @admin.display(
+        description="Removed by User"
+    )
     def get_custom_benefits_removed_by_user(self, obj):
         benefits = obj.user_customizations["removed_by_user"]
         if not benefits:
@@ -584,7 +735,6 @@ class SponsorshipAdmin(admin.ModelAdmin):
         )
         return mark_safe(html)
 
-    get_custom_benefits_removed_by_user.short_description = "Removed by User"
 
     def rollback_to_editing_view(self, request, pk):
         return views_admin.rollback_to_editing_view(self, request, pk)
@@ -600,6 +750,12 @@ class SponsorshipAdmin(admin.ModelAdmin):
 
     def list_uploaded_assets_view(self, request, pk):
         return views_admin.list_uploaded_assets(self, request, pk)
+
+    def unlock_view(self, request, pk):
+        return views_admin.unlock_view(self, request, pk)
+
+    def lock_view(self, request, pk):
+        return views_admin.lock_view(self, request, pk)
 
 
 @admin.register(SponsorshipCurrentYear)
@@ -625,6 +781,9 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
         ]
         return my_urls + urls
 
+    @admin.display(
+        description="Links"
+    )
     def links(self, obj):
         clone_form = CloneApplicationConfigForm()
         configured_years = clone_form.configured_years
@@ -646,8 +805,10 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
         html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
         html += "</ul>"
         return mark_safe(html)
-    links.short_description = "Links"
 
+    @admin.display(
+        description="Other configured years"
+    )
     def other_years(self, obj):
         clone_form = CloneApplicationConfigForm()
         configured_years = clone_form.configured_years
@@ -678,7 +839,6 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             html += "</ul></li>"
         html += "</ul>"
         return mark_safe(html)
-    other_years.short_description = "Other configured years"
 
     def clone_application_config(self, request):
         return views_admin.clone_application_config(self, request)
@@ -706,10 +866,12 @@ class ContractModelAdmin(admin.ModelAdmin):
         qs = super().get_queryset(*args, **kwargs)
         return qs.select_related("sponsorship__sponsor")
 
+    @admin.display(
+        description="Revision"
+    )
     def get_revision(self, obj):
         return obj.revision if obj.is_draft else "Final"
 
-    get_revision.short_description = "Revision"
 
     fieldsets = [
         (
@@ -777,6 +939,9 @@ class ContractModelAdmin(admin.ModelAdmin):
 
         return readonly_fields
 
+    @admin.display(
+        description="Contract document"
+    )
     def document_link(self, obj):
         html, url, msg = "---", "", ""
 
@@ -794,8 +959,10 @@ class ContractModelAdmin(admin.ModelAdmin):
             html = f'<a href="{url}" target="_blank">{msg}</a>'
         return mark_safe(html)
 
-    document_link.short_description = "Contract document"
 
+    @admin.display(
+        description="Sponsorship"
+    )
     def get_sponsorship_url(self, obj):
         if not obj.sponsorship:
             return "---"
@@ -803,7 +970,6 @@ class ContractModelAdmin(admin.ModelAdmin):
         html = f"<a href='{url}' target='_blank'>{obj.sponsorship}</a>"
         return mark_safe(html)
 
-    get_sponsorship_url.short_description = "Sponsorship"
 
     def get_urls(self):
         urls = super().get_urls()
@@ -886,7 +1052,7 @@ class AssociatedBenefitListFilter(admin.SimpleListFilter):
         return {str(b.id): b for b in benefits}
 
     def lookups(self, request, model_admin):
-        return [(k, b.name) for k, b in self.benefits_with_assets.items()]
+        return [(k, f"{b.name} ({b.year})") for k, b in self.benefits_with_assets.items()]
 
     def queryset(self, request, queryset):
         benefit = self.benefits_with_assets.get(self.value())
@@ -968,14 +1134,19 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         qs = Sponsorship.objects.all().select_related("package", "sponsor")
         return {sp.id: sp for sp in qs}
 
+    @admin.display(
+        description="Value"
+    )
     def get_value(self, obj):
         html = obj.value
         if obj.value and getattr(obj.value, "url", None):
             html = f"<a href='{obj.value.url}' target='_blank'>{obj.value}</a>"
         return mark_safe(html)
 
-    get_value.short_description = "Value"
 
+    @admin.display(
+        description="Associated with"
+    )
     def get_related_object(self, obj):
         """
         Returns the content_object as an URL and performs better because
@@ -993,11 +1164,12 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         html = f"<a href='{content_object.admin_url}' target='_blank'>{content_object}</a>"
         return mark_safe(html)
 
-    get_related_object.short_description = "Associated with"
 
+    @admin.action(
+        description="Export selected"
+    )
     def export_assets_as_zipfile(self, request, queryset):
         return views_admin.export_assets_as_zipfile(self, request, queryset)
-    export_assets_as_zipfile.short_description = "Export selected"
 
 
 class GenericAssetChildModelAdmin(PolymorphicChildModelAdmin):

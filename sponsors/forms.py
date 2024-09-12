@@ -3,6 +3,7 @@ from itertools import chain
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
+from django.core.validators import FileExtensionValidator
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -127,6 +128,7 @@ class SponsorshipsBenefitsForm(forms.Form):
         if not pkg_benefits and standalone:  # standalone only
             pkg, _ = SponsorshipPackage.objects.get_or_create(
                 slug="standalone-only",
+                year=SponsorshipCurrentYear.get_year(),
                 defaults={"name": "Standalone Only", "sponsorship_amount": 0},
             )
 
@@ -219,15 +221,21 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For promotion of your sponsorship on social media.",
         required=False,
     )
+    linked_in_page_url = forms.URLField(
+        label="LinkedIn page URL",
+        help_text="URL for your LinkedIn page.",
+        required=False,
+    )
     web_logo = forms.ImageField(
         label="Sponsor web logo",
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.ImageField(
+    print_logo = forms.FileField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
     )
 
     primary_phone = forms.CharField(
@@ -250,10 +258,17 @@ class SponsorshipApplicationForm(forms.Form):
     state = forms.CharField(
         label="State/Province/Region", max_length=64, required=False
     )
+    state_of_incorporation = forms.CharField(
+        label="State of incorporation", help_text="US only, If different than mailing address", max_length=64, required=False
+    )
     postal_code = forms.CharField(
         label="Zip/Postal Code", max_length=64, required=False
     )
-    country = CountryField().formfield(required=False)
+    country = CountryField().formfield(required=False, help_text="For mailing/contact purposes")
+
+    country_of_incorporation = CountryField().formfield(
+        label="Country of incorporation", help_text="For contractual purposes", required=False
+    )
 
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop("user", None)
@@ -369,7 +384,10 @@ class SponsorshipApplicationForm(forms.Form):
             description=self.cleaned_data.get("description", ""),
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
+            linked_in_page_url=self.cleaned_data["linked_in_page_url"],
             print_logo=self.cleaned_data.get("print_logo"),
+            country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
+            state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
         )
         contacts = [f.save(commit=False) for f in self.contacts_formset.forms]
         for contact in contacts:
@@ -391,6 +409,10 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
     overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
+    renewal = forms.BooleanField(
+        help_text="If true, it means the sponsorship is a renewal of a previous sponsorship and will use the renewal template for contracting.",
+        required=False,
+    )
 
     def __init__(self, *args, **kwargs):
         force_required = kwargs.pop("force_required", False)
@@ -402,10 +424,12 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
             self.fields.pop("overlapped_by")  # overlapped should never be displayed on approval
             for field_name in self.fields:
                 self.fields[field_name].required = True
+        self.fields["renewal"].required = False
+
 
     class Meta:
         model = Sponsorship
-        fields = ["start_date", "end_date", "package", "sponsorship_fee"]
+        fields = ["start_date", "end_date", "package", "sponsorship_fee", "renewal"]
         widgets = {
             'year': SPONSORSHIP_YEAR_SELECT,
         }
@@ -414,6 +438,7 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
+        renewal = cleaned_data.get("renewal")
 
         if start_date and end_date and end_date <= start_date:
             raise forms.ValidationError("End date must be greater than start date")
@@ -549,10 +574,11 @@ class SponsorUpdateForm(forms.ModelForm):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
-    print_logo = forms.ImageField(
+    print_logo = forms.FileField(
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
     )
 
     def __init__(self, *args, **kwargs):

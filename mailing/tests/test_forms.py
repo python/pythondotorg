@@ -1,6 +1,7 @@
+"""Tests for mailing app forms."""
 from django.test import TestCase
 
-from mailing.forms import BaseEmailTemplateForm
+from mailing.tests.forms import TestBaseEmailTemplateForm
 
 
 class BaseEmailTemplateFormTests(TestCase):
@@ -14,16 +15,16 @@ class BaseEmailTemplateFormTests(TestCase):
 
     def test_validate_required_fields(self):
         required = set(self.data)
-        form = BaseEmailTemplateForm(data={})
+        form = TestBaseEmailTemplateForm(data={})
         self.assertFalse(form.is_valid())
         self.assertEqual(required, set(form.errors))
 
     def test_validate_with_correct_data(self):
-        form = BaseEmailTemplateForm(data=self.data)
+        form = TestBaseEmailTemplateForm(data=self.data)
         self.assertTrue(form.is_valid())
 
     def test_invalid_form_if_broken_template_syntax(self):
         self.data["content"] = "Invalid syntax {% invalid %}"
-        form = BaseEmailTemplateForm(data=self.data)
+        form = TestBaseEmailTemplateForm(data=self.data)
         self.assertFalse(form.is_valid())
         self.assertIn("content", form.errors, form.errors)

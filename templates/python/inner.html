@@ -623,40 +623,9 @@ p q r s t u v w x y z { | } ~</samp></pre>
 
 {% block left_sidebar %}
 <aside class="left-sidebar" role="secondary">
-  
+
     {% include "components/navigation-widget.html" %}
 
-    <div class="twitter-widget sidebar-widget">
-        <script type="text/javascript" src="//widgets.twimg.com/j/2/widget.js"></script>
-        <script type="text/javascript">// <![CDATA[
-        new TWTR.Widget({
-          version: 2,
-          type: 'profile',
-          rpp: 3,
-          interval: 30000,
-          width: 'auto',
-          height: 300,
-          theme: {
-            shell: {
-              background: '#f2f2f2',
-              color: '#666666'
-            },
-            tweets: {
-              background: '#f2f2f2',
-              color: '#666666',
-              links: '#3776ab'
-            }
-          },
-          features: {
-            scrollbar: false,
-            loop: false,
-            live: false,
-            behavior: 'all'
-          }
-        }).render().setUser('ThePSF').start();
-        // ]]></script>
-    </div>
-    
     <div class="psf-sidebar-widget sidebar-widget">
         <h3 class="widget-title">The PSF</h3>
         <p>The Python Software Foundation is the organization behind Python. Become a member of the PSF and help advance the software and our mission. </p>
