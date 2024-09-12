@@ -1,4 +1,3 @@
-# Fastly Service Dictionary Items
 resource "fastly_service_dictionary_items" "edge_security_dictionary_items" {
   count         = var.activate_ngwaf_service ? 1 : 0
   service_id    = fastly_service_vcl.python_org.id
@@ -8,7 +7,6 @@ resource "fastly_service_dictionary_items" "edge_security_dictionary_items" {
   }
 }
 
-# Fastly Service Dynamic Snippet Contents
 resource "fastly_service_dynamic_snippet_content" "ngwaf_config_snippets" {
   for_each        = var.activate_ngwaf_service ? toset(["init", "miss", "pass", "deliver"]) : []
   service_id      = fastly_service_vcl.python_org.id
