@@ -29,7 +29,7 @@ N/A
 ## Requirements
 
 Tested on 
-- Tested on Terraform 1.8.5
+- Tested on Terraform 1.9.5
 - Fastly provider 5.13.0
 
 # Fastly's NGWAF
