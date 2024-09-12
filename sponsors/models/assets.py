@@ -13,6 +13,8 @@ from django.db.models.fields.files import ImageFieldFile, FileField
 from polymorphic.managers import PolymorphicManager
 from polymorphic.models import PolymorphicModel
 
+from sponsors.models.managers import GenericAssetQuerySet
+
 
 def generic_asset_path(instance, filename):
     """
@@ -28,7 +30,7 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
-    objects = PolymorphicManager()
+    objects = GenericAssetQuerySet.as_manager()
     non_polymorphic = models.Manager()
 
     # UUID can't be the object ID because Polymorphic expects default django integer ID
@@ -104,7 +106,7 @@ class ImgAsset(GenericAsset):
 
 
 class TextAsset(GenericAsset):
-    text = models.TextField(default="")
+    text = models.TextField(default="", blank=True)
 
     def __str__(self):
         return f"Text asset: {self.internal_name}"

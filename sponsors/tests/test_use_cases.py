@@ -12,7 +12,8 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 
 from sponsors import use_cases
 from sponsors.notifications import *
-from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate
+from sponsors.models import Sponsorship, Contract, SponsorEmailNotificationTemplate, Sponsor, SponsorshipBenefit, \
+    SponsorshipPackage
 
 
 class CreateSponsorshipApplicationUseCaseTests(TestCase):
@@ -117,6 +118,24 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
         self.assertEqual(self.sponsorship.package, self.package)
         self.assertEqual(self.sponsorship.level_name, self.package.name)
+        self.assertFalse(self.sponsorship.renewal)
+
+
+    def test_update_renewal_sponsorship_as_approved_and_create_contract(self):
+        self.data.update({"renewal": True})
+        self.use_case.execute(self.sponsorship, **self.data)
+        self.sponsorship.refresh_from_db()
+
+        today = timezone.now().date()
+        self.assertEqual(self.sponsorship.approved_on, today)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
+        self.assertTrue(self.sponsorship.contract.pk)
+        self.assertTrue(self.sponsorship.start_date)
+        self.assertTrue(self.sponsorship.end_date)
+        self.assertEqual(self.sponsorship.sponsorship_fee, 100)
+        self.assertEqual(self.sponsorship.package, self.package)
+        self.assertEqual(self.sponsorship.level_name, self.package.name)
+        self.assertEqual(self.sponsorship.renewal, True)
 
     def test_send_notifications_using_sponsorship(self):
         self.use_case.execute(self.sponsorship, **self.data)
@@ -220,7 +239,7 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertEqual(b"Contract content", self.contract.signed_document.read())
         self.assertEqual(f"{Contract.SIGNED_PDF_DIR}1234.txt", self.contract.signed_document.name)
 
-    def test_build_use_case_with_default_notificationss(self):
+    def test_build_use_case_with_default_notifications(self):
         uc = use_cases.ExecuteExistingContractUseCase.build()
         self.assertEqual(len(uc.notifications), 2)
         self.assertIsInstance(
@@ -229,6 +248,63 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         self.assertIsInstance(
             uc.notifications[1], RefreshSponsorshipsCache,
         )
+
+    def test_execute_contract_flag_overlapping_sponsorships(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=sponsorship.sponsor,
+            sponsorship__start_date=sponsorship.start_date + timedelta(days=5),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertEqual(sponsorship.overlapped_by, recent_contract.sponsorship)
+
+    def test_execute_contract_do_not_flag_overlap_if_no_date_range_conflict(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=sponsorship.sponsor,
+            sponsorship__start_date=sponsorship.end_date + timedelta(days=1),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertIsNone(sponsorship.overlapped_by)
+
+    def test_execute_contract_do_not_flag_overlap_if_from_other_sponsor(self):
+        sponsorship = self.contract.sponsorship
+        self.use_case.execute(self.contract, self.file)
+        self.contract.refresh_from_db()
+        recent_contract = baker.make_recipe(
+            "sponsors.tests.empty_contract",
+            status=Contract.DRAFT,
+            sponsorship__sponsor=baker.make(Sponsor),
+            sponsorship__start_date=sponsorship.start_date + timedelta(days=5),
+            sponsorship__end_date=sponsorship.end_date + timedelta(days=5),
+        )
+
+        self.use_case.execute(recent_contract, self.file)
+        recent_contract.refresh_from_db()
+        sponsorship.refresh_from_db()
+
+        self.assertEqual(recent_contract.status, Contract.EXECUTED)
+        self.assertIsNone(sponsorship.overlapped_by)
 
 
 class NullifyContractUseCaseTests(TestCase):
@@ -293,4 +369,44 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.assertEqual(len(uc.notifications), 1)
         self.assertIsInstance(
             uc.notifications[0], SendSponsorNotificationLogger
+        )
+
+
+class CloneSponsorshipYearUseCaseTests(TestCase):
+    def setUp(self):
+        self.request = Mock()
+        self.notifications = [Mock()]
+        self.use_case = use_cases.CloneSponsorshipYearUseCase(self.notifications)
+
+    def test_clone_package_and_benefits(self):
+        baker.make(SponsorshipPackage, year=2021)  # package from another year
+        baker.make(SponsorshipPackage, year=2022, _quantity=2)
+        baker.make(SponsorshipBenefit, year=2021)  # benefit from another year
+        benefits_2022 = baker.make(SponsorshipBenefit, year=2022, _quantity=3)
+
+        created_objects = self.use_case.execute(clone_from_year=2022, target_year=2023, request=self.request)
+
+        # assert new packages were created
+        self.assertEqual(5, SponsorshipPackage.objects.count())
+        self.assertEqual(2, SponsorshipPackage.objects.filter(year=2022).count())
+        self.assertEqual(2, SponsorshipPackage.objects.filter(year=2023).count())
+        self.assertEqual(1, SponsorshipPackage.objects.filter(year=2021).count())
+        # assert new benefits were created
+        self.assertEqual(7, SponsorshipBenefit.objects.count())
+        self.assertEqual(3, SponsorshipBenefit.objects.filter(year=2022).count())
+        self.assertEqual(3, SponsorshipBenefit.objects.filter(year=2023).count())
+        self.assertEqual(1, SponsorshipBenefit.objects.filter(year=2021).count())
+
+        n = self.notifications[0]
+        base_kwargs = {"request": self.request, "from_year": 2022}
+        self.assertEqual(len(created_objects), n.notify.call_count)
+        for resource in created_objects:
+            base_kwargs["resource"] = resource
+            n.notify.assert_any_call(**base_kwargs)
+
+    def test_build_use_case_with_default_notificationss(self):
+        uc = use_cases.CloneSponsorshipYearUseCase.build()
+        self.assertEqual(len(uc.notifications), 1)
+        self.assertIsInstance(
+            uc.notifications[0], ClonedResourcesLogger
         )

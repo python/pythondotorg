@@ -2,7 +2,7 @@ from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
 from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
@@ -10,8 +10,6 @@ from sponsors.models.enums import AssetsRelatedTo
 from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
-
-from ..factories import MembershipFactory
 
 User = get_user_model()
 
@@ -84,7 +82,7 @@ class UsersViewsTestCase(TestCase):
         self.assertEqual(response.status_code, 302)  # Requires login now
 
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
@@ -105,7 +103,7 @@ class UsersViewsTestCase(TestCase):
     def test_membership_update_404(self):
         url = reverse('users:user_membership_edit')
         self.assertFalse(self.user.has_membership)
-        self.client.login(username=self.user, password='password')
+        self.client.login(username=self.user.username, password='password')
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
@@ -114,7 +112,7 @@ class UsersViewsTestCase(TestCase):
         # has membership.
         url = reverse('users:user_membership_create')
         self.assertTrue(self.user2.has_membership)
-        self.client.login(username=self.user2, password='password')
+        self.client.login(username=self.user2.username, password='password')
         response = self.client.get(url)
         self.assertRedirects(response, reverse('users:user_membership_edit'))
 
@@ -139,6 +137,7 @@ class UsersViewsTestCase(TestCase):
 
         # should return 200 if the user does want to see their user profile
         post_data = {
+            'username': 'username',
             'search_visibility': 0,
             'email_privacy': 1,
             'public_profile': False,
@@ -244,7 +243,7 @@ class UsersViewsTestCase(TestCase):
             response, 'A user with that username already exists.'
         )
         self.assertContains(
-            response, 'A user is already registered with this e-mail address.'
+            response, 'A user is already registered with this email address.'
         )
 
     def test_usernames(self):
@@ -488,7 +487,7 @@ class UpdateSponsorInfoViewTests(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "users/sponsor_info_update.html")
+        self.assertTemplateUsed(response, "sponsors/new_sponsorship_application_form.html")
         self.assertEqual(context["sponsor"], self.sponsor)
         self.assertIsInstance(context["form"], SponsorUpdateForm)
 

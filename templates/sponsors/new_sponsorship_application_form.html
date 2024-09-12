@@ -2,15 +2,19 @@
 {% load boxes widget_tweaks %}
 {% load humanize %}
 {% load sponsors %}
+{% block page_title %}Sponsorship Information{% endblock %}
 
 
-{% block page_title %}Submit Sponsorship Information{% endblock %}
 
 {% block content %}
   <article id="new_sponsorship_application_container" class="text">
-    <h1>Submit Sponsorship Information</h1>
 
-    <div id="sponsorship-info-container" class="user-feedback level-general">
+{% if sponsor %}
+<div>
+<h1> Edit {{sponsor}}</h1>
+</div>
+{% else %}
+        <div id="sponsorship-info-container" class="user-feedback level-general">
       {% if sponsorship_package %}
       <p>
         You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
@@ -34,6 +38,10 @@
       <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
     </div>
 
+    <h1>Submit Sponsorship Information</h1>
+{% endif %}
+
+
     {% if form.errors %}
     <span class="error-message">The form has one or more errors</span>
     {{ form.non_field_errors }}
@@ -53,6 +61,8 @@
 
       <div id="new-appication-fields" {% if form.user_with_previous_sponsors and not form.errors %}style="display: none"{% endif %}>
 
+        <h2>Basics</h2>
+
         <p class="form_field">
           <label>{{ form.name.label }} <span class="error-message">{% if form.name.errors %}{{ form.name.errors.as_text }}</span>{% endif %}</label>
           {% render_field form.name %}
@@ -61,6 +71,33 @@
           <span class="helptext">{{ form.name.help_text }}</span>
           {% endif %}
         </p>
+
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+            <label>{{ form.country_of_incorporation.label }} <span class="error-message">{% if form.country_of_incorporation.errors %}
+              {{ form.country.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.country_of_incorporation %}
+            {% if form.country_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.country_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+            <label>{{ form.state_of_incorporation.label }} <span class="error-message">{% if form.state_of_incorporation.errors %}
+              {{ form.state_of_incorporation.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.state %}
+            {% if form.state_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
+        </div>
 
         <p class="form_field">
           <label>{{ form.description.label }} <span class="error-message">{% if form.description.errors %}{{ form.description.errors.as_text }}</span>{% endif %}</label>
@@ -93,16 +130,52 @@
               {% endif %}
             </p>
           </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}{{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.linked_in_page_url%}
+              {% if form.linked_in_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
         </div>
 
-        <p class="form_field">
-          <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}{{ form.country.errors.as_text }}</span>{% endif %}</label>
-          {% render_field form.country %}
-          {% if form.country.help_text %}
-          <br/>
-          <span class="helptext">{{ form.country.help_text }}</span>
-          {% endif %}
-        </p>
+        <div class="inline_fields">
+          <div>
+          <p class="form_field">
+          <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.web_logo %}
+            {% if sponsor.web_logo %}
+          <p>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></p>
+        {% endif %}
+            {% if form.web_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.web_logo.help_text }}</span>
+            {% endif %}
+          </p>
+          </div>
+
+          <div>
+          <p class="form_field">
+            <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.print_logo %}
+            {% if sponsor.print_logo %}
+          <p>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></p>
+        {% endif %}
+            {% if form.print_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.print_logo.help_text }}</span>
+            {% endif %}
+          </p>
+          </div>
+        </div>
+
+        <hr>
+
+        <h2>Mailing and Contact</h2>
 
         <div class="inline_fields">
           <div>
@@ -167,11 +240,11 @@
 
           <div>
             <p class="form_field">
-              <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
-              {% render_field form.primary_phone %}
-              {% if form.primary_phone.help_text %}
+              <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}{{ form.country.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.country %}
+              {% if form.country.help_text %}
               <br/>
-              <span class="helptext">{{ form.primary_phone.help_text }}</span>
+              <span class="helptext">{{ form.country.help_text }}</span>
               {% endif %}
             </p>
           </div>
@@ -179,25 +252,14 @@
 
         <div class="inline_fields">
           <div>
-          <p class="form_field">
-          <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
-            {% render_field form.web_logo %}
-            {% if form.web_logo.help_text %}
-            <br/>
-            <span class="helptext">{{ form.web_logo.help_text }}</span>
-            {% endif %}
-          </p>
-          </div>
-
-          <div>
-          <p class="form_field">
-            <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
-            {% render_field form.print_logo %}
-            {% if form.print_logo.help_text %}
-            <br/>
-            <span class="helptext">{{ form.print_logo.help_text }}</span>
-            {% endif %}
-          </p>
+            <p class="form_field">
+              <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.primary_phone %}
+              {% if form.primary_phone.help_text %}
+              <br/>
+              <span class="helptext">{{ form.primary_phone.help_text }}</span>
+              {% endif %}
+            </p>
           </div>
         </div>
 
@@ -216,11 +278,16 @@
 
           <button class="formset-btn add-form-row" type="button">Extra contact</button>
         </div>
-
+{% if sponsor %}
+              <div class="form-actions">
+        <input type="submit" name="submit-btn" value="Save"/>
+      </div>
+        {% else %}
       </div>
 
       <input id="submit-btn" type="submit" value="Apply">
     </form>
+    {% endif %}
   </article>
 
 {% endblock content %}

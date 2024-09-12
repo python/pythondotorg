@@ -1,5 +1,6 @@
+from django.db import IntegrityError
 from django.db.models import Count
-from ordered_model.models import OrderedModelManager
+from ordered_model.models import OrderedModelManager, OrderedModelQuerySet
 from django.db.models import Q, Subquery
 from django.db.models.query import QuerySet
 from django.utils import timezone
@@ -25,11 +26,13 @@ class SponsorshipQuerySet(QuerySet):
     def finalized(self):
         return self.filter(status=self.model.FINALIZED)
 
+    def active_on_date(self, ref_date):
+        return self.filter(start_date__lte=ref_date, end_date__gte=ref_date)
+
     def enabled(self):
         """Sponsorship which are finalized and enabled"""
         today = timezone.now().date()
-        qs = self.finalized()
-        return qs.filter(start_date__lte=today, end_date__gte=today)
+        return self.finalized().active_on_date(today).exclude(overlapped_by__isnull=False)
 
     def with_logo_placement(self, logo_place=None, publisher=None):
         from sponsors.models import LogoPlacement, SponsorBenefit
@@ -46,6 +49,12 @@ class SponsorshipQuerySet(QuerySet):
         feature_qs = feature_model.objects.all()
         benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
         return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+
+
+class SponsorshipCurrentYearQuerySet(QuerySet):
+
+    def delete(self):
+        raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
 
 
 class SponsorContactQuerySet(QuerySet):
@@ -72,30 +81,47 @@ class SponsorContactQuerySet(QuerySet):
         return self.filter(query)
 
 
-class SponsorshipBenefitManager(OrderedModelManager):
+class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
     def with_conflicts(self):
         return self.exclude(conflicts__isnull=True)
 
     def without_conflicts(self):
         return self.filter(conflicts__isnull=True)
 
-    def add_ons(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, a_la_carte=False)
-
     def a_la_carte(self):
-        return self.filter(a_la_carte=True)
+        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False).exclude(unavailable=True)
+
+    def standalone(self):
+        return self.filter(standalone=True).exclude(unavailable=True)
 
     def with_packages(self):
         return (
             self.annotate(num_packages=Count("packages"))
-            .exclude(Q(num_packages=0) | Q(a_la_carte=True))
+            .exclude(Q(num_packages=0) | Q(standalone=True))
+            .exclude(unavailable=True)
             .order_by("-num_packages", "order")
         )
 
+    def from_year(self, year):
+        return self.filter(year=year).exclude(unavailable=True)
 
-class SponsorshipPackageManager(OrderedModelManager):
+    def from_current_year(self):
+        from sponsors.models import SponsorshipCurrentYear
+        current_year = SponsorshipCurrentYear.get_year()
+        return self.from_year(current_year)
+
+
+class SponsorshipPackageQuerySet(OrderedModelQuerySet):
     def list_advertisables(self):
         return self.filter(advertise=True)
+
+    def from_year(self, year):
+        return self.filter(year=year)
+
+    def from_current_year(self):
+        from sponsors.models import SponsorshipCurrentYear
+        current_year = SponsorshipCurrentYear.get_year()
+        return self.from_year(current_year)
 
 
 class BenefitFeatureQuerySet(PolymorphicQuerySet):
@@ -118,3 +144,20 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
         from sponsors.models.benefits import ProvidedAssetMixin
         provided_assets_classes = ProvidedAssetMixin.__subclasses__()
         return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
+
+
+class BenefitFeatureConfigurationQuerySet(PolymorphicQuerySet):
+
+    def delete(self):
+        if not self.polymorphic_disabled:
+            return self.non_polymorphic().delete()
+        else:
+            return super().delete()
+
+
+class GenericAssetQuerySet(PolymorphicQuerySet):
+
+    def all_assets(self):
+        from sponsors.models import GenericAsset
+        classes = GenericAsset.all_asset_types()
+        return self.select_related("content_type").instance_of(*classes)

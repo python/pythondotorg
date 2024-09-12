@@ -46,4 +46,8 @@ class ReleaseFileSerializer(serializers.HyperlinkedModelSerializer):
             'filesize',
             'download_button',
             'resource_uri',
+            'sigstore_signature_file',
+            'sigstore_cert_file',
+            'sigstore_bundle_file',
+            'sbom_spdx2_file',
         )

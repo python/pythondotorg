@@ -1,9 +1,10 @@
-from django.conf.urls import handler404, include
+from django.conf.urls import handler404
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.conf.urls.static import static
+from django.urls import include
 from django.urls import path, re_path
-from django.views.generic.base import TemplateView, RedirectView
+from django.views.generic.base import TemplateView
 from django.conf import settings
 
 from cms.views import custom_404
@@ -16,6 +17,7 @@ handler404 = custom_404
 urlpatterns = [
     # homepage
     path('', views.IndexView.as_view(), name='home'),
+    re_path(r'^_health/?', views.health, name='health'),
     path('authenticated', views.AuthenticatedView.as_view(), name='authenticated'),
     re_path(r'^humans.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
     re_path(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
@@ -24,18 +26,11 @@ urlpatterns = [
     # python section landing pages
     path('about/', TemplateView.as_view(template_name="python/about.html"), name='about'),
 
-    # Redirect old download links to new downloads pages
-    path('download/', RedirectView.as_view(url='https://www.python.org/downloads/', permanent=True)),
-    path('download/source/', RedirectView.as_view(url='https://www.python.org/downloads/source/', permanent=True)),
-    path('download/mac/', RedirectView.as_view(url='https://www.python.org/downloads/macos/', permanent=True)),
-    path('download/windows/', RedirectView.as_view(url='https://www.python.org/downloads/windows/', permanent=True)),
-
     # duplicated downloads to getit to bypass China's firewall. See
     # https://github.com/python/pythondotorg/issues/427 for more info.
     path('getit/', include('downloads.urls', namespace='getit')),
     path('downloads/', include('downloads.urls', namespace='download')),
     path('doc/', views.DocumentationIndexView.as_view(), name='documentation'),
-    path('blog/', RedirectView.as_view(url='/blogs/', permanent=True)),
     path('blogs/', include('blogs.urls')),
     path('inner/', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 
