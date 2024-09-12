@@ -1,6 +1,6 @@
 # python.org
 
-[![Build Status](https://travis-ci.org/python/pythondotorg.svg?branch=main)](https://travis-ci.org/python/pythondotorg)
+[![CI](https://github.com/python/pythondotorg/actions/workflows/ci.yml/badge.svg)](https://github.com/python/pythondotorg/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/pythondotorg/badge/?version=latest)](https://pythondotorg.readthedocs.io/?badge=latest)
 
 ### General information
@@ -16,7 +16,7 @@ https://github.com/python/cpython/issues/.
 
 * Source code: https://github.com/python/pythondotorg
 * Issue tracker: https://github.com/python/pythondotorg/issues
-* Documentation: https://pythondotorg.readthedocs.org/
+* Documentation: https://pythondotorg.readthedocs.io/
 * Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
 * IRC: `#pydotorg` on Freenode
 * Staging site: https://staging.python.org/ (`main` branch)

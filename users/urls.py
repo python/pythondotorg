@@ -19,6 +19,11 @@ urlpatterns = [
         name="edit_sponsor_info",
     ),
     path(
+        "sponsorships/sponsor/edit/",
+        views.edit_sponsor_info_implicit,
+        name="edit_sponsor_info_implicit",
+    ),
+    path(
         "sponsorships/<int:pk>/assets/",
         views.UpdateSponsorshipAssetsView.as_view(),
         name="update_sponsorship_assets",

@@ -96,7 +96,7 @@
           <!-- Packages information (as columns) --!>
           {% for package in form.fields.package.queryset %}
             <div class="col benefit-within-package {% if forloop.counter <= benefit.num_packages or not benefit.package_only %}package-{{ package.id }}-benefit {% if form.initial.package == package.id %}selected{% endif %}{% endif %}" data-package-reference="{{ package.id }}">
-              {% if forloop.counter <= benefit.num_packages %}
+              {% if benefit in package.benefits.all %}
                 <img
                     id="benefit-{{ benefit.id }}-package-{{ package.id }}"
                     onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"

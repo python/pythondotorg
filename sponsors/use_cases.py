@@ -3,7 +3,7 @@ from django.db import transaction
 from sponsors import notifications
 from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate, SponsorshipBenefit, \
     SponsorshipPackage
-from sponsors.pdf import render_contract_to_pdf_file, render_contract_to_docx_file
+from sponsors.contracts import render_contract_to_pdf_file, render_contract_to_docx_file
 
 
 class BaseUseCaseWithNotifications:
@@ -55,11 +55,14 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         sponsorship.approve(start_date, end_date)
         package = kwargs.get("package")
         fee = kwargs.get("sponsorship_fee")
+        renewal = kwargs.get("renewal", False)
         if package:
             sponsorship.package = package
             sponsorship.level_name = package.name
         if fee:
             sponsorship.sponsorship_fee = fee
+        if renewal:
+            sponsorship.renewal = True
 
         sponsorship.save()
         contract = Contract.new(sponsorship)

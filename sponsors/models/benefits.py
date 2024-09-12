@@ -16,7 +16,7 @@ from sponsors.models.enums import (
 
 ########################################
 # Benefit features abstract classes
-from sponsors.models.managers import BenefitFeatureQuerySet
+from sponsors.models.managers import BenefitFeatureQuerySet, BenefitFeatureConfigurationQuerySet
 
 
 ########################################
@@ -146,7 +146,10 @@ class AssetConfigurationMixin:
 
     def get_clone_kwargs(self, new_benefit):
         kwargs = super().get_clone_kwargs(new_benefit)
-        kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
+        if str(self.benefit.year) in self.internal_name:
+            kwargs["internal_name"] = self.internal_name.replace(str(self.benefit.year), str(new_benefit.year))
+        else:
+            kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
         due_date = kwargs.get("due_date")
         if due_date:
             kwargs["due_date"] = due_date.replace(year=new_benefit.year)
@@ -307,11 +310,14 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     Base class for sponsorship benefits configuration.
     """
 
+    objects = BenefitFeatureQuerySet.as_manager()
     benefit = models.ForeignKey("sponsors.SponsorshipBenefit", on_delete=models.CASCADE)
+    non_polymorphic = models.Manager()
 
     class Meta:
         verbose_name = "Benefit Feature Configuration"
         verbose_name_plural = "Benefit Feature Configurations"
+        base_manager_name = 'non_polymorphic'
 
     @property
     def benefit_feature_class(self):

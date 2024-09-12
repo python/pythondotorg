@@ -118,6 +118,24 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.assertEqual(self.sponsorship.sponsorship_fee, 100)
         self.assertEqual(self.sponsorship.package, self.package)
         self.assertEqual(self.sponsorship.level_name, self.package.name)
+        self.assertFalse(self.sponsorship.renewal)
+
+
+    def test_update_renewal_sponsorship_as_approved_and_create_contract(self):
+        self.data.update({"renewal": True})
+        self.use_case.execute(self.sponsorship, **self.data)
+        self.sponsorship.refresh_from_db()
+
+        today = timezone.now().date()
+        self.assertEqual(self.sponsorship.approved_on, today)
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
+        self.assertTrue(self.sponsorship.contract.pk)
+        self.assertTrue(self.sponsorship.start_date)
+        self.assertTrue(self.sponsorship.end_date)
+        self.assertEqual(self.sponsorship.sponsorship_fee, 100)
+        self.assertEqual(self.sponsorship.package, self.package)
+        self.assertEqual(self.sponsorship.level_name, self.package.name)
+        self.assertEqual(self.sponsorship.renewal, True)
 
     def test_send_notifications_using_sponsorship(self):
         self.use_case.execute(self.sponsorship, **self.data)

@@ -264,7 +264,7 @@ class SponsorshipDetailView(DetailView):
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorInfoView(UpdateView):
     object_name = "sponsor"
-    template_name = 'users/sponsor_info_update.html'
+    template_name = 'sponsors/new_sponsorship_application_form.html'
     form_class = SponsorUpdateForm
 
     def get_queryset(self):
@@ -276,6 +276,18 @@ class UpdateSponsorInfoView(UpdateView):
     def get_success_url(self):
         messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
         return self.request.path
+
+@login_required(login_url=settings.LOGIN_URL)
+def edit_sponsor_info_implicit(request):
+    sponsors = Sponsor.objects.filter(contacts__user=request.user).all()
+    if len(sponsors) == 0:
+        messages.add_message(request, messages.INFO, "No Sponsors associated with your user.")
+        return redirect('users:user_profile_edit')
+    elif len(sponsors) == 1:
+        return redirect('users:edit_sponsor_info', pk=sponsors[0].id)
+    else:
+        messages.add_message(request, messages.INFO, "Multiple Sponsors associated with your user.")
+        return render(request, 'users/sponsor_select.html', context={"sponsors": sponsors})
 
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")

@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   postgres:
-    image: postgres:10-bullseye
+    image: postgres:15.3-bullseye
     ports:
       - "5433:5432"
     environment:
@@ -14,8 +14,17 @@ services:
       test: ["CMD", "pg_isready", "-U", "pythondotorg", "-d", "pythondotorg"]
       interval: 1s
 
+  redis:
+    image: redis:7-bullseye
+    ports:
+      - "6379:6379"
+    healthcheck:
+     test: ["CMD", "redis-cli","ping"]
+     interval: 1s
+
   web:
     build: .
+    image: pythondotorg:docker-compose
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
@@ -26,4 +35,20 @@ services:
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    image: pythondotorg:docker-compose
+    command: celery -A pydotorg worker -B -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    volumes:
+      - .:/code
+    environment:
+      DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
+      DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
