@@ -4,6 +4,7 @@ import tempfile
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 from django.utils.dateformat import format
+from unidecode import unidecode
 
 import pypandoc
 
@@ -70,7 +71,7 @@ def render_contract_to_docx_response(request, contract, **context):
     )
     response[
         "Content-Disposition"
-    ] = f"attachment; filename={'sponsorship-renewal' if contract.sponsorship.renewal else 'sponsorship-contract'}-{contract.sponsorship.sponsor.name.replace(' ', '-').replace('.', '')}.docx"
+    ] = f"attachment; filename={'sponsorship-renewal' if contract.sponsorship.renewal else 'sponsorship-contract'}-{unidecode(contract.sponsorship.sponsor.name.replace(' ', '-').replace('.', ''))}.docx"
     return response
 
 
