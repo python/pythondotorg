@@ -121,7 +121,7 @@ class SponsorshipPackage(OrderedModel):
         """
         Give the admin an indication of how revenue for sponsorships in this package will be divvied up
         """
-        values, key = {}, "program__description"
+        values, key = {}, "program__name"
         for benefit in self.benefits.values(key).annotate(amount=Sum("internal_value", default=0)).order_by("-amount"):
             values[benefit[key]] = values.get(benefit[key], 0) + (benefit["amount"] or 0)
         total = sum(values.values())

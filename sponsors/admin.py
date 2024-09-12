@@ -198,19 +198,13 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         return {}
 
     def get_benefit_split(self, obj: SponsorshipPackage) -> str:
-        # colors selected from defined css variables in order to look like they fit in the theme
         colors = [
-            "secondary",  # blue
-            "admin-interface-header-background-color",  # dark green
-            "admin-interface-title-color",  # yellow
-            "admin-interface-header-text-color",  # light green
-            "admin-interface-delete-button-background-hover-color",  # red
-            "admin-interface-save-button-background-hover-color",  # darker green
-            "admin-interface-module-background-selected-color",  # light yellow
-            "admin-interface-generic-link-hover-color",  # medium green
+            "#ffde57",  # Python Gold
+            "#4584b6",  # Python Blue
+            "#646464",  # Python Grey
         ]
         split = obj.get_default_revenue_split()
-        # I hope there's never more than 8 things in the split, but just in case...
+        # rotate colors through our available palette
         if len(split) > len(colors):
             colors = colors * (1 + (len(split) // len(colors)))
         # build some span elements to show the percentages and have the program name in the title (to show on hover)
