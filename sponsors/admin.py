@@ -212,7 +212,7 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         for i, (name, pct) in enumerate(split):
             pct_str = f"{pct:.0f}%"
             widths.append(pct_str)
-            spans.append(f"<span title='{name}' style='background-color:var(--{colors[i]})'>{pct_str}</span>")
+            spans.append(f"<span title='{name}' style='background-color:{colors[i]}'>{pct_str}</span>")
         # define a style that will show our span elements like a single horizontal stacked bar chart
         style = f'color:#fff;text-align:center;cursor:pointer;display:grid;grid-template-columns:{" ".join(widths)}'
         # wrap it all up and put a bow on it
