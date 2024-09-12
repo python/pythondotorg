@@ -2,6 +2,7 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 
 from allauth.account.forms import SignupForm
+from allauth.account.models import EmailAddress
 
 from users.forms import UserProfileForm, MembershipForm
 
@@ -50,14 +51,16 @@ class UsersFormsTestCase(TestCase):
         self.assertIn('username', form.errors)
 
     def test_duplicate_email(self):
-        User.objects.create_user('test1', 'test@example.com', 'testpass')
+        user = User.objects.create_user('test1', 'test@example.com', 'testpass')
+        EmailAddress.objects.create(user=user, email="test@example.com")
 
-        form = SignupForm({
+        form = SignupForm(data={
             'username': 'username2',
             'email': 'test@example.com',
             'password1': 'password',
-            'password2': 'password'
+            'password2': 'password',
         })
+
         self.assertFalse(form.is_valid())
         self.assertIn('email', form.errors)
 
@@ -92,13 +95,8 @@ class UsersFormsTestCase(TestCase):
             'password2': 'password',
         })
         self.assertFalse(form.is_valid())
-        self.assertEqual(
-            form.errors['username'],
-            [
-                'Enter a valid username. This value may contain only '
-                'English letters, numbers, and @/./+/-/_ characters.'
-            ]
-        )
+        expected_error = 'Enter a valid username. This value may contain only unaccented lowercase a-z and uppercase A-Z letters, numbers, and @/./+/-/_ characters.'
+        self.assertIn(expected_error, form.errors['username'])
 
     def test_user_membership(self):
         form = MembershipForm({
@@ -125,6 +123,7 @@ class UserProfileFormTestCase(TestCase):
         User.objects.create_user('test42', 'test42@example.com', 'testpass')
 
         form = UserProfileForm({
+            'username': 'stanne',
             'email': 'test42@example.com',
             'search_visibility': 0,
             'email_privacy': 0,
@@ -133,4 +132,20 @@ class UserProfileFormTestCase(TestCase):
         self.assertEqual(
             form.errors,
             {'email': ['Please use a unique email address.']}
+        )
+
+    def test_case_insensitive_unique_username(self):
+        User.objects.create_user('stanne', 'mikael@darktranquillity.com', 'testpass')
+        User.objects.create_user('test42', 'test42@example.com', 'testpass')
+
+        form = UserProfileForm({
+            'username': 'Test42',
+            'email': 'mikael@darktranquillity.com',
+            'search_visibility': 0,
+            'email_privacy': 0,
+        }, instance=User.objects.get(username='stanne'))
+        self.assertFalse(form.is_valid())
+        self.assertEqual(
+            form.errors,
+            {'username': ['A user with that username already exists.']}
         )

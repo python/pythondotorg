@@ -1,8 +1,12 @@
 import datetime
 
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from django.urls import reverse
 from django.utils.text import slugify
 
+from fastly.utils import purge_url
 from markupfield.fields import MarkupField
 
 from users.models import User
@@ -20,7 +24,7 @@ class Election(models.Model):
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(
-        escape_html=True, markup_type="markdown", blank=False, null=True
+        escape_html=False, markup_type="markdown", blank=False, null=True
     )
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
@@ -47,17 +51,22 @@ class Election(models.Model):
 
     @property
     def status(self):
-        if not self.nominations_open:
-            if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
-                return "Nominations Not Yet Open"
+        if self.nominations_open_at is not None and self.nominations_close_at is not None:
+            if not self.nominations_open:
+                if self.nominations_open_at > datetime.datetime.now(datetime.timezone.utc):
+                    return "Nominations Not Yet Open"
 
-            return "Nominations Closed"
+                return "Nominations Closed"
 
-        return "Nominations Open"
+            return "Nominations Open"
+        else:
+            if self.date >= datetime.date.today():
+                return "Commenced"
+            return "Voting Not Yet Begun"
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Election, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nominee(models.Model):
@@ -82,6 +91,12 @@ class Nominee(models.Model):
     approved = models.BooleanField(null=False, default=False)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
+
+    def get_absolute_url(self):
+        return reverse(
+            "nominations:nominee_detail",
+            kwargs={"election": self.election.slug, "slug": self.slug},
+        )
 
     @property
     def name(self):
@@ -149,7 +164,7 @@ class Nominee(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(Nominee, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class Nomination(models.Model):
@@ -181,6 +196,24 @@ class Nomination(models.Model):
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
 
+    def get_absolute_url(self):
+        return reverse(
+            "nominations:nomination_detail",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
+    def get_edit_url(self):
+        return reverse(
+            "nominations:nomination_edit",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
+    def get_accept_url(self):
+        return reverse(
+            "nominations:nomination_accept",
+            kwargs={"election": self.election.slug, "pk": self.pk},
+        )
+
     def editable(self, user=None):
         if (
             self.nominee
@@ -205,7 +238,36 @@ class Nomination(models.Model):
         if user is None:
             return False
 
-        if user.is_staff or user == self.nominee or user == self.nominator:
+        if user.is_staff:
+            return True
+
+        if user == self.nominator:
+            return True
+
+        if self.nominee and user == self.nominee.user:
             return True
 
         return False
+
+
+@receiver(post_save, sender=Nomination)
+def purge_nomination_pages(sender, instance, created, **kwargs):
+    """ Purge pages that contain the rendered markup """
+    # Skip in fixtures
+    if kwargs.get("raw", False):
+        return
+
+    # Purge the nomination page itself
+    purge_url(instance.get_absolute_url())
+
+    if instance.nominee:
+        # Purge the nominee page
+        purge_url(instance.nominee.get_absolute_url())
+
+    if instance.election:
+        # Purge the election page
+        purge_url(
+            reverse(
+                "nominations:nominees_list", kwargs={"election": instance.election.slug}
+            )
+        )

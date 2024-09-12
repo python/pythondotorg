@@ -1,5 +1,5 @@
 """
-This is not the content managment system you are looking for.
+This is not the content management system you are looking for.
 
 There aren't actually any "content" objects here (but do see the pages and boxes
 apps) Instead, we treat content management as a set of attributes, and actions

@@ -1,16 +1,16 @@
 # python.org
 
-[![Build Status](https://travis-ci.org/python/pythondotorg.svg?branch=master)](https://travis-ci.org/python/pythondotorg)
+[![CI](https://github.com/python/pythondotorg/actions/workflows/ci.yml/badge.svg)](https://github.com/python/pythondotorg/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/pythondotorg/badge/?version=latest)](https://pythondotorg.readthedocs.io/?badge=latest)
 
 ### General information
 
 This is the repository and issue tracker for [python.org](https://www.python.org).
 The repository for CPython itself is at https://github.com/python/cpython, and the
-issue tracker is at https://bugs.python.org.
+issue tracker is at https://github.com/python/cpython/issues/.
 
 Issues related to [Python's documentation](https://docs.python.org) can be filed in
-https://bugs.python.org.
+https://github.com/python/cpython/issues/.
 
 ### Contributing
 
@@ -19,5 +19,5 @@ https://bugs.python.org.
 * Documentation: https://pythondotorg.readthedocs.org/
 * Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
 * IRC: `#pydotorg` on Freenode
-* Staging site: https://staging.python.org/ (`master` branch)
+* Staging site: https://staging.python.org/ (`main` branch)
 * License: Apache License

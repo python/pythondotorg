@@ -1110,6 +1110,7 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 }
 
 .download-list-widget { @extend .small-widget; }
+.active-release-list-widget { @extend .small-widget; }
 
 .blog-widget { @extend %indent-time-elements; }
 
@@ -1792,6 +1793,25 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 .release-number { font-family: $default-font-bold; }
 
+.release-version,
+.release-status,
+.release-start,
+.release-end,
+.release-pep {
+    display: block;
+}
+.release-version { font-family: $default-font-bold; }
+
+
+.active-release-list-widget {
+
+    .list-row-headings,
+    .list-row-container li { font-size: px2em( 14px ); }
+
+    .list-row-container { margin-bottom: .5em; }
+
+}
+
 .download-list-widget {
 
     .list-row-headings,
@@ -1893,9 +1913,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         margin-bottom: rhythm( .5 );
     }
 
-    .twitter-widget { padding: 0; }
-
-    .twtr-doc { padding: .75em; }
 }
 
 .right-sidebar {
@@ -2035,12 +2052,51 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
 /* ! ===== User profile pages and sign up forms ===== */
 .user-profile-controls {
-    border-bottom: 1px solid $default-border-color;
     margin-bottom: 2em;
 
-    li {
-        @include pe-inline-block();
-        margin-right: .75em;
+    .menu {
+      display: flex;
+      width: 100%;
+    }
+
+    div.section {
+      padding: 0.25em 1em;
+
+      &:hover {
+          .section-links {
+              display: inline;
+          }
+      }
+
+      span {
+        @extend %button-style-yellow;
+      }
+    }
+
+    div.single-link {
+       span > a {
+          color: #4d4d4d !important;
+       }
+    }
+
+    div.section-links {
+      display: none;
+
+      ul {
+        margin-left: 0;
+        list-style: none;
+        padding-top:0.15em;
+
+        li {
+          @extend %grey-colorbox;
+          margin-bottom: 0;
+          padding: 0.25em 0.25em;
+
+          &:hover {
+            @include vertical-gradient( $grey-lightest, darken($grey-lightest, 15%) );
+          }
+        };
+      };
     }
 
     & + .return-link {
@@ -2351,7 +2407,7 @@ span.highlighted {
 /* ! ===== ICONS ===== */
 
 /* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
-.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow, .icon-mastodon {
 	font-family: 'Pythonicon';
 	speak: none;
 	font-style: normal;
@@ -2370,6 +2426,557 @@ span.highlighted {
 	 */
 	span { display: none; }
 }
+.fa {
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+    margin-right: .5em;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        /* Hide a unicode fallback character when we supply it by default.
+         * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
+         */
+        span { display: none; }
+}
 
 /* Keep this at the bottom since it will create a huge set of data */
 @import "fonts";
+
+/* ! ===== SPONSORSHIP APP ===== */
+.ui-tooltip-content {
+    font-size: 75%;
+}
+
+$breakpoint-phone: 640px;
+$breakpoint-desktop: 1200px;
+
+#new_sponsorship_application_container, #edit-sponsor-information {
+
+  .form_field {
+    margin-top: 1em;
+    margin-bottom: 0;
+    textarea, input { margin-bottom: 0px };
+    select { margin-bottom: 0px };
+
+    .error-message { font-size: 75% }
+  }
+
+  #sponsorship-info-container {
+    ul { margin-bottom: 0px; }
+  }
+
+  .helptext {
+    font-size: 85%;
+  }
+
+  .inline_fields {
+    display: block;
+
+    div {
+      display: inline-block;
+      width: 49%;
+    }
+
+    .form_field{
+      display: block;
+    }
+
+    .helptext {
+      display: block;
+    }
+  }
+
+  #new-application-link {
+    cursor: pointer;
+    text-decoration: underline;
+    color: $link-color;
+  }
+
+  .sponsor-contacts-container {
+    table {
+      margin-bottom: 0;
+      table-layout: fixed;
+      width: 100%;
+      * {vertical-align: middle;}
+      th {
+        width: 25%;
+      }
+      td {
+        width: 75%;
+      }
+
+      .remove-contact-row {
+        display: none;
+      }
+
+      input { margin: 0 0.5em 0 0; }
+      br { display: none }
+    }
+
+    .formset-btn {
+      margin-top: 0.5em;
+      font-size: 65%;
+      border-color: $green;
+      color: $white !important;
+      @include vertical-gradient(lighten( $green, 20% ), $green);
+    }
+
+    .contact-form {
+        margin-bottom: 1em;
+    }
+  }
+
+  #submit-btn { margin-top: 1em; }
+
+  .remove {
+    font-size:75%;
+    label {
+      display: inline;
+      cursor: pointer;
+      text-decoration: underline;
+      color: $red !important;
+    }
+  }
+
+  .errorlist {
+    margin: 0;
+    font-size: 75%;
+  }
+}
+
+#edit-sponsor-information {
+  .helptext {
+    font-size: 65%;
+  }
+
+  .form-actions {
+    margin-top: 1em;
+    float: right;
+  }
+
+  input:read-only {
+    background: $grey-lighterest;
+    cursor: not-allowed;
+  }
+
+  input[type=file] {
+      background: none;
+      cursor: pointer;
+  }
+
+  input[type=submit] {
+    cursor: pointer;
+  }
+
+}
+
+#select_sponsorship_benefits_container {
+
+    h1 { /* Page header */
+      font-size: 26px;
+      line-height: 37px;
+      color: #3776ab;
+    }
+
+    h2 { /* Page title */
+      font-size: 23px;
+      line-height: 37px;
+      color: #999999;
+    }
+
+    h3 { /* column headings, blue */
+      font-size: 20px;
+      line-height: 24px;
+      color: #3776AB;
+    }
+
+    h4 { /* column headings, blue */
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+      margin-top: 1em;
+      @media (max-width: $breakpoint-desktop*1.1) { font-size: 16px; }
+    }
+
+    p {
+      font-size: 18px;
+      line-height: 28px;
+      color: #444444;
+    }
+
+    .section-title {
+      justify-content: flex-start !important;
+
+      h4{
+        margin: 0;
+        font-size: 20px;
+        line-height: 25.14px;
+        font-weight: 700;
+      }
+
+      img {
+        height: 47px;
+      }
+
+      .col:not(:first-child) {
+        padding-top: 1px;
+        padding-left: 0.5em;
+        display: flex;
+        flex-flow: column nowrap;
+        align-items: baseline;
+      }
+
+      .with-description {
+        padding-top: 28px !important;
+      }
+
+    }
+
+  .row {
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+
+    .col {
+        text-align: center;
+    }
+
+    .col-items {
+      padding: 0 0;
+      display: flex;
+      flex-flow: column wrap;
+    }
+  }
+
+  .benefit-description {
+    display: inline-block;
+    line-height: 10px;
+    font-size: 12px;
+  }
+
+  .benefit-title {
+    margin-top: 0;
+  }
+
+  .benefit-program {
+    font-size: bold;
+  }
+
+  #benefitsTable {
+    width: 90vw;
+    position: relative;
+    left: calc(50% - 45vw);
+    margin: 2em 0;
+
+    .benefit {
+       display: block;
+
+      .title {
+        display: inline-block;
+        font-size: 16px;
+        line-height: 18px;
+      }
+    }
+
+    .row {
+      border-bottom: 1px solid #E6E8EA;
+
+      .col:not(first-child) {
+        width: 10%;
+        text-align: center;
+        margin: 0 0.25em;
+
+        @media (max-width: $breakpoint-desktop) {width: 30%};
+      }
+
+      .col:first-child {
+        width: 20%;
+        text-align: left;
+
+        @media (max-width: $breakpoint-desktop) {width: 70%};
+      }
+    }
+
+    .separator {
+      flex-shrink: 0;
+      border-bottom: 3px solid #FFD343;
+      display: block;
+
+      h4 {
+        font-size: 23px;
+        line-height: 29px;
+        font-weight: 700;
+        float: left;
+      }
+
+      .toggle_btn {
+        margin-top: 2em;
+        float: right;
+        cursor: pointer;
+        text-decoration: underline dotted;
+      }
+    }
+
+    .no-border {
+      border-bottom: none;
+    }
+
+    .package-input {
+
+      .custom-fee {
+        font-size: 75%;
+        display: none;
+      }
+
+      input {
+        display: none;
+      }
+
+      h4 {
+        transform: rotateY(35deg);
+      }
+
+      cursor: pointer;
+      padding-bottom: 0.5em !important;
+      border: 1px solid $default-border-color;
+      border-radius: 15px;
+    }
+
+    .selected {
+      background-color: lighten($blue, 50%);
+      border-radius: 15px;
+
+      img {
+        padding: 0.5em 1em;
+        cursor: pointer;
+      }
+    }
+
+
+    @media (max-width: $breakpoint-desktop) {
+      .benefit-within-package {display: none;}
+      .selected {background-color: transparent;}
+
+      .package-input.selected {
+          background-color: lighten($blue, 50%);
+      }
+    };
+  }
+
+  .custom-benefits {
+    margin: 2em 0;
+    padding: 0 2em;
+
+    input {
+      margin-bottom: 0.5em;
+    }
+
+    .col-items {
+      min-height: 137px;
+      background-color: #C4C4C4;
+      margin: 0em 0.5em;
+      padding: 1em 0.5em;
+      width: 23%;
+      color: #000000;
+    }
+
+    .benefit-title {
+      color: #000000;
+      margin: 0;
+      padding: 0;
+    }
+
+    @media (max-width: $breakpoint-desktop) {
+      margin: 0;
+      padding: 1em;
+
+      input {
+        margin-right: 1em;
+      }
+
+      .row {
+        flex-flow: column wrap !important;
+        width: 100%;
+      }
+
+      .col-items{
+        background-color: transparent;
+        flex-flow: row nowrap !important;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+        min-height: initial;
+        align-items: baseline;
+      }
+
+      .a-la-carte-description {
+        text-align: left;
+        padding-right: 1em;
+      }
+    }
+  }
+
+  .submit-row {
+    justify-content: space-between;
+    padding-left: 2em;
+
+    .btn {
+      width: 218px;
+      height: 47px;
+
+      font-weight: bold;
+      color: black !important;
+      background: $yellow;
+      box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+      border-radius: 20px;
+      text-align: center;
+
+      &:hover, &:focus {
+        background: lighten($yellow, 5%);
+        text-shadow: 0 0 5px rgba( $yellow, 0.2);
+      }
+    }
+
+    @media (max-width: $breakpoint-desktop) {
+      flex-flow: column nowrap !important;
+      width: 100%;
+      padding: 0;
+
+
+      .btn {
+        margin: 1em;
+      }
+    }
+  }
+
+  @media (max-width: $breakpoint-desktop) {
+    #package-selection {
+      .row {
+        /* Mobile's layout lists the package selection as a single column instead of multiple
+           ones as in the desktop version. That's why this strange flex-flow change is being
+           made for both row and col classes so they can switch logic. Classes' name should be
+           changed at some time to avoid this confusion.
+         */
+        flex-flow: column wrap !important;
+
+        .col:not(first-child) {
+          width: 50%;
+
+          @media (max-width: $breakpoint-phone) {
+            width: 80%;
+          }
+        }
+
+        .col:first-child {
+          width: 20%;
+        }
+      }
+
+      .col, .col-items {
+        flex-flow: row nowrap !important;
+        align-items: baseline;
+        justify-content: space-between;
+        align-content: flex-start;
+      }
+
+      .package-input {
+         /* The internal disposition of the package name, price and checkbox for the mobile version differs
+          from the desktop one. To avoid having 2 type of HTML structures, we're rearranging how the
+          items are being displayed using the order property.*/
+         h4 { // package name
+           order: 2;
+           padding-left: 1em;
+         }
+         span { // package fee
+           order: 3;
+           padding-right: 1em;
+         }
+         input { // input
+           order: 1;
+         }
+         margin: 0.25rem 0 !important;
+      }
+    }
+  }
+
+
+  @media (min-width: $breakpoint-desktop) {
+    /* Destkop version have the package selection row as a fixed header after some scrolling.
+       This CSS block address this logic.
+     */
+    .sticky {
+      position: -webkit-sticky; /* for Safari */
+      position: sticky;
+      top: 0;
+//background-color: #fcfcfc;  /* same as content-wrapper */
+      @include vertical-gradient(#f9f9f9, #fcfcfc);
+    }
+  }
+
+}
+
+#thank-you-container {
+  background: #417DAF;
+  text-align: center;
+  padding: 2em 0;
+  * {
+    color: #FCFCFC;
+    padding: 1em 0;
+  }
+
+  span {
+    font-size: 28px
+  }
+}
+
+.hidden {
+  display: none;
+}
+
+
+#sponsorship-detail-container {
+  .info-cards {
+    display: flex;
+    width: 100%;
+    align-content: center;
+    flex-wrap: wrap;
+  }
+
+  .card {
+    flex: 1 0 48%;
+  }
+
+  .card-info {
+    margin: .5em .5em;
+    padding: 1em 1em;
+    border: 1px solid $default-border-color;
+    @include border-radius();
+    background: $grey-lightest;
+
+    h3 {
+      margin: 0;
+    }
+  }
+}
+
+#update-sponsorship-assets {
+  input {
+    padding: 0.25em;
+    margin-top: 0.25em;
+    margin-bottom: 0;
+  }
+
+  .helptext { font-size: 75%; }
+
+  .btn { @extend %button-style-blue; }
+
+  .form-actions { margin: 0.5em 0; }
+}

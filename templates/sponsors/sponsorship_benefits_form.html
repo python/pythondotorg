@@ -1,0 +1,311 @@
+{% extends "psf/full-width.html" %}
+{% load pipeline boxes humanize static sponsors waffle_tags %}
+
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}Sponsorship Application | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block content %}
+  {% flag "sponsorship-applications-open" %}
+    {% if custom_year %}
+      <div class="admin-alert warning">
+        <h1>Important!</h1>
+        <p>You're seeing this message because you're a staff user!</p>
+        <p>You're are currently previewing how the sponsorship application using the configuration from <b>{{ custom_year }}</b>.</p>
+        <p>This should be used only for preview before updating the <a href="{% url "admin:sponsors_sponsorshipcurrentyear_changelist" %}">Sponsorship Current Active</a> year to {{ custom_year }}.</p>
+      </div>
+    {% endif %}
+
+  <article class="text">
+    {% box 'sponsorship-application' %}
+  </article>
+
+  <form id="application_form" action="" method="POST">
+    {% csrf_token %}
+    <div id="select_sponsorship_benefits_container">
+
+      <div class="row section-title">
+        <img class="col" src='{% static "img/sponsors/title-1.svg" %}'/>
+        <h4 class="col">Select a Sponsorship Package</h4>
+      </div>
+
+      <div id="benefitsTable">
+
+        <!-- Package selection --!>
+        <div id="package-selection" class="sticky">
+          <div class="row no-border">
+             <span class="col">
+               {% if form.errors %}
+                 <strong>Errors within the form</strong>
+                 <ul class="errorlist">
+                   {% for field in form %}
+                     {% for error in field.errors %}
+                       <li>{{field.name}}: {{ error|escape }}</li>
+                     {% endfor %}
+                   {% endfor %}
+                   {% for error in form.non_field_errors %}
+                     <li>{{ error|escape }}</li>
+                   {% endfor %}
+                 </ul>
+               {% endif %}
+             </span>
+             {% for package in form.fields.package.queryset %}
+             <div
+                 id="pkg_container_{{ package.id }}"
+                 class="col col-items package-input
+                 {% if package.id == form.initial.package %}selected{% endif %}"
+                 data-package-id="{{ package.id}}"
+                 onclick="updatePackageInput({{forloop.counter0}})"
+                 {% if not package.allow_a_la_carte %}title="This package does not accept customization with a la carte benefits."{% endif %}
+             >
+               <h4>{{ package.name|upper }}</h4>
+               <span class="package-price">${{ package.sponsorship_amount|intcomma }}<span class="custom-fee-{{ package.id }} custom-fee">*</span></span>
+               <input
+                   type="radio"
+                   name="package"
+                   value="{{ package.id }}"
+                   id="id_package_{{ forloop.counter0 }}"
+                   {% if package.id == form.initial.package %}checked="checked"{% endif %}
+                   data-pos={{ forloop.counter0 }}
+                   {% if package.allow_a_la_carte %}allow_a_la_carte="true"{% endif %}
+               />
+               <span class="custom-fee-{{ package.id }} custom-fee">* Subject to change</span>
+             </div>
+             {% endfor %}
+          </div>
+        </div>
+
+        {% for field in form.benefits_programs %}
+        {% if field.field.queryset|length > 0 %}
+        {% with forloop.counter as sectionNum %}
+        <div class="row separator">
+           <h4>{{ field.label }}</h4>
+           <small class="toggle_btn" data-section={{ sectionNum }}>Collapse/expand section</small>
+        </div>
+
+        <!-- Benefits listing (as rows) --!>
+        {% for benefit in field.field.queryset %}
+        <div class="row {% if forloop.last %}no-border{% endif %} section-{{ sectionNum }}-content section-content">
+          <div class="col benefit">
+            <h4 class="benefit-title">{{ benefit.name }}</h4>
+            <span class="benefit-description">{{ benefit.description }}</span>
+          </div>
+          <!-- Packages information (as columns) --!>
+          {% for package in form.fields.package.queryset %}
+            <div class="col benefit-within-package {% if forloop.counter <= benefit.num_packages or not benefit.package_only %}package-{{ package.id }}-benefit {% if form.initial.package == package.id %}selected{% endif %}{% endif %}" data-package-reference="{{ package.id }}">
+              {% if benefit in package.benefits.all %}
+                <img
+                    id="benefit-{{ benefit.id }}-package-{{ package.id }}"
+                    onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                    {% if form.initial %}
+                      {% if benefit.id in field.initial and package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% elif package.id == form.initial.package %}
+                      src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                      {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                      {% endif %}
+                    {% else %}
+                      src="{% static 'img/sponsors/tick.svg' %}"
+                      data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% endif %}
+                    data-initial-state="{% static 'img/sponsors/tick.svg' %}"
+                />
+              {% elif not benefit.package_only and package.allow_a_la_carte%}
+                <img
+                  id="benefit-{{ benefit.id }}-package-{{ package.id }}"
+                  onclick="benefitUpdate({{ benefit.id }}, {{ package.id }})"
+                  {% if form.initial %}
+                    {% if benefit.id in field.initial and package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick.svg' %}"
+                    data-next-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    {% elif package.id == form.initial.package %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% else %}
+                    src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                    data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                    {% endif %}
+                  {% else %}
+                  src="{% static 'img/sponsors/tick-placeholder.png' %}"
+                  data-next-state="{% static 'img/sponsors/tick.svg' %}"
+                  {% endif %}
+                  data-initial-state="{% static 'img/sponsors/tick-placeholder.png' %}"
+                />
+                <br/>
+                <small>Potential add-on</small>
+              {% endif %}
+              {% if benefit.has_tiers %}
+                <div><small>{% benefit_quantity_for_package benefit package %}</small></div>
+              {% endif %}
+            </div>
+
+          {% endfor %}
+          <input class="hidden" data-benefit-id={{ benefit.id }} id="id_{{field.name}}_{{ forloop.counter0 }}" name="{{ field.name }}" type="checkbox" value="{{ benefit.id }}" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} {% if benefit.id in field.initial %}checked{% endif %} {% if benefit.package_only %}package_only='true'{% endif %}>
+        </div>
+        {% endfor %}
+
+        {% endwith %}
+        {% endif %}
+        {% endfor %}
+      </div>
+
+      {% if form.fields.a_la_carte_benefits.queryset.exists %}
+        <div class="row section-title">
+          <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
+          <div class="col with-description">
+            <h4>Select a la carte benefits</h4>
+            <div>Available to add to sponsorship packages.</div>
+            <div id="a-la-cart-benefits-disallowed" class="hidden"><b>Selected sponsorship package does not allow a la carte benefit additions.</b></div>
+          </div>
+        </div>
+
+        <div id="a-la-carte-benefits" class="custom-benefits">
+          <div class="row" style="justify-content: start;">
+          {% for benefit in form.fields.a_la_carte_benefits.queryset %}
+            <div class="col col-items">
+              <input type="checkbox" name="a_la_carte_benefits" {% if benefit.unavailability_message and benefit.id not in field.initial or not benefit.has_capacity %}disabled{% endif %} class="{% if benefit.unavailability_message or not benefit.has_capacity %}soldout{% endif %}" value="{{ benefit.id }}" {% if benefit.id in form.initial.a_la_carte_benefits|default:"" %}checked{% endif %}/>
+              <div class="a-la-carte-description">
+                <span class="benefit-program">{{ benefit.program }}</span> -
+                <span class="benefit-title">{{ benefit.name }}</span>
+                <span class="benefit-description">{{ benefit.description }}</span>
+              </div>
+            </div>
+          {% if forloop.counter|divisibleby:4 %}
+          </div>
+          <div class="row" style="justify-content: start;">
+          {% endif %}
+          {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {% if form.fields.standalone_benefits.queryset.exists %}
+        <div class="row section-title">
+          {% if not form.fields.a_la_carte_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
+          {% else %}
+          <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
+          {% endif %}
+          <div class="col with-description">
+            <h4>Select standalone benefits</h4>
+            <span>Available to be selected without package</span>
+            <div id="standalone-benefits-disallowed" class="hidden"><b>Standalone benefits are not available when selecting a package.</b></div>
+          </div>
+        </div>
+
+        <div id="standalone-benefits" class="custom-benefits">
+          <div class="row" style="justify-content: start;">
+            {% for benefit in form.fields.standalone_benefits.queryset %}
+              <div class="col col-items">
+                <input type="checkbox" name="standalone_benefits" value="{{ benefit.id }}" {% if benefit.id in form.initial.standalone_benefits|default:"" %}checked{% endif %}/>
+                <div class="a-la-carte-description">
+                  <span class="benefit-program">{{ benefit.program }}</span> -
+                  <span class="benefit-title">{{ benefit.name }}</span>
+                  <span class="benefit-description">{{ benefit.description }}</span>
+                </div>
+              </div>
+              {% if forloop.counter|divisibleby:4 %}
+                </div>
+                <div class="row">
+              {% endif %}
+            {% endfor %}
+            </div>
+        </div>
+      {% endif %}
+
+      <div class="row section-title">
+        {% if form.fields.a_la_carte_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
+        <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
+        {% elif form.fields.a_la_carte_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
+        <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
+        {% else %}
+        <img class="col" src='{% static "img/sponsors/title-2.svg" %}'/>
+        {% endif %}
+        <h4 class="col">Submit your contact information</h4>
+      </div>
+
+      <div class="row submit-row">
+        <ol>
+          <li><p>Create an account or log-in</p></li>
+          <li><p>Submit your contact information</p></li>
+        </ol>
+        <div>
+          <label>
+            <input class="btn btn-sponsorship-submit" type="submit" value="Submit" {% if custom_year %}disabled{% endif %}/>
+             | <a id="clear_form_btn" href="#package-selection">Clear form</a>
+          </label>
+        </div>
+      </div>
+
+      <div class="row section-title">
+        {% if form.fields.a_la_carte_benefits.queryset.exists and  form.fields.standalone_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-5.svg" %}'/>
+        {% elif form.fields.a_la_carte_benefits.queryset.exists or form.fields.standalone_benefits.queryset.exists %}
+          <img class="col" src='{% static "img/sponsors/title-4.svg" %}'/>
+        {% else %}
+          <img class="col" src='{% static "img/sponsors/title-3.svg" %}'/>
+        {% endif %}
+        <h4 class="col">PSF staff will reach out to confirm and finalize</h4>
+      </div>
+
+    </div>
+
+    <div id="package_benefits" style="display: none">
+    {% for package in sponsorship_packages %}
+      <div id="package_benefits_{{ package.id }}" data-cost="{{ package.sponsorship_amount }}">
+        {% for benefit in package.benefits.all %}
+          {% if benefit.has_capacity %}<div>{{ benefit.id }}</div>{% endif %}
+        {% endfor %}
+      </div>
+
+    {% endfor %}
+    </div>
+
+    <div id="conflicts_container" style="display: none">
+    {% for benefit, conflicts in form.benefits_conflicts.items %}
+      <div id="conflicts_with_{{ benefit }}">
+        {% for conflict in conflicts %}
+          <div>{{ conflict }}</div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+    </div>
+  </form>
+  {% else %}
+  <article class="text">
+    {% box 'sponsorship-application-closed' %}
+  </article>
+  {% endflag %}
+
+{% endblock content %}
+
+{% block footer %}
+  {% flag "sponsorship-applications-open" %}
+  <div id="thank-you-container">
+    <span>If you would like us to walk you through the new program, email sponsors@python.org.</span>
+    <h1>Thank you for making a difference in the Python ecosystem!</h1>
+  </div>
+  {% else %}
+  <div id="thank-you-container">
+    <span>If you need to submit sooner, or have any questions, email sponsors@python.org.</span>
+    <h1>Thank you for your interest in making a difference in the Python ecosystem!</h1>
+  </div>
+  {% endflag %}
+  {{ block.super }}
+{% endblock %}
+
+{% block javascript %}
+  {{ block.super }}
+  {% javascript 'sponsors' %}
+  {% comment %}
+  {# equivalent to: #}
+  <script src="{{ STATIC_URL }}js/sponsors/applicationForm.js"></script>
+  {% endcomment %}
+{% endblock %}

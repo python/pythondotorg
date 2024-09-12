@@ -2,7 +2,7 @@
 {% load nominations %}
 
 {% block page_title %}
-Nomination for {{ nomination.name }}
+Nominee for {{ election.name }} Election
 | {{ SITE_INFO.site_name }}
 {% endblock %}
 
@@ -21,9 +21,9 @@ Nomination for {{ nomination.name }}
         {% if nominee.self_nomination %}
         <li><b>Nominee Statement</b>:
           <ul>
-          <div style="border-style: none;">
+          <article class="text">
           {{ nominee.self_nomination.nomination_statement.rendered|safe }}
-          </div>
+          </article>
           </ul>
         {% endif %}
         {% if nominee.nominations_received %}

@@ -10,8 +10,20 @@
 # $ git config --global core.excludesfile ~/.gitignore_global
 
 .sass-cache/
+docs/build
 media/*
 static-root/
 static/stylesheets/mq.css
 static/stylesheets/no-mq.css
 static/stylesheets/style.css
+__pycache__
+*.db
+*.py[co]
+.vscode
+.~lock.*
+.idea
+.coverage
+.env
+.DS_Store
+.envrc
+.state/

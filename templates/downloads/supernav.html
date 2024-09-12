@@ -10,7 +10,7 @@
         <p>
             <a class="button" href="{{ data.python3.url }}">{{ data.python3.release.name }}</a>
         </p>
-        {% if data.os.slug == 'windows' %}<p><strong>Note that Python 3.5+ <em>cannot</em> be used on Windows XP or earlier.</strong></p>{% endif %}
+        {% if data.os.slug == 'windows' %}<p><strong>Note that Python 3.9+ <em>cannot</em> be used on Windows 7 or earlier.</strong></p>{% endif %}
         <p>Not the OS you are looking for? Python can be used on many operating systems and environments. <a href="{% url 'download:download' %}">View the full list of downloads</a>.</p>
     </div>
     {% endfor %}

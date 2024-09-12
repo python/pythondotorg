@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys
 import os
@@ -9,6 +8,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.todo',
     'sphinx.ext.viewcode',
+    'myst_parser',
 ]
 
 templates_path = ['_templates']
@@ -23,17 +23,18 @@ version = '1.0'
 # The full version, including alpha/beta/rc tags.
 release = '1.0'
 
+html_title = 'Python.org Website'
+
 pygments_style = 'sphinx'
 
-try:
-    import sphinx_rtd_theme
-except ImportError:
-    html_theme = 'default'
-else:
-    html_theme = 'sphinx_rtd_theme'
-    html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
+html_theme = "furo"
 
 htmlhelp_basename = 'PythonorgWebsitedoc'
+
+source_suffix = {
+    '.rst': 'restructuredtext',
+    '.md': 'markdown',
+}
 
 
 # -- Options for LaTeX output ---------------------------------------------

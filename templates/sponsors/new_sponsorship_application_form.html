@@ -1,0 +1,387 @@
+{% extends "psf/full-width.html" %}
+{% load boxes widget_tweaks %}
+{% load humanize %}
+{% load sponsors %}
+{% block page_title %}Sponsorship Information{% endblock %}
+
+
+
+{% block content %}
+  <article id="new_sponsorship_application_container" class="text">
+
+{% if sponsor %}
+<div>
+<h1> Edit {{sponsor}}</h1>
+</div>
+{% else %}
+        <div id="sponsorship-info-container" class="user-feedback level-general">
+      {% if sponsorship_package %}
+      <p>
+        You selected the <b>{{ sponsorship_package.name }}</b> package {% if sponsorship_price %}costing ${{ sponsorship_price|intcomma }} USD {% endif %}and the following benefits:
+      </p>
+      <ul>
+        {% for benefit in sponsorship_benefits %}
+          <li>{% benefit_name_for_display benefit sponsorship_package %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {% if added_benefits %}
+      <p>Added benefits:</p>
+      <ul>
+        {% for benefit in added_benefits %}
+          <li>{% benefit_name_for_display benefit sponsorship_package %}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+      <p><i>Please complete the form below.</i></p>
+      <span class="remove"><label id="close-info-container">Close</label> | <a href="{% url 'select_sponsorship_application_benefits' %}">Back to select benefits</a></span>
+    </div>
+
+    <h1>Submit Sponsorship Information</h1>
+{% endif %}
+
+
+    {% if form.errors %}
+    <span class="error-message">The form has one or more errors</span>
+    {{ form.non_field_errors }}
+    {% endif %}
+
+    <form action="" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+
+      {% if form.user_with_previous_sponsors %}
+      <p id="sponsor-select-field" class="form_field">
+        <label>{{ form.sponsor.label }} <span class="error-message">{% if form.sponsor.errors %}{{ form.sponsor.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.sponsor %}
+        <br/>
+        <span class="helptext">Your user account is already associated with existing PSF Sponsors. Select an existing sponsor to submit this application on their behalf or <span id="new-application-link">create a new one</span></span>.
+      </p>
+      {% endif %}
+
+      <div id="new-appication-fields" {% if form.user_with_previous_sponsors and not form.errors %}style="display: none"{% endif %}>
+
+        <h2>Basics</h2>
+
+        <p class="form_field">
+          <label>{{ form.name.label }} <span class="error-message">{% if form.name.errors %}{{ form.name.errors.as_text }}</span>{% endif %}</label>
+          {% render_field form.name %}
+          {% if form.name.help_text %}
+          <br/>
+          <span class="helptext">{{ form.name.help_text }}</span>
+          {% endif %}
+        </p>
+
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+            <label>{{ form.country_of_incorporation.label }} <span class="error-message">{% if form.country_of_incorporation.errors %}
+              {{ form.country.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.country_of_incorporation %}
+            {% if form.country_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.country_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+            <label>{{ form.state_of_incorporation.label }} <span class="error-message">{% if form.state_of_incorporation.errors %}
+              {{ form.state_of_incorporation.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.state %}
+            {% if form.state_of_incorporation.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state_of_incorporation.help_text }}</span>
+            {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <p class="form_field">
+          <label>{{ form.description.label }} <span class="error-message">{% if form.description.errors %}{{ form.description.errors.as_text }}</span>{% endif %}</label>
+          {% render_field form.description %}
+          {% if form.description.help_text %}
+          <br/>
+          <span class="helptext">{{ form.description.help_text }}</span>
+          {% endif %}
+        </p>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}{{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.landing_page_url %}
+              {% if form.landing_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.landing_page_url.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.twitter_handle.label }} <span class="error-message">{% if form.twitter_handle.errors %}{{ form.twitter_handle.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.twitter_handle %}
+              {% if form.twitter_handle.help_text %}
+              <br/>
+              <span class="helptext">{{ form.twitter_handle.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}{{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.linked_in_page_url%}
+              {% if form.linked_in_page_url.help_text %}
+              <br/>
+              <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="inline_fields">
+          <div>
+          <p class="form_field">
+          <label>{{ form.web_logo.label }} <span class="error-message">{% if form.web_logo.errors %}{{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.web_logo %}
+            {% if sponsor.web_logo %}
+          <p>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></p>
+        {% endif %}
+            {% if form.web_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.web_logo.help_text }}</span>
+            {% endif %}
+          </p>
+          </div>
+
+          <div>
+          <p class="form_field">
+            <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.print_logo %}
+            {% if sponsor.print_logo %}
+          <p>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></p>
+        {% endif %}
+            {% if form.print_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.print_logo.help_text }}</span>
+            {% endif %}
+          </p>
+          </div>
+        </div>
+
+        <hr>
+
+        <h2>Mailing and Contact</h2>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.mailing_address_line_1.label }} <span class="error-message">{% if form.mailing_address_line_1.errors %}{{ form.mailing_address_line_1.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.mailing_address_line_1 %}
+              {% if form.mailing_address_line_1.help_text %}
+              <br/>
+              <span class="helptext">{{ form.mailing_address_line_1.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.mailing_address_line_2.label }} <span class="error-message">{% if form.mailing_address_line_2.errors %}{{ form.mailing_address_line_2.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.mailing_address_line_2 %}
+              {% if form.mailing_address_line_2.help_text %}
+              <br/>
+              <span class="helptext">{{ form.mailing_address_line_2.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.city.label }} <span class="error-message">{% if form.city.errors %}{{ form.city.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.city %}
+              {% if form.city.help_text %}
+              <br/>
+              <span class="helptext">{{ form.city.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.state.label }} <span class="error-message">{% if form.state.errors %}{{ form.state.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.state %}
+              {% if form.state.help_text %}
+              <br/>
+              <span class="helptext">{{ form.state.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.postal_code.label }} <span class="error-message">{% if form.postal_code.errors %}{{ form.postal_code.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.postal_code %}
+              {% if form.postal_code.help_text %}
+              <br/>
+              <span class="helptext">{{ form.postal_code.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+
+          <div>
+            <p class="form_field">
+              <label>{{ form.country.label }} <span class="error-message">{% if form.country.errors %}{{ form.country.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.country %}
+              {% if form.country.help_text %}
+              <br/>
+              <span class="helptext">{{ form.country.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <div class="inline_fields">
+          <div>
+            <p class="form_field">
+              <label>{{ form.primary_phone.label }} <span class="error-message">{% if form.primary_phone.errors %}{{ form.primary_phone.errors.as_text }}</span>{% endif %}</label>
+              {% render_field form.primary_phone %}
+              {% if form.primary_phone.help_text %}
+              <br/>
+              <span class="helptext">{{ form.primary_phone.help_text }}</span>
+              {% endif %}
+            </p>
+          </div>
+        </div>
+
+        <h1>Contacts</h1>
+          {{ form.contacts_formset.management_form }}
+          <div class="sponsor-contacts-container">
+
+            {% for form in form.contacts_formset %}
+            <div class="contact-form form-row">
+              <table>
+                 {{ form }}
+                 <tr class="remove {% if forloop.first %}remove-contact-row {% endif %}remove-form-row"><th><label>Remove contact</label></th></tr>
+              </table>
+            </div>
+            {% endfor %}
+
+          <button class="formset-btn add-form-row" type="button">Extra contact</button>
+        </div>
+{% if sponsor %}
+              <div class="form-actions">
+        <input type="submit" name="submit-btn" value="Save"/>
+      </div>
+        {% else %}
+      </div>
+
+      <input id="submit-btn" type="submit" value="Apply">
+    </form>
+    {% endif %}
+  </article>
+
+{% endblock content %}
+
+{% block javascript %}
+  {{ block.super }}
+  <script type='text/javascript'>
+  // JS reference from https://medium.com/all-about-django/adding-forms-dynamically-to-a-django-formset-375f1090c2b0
+
+  function updateElementIndex(el, prefix, ndx) {
+      var id_regex = new RegExp('(' + prefix + '-\\d+)');
+      var replacement = prefix + '-' + ndx;
+      if ($(el).attr("for")) $(el).attr("for", $(el).attr("for").replace(id_regex, replacement));
+      if (el.id) el.id = el.id.replace(id_regex, replacement);
+      if (el.name) el.name = el.name.replace(id_regex, replacement);
+  }
+  function cloneMore(selector, prefix) {
+      var newElement = $(selector).clone(true);
+      var total = $('#id_' + prefix + '-TOTAL_FORMS').val();
+      newElement.find(':input:not([type=button]):not([type=submit]):not([type=reset])').each(function() {
+          var name = $(this).attr('name').replace('-' + (total-1) + '-', '-' + total + '-');
+          var id = 'id_' + name;
+          $(this).attr({'name': name, 'id': id}).val('').removeAttr('checked');
+      });
+      newElement.find('label').each(function() {
+          var forValue = $(this).attr('for');
+          if (forValue) {
+            forValue = forValue.replace('-' + (total-1) + '-', '-' + total + '-');
+            $(this).attr({'for': forValue});
+          }
+      });
+      newElement.find(".remove-contact-row").show();
+      total++;
+      $('#id_' + prefix + '-TOTAL_FORMS').val(total);
+      $(selector).after(newElement);
+      var conditionRow = $('.form-row:not(:last)');
+      conditionRow.find('.btn.add-form-row')
+      .removeClass('btn-success').addClass('btn-danger')
+      .removeClass('add-form-row').addClass('remove-form-row')
+      .html('<span class="glyphicon glyphicon-minus" aria-hidden="true"></span>');
+
+      var maxForms = $('#id_' + prefix + '-MAX_NUM_FORMS').val();
+      if (total >= maxForms) {
+          $(".add-form-row").hide();
+      }
+
+      return false;
+  }
+  function deleteForm(prefix, btn) {
+      var total = parseInt($('#id_' + prefix + '-TOTAL_FORMS').val());
+      if (total > 1){
+          btn.closest('.form-row').remove();
+          var forms = $('.form-row');
+          $('#id_' + prefix + '-TOTAL_FORMS').val(forms.length);
+          for (var i=0, formCount=forms.length; i<formCount; i++) {
+              $(forms.get(i)).find(':input').each(function() {
+                  updateElementIndex(this, prefix, i);
+              });
+          }
+          $(".add-form-row").show();
+      }
+      return false;
+  }
+  let formPrefix = "contact";
+  $(document).on('click', '.add-form-row', function(e){
+      e.preventDefault();
+      cloneMore('.form-row:last', formPrefix);
+      return false;
+  });
+  $(document).on('click', '.remove-form-row', function(e){
+      e.preventDefault();
+      deleteForm(formPrefix, $(this));
+      return false;
+  });
+  $(document).on("change", "#id_sponsor", function(e){
+      e.preventDefault();
+      let sponsor = $(this).val();
+      if (sponsor.length) {
+          $("#new-appication-fields").hide();
+          $('input[required=""]').removeAttr("required");
+      }
+      return false;
+  });
+  $(document).on("click", "#new-application-link", function(e){
+      e.preventDefault();
+      console.log('vai');
+      $("#id_sponsor").val("");
+      $("#new-appication-fields").show();
+      return false;
+  });
+  $(document).on("click", "#close-info-container", function(e){
+      e.preventDefault();
+      $("#sponsorship-info-container").hide();
+      return false;
+  });
+</script>
+{% endblock %}

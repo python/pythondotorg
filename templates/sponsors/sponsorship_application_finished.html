@@ -1,0 +1,25 @@
+{% extends "psf/full-width.html" %}
+{% load sponsors %}
+{% load pipeline %}
+
+{% block head %}
+  {% stylesheet 'font-awesome' %}
+{% endblock %}
+
+{% block page_title %}Finished{% endblock %}
+
+{% block content %}
+  <article class="text">
+    <h1>Application submitted!</h1>
+    <hr>
+    <p><i>Thank you for submitting your application to sponsor the PSF ecosystem.</i></p>
+    <p>Our team has been notified and will contact you within 5 business days to discuss next steps.</p>
+    <p>A confirmation has been emailed to {% for item in notified %}{% if forloop.first %}{% else %}{% if forloop.last %} and {% else %}, {% endif %}{% endif %}{{item}}{% endfor %}. <i class="fa fa-question-circle" title="Note: we only email confirmations to addresses which python.org has previously contacted."></i></p>
+    <p>If you have any questions please respond to the confirmation email or contact <a href="mailto:sponsors@python.org">sponsors@python.org</a></p>
+    <p>- The Python Software Foundation Sponsorship Team</p>
+
+    <hr>
+    <h2>Application contents</h2>
+    <pre>{% full_sponsorship sponsorship %}</pre>
+  </article>
+{% endblock content %}

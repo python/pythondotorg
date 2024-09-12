@@ -1,0 +1,42 @@
+[
+{
+  "model": "waffle.flag",
+  "pk": 1,
+  "fields": {
+    "name": "psf_membership",
+    "everyone": null,
+    "percent": null,
+    "testing": true,
+    "superusers": true,
+    "staff": false,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "This flag is used to show the PSF Basic and Advanced member registration process.",
+    "created": "2015-06-05T09:47:03Z",
+    "modified": "2017-03-22T01:45:42.077Z",
+    "groups": [],
+    "users": []
+  }
+},
+{
+  "model": "waffle.flag",
+  "pk": 2,
+  "fields": {
+    "name": "sponsorship-applications-open",
+    "everyone": true,
+    "percent": null,
+    "testing": false,
+    "superusers": false,
+    "staff": false,
+    "authenticated": false,
+    "languages": "",
+    "rollout": false,
+    "note": "Controls if the application form and benefits \"menu\" is visible at https://www.python.org/sponsors/application/\r\n\r\nThe contents of the page when applications are closed is modifiable at https://www.python.org/admin/boxes/box/106/change/",
+    "created": "2022-07-21T17:16:05Z",
+    "modified": "2022-07-21T17:24:06.747Z",
+    "groups": [],
+    "users": []
+  }
+}
+]

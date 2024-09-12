@@ -1,0 +1,7 @@
+Of the {{ submissions_current_month }} Job submissions created in {% now "F Y" %}:
+{% for key, value in current_month_jobs.items %}
+  - {{ value }} have status {{ key }}{% endfor %}
+
+For the {{ submissions_previous_month }} Job submissions created last month:
+{% for key, value in previous_month_jobs.items %}
+  - {{ value }} have status {{ key }}{% endfor %}

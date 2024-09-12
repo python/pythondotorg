@@ -26,8 +26,7 @@ class EventsImporterTestCase(TestCase):
 
     def test_modified_event(self):
         importer = ICSImporter(self.calendar)
-        ical = """\
-BEGIN:VCALENDAR
+        ical = """BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -45,7 +44,7 @@ CREATED:20151113T123318Z
 DESCRIPTION:<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp C
  ologne 2016</a>
 LAST-MODIFIED:20160401T210533Z
-LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Köln\, Germany
+LOCATION:GFU Cyrus AG, Am Grauen Stein 27, 51105 Köln, Germany
 SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:PythonCamp Cologne 2016
@@ -71,8 +70,7 @@ END:VCALENDAR
             e.next_or_previous_time.dt_end
         )
 
-        ical = """\
-BEGIN:VCALENDAR
+        ical = """BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
 VERSION:2.0
 CALSCALE:GREGORIAN
@@ -89,7 +87,7 @@ UID:8ceqself979pphq4eu7l5e2db8@google.com
 CREATED:20151113T123318Z
 DESCRIPTION:Python Istanbul
 LAST-MODIFIED:20160401T222533Z
-LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Istanbul\, Turkey
+LOCATION:GFU Cyrus AG, Am Grauen Stein 27, 51105 Istanbul, Turkey
 SEQUENCE:0
 STATUS:CONFIRMED
 SUMMARY:PythonCamp Cologne 2016
@@ -114,8 +112,7 @@ END:VCALENDAR
         )
 
     def test_import_event_excludes_ending_day_when_all_day_is_true(self):
-        ical = """\
-BEGIN:VCALENDAR
+        ical = """BEGIN:VCALENDAR
 BEGIN:VEVENT
 DTSTART;VALUE=DATE:20150328
 DTEND;VALUE=DATE:20150330
@@ -123,7 +120,7 @@ DTSTAMP:20150202T092425Z
 UID:pythoncalendartest@python.org
 SUMMARY:PythonCamp 2015 - Python Bar Camp in Cologne
 DESCRIPTION:Python PythonCamp 2015 - Python Bar Camp in Cologne
-LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Cologne\, Germany
+LOCATION:GFU Cyrus AG, Am Grauen Stein 27, 51105 Cologne, Germany
 END:VEVENT
 END:VCALENDAR
 """
@@ -143,8 +140,7 @@ END:VCALENDAR
         )
 
     def test_import_event_does_not_exclude_ending_day_when_all_day_is_false(self):
-        ical = """\
-BEGIN:VCALENDAR
+        ical = """BEGIN:VCALENDAR
 BEGIN:VEVENT
 DTSTART:20130802T200000Z
 DTEND:20130802T203000Z
@@ -152,7 +148,7 @@ DTSTAMP:20150202T092425Z
 UID:pythoncalendartestsingleday@python.org
 SUMMARY:PythonCamp 2015 - Python Bar Camp in Cologne
 DESCRIPTION:Python PythonCamp 2015 - Python Bar Camp in Cologne
-LOCATION:GFU Cyrus AG\, Am Grauen Stein 27\, 51105 Cologne\, Germany
+LOCATION:GFU Cyrus AG, Am Grauen Stein 27, 51105 Cologne, Germany
 END:VEVENT
 END:VCALENDAR
 """

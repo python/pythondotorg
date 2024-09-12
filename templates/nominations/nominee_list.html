@@ -2,7 +2,7 @@
 {% load nominations %}
 
 {% block page_title %}
-Nomination for {{ nomination.name }}
+Nominees for {{ election.name }} Election
 | {{ SITE_INFO.site_name }}
 {% endblock %}
 
@@ -136,7 +136,7 @@ details div p
 
 
     //create a started flag so we can prevent the initialisation
-    //function firing from both DOMContentLoaded and window.onloiad
+    //function firing from both DOMContentLoaded and window.onload
     var started = false;
 
     //initialisation function
@@ -210,7 +210,7 @@ details div p
       //define a statechange function that updates aria-expanded and style.display
       //to either expand or collapse the region (ie. invert the current state)
       //or to set a specific state if the expanded flag is strictly true or false
-      //then update the twisty if we have one with a correpsonding glyph
+      //then update the twisty if we have one with a corresponding glyph
       function statechange(summary, expanded)
       {
         if(typeof(expanded) == 'undefined')
@@ -330,7 +330,7 @@ details div p
   <p>Nominations close at {{ election.nominations_close_at }}, this is a preview of only nominations relevant to you.</p>
   {% endif %}
   {% for nominee in object_list|shuffle %}
-  <h2><a href="{% url 'nominations:nominee_detail' election=election.slug slug=nominee.slug %}">{{ nominee.display_name }}</a></h2>
+  <h2><a href="{{ nominee.get_absolute_url }}">{{ nominee.display_name }}</a></h2>
   <details id="{{ nominee.slug }}">
     <summary>
       Nomination details

@@ -1,0 +1,23 @@
+{% load sponsors %}
+Dear {{ sponsorship.sponsor.name }}
+{% if sponsorship.for_modified_package %}
+Thank you for submitting your sponsorship application.
+We will contact you to discuss finalizing the customized sponsorship package within 5 business days.
+{% else %}
+Thank you for submitting your sponsorship application.
+We will be sending a Contract reflecting the sponsorship contract details within 5 business days.
+{% endif %}
+You can review your full application and a list of benefits you will receive below.
+
+{% if required_assets %}One or more benefits you've select require more information. Here's a list of the required assets with links, so you can submit them:
+{% for asset in required_assets %}
+- {{ asset.label }}: http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{{ asset.user_edit_url }}{% endfor %}{% endif %}
+
+Thank you,
+Loren Crary
+Director of Resource Development
+Python Software Foundation
+
+-------------------------------------------------------------------------------
+
+{% full_sponsorship sponsorship %}

@@ -1,0 +1,57 @@
+{% extends "admin/change_form.html" %}
+{% load i18n admin_urls admin_modify %}
+
+{% block object-tools-items %}
+  {% with original as sp %}
+
+    <li>
+        <a href="{% url 'users:sponsorship_application_detail' sp.pk %}" style="background: #70bf2b">View Dashboard</a>
+    </li>
+
+    {% if sp.APPROVED in sp.next_status %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_approve' sp.pk %}" style="background: #70bf2b">Generate Contract for Signing</a>
+    </li>
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_approve_existing_contract' sp.pk %}" style="background: #70bf2b">Upload Finalized Contract</a>
+    </li>
+    {% endif %}
+
+    {% if sp.REJECTED in sp.next_status %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_reject' sp.pk %}"  style="background: #ba2121">Reject</a>
+    </li>
+    {% endif %}
+
+    {% if sp.FINALIZED in sp.next_status %}
+    <li>
+        <a href="{{ sp.contract_admin_url }}"  style="background: #417690">Review Contract</a>
+    </li>
+    {% endif %}
+
+    {% if sp.status != sp.FINALIZED and sp.status != sp.APPLIED %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_rollback_to_edit' sp.pk %}">Rollback to Edit</a>
+    </li>
+    {% endif %}
+
+    <li>
+      <a href="{% url 'admin:sponsors_sponsorship_list_uploaded_assets' sp.pk %}">Uploaded Assets</a>
+    </li>
+
+    {% if sp.unlocked and sp.status != sp.APPLIED %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_lock' sp.pk %}" style="background: #70bf2b">Lock</a>
+    </li>
+    {% endif %}
+
+    {% if sp.locked and sp.status == sp.FINALIZED  %}
+    <li>
+      <a href="{% url 'admin:sponsors_sponsorship_unlock' sp.pk %}">Unlock</a>
+    </li>
+    {% endif %}
+
+  {% endwith %}
+
+  {{ block.super }}
+{% endblock %}

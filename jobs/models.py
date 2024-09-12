@@ -13,6 +13,8 @@ from markupfield.fields import MarkupField
 from cms.models import ContentManageable, NameSlugModel
 from fastly.utils import purge_url
 
+from users.models import User
+
 from .managers import JobQuerySet, JobTypeQuerySet, JobCategoryQuerySet
 from .signals import (
     job_was_submitted, job_was_approved, job_was_rejected, comment_was_posted
@@ -107,7 +109,13 @@ class Job(ContentManageable):
     url = models.URLField(
         verbose_name='URL',
         null=True,
-        blank=True)
+        blank=False)
+
+    submitted_by = models.ForeignKey(
+        User,
+        null=True,
+        on_delete=models.SET_NULL,
+    )
 
     STATUS_DRAFT = 'draft'
     STATUS_REVIEW = 'review'
@@ -155,7 +163,7 @@ class Job(ContentManageable):
         permissions = [('can_moderate_jobs', 'Can moderate Job listings')]
 
     def __str__(self):
-        return 'Job Listing #{}'.format(self.pk)
+        return f'Job Listing #{self.pk}'
 
     def save(self, **kwargs):
         location_parts = (self.city, self.region, self.country)
@@ -205,7 +213,7 @@ class Job(ContentManageable):
 
     @property
     def display_name(self):
-        return "%s, %s" % (self.job_title, self.company_name)
+        return f"{self.job_title}, {self.company_name}"
 
     @property
     def display_description(self):
@@ -249,7 +257,7 @@ class JobReviewComment(ContentManageable):
         return super().save(**kwargs)
 
     def __str__(self):
-        return '<Job #{}: {}>'.format(self.job.pk, self.comment.raw[:50])
+        return f'<Job #{self.job.pk}: {self.comment.raw[:50]}>'
 
 
 @receiver(post_save, sender=Job)

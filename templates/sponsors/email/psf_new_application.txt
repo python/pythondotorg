@@ -1,0 +1,8 @@
+{% load sponsors %}
+A new sponsorship application has been submitted!
+
+View the application at {% if request.is_secure %}https://{% else %}http://{% endif %}{{ request.get_host }}{{ sponsorship.admin_url }}
+
+Details:
+
+{% full_sponsorship sponsorship %}

@@ -19,18 +19,22 @@
   <h1><a href="{% url 'nominations:nominees_list' election=election.slug %}">{{ election.name }} Election</a></h1>
 
   {% if nominations.nominations_recieved|length > 0 %}
-  <h2>Nominations Recieved</h2>
+  <h2>Nominations Received</h2>
   <ul>
     {% for nomination in nominations.nominations_recieved %}
     <li>
     {% if nomination.nominator == request.user %}
     Self Nomination
     {% else %}
-    Nomination from {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
+    Nomination from {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }} {% if nomination.accepted %}<b>Accepted</b>{% else %}<i>Not accepted!</i>{% endif %}
     {% endif %}
-    <a href="{% url 'nominations:nomination_detail' election=election.slug pk=nomination.id %}">
+    <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
-      View/Edit
+          {% if nomination.nominator == request.user %}
+          View / Edit
+          {% else %}
+          View / Manage Acceptance
+          {% endif %}
       {% else %}
       View
       {% endif %}
@@ -50,7 +54,7 @@
     {% else %}
     {{ nomination.name }}
     {% endif %}
-    <a href="{% url 'nominations:nomination_detail' election=election.slug pk=nomination.id %}">
+    <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
       View/Edit
       {% else %}

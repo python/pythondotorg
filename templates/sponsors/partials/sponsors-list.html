@@ -1,0 +1,63 @@
+{% load thumbnail %}
+{% load cache %}
+{% load sponsors %}
+
+
+{% if logo_place == "download" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_DOWNLOAD_SPONSORS_LIST %}
+  <h2 class="widget-title">Sponsors</h2>
+  <p>Visionary sponsors help to host Python downloads.</p>
+  {% for sponsorship in sponsorships %}
+  {% thumbnail sponsorship.sponsor.web_logo "x200" format="PNG" quality=100 as im %}
+    <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:200px;max-width:200px;height:auto;width:auto;">
+  {% endthumbnail %}
+  {% endfor %}
+{% endcache CACHED_DOWNLOAD_SPONSORS_LIST %}
+
+{% elif logo_place == "jobs" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_JOBS_SPONSORS_LIST %}
+  <h3 class="widget-title">Job Board Sponsors</h3>
+  <div style="display: grid; grid-gap: 1em; grid-template-columns: repeat(auto-fit, minmax(100px, 0fr)); grid-template-rows: repeat(1, minmax(50px, 0fr)); align-items: center; justify-content: center; margin-top: 1em;">
+  {% for sponsorship in sponsorships %}
+  {% thumbnail sponsorship.sponsor.web_logo "x100" format="PNG" quality=100 as im %}
+    <div>
+      <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:100px;max-width:100px;height:auto;width:auto;">
+    </div>
+  {% endthumbnail %}
+  {% endfor %}
+  </div>
+{% endcache CACHED_JOBS_SPONSORS_LIST %}
+
+{% elif logo_place == "sponsors" %}
+{% comment %}cache for 1 day{% endcomment %}
+{% cache 86400 CACHED_SPONSORS_LIST %}
+
+  {% for package, placement_info in sponsorships_by_package.items %}
+  {% if placement_info.sponsorships %}
+  <div title="{{ package }} Sponsors" align="center">
+    {% with dimension=placement_info.logo_dimension %}
+
+    <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ placement_info.label }} Sponsors</h1>
+
+    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
+      {% for sponsorship in placement_info.sponsorships %}
+        <div id="{{ sponsorship.sponsor.slug }}" data-internal-year={{ sponsorship.year }}>
+            <div
+                data-ea-publisher="psf"
+                data-ea-type="psf-image-only"
+                data-ea-force-ad="{{ sponsorship.sponsor.slug }}-psf-sponsors"
+                style="max-width:{{ sponsorship.sponsor.web_logo|ideal_size:dimension }}px;height:auto;width:auto;"
+            ></div>
+            <p>{{ sponsorship.sponsor.name }}</p>
+        </div>
+      {% endfor %}
+    </div>
+
+    {% endwith %}
+  </div>
+  {% endif %}
+  {% endfor %}
+{% endcache CACHED_SPONSORS_LIST %}
+{% endif %}

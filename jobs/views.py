@@ -339,7 +339,7 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
             getattr(form.instance.job, action)(self.request.user)
             messages.add_message(
                 self.request, messages.SUCCESS,
-                "'{}' {}.".format(form.instance.job, action_status)
+                f"'{form.instance.job}' {action_status}."
             )
         else:
             messages.add_message(self.request, messages.SUCCESS,
@@ -360,8 +360,6 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
         kwargs['request'] = self.request
-        # We don't allow posting a job without logging in to the site.
-        kwargs['initial'] = {'email': self.request.user.email}
         return kwargs
 
     def get_context_data(self, **kwargs):
@@ -371,6 +369,7 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
+        form.instance.submitted_by = self.request.user
         form.instance.status = 'draft'
         return super().form_valid(form)
 

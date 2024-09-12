@@ -13,7 +13,7 @@ class DownloadMixin:
     def setUpClass(cls):
         super().setUpClass()
         cls.windows, _ = OS.objects.get_or_create(name='Windows')
-        cls.osx, _ = OS.objects.get_or_create(name='Mac OSX')
+        cls.osx, _ = OS.objects.get_or_create(name='macOS')
         cls.linux, _ = OS.objects.get_or_create(name='Linux')
 
 
@@ -64,6 +64,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_source=True,
             description='Gzipped source',
             url='ftp/python/2.7.5/Python-2.7.5.tgz',
+            filesize=12345678,
         )
 
         self.draft_release = Release.objects.create(

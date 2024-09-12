@@ -1,0 +1,2984 @@
+[
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 2,
+  "fields": {
+    "order": 17,
+    "name": "Meet with the PSF Board of Directors",
+    "description": "Opportunity to meet with the PSF Board of Directors to discuss a topic of your choosing. The health and sustainability of our community is important to many organizations and we want to make sure community needs are heard and noted.",
+    "program": 1,
+    "package_only": true,
+    "new": true,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 4,
+  "fields": {
+    "order": 25,
+    "name": "Logo on python.org/downloads/",
+    "description": "Logo added to python.org/downloads/. 4.4 million distinct users visit this page every month!",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 15000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 24,
+  "fields": {
+    "order": 14,
+    "name": "Mention in the PSF Newsletter",
+    "description": "Mentions in the PSF newsletter that is published every other month.",
+    "program": 1,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 7000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 25,
+  "fields": {
+    "order": 16,
+    "name": "Original Blog Post",
+    "description": "1 original blog post on the PSF blog highlighting sponsor\u2019s use of Python.",
+    "program": 1,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2500,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 26,
+  "fields": {
+    "order": 15,
+    "name": "Logo listed on PSF blog",
+    "description": "Logo will be placed in the header on the blog home page  (pyfound.blogspot.com) and visible for one year. The PSF blog receives about 72,000 views per month(4,126,948 all time)",
+    "program": 1,
+    "package_only": true,
+    "new": true,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": 8,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 29,
+  "fields": {
+    "order": 13,
+    "name": "jobs.python.org support",
+    "description": "Logo listed on jobs.python.org for one year",
+    "program": 1,
+    "package_only": true,
+    "new": true,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": 8,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 30,
+  "fields": {
+    "order": 12,
+    "name": "Community visibility on social media",
+    "description": "Social media promotion of your sponsorship via @ThePSF\r\n4 - Visionary and Sustainability\r\n3 - Maintaining\r\n2 - Contributing and Supporting\r\n1 - Partner",
+    "program": 1,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1500,
+    "capacity": 8,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 31,
+  "fields": {
+    "order": 11,
+    "name": "Logo on python.org",
+    "description": "Logo linked to sponsor designated URL posted on https://www.python.org/psf/sponsors/\r\nListed in order of package level",
+    "program": 1,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 32,
+  "fields": {
+    "order": 10,
+    "name": "Level supporter badge",
+    "description": "PSF provides a supporter icon that should be displayed on sponsor website, social media accounts and events.  A way to show support for the Python community.",
+    "program": 1,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 33,
+  "fields": {
+    "order": 8,
+    "name": "Promotion of Python case study",
+    "description": "Write a case study showcasing your use of Python. Any case studies posted on python.org will be promoted on social media and community mailing lists.",
+    "program": 1,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 35,
+  "fields": {
+    "order": 40,
+    "name": "Logo on the PyPI footer",
+    "description": "https://pypi.org/",
+    "program": 3,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 36,
+  "fields": {
+    "order": 39,
+    "name": "Individual PSF blog post about PyPI use",
+    "description": "PSF and sponsor will work on a blog to be posted on pyfound.blogspot.org.",
+    "program": 3,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 38,
+  "fields": {
+    "order": 37,
+    "name": "Logo in a prominent position on the PyPI project detail page",
+    "description": "Company logo will be added to a prominent location on PyPI project pages",
+    "program": 3,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 40,
+  "fields": {
+    "order": 36,
+    "name": "Inclusion in a PSF blog about PyPI use with other sponsors",
+    "description": "Blog on pyfound.blogspot.org to be written by PSF staff",
+    "program": 3,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 42,
+  "fields": {
+    "order": 4,
+    "name": "Logo on the PyPI sponsors page",
+    "description": "Company logo will be added to a sponsor page on pypi.org/",
+    "program": 3,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 44,
+  "fields": {
+    "order": 27,
+    "name": "Joint press release with the PSF",
+    "description": "PSF and sponsor will work together to create a press release.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 10000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 45,
+  "fields": {
+    "order": 28,
+    "name": "CPython Dev Sprint Recognition",
+    "description": "Sponsor will receive recognition at the intro and wrap up of the sprint, plus social media mentions.\r\nSponsor will also be recognized in the virtual event and in the post event blog.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 10000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 46,
+  "fields": {
+    "order": 29,
+    "name": "Logo recognition on devguide.python.org/",
+    "description": "Logo added to devguide.python.org/. Many core developers and mentees use this resource daily.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 47,
+  "fields": {
+    "order": 30,
+    "name": "Meet with the Python Steering Council",
+    "description": "Opportunity to meet with the Steering Council to discuss technical aspects of Python or feedback you may have, or just a Q&A with the Steering Council. The health and sustainability of Python is critical to many organizations and we want to make sure community needs are heard and noted.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 9500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 48,
+  "fields": {
+    "order": 30,
+    "name": "docs.python.org recognition",
+    "description": "Logo listed on docs.python.org pages for one year.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 49,
+  "fields": {
+    "order": 31,
+    "name": "Language Summit recognition",
+    "description": "Sponsor will receive recognition at the intro and wrap up of the event, one social media mention, and recognition in post event blog.",
+    "program": 4,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 57,
+  "fields": {
+    "order": 47,
+    "name": "Social Media Promotion",
+    "description": "Social Media promotion of your sponsorship on @PyPI",
+    "program": 3,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 58,
+  "fields": {
+    "order": 0,
+    "name": "Booth space in Exhibit Hall",
+    "description": "Booth in Expo Hall starting Thursday for Opening Reception, all day Friday, and Saturday. Limited availability, first come first served. Visionary and Sustainability sponsors have access to up to 20x30, Maintaining up to 20x20, Contributing and Supporting up to 20x10, and Partner up to 10x10.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 10000,
+    "capacity": 3,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 62,
+  "fields": {
+    "order": 27,
+    "name": "Complimentary lead retrieval",
+    "description": "Complimentary lead retrieval license for use during PyCon US",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 200,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 63,
+  "fields": {
+    "order": 28,
+    "name": "Highlight in attendee email",
+    "description": "Highlight of PyCon US content in the attendee emails sent to all registered attendees",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 64,
+  "fields": {
+    "order": 3,
+    "name": "Full conference passes",
+    "description": "Full conference pass includes Opening Reception and all content Friday, Saturday and Sunday",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 700,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 65,
+  "fields": {
+    "order": 29,
+    "name": "Expo Hall  only staff passes",
+    "description": "Expo Hall only passes include access to Expo Hall only (includes Opening Reception, breakfast and lunch Friday, Saturday and Sunday)",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 75,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 66,
+  "fields": {
+    "order": 31,
+    "name": "Sponsor Workshops",
+    "description": "One Sponsor Workshop, 45 minutes presentation on Thursday, April 28th.\r\n\r\nCapacity limit of 12 workshops",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 8000,
+    "capacity": 12,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 68,
+  "fields": {
+    "order": 32,
+    "name": "Sponsor Greeting in General Session",
+    "description": "Three minute live greeting for PyCon US Attendees during General Sessions.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 8000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 69,
+  "fields": {
+    "order": 33,
+    "name": "Full-Color Slide",
+    "description": "One full-color slide to be used in rotation in general session & all breakout rooms in between talks, will be displayed between sessions.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 3000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 70,
+  "fields": {
+    "order": 1,
+    "name": "Logo highlight in PyCon US News",
+    "description": "4 mentions, sent monthly to all users that opted-in for PyCon News",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 71,
+  "fields": {
+    "order": 9,
+    "name": "Job listing and Job fair table",
+    "description": "Included in sponsorship is a job fair table in the Expo Hall for the Job Fair including a job listing on us.pycon.org jobs fair page. An Expo Only pass is required for staff (includes breakfast and lunch)",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 72,
+  "fields": {
+    "order": 34,
+    "name": "Private Job Fair Interview Room",
+    "description": "Private interview room available to recruiting team during Job Fair on Sunday.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 73,
+  "fields": {
+    "order": 35,
+    "name": "Additional Expo Hall Only Passes",
+    "description": "Up to 5 additional Expo Hall Only staff passes available at $75.00 each. A voucher code will be provided for the quantity requested and each staff member will be required to register and pay the discounted ticket cost individually.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 75,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 74,
+  "fields": {
+    "order": 2,
+    "name": "Listing on PyCon US website",
+    "description": "Sponsor designation and listing on us.pycon.org",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 75,
+  "fields": {
+    "order": 37,
+    "name": "Social Media promotion",
+    "description": "Promotion of sponsorshp on @pycon Twitter.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 1500,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 76,
+  "fields": {
+    "order": 38,
+    "name": "Donation opportunity in PyLadies Auction",
+    "description": "Provide a donation for the PyLadies Auction",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 77,
+  "fields": {
+    "order": 36,
+    "name": "Additional full conference passes",
+    "description": "Up to 10 additional passes available at a 25% discount off the regular corporate rate. A voucher code will be provided for the quantity requested and each staff member will be required to register and pay the discounted ticket cost individually.",
+    "program": 5,
+    "package_only": true,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 562,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 78,
+  "fields": {
+    "order": 48,
+    "name": "Open Source Project Booth",
+    "description": "PyCon US 2022 is offering a certain number of F/OSS Projects complimentary booths.  Select this option to apply for one of the booths if your group is working on a project in open source. Acceptance notifications will be sent no later than February 24, 2022",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": true,
+    "internal_description": "PyCon US 2022 is offering a certain number of F/OSS Projects complimentary booths.  Select this option to apply for one of the booths if your group is working on a project in open source. Acceptance notifications will be sent in February 2022",
+    "internal_value": null,
+    "capacity": 10,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 79,
+  "fields": {
+    "order": 50,
+    "name": "Registration Sponsor",
+    "description": "$10,000 with capacity for 2 sponsors\r\nOpportunity to provide an item for attendees as they check-in that promotes sustainability.  Logo placed on registration display. Social Media Promotion.",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 10000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 80,
+  "fields": {
+    "order": 51,
+    "name": "Opening Reception Sponsor",
+    "description": "$5,000 with capacity of 2 sponsors.\r\nWelcome sign displayed at entrance of the Opening Reception.  Social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 5000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 82,
+  "fields": {
+    "order": 49,
+    "name": "Job Fair Table",
+    "description": "Select this option to participate only in the Job Fair - May 1, 2022 in Salt Lake City\r\n\r\n$3,000 per table\r\nIncludes (2) Job Fair registration passes(includes lunch), listing on the Jobs Fair page on us.pycon.org",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": true,
+    "internal_description": "",
+    "internal_value": 3000,
+    "capacity": null,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 83,
+  "fields": {
+    "order": 52,
+    "name": "Captioning Sponsor",
+    "description": "$2,000 \r\nLogo placement on us.pycon.org, social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 84,
+  "fields": {
+    "order": 53,
+    "name": "PyLadies Auction Sponsor",
+    "description": "$3,000 \r\nwelcome at the Auction, logo placement on us.pycon.org, social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": true,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 3000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 85,
+  "fields": {
+    "order": 54,
+    "name": "PyLadies Luncheon Sponsor",
+    "description": "$2,000 sponsorship cost\r\nLogo placement on us.pycon.org, social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 86,
+  "fields": {
+    "order": 55,
+    "name": "PSF Member Lunch Sponsor",
+    "description": "$2,000 with capacity for 2 sponsors\r\nlogo placement on us.pycon.org, social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": 2,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.sponsorshipbenefit",
+  "pk": 87,
+  "fields": {
+    "order": 56,
+    "name": "PyCon US Travel Grant Sponsor",
+    "description": "$2,000 with capacity for 4 sponsors\r\nLogo placement on us.pycon.org, social media promotion",
+    "program": 5,
+    "package_only": false,
+    "new": false,
+    "unavailable": false,
+    "standalone": false,
+    "internal_description": "",
+    "internal_value": 2000,
+    "capacity": 4,
+    "soft_capacity": false,
+    "year": 2022,
+    "packages": [],
+    "legal_clauses": [],
+    "conflicts": []
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 26,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 62
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 27,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 62
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 28,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 62
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 29,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 30,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 31,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 32,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 33,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 34,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 35,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 36,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 37,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 38,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 39,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 40,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 41,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 42,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 43,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 44,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 45,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 46,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 47,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 48,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 49,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 75
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 51,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 31
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 52,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 38
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 53,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 74
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 54,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "emailtargetableconfiguration"
+    ],
+    "benefit": 74
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 55,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "emailtargetableconfiguration"
+    ],
+    "benefit": 74
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 87,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 29
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 88,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 4
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 89,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 24
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 90,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 24
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 91,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 24
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 92,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredtextassetconfiguration"
+    ],
+    "benefit": 63
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 93,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 94,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 95,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 96,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 97,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 98,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 99,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 100,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 101,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 102,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 103,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 104,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 105,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 106,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 107,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 108,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 109,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 73
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 110,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredtextassetconfiguration"
+    ],
+    "benefit": 68
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 111,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredimgassetconfiguration"
+    ],
+    "benefit": 69
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 112,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredresponseassetconfiguration"
+    ],
+    "benefit": 71
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 113,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredresponseassetconfiguration"
+    ],
+    "benefit": 66
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 114,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 58
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 115,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 58
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 116,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 71
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 117,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 31
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 118,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 33
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 119,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredtextassetconfiguration"
+    ],
+    "benefit": 71
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 120,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 66
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 121,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "logoplacementconfiguration"
+    ],
+    "benefit": 42
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 122,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 123,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 124,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 82
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 125,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedtextassetconfiguration"
+    ],
+    "benefit": 71
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 126,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredresponseassetconfiguration"
+    ],
+    "benefit": 72
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 128,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 64
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 129,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 65
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 130,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 131,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "tieredbenefitconfiguration"
+    ],
+    "benefit": 77
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 132,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "requiredresponseassetconfiguration"
+    ],
+    "benefit": 76
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 161,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 58
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 162,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "providedfileassetconfiguration"
+    ],
+    "benefit": 62
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 163,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "emailtargetableconfiguration"
+    ],
+    "benefit": 58
+  }
+},
+{
+  "model": "sponsors.benefitfeatureconfiguration",
+  "pk": 164,
+  "fields": {
+    "polymorphic_ctype": [
+      "sponsors",
+      "emailtargetableconfiguration"
+    ],
+    "benefit": 87
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 51,
+  "fields": {
+    "publisher": "psf",
+    "logo_place": "sponsors",
+    "link_to_sponsors_page": false,
+    "describe_as_sponsor": false
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 52,
+  "fields": {
+    "publisher": "pypi",
+    "logo_place": "sidebar",
+    "link_to_sponsors_page": true,
+    "describe_as_sponsor": true
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 53,
+  "fields": {
+    "publisher": "pycon",
+    "logo_place": "sponsors",
+    "link_to_sponsors_page": false,
+    "describe_as_sponsor": false
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 87,
+  "fields": {
+    "publisher": "psf",
+    "logo_place": "jobs",
+    "link_to_sponsors_page": false,
+    "describe_as_sponsor": false
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 88,
+  "fields": {
+    "publisher": "psf",
+    "logo_place": "download",
+    "link_to_sponsors_page": false,
+    "describe_as_sponsor": false
+  }
+},
+{
+  "model": "sponsors.logoplacementconfiguration",
+  "pk": 121,
+  "fields": {
+    "publisher": "pypi",
+    "logo_place": "sponsors",
+    "link_to_sponsors_page": true,
+    "describe_as_sponsor": true
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 26,
+  "fields": {
+    "package": 1,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 27,
+  "fields": {
+    "package": 2,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 28,
+  "fields": {
+    "package": 3,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 29,
+  "fields": {
+    "package": 1,
+    "quantity": 25
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 30,
+  "fields": {
+    "package": 2,
+    "quantity": 22
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 31,
+  "fields": {
+    "package": 3,
+    "quantity": 18
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 32,
+  "fields": {
+    "package": 4,
+    "quantity": 15
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 33,
+  "fields": {
+    "package": 5,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 34,
+  "fields": {
+    "package": 6,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 35,
+  "fields": {
+    "package": 7,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 36,
+  "fields": {
+    "package": 8,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 37,
+  "fields": {
+    "package": 1,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 38,
+  "fields": {
+    "package": 2,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 39,
+  "fields": {
+    "package": 3,
+    "quantity": 8
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 40,
+  "fields": {
+    "package": 4,
+    "quantity": 8
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 41,
+  "fields": {
+    "package": 5,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 42,
+  "fields": {
+    "package": 6,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 43,
+  "fields": {
+    "package": 1,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 44,
+  "fields": {
+    "package": 2,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 45,
+  "fields": {
+    "package": 3,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 46,
+  "fields": {
+    "package": 4,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 47,
+  "fields": {
+    "package": 5,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 48,
+  "fields": {
+    "package": 6,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 49,
+  "fields": {
+    "package": 7,
+    "quantity": 1
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 89,
+  "fields": {
+    "package": 1,
+    "quantity": 4
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 90,
+  "fields": {
+    "package": 2,
+    "quantity": 4
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 91,
+  "fields": {
+    "package": 3,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 93,
+  "fields": {
+    "package": 1,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 94,
+  "fields": {
+    "package": 2,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 95,
+  "fields": {
+    "package": 3,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 96,
+  "fields": {
+    "package": 4,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 97,
+  "fields": {
+    "package": 5,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 98,
+  "fields": {
+    "package": 6,
+    "quantity": 5
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 99,
+  "fields": {
+    "package": 1,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 100,
+  "fields": {
+    "package": 2,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 101,
+  "fields": {
+    "package": 3,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 102,
+  "fields": {
+    "package": 4,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 103,
+  "fields": {
+    "package": 5,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 104,
+  "fields": {
+    "package": 6,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 105,
+  "fields": {
+    "package": 7,
+    "quantity": 10
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 122,
+  "fields": {
+    "package": 9,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 123,
+  "fields": {
+    "package": 9,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 128,
+  "fields": {
+    "package": 11,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 129,
+  "fields": {
+    "package": 11,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 130,
+  "fields": {
+    "package": 9,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.tieredbenefitconfiguration",
+  "pk": 131,
+  "fields": {
+    "package": 11,
+    "quantity": 2
+  }
+},
+{
+  "model": "sponsors.emailtargetableconfiguration",
+  "pk": 54,
+  "fields": {}
+},
+{
+  "model": "sponsors.emailtargetableconfiguration",
+  "pk": 55,
+  "fields": {}
+},
+{
+  "model": "sponsors.emailtargetableconfiguration",
+  "pk": 163,
+  "fields": {}
+},
+{
+  "model": "sponsors.emailtargetableconfiguration",
+  "pk": 164,
+  "fields": {}
+},
+{
+  "model": "sponsors.requiredimgassetconfiguration",
+  "pk": 111,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-static-slide",
+    "label": "Your slide for display between sessions.",
+    "help_text": "Deadline to provide graphics for full-color ad to be used in rotation in general session and all breakout rooms in between talk tracks.",
+    "due_date": "2022-04-08",
+    "min_width": 1024,
+    "max_width": 4096,
+    "min_height": 768,
+    "max_height": 3072
+  }
+},
+{
+  "model": "sponsors.requiredtextassetconfiguration",
+  "pk": 92,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "Attendee Email Text",
+    "due_date": "2022-03-21",
+    "label": "Some text from you to share in the attendee email",
+    "help_text": "2-3 sentences of PyCon US offerings to share with attendees. Can include links to talks, workshops, or websites.",
+    "max_length": null
+  }
+},
+{
+  "model": "sponsors.requiredtextassetconfiguration",
+  "pk": 110,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "sponsor-greeting-details",
+    "due_date": "2022-04-08",
+    "label": "Name of speaker who will give your 3 minute greeting.",
+    "help_text": "We need this to review ahead of live presentation.",
+    "max_length": null
+  }
+},
+{
+  "model": "sponsors.requiredtextassetconfiguration",
+  "pk": 119,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-job-listing",
+    "due_date": "2022-04-18",
+    "label": "Job listing for us.pycon.org Jobs page.",
+    "help_text": "Your job listing for us.pycon.org. Markdown will be supported, see https://www.markdownguide.org/cheat-sheet/ for how to add links and structure to your job listing.",
+    "max_length": null
+  }
+},
+{
+  "model": "sponsors.requiredresponseassetconfiguration",
+  "pk": 112,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-confirm-job-fair-participation",
+    "label": "Will you be participating in the onsite Job Fair?",
+    "help_text": "Deadline to confirm participation for the Job Fair",
+    "due_date": "2022-04-01"
+  }
+},
+{
+  "model": "sponsors.requiredresponseassetconfiguration",
+  "pk": 113,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-confirm-sponsor-workshop-participation",
+    "label": "Will you be presenting an in-person Sponsor Workshop?",
+    "help_text": "Deadline to confirm Sponsor Workshop participation.",
+    "due_date": "2022-02-22"
+  }
+},
+{
+  "model": "sponsors.requiredresponseassetconfiguration",
+  "pk": 126,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "PyCon-private-job-fair-interview-room",
+    "label": "Will you be utilizing a private Job Fair interview room?",
+    "help_text": "Deadline to confirm private Job Fair interview room",
+    "due_date": "2022-04-18"
+  }
+},
+{
+  "model": "sponsors.requiredresponseassetconfiguration",
+  "pk": 132,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "PyLadies-auction-donation-form",
+    "label": "Will you be donating items to the PyLadies Auction?",
+    "help_text": "Please submit your donations via this form by April 22, 2022: https://docs.google.com/forms/d/e/1FAIpQLSfZvo48BxEv41Vnwn7GlxQ-RGjJsybKR1sz47osAUPfknaMGw/viewform",
+    "due_date": "2022-04-22"
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 106,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "full_conference_passes_code",
+    "shared": false,
+    "label": "Complimentary Full Conference Registration Voucher",
+    "help_text": "Provide this to your team who are attending Full Conference, provides complimentary registration.",
+    "shared_text": ""
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 107,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "expo_hall_only_passes_code",
+    "shared": false,
+    "label": "Complimentary Expo Hall Only Registration Voucher",
+    "help_text": "Provide this to your team who are only attending to staff your Expo Hall booth, provides complimentary registration.",
+    "shared_text": ""
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 108,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "additional_full_conference_passes_code",
+    "shared": false,
+    "label": "Discounted Additional Full Conference Registration Voucher Code",
+    "help_text": "Provide this to your team who are attending Full Conference, provides a 25% discounted corporate registration at $525. Pay when completing registration..",
+    "shared_text": ""
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 109,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "additional_expo_hall_only_passes_code",
+    "shared": false,
+    "label": "Discounted Additional Expo Hall Only Registration Voucher",
+    "help_text": "Provide this to your team who are only attending to staff your Expo Hall booth, provides discounted registration.",
+    "shared_text": null
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 120,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-sponsor-workshop-pretalx-submission",
+    "shared": true,
+    "label": "Sponsor Workshop Pretalx Submission Link",
+    "help_text": "Please have speakers submit speaker info, workshop title, and brief description to Pretalx by February 22, 2022. Speakers will need to make an account using the same email address that they will use to register for the conference on us.pycon.org",
+    "shared_text": "https://pretalx.com/pycon-2022/cfp"
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 124,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-job-fair-table-number",
+    "shared": false,
+    "label": "Job Fair Table Number Assignment",
+    "help_text": "",
+    "shared_text": ""
+  }
+},
+{
+  "model": "sponsors.providedtextassetconfiguration",
+  "pk": 125,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-us-2022-job-fair-table-number",
+    "shared": false,
+    "label": "Job Fair Table Number Assignment",
+    "help_text": "",
+    "shared_text": ""
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 114,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-exhibitor-kit",
+    "shared": true,
+    "label": "Pycon 2022 Exhibitor Kit",
+    "help_text": "PDF password is \"2022pyconus\"",
+    "shared_file": "2022-PYCON-Exhibitor-Kit-3.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 115,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-expo-hall-floorplan",
+    "shared": true,
+    "label": "PyCon 2022 Expo Hall Floor Plan",
+    "help_text": "Email sponsors@python.org with the Expo Hall booth number you would like to select. Booth selection is on a first come first served basis.",
+    "shared_file": "PyCon_US_2022_Booth_Selections_i9yCIaz.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 116,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-job-fair-kit",
+    "shared": true,
+    "label": "PyCon 2022 Job Fair Participant Kit",
+    "help_text": "",
+    "shared_file": "2022-PYCON-Job-Fair-Kit.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 117,
+  "fields": {
+    "related_to": "sponsor",
+    "internal_name": "sponsor-dashboard-instructions",
+    "shared": false,
+    "label": "Sponsor Dashboard Access Instructions",
+    "help_text": "",
+    "shared_file": "How_to_Manage_your_Sponsorship_Dashboard_ag7UE6o.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 118,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "PSF-style-guide-case-studies",
+    "shared": true,
+    "label": "Python Case Study Style Guide",
+    "help_text": "Refer to this document for guidelines for your Python case study submission",
+    "shared_file": "PSF_style_guide_for_case_studies_and_success_stories-v2.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 161,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-2022-expo-pass-lead-retrieval",
+    "shared": true,
+    "label": "Lead Retrieval",
+    "help_text": "Follow these instructions to purchase lead retrieval license for PyCon US 2022",
+    "shared_file": "PyCon_US_2022_Lead_Retrieval.pdf"
+  }
+},
+{
+  "model": "sponsors.providedfileassetconfiguration",
+  "pk": 162,
+  "fields": {
+    "related_to": "sponsorship",
+    "internal_name": "pycon-us-2022-comlimentary-lead-retreival",
+    "shared": true,
+    "label": "Complimentary Lead Retrieval",
+    "help_text": "Follow these instructions to claim your Expo Pass Exhibitor Profile. Do not purchase lead retrieval, you will receive your promo code via email and will enter this code into Expo Pass to receive your complimentary lead retrieval license.",
+    "shared_file": "PyCon_US_2022_Lead_Retrieval_HrY96co.pdf"
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 1,
+  "fields": {
+    "order": 0,
+    "name": "Visionary",
+    "sponsorship_amount": 150000,
+    "advertise": true,
+    "logo_dimension": 350,
+    "slug": "visionary",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 2,
+  "fields": {
+    "order": 1,
+    "name": "Sustainability",
+    "sponsorship_amount": 90000,
+    "advertise": true,
+    "logo_dimension": 300,
+    "slug": "sustainability",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 3,
+  "fields": {
+    "order": 2,
+    "name": "Maintaining",
+    "sponsorship_amount": 60000,
+    "advertise": true,
+    "logo_dimension": 300,
+    "slug": "maintaining",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 4,
+  "fields": {
+    "order": 3,
+    "name": "Contributing",
+    "sponsorship_amount": 30000,
+    "advertise": true,
+    "logo_dimension": 275,
+    "slug": "contributing",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 5,
+  "fields": {
+    "order": 4,
+    "name": "Supporting",
+    "sponsorship_amount": 15000,
+    "advertise": true,
+    "logo_dimension": 250,
+    "slug": "supporting",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 6,
+  "fields": {
+    "order": 5,
+    "name": "Partner",
+    "sponsorship_amount": 10000,
+    "advertise": true,
+    "logo_dimension": 225,
+    "slug": "partner",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 7,
+  "fields": {
+    "order": 6,
+    "name": "Participating",
+    "sponsorship_amount": 3750,
+    "advertise": true,
+    "logo_dimension": 225,
+    "slug": "participating",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 8,
+  "fields": {
+    "order": 7,
+    "name": "Associate",
+    "sponsorship_amount": 1500,
+    "advertise": true,
+    "logo_dimension": 175,
+    "slug": "associate",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 9,
+  "fields": {
+    "order": 8,
+    "name": "Open Source and Community",
+    "sponsorship_amount": 0,
+    "advertise": false,
+    "logo_dimension": 175,
+    "slug": "open-source-and-community",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 10,
+  "fields": {
+    "order": 9,
+    "name": "Standalone Only",
+    "sponsorship_amount": 0,
+    "advertise": false,
+    "logo_dimension": 175,
+    "slug": "standalone-only",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshippackage",
+  "pk": 11,
+  "fields": {
+    "order": 10,
+    "name": "PyCon Startup Row",
+    "sponsorship_amount": 0,
+    "advertise": false,
+    "logo_dimension": 175,
+    "slug": "pycon-startup-row",
+    "year": 2022
+  }
+},
+{
+  "model": "sponsors.sponsorshipprogram",
+  "pk": 1,
+  "fields": {
+    "order": 0,
+    "name": "Foundation",
+    "description": ""
+  }
+},
+{
+  "model": "sponsors.sponsorshipprogram",
+  "pk": 3,
+  "fields": {
+    "order": 2,
+    "name": "PyPI",
+    "description": ""
+  }
+},
+{
+  "model": "sponsors.sponsorshipprogram",
+  "pk": 4,
+  "fields": {
+    "order": 3,
+    "name": "Core Development",
+    "description": ""
+  }
+},
+{
+  "model": "sponsors.sponsorshipprogram",
+  "pk": 5,
+  "fields": {
+    "order": 1,
+    "name": "PyCon US 2022",
+    "description": ""
+  }
+}
+]

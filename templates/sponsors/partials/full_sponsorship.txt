@@ -1,0 +1,21 @@
+{% load humanize %}
+# Sponsor Information
+  * Name		{{ sponsor.name }}
+  * Description		{{ sponsor.description }}
+  * Landing Page URL	{{ sponsor.landing_page_url }}
+  * Primary Phone	{{ sponsor.primary_phone }}
+  * City		{{ sponsor.city }}{% if sponsor.state %} - {{ sponsor.state }}{% endif %} - {{ sponsor.get_country_display}} ({{ sponsor.country}})
+  * Mailing Address	{{ sponsor.mailing_address_line_1 }}{% if sponsor.mailing_address_line_1 %} - {{ sponsor.mailing_address_line_2 }}{% endif %}
+  * Zip/Postal Code	{{ sponsor.postal_code }}
+  * Contacts
+{% for contact in sponsor.contacts.all %}        - {{ contact.name }}, {{ contact.email }}, {{ contact.phone }}{% if contact.primary %} - *Primary*{%endif %}
+{% endfor %}
+# Sponsorship Information
+  * Status		{{ sponsorship.status }}
+{% if sponsorship.level_name %}  * Level		{{ sponsorship.level_name }}{% else %}  * Level			Custom Package{% endif %}
+{% if not display_fee %}  * Sponsorship Fee	To be determined{% else %}  * Sponsorship Fee	${{ sponsorship.sponsorship_fee|intcomma }} USD{% endif %}
+  {% if sponsorship.package_benefits %}* Package Benefits
+{% for benefit in  sponsorship.package_benefits %}    - {% if benefit.program %}{{ benefit.program.name }}{% else %}{{ benefit.program_name }}{% endif %} - {{ benefit.name_for_display }}
+{% endfor %}{% endif %}  {% if sponsorship.added_benefits %}* Added Benefits
+{% for benefit in  sponsorship.added_benefits %}    - {{ benefit.program.name }} - {{ benefit.name_for_display }}
+{% endfor %}{% endif %}

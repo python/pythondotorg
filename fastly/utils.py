@@ -14,7 +14,7 @@ def purge_url(path):
     if api_key:
         response = requests.request(
             'PURGE',
-            'https://www.python.org{}'.format(path),
+            f'https://www.python.org{path}',
             headers={'Fastly-Key': api_key},
         )
         return response

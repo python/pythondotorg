@@ -12,7 +12,7 @@
   Unknown W Brackets, Benjamin Westfarer, Rob Eberhardt,
   Bill Edney, Kevin Newman, James Crompton, Matthew Mastracci,
   Doug Wright, Richard York, Kenneth Kolano, MegaZone,
-  Thomas Verelst, Mark 'Tarquin' Wilton-Jones, Rainer Åhlfors,
+  Thomas Verelst, Mark 'Tarquin' Wilton-Jones, Rainer Ã…hlfors,
   David Zulaica, Ken Kolano, Kevin Newman, Sjoerd Visscher,
   Ingo Chao
 */
@@ -2406,3 +2406,4 @@ IE7.loaded = true;
 })();
 
 })(this, document);
+

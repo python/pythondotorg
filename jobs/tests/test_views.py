@@ -301,7 +301,8 @@ class JobsViewTests(TestCase):
             'country': 'USA',
             'description': 'Lorem ipsum dolor sit amet',
             'requirements': 'Some requirements',
-            'email': 'hr@company.com'
+            'email': 'hr@company.com',
+            'url': 'https://jobs.company.com',
         }
 
         # Check that anonymous posting is not allowed. See #852.
@@ -319,10 +320,6 @@ class JobsViewTests(TestCase):
         User = get_user_model()
         creator = User.objects.create_user(username, email, password)
         self.client.login(username=creator.username, password='secret')
-
-        # Check that the email is already there.
-        response = self.client.get(url)
-        self.assertEqual(response.context['form'].initial['email'], email)
 
         response = self.client.post(url, post_data, follow=True)
 
@@ -352,7 +349,7 @@ class JobsViewTests(TestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertEqual(
             mail.outbox[0].subject,
-            "Job Submitted for Approval: {}".format(job.display_name)
+            f"Job Submitted for Approval: {job.display_name}"
         )
 
         del mail.outbox[:]
@@ -379,9 +376,6 @@ class JobsViewTests(TestCase):
         self.client.login(username=user_data['username'],
                           password=user_data['password'])
         response = self.client.get(create_url)
-
-        self.assertEqual(response.context['form'].initial,
-                         {'email': user_data['email']})
 
     def test_job_types(self):
         job_type2 = JobTypeFactory(
@@ -436,15 +430,15 @@ class JobsViewTests(TestCase):
 
     def test_job_display_name(self):
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
         self.job.company_name = 'ABC'
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
         self.job.company_name = ''
         self.assertEqual(self.job.display_name,
-            "%s, %s" % (self.job.job_title, self.job.company_name))
+            f"{self.job.job_title}, {self.job.company_name}")
 
     def test_job_display_about(self):
         self.job.company_description.raw = 'XYZ'

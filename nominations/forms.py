@@ -1,4 +1,5 @@
 from django import forms
+from django.utils.safestring import mark_safe
 
 from markupfield.widgets import MarkupTextarea
 
@@ -30,7 +31,34 @@ class NominationForm(forms.ModelForm):
 
 
 class NominationCreateForm(NominationForm):
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request", None)
+        super().__init__(*args, **kwargs)
+
     self_nomination = forms.BooleanField(
         required=False,
         help_text="If you are nominating yourself, we will automatically associate the nomination with your python.org user.",
     )
+
+    def clean_self_nomination(self):
+        data = self.cleaned_data["self_nomination"]
+        if data:
+            if not self.request.user.first_name or not self.request.user.last_name:
+                raise forms.ValidationError(
+                    mark_safe(
+                        'You must set your First and Last name in your <a href="/users/edit/">User Profile</a> to self nominate.'
+                    )
+                )
+
+        return data
+
+
+class NominationAcceptForm(forms.ModelForm):
+    class Meta:
+        model = Nomination
+        fields = (
+            "accepted",
+        )
+        help_texts = {
+            "accepted": "If selected, this nomination will be considered accepted and displayed once nominations are public.",
+        }

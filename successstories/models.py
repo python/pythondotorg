@@ -58,6 +58,8 @@ class Story(NameSlugModel, ContentManageable):
     featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
 
+    submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
+
     objects = StoryManager()
 
     class Meta:
@@ -143,7 +145,7 @@ Review URL: {admin_url}
         name_lines = instance.name.splitlines()
         name = name_lines[0] if name_lines else instance.name
         email = EmailMessage(
-            'New success story submission: {}'.format(name),
+            f'New success story submission: {name}',
             body.format(
                 name=instance.name,
                 company_name=instance.company_name,
@@ -153,7 +155,7 @@ Review URL: {admin_url}
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
-                admin_url='https://www.{}{}'.format(
+                admin_url='https://{}{}'.format(
                     Site.objects.get_current(), instance.get_admin_url()
                 ),
             ).strip(),

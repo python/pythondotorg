@@ -447,6 +447,23 @@
     .release-download { width: 25%; }
     .release-enhancements { width: 25%; }
 
+    .release-version,
+    .release-status,
+    .release-start,
+    .release-end,
+    .release-pep {
+        -moz-box-orient: vertical;
+        display: inline-block;
+        margin-right: -4px;
+        vertical-align: middle;
+    }
+
+    .release-version { width: 15%; }
+    .release-status { width: 20%; }
+    .release-start { width: 25%; }
+    .release-end { width: 25%; }
+    .release-pep { width: 15%; }
+
     /* Previous Next pattern */
     .previous-next {
         @include clearfix();
@@ -920,7 +937,7 @@
         <ul class="subnav menu" role="menu" aria-hidden="true">
             <li class="tier-2 element-1" role="treeitem"><a href="#">Releases</a></li>
             <li class="super-navigation">
-                <h2>Download for Mac OSX</h2>
+                <h2>Download for macOS</h2>
                 <p>Not the system you are looking for? Python can be used on 21 different operating systems and environments. <a href="#">View the full list</a>.
                 </p><p>
                     <a class="button">Python 3.3.0</a>

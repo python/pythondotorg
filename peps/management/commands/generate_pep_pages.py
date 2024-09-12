@@ -51,16 +51,19 @@ class Command(BaseCommand):
         verbose("== Starting PEP page generation")
 
         with ExitStack() as stack:
-            verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
-            temp_file = self.get_artifact_tarball(stack)
-            if not temp_file:
-                verbose("== No update to artifacts, we're done here!")
-                return
-            temp_dir = stack.enter_context(TemporaryDirectory())
-            tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
-            tar_ball.extractall(path=temp_dir, numeric_owner=False)
+            if settings.PEP_REPO_PATH is not None:
+                artifacts_path = settings.PEP_REPO_PATH
+            else:
+                verbose(f"== Fetching PEP artifact from {settings.PEP_ARTIFACT_URL}")
+                temp_file = self.get_artifact_tarball(stack)
+                if not temp_file:
+                    verbose("== No update to artifacts, we're done here!")
+                    return
+                temp_dir = stack.enter_context(TemporaryDirectory())
+                tar_ball = stack.enter_context(TarFile.open(fileobj=temp_file, mode='r:gz'))
+                tar_ball.extractall(path=temp_dir, numeric_owner=False)
 
-            artifacts_path = os.path.join(temp_dir, 'peps')
+                artifacts_path = os.path.join(temp_dir, 'peps')
 
             verbose("Generating RSS Feed")
             peps_rss = get_peps_rss(artifacts_path)
@@ -79,20 +82,20 @@ class Command(BaseCommand):
             for f in os.listdir(artifacts_path):
 
                 if self.is_image(f):
-                    verbose("- Deferring import of image '{}'".format(f))
+                    verbose(f"- Deferring import of image '{f}'")
                     image_paths.add(f)
                     continue
 
                 # Skip files we aren't looking for
                 if not self.is_pep_page(f):
-                    verbose("- Skipping non-PEP file '{}'".format(f))
+                    verbose(f"- Skipping non-PEP file '{f}'")
                     continue
 
                 if 'pep-0000.html' in f:
                     verbose("- Skipping duplicate PEP0 index")
                     continue
 
-                verbose("Generating PEP Page from '{}'".format(f))
+                verbose(f"Generating PEP Page from '{f}'")
                 pep_match = pep_number_re.match(f)
                 if pep_match:
                     pep_number = pep_match.groups(1)[0]
@@ -103,9 +106,9 @@ class Command(BaseCommand):
                                 pep_number
                             )
                         )
-                    verbose("====== Title: '{}'".format(p.title))
+                    verbose(f"====== Title: '{p.title}'")
                 else:
-                    verbose("- Skipping invalid '{}'".format(f))
+                    verbose(f"- Skipping invalid '{f}'")
 
             # Find pep images. This needs to happen afterwards, because we need
             for img in image_paths:
@@ -116,7 +119,7 @@ class Command(BaseCommand):
                         pep_number, img))
                     add_pep_image(artifacts_path, pep_number, img)
                 else:
-                    verbose("- Skipping non-PEP related image '{}'".format(img))
+                    verbose(f"- Skipping non-PEP related image '{img}'")
 
         verbose("== Finished")
 

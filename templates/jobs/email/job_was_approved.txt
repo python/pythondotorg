@@ -2,7 +2,7 @@ Dear {{ user_name }},
 
 Thank you for choosing to list your vacancy on the PSF Python Job Board.
 
-Your listing is now active and available to view at:
+Your listing is now active and available to view for 30 days at:
 
     https://{{ site.domain }}{{ content_object.get_absolute_url }}
 
@@ -11,7 +11,7 @@ team as soon as possible at jobs@python.org.
 
 To keep the job board fresh and active for job seekers, we'd appreciate if
 you'd let us know as soon as possible when the position is filled so we can
-remove your listing.
+remove your listing. You can also remove the listing yourself.
 
 Good luck in filling your position,
 

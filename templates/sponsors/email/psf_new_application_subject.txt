@@ -1,0 +1,1 @@
+New sponsorship application from {{ sponsorship.sponsor.name }}

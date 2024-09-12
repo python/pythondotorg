@@ -9,7 +9,7 @@ from django.db.models import Q
 from django.template.defaultfilters import date
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from cms.models import ContentManageable, NameSlugModel
 
@@ -237,7 +237,7 @@ class OccurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return '%s %s - %s' % (self.event.title, date(self.dt_start.strftime, strftime), date(self.dt_end.strftime, strftime))
+        return f'{self.event.title} {date(self.dt_start.strftime, strftime)} - {date(self.dt_end.strftime, strftime)}'
 
     @property
     def begin(self):
@@ -284,7 +284,7 @@ class RecurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return '%s every %s since %s' % (self.event.title, timedelta_nice_repr(self.interval), date(self.dt_start.strftime, strftime))
+        return f'{self.event.title} every {timedelta_nice_repr(self.interval)} since {date(self.dt_start.strftime, strftime)}'
 
     def to_rrule(self):
         return rrule(
@@ -331,11 +331,11 @@ class Alarm(ContentManageable):
     trigger = models.PositiveSmallIntegerField(_("hours before the event occurs"), default=24)
 
     def __str__(self):
-        return 'Alarm for %s to %s' % (self.event.title, self.recipient)
+        return f'Alarm for {self.event.title} to {self.recipient}'
 
     @property
     def recipient(self):
         full_name = self.creator.get_full_name()
         if full_name:
-            return "%s <%s>" % (full_name, self.creator.email)
+            return f"{full_name} <{self.creator.email}>"
         return self.creator.email

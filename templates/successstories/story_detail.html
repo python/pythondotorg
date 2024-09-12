@@ -31,7 +31,6 @@
         <p class="company-byline">
             Written by <strong>{{ story.author }}</strong>,
             <a rel="external" href="{{ story.get_company_url }}">{{ story.get_company_name }}</a>
-            — <time datetime="{{ story.created|date:'c' }}">{{ story.created|date:'F Y' }}</time>
         </p>
 
         {{ story.content.rendered|safe }}
