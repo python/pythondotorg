@@ -2,7 +2,7 @@ from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
 from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
@@ -10,8 +10,6 @@ from sponsors.models.enums import AssetsRelatedTo
 from sponsors.tests.utils import get_static_image_file_as_upload
 from users.factories import UserFactory
 from users.models import Membership
-
-from ..factories import MembershipFactory
 
 User = get_user_model()
 
@@ -245,7 +243,7 @@ class UsersViewsTestCase(TestCase):
             response, 'A user with that username already exists.'
         )
         self.assertContains(
-            response, 'A user is already registered with this e-mail address.'
+            response, 'A user is already registered with this email address.'
         )
 
     def test_usernames(self):
@@ -489,7 +487,7 @@ class UpdateSponsorInfoViewTests(TestCase):
         response = self.client.get(self.url)
         context = response.context
 
-        self.assertTemplateUsed(response, "users/sponsor_info_update.html")
+        self.assertTemplateUsed(response, "sponsors/new_sponsorship_application_form.html")
         self.assertEqual(context["sponsor"], self.sponsor)
         self.assertIsInstance(context["form"], SponsorUpdateForm)
 

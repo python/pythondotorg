@@ -50,3 +50,9 @@ shell: .state/db-initialized
 clean:
 	docker-compose down -v
 	rm -f .state/docker-build-web .state/db-initialized .state/db-migrated 
+
+test: .state/db-initialized
+	docker-compose run --rm web ./manage.py test
+
+docker_shell: .state/db-initialized
+	docker-compose run --rm web /bin/bash

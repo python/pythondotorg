@@ -1,8 +1,8 @@
-gunicorn==19.9.0
+gunicorn==22.0.0
 
 raven==6.10.0
 
 # Heroku
-Whitenoise
-django-storages
-boto3
+Whitenoise==6.6.0  # 6.4.0 is first version that supports Django 4.2
+django-storages==1.14.4  # 1.14.4 is first version that supports Django 4.2
+boto3==1.26.165

@@ -64,12 +64,12 @@ def user_nav_bar_links(request):
         if request.user.has_membership:
             nav["psf_membership"]['urls'].append({
                 "url": reverse("users:user_membership_edit"),
-                "label": "Edit PSF membership"
+                "label": "Edit PSF Basic membership"
             })
         else:
             nav["psf_membership"]['urls'].append({
                 "url": reverse("users:user_membership_create"),
-                "label": "Become a PSF member"
+                "label": "Become a PSF Basic member"
             })
 
     return {"USER_NAV_BAR": nav}

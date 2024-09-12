@@ -1913,9 +1913,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
         margin-bottom: rhythm( .5 );
     }
 
-    .twitter-widget { padding: 0; }
-
-    .twtr-doc { padding: .75em; }
 }
 
 .right-sidebar {
@@ -2410,7 +2407,7 @@ span.highlighted {
 /* ! ===== ICONS ===== */
 
 /* Look inside _fonts.scss for most of the code. We declare this here so we can adjust as needed for specific elements. */
-.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow {
+.icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow, .icon-mastodon {
 	font-family: 'Pythonicon';
 	speak: none;
 	font-style: normal;
@@ -2428,6 +2425,24 @@ span.highlighted {
 	 * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
 	 */
 	span { display: none; }
+}
+.fa {
+        speak: none;
+        font-style: normal;
+        font-weight: normal;
+        font-variant: normal;
+        text-transform: none;
+        line-height: 1;
+    margin-right: .5em;
+
+        /* Better Font Rendering =========== */
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+
+        /* Hide a unicode fallback character when we supply it by default.
+         * In fonts.scss, we hide the icon and show the fallback when other conditions are not met
+         */
+        span { display: none; }
 }
 
 /* Keep this at the bottom since it will create a huge set of data */

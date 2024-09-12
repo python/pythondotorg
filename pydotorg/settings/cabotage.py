@@ -26,9 +26,12 @@ HAYSTACK_SEARCHBOX_SSL_URL = config(
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
+        'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
         'URL': HAYSTACK_SEARCHBOX_SSL_URL,
-        'INDEX_NAME': 'haystack-prod',
+        'INDEX_NAME': config('HAYSTACK_INDEX', default='haystack-prod'),
+        'KWARGS': {
+            'ca_certs': '/var/run/secrets/cabotage.io/ca.crt',
+        }
     },
 }
 
@@ -41,8 +44,14 @@ MIDDLEWARE = [
 ] + MIDDLEWARE
 
 MEDIAFILES_LOCATION = 'media'
-DEFAULT_FILE_STORAGE = 'custom_storages.MediaStorage'
-STATICFILES_STORAGE = 'custom_storages.PipelineManifestStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": 'custom_storages.storages.MediaStorage',
+    },
+    "staticfiles": {
+        "BACKEND": 'custom_storages.storages.PipelineManifestStorage',
+    },
+}
 
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
@@ -68,7 +77,7 @@ INSTALLED_APPS += [
 
 RAVEN_CONFIG = {
     "dsn": config('SENTRY_DSN'),
-    "release": config('SOURCE_VERSION'),
+    "release": config('SOURCE_COMMIT'),
 }
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')

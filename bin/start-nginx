@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+psmgr=/tmp/nginx-buildpack-wait
+rm -f $psmgr
+mkfifo $psmgr
+
+n=1
+while getopts :f option ${@:1:2}
+do
+  case "${option}"
+  in
+    f) FORCE=$OPTIND; n=$((n+1));;
+  esac
+done
+
+# Initialize log directory.
+mkdir -p /tmp/logs/nginx
+touch /tmp/logs/nginx/access.log /tmp/logs/nginx/error.log
+echo 'buildpack=nginx at=logs-initialized'
+
+# Start log redirection.
+(
+  # Redirect nginx logs to stdout.
+  tail -qF -n 0 /tmp/logs/nginx/*.log
+  echo 'logs' >$psmgr
+) &
+
+# Start App Server
+(
+  # Take the command passed to this bin and start it.
+  # E.g. bin/start-nginx bundle exec unicorn -c config/unicorn.rb
+  COMMAND=${@:$n}
+  echo "buildpack=nginx at=start-app cmd=$COMMAND"
+  $COMMAND
+  echo 'app' >$psmgr
+) &
+
+if [[ -z "$FORCE" ]]
+then
+  FILE="/tmp/app-initialized"
+
+  # We block on app-initialized so that when nginx binds to $PORT
+  # are app is ready for traffic.
+  while [[ ! -f "$FILE" ]]
+  do
+    echo 'buildpack=nginx at=app-initialization'
+    sleep 1
+  done
+  echo 'buildpack=nginx at=app-initialized'
+fi
+
+# Start nginx
+(
+  # We expect nginx to run in foreground.
+  # We also expect a socket to be at /tmp/nginx.socket.
+  echo 'buildpack=nginx at=nginx-start'
+  cd /tmp
+  /usr/bin/nginx -p . -c /code/config/nginx.conf
+  echo 'nginx' >$psmgr
+) &
+
+# This read will block the process waiting on a msg to be put into the fifo.
+# If any of the processes defined above should exit,
+# a msg will be put into the fifo causing the read operation
+# to un-block. The process putting the msg into the fifo
+# will use it's process name as a msg so that we can print the offending
+# process to stdout.
+read exit_process <$psmgr
+echo "buildpack=nginx at=exit process=$exit_process"
+exit 1
