@@ -5,20 +5,30 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jobs', '0016_auto_20170821_2000'),
+        ("jobs", "0016_auto_20170821_2000"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='job',
-            name='category',
-            field=models.ForeignKey(limit_choices_to={'active': True}, on_delete=django.db.models.deletion.CASCADE, related_name='jobs', to='jobs.JobCategory'),
+            model_name="job",
+            name="category",
+            field=models.ForeignKey(
+                limit_choices_to={"active": True},
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="jobs",
+                to="jobs.JobCategory",
+            ),
         ),
         migrations.AlterField(
-            model_name='job',
-            name='job_types',
-            field=models.ManyToManyField(blank=True, limit_choices_to={'active': True}, related_name='jobs', to='jobs.JobType', verbose_name='Job technologies'),
+            model_name="job",
+            name="job_types",
+            field=models.ManyToManyField(
+                blank=True,
+                limit_choices_to={"active": True},
+                related_name="jobs",
+                to="jobs.JobType",
+                verbose_name="Job technologies",
+            ),
         ),
     ]

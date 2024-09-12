@@ -4,23 +4,26 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('sponsors', '0086_auto_20220809_1655'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("sponsors", "0086_auto_20220809_1655"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='TieredQuantity',
-            new_name='TieredBenefit',
+            old_name="TieredQuantity",
+            new_name="TieredBenefit",
         ),
         migrations.RenameModel(
-            old_name='TieredQuantityConfiguration',
-            new_name='TieredBenefitConfiguration',
+            old_name="TieredQuantityConfiguration",
+            new_name="TieredBenefitConfiguration",
         ),
         migrations.AlterModelOptions(
-            name='tieredbenefit',
-            options={'base_manager_name': 'objects', 'verbose_name': 'Tiered Benefit', 'verbose_name_plural': 'Tiered Benefits'},
+            name="tieredbenefit",
+            options={
+                "base_manager_name": "objects",
+                "verbose_name": "Tiered Benefit",
+                "verbose_name_plural": "Tiered Benefits",
+            },
         ),
     ]

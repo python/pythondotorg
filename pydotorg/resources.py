@@ -49,7 +49,7 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
             return super().get_identifier(request)
         else:
             # returns a combination of IP address and hostname.
-            return "{}_{}".format(request.META.get('REMOTE_ADDR', 'noaddr'), request.META.get('REMOTE_HOST', 'nohost'))
+            return "{}_{}".format(request.META.get("REMOTE_ADDR", "noaddr"), request.META.get("REMOTE_HOST", "nohost"))
 
     def check_active(self, user):
         return True
@@ -59,6 +59,7 @@ class StaffAuthorization(Authorization):
     """
     Everybody can read everything. Staff users can write everything.
     """
+
     def read_list(self, object_list, bundle):
         # Everybody can read
         return object_list
@@ -102,6 +103,7 @@ class OnlyPublishedAuthorization(StaffAuthorization):
     """
     Only staff users can see unpublished objects.
     """
+
     def read_list(self, object_list, bundle):
         if not bundle.request.user.is_staff:
             return object_list.filter(is_published=True)
@@ -119,5 +121,5 @@ class GenericResource(ModelResource):
     class Meta:
         authentication = ApiKeyOrGuestAuthentication()
         authorization = StaffAuthorization()
-        throttle = CacheThrottle(throttle_at=600) # default is 150 req/hr
+        throttle = CacheThrottle(throttle_at=600)  # default is 150 req/hr
         abstract = True

@@ -5,7 +5,6 @@ from mailing.models import BaseEmailTemplate
 
 
 class BaseEmailTemplateForm(forms.ModelForm):
-
     def clean_content(self):
         content = self.cleaned_data["content"]
         try:

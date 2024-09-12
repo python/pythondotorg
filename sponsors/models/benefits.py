@@ -1,6 +1,7 @@
 """
 This module holds models related to benefits features and configurations
 """
+
 from django import forms
 from django.db import models
 from django.db.models import UniqueConstraint
@@ -26,13 +27,13 @@ class BaseLogoPlacement(models.Model):
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in PublisherChoices],
         verbose_name="Publisher",
-        help_text="On which site should the logo be displayed?"
+        help_text="On which site should the logo be displayed?",
     )
     logo_place = models.CharField(
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
         verbose_name="Logo Placement",
-        help_text="Where the logo should be placed?"
+        help_text="Where the logo should be placed?",
     )
     link_to_sponsors_page = models.BooleanField(
         default=False,
@@ -73,7 +74,7 @@ class BaseAsset(models.Model):
         max_length=30,
         choices=[(c.value, c.name.replace("_", " ").title()) for c in AssetsRelatedTo],
         verbose_name="Related To",
-        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to."
+        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to.",
     )
     internal_name = models.CharField(
         max_length=128,
@@ -82,15 +83,9 @@ class BaseAsset(models.Model):
         unique=False,
         db_index=True,
     )
-    label = models.CharField(
-        max_length=256,
-        help_text="What's the title used to display the input to the sponsor?"
-    )
+    label = models.CharField(max_length=256, help_text="What's the title used to display the input to the sponsor?")
     help_text = models.CharField(
-        max_length=256,
-        help_text="Any helper comment on how the input should be populated",
-        default="",
-        blank=True
+        max_length=256, help_text="Any helper comment on how the input should be populated", default="", blank=True
     )
 
     class Meta:
@@ -106,7 +101,7 @@ class BaseRequiredAsset(BaseAsset):
 
 class BaseProvidedAsset(BaseAsset):
     shared = models.BooleanField(
-        default = False,
+        default=False,
     )
 
     def shared_value(self):
@@ -125,8 +120,7 @@ class AssetConfigurationMixin:
 
     def create_benefit_feature(self, sponsor_benefit, **kwargs):
         if not self.ASSET_CLASS:
-            raise NotImplementedError(
-                "Subclasses of AssetConfigurationMixin must define an ASSET_CLASS attribute.")
+            raise NotImplementedError("Subclasses of AssetConfigurationMixin must define an ASSET_CLASS attribute.")
 
         # Super: BenefitFeatureConfiguration.create_benefit_feature
         benefit_feature = super().create_benefit_feature(sponsor_benefit, **kwargs)
@@ -138,7 +132,8 @@ class AssetConfigurationMixin:
         asset_qs = content_object.assets.filter(internal_name=self.internal_name)
         if not asset_qs.exists():
             asset = self.ASSET_CLASS(
-                content_object=content_object, internal_name=self.internal_name,
+                content_object=content_object,
+                internal_name=self.internal_name,
             )
             asset.save()
 
@@ -175,14 +170,10 @@ class BaseRequiredTextAsset(BaseRequiredAsset):
     ASSET_CLASS = TextAsset
 
     label = models.CharField(
-        max_length=256,
-        help_text="What's the title used to display the text input to the sponsor?"
+        max_length=256, help_text="What's the title used to display the text input to the sponsor?"
     )
     help_text = models.CharField(
-        max_length=256,
-        help_text="Any helper comment on how the input should be populated",
-        default="",
-        blank=True
+        max_length=256, help_text="Any helper comment on how the input should be populated", default="", blank=True
     )
     max_length = models.IntegerField(
         default=None,
@@ -206,14 +197,10 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
     ASSET_CLASS = TextAsset
 
     label = models.CharField(
-        max_length=256,
-        help_text="What's the title used to display the text input to the sponsor?"
+        max_length=256, help_text="What's the title used to display the text input to the sponsor?"
     )
     help_text = models.CharField(
-        max_length=256,
-        help_text="Any helper comment on how the input should be populated",
-        default="",
-        blank=True
+        max_length=256, help_text="Any helper comment on how the input should be populated", default="", blank=True
     )
     shared_text = models.TextField(blank=True, null=True)
 
@@ -223,18 +210,13 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
     class Meta(BaseProvidedAsset.Meta):
         abstract = True
 
+
 class BaseProvidedFileAsset(BaseProvidedAsset):
     ASSET_CLASS = FileAsset
 
-    label = models.CharField(
-        max_length=256,
-        help_text="What's the title used to display the file to the sponsor?"
-    )
+    label = models.CharField(max_length=256, help_text="What's the title used to display the file to the sponsor?")
     help_text = models.CharField(
-        max_length=256,
-        help_text="Any helper comment on how the file should be used",
-        default="",
-        blank=True
+        max_length=256, help_text="Any helper comment on how the file should be used", default="", blank=True
     )
     shared_file = models.FileField(blank=True, null=True)
 
@@ -246,7 +228,6 @@ class BaseProvidedFileAsset(BaseProvidedAsset):
 
 
 class AssetMixin:
-
     def __related_asset(self):
         """
         This method exists to avoid FK relationships between the GenericAsset
@@ -276,11 +257,11 @@ class AssetMixin:
         url = reverse("users:update_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
         return url + f"?required_asset={self.pk}"
 
-
     @property
     def user_view_url(self):
         url = reverse("users:view_provided_sponsorship_assets", args=[self.sponsor_benefit.sponsorship.pk])
         return url + f"?provided_asset={self.pk}"
+
 
 class RequiredAssetMixin(AssetMixin):
     """
@@ -288,7 +269,9 @@ class RequiredAssetMixin(AssetMixin):
     It's a mixin to get the information submitted by the user
     and which is stored in the related asset class.
     """
+
     pass
+
 
 class ProvidedAssetMixin(AssetMixin):
     """
@@ -299,9 +282,10 @@ class ProvidedAssetMixin(AssetMixin):
 
     @AssetMixin.value.getter
     def value(self):
-        if hasattr(self, 'shared') and self.shared:
+        if hasattr(self, "shared") and self.shared:
             return self.shared_value()
         return super().value
+
 
 ######################################################
 # SponsorshipBenefit features configuration models
@@ -317,7 +301,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     class Meta:
         verbose_name = "Benefit Feature Configuration"
         verbose_name_plural = "Benefit Feature Configurations"
-        base_manager_name = 'non_polymorphic'
+        base_manager_name = "non_polymorphic"
 
     @property
     def benefit_feature_class(self):
@@ -339,7 +323,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         for field in benefit_fields:
             # Skip the OneToOne rel from the base class to BenefitFeatureConfiguration base class
             # since this field only exists in child models
-            if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
+            if BenefitFeatureConfiguration is getattr(field, "related_model", None):
                 continue
             # Skip if field config is being externally overwritten
             elif field.name in kwargs:
@@ -469,8 +453,7 @@ class RequiredImgAssetConfiguration(AssetConfigurationMixin, BaseRequiredImgAsse
         return RequiredImgAsset
 
 
-class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAsset,
-                                     BenefitFeatureConfiguration):
+class RequiredTextAssetConfiguration(AssetConfigurationMixin, BaseRequiredTextAsset, BenefitFeatureConfiguration):
     class Meta(BaseRequiredTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Text Configuration"
         verbose_name_plural = "Require Text Configurations"
@@ -490,9 +473,7 @@ class RequiredResponseAssetConfiguration(
     class Meta(BaseRequiredResponseAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Require Response Configuration"
         verbose_name_plural = "Require Response Configurations"
-        constraints = [
-            UniqueConstraint(fields=["internal_name"], name="uniq_response_asset_cfg")
-        ]
+        constraints = [UniqueConstraint(fields=["internal_name"], name="uniq_response_asset_cfg")]
 
     def __str__(self):
         return f"Require response configuration"
@@ -502,9 +483,7 @@ class RequiredResponseAssetConfiguration(
         return RequiredResponseAsset
 
 
-class ProvidedTextAssetConfiguration(
-    AssetConfigurationMixin, BaseProvidedTextAsset, BenefitFeatureConfiguration
-):
+class ProvidedTextAssetConfiguration(AssetConfigurationMixin, BaseProvidedTextAsset, BenefitFeatureConfiguration):
     class Meta(BaseProvidedTextAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided Text Configuration"
         verbose_name_plural = "Provided Text Configurations"
@@ -518,8 +497,7 @@ class ProvidedTextAssetConfiguration(
         return ProvidedTextAsset
 
 
-class ProvidedFileAssetConfiguration(AssetConfigurationMixin, BaseProvidedFileAsset,
-                                     BenefitFeatureConfiguration):
+class ProvidedFileAssetConfiguration(AssetConfigurationMixin, BaseProvidedFileAsset, BenefitFeatureConfiguration):
     class Meta(BaseProvidedFileAsset.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Provided File Configuration"
         verbose_name_plural = "Provided File Configurations"
@@ -539,6 +517,7 @@ class BenefitFeature(PolymorphicModel):
     """
     Base class for sponsor benefits features.
     """
+
     objects = BenefitFeatureQuerySet.as_manager()
     non_polymorphic = models.Manager()
 
@@ -547,7 +526,7 @@ class BenefitFeature(PolymorphicModel):
     class Meta:
         verbose_name = "Benefit Feature"
         verbose_name_plural = "Benefit Features"
-        base_manager_name = 'non_polymorphic'
+        base_manager_name = "non_polymorphic"
 
     def display_modifier(self, name, **kwargs):
         return name
@@ -607,7 +586,9 @@ class RequiredImgAsset(RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature)
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.ImageField(required=required, help_text=help_text, label=label, widget=forms.ClearableFileInput, **kwargs)
+        return forms.ImageField(
+            required=required, help_text=help_text, label=label, widget=forms.ClearableFileInput, **kwargs
+        )
 
 
 class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeature):
@@ -641,7 +622,14 @@ class RequiredResponseAsset(RequiredAssetMixin, BaseRequiredResponseAsset, Benef
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
-        return forms.ChoiceField(required=required, choices=Response.choices(), widget=forms.RadioSelect, help_text=help_text, label=label, **kwargs)
+        return forms.ChoiceField(
+            required=required,
+            choices=Response.choices(),
+            widget=forms.RadioSelect,
+            help_text=help_text,
+            label=label,
+            **kwargs,
+        )
 
 
 class ProvidedTextAsset(ProvidedAssetMixin, BaseProvidedTextAsset, BenefitFeature):

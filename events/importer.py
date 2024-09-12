@@ -21,35 +21,29 @@ class ICSImporter:
         # Django will already convert to datetime by setting the time to 0:00,
         # but won't add any timezone information. We will convert them to
         # aware datetime objects manually.
-        dt_start = extract_date_or_datetime(event_data['DTSTART'].dt)
-        dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
+        dt_start = extract_date_or_datetime(event_data["DTSTART"].dt)
+        dt_end = extract_date_or_datetime(event_data["DTEND"].dt)
 
         # Let's mark those occurrences as 'all-day'.
-        all_day = (
-            dt_start.resolution == DATE_RESOLUTION or
-            dt_end.resolution == DATE_RESOLUTION
-        )
+        all_day = dt_start.resolution == DATE_RESOLUTION or dt_end.resolution == DATE_RESOLUTION
 
         defaults = {
-            'dt_start': dt_start,
-            'dt_end': dt_end - timedelta(days=1) if all_day else dt_end,
-            'all_day': all_day
+            "dt_start": dt_start,
+            "dt_end": dt_end - timedelta(days=1) if all_day else dt_end,
+            "all_day": all_day,
         }
 
         OccurringRule.objects.update_or_create(event=event, defaults=defaults)
 
     def import_event(self, event_data):
-        uid = event_data['UID']
-        title = event_data['SUMMARY']
-        description = event_data.get('DESCRIPTION', '')
-        location, _ = EventLocation.objects.get_or_create(
-            calendar=self.calendar,
-            name=event_data['LOCATION']
-        )
+        uid = event_data["UID"]
+        title = event_data["SUMMARY"]
+        description = event_data.get("DESCRIPTION", "")
+        location, _ = EventLocation.objects.get_or_create(calendar=self.calendar, name=event_data["LOCATION"])
         defaults = {
-            'title': title,
-            'venue': location,
-            'calendar': self.calendar,
+            "title": title,
+            "venue": location,
+            "calendar": self.calendar,
         }
         event, _ = Event.objects.update_or_create(uid=uid, defaults=defaults)
         event.description.raw = description
@@ -69,7 +63,7 @@ class ICSImporter:
 
     def get_events(self, ical):
         ical = ICalendar.from_ical(ical)
-        return ical.walk('VEVENT')
+        return ical.walk("VEVENT")
 
     def import_events_from_text(self, ical):
         events = self.get_events(ical)

@@ -2,7 +2,9 @@ from rest_framework.authentication import TokenAuthentication
 
 from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
 from pydotorg.drf import (
-    BaseReadOnlyAPIViewSet, BaseFilterSet, IsStaffOrReadOnly,
+    BaseReadOnlyAPIViewSet,
+    BaseFilterSet,
+    IsStaffOrReadOnly,
 )
 
 from .models import Page
@@ -13,32 +15,35 @@ class PageResource(GenericResource):
     class Meta(GenericResource.Meta):
         authorization = OnlyPublishedAuthorization()
         queryset = Page.objects.all()
-        resource_name = 'pages/page'
+        resource_name = "pages/page"
         fields = [
-            'creator', 'last_modified_by',
-            'title', 'keywords', 'description',
-            'path', 'content', 'is_published',
-            'template_name'
-
+            "creator",
+            "last_modified_by",
+            "title",
+            "keywords",
+            "description",
+            "path",
+            "content",
+            "is_published",
+            "template_name",
         ]
         filtering = {
-            'title': ('exact',),
-            'keywords': ('exact', 'icontains'),
-            'path': ('exact',),
-            'is_published': ('exact',),
+            "title": ("exact",),
+            "keywords": ("exact", "icontains"),
+            "path": ("exact",),
+            "is_published": ("exact",),
         }
         abstract = False
 
 
 class PageFilterSet(BaseFilterSet):
-
     class Meta:
         model = Page
         fields = {
-            'title': ['exact'],
-            'path': ['exact'],
-            'keywords': ['exact', 'icontains'],
-            'is_published': ['exact'],
+            "title": ["exact"],
+            "path": ["exact"],
+            "keywords": ["exact", "icontains"],
+            "is_published": ["exact"],
         }
 
 

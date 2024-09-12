@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0100_auto_20240107_1054'),
+        ("sponsors", "0100_auto_20240107_1054"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsor',
-            name='linked_in_page_url',
-            field=models.URLField(blank=True, help_text='URL for your LinkedIn page.', null=True, verbose_name='LinkedIn page URL'),
+            model_name="sponsor",
+            name="linked_in_page_url",
+            field=models.URLField(
+                blank=True, help_text="URL for your LinkedIn page.", null=True, verbose_name="LinkedIn page URL"
+            ),
         ),
     ]

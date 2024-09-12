@@ -27,7 +27,7 @@ def render_template_for(obj, template=None, template_directory=None):
 
     """
     context = {
-        'object': obj,
+        "object": obj,
     }
 
     template_list = []
@@ -38,11 +38,11 @@ def render_template_for(obj, template=None, template_directory=None):
     if template_directory:
         template_dirs.append(template_directory)
 
-    template_dirs.append('community/types')
+    template_dirs.append("community/types")
 
     for directory in template_dirs:
-        template_list.append(f'{directory}/{obj.get_media_type_display()}.html')
-        template_list.append(f'{directory}/default.html')
+        template_list.append(f"{directory}/{obj.get_media_type_display()}.html")
+        template_list.append(f"{directory}/default.html")
 
     output = render_to_string(template_list, context)
     return output

@@ -20,11 +20,10 @@ class StoryQuerySet(QuerySet):
 
 
 class StoryManager(Manager.from_queryset(StoryQuerySet)):
-
     def random_featured(self):
         # We don't just call queryset.order_by('?') because that
         # would kill the database.
-        count = self.featured().aggregate(count=Count('id'))['count']
+        count = self.featured().aggregate(count=Count("id"))["count"]
         if count == 0:
             return self.get_queryset().none()
         random_index = random.randint(0, count - 1)

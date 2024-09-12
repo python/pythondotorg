@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0003_auto_20170821_2000"),
     ]
@@ -25,9 +24,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("name", models.CharField(max_length=64)),
                 ("description", models.TextField(blank=True, null=True)),
@@ -59,9 +56,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("name", models.CharField(max_length=64)),
                 ("sponsorship_amount", models.PositiveIntegerField()),
@@ -85,9 +80,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "order",
-                    models.PositiveIntegerField(
-                        db_index=True, editable=False, verbose_name="order"
-                    ),
+                    models.PositiveIntegerField(db_index=True, editable=False, verbose_name="order"),
                 ),
                 ("name", models.CharField(max_length=64)),
                 ("description", models.TextField(blank=True, null=True)),
@@ -100,9 +93,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsorshipbenefit",
             name="levels",
-            field=models.ManyToManyField(
-                related_name="benefits", to="sponsors.SponsorshipLevel"
-            ),
+            field=models.ManyToManyField(related_name="benefits", to="sponsors.SponsorshipLevel"),
         ),
         migrations.AddField(
             model_name="sponsorshipbenefit",

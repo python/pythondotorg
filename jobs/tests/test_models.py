@@ -9,11 +9,10 @@ from ..models import Job, JobType, JobCategory
 
 
 class JobsModelsTests(TestCase):
-
     def create_job(self, **kwargs):
         job_kwargs = {
-            'city': "Memphis",
-            'region': "TN",
+            "city": "Memphis",
+            "region": "TN",
             "country": "USA",
         }
         job_kwargs.update(**kwargs)
@@ -32,7 +31,7 @@ class JobsModelsTests(TestCase):
 
     def test_location_slug(self):
         job = self.create_job()
-        self.assertEqual(job.location_slug, 'memphis-tn-usa')
+        self.assertEqual(job.location_slug, "memphis-tn-usa")
 
     def test_approved_manager(self):
         self.assertEqual(Job.objects.approved().count(), 0)
@@ -83,7 +82,7 @@ class JobsModelsTests(TestCase):
 
     def test_job_type_with_active_jobs_manager(self):
         t1 = factories.JobTypeFactory()
-        t2 = factories.JobTypeFactory(name='Spam')
+        t2 = factories.JobTypeFactory(name="Spam")
         j1 = factories.ApprovedJobFactory()
         j1.job_types.add(t1)
 
@@ -94,7 +93,7 @@ class JobsModelsTests(TestCase):
 
     def test_job_category_with_active_jobs_manager(self):
         c1 = factories.JobCategoryFactory()
-        c2 = factories.JobCategoryFactory(name='Foo')
+        c2 = factories.JobCategoryFactory(name="Foo")
         j1 = factories.ApprovedJobFactory()
         j1.category = c1
         j1.save()
@@ -122,14 +121,14 @@ class JobsModelsTests(TestCase):
         self.assertEqual(job2.get_previous_listing(), job1)
 
     def test_region_optional(self):
-        job = self.create_job(region='')
+        job = self.create_job(region="")
         self.assertEqual(job.city, "Memphis")
         self.assertEqual(job.country, "USA")
         self.assertFalse(job.region)
 
     def test_display_location(self):
         job1 = self.create_job()
-        self.assertEqual(job1.display_location, 'Memphis, TN, USA')
+        self.assertEqual(job1.display_location, "Memphis, TN, USA")
 
-        job2 = self.create_job(region='')
-        self.assertEqual(job2.display_location, 'Memphis, USA')
+        job2 = self.create_job(region="")
+        self.assertEqual(job2.display_location, "Memphis, USA")

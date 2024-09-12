@@ -5,48 +5,131 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0054_auto_20211026_1432'),
+        ("sponsors", "0054_auto_20211026_1432"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='RequiredTextAsset',
+            name="RequiredTextAsset",
             fields=[
-                ('benefitfeature_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sponsors.BenefitFeature')),
-                ('related_to', models.CharField(choices=[('sponsor', 'Sponsor'), ('sponsorship', 'Sponsorship')], help_text='To which instance (Sponsor or Sponsorship) should this asset relate to.', max_length=30, verbose_name='Related To')),
-                ('internal_name', models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, unique=True, verbose_name='Internal Name')),
-                ('label', models.CharField(help_text="What's the title used to display the text input to the sponsor?", max_length=256)),
-                ('help_text', models.CharField(blank=True, default='', help_text='Any helper comment on how the input should be populated', max_length=256)),
+                (
+                    "benefitfeature_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="sponsors.BenefitFeature",
+                    ),
+                ),
+                (
+                    "related_to",
+                    models.CharField(
+                        choices=[("sponsor", "Sponsor"), ("sponsorship", "Sponsorship")],
+                        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to.",
+                        max_length=30,
+                        verbose_name="Related To",
+                    ),
+                ),
+                (
+                    "internal_name",
+                    models.CharField(
+                        db_index=True,
+                        help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                        max_length=128,
+                        unique=True,
+                        verbose_name="Internal Name",
+                    ),
+                ),
+                (
+                    "label",
+                    models.CharField(
+                        help_text="What's the title used to display the text input to the sponsor?", max_length=256
+                    ),
+                ),
+                (
+                    "help_text",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Any helper comment on how the input should be populated",
+                        max_length=256,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Require Text',
-                'verbose_name_plural': 'Require Texts',
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "verbose_name": "Require Text",
+                "verbose_name_plural": "Require Texts",
+                "abstract": False,
+                "base_manager_name": "objects",
             },
-            bases=('sponsors.benefitfeature', models.Model),
+            bases=("sponsors.benefitfeature", models.Model),
         ),
         migrations.CreateModel(
-            name='RequiredTextAssetConfiguration',
+            name="RequiredTextAssetConfiguration",
             fields=[
-                ('benefitfeatureconfiguration_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sponsors.BenefitFeatureConfiguration')),
-                ('related_to', models.CharField(choices=[('sponsor', 'Sponsor'), ('sponsorship', 'Sponsorship')], help_text='To which instance (Sponsor or Sponsorship) should this asset relate to.', max_length=30, verbose_name='Related To')),
-                ('internal_name', models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, unique=True, verbose_name='Internal Name')),
-                ('label', models.CharField(help_text="What's the title used to display the text input to the sponsor?", max_length=256)),
-                ('help_text', models.CharField(blank=True, default='', help_text='Any helper comment on how the input should be populated', max_length=256)),
+                (
+                    "benefitfeatureconfiguration_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="sponsors.BenefitFeatureConfiguration",
+                    ),
+                ),
+                (
+                    "related_to",
+                    models.CharField(
+                        choices=[("sponsor", "Sponsor"), ("sponsorship", "Sponsorship")],
+                        help_text="To which instance (Sponsor or Sponsorship) should this asset relate to.",
+                        max_length=30,
+                        verbose_name="Related To",
+                    ),
+                ),
+                (
+                    "internal_name",
+                    models.CharField(
+                        db_index=True,
+                        help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                        max_length=128,
+                        unique=True,
+                        verbose_name="Internal Name",
+                    ),
+                ),
+                (
+                    "label",
+                    models.CharField(
+                        help_text="What's the title used to display the text input to the sponsor?", max_length=256
+                    ),
+                ),
+                (
+                    "help_text",
+                    models.CharField(
+                        blank=True,
+                        default="",
+                        help_text="Any helper comment on how the input should be populated",
+                        max_length=256,
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Require Text Configuration',
-                'verbose_name_plural': 'Require Text Configurations',
-                'abstract': False,
-                'base_manager_name': 'objects',
+                "verbose_name": "Require Text Configuration",
+                "verbose_name_plural": "Require Text Configurations",
+                "abstract": False,
+                "base_manager_name": "objects",
             },
-            bases=('sponsors.benefitfeatureconfiguration', models.Model),
+            bases=("sponsors.benefitfeatureconfiguration", models.Model),
         ),
         migrations.AlterModelOptions(
-            name='requiredimgasset',
-            options={'base_manager_name': 'objects', 'verbose_name': 'Require Image', 'verbose_name_plural': 'Require Images'},
+            name="requiredimgasset",
+            options={
+                "base_manager_name": "objects",
+                "verbose_name": "Require Image",
+                "verbose_name_plural": "Require Images",
+            },
         ),
     ]

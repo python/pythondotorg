@@ -23,29 +23,21 @@ class Election(models.Model):
     date = models.DateField()
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
-    description = MarkupField(
-        escape_html=False, markup_type="markdown", blank=False, null=True
-    )
+    description = MarkupField(escape_html=False, markup_type="markdown", blank=False, null=True)
 
     slug = models.SlugField(max_length=255, blank=True, null=True)
 
     @property
     def nominations_open(self):
         if self.nominations_open_at and self.nominations_close_at:
-            return (
-                self.nominations_open_at
-                < datetime.datetime.now(datetime.timezone.utc)
-                < self.nominations_close_at
-            )
+            return self.nominations_open_at < datetime.datetime.now(datetime.timezone.utc) < self.nominations_close_at
 
         return False
 
     @property
     def nominations_complete(self):
         if self.nominations_close_at:
-            return self.nominations_close_at < datetime.datetime.now(
-                datetime.timezone.utc
-            )
+            return self.nominations_close_at < datetime.datetime.now(datetime.timezone.utc)
 
         return False
 
@@ -76,9 +68,7 @@ class Nominee(models.Model):
     def __str__(self):
         return f"{self.name}"
 
-    election = models.ForeignKey(
-        Election, related_name="nominees", on_delete=models.CASCADE
-    )
+    election = models.ForeignKey(Election, related_name="nominees", on_delete=models.CASCADE)
     user = models.ForeignKey(
         User,
         related_name="nominations_recieved",
@@ -104,19 +94,11 @@ class Nominee(models.Model):
 
     @property
     def nominations_received(self):
-        return (
-            self.nominations.filter(accepted=True, approved=True)
-            .exclude(nominator=self.user)
-            .all()
-        )
+        return self.nominations.filter(accepted=True, approved=True).exclude(nominator=self.user).all()
 
     @property
     def nominations_pending(self):
-        return (
-            self.nominations.exclude(accepted=False, approved=False)
-            .exclude(nominator=self.user)
-            .all()
-        )
+        return self.nominations.exclude(accepted=False, approved=False).exclude(nominator=self.user).all()
 
     @property
     def self_nomination(self):
@@ -128,10 +110,7 @@ class Nominee(models.Model):
 
     @property
     def display_previous_board_service(self):
-        if (
-            self.self_nomination is not None
-            and self.self_nomination.previous_board_service
-        ):
+        if self.self_nomination is not None and self.self_nomination.previous_board_service:
             return self.self_nomination.previous_board_service
 
         return self.nominations.first().previous_board_service
@@ -178,13 +157,9 @@ class Nomination(models.Model):
     previous_board_service = models.CharField(max_length=1024, blank=False, null=True)
     employer = models.CharField(max_length=1024, blank=False, null=True)
     other_affiliations = models.CharField(max_length=2048, blank=True, null=True)
-    nomination_statement = MarkupField(
-        escape_html=True, markup_type="markdown", blank=False, null=True
-    )
+    nomination_statement = MarkupField(escape_html=True, markup_type="markdown", blank=False, null=True)
 
-    nominator = models.ForeignKey(
-        User, related_name="nominations_made", on_delete=models.CASCADE
-    )
+    nominator = models.ForeignKey(User, related_name="nominations_made", on_delete=models.CASCADE)
     nominee = models.ForeignKey(
         Nominee,
         related_name="nominations",
@@ -215,18 +190,10 @@ class Nomination(models.Model):
         )
 
     def editable(self, user=None):
-        if (
-            self.nominee
-            and user == self.nominee.user
-            and self.election.nominations_open
-        ):
+        if self.nominee and user == self.nominee.user and self.election.nominations_open:
             return True
 
-        if (
-            user == self.nominator
-            and not (self.accepted or self.approved)
-            and self.election.nominations_open
-        ):
+        if user == self.nominator and not (self.accepted or self.approved) and self.election.nominations_open:
             return True
 
         return False
@@ -252,7 +219,7 @@ class Nomination(models.Model):
 
 @receiver(post_save, sender=Nomination)
 def purge_nomination_pages(sender, instance, created, **kwargs):
-    """ Purge pages that contain the rendered markup """
+    """Purge pages that contain the rendered markup"""
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
@@ -266,8 +233,4 @@ def purge_nomination_pages(sender, instance, created, **kwargs):
 
     if instance.election:
         # Purge the election page
-        purge_url(
-            reverse(
-                "nominations:nominees_list", kwargs={"election": instance.election.slug}
-            )
-        )
+        purge_url(reverse("nominations:nominees_list", kwargs={"election": instance.election.slug}))

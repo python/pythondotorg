@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jobs', '0019_job_submitted_by'),
+        ("jobs", "0019_job_submitted_by"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='job',
-            name='url',
-            field=models.URLField(null=True, verbose_name='URL'),
+            model_name="job",
+            name="url",
+            field=models.URLField(null=True, verbose_name="URL"),
         ),
     ]

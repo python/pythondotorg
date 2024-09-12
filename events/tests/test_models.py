@@ -12,9 +12,9 @@ from ..utils import seconds_resolution, convert_dt_to_aware
 
 class EventsModelsTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user, slug='test-calendar')
-        self.event = Event.objects.create(title='event', creator=self.user, calendar=self.calendar)
+        self.user = get_user_model().objects.create_user(username="username", password="password")
+        self.calendar = Calendar.objects.create(creator=self.user, slug="test-calendar")
+        self.event = Event.objects.create(title="event", creator=self.user, calendar=self.calendar)
 
     def test_occurring_event(self):
         now = seconds_resolution(timezone.now())
@@ -62,7 +62,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
 
-
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
         rt.save()
@@ -84,12 +83,7 @@ class EventsModelsTests(TestCase):
         )
 
         self.assertEqual(rt.freq_interval_as_timedelta, datetime.timedelta(days=7))
-        dateutil_rrule = rrule(
-            WEEKLY,
-            interval=1,
-            dtstart=recurring_time_dtstart,
-            until=recurring_time_dtend
-        )
+        dateutil_rrule = rrule(WEEKLY, interval=1, dtstart=recurring_time_dtstart, until=recurring_time_dtend)
         self.assertEqual(rt.to_rrule().after(now), dateutil_rrule.after(now))
         self.assertEqual(rt.dt_start, rt.to_rrule().after(now))
 

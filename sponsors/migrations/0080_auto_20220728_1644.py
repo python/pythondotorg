@@ -5,19 +5,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0079_index_to_force_singleton'),
+        ("sponsors", "0079_index_to_force_singleton"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='sponsorshipcurrentyear',
-            options={'verbose_name': 'Active Year', 'verbose_name_plural': 'Active Year'},
+            name="sponsorshipcurrentyear",
+            options={"verbose_name": "Active Year", "verbose_name_plural": "Active Year"},
         ),
         migrations.AlterField(
-            model_name='sponsorshipcurrentyear',
-            name='year',
-            field=models.PositiveIntegerField(help_text='Every new sponsorship application will be considered as an application from to the active year.', validators=[django.core.validators.MinValueValidator(limit_value=2022, message='The min year value is 2022.'), django.core.validators.MaxValueValidator(limit_value=2050, message='The max year value is 2050.')]),
+            model_name="sponsorshipcurrentyear",
+            name="year",
+            field=models.PositiveIntegerField(
+                help_text="Every new sponsorship application will be considered as an application from to the active year.",
+                validators=[
+                    django.core.validators.MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+                    django.core.validators.MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+                ],
+            ),
         ),
     ]

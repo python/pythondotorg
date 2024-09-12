@@ -8,13 +8,14 @@ class Command(BaseCommand):
     """
     Dump PEP related Pages as indented JSON
     """
+
     help = "Dump PEP related Pages as indented JSON"
 
     def handle(self, **options):
-        qs = Page.objects.filter(path__startswith='dev/peps/')
+        qs = Page.objects.filter(path__startswith="dev/peps/")
 
         serializers.serialize(
-            format='json',
+            format="json",
             queryset=qs,
             indent=4,
             stream=self.stdout,

@@ -5,22 +5,31 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0055_auto_20211026_1512'),
+        ("sponsors", "0055_auto_20211026_1512"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='TextAsset',
+            name="TextAsset",
             fields=[
-                ('genericasset_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sponsors.GenericAsset')),
-                ('text', models.TextField(default='')),
+                (
+                    "genericasset_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="sponsors.GenericAsset",
+                    ),
+                ),
+                ("text", models.TextField(default="")),
             ],
             options={
-                'verbose_name': 'Image Asset',
-                'verbose_name_plural': 'Image Assets',
+                "verbose_name": "Image Asset",
+                "verbose_name_plural": "Image Assets",
             },
-            bases=('sponsors.genericasset',),
+            bases=("sponsors.genericasset",),
         ),
     ]

@@ -5,60 +5,63 @@ import django.db.models.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0075_auto_20220303_2023'),
+        ("sponsors", "0075_auto_20220303_2023"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='benefitfeature',
-            options={'base_manager_name': 'non_polymorphic', 'verbose_name': 'Benefit Feature', 'verbose_name_plural': 'Benefit Features'},
+            name="benefitfeature",
+            options={
+                "base_manager_name": "non_polymorphic",
+                "verbose_name": "Benefit Feature",
+                "verbose_name_plural": "Benefit Features",
+            },
         ),
         migrations.AlterModelOptions(
-            name='genericasset',
-            options={'base_manager_name': 'non_polymorphic', 'verbose_name': 'Asset', 'verbose_name_plural': 'Assets'},
+            name="genericasset",
+            options={"base_manager_name": "non_polymorphic", "verbose_name": "Asset", "verbose_name_plural": "Assets"},
         ),
         migrations.AlterModelManagers(
-            name='benefitfeature',
+            name="benefitfeature",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='fileasset',
+            name="fileasset",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='genericasset',
+            name="genericasset",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='imgasset',
+            name="imgasset",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='responseasset',
+            name="responseasset",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='textasset',
+            name="textasset",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
     ]

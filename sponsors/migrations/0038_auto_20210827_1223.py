@@ -4,8 +4,8 @@ from django.db import migrations
 
 
 def populate_sponsorship_package_fk(apps, schema_editor):
-    Sponsorship = apps.get_model('sponsors.Sponsorship')
-    SponsorshipPackage = apps.get_model('sponsors.SponsorshipPackage')
+    Sponsorship = apps.get_model("sponsors.Sponsorship")
+    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")
 
     for sponsorship in Sponsorship.objects.all().iterator():
         try:
@@ -17,11 +17,8 @@ def populate_sponsorship_package_fk(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0037_sponsorship_package'),
+        ("sponsors", "0037_sponsorship_package"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_sponsorship_package_fk, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(populate_sponsorship_package_fk, migrations.RunPython.noop)]

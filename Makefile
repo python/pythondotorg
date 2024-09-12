@@ -56,3 +56,6 @@ test: .state/db-initialized
 
 docker_shell: .state/db-initialized
 	docker-compose run --rm web /bin/bash
+
+fmt: Dockerfile dev-requirements.txt base-requirements.txt
+	docker-compose run --rm web ruff format .

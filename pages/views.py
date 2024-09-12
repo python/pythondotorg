@@ -9,16 +9,16 @@ from .models import Page
 
 
 class PageView(DetailView):
-    template_name = 'pages/default.html'
-    template_name_field = 'template_name'
-    context_object_name = 'page'
+    template_name = "pages/default.html"
+    template_name_field = "template_name"
+    context_object_name = "page"
 
     # Use "path" as the lookup key, rather than the default "slug".
-    slug_url_kwarg = 'path'
-    slug_field = 'path'
+    slug_url_kwarg = "path"
+    slug_field = "path"
 
     def get_template_names(self):
-        """ Use the template defined in the model or a default """
+        """Use the template defined in the model or a default"""
         names = [self.template_name]
 
         if self.object and self.template_name_field:
@@ -40,7 +40,7 @@ class PageView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['in_pages_app'] = True
+        context["in_pages_app"] = True
         return context
 
     def get(self, request, *args, **kwargs):
@@ -48,9 +48,9 @@ class PageView(DetailView):
         # '/downloads/release/python-XYZ/' if the latter URL doesn't have
         # 'release_page' (which points to the former URL) field set.
         # See #956 for details.
-        matched = re.match(r'/download/releases/([\d.]+)/$', self.request.path)
+        matched = re.match(r"/download/releases/([\d.]+)/$", self.request.path)
         if matched is not None:
-            release_slug = 'python-{}'.format(matched.group(1).replace('.', ''))
+            release_slug = "python-{}".format(matched.group(1).replace(".", ""))
             try:
                 Release.objects.get(slug=release_slug, release_page__isnull=True)
             except Release.DoesNotExist:
@@ -58,8 +58,8 @@ class PageView(DetailView):
             else:
                 return HttpResponsePermanentRedirect(
                     reverse(
-                        'download:download_release_detail',
-                        kwargs={'release_slug': release_slug},
+                        "download:download_release_detail",
+                        kwargs={"release_slug": release_slug},
                     )
                 )
         return super().get(request, *args, **kwargs)

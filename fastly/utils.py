@@ -10,12 +10,12 @@ def purge_url(path):
     if settings.DEBUG:
         return
 
-    api_key = getattr(settings, 'FASTLY_API_KEY', None)
+    api_key = getattr(settings, "FASTLY_API_KEY", None)
     if api_key:
         response = requests.request(
-            'PURGE',
-            f'https://www.python.org{path}',
-            headers={'Fastly-Key': api_key},
+            "PURGE",
+            f"https://www.python.org{path}",
+            headers={"Fastly-Key": api_key},
         )
         return response
 

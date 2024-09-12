@@ -4,25 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('downloads', '0005_move_release_page_content'),
+        ("downloads", "0005_move_release_page_content"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='os',
-            name='slug',
+            model_name="os",
+            name="slug",
             field=models.SlugField(max_length=200, unique=True),
         ),
         migrations.AlterField(
-            model_name='release',
-            name='slug',
+            model_name="release",
+            name="slug",
             field=models.SlugField(max_length=200, unique=True),
         ),
         migrations.AlterField(
-            model_name='releasefile',
-            name='slug',
+            model_name="releasefile",
+            name="slug",
             field=models.SlugField(max_length=200, unique=True),
         ),
     ]

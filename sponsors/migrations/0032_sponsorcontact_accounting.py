@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0031_auto_20210810_1232'),
+        ("sponsors", "0031_auto_20210810_1232"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorcontact',
-            name='accounting',
-            field=models.BooleanField(default=False, help_text='Accounting contacts will only be notified regarding invoices and payments.'),
+            model_name="sponsorcontact",
+            name="accounting",
+            field=models.BooleanField(
+                default=False, help_text="Accounting contacts will only be notified regarding invoices and payments."
+            ),
         ),
     ]

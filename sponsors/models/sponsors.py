@@ -1,6 +1,7 @@
 """
 This module holds models related to the Sponsor entity.
 """
+
 from allauth.account.models import EmailAddress
 from django.conf import settings
 from django.core.validators import FileExtensionValidator
@@ -36,7 +37,7 @@ class Sponsor(ContentManageable):
         null=True,
         verbose_name="Landing page URL",
         help_text="Landing page URL. This may be provided by the sponsor, however the linked page may not contain any "
-                  "sales or marketing information.",
+        "sales or marketing information.",
     )
     twitter_handle = models.CharField(
         max_length=32,  # Actual limit set by twitter is 15 characters, but that may change?
@@ -45,20 +46,17 @@ class Sponsor(ContentManageable):
         verbose_name="Twitter handle",
     )
     linked_in_page_url = models.URLField(
-        blank=True,
-        null=True,
-        verbose_name="LinkedIn page URL",
-        help_text="URL for your LinkedIn page."
+        blank=True, null=True, verbose_name="LinkedIn page URL", help_text="URL for your LinkedIn page."
     )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
         verbose_name="Web logo",
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than "
-                  "256px",
+        "256px",
     )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
+        validators=[FileExtensionValidator(["eps", "epsf" "epsi", "svg", "png"])],
         blank=True,
         null=True,
         verbose_name="Print logo",
@@ -66,27 +64,23 @@ class Sponsor(ContentManageable):
     )
 
     primary_phone = models.CharField("Primary Phone", max_length=32)
-    mailing_address_line_1 = models.CharField(
-        verbose_name="Mailing Address line 1", max_length=128, default=""
-    )
+    mailing_address_line_1 = models.CharField(verbose_name="Mailing Address line 1", max_length=128, default="")
     mailing_address_line_2 = models.CharField(
         verbose_name="Mailing Address line 2", max_length=128, blank=True, default=""
     )
     city = models.CharField(verbose_name="City", max_length=64, default="")
-    state = models.CharField(
-        verbose_name="State/Province/Region", max_length=64, blank=True, default=""
-    )
-    postal_code = models.CharField(
-        verbose_name="Zip/Postal Code", max_length=64, default=""
-    )
+    state = models.CharField(verbose_name="State/Province/Region", max_length=64, blank=True, default="")
+    postal_code = models.CharField(verbose_name="Zip/Postal Code", max_length=64, default="")
     country = CountryField(default="", help_text="For mailing/contact purposes")
     assets = GenericRelation(GenericAsset)
     country_of_incorporation = CountryField(
-        verbose_name="Country of incorporation (If different)", help_text="For contractual purposes", blank=True, null=True
+        verbose_name="Country of incorporation (If different)",
+        help_text="For contractual purposes",
+        blank=True,
+        null=True,
     )
     state_of_incorporation = models.CharField(
-        verbose_name="US only: State of incorporation (If different)",
-        max_length=64, blank=True, null=True, default=""
+        verbose_name="US only: State of incorporation (If different)", max_length=64, blank=True, null=True, default=""
     )
 
     class Meta:
@@ -96,9 +90,7 @@ class Sponsor(ContentManageable):
     def verified_emails(self, initial_emails=None):
         emails = initial_emails if initial_emails is not None else []
         for contact in self.contacts.all():
-            if EmailAddress.objects.filter(
-                email__iexact=contact.email, verified=True
-            ).exists():
+            if EmailAddress.objects.filter(email__iexact=contact.email, verified=True).exists():
                 emails.append(contact.email)
         return list(set({e.casefold(): e for e in emails}.values()))
 
@@ -132,6 +124,7 @@ class SponsorContact(models.Model):
     """
     Sponsor contact information
     """
+
     PRIMARY_CONTACT = "primary"
     ADMINISTRATIVE_CONTACT = "administrative"
     ACCOUTING_CONTACT = "accounting"
@@ -145,24 +138,20 @@ class SponsorContact(models.Model):
 
     objects = SponsorContactQuerySet.as_manager()
 
-    sponsor = models.ForeignKey(
-        "Sponsor", on_delete=models.CASCADE, related_name="contacts"
-    )
+    sponsor = models.ForeignKey("Sponsor", on_delete=models.CASCADE, related_name="contacts")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.CASCADE
     )  # Optionally related to a User! (This needs discussion)
     primary = models.BooleanField(
         default=False,
         help_text="The primary contact for a sponsorship will be responsible for managing deliverables we need to "
-                  "fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship. "
+        "fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship. ",
     )
     administrative = models.BooleanField(
-        default=False,
-        help_text="Administrative contacts will only be notified regarding contracts."
+        default=False, help_text="Administrative contacts will only be notified regarding contracts."
     )
     accounting = models.BooleanField(
-        default=False,
-        help_text="Accounting contacts will only be notified regarding invoices and payments."
+        default=False, help_text="Accounting contacts will only be notified regarding invoices and payments."
     )
     manager = models.BooleanField(
         default=False,
@@ -181,15 +170,15 @@ class SponsorContact(models.Model):
 
     @property
     def type(self):
-        types=[]
+        types = []
         if self.primary:
-            types.append('Primary')
+            types.append("Primary")
         if self.administrative:
-            types.append('Administrative')
+            types.append("Administrative")
         if self.manager:
-            types.append('Manager')
+            types.append("Manager")
         if self.accounting:
-            types.append('Accounting')
+            types.append("Accounting")
         return ", ".join(types)
 
     def __str__(self):
@@ -202,20 +191,16 @@ class SponsorBenefit(OrderedModel):
     Created after a new sponsorship
     """
 
-    sponsorship = models.ForeignKey(
-        'sponsors.Sponsorship', on_delete=models.CASCADE, related_name="benefits"
-    )
+    sponsorship = models.ForeignKey("sponsors.Sponsorship", on_delete=models.CASCADE, related_name="benefits")
     sponsorship_benefit = models.ForeignKey(
-        'sponsors.SponsorshipBenefit',
+        "sponsors.SponsorshipBenefit",
         null=True,
         blank=False,
         on_delete=models.SET_NULL,
         help_text="Sponsorship Benefit this Sponsor Benefit came from",
     )
     program_name = models.CharField(
-        max_length=1024,
-        verbose_name="Program Name",
-        help_text="For display in the contract and sponsor dashboard."
+        max_length=1024, verbose_name="Program Name", help_text="For display in the contract and sponsor dashboard."
     )
     name = models.CharField(
         max_length=1024,
@@ -229,7 +214,7 @@ class SponsorBenefit(OrderedModel):
         help_text="For display in the contract and sponsor dashboard.",
     )
     program = models.ForeignKey(
-        'sponsors.SponsorshipProgram',
+        "sponsors.SponsorshipProgram",
         null=True,
         blank=False,
         on_delete=models.SET_NULL,
@@ -242,12 +227,8 @@ class SponsorBenefit(OrderedModel):
         verbose_name="Benefit Internal Value",
         help_text="Benefit's internal value from when the Sponsorship gets created",
     )
-    added_by_user = models.BooleanField(
-        blank=True, default=False, verbose_name="Added by user?"
-    )
-    standalone = models.BooleanField(
-        blank=True, default=False, verbose_name="Added as standalone benefit?"
-    )
+    added_by_user = models.BooleanField(blank=True, default=False, verbose_name="Added by user?")
+    standalone = models.BooleanField(blank=True, default=False, verbose_name="Added as standalone benefit?")
 
     def __str__(self):
         if self.program is not None:

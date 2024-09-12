@@ -17,21 +17,26 @@ class LogoPlacementeAPIListTests(APITestCase):
     url = reverse_lazy("logo_placement_list")
 
     def setUp(self):
-        self.user = baker.make('users.User')
+        self.user = baker.make("users.User")
         token = Token.objects.get(user=self.user)
-        self.permission = Permission.objects.get(name='Can access sponsor placement API')
+        self.permission = Permission.objects.get(name="Can access sponsor placement API")
         self.user.user_permissions.add(self.permission)
-        self.authorization = f'Token {token.key}'
+        self.authorization = f"Token {token.key}"
         self.sponsors = baker.make(Sponsor, _create_files=True, _quantity=3)
 
-        sponsorships = baker.make_recipe("sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors),
-                                         _quantity=3)
+        sponsorships = baker.make_recipe(
+            "sponsors.tests.finalized_sponsorship", sponsor=iter(self.sponsors), _quantity=3
+        )
         self.sp1, self.sp2, self.sp3 = sponsorships
         baker.make_recipe("sponsors.tests.logo_at_download_feature", sponsor_benefit__sponsorship=self.sp1)
         baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=self.sp1)
         baker.make_recipe("sponsors.tests.logo_at_sponsors_feature", sponsor_benefit__sponsorship=self.sp2)
-        baker.make_recipe("sponsors.tests.logo_at_pypi_feature", sponsor_benefit__sponsorship=self.sp3,
-                          link_to_sponsors_page=True, describe_as_sponsor=True)
+        baker.make_recipe(
+            "sponsors.tests.logo_at_pypi_feature",
+            sponsor_benefit__sponsorship=self.sp3,
+            link_to_sponsors_page=True,
+            describe_as_sponsor=True,
+        )
 
     def tearDown(self):
         for sponsor in Sponsor.objects.all():
@@ -53,20 +58,19 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[1].name]))
         self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[2].name]))
         self.assertEqual(
-            None,
-            [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]['sponsor_url']
+            None, [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]["sponsor_url"]
         )
         self.assertEqual(
             f"http://testserver/psf/sponsors/#{slugify(self.sp3.sponsor.name)}",
-            [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]['sponsor_url']
+            [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]["sponsor_url"],
         )
         self.assertCountEqual(
             [self.sp1.sponsor.description, self.sp1.sponsor.description, self.sp2.sponsor.description],
-            [p['description'] for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value]
+            [p["description"] for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value],
         )
         self.assertEqual(
             [f"{self.sp3.sponsor.name} is a {self.sp3.level_name} sponsor of the Python Software Foundation."],
-            [p['description'] for p in data if p["publisher"] == PublisherChoices.PYPI.value]
+            [p["description"] for p in data if p["publisher"] == PublisherChoices.PYPI.value],
         )
 
     def test_invalid_token(self):
@@ -95,9 +99,11 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(403, response.status_code)
 
     def test_filter_sponsorship_by_publisher(self):
-        querystring = urlencode({
-            "publisher": PublisherChoices.PYPI.value,
-        })
+        querystring = urlencode(
+            {
+                "publisher": PublisherChoices.PYPI.value,
+            }
+        )
         url = f"{self.url}?{querystring}"
         response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
@@ -107,9 +113,11 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(self.sp3.sponsor.name, data[0]["sponsor"])
 
     def test_filter_sponsorship_by_flight(self):
-        querystring = urlencode({
-            "flight": LogoPlacementChoices.SIDEBAR.value,
-        })
+        querystring = urlencode(
+            {
+                "flight": LogoPlacementChoices.SIDEBAR.value,
+            }
+        )
         url = f"{self.url}?{querystring}"
         response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
@@ -120,10 +128,7 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(self.sp3.sponsor.slug, data[0]["sponsor_slug"])
 
     def test_bad_request_for_invalid_filters(self):
-        querystring = urlencode({
-            "flight": "invalid-flight",
-            "publisher": "invalid-publisher"
-        })
+        querystring = urlencode({"flight": "invalid-flight", "publisher": "invalid-publisher"})
         url = f"{self.url}?{querystring}"
         response = self.client.get(url, headers={"authorization": self.authorization})
         data = response.json()
@@ -134,17 +139,16 @@ class LogoPlacementeAPIListTests(APITestCase):
 
 
 class SponsorshipAssetsAPIListTests(APITestCase):
-
     def setUp(self):
-        self.user = baker.make('users.User')
+        self.user = baker.make("users.User")
         token = Token.objects.get(user=self.user)
-        self.permission = Permission.objects.get(name='Can access sponsor placement API')
+        self.permission = Permission.objects.get(name="Can access sponsor placement API")
         self.user.user_permissions.add(self.permission)
-        self.authorization = f'Token {token.key}'
+        self.authorization = f"Token {token.key}"
         self.internal_name = "txt_assets"
         self.url = reverse_lazy("assets_list") + f"?internal_name={self.internal_name}"
-        self.sponsorship = baker.make(Sponsorship, sponsor__name='Sponsor 1')
-        self.sponsor = baker.make(Sponsor, name='Sponsor 2')
+        self.sponsorship = baker.make(Sponsorship, sponsor__name="Sponsor 1")
+        self.sponsor = baker.make(Sponsor, name="Sponsor 2")
         self.txt_asset = TextAsset.objects.create(
             internal_name=self.internal_name,
             uuid=uuid.uuid4(),
@@ -226,7 +230,7 @@ class SponsorshipAssetsAPIListTests(APITestCase):
         self.assertEqual(data[0]["sponsor_slug"], "sponsor-1")
 
     def test_serialize_img_value_as_url_to_image(self):
-        self.img_asset.value = SimpleUploadedFile(name='test_image.jpg', content=b"content", content_type='image/jpeg')
+        self.img_asset.value = SimpleUploadedFile(name="test_image.jpg", content=b"content", content_type="image/jpeg")
         self.img_asset.save()
 
         url = reverse_lazy("assets_list") + f"?internal_name={self.img_asset.internal_name}"

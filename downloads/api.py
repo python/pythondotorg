@@ -17,78 +17,103 @@ from .serializers import OSSerializer, ReleaseSerializer, ReleaseFileSerializer
 class OSResource(GenericResource):
     class Meta(GenericResource.Meta):
         queryset = OS.objects.all()
-        resource_name = 'downloads/os'
+        resource_name = "downloads/os"
         fields = [
-            'name', 'slug',
+            "name",
+            "slug",
             # The following fields won't show up in the response
             # because there is no 'User' relation defined in the API.
             # See 'ReleaseResource.release_page' for an example.
-            'creator', 'last_modified_by'
+            "creator",
+            "last_modified_by",
         ]
         filtering = {
-            'name': ('exact',),
-            'slug': ('exact',),
+            "name": ("exact",),
+            "slug": ("exact",),
         }
         abstract = False
 
 
 class ReleaseResource(GenericResource):
-    release_page = fields.ToOneField(PageResource, 'release_page', null=True, blank=True)
+    release_page = fields.ToOneField(PageResource, "release_page", null=True, blank=True)
 
     class Meta(GenericResource.Meta):
         queryset = Release.objects.all()
-        resource_name = 'downloads/release'
+        resource_name = "downloads/release"
         authorization = OnlyPublishedAuthorization()
         fields = [
-            'name', 'slug',
-            'creator', 'last_modified_by',
-            'version', 'is_published', 'release_date', 'pre_release',
-            'release_page', 'release_notes_url', 'show_on_download_page',
-            'is_latest',
+            "name",
+            "slug",
+            "creator",
+            "last_modified_by",
+            "version",
+            "is_published",
+            "release_date",
+            "pre_release",
+            "release_page",
+            "release_notes_url",
+            "show_on_download_page",
+            "is_latest",
         ]
         filtering = {
-            'name': ('exact',),
-            'slug': ('exact',),
-            'is_published': ('exact',),
-            'pre_release': ('exact',),
-            'version': ('exact', 'startswith',),
-            'release_date': (ALL,)
+            "name": ("exact",),
+            "slug": ("exact",),
+            "is_published": ("exact",),
+            "pre_release": ("exact",),
+            "version": (
+                "exact",
+                "startswith",
+            ),
+            "release_date": (ALL,),
         }
         abstract = False
 
 
 class ReleaseFileResource(GenericResource):
-    os = fields.ToOneField(OSResource, 'os')
-    release = fields.ToOneField(ReleaseResource, 'release')
+    os = fields.ToOneField(OSResource, "os")
+    release = fields.ToOneField(ReleaseResource, "release")
 
     class Meta(GenericResource.Meta):
         queryset = ReleaseFile.objects.all()
-        resource_name = 'downloads/release_file'
+        resource_name = "downloads/release_file"
         fields = [
-            'name', 'slug',
-            'creator', 'last_modified_by',
-            'os', 'release', 'description', 'is_source', 'url', 'gpg_signature_file',
-            'md5_sum', 'filesize', 'download_button', 'sigstore_signature_file',
-            'sigstore_cert_file', 'sigstore_bundle_file', 'sbom_spdx2_file',
+            "name",
+            "slug",
+            "creator",
+            "last_modified_by",
+            "os",
+            "release",
+            "description",
+            "is_source",
+            "url",
+            "gpg_signature_file",
+            "md5_sum",
+            "filesize",
+            "download_button",
+            "sigstore_signature_file",
+            "sigstore_cert_file",
+            "sigstore_bundle_file",
+            "sbom_spdx2_file",
         ]
         filtering = {
-            'name': ('exact',),
-            'slug': ('exact',),
-            'os': ALL_WITH_RELATIONS,
-            'release': ALL_WITH_RELATIONS,
-            'description': ('contains',),
+            "name": ("exact",),
+            "slug": ("exact",),
+            "os": ALL_WITH_RELATIONS,
+            "release": ALL_WITH_RELATIONS,
+            "description": ("contains",),
         }
         abstract = False
 
 
 # Django Rest Framework
 
+
 class OSViewSet(viewsets.ModelViewSet):
     queryset = OS.objects.all()
     serializer_class = OSSerializer
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
-    filterset_fields = ('name', 'slug')
+    filterset_fields = ("name", "slug")
 
 
 class ReleaseViewSet(BaseAPIViewSet):
@@ -97,25 +122,24 @@ class ReleaseViewSet(BaseAPIViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
     filterset_fields = (
-        'name',
-        'slug',
-        'is_published',
-        'pre_release',
-        'version',
-        'release_date',
+        "name",
+        "slug",
+        "is_published",
+        "pre_release",
+        "version",
+        "release_date",
     )
 
 
 class ReleaseFileFilter(BaseFilterSet):
-
     class Meta:
         model = ReleaseFile
         fields = {
-            'name': ['exact'],
-            'slug': ['exact'],
-            'description': ['contains'],
-            'os': ['exact'],
-            'release': ['exact'],
+            "name": ["exact"],
+            "slug": ["exact"],
+            "description": ["contains"],
+            "os": ["exact"],
+            "release": ["exact"],
         }
 
 
@@ -126,9 +150,9 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     permission_classes = (IsStaffOrReadOnly,)
     filterset_class = ReleaseFileFilter
 
-    @action(detail=False, methods=['delete'])
+    @action(detail=False, methods=["delete"])
     def delete_by_release(self, request):
-        release = request.query_params.get('release')
+        release = request.query_params.get("release")
         if release is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # TODO: We can add support for pagination in the future.

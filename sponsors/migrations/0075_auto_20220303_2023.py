@@ -6,15 +6,14 @@ import django.db.models.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0074_auto_20220211_1659'),
+        ("sponsors", "0074_auto_20220211_1659"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorship',
-            name='overlapped_by',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to='sponsors.Sponsorship'),
+            model_name="sponsorship",
+            name="overlapped_by",
+            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.SET_NULL, to="sponsors.Sponsorship"),
         ),
     ]

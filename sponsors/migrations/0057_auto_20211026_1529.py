@@ -5,15 +5,14 @@ import uuid
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0056_textasset'),
+        ("sponsors", "0056_textasset"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='genericasset',
-            name='uuid',
+            model_name="genericasset",
+            name="uuid",
             field=models.UUIDField(default=uuid.uuid4, editable=False),
         ),
     ]

@@ -4,29 +4,30 @@ from django.db import migrations, models
 
 from sponsors.models.sponsorship import Sponsorship as _Sponsorship
 
+
 def forwards_func(apps, schema_editor):
-    Sponsorship = apps.get_model('sponsors', 'Sponsorship')
+    Sponsorship = apps.get_model("sponsors", "Sponsorship")
     db_alias = schema_editor.connection.alias
 
     for sponsorship in Sponsorship.objects.all():
         sponsorship.locked = not (sponsorship.status == _Sponsorship.APPLIED)
         sponsorship.save()
 
+
 def reverse_func(apps, schema_editor):
     pass
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0093_auto_20230214_2113'),
+        ("sponsors", "0093_auto_20230214_2113"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorship',
-            name='locked',
+            model_name="sponsorship",
+            name="locked",
             field=models.BooleanField(default=False),
         ),
-        migrations.RunPython(forwards_func, reverse_func)
+        migrations.RunPython(forwards_func, reverse_func),
     ]

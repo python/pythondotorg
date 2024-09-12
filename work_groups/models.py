@@ -5,13 +5,14 @@ from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
 
-DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
 
 class WorkGroup(ContentManageable, NameSlugModel):
     """
     Model to store Python Working Groups
     """
+
     active = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)
 
@@ -46,12 +47,9 @@ class WorkGroup(ContentManageable, NameSlugModel):
         help_text="What resources will you need from the PSF in order to have a functional and effective workgroup?",
     )
 
-    url = models.URLField('URL', blank=True, help_text="Main URL for Group")
+    url = models.URLField("URL", blank=True, help_text="Main URL for Group")
 
-    organizers = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        related_name="+"
-    )
+    organizers = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="+")
 
     members = models.ManyToManyField(
         settings.AUTH_USER_MODEL,

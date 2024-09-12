@@ -21,12 +21,8 @@ class CreatePyConVouchersForSponsorsTestCase(TestCase):
     def test_generate_voucher_codes(self, mock_api_call):
         for benefit_id, code in BENEFITS.items():
             sponsor = baker.make("sponsors.Sponsor", name="Foo")
-            sponsorship = baker.make(
-                "sponsors.Sponsorship", status="finalized", sponsor=sponsor
-            )
-            sponsorship_benefit = baker.make(
-                "sponsors.SponsorshipBenefit", id=benefit_id
-            )
+            sponsorship = baker.make("sponsors.Sponsorship", status="finalized", sponsor=sponsor)
+            sponsorship_benefit = baker.make("sponsors.SponsorshipBenefit", id=benefit_id)
             sponsor_benefit = baker.make(
                 "sponsors.SponsorBenefit",
                 id=benefit_id,
@@ -48,7 +44,5 @@ class CreatePyConVouchersForSponsorsTestCase(TestCase):
         generate_voucher_codes(2020)
 
         for benefit_id, code in BENEFITS.items():
-            asset = ProvidedTextAsset.objects.get(
-                sponsor_benefit__id=benefit_id, internal_name=code["internal_name"]
-            )
+            asset = ProvidedTextAsset.objects.get(sponsor_benefit__id=benefit_id, internal_name=code["internal_name"])
             self.assertEqual(asset.value, "test-promo-code")

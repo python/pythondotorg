@@ -6,21 +6,32 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('blogs', '0002_remove_translations_and_contributors'),
+        ("blogs", "0002_remove_translations_and_contributors"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='relatedblog',
-            name='creator',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_creator', to=settings.AUTH_USER_MODEL),
+            model_name="relatedblog",
+            name="creator",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(app_label)s_%(class)s_creator",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
         migrations.AlterField(
-            model_name='relatedblog',
-            name='last_modified_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='%(app_label)s_%(class)s_modified', to=settings.AUTH_USER_MODEL),
+            model_name="relatedblog",
+            name="last_modified_by",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="%(app_label)s_%(class)s_modified",
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

@@ -1,8 +1,8 @@
-
 from rest_framework import serializers
 
 from sponsors.models import GenericAsset
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
+
 
 class LogoPlacementSerializer(serializers.Serializer):
     publisher = serializers.CharField()

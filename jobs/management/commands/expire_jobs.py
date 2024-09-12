@@ -8,14 +8,10 @@ from jobs.models import Job
 
 
 class Command(BaseCommand):
-    """ Expire jobs older than settings.JOB_THRESHOLD_DAYS """
+    """Expire jobs older than settings.JOB_THRESHOLD_DAYS"""
 
     def handle(self, **options):
-        days = getattr(settings, 'JOB_THRESHOLD_DAYS', 90)
+        days = getattr(settings, "JOB_THRESHOLD_DAYS", 90)
         expiration = timezone.now() - datetime.timedelta(days=days)
 
-        Job.objects.approved().filter(
-            expires__lte=expiration
-        ).update(
-            status=Job.STATUS_EXPIRED
-        )
+        Job.objects.approved().filter(expires__lte=expiration).update(status=Job.STATUS_EXPIRED)

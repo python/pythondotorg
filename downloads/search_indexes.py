@@ -10,11 +10,11 @@ from .models import Release
 
 class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='name')
+    name = indexes.CharField(model_attr="name")
     description = indexes.CharField()
     path = indexes.CharField()
-    release_notes_url = indexes.CharField(model_attr='release_notes_url')
-    release_date = indexes.DateTimeField(model_attr='release_date')
+    release_notes_url = indexes.CharField(model_attr="release_notes_url")
+    release_date = indexes.DateTimeField(model_attr="release_date")
 
     include_template = indexes.CharField()
 
@@ -22,7 +22,7 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
         return Release
 
     def index_queryset(self, using=None):
-        """ Only index published Releases """
+        """Only index published Releases"""
         return self.get_model().objects.filter(is_published=True)
 
     def prepare_include_template(self, obj):
@@ -38,7 +38,7 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
         return striptags(truncatewords_html(obj.content.rendered, 50))
 
     def prepare(self, obj):
-        """ Boost recent releases """
+        """Boost recent releases"""
         data = super().prepare(obj)
 
         now = timezone.now()
@@ -49,10 +49,10 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
         # Boost releases in the last 3 months and 6 months
         # reduce boost on releases older than 2 years
         if obj.release_date >= three_months:
-            data['boost'] = 1.2
+            data["boost"] = 1.2
         elif obj.release_date >= six_months:
-            data['boost'] = 1.1
+            data["boost"] = 1.1
         elif obj.release_date <= two_years:
-            data['boost'] = 0.8
+            data["boost"] = 0.8
 
         return data

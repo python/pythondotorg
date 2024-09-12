@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0101_sponsor_linked_in_page_url'),
+        ("sponsors", "0101_sponsor_linked_in_page_url"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='textasset',
-            name='text',
-            field=models.TextField(blank=True, default=''),
+            model_name="textasset",
+            name="text",
+            field=models.TextField(blank=True, default=""),
         ),
     ]

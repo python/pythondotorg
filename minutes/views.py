@@ -7,8 +7,8 @@ from .models import Minutes
 
 class MinutesList(ListView):
     model = Minutes
-    template_name = 'minutes/minutes_list.html'
-    context_object_name = 'minutes_list'
+    template_name = "minutes/minutes_list.html"
+    context_object_name = "minutes_list"
 
     def get_queryset(self):
         if self.request.user.is_staff:
@@ -16,13 +16,13 @@ class MinutesList(ListView):
         else:
             qs = Minutes.objects.published()
 
-        return qs.order_by('-date')
+        return qs.order_by("-date")
 
 
 class MinutesDetail(DetailView):
     model = Minutes
-    template_name = 'minutes/minutes_detail.html'
-    context_object_name = 'minutes'
+    template_name = "minutes/minutes_detail.html"
+    context_object_name = "minutes"
 
     def get_object(self, queryset=None):
         # Allow site admins to see drafts
@@ -33,9 +33,9 @@ class MinutesDetail(DetailView):
 
         try:
             obj = qs.get(
-                date__year=int(self.kwargs['year']),
-                date__month=int(self.kwargs['month']),
-                date__day=int(self.kwargs['day']),
+                date__year=int(self.kwargs["year"]),
+                date__month=int(self.kwargs["month"]),
+                date__day=int(self.kwargs["day"]),
             )
         except ObjectDoesNotExist:
             raise Http404("Minutes does not exist")
@@ -47,8 +47,8 @@ class MinutesDetail(DetailView):
 
         same_year = Minutes.objects.filter(
             date__year=self.object.date.year,
-        ).order_by('date')
+        ).order_by("date")
 
-        context['same_year_minutes'] = same_year
+        context["same_year_minutes"] = same_year
 
         return context

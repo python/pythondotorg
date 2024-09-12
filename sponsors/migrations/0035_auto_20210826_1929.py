@@ -5,25 +5,26 @@ import sponsors.models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0034_contract_document_docx'),
+        ("sponsors", "0034_contract_document_docx"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='contract',
-            name='document',
-            field=models.FileField(blank=True, upload_to='sponsors/contracts/', verbose_name='Unsigned PDF'),
+            model_name="contract",
+            name="document",
+            field=models.FileField(blank=True, upload_to="sponsors/contracts/", verbose_name="Unsigned PDF"),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='document_docx',
-            field=models.FileField(blank=True, upload_to='sponsors/contracts/docx/', verbose_name='Unsigned Docx'),
+            model_name="contract",
+            name="document_docx",
+            field=models.FileField(blank=True, upload_to="sponsors/contracts/docx/", verbose_name="Unsigned Docx"),
         ),
         migrations.AlterField(
-            model_name='contract',
-            name='signed_document',
-            field=models.FileField(blank=True, upload_to=sponsors.models.signed_contract_random_path, verbose_name='Signed PDF'),
+            model_name="contract",
+            name="signed_document",
+            field=models.FileField(
+                blank=True, upload_to=sponsors.models.signed_contract_random_path, verbose_name="Signed PDF"
+            ),
         ),
     ]

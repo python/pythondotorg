@@ -10,12 +10,12 @@ register = template.Library()
 @stringfilter
 def render_email(value):
     if value:
-        mailbox, domain = value.split('@')
-        mailbox_tokens = mailbox.split('.')
-        domain_tokens = domain.split('.')
+        mailbox, domain = value.split("@")
+        mailbox_tokens = mailbox.split(".")
+        domain_tokens = domain.split(".")
 
-        mailbox = '<span>.</span>'.join(mailbox_tokens)
-        domain = '<span>.</span>'.join(domain_tokens)
+        mailbox = "<span>.</span>".join(mailbox_tokens)
+        domain = "<span>.</span>".join(domain_tokens)
 
-        return format_html('<span>@</span>'.join((mailbox, domain)))
+        return format_html("<span>@</span>".join((mailbox, domain)))
     return None

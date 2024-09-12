@@ -13,36 +13,35 @@ from .models import JobType, JobCategory, Job
 
 
 class JobProvider(BaseProvider):
-
     job_types = [
-        'Big Data',
-        'Cloud',
-        'Database',
-        'Evangelism',
-        'Systems',
-        'Test',
-        'Web',
-        'Operations',
+        "Big Data",
+        "Cloud",
+        "Database",
+        "Evangelism",
+        "Systems",
+        "Test",
+        "Web",
+        "Operations",
     ]
 
     job_categories = [
-        'Software Developer',
-        'Software Engineer',
-        'Data Analyst',
-        'Administrator',
+        "Software Developer",
+        "Software Engineer",
+        "Data Analyst",
+        "Administrator",
     ]
 
     job_titles = [
-        'Senior Python Developer',
-        'Django Developer',
-        'Full Stack Python/Django Developer',
-        'Machine Learning Engineer',
-        'Full Stack Developer',
-        'Python Data Engineer',
-        'Senior Test Automation Engineer',
-        'Backend Python Engineer',
-        'Python Tech Lead',
-        'Junior Developer',
+        "Senior Python Developer",
+        "Django Developer",
+        "Full Stack Python/Django Developer",
+        "Machine Learning Engineer",
+        "Full Stack Developer",
+        "Python Data Engineer",
+        "Senior Test Automation Engineer",
+        "Backend Python Engineer",
+        "Python Tech Lead",
+        "Junior Developer",
     ]
 
     def job_type(self):
@@ -59,42 +58,39 @@ factory.Faker.add_provider(JobProvider)
 
 
 class JobCategoryFactory(DjangoModelFactory):
-
     class Meta:
         model = JobCategory
-        django_get_or_create = ('name',)
+        django_get_or_create = ("name",)
 
-    name = factory.Faker('job_category')
+    name = factory.Faker("job_category")
 
 
 class JobTypeFactory(DjangoModelFactory):
-
     class Meta:
         model = JobType
-        django_get_or_create = ('name',)
+        django_get_or_create = ("name",)
 
-    name = factory.Faker('job_type')
+    name = factory.Faker("job_type")
 
 
 class JobFactory(DjangoModelFactory):
-
     class Meta:
         model = Job
 
     creator = factory.SubFactory(UserFactory)
     category = factory.SubFactory(JobCategoryFactory)
-    job_title = factory.Faker('job_title')
-    city = 'Lawrence'
-    region = 'KS'
-    country = 'US'
-    company_name = factory.Faker('company')
-    company_description = factory.Faker('sentence', nb_words=10)
-    contact = factory.Faker('name')
-    email = factory.Faker('email')
-    url = 'https://www.example.com/'
+    job_title = factory.Faker("job_title")
+    city = "Lawrence"
+    region = "KS"
+    country = "US"
+    company_name = factory.Faker("company")
+    company_description = factory.Faker("sentence", nb_words=10)
+    contact = factory.Faker("name")
+    email = factory.Faker("email")
+    url = "https://www.example.com/"
 
-    description = 'Test Description'
-    requirements = 'Test Requirements'
+    description = "Test Description"
+    requirements = "Test Requirements"
 
     @factory.lazy_attribute
     def expires(self):
@@ -143,21 +139,23 @@ class ReviewJobFactory(JobFactory):
 class JobsBoardAdminGroupFactory(DjangoModelFactory):
     class Meta:
         model = Group
-        django_get_or_create = ('name',)
+        django_get_or_create = ("name",)
 
-    name = 'Job Board Admin'
+    name = "Job Board Admin"
 
 
 def initial_data():
     return {
-        'jobs': [
+        "jobs": [
             ArchivedJobFactory(),
             DraftJobFactory(),
             ExpiredJobFactory(),
             RejectedJobFactory(),
             RemovedJobFactory(),
-        ] + ApprovedJobFactory.create_batch(size=5) + ReviewJobFactory.create_batch(size=3),
-        'groups': [
+        ]
+        + ApprovedJobFactory.create_batch(size=5)
+        + ReviewJobFactory.create_batch(size=3),
+        "groups": [
             JobsBoardAdminGroupFactory(),
         ],
     }

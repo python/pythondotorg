@@ -18,13 +18,8 @@ def reset_sponsor_benefits_cost(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0013_sponsorbenefit_benefit_internal_value"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            populate_sponsor_benefits_cost, reset_sponsor_benefits_cost
-        )
-    ]
+    operations = [migrations.RunPython(populate_sponsor_benefits_cost, reset_sponsor_benefits_cost)]

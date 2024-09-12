@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0063_auto_20211220_1422'),
+        ("sponsors", "0063_auto_20211220_1422"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorshippackage',
-            name='slug',
-            field=models.SlugField(default='', help_text='Internal identifier used to reference this package.'),
+            model_name="sponsorshippackage",
+            name="slug",
+            field=models.SlugField(default="", help_text="Internal identifier used to reference this package."),
         ),
     ]

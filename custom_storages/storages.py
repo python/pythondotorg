@@ -42,11 +42,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
         """
         Return a list of (start, end) tuples for each comment block.
         """
-        return [
-            (match.start(), match.end())
-            for match in re.finditer(r'\/\*.*?\*\/', content, flags=re.DOTALL)
-        ]
-
+        return [(match.start(), match.end()) for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)]
 
     def is_in_comment(self, pos, comments):
         for start, end in comments:
@@ -55,7 +51,6 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             if pos < start:
                 return False
         return False
-
 
     def url_converter(self, name, hashed_files, template=None, comment_blocks=[]):
         """
@@ -112,9 +107,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 hashed_files=hashed_files,
             )
 
-            transformed_url = "/".join(
-                url_path.split("/")[:-1] + hashed_url.split("/")[-1:]
-            )
+            transformed_url = "/".join(url_path.split("/")[:-1] + hashed_url.split("/")[-1:])
 
             # Restore the fragment that was stripped off earlier.
             if fragment:
@@ -125,7 +118,6 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             return template % matches
 
         return converter
-
 
     def _post_process(self, paths, adjustable_paths, hashed_files):
         # Sort the files by directory level
@@ -163,9 +155,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         if matches_patterns(path, (extension,)):
                             comment_blocks = self.get_comment_blocks(content)
                             for pattern, template in patterns:
-                                converter = self.url_converter(
-                                    name, hashed_files, template, comment_blocks
-                                )
+                                converter = self.url_converter(name, hashed_files, template, comment_blocks)
                                 try:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:

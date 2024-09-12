@@ -34,8 +34,7 @@ class LoginRequiredMixin(DjangoLoginRequiredMixin):
             self.get_redirect_field_name(),
         )
         if self.raise_exception:
-            if (self.redirect_unauthenticated_users and not
-                    self.request.user.is_authenticated):
+            if self.redirect_unauthenticated_users and not self.request.user.is_authenticated:
                 return response
             raise PermissionDenied(self.get_permission_denied_message())
         return response
@@ -45,12 +44,10 @@ class GroupRequiredMixin(AccessMixin):
     group_required = None
 
     def get_group_required(self):
-        if self.group_required is None or (
-                not isinstance(self.group_required, (str, list, tuple))
-        ):
+        if self.group_required is None or (not isinstance(self.group_required, (str, list, tuple))):
             msg = (
                 '{} requires the "group_required" attribute to be set and be '
-                'one of the following types: string, list or tuple'
+                "one of the following types: string, list or tuple"
             )
             raise ImproperlyConfigured(msg.format(type(self).__name__))
         if not isinstance(self.group_required, (list, tuple)):
@@ -62,7 +59,7 @@ class GroupRequiredMixin(AccessMixin):
             return False
         if self.request.user.is_superuser:
             return True
-        user_groups = self.request.user.groups.values_list('name', flat=True)
+        user_groups = self.request.user.groups.values_list("name", flat=True)
         return set(group).intersection(set(user_groups))
 
     def dispatch(self, request, *args, **kwargs):

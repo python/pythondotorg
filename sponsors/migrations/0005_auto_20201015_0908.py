@@ -5,15 +5,12 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0004_auto_20201014_1622"),
     ]
 
     operations = [
-        migrations.RenameField(
-            model_name="sponsorshipbenefit", old_name="value", new_name="internal_value"
-        ),
+        migrations.RenameField(model_name="sponsorshipbenefit", old_name="value", new_name="internal_value"),
         migrations.AddField(
             model_name="sponsorshipbenefit",
             name="capacity",

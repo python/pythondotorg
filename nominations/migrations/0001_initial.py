@@ -7,7 +7,6 @@ import markupfield.fields
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [migrations.swappable_dependency(settings.AUTH_USER_MODEL)]
@@ -144,7 +143,5 @@ class Migration(migrations.Migration):
                 to="nominations.Nominee",
             ),
         ),
-        migrations.AlterUniqueTogether(
-            name="nominee", unique_together={("user", "election")}
-        ),
+        migrations.AlterUniqueTogether(name="nominee", unique_together={("user", "election")}),
     ]

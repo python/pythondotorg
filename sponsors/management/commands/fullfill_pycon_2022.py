@@ -77,18 +77,14 @@ class Command(BaseCommand):
                 .all()
             ):
                 try:
-                    quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(
-                        sponsor_benefit=sponsorbenefit
-                    )
+                    quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(sponsor_benefit=sponsorbenefit)
                 except BenefitFeature.DoesNotExist:
-                    print(
-                        f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code_type}"
-                    )
+                    print(f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code_type}")
                     continue
                 try:
-                    asset = ProvidedTextAsset.objects.filter(
-                        sponsor_benefit=sponsorbenefit
-                    ).get(internal_name=f"{code_type}_code")
+                    asset = ProvidedTextAsset.objects.filter(sponsor_benefit=sponsorbenefit).get(
+                        internal_name=f"{code_type}_code"
+                    )
                 except ProvidedTextAsset.DoesNotExist:
                     print(
                         f"No provided asset found for {sponsorbenefit.sponsorship.sponsor.name} with internal name {code_type}_code"
@@ -104,9 +100,7 @@ class Command(BaseCommand):
                     },
                 )
                 if result["code"] == 200:
-                    print(
-                        f"Fullfilling {code_type} for {sponsorbenefit.sponsorship.sponsor.name}: {quantity.quantity}"
-                    )
+                    print(f"Fullfilling {code_type} for {sponsorbenefit.sponsorship.sponsor.name}: {quantity.quantity}")
                     promo_code = result["data"]["promo_code"]
                     asset.value = promo_code
                     asset.save()

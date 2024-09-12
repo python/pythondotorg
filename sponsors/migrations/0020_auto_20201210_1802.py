@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0019_statementofwork"),
     ]
@@ -17,9 +16,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsorbenefit",
             name="order",
-            field=models.PositiveIntegerField(
-                db_index=True, default=1, editable=False, verbose_name="order"
-            ),
+            field=models.PositiveIntegerField(db_index=True, default=1, editable=False, verbose_name="order"),
             preserve_default=False,
         ),
     ]

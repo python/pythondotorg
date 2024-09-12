@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0070_auto_20220111_2055'),
+        ("sponsors", "0070_auto_20220111_2055"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='requiredimgasset',
-            name='due_date',
+            model_name="requiredimgasset",
+            name="due_date",
             field=models.DateField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='requiredimgassetconfiguration',
-            name='due_date',
+            model_name="requiredimgassetconfiguration",
+            name="due_date",
             field=models.DateField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='requiredtextasset',
-            name='due_date',
+            model_name="requiredtextasset",
+            name="due_date",
             field=models.DateField(blank=True, default=None, null=True),
         ),
         migrations.AddField(
-            model_name='requiredtextassetconfiguration',
-            name='due_date',
+            model_name="requiredtextassetconfiguration",
+            name="due_date",
             field=models.DateField(blank=True, default=None, null=True),
         ),
     ]

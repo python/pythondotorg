@@ -1,0 +1,24 @@
+line-length = 120
+src = ["banners", "blogs", "boxes", "cms", "codesamples", "community", "companies", "custom_storages",
+    "downloads", "events", "fastly", "jobs", "mailing", "membersip", "minutes", "nominations", "pages",
+    "peps", "pydotorg", "sponsors", "successstories", "users", "work_groups"]
+target-version = "py312"
+
+[lint]
+select = ["ALL"]
+ignore = ["ANN101", "ANN102", "ANN401", "PLR0913", "RUF012", "COM812", "ISC001", "ERA001", "TD", "FIX002"]
+
+[format]
+quote-style = "double"
+indent-style = "space"
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.mccabe]
+max-complexity = 12
+
+[lint.isort]
+known-first-party = ["pybama_org", "tests", "config"]
+
+[lint.per-file-ignores]

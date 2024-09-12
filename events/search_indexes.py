@@ -7,12 +7,12 @@ from .models import Event, Calendar
 
 class CalendarIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='name')
+    name = indexes.CharField(model_attr="name")
     description = indexes.CharField(null=True)
     path = indexes.CharField()
-    rss = indexes.CharField(model_attr='rss', null=True)
-    twitter = indexes.CharField(model_attr='twitter', null=True)
-    ical_url = indexes.CharField(model_attr='url', null=True)
+    rss = indexes.CharField(model_attr="rss", null=True)
+    twitter = indexes.CharField(model_attr="twitter", null=True)
+    ical_url = indexes.CharField(model_attr="url", null=True)
     include_template = indexes.CharField()
 
     def get_model(self):
@@ -29,13 +29,13 @@ class CalendarIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare(self, obj):
         data = super().prepare(obj)
-        data['boost'] = 4
+        data["boost"] = 4
         return data
 
 
 class EventIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
-    name = indexes.CharField(model_attr='title')
+    name = indexes.CharField(model_attr="title")
     description = indexes.CharField(null=True)
     venue = indexes.CharField(null=True)
     path = indexes.CharField()
@@ -60,15 +60,15 @@ class EventIndex(indexes.SearchIndex, indexes.Indexable):
             return None
 
     def prepare(self, obj):
-        """ Boost events """
+        """Boost events"""
         data = super().prepare(obj)
 
         # Reduce boost of past events
         if obj.is_past:
-            data['boost'] = 0.9
+            data["boost"] = 0.9
         elif obj.featured:
-            data['boost'] = 1.2
+            data["boost"] = 1.2
         else:
-            data['boost'] = 1.1
+            data["boost"] = 1.1
 
         return data

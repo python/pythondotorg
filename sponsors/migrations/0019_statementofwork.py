@@ -6,7 +6,6 @@ import markupfield.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0019_sponsor_twitter_handle"),
     ]

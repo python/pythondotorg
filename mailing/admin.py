@@ -13,16 +13,15 @@ class BaseEmailTemplateAdmin(admin.ModelAdmin):
     readonly_fields = ["created_at", "updated_at"]
     search_fields = ["internal_name"]
     fieldsets = (
-        (None, {
-            'fields': ('internal_name',)
-        }),
-        ('Email template', {
-            'fields': ('subject', 'content')
-        }),
-        ('Timestamps', {
-            'classes': ('collapse',),
-            'fields': ('created_at', 'updated_at'),
-        }),
+        (None, {"fields": ("internal_name",)}),
+        ("Email template", {"fields": ("subject", "content")}),
+        (
+            "Timestamps",
+            {
+                "classes": ("collapse",),
+                "fields": ("created_at", "updated_at"),
+            },
+        ),
     )
 
     def get_form(self, *args, **kwargs):

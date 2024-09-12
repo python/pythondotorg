@@ -6,38 +6,59 @@ import sponsors.models.assets
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
-        ('sponsors', '0052_requiredimgasset_requiredimgassetconfiguration'),
+        ("contenttypes", "0002_remove_content_type_name"),
+        ("sponsors", "0052_requiredimgasset_requiredimgassetconfiguration"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='GenericAsset',
+            name="GenericAsset",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('object_id', models.PositiveIntegerField()),
-                ('internal_name', models.CharField(db_index=True, max_length=128, verbose_name='Internal Name')),
-                ('content_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='contenttypes.ContentType')),
-                ('polymorphic_ctype', models.ForeignKey(editable=False, null=True, on_delete=django.db.models.deletion.CASCADE, related_name='polymorphic_sponsors.genericasset_set+', to='contenttypes.ContentType')),
+                ("id", models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("object_id", models.PositiveIntegerField()),
+                ("internal_name", models.CharField(db_index=True, max_length=128, verbose_name="Internal Name")),
+                (
+                    "content_type",
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="contenttypes.ContentType"),
+                ),
+                (
+                    "polymorphic_ctype",
+                    models.ForeignKey(
+                        editable=False,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="polymorphic_sponsors.genericasset_set+",
+                        to="contenttypes.ContentType",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'Asset',
-                'verbose_name_plural': 'Assets',
-                'unique_together': {('content_type', 'object_id', 'internal_name')},
+                "verbose_name": "Asset",
+                "verbose_name_plural": "Assets",
+                "unique_together": {("content_type", "object_id", "internal_name")},
             },
         ),
         migrations.CreateModel(
-            name='ImgAsset',
+            name="ImgAsset",
             fields=[
-                ('genericasset_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='sponsors.GenericAsset')),
-                ('image', models.ImageField(null=True, upload_to=sponsors.models.assets.generic_asset_path)),
+                (
+                    "genericasset_ptr",
+                    models.OneToOneField(
+                        auto_created=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        parent_link=True,
+                        primary_key=True,
+                        serialize=False,
+                        to="sponsors.GenericAsset",
+                    ),
+                ),
+                ("image", models.ImageField(null=True, upload_to=sponsors.models.assets.generic_asset_path)),
             ],
             options={
-                'verbose_name': 'Image Asset',
-                'verbose_name_plural': 'Image Assets',
+                "verbose_name": "Image Asset",
+                "verbose_name_plural": "Image Assets",
             },
-            bases=('sponsors.genericasset',),
+            bases=("sponsors.genericasset",),
         ),
     ]

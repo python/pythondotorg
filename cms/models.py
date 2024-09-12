@@ -25,14 +25,14 @@ class ContentManageable(models.Model):
     # where there isn't a request.user sitting around).
     creator = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_creator',
+        related_name="%(app_label)s_%(class)s_creator",
         null=True,
         blank=True,
         on_delete=models.CASCADE,
     )
     last_modified_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
-        related_name='%(app_label)s_%(class)s_modified',
+        related_name="%(app_label)s_%(class)s_modified",
         null=True,
         blank=True,
         on_delete=models.CASCADE,

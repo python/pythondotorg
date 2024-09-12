@@ -4,20 +4,19 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0088_auto_20220810_1655'),
+        ("sponsors", "0088_auto_20220810_1655"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='sponsorbenefit',
-            old_name='a_la_carte',
-            new_name='standalone',
+            model_name="sponsorbenefit",
+            old_name="a_la_carte",
+            new_name="standalone",
         ),
         migrations.RenameField(
-            model_name='sponsorshipbenefit',
-            old_name='a_la_carte',
-            new_name='standalone',
+            model_name="sponsorshipbenefit",
+            old_name="a_la_carte",
+            new_name="standalone",
         ),
     ]

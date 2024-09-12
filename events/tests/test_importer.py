@@ -7,8 +7,10 @@ from events.importer import ICSImporter
 from events.models import Calendar, Event
 
 CUR_DIR = os.path.dirname(__file__)
-EVENTS_CALENDAR = os.path.join(CUR_DIR, 'events.ics')
-EVENTS_CALENDAR_URL = 'https://www.google.com/calendar/ical/j7gov1cmnqr9tvg14k621j7t5c@group.calendar.google.com/public/basic.ics'
+EVENTS_CALENDAR = os.path.join(CUR_DIR, "events.ics")
+EVENTS_CALENDAR_URL = (
+    "https://www.google.com/calendar/ical/j7gov1cmnqr9tvg14k621j7t5c@group.calendar.google.com/public/basic.ics"
+)
 
 
 class EventsImporterTestCase(TestCase):
@@ -16,7 +18,7 @@ class EventsImporterTestCase(TestCase):
     def setUpClass(cls):
         # TODO: Use TestCase.setUpTestData() instead in Django 1.8+.
         super().setUpClass()
-        cls.calendar = Calendar.objects.create(url=EVENTS_CALENDAR_URL, slug='python-events')
+        cls.calendar = Calendar.objects.create(url=EVENTS_CALENDAR_URL, slug="python-events")
 
     def test_injest(self):
         importer = ICSImporter(self.calendar)
@@ -54,21 +56,14 @@ END:VCALENDAR
 """
         importer.import_events_from_text(ical)
 
-        e = Event.objects.get(uid='8ceqself979pphq4eu7l5e2db8@google.com')
+        e = Event.objects.get(uid="8ceqself979pphq4eu7l5e2db8@google.com")
         self.assertEqual(e.calendar.url, EVENTS_CALENDAR_URL)
         self.assertEqual(
-            e.description.rendered,
-            '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
+            e.description.rendered, '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
         )
         self.assertTrue(e.next_or_previous_time.all_day)
-        self.assertEqual(
-            make_aware(datetime(year=2016, month=4, day=2)),
-            e.next_or_previous_time.dt_start
-        )
-        self.assertEqual(
-            make_aware(datetime(year=2016, month=4, day=3)),
-            e.next_or_previous_time.dt_end
-        )
+        self.assertEqual(make_aware(datetime(year=2016, month=4, day=2)), e.next_or_previous_time.dt_start)
+        self.assertEqual(make_aware(datetime(year=2016, month=4, day=3)), e.next_or_previous_time.dt_end)
 
         ical = """BEGIN:VCALENDAR
 PRODID:-//Google Inc//Google Calendar 70.9054//EN
@@ -97,19 +92,13 @@ END:VCALENDAR
 """
         importer.import_events_from_text(ical)
 
-        e2 = Event.objects.get(uid='8ceqself979pphq4eu7l5e2db8@google.com')
+        e2 = Event.objects.get(uid="8ceqself979pphq4eu7l5e2db8@google.com")
         self.assertEqual(e.pk, e2.pk)
         self.assertEqual(e2.calendar.url, EVENTS_CALENDAR_URL)
-        self.assertEqual(e2.description.rendered, 'Python Istanbul')
+        self.assertEqual(e2.description.rendered, "Python Istanbul")
         self.assertTrue(e.next_or_previous_time.all_day)
-        self.assertEqual(
-            make_aware(datetime(year=2016, month=4, day=2)),
-            e.next_or_previous_time.dt_start
-        )
-        self.assertEqual(
-            make_aware(datetime(year=2016, month=4, day=3)),
-            e.next_or_previous_time.dt_end
-        )
+        self.assertEqual(make_aware(datetime(year=2016, month=4, day=2)), e.next_or_previous_time.dt_start)
+        self.assertEqual(make_aware(datetime(year=2016, month=4, day=3)), e.next_or_previous_time.dt_end)
 
     def test_import_event_excludes_ending_day_when_all_day_is_true(self):
         ical = """BEGIN:VCALENDAR
@@ -127,17 +116,11 @@ END:VCALENDAR
         importer = ICSImporter(self.calendar)
         importer.import_events_from_text(ical)
 
-        all_day_event = Event.objects.get(uid='pythoncalendartest@python.org')
+        all_day_event = Event.objects.get(uid="pythoncalendartest@python.org")
         self.assertTrue(all_day_event.next_or_previous_time.all_day)
         self.assertFalse(all_day_event.next_or_previous_time.single_day)
-        self.assertEqual(
-            make_aware(datetime(year=2015, month=3, day=28)),
-            all_day_event.next_or_previous_time.dt_start
-        )
-        self.assertEqual(
-            make_aware(datetime(year=2015, month=3, day=29)),
-            all_day_event.next_or_previous_time.dt_end
-        )
+        self.assertEqual(make_aware(datetime(year=2015, month=3, day=28)), all_day_event.next_or_previous_time.dt_start)
+        self.assertEqual(make_aware(datetime(year=2015, month=3, day=29)), all_day_event.next_or_previous_time.dt_end)
 
     def test_import_event_does_not_exclude_ending_day_when_all_day_is_false(self):
         ical = """BEGIN:VCALENDAR
@@ -156,14 +139,13 @@ END:VCALENDAR
         importer = ICSImporter(self.calendar)
         importer.import_events_from_text(ical)
 
-        single_day_event = Event.objects.get(uid='pythoncalendartestsingleday@python.org')
+        single_day_event = Event.objects.get(uid="pythoncalendartestsingleday@python.org")
         self.assertFalse(single_day_event.next_or_previous_time.all_day)
         self.assertTrue(single_day_event.next_or_previous_time.single_day)
         self.assertEqual(
-            make_aware(datetime(year=2013, month=8, day=2, hour=20)),
-            single_day_event.next_or_previous_time.dt_start
+            make_aware(datetime(year=2013, month=8, day=2, hour=20)), single_day_event.next_or_previous_time.dt_start
         )
         self.assertEqual(
             make_aware(datetime(year=2013, month=8, day=2, hour=20, minute=30)),
-            single_day_event.next_or_previous_time.dt_end
+            single_day_event.next_or_previous_time.dt_end,
         )

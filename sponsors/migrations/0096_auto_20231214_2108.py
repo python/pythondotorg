@@ -5,57 +5,48 @@ import django.db.models.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0095_auto_20231214_2025'),
+        ("sponsors", "0095_auto_20231214_2025"),
     ]
 
     operations = [
         migrations.AlterModelManagers(
-            name='benefitfeatureconfiguration',
+            name="benefitfeatureconfiguration",
             managers=[
-                ('objects', django.db.models.manager.Manager()),
-                ('non_polymorphic', django.db.models.manager.Manager()),
+                ("objects", django.db.models.manager.Manager()),
+                ("non_polymorphic", django.db.models.manager.Manager()),
             ],
         ),
         migrations.AlterModelManagers(
-            name='emailtargetableconfiguration',
-            managers=[
-            ],
+            name="emailtargetableconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='logoplacementconfiguration',
-            managers=[
-            ],
+            name="logoplacementconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='providedfileassetconfiguration',
-            managers=[
-            ],
+            name="providedfileassetconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='providedtextassetconfiguration',
-            managers=[
-            ],
+            name="providedtextassetconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='requiredimgassetconfiguration',
-            managers=[
-            ],
+            name="requiredimgassetconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='requiredresponseassetconfiguration',
-            managers=[
-            ],
+            name="requiredresponseassetconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='requiredtextassetconfiguration',
-            managers=[
-            ],
+            name="requiredtextassetconfiguration",
+            managers=[],
         ),
         migrations.AlterModelManagers(
-            name='tieredbenefitconfiguration',
-            managers=[
-            ],
+            name="tieredbenefitconfiguration",
+            managers=[],
         ),
     ]

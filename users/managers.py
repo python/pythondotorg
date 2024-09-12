@@ -3,7 +3,6 @@ from django.contrib.auth.models import UserManager as DjangoUserManager
 
 
 class UserQuerySet(QuerySet):
-
     def active(self):
         return self.filter(is_active=True)
 

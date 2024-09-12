@@ -18,7 +18,7 @@ class NomineeAdmin(admin.ModelAdmin):
     readonly_fields = ("slug",)
 
     def get_ordering(self, request):
-        return ['election', Lower('user__last_name')]
+        return ["election", Lower("user__last_name")]
 
 
 @admin.register(Nomination)
@@ -28,4 +28,4 @@ class NominationAdmin(admin.ModelAdmin):
     list_filter = ("election", "accepted", "approved")
 
     def get_ordering(self, request):
-        return ['election', Lower('nominee__user__last_name')]
+        return ["election", Lower("nominee__user__last_name")]

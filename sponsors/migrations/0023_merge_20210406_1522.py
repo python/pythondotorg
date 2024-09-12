@@ -4,11 +4,9 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0022_sponsorcontact_administrative'),
-        ('sponsors', '0020_sponsorshipbenefit_unavailable'),
+        ("sponsors", "0022_sponsorcontact_administrative"),
+        ("sponsors", "0020_sponsorshipbenefit_unavailable"),
     ]
 
-    operations = [
-    ]
+    operations = []

@@ -13,3 +13,5 @@ django-debug-toolbar==3.2.1
 coverage
 ddt
 model-bakery==1.4.0
+
+ruff

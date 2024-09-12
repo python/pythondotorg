@@ -6,7 +6,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("sponsors", "0007_auto_20201021_1410"),
@@ -144,9 +143,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "primary_phone",
-                    models.CharField(
-                        max_length=32, verbose_name="Sponsor Primary Phone"
-                    ),
+                    models.CharField(max_length=32, verbose_name="Sponsor Primary Phone"),
                 ),
                 (
                     "mailing_address",

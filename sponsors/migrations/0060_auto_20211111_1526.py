@@ -4,30 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0059_auto_20211029_1503'),
+        ("sponsors", "0059_auto_20211029_1503"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='logoplacement',
-            name='describe_as_sponsor',
+            model_name="logoplacement",
+            name="describe_as_sponsor",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='logoplacement',
-            name='link_to_sponsors_page',
+            model_name="logoplacement",
+            name="link_to_sponsors_page",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='logoplacementconfiguration',
-            name='describe_as_sponsor',
+            model_name="logoplacementconfiguration",
+            name="describe_as_sponsor",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='logoplacementconfiguration',
-            name='link_to_sponsors_page',
+            model_name="logoplacementconfiguration",
+            name="link_to_sponsors_page",
             field=models.BooleanField(default=False),
         ),
     ]

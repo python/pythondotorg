@@ -17,9 +17,7 @@ class NominationForm(forms.ModelForm):
             "other_affiliations",
             "nomination_statement",
         )
-        widgets = {
-            "nomination_statement": MarkupTextarea()
-        }  # , "self_nomination": forms.CheckboxInput()}
+        widgets = {"nomination_statement": MarkupTextarea()}  # , "self_nomination": forms.CheckboxInput()}
         help_texts = {
             "name": "Name of the person you are nominating.",
             "email": "Email address for the person you are nominating.",
@@ -56,9 +54,7 @@ class NominationCreateForm(NominationForm):
 class NominationAcceptForm(forms.ModelForm):
     class Meta:
         model = Nomination
-        fields = (
-            "accepted",
-        )
+        fields = ("accepted",)
         help_texts = {
             "accepted": "If selected, this nomination will be considered accepted and displayed once nominations are public.",
         }

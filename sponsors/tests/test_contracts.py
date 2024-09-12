@@ -21,10 +21,8 @@ class TestRenderContract(TestCase):
 
         self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-contract-Sponsor.docx")
         self.assertEqual(
-            response.get("Content-Type"),
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-
 
     # DOCX unit test
     def test_render_renewal_response_with_docx_attachment(self):
@@ -34,6 +32,5 @@ class TestRenderContract(TestCase):
 
         self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-renewal-Sponsor.docx")
         self.assertEqual(
-            response.get("Content-Type"),
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )

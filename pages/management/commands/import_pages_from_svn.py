@@ -14,34 +14,34 @@ from ...parser import parse_page
 
 
 def fix_image_path(src):
-    if src.startswith('http'):
+    if src.startswith("http"):
         return src
-    if not src.startswith('/'):
-        src = '/' + src
-    url = f'{settings.MEDIA_URL}pages{src}'
+    if not src.startswith("/"):
+        src = "/" + src
+    url = f"{settings.MEDIA_URL}pages{src}"
     return url
 
 
 class Command(BaseCommand):
-    """ Import PSF content from svn repository of ReST content """
+    """Import PSF content from svn repository of ReST content"""
 
     def _build_path(self, filename):
-        filename = filename.replace(self.SVN_REPO_PATH, '')
-        filename = filename.replace('/content.ht', '')
-        filename = filename.replace('/content.rst', '')
-        filename = filename.replace('/body.html', '')
-        return filename.strip('/')
+        filename = filename.replace(self.SVN_REPO_PATH, "")
+        filename = filename.replace("/content.ht", "")
+        filename = filename.replace("/content.rst", "")
+        filename = filename.replace("/body.html", "")
+        return filename.strip("/")
 
     def copy_image(self, content_path, image):
-        if image.startswith('http'):
+        if image.startswith("http"):
             return
 
-        if image.startswith('/'):
+        if image.startswith("/"):
             image = image[1:]
             src = os.path.join(os.path.dirname(self.SVN_REPO_PATH), image)
         else:
             src = os.path.join(self.SVN_REPO_PATH, content_path, image)
-        dst = os.path.join(settings.MEDIA_ROOT, 'pages', image)
+        dst = os.path.join(settings.MEDIA_ROOT, "pages", image)
 
         try:
             os.makedirs(os.path.dirname(dst))
@@ -53,40 +53,37 @@ class Command(BaseCommand):
             pass
 
     def save_images(self, content_path, page):
-        soup = BeautifulSoup(page.content.rendered, 'lxml')
-        images = soup.find_all('img')
+        soup = BeautifulSoup(page.content.rendered, "lxml")
+        images = soup.find_all("img")
 
         for image in images:
-            self.copy_image(content_path, image.get('src'))
-            dst = fix_image_path(image.get('src'))
-            image['src'] = dst
+            self.copy_image(content_path, image.get("src"))
+            dst = fix_image_path(image.get("src"))
+            image["src"] = dst
 
-            Image.objects.get_or_create(
-                page=page,
-                image=dst
-            )
-        wrapper = BeautifulSoup('<div>', 'lxml')
+            Image.objects.get_or_create(page=page, image=dst)
+        wrapper = BeautifulSoup("<div>", "lxml")
         [wrapper.div.append(el) for el in soup.body.contents]
         page.content = "%s" % wrapper.div
-        page.content_markup_type = 'html'
+        page.content_markup_type = "html"
         page.save()
 
     def handle(self, *args, **kwargs):
-        self.SVN_REPO_PATH = getattr(settings, 'PYTHON_ORG_CONTENT_SVN_PATH', None)
+        self.SVN_REPO_PATH = getattr(settings, "PYTHON_ORG_CONTENT_SVN_PATH", None)
         if self.SVN_REPO_PATH is None:
             raise ImproperlyConfigured("PYTHON_ORG_CONTENT_SVN_PATH not defined in settings")
 
         matches = []
         for root, dirnames, filenames in os.walk(self.SVN_REPO_PATH):
             for filename in filenames:
-                if re.match(r'(content\.(ht|rst)|body\.html)$', filename):
+                if re.match(r"(content\.(ht|rst)|body\.html)$", filename):
                     matches.append(os.path.join(root, filename))
 
         for match in matches:
             path = self._build_path(match)
 
             # Skip homepage
-            if path == '':
+            if path == "":
                 continue
 
             try:
@@ -98,11 +95,11 @@ class Command(BaseCommand):
 
             try:
                 defaults = {
-                    'title': data['headers'].get('Title', ''),
-                    'keywords': data['headers'].get('Keywords', ''),
-                    'description': data['headers'].get('Description', ''),
-                    'content': data['content'],
-                    'content_markup_type': data['content_type'],
+                    "title": data["headers"].get("Title", ""),
+                    "keywords": data["headers"].get("Keywords", ""),
+                    "description": data["headers"].get("Description", ""),
+                    "content": data["content"],
+                    "content_markup_type": data["content_type"],
                 }
 
                 page_obj, _ = Page.objects.get_or_create(path=path, defaults=defaults)

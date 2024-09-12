@@ -132,37 +132,32 @@ def add_log_entry(request, object, acton_flag, message):
         object_id=object.pk,
         object_repr=str(object),
         action_flag=acton_flag,
-        change_message=message
+        change_message=message,
     )
 
 
 class SponsorshipApprovalLogger:
-
     def notify(self, request, sponsorship, contract, **kwargs):
         add_log_entry(request, sponsorship, CHANGE, "Sponsorship Approval")
         add_log_entry(request, contract, ADDITION, "Created After Sponsorship Approval")
 
 
 class SentContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Sent")
 
 
 class ExecutedContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Executed")
 
 
 class ExecutedExistingContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Existing Contract Uploaded and Executed")
 
 
 class NullifiedContractLogger:
-
     def notify(self, request, contract, **kwargs):
         add_log_entry(request, contract, CHANGE, "Contract Nullified")
 
@@ -195,7 +190,6 @@ class AssetCloseToDueDateNotificationToSponsors(BaseEmailSponsorshipNotification
 
 
 class ClonedResourcesLogger:
-
     def notify(self, request, resource, from_year, **kwargs):
         msg = f"Cloned from {from_year} sponsorship application config"
         add_log_entry(request, resource, ADDITION, msg)

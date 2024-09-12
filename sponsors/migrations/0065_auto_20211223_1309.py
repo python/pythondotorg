@@ -13,11 +13,8 @@ def populate_packages_slugs(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0064_sponsorshippackage_slug'),
+        ("sponsors", "0064_sponsorshippackage_slug"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_packages_slugs, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(populate_packages_slugs, migrations.RunPython.noop)]

@@ -7,6 +7,6 @@ from .models import Company
 
 @admin.register(Company)
 class CompanyAdmin(NameSlugAdmin):
-    search_fields = ['name']
-    list_display = ['__str__', 'contact', 'email']
-    ordering = ['-pk']
+    search_fields = ["name"]
+    list_display = ["__str__", "contact", "email"]
+    ordering = ["-pk"]

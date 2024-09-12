@@ -5,7 +5,6 @@ import django_countries.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0015_auto_20201117_1739"),
     ]
@@ -28,9 +27,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsor",
             name="mailing_address_line_1",
-            field=models.CharField(
-                default="", max_length=128, verbose_name="Mailing Address line 1"
-            ),
+            field=models.CharField(default="", max_length=128, verbose_name="Mailing Address line 1"),
         ),
         migrations.AddField(
             model_name="sponsor",
@@ -45,9 +42,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsor",
             name="postal_code",
-            field=models.CharField(
-                default="", max_length=64, verbose_name="Zip/Postal Code"
-            ),
+            field=models.CharField(default="", max_length=64, verbose_name="Zip/Postal Code"),
         ),
         migrations.AddField(
             model_name="sponsor",

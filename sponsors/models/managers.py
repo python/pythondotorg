@@ -16,12 +16,12 @@ class SponsorshipQuerySet(QuerySet):
         return self.filter(status=self.model.APPROVED)
 
     def visible_to(self, user):
-        contacts = user.sponsorcontact_set.values_list('sponsor_id', flat=True)
+        contacts = user.sponsorcontact_set.values_list("sponsor_id", flat=True)
         status = [self.model.APPLIED, self.model.APPROVED, self.model.FINALIZED]
         return self.filter(
             Q(submited_by=user) | Q(sponsor_id__in=Subquery(contacts)),
             status__in=status,
-        ).select_related('sponsor')
+        ).select_related("sponsor")
 
     def finalized(self):
         return self.filter(status=self.model.FINALIZED)
@@ -36,23 +36,28 @@ class SponsorshipQuerySet(QuerySet):
 
     def with_logo_placement(self, logo_place=None, publisher=None):
         from sponsors.models import LogoPlacement, SponsorBenefit
+
         feature_qs = LogoPlacement.objects.all()
         if logo_place:
             feature_qs = feature_qs.filter(logo_place=logo_place)
         if publisher:
             feature_qs = feature_qs.filter(publisher=publisher)
-        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
-        return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+        benefit_qs = SponsorBenefit.objects.filter(
+            id__in=Subquery(feature_qs.values_list("sponsor_benefit_id", flat=True))
+        )
+        return self.filter(id__in=Subquery(benefit_qs.values_list("sponsorship_id", flat=True)))
 
     def includes_benefit_feature(self, feature_model):
         from sponsors.models import SponsorBenefit
+
         feature_qs = feature_model.objects.all()
-        benefit_qs = SponsorBenefit.objects.filter(id__in=Subquery(feature_qs.values_list('sponsor_benefit_id', flat=True)))
-        return self.filter(id__in=Subquery(benefit_qs.values_list('sponsorship_id', flat=True)))
+        benefit_qs = SponsorBenefit.objects.filter(
+            id__in=Subquery(feature_qs.values_list("sponsor_benefit_id", flat=True))
+        )
+        return self.filter(id__in=Subquery(benefit_qs.values_list("sponsorship_id", flat=True)))
 
 
 class SponsorshipCurrentYearQuerySet(QuerySet):
-
     def delete(self):
         raise IntegrityError("Singleton object cannot be delete. Try updating it instead.")
 
@@ -89,7 +94,11 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
         return self.filter(conflicts__isnull=True)
 
     def a_la_carte(self):
-        return self.annotate(num_packages=Count("packages")).filter(num_packages=0, standalone=False).exclude(unavailable=True)
+        return (
+            self.annotate(num_packages=Count("packages"))
+            .filter(num_packages=0, standalone=False)
+            .exclude(unavailable=True)
+        )
 
     def standalone(self):
         return self.filter(standalone=True).exclude(unavailable=True)
@@ -107,6 +116,7 @@ class SponsorshipBenefitQuerySet(OrderedModelQuerySet):
 
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
+
         current_year = SponsorshipCurrentYear.get_year()
         return self.from_year(current_year)
 
@@ -120,12 +130,12 @@ class SponsorshipPackageQuerySet(OrderedModelQuerySet):
 
     def from_current_year(self):
         from sponsors.models import SponsorshipCurrentYear
+
         current_year = SponsorshipCurrentYear.get_year()
         return self.from_year(current_year)
 
 
 class BenefitFeatureQuerySet(PolymorphicQuerySet):
-
     def delete(self):
         if not self.polymorphic_disabled:
             return self.non_polymorphic().delete()
@@ -137,17 +147,18 @@ class BenefitFeatureQuerySet(PolymorphicQuerySet):
 
     def required_assets(self):
         from sponsors.models.benefits import RequiredAssetMixin
+
         required_assets_classes = RequiredAssetMixin.__subclasses__()
         return self.instance_of(*required_assets_classes).select_related("sponsor_benefit__sponsorship")
 
     def provided_assets(self):
         from sponsors.models.benefits import ProvidedAssetMixin
+
         provided_assets_classes = ProvidedAssetMixin.__subclasses__()
         return self.instance_of(*provided_assets_classes).select_related("sponsor_benefit__sponsorship")
 
 
 class BenefitFeatureConfigurationQuerySet(PolymorphicQuerySet):
-
     def delete(self):
         if not self.polymorphic_disabled:
             return self.non_polymorphic().delete()
@@ -156,8 +167,8 @@ class BenefitFeatureConfigurationQuerySet(PolymorphicQuerySet):
 
 
 class GenericAssetQuerySet(PolymorphicQuerySet):
-
     def all_assets(self):
         from sponsors.models import GenericAsset
+
         classes = GenericAsset.all_asset_types()
         return self.select_related("content_type").instance_of(*classes)

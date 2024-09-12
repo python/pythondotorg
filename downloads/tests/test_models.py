@@ -3,10 +3,9 @@ from .base import BaseDownloadTests
 
 
 class DownloadModelTests(BaseDownloadTests):
-
     def test_stringification(self):
-        self.assertEqual(str(self.osx), 'macOS')
-        self.assertEqual(str(self.release_275), 'Python 2.7.5')
+        self.assertEqual(str(self.osx), "macOS")
+        self.assertEqual(str(self.release_275), "Python 2.7.5")
 
     def test_published(self):
         published_releases = Release.objects.published()
@@ -57,18 +56,21 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertIn(self.pre_release, versions)
 
     def test_get_version(self):
-        self.assertEqual(self.release_275.name, 'Python 2.7.5')
-        self.assertEqual(self.release_275.get_version(), '2.7.5')
+        self.assertEqual(self.release_275.name, "Python 2.7.5")
+        self.assertEqual(self.release_275.get_version(), "2.7.5")
 
     def test_get_version_27(self):
-        release = Release.objects.create(name='Python 2.7.12')
-        self.assertEqual(release.name, 'Python 2.7.12')
-        self.assertEqual(release.get_version(), '2.7.12')
+        release = Release.objects.create(name="Python 2.7.12")
+        self.assertEqual(release.name, "Python 2.7.12")
+        self.assertEqual(release.get_version(), "2.7.12")
 
     def test_get_version_invalid(self):
         names = [
-            'spam', 'Python2.7.5', 'Python   2.7.7', r'Python\t2.7.9',
-            r'\tPython 2.8.0',
+            "spam",
+            "Python2.7.5",
+            "Python   2.7.7",
+            r"Python\t2.7.9",
+            r"\tPython 2.8.0",
         ]
         for name in names:
             with self.subTest(name=name):
@@ -80,10 +82,10 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertFalse(self.release_275.is_version_at_least_3_5)
         self.assertFalse(self.release_275.is_version_at_least_3_9)
 
-        release_38 = Release.objects.create(name='Python 3.8.0')
+        release_38 = Release.objects.create(name="Python 3.8.0")
         self.assertFalse(release_38.is_version_at_least_3_9)
         self.assert_(release_38.is_version_at_least_3_5)
 
-        release_310 = Release.objects.create(name='Python 3.10.0')
+        release_310 = Release.objects.create(name="Python 3.10.0")
         self.assert_(release_310.is_version_at_least_3_9)
         self.assert_(release_310.is_version_at_least_3_5)

@@ -5,20 +5,19 @@ import django.db.models.manager
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0073_auto_20220128_1906'),
+        ("sponsors", "0073_auto_20220128_1906"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='providedtextasset',
-            name='shared_text',
+            model_name="providedtextasset",
+            name="shared_text",
             field=models.TextField(blank=True, null=True),
         ),
         migrations.AddField(
-            model_name='providedtextassetconfiguration',
-            name='shared_text',
+            model_name="providedtextassetconfiguration",
+            name="shared_text",
             field=models.TextField(blank=True, null=True),
         ),
     ]

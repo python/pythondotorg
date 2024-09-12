@@ -28,8 +28,6 @@ class GlobalSurrogateKey:
         response = self.get_response(request)
         if hasattr(settings, "GLOBAL_SURROGATE_KEY"):
             response["Surrogate-Key"] = " ".join(
-                filter(
-                    None, [settings.GLOBAL_SURROGATE_KEY, response.get("Surrogate-Key")]
-                )
+                filter(None, [settings.GLOBAL_SURROGATE_KEY, response.get("Surrogate-Key")])
             )
         return response

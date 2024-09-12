@@ -8,7 +8,6 @@ from .utils import get_test_rss_path
 
 
 class BlogViewTest(TestCase):
-
     def setUp(self):
         self.test_file_path = get_test_rss_path()
 
@@ -17,13 +16,11 @@ class BlogViewTest(TestCase):
         Test our assignment tag, also ends up testing the update_blogs
         management command
         """
-        Feed.objects.create(
-            id=1, name='psf default', website_url='example.org',
-            feed_url=self.test_file_path)
-        call_command('update_blogs')
+        Feed.objects.create(id=1, name="psf default", website_url="example.org", feed_url=self.test_file_path)
+        call_command("update_blogs")
 
-        resp = self.client.get(reverse('blog'))
+        resp = self.client.get(reverse("blog"))
         self.assertEqual(resp.status_code, 200)
 
         latest = BlogEntry.objects.latest()
-        self.assertEqual(resp.context['latest_entry'], latest)
+        self.assertEqual(resp.context["latest_entry"], latest)

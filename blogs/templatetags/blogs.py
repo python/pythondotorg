@@ -7,7 +7,7 @@ register = template.Library()
 
 @register.simple_tag
 def get_latest_blog_entries(limit=5):
-    """ Return limit of latest blog entries """
+    """Return limit of latest blog entries"""
     return BlogEntry.objects.order_by("-pub_date")[:limit]
 
 
@@ -21,6 +21,4 @@ def feed_list(slug, limit=10):
       {{ entry }}
     {% endfor %}
     """
-    return BlogEntry.objects.filter(
-        feed__feedaggregate__slug=slug).order_by('-pub_date')[:limit]
-
+    return BlogEntry.objects.filter(feed__feedaggregate__slug=slug).order_by("-pub_date")[:limit]

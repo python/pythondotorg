@@ -12,6 +12,7 @@ from sponsors.models import Sponsorship, Contract
 # The same limitation is true for the SponsorshipQuerySet's approved method and for
 # the sponsorship.contract reverse lookup.
 
+
 class Command(BaseCommand):
     """
     Create Contract objects for existing approved Sponsorships.
@@ -19,6 +20,7 @@ class Command(BaseCommand):
     Run this command as a initial data migration or to make sure
     all approved Sponsorships do have associated Contract objects.
     """
+
     help = "Create Contract objects for existing approved Sponsorships."
 
     def handle(self, **options):

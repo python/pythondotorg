@@ -5,12 +5,16 @@ from rest_framework import permissions
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from sponsors.models import BenefitFeature, LogoPlacement, Sponsorship, GenericAsset
-from sponsors.serializers import LogoPlacementSerializer, FilterLogoPlacementsSerializer, FilterAssetsSerializer, \
-    AssetSerializer
+from sponsors.serializers import (
+    LogoPlacementSerializer,
+    FilterLogoPlacementsSerializer,
+    FilterAssetsSerializer,
+    AssetSerializer,
+)
 
 
 class SponsorPublisherPermission(permissions.BasePermission):
-    message = 'Must have publisher permission.'
+    message = "Must have publisher permission."
 
     def has_permission(self, request, view):
         user = request.user
@@ -50,9 +54,13 @@ class LogoPlacementeAPIList(APIView):
                 placement["publisher"] = logo.publisher
                 placement["flight"] = logo.logo_place
                 if logo.describe_as_sponsor:
-                    placement["description"] = f"{sponsor.name} is a {sponsorship.level_name} sponsor of the Python Software Foundation."
+                    placement["description"] = (
+                        f"{sponsor.name} is a {sponsorship.level_name} sponsor of the Python Software Foundation."
+                    )
                 if logo.link_to_sponsors_page:
-                    placement["sponsor_url"] = request.build_absolute_uri(reverse('psf-sponsors') + f"#{slugify(sponsor.name)}")
+                    placement["sponsor_url"] = request.build_absolute_uri(
+                        reverse("psf-sponsors") + f"#{slugify(sponsor.name)}"
+                    )
                 placements.append(placement)
 
         serializer = LogoPlacementSerializer(placements, many=True)
@@ -66,8 +74,7 @@ class SponsorshipAssetsAPIList(APIView):
         assets_filter = FilterAssetsSerializer(data=request.GET)
         assets_filter.is_valid(raise_exception=True)
 
-        assets = GenericAsset.objects.all_assets().filter(
-            internal_name=assets_filter.by_internal_name).iterator()
+        assets = GenericAsset.objects.all_assets().filter(internal_name=assets_filter.by_internal_name).iterator()
         assets = (a for a in assets if assets_filter.accept_empty or a.has_value)
         serializer = AssetSerializer(assets, many=True)
 

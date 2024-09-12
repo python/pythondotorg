@@ -5,7 +5,6 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0009_auto_20201103_1259"),
     ]
@@ -38,9 +37,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsor",
             name="mailing_address",
-            field=models.TextField(
-                default="", verbose_name="Sponsor Mailing/Billing Address"
-            ),
+            field=models.TextField(default="", verbose_name="Sponsor Mailing/Billing Address"),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -57,9 +54,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="sponsor",
             name="primary_phone",
-            field=models.CharField(
-                default="", max_length=32, verbose_name="Sponsor Primary Phone"
-            ),
+            field=models.CharField(default="", max_length=32, verbose_name="Sponsor Primary Phone"),
             preserve_default=False,
         ),
         migrations.AddField(

@@ -8,33 +8,33 @@ from cms.forms import ContentManageableModelForm
 
 
 class JobForm(ContentManageableModelForm):
-    required_css_class = 'required'
+    required_css_class = "required"
 
     class Meta:
         model = Job
         fields = (
-            'job_title',
-            'company_name',
-            'category',
-            'job_types',
-            'other_job_type',
-            'city',
-            'region',
-            'country',
-            'description',
-            'requirements',
-            'company_description',
-            'contact',
-            'email',
-            'url',
-            'telecommuting',
-            'agencies',
+            "job_title",
+            "company_name",
+            "category",
+            "job_types",
+            "other_job_type",
+            "city",
+            "region",
+            "country",
+            "description",
+            "requirements",
+            "company_description",
+            "contact",
+            "email",
+            "url",
+            "telecommuting",
+            "agencies",
         )
         widgets = {
-            'job_types': CheckboxSelectMultiple(),
+            "job_types": CheckboxSelectMultiple(),
         }
         help_texts = {
-            'email': (
+            "email": (
                 "<b>This email address will be publicly displayed for "
                 "applicants to contact if they are interested in the "
                 "posting.</b>"
@@ -43,12 +43,12 @@ class JobForm(ContentManageableModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.fields['job_types'].help_text = None
+        self.fields["job_types"].help_text = None
 
     def save(self, commit=True):
         obj = super().save()
         obj.job_types.clear()
-        for t in self.cleaned_data['job_types']:
+        for t in self.cleaned_data["job_types"]:
             obj.job_types.add(t)
         return obj
 
@@ -60,12 +60,12 @@ class JobReviewCommentForm(ContentManageableModelForm):
 
     class Meta:
         model = JobReviewComment
-        fields = ['job', 'comment']
+        fields = ["job", "comment"]
         widgets = {
-            'job': HiddenInput(),
+            "job": HiddenInput(),
         }
 
     def save(self, commit=True):
         # Don't try to add a new comment if the 'comment' field is empty.
-        if self.cleaned_data['comment']:
+        if self.cleaned_data["comment"]:
             return super().save(commit=commit)

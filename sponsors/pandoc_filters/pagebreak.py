@@ -6,19 +6,19 @@
 # Revision: c8cddccebb78af75168da000a3d6ac09349bef73
 # ------------------------------------------------------------------------------
 # MIT License
-# 
+#
 # Copyright (c) 2018 pandocker
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in all
 # copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -28,7 +28,7 @@
 # SOFTWARE.
 # ------------------------------------------------------------------------------
 
-""" pandoc-docx-pagebreakpy
+"""pandoc-docx-pagebreakpy
 Pandoc filter to insert pagebreak as openxml RawBlock
 Only for docx output
 
@@ -40,10 +40,12 @@ import panflute as pf
 
 
 class DocxPagebreak(object):
-    pagebreak = pf.RawBlock("<w:p><w:r><w:br w:type=\"page\" /></w:r></w:p>", format="openxml")
-    sectionbreak = pf.RawBlock("<w:p><w:pPr><w:sectPr><w:type w:val=\"nextPage\" /></w:sectPr></w:pPr></w:p>",
-                               format="openxml")
-    toc = pf.RawBlock(r"""
+    pagebreak = pf.RawBlock('<w:p><w:r><w:br w:type="page" /></w:r></w:p>', format="openxml")
+    sectionbreak = pf.RawBlock(
+        '<w:p><w:pPr><w:sectPr><w:type w:val="nextPage" /></w:sectPr></w:pPr></w:p>', format="openxml"
+    )
+    toc = pf.RawBlock(
+        r"""
 <w:sdt>
     <w:sdtContent xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main">
         <w:p>
@@ -56,12 +58,14 @@ class DocxPagebreak(object):
         </w:p>
     </w:sdtContent>
 </w:sdt>
-""", format="openxml")
+""",
+        format="openxml",
+    )
 
     def action(self, elem, doc):
         if isinstance(elem, pf.RawBlock):
             if elem.text == r"\newpage":
-                if (doc.format == "docx"):
+                if doc.format == "docx":
                     elem = self.pagebreak
             # elif elem.text == r"\newsection":
             #     if (doc.format == "docx"):
@@ -70,7 +74,7 @@ class DocxPagebreak(object):
             #     else:
             #         elem = []
             elif elem.text == r"\toc":
-                if (doc.format == "docx"):
+                if doc.format == "docx":
                     pf.debug("Table of Contents")
                     para = [pf.Para(pf.Str("Table"), pf.Space(), pf.Str("of"), pf.Space(), pf.Str("Contents"))]
                     div = pf.Div(*para, attributes={"custom-style": "TOC Heading"})

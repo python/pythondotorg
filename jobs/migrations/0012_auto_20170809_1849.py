@@ -3,22 +3,22 @@ from django.contrib.contenttypes.management import create_contenttypes
 from django.db import models, migrations
 from django.utils.timezone import now
 
-MARKER = '.. Migrated from django_comments_xtd.Comment model.\n\n'
+MARKER = ".. Migrated from django_comments_xtd.Comment model.\n\n"
 
-comments_app_name = 'django_comments_xtd'
-content_type = 'job'
+comments_app_name = "django_comments_xtd"
+content_type = "job"
 
 
 def migrate_old_content(apps, schema_editor):
     try:
-        Comment = apps.get_model(comments_app_name, 'XtdComment')
+        Comment = apps.get_model(comments_app_name, "XtdComment")
     except LookupError:
         # django_comments_xtd isn't installed.
         return
-    create_contenttypes(apps.app_configs['contenttypes'])
-    JobReviewComment = apps.get_model('jobs', 'JobReviewComment')
-    Job = apps.get_model('jobs', 'Job')
-    ContentType = apps.get_model('contenttypes', 'ContentType')
+    create_contenttypes(apps.app_configs["contenttypes"])
+    JobReviewComment = apps.get_model("jobs", "JobReviewComment")
+    Job = apps.get_model("jobs", "Job")
+    ContentType = apps.get_model("contenttypes", "ContentType")
     db_alias = schema_editor.connection.alias
     try:
         # 'ContentType.name' is now a property in Django 1.8 so we
@@ -27,7 +27,9 @@ def migrate_old_content(apps, schema_editor):
     except ContentType.DoesNotExist:
         return
     old_comments = Comment.objects.using(db_alias).filter(
-        content_type=job_contenttype.pk, is_public=True, is_removed=False,
+        content_type=job_contenttype.pk,
+        is_public=True,
+        is_removed=False,
     )
     found_jobs = {}
     comments = []
@@ -52,19 +54,18 @@ def migrate_old_content(apps, schema_editor):
 
 
 def delete_migrated_content(apps, schema_editor):
-    JobReviewComment = apps.get_model('jobs', 'JobReviewComment')
+    JobReviewComment = apps.get_model("jobs", "JobReviewComment")
     db_alias = schema_editor.connection.alias
     JobReviewComment.objects.using(db_alias).filter(comment__startswith=MARKER).delete()
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('contenttypes', '0001_initial'),
-        ('jobs', '0011_jobreviewcomment'),
+        ("contenttypes", "0001_initial"),
+        ("jobs", "0011_jobreviewcomment"),
     ]
     if global_apps.is_installed(comments_app_name):
-        dependencies.append((comments_app_name, '0001_initial'))
+        dependencies.append((comments_app_name, "0001_initial"))
 
     operations = [
         migrations.RunPython(migrate_old_content, delete_migrated_content),

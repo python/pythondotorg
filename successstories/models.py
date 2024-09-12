@@ -17,67 +17,66 @@ from companies.models import Company
 from fastly.utils import purge_url
 
 
-PSF_TO_EMAILS = ['psf-staff@python.org']
-DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+PSF_TO_EMAILS = ["psf-staff@python.org"]
+DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
 
 class StoryCategory(NameSlugModel):
-
     class Meta:
-        ordering = ('name',)
-        verbose_name = 'story category'
-        verbose_name_plural = 'story categories'
+        ordering = ("name",)
+        verbose_name = "story category"
+        verbose_name_plural = "story categories"
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('success_story_list_category', kwargs={'slug': self.slug})
+        return reverse("success_story_list_category", kwargs={"slug": self.slug})
 
 
 class Story(NameSlugModel, ContentManageable):
     company_name = models.CharField(max_length=500)
-    company_url = models.URLField(verbose_name='Company URL')
+    company_url = models.URLField(verbose_name="Company URL")
     company = models.ForeignKey(
         Company,
-        related_name='success_stories',
+        related_name="success_stories",
         blank=True,
         null=True,
         on_delete=models.CASCADE,
     )
     category = models.ForeignKey(
         StoryCategory,
-        related_name='success_stories',
+        related_name="success_stories",
         on_delete=models.CASCADE,
     )
-    author = models.CharField(max_length=500, help_text='Author of the content')
+    author = models.CharField(max_length=500, help_text="Author of the content")
     author_email = models.EmailField(max_length=100, blank=True, null=True)
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
     featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
-    image = models.ImageField(upload_to='successstories', blank=True, null=True)
+    image = models.ImageField(upload_to="successstories", blank=True, null=True)
 
     submitted_by = models.ForeignKey(settings.AUTH_USER_MODEL, blank=True, null=True, on_delete=models.SET_NULL)
 
     objects = StoryManager()
 
     class Meta:
-        ordering = ('-created',)
-        verbose_name = 'story'
-        verbose_name_plural = 'stories'
+        ordering = ("-created",)
+        verbose_name = "story"
+        verbose_name_plural = "stories"
 
     def __str__(self):
         return self.name
 
     def get_absolute_url(self):
-        return reverse('success_story_detail', kwargs={'slug': self.slug})
+        return reverse("success_story_detail", kwargs={"slug": self.slug})
 
     def get_admin_url(self):
-        return reverse('admin:successstories_story_change', args=(self.id,))
+        return reverse("admin:successstories_story_change", args=(self.id,))
 
     def get_company_name(self):
-        """ Return company name depending on ForeignKey """
+        """Return company name depending on ForeignKey"""
         if self.company:
             return self.company.name
         else:
@@ -92,26 +91,29 @@ class Story(NameSlugModel, ContentManageable):
 
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, created, **kwargs):
-    """ Update download supernav """
+    """Update download supernav"""
     # Skip in fixtures
-    if kwargs.get('raw', False):
+    if kwargs.get("raw", False):
         return
 
     if instance.is_published and instance.featured:
-        content = render_to_string('successstories/supernav.html', {
-            'story': instance,
-        })
+        content = render_to_string(
+            "successstories/supernav.html",
+            {
+                "story": instance,
+            },
+        )
 
         box, _ = Box.objects.update_or_create(
-            label='supernav-python-success-stories',
+            label="supernav-python-success-stories",
             defaults={
-                'content': content,
-                'content_markup_type': 'html',
-            }
+                "content": content,
+                "content_markup_type": "html",
+            },
         )
 
         # Purge Fastly cache
-        purge_url('/box/supernav-python-success-stories/')
+        purge_url("/box/supernav-python-success-stories/")
 
     if instance.is_published:
         # Purge the page itself
@@ -121,7 +123,7 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
 @receiver(post_save, sender=Story)
 def send_email_to_psf(sender, instance, created, **kwargs):
     # Skip in fixtures
-    if kwargs.get('raw', False) or not created:
+    if kwargs.get("raw", False) or not created:
         return
 
     if not instance.is_published:
@@ -145,7 +147,7 @@ Review URL: {admin_url}
         name_lines = instance.name.splitlines()
         name = name_lines[0] if name_lines else instance.name
         email = EmailMessage(
-            f'New success story submission: {name}',
+            f"New success story submission: {name}",
             body.format(
                 name=instance.name,
                 company_name=instance.company_name,
@@ -155,9 +157,7 @@ Review URL: {admin_url}
                 author_email=instance.author_email,
                 pull_quote=instance.pull_quote,
                 content=instance.content.raw,
-                admin_url='https://{}{}'.format(
-                    Site.objects.get_current(), instance.get_admin_url()
-                ),
+                admin_url="https://{}{}".format(Site.objects.get_current(), instance.get_admin_url()),
             ).strip(),
             settings.DEFAULT_FROM_EMAIL,
             PSF_TO_EMAILS,

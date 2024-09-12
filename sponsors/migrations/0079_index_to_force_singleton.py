@@ -20,12 +20,9 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('sponsors', '0078_init_current_year_singleton'),
+        ("sponsors", "0078_init_current_year_singleton"),
     ]
 
     operations = [
-        migrations.RunSQL(
-            sql=CREATE_SINGLETON_INDEX,
-            reverse_sql=DROP_SINGLETON_INDEX
-        ),
+        migrations.RunSQL(sql=CREATE_SINGLETON_INDEX, reverse_sql=DROP_SINGLETON_INDEX),
     ]

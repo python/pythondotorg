@@ -26,11 +26,8 @@ def reset_logo_dimensions(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0040_auto_20210827_1313'),
+        ("sponsors", "0040_auto_20210827_1313"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_logo_dimensions, reset_logo_dimensions)
-    ]
+    operations = [migrations.RunPython(populate_logo_dimensions, reset_logo_dimensions)]

@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0035_auto_20210826_1929'),
+        ("sponsors", "0035_auto_20210826_1929"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='sponsorship',
-            options={'permissions': [('sponsor_publisher', 'Can access sponsor placement API')]},
+            name="sponsorship",
+            options={"permissions": [("sponsor_publisher", "Can access sponsor placement API")]},
         ),
     ]

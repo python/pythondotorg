@@ -5,25 +5,38 @@ import django_countries.fields
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0099_auto_20231224_1854'),
+        ("sponsors", "0099_auto_20231224_1854"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsor',
-            name='country_of_incorporation',
-            field=django_countries.fields.CountryField(blank=True, help_text='For contractual purposes', max_length=2, null=True, verbose_name='Country of incorporation (If different)'),
+            model_name="sponsor",
+            name="country_of_incorporation",
+            field=django_countries.fields.CountryField(
+                blank=True,
+                help_text="For contractual purposes",
+                max_length=2,
+                null=True,
+                verbose_name="Country of incorporation (If different)",
+            ),
         ),
         migrations.AddField(
-            model_name='sponsor',
-            name='state_of_incorporation',
-            field=models.CharField(blank=True, default='', max_length=64, null=True, verbose_name='US only: State of incorporation (If different)'),
+            model_name="sponsor",
+            name="state_of_incorporation",
+            field=models.CharField(
+                blank=True,
+                default="",
+                max_length=64,
+                null=True,
+                verbose_name="US only: State of incorporation (If different)",
+            ),
         ),
         migrations.AlterField(
-            model_name='sponsor',
-            name='country',
-            field=django_countries.fields.CountryField(default='', help_text='For mailing/contact purposes', max_length=2),
+            model_name="sponsor",
+            name="country",
+            field=django_countries.fields.CountryField(
+                default="", help_text="For mailing/contact purposes", max_length=2
+            ),
         ),
     ]

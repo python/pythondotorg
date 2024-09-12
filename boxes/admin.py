@@ -5,4 +5,4 @@ from .models import Box
 
 @admin.register(Box)
 class BoxAdmin(ContentManageableModelAdmin):
-    ordering = ('label', )
+    ordering = ("label",)

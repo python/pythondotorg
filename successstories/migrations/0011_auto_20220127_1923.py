@@ -6,15 +6,16 @@ import django.db.models.deletion
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('successstories', '0010_story_submitted_by'),
+        ("successstories", "0010_story_submitted_by"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='story',
-            name='submitted_by',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL),
+            model_name="story",
+            name="submitted_by",
+            field=models.ForeignKey(
+                blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to=settings.AUTH_USER_MODEL
+            ),
         ),
     ]
