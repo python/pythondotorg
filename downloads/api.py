@@ -68,7 +68,8 @@ class ReleaseFileResource(GenericResource):
             'name', 'slug',
             'creator', 'last_modified_by',
             'os', 'release', 'description', 'is_source', 'url', 'gpg_signature_file',
-            'md5_sum', 'filesize', 'download_button',
+            'md5_sum', 'filesize', 'download_button', 'sigstore_signature_file',
+            'sigstore_cert_file', 'sigstore_bundle_file', 'sbom_spdx2_file',
         ]
         filtering = {
             'name': ('exact',),

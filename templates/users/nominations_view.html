@@ -26,11 +26,15 @@
     {% if nomination.nominator == request.user %}
     Self Nomination
     {% else %}
-    Nomination from {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}
+    Nomination from {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }} {% if nomination.accepted %}<b>Accepted</b>{% else %}<i>Not accepted!</i>{% endif %}
     {% endif %}
     <a href="{{ nomination.get_absolute_url }}">
       {% if nomination.is_editable %}
-      View/Edit
+          {% if nomination.nominator == request.user %}
+          View / Edit
+          {% else %}
+          View / Manage Acceptance
+          {% endif %}
       {% else %}
       View
       {% endif %}

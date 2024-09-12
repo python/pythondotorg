@@ -1,0 +1,61 @@
+{% extends 'admin/change_form.html' %}
+{% load i18n static %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <style>
+    .helptext { display: block; font-size: smaller; padding-left: 2em; }
+    label { font-weight: bold; font-size: medium; color: #444 }
+  </style>
+{% endblock %}
+
+{% block title %}Accept {{ sponsorship }} | python.org{% endblock %}
+
+{% block breadcrumbs %}
+  <div class="breadcrumbs">
+    <a href="{% url 'admin:index' %}">{% trans 'Home' %}</a> &gt
+    <a href="{% url 'admin:app_list' app_label='sponsors' %}">{% trans 'Sponsors' %}</a> &gt
+    <a href="{% url 'admin:sponsors_sponsorshipcurrentyear_changelist' %}">{% trans 'Active Year' %}</a> &gt
+    {% trans 'Clone Application Configuration' %}
+  </div>
+{% endblock %}
+
+{% block content %}
+  <h1>Clone Sponsorsihp Application Configuration</h1>
+  <p>You can use this form to generate a new sponsorship application year by copying it from an already configured year.</p>
+  {% if configured_years %}
+  <p>There are already valid configuraiton for the following years:</p>
+  <uL>
+    {% for year in configured_years %}
+      <li>
+        <b>{{ year }}:</b>
+        <a target="_blank" href="{% url 'admin:sponsors_sponsorshippackage_changelist' %}?year={{ year }}">See packages</a> |
+        <a target="_blank" href="{% url 'admin:sponsors_sponsorshipbenefit_changelist' %}?year={{ year }}">See benefits</a>
+      </li>
+    {% endfor %}
+  </uL>
+  {% endif %}
+
+  {% if not new_year %}
+    <hr>
+    <br>
+    <div id="content-main">
+
+      <form action="" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <p>
+          <b>IMPORTANT</b>: This process performs a lot of database queries and can take a while to finish executing.
+            Please, make sure you're using the correct values before submit the form.
+        </p>
+        <div class="submit-row">
+          <input type="submit" value="Clone" class="default">
+        </div>
+
+      </form>
+    </div>
+  {% endif %}
+
+{% endblock %}

@@ -9,11 +9,41 @@ $(document).ready(function(){
     getBenefitInput: function(benefitId) { return SELECTORS.benefitsInputs().filter('[value=' + benefitId + ']'); },
     getSelectedBenefits: function() { return SELECTORS.benefitsInputs().filter(":checked"); },
     tickImages: function() { return $(`.benefit-within-package img`) },
-    sectionToggleBtns: function() { return $(".toggle_btn")}
+    sectionToggleBtns: function() { return $(".toggle_btn")},
+    aLaCarteInputs:  function() { return $("input[name=a_la_carte_benefits]"); },
+    standaloneInputs:  function() { return $("input[name=standalone_benefits]"); },
+    aLaCarteMessage: function() { return $("#a-la-cart-benefits-disallowed"); },
+    standaloneMessage: function() { return $("#standalone-benefits-disallowed"); },
+    clearFormButton: function() { return $("#clear_form_btn"); },
+    applicationForm: function() { return $("#application_form"); },
   }
 
-  const initialPackage = $("input[name=package]:checked").val();
-  if (initialPackage && initialPackage.length > 0) mobileUpdate(initialPackage);
+  const pkgInputs = $("input[name=package]:checked");
+  if (pkgInputs.length > 0 && pkgInputs.val()) {
+
+    // Disable A La Carte inputs based on initial package value
+    if (pkgInputs.attr("allow_a_la_carte") !== "true"){
+      let msg = "Cannot add a la carte benefit with the selected package.";
+      SELECTORS.aLaCarteInputs().attr("title", msg);
+      SELECTORS.aLaCarteMessage().removeClass("hidden");
+      SELECTORS.aLaCarteInputs().prop("checked", false);
+      SELECTORS.aLaCarteInputs().prop("disabled", true);
+
+    }
+
+    // Disable Standalone benefits inputs
+    let msg ="Cannot apply for standalone benefit with the selected package.";
+    SELECTORS.standaloneInputs().prop("checked", false);
+    SELECTORS.standaloneInputs().prop("disabled", true);
+    SELECTORS.standaloneMessage().removeClass("hidden");
+    SELECTORS.standaloneInputs().attr("title", msg);
+
+    // Update mobile selection
+    mobileUpdate(pkgInputs.val());
+  } else {
+    // disable a la carte if no package selected at the first step
+    SELECTORS.aLaCarteInputs().prop("disabled", true);
+  }
 
   SELECTORS.sectionToggleBtns().click(function(){
     const section = $(this).data('section');
@@ -21,9 +51,34 @@ $(document).ready(function(){
     $(className).toggle();
   });
 
+  SELECTORS.clearFormButton().click(function(){
+    SELECTORS.aLaCarteInputs().prop('checked', false).prop('selected', false);
+    SELECTORS.benefitsInputs().prop('checked', false).prop('selected', false);
+    SELECTORS.packageInput().prop('checked', false).prop('selected', false);
+    SELECTORS.standaloneInputs()
+      .prop('checked', false).prop('selected', false).prop("disabled", false);
+
+    SELECTORS.tickImages().each((i, img) => {
+      const initImg = img.getAttribute('data-initial-state');
+      const src = img.getAttribute('src');
+
+      if (src !== initImg) {
+        img.setAttribute('data-next-state', src);
+      }
+
+      img.setAttribute('src', initImg);
+    });
+    $(".selected").removeClass("selected");
+    $('.custom-fee').hide();
+  });
+
   SELECTORS.packageInput().click(function(){
     let package = this.value;
-    if (package.length == 0) return;
+    if (package.length == 0) {
+      SELECTORS.standaloneInputs().prop("disabled", false);
+      SELECTORS.standaloneMessage().addClass("hidden");
+      return;
+    }
 
     // clear previous customizations
     SELECTORS.tickImages().each((i, img) => {
@@ -48,6 +103,25 @@ $(document).ready(function(){
     $(`.package-${package}-benefit`).addClass("selected");
     $(`.package-${package}-benefit input`).prop("disabled", false);
 
+    let msg ="Cannot apply for standalone benefit with the selected package.";
+    SELECTORS.standaloneInputs().prop("checked", false);
+    SELECTORS.standaloneInputs().prop("disabled", true);
+    SELECTORS.standaloneMessage().removeClass("hidden");
+    SELECTORS.standaloneInputs().attr("title", msg);
+
+    // Disable a la carte benefits if package disables it
+    if ($(this).attr("allow_a_la_carte") !== "true") {
+      msg ="Cannot add a la carte benefit with the selected package.";
+      SELECTORS.aLaCarteInputs().attr("title", msg);
+      SELECTORS.aLaCarteMessage().removeClass("hidden");
+      SELECTORS.aLaCarteInputs().prop("checked", false);
+      SELECTORS.aLaCarteInputs().prop("disabled", true);
+    } else {
+      SELECTORS.aLaCarteInputs().attr("title", "");
+      SELECTORS.aLaCarteMessage().addClass("hidden");
+      SELECTORS.aLaCarteInputs().not('.soldout').prop("disabled", false);
+    }
+
     // populate hidden inputs according to package's benefits
     SELECTORS.getPackageBenefits(package).each(function(){
       let benefit = $(this).html();
@@ -69,7 +143,7 @@ function mobileUpdate(packageId) {
     || document.body.clientWidth;
   const mobileVersion = width <= DESKTOP_WIDTH_LIMIT;
   if (!mobileVersion) return;
-  $(".benefit-within-package").hide();  // hide all ticks and potential add-ons inputs
+  $(".benefit-within-package").hide();  // hide all ticks and potential a la carte inputs
   $(`div[data-package-reference=${packageId}]`).show()  // display only package's ones
 }
 

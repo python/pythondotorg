@@ -16,7 +16,7 @@ from sponsors.models.enums import (
 
 ########################################
 # Benefit features abstract classes
-from sponsors.models.managers import BenefitFeatureQuerySet
+from sponsors.models.managers import BenefitFeatureQuerySet, BenefitFeatureConfigurationQuerySet
 
 
 ########################################
@@ -47,9 +47,15 @@ class BaseLogoPlacement(models.Model):
         abstract = True
 
 
-class BaseTieredQuantity(models.Model):
+class BaseTieredBenefit(models.Model):
     package = models.ForeignKey("sponsors.SponsorshipPackage", on_delete=models.CASCADE)
     quantity = models.PositiveIntegerField()
+    display_label = models.CharField(
+        blank=True,
+        default="",
+        help_text="If populated, this will be displayed instead of the quantity value.",
+        max_length=32,
+    )
 
     class Meta:
         abstract = True
@@ -137,6 +143,17 @@ class AssetConfigurationMixin:
             asset.save()
 
         return benefit_feature
+
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = super().get_clone_kwargs(new_benefit)
+        if str(self.benefit.year) in self.internal_name:
+            kwargs["internal_name"] = self.internal_name.replace(str(self.benefit.year), str(new_benefit.year))
+        else:
+            kwargs["internal_name"] = f"{self.internal_name}_{new_benefit.year}"
+        due_date = kwargs.get("due_date")
+        if due_date:
+            kwargs["due_date"] = due_date.replace(year=new_benefit.year)
+        return kwargs
 
     class Meta:
         abstract = True
@@ -293,11 +310,14 @@ class BenefitFeatureConfiguration(PolymorphicModel):
     Base class for sponsorship benefits configuration.
     """
 
+    objects = BenefitFeatureQuerySet.as_manager()
     benefit = models.ForeignKey("sponsors.SponsorshipBenefit", on_delete=models.CASCADE)
+    non_polymorphic = models.Manager()
 
     class Meta:
         verbose_name = "Benefit Feature Configuration"
         verbose_name_plural = "Benefit Feature Configurations"
+        base_manager_name = 'non_polymorphic'
 
     @property
     def benefit_feature_class(self):
@@ -307,10 +327,9 @@ class BenefitFeatureConfiguration(PolymorphicModel):
         """
         raise NotImplementedError
 
-    def get_benefit_feature_kwargs(self, **kwargs):
+    def get_cfg_kwargs(self, **kwargs):
         """
-        Return kwargs dict to initialize the benefit feature.
-        If the benefit should not be created, return None instead.
+        Return kwargs dict with default config data
         """
         # Get all fields from benefit feature configuration base model
         base_fields = set(BenefitFeatureConfiguration._meta.get_fields())
@@ -322,7 +341,22 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             # since this field only exists in child models
             if BenefitFeatureConfiguration is getattr(field, 'related_model', None):
                 continue
+            # Skip if field config is being externally overwritten
+            elif field.name in kwargs:
+                continue
             kwargs[field.name] = getattr(self, field.name)
+        return kwargs
+
+    def get_benefit_feature_kwargs(self, **kwargs):
+        """
+        Return kwargs dict to initialize the benefit feature.
+        If the benefit should not be created, return None instead.
+        """
+        return self.get_cfg_kwargs(**kwargs)
+
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = self.get_cfg_kwargs()
+        kwargs["benefit"] = new_benefit
         return kwargs
 
     def get_benefit_feature(self, **kwargs):
@@ -347,6 +381,13 @@ class BenefitFeatureConfiguration(PolymorphicModel):
             feature.save()
         return feature
 
+    def clone(self, sponsorship_benefit):
+        """
+        Clones this configuration for another sponsorship benefit
+        """
+        cfg_kwargs = self.get_clone_kwargs(sponsorship_benefit)
+        return self.__class__.objects.get_or_create(**cfg_kwargs)
+
 
 class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration):
     """
@@ -365,18 +406,18 @@ class LogoPlacementConfiguration(BaseLogoPlacement, BenefitFeatureConfiguration)
         return f"Logo Configuration for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
-class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguration):
+class TieredBenefitConfiguration(BaseTieredBenefit, BenefitFeatureConfiguration):
     """
     Configuration for tiered quantities among packages
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Tiered Benefit Configuration"
         verbose_name_plural = "Tiered Benefit Configurations"
 
     @property
     def benefit_feature_class(self):
-        return TieredQuantity
+        return TieredBenefit
 
     def get_benefit_feature_kwargs(self, **kwargs):
         if kwargs["sponsor_benefit"].sponsorship.package == self.package:
@@ -384,12 +425,17 @@ class TieredQuantityConfiguration(BaseTieredQuantity, BenefitFeatureConfiguratio
         return None
 
     def __str__(self):
-        return f"Tiered Quantity Configuration for {self.benefit} and {self.package} ({self.quantity})"
+        return f"Tiered Benefit Configuration for {self.benefit} and {self.package} ({self.quantity})"
 
     def display_modifier(self, name, **kwargs):
         if kwargs.get("package") != self.package:
             return name
-        return f"{name} ({self.quantity})"
+        return f"{name} ({self.display_label or self.quantity})"
+
+    def get_clone_kwargs(self, new_benefit):
+        kwargs = super().get_clone_kwargs(new_benefit)
+        kwargs["package"], _ = self.package.clone(year=new_benefit.year)
+        return kwargs
 
 
 class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfiguration):
@@ -397,7 +443,7 @@ class EmailTargetableConfiguration(BaseEmailTargetable, BenefitFeatureConfigurat
     Configuration for email targeatable benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeatureConfiguration.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeatureConfiguration.Meta):
         verbose_name = "Email Targetable Configuration"
         verbose_name_plural = "Email Targetable Configurations"
 
@@ -520,17 +566,17 @@ class LogoPlacement(BaseLogoPlacement, BenefitFeature):
         return f"Logo for {self.get_publisher_display()} at {self.get_logo_place_display()}"
 
 
-class TieredQuantity(BaseTieredQuantity, BenefitFeature):
+class TieredBenefit(BaseTieredBenefit, BenefitFeature):
     """
-    Tiered Quantity feature for sponsor benefits
+    Tiered Benefit feature for sponsor benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
-        verbose_name = "Tiered Quantity"
-        verbose_name_plural = "Tiered Quantities"
+    class Meta(BaseTieredBenefit.Meta, BenefitFeature.Meta):
+        verbose_name = "Tiered Benefit"
+        verbose_name_plural = "Tiered Benefits"
 
     def display_modifier(self, name, **kwargs):
-        return f"{name} ({self.quantity})"
+        return f"{name} ({self.display_label or self.quantity})"
 
     def __str__(self):
         return f"{self.quantity} of {self.sponsor_benefit} for {self.package}"
@@ -541,7 +587,7 @@ class EmailTargetable(BaseEmailTargetable, BenefitFeature):
     For email targeatable benefits
     """
 
-    class Meta(BaseTieredQuantity.Meta, BenefitFeature.Meta):
+    class Meta(BaseTieredBenefit.Meta, BenefitFeature.Meta):
         verbose_name = "Email Targetable Benefit"
         verbose_name_plural = "Email Targetable Benefits"
 

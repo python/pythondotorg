@@ -3,6 +3,7 @@ This module holds models related to the Sponsor entity.
 """
 from allauth.account.models import EmailAddress
 from django.conf import settings
+from django.core.validators import FileExtensionValidator
 from django.db import models
 from django.core.exceptions import ObjectDoesNotExist
 from django.template.defaultfilters import slugify
@@ -43,6 +44,12 @@ class Sponsor(ContentManageable):
         null=True,
         verbose_name="Twitter handle",
     )
+    linked_in_page_url = models.URLField(
+        blank=True,
+        null=True,
+        verbose_name="LinkedIn page URL",
+        help_text="URL for your LinkedIn page."
+    )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
         verbose_name="Web logo",
@@ -51,6 +58,7 @@ class Sponsor(ContentManageable):
     )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
+        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
         blank=True,
         null=True,
         verbose_name="Print logo",
@@ -71,8 +79,15 @@ class Sponsor(ContentManageable):
     postal_code = models.CharField(
         verbose_name="Zip/Postal Code", max_length=64, default=""
     )
-    country = CountryField(default="")
+    country = CountryField(default="", help_text="For mailing/contact purposes")
     assets = GenericRelation(GenericAsset)
+    country_of_incorporation = CountryField(
+        verbose_name="Country of incorporation (If different)", help_text="For contractual purposes", blank=True, null=True
+    )
+    state_of_incorporation = models.CharField(
+        verbose_name="US only: State of incorporation (If different)",
+        max_length=64, blank=True, null=True, default=""
+    )
 
     class Meta:
         verbose_name = "sponsor"
@@ -164,6 +179,19 @@ class SponsorContact(models.Model):
         if self.user is not None and (self.primary or self.manager):
             return True
 
+    @property
+    def type(self):
+        types=[]
+        if self.primary:
+            types.append('Primary')
+        if self.administrative:
+            types.append('Administrative')
+        if self.manager:
+            types.append('Manager')
+        if self.accounting:
+            types.append('Accounting')
+        return ", ".join(types)
+
     def __str__(self):
         return f"Contact {self.name} from {self.sponsor}"
 
@@ -217,8 +245,8 @@ class SponsorBenefit(OrderedModel):
     added_by_user = models.BooleanField(
         blank=True, default=False, verbose_name="Added by user?"
     )
-    a_la_carte = models.BooleanField(
-        blank=True, default=False, verbose_name="Added as a la carte benefit?"
+    standalone = models.BooleanField(
+        blank=True, default=False, verbose_name="Added as standalone benefit?"
     )
 
     def __str__(self):
@@ -232,8 +260,8 @@ class SponsorBenefit(OrderedModel):
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
-        kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.a_la_carte
-        kwargs["a_la_carte"] = benefit.a_la_carte
+        kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.standalone
+        kwargs["standalone"] = benefit.standalone
         sponsor_benefit = cls.objects.create(
             sponsorship_benefit=benefit,
             program_name=benefit.program.name,
@@ -273,8 +301,8 @@ class SponsorBenefit(OrderedModel):
         self.description = benefit.description
         self.program = benefit.program
         self.benefit_internal_value = benefit.internal_value
-        self.a_la_carte = benefit.a_la_carte
-        self.added_by_user = self.added_by_user or self.a_la_carte
+        self.standalone = benefit.standalone
+        self.added_by_user = self.added_by_user or self.standalone
 
         # generate benefit features from benefit features configurations
         features = self.features.all().delete()

@@ -39,6 +39,14 @@ class LegalClause(OrderedModel):
     def __str__(self):
         return f"Clause: {self.internal_name}"
 
+    def clone(self):
+        return LegalClause.objects.create(
+            internal_name=self.internal_name,
+            clause=self.clause,
+            notes=self.notes,
+            order=self.order,
+        )
+
     class Meta(OrderedModel.Meta):
         pass
 
@@ -240,6 +248,7 @@ class Contract(models.Model):
 
         self.status = self.EXECUTED
         self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.locked = True
         self.sponsorship.finalized_on = timezone.now().date()
         if commit:
             self.sponsorship.save()

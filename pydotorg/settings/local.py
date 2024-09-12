@@ -26,7 +26,7 @@ HAYSTACK_SEARCHBOX_SSL_URL = config(
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.elasticsearch5_backend.Elasticsearch5SearchEngine',
+        'ENGINE': 'haystack.backends.elasticsearch7_backend.Elasticsearch7SearchEngine',
         'URL': HAYSTACK_SEARCHBOX_SSL_URL,
         'INDEX_NAME': 'haystack',
     },
@@ -64,7 +64,8 @@ MIDDLEWARE += [
 
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'pythondotorg-local-cache',
     }
 }
 

@@ -48,7 +48,7 @@ class TemplateProcessorsTestCase(TestCase):
                 "label": "Membership",
                 "urls": [
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
-                    {"url": reverse("users:user_membership_create"), "label": "Become a PSF member"},
+                    {"url": reverse("users:user_membership_create"), "label": "Become a PSF Basic member"},
                 ],
             },
             "sponsorships": {
@@ -80,7 +80,7 @@ class TemplateProcessorsTestCase(TestCase):
                 "label": "Membership",
                 "urls": [
                     {"url": reverse("users:user_nominations_view"), "label": "Nominations"},
-                    {"url": reverse("users:user_membership_edit"), "label": "Edit PSF membership"},
+                    {"url": reverse("users:user_membership_edit"), "label": "Edit PSF Basic membership"},
                 ],
             },
             "sponsorships": {

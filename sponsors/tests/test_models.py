@@ -1,4 +1,8 @@
 from datetime import date, timedelta
+import random
+
+from django.core.cache import cache
+from django.db import IntegrityError
 from model_bakery import baker, seq
 
 from django import forms
@@ -18,9 +22,9 @@ from ..models import (
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipPackage,
-    TieredQuantity,
-    TieredQuantityConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
-    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset
+    TieredBenefit,
+    TieredBenefitConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
+    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset, SponsorshipCurrentYear
 )
 from ..exceptions import (
     SponsorWithExistingApplicationException,
@@ -28,7 +32,8 @@ from ..exceptions import (
     InvalidStatusException,
 )
 from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
-from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset
+from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset, \
+    EmailTargetableConfiguration
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -70,7 +75,7 @@ class SponsorshipBenefitModelTests(TestCase):
     def test_name_for_display_without_specifying_package(self):
         benefit = baker.make(SponsorshipBenefit, name='Benefit')
         benefit_config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package__name='Package',
             benefit=benefit,
             quantity=10
@@ -111,6 +116,7 @@ class SponsorshipModelTests(TestCase):
         )
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
+        current_year = SponsorshipCurrentYear.get_year()
 
         self.assertEqual(sponsorship.submited_by, self.user)
         self.assertEqual(sponsorship.sponsor, self.sponsor)
@@ -126,6 +132,7 @@ class SponsorshipModelTests(TestCase):
         self.assertIsNone(sponsorship.agreed_fee)
         self.assertIsNone(sponsorship.package)
         self.assertTrue(sponsorship.for_modified_package)
+        self.assertEqual(sponsorship.year, current_year)
 
         self.assertEqual(sponsorship.benefits.count(), len(self.benefits))
         for benefit in self.benefits:
@@ -294,6 +301,56 @@ class SponsorshipModelTests(TestCase):
             self.assertEqual(sponsorship.agreed_fee, 2000)
 
 
+class SponsorshipCurrentYearTests(TestCase):
+
+    def test_singleton_object_is_loaded_by_default(self):
+        curr_year = SponsorshipCurrentYear.objects.get()
+        self.assertEqual(1, curr_year.pk)
+        self.assertEqual(2022, curr_year.year)
+
+    def test_make_sure_we_cannot_add_new_current_years(self):
+        self.assertTrue(SponsorshipCurrentYear.objects.get())
+        with self.assertRaises(IntegrityError) as context:
+            baker.make(SponsorshipCurrentYear, id=2)
+
+        self.assertIn("sponsorship_current_year_singleton_idx", str(context.exception))
+
+    def test_singleton_object_cannot_be_deleted(self):
+        curr_year = SponsorshipCurrentYear.objects.get()
+        with self.assertRaises(IntegrityError) as context:
+            curr_year.delete()
+
+        self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
+
+        with self.assertRaises(IntegrityError) as context:
+            SponsorshipCurrentYear.objects.all().delete()
+
+        self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
+
+    def test_current_year_is_cached(self):
+        # cleans cached from previous test runs
+        cache.clear()
+
+        # first time: no cache
+        with self.assertNumQueries(1):
+            year = SponsorshipCurrentYear.get_year()
+
+        self.assertEqual(year, cache.get(SponsorshipCurrentYear.CACHE_KEY))
+        # second time: cache hit
+        with self.assertNumQueries(0):
+            SponsorshipCurrentYear.get_year()
+
+        curr_year = SponsorshipCurrentYear.objects.get()
+        # update should clear cache
+        curr_year.year = 2024
+        curr_year.save()
+        with self.assertNumQueries(1):
+            self.assertEqual(2024, SponsorshipCurrentYear.get_year())
+
+        # cleans cached for next test runs
+        cache.clear()
+
+
 class SponsorshipPackageTests(TestCase):
     def setUp(self):
         self.package = baker.make("sponsors.SponsorshipPackage")
@@ -357,6 +414,40 @@ class SponsorshipPackageTests(TestCase):
         ]  # missing benefits with index 2 or 3
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
+
+    def test_clone_package_to_next_year(self):
+        pkg = baker.make(SponsorshipPackage, year=2022, advertise=True, logo_dimension=300)
+        pkg_2023, created = pkg.clone(year=2023)
+        self.assertTrue(created)
+        self.assertTrue(pkg_2023.pk)
+        self.assertEqual(2023, pkg_2023.year)
+        self.assertEqual(pkg.name, pkg_2023.name)
+        self.assertEqual(pkg.order, pkg_2023.order)
+        self.assertEqual(pkg.sponsorship_amount, pkg_2023.sponsorship_amount)
+        self.assertEqual(True, pkg_2023.advertise)
+        self.assertEqual(300, pkg_2023.logo_dimension)
+        self.assertEqual(pkg.slug, pkg_2023.slug)
+
+    def test_clone_does_not_repeate_already_cloned_package(self):
+        pkg_2023, created = self.package.clone(year=2023)
+        repeated_pkg_2023, created = self.package.clone(year=2023)
+        self.assertFalse(created)
+        self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
+
+    def test_get_default_revenue_split(self):
+        benefits = baker.make(SponsorshipBenefit, internal_value=int(random.random() * 1000), _quantity=12)
+        program_names = set((b.program.name for b in benefits))
+        pkg1 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[:3])
+        pkg2 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[3:7])
+        pkg3 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[7:])
+        splits = [pkg.get_default_revenue_split() for pkg in (pkg1, pkg2, pkg3)]
+        split_names = set((name for split in splits for name, _ in split))
+        totals = [sum((pct for _, pct in split)) for split in splits]
+        # since the split percentages are rounded, they may not always total exactly 100.000
+        self.assertAlmostEqual(totals[0], 100, delta=0.1)
+        self.assertAlmostEqual(totals[1], 100, delta=0.1)
+        self.assertAlmostEqual(totals[2], 100, delta=0.1)
+        self.assertEqual(split_names, program_names)
 
 
 class SponsorContactModelTests(TestCase):
@@ -600,17 +691,17 @@ class SponsorBenefitModelTests(TestCase):
 
     def test_new_copy_do_not_save_unexisting_features(self):
         benefit_config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package__name='Another package',
             benefit=self.sponsorship_benefit,
         )
-        self.assertEqual(0, TieredQuantity.objects.count())
+        self.assertEqual(0, TieredBenefit.objects.count())
 
         sponsor_benefit = SponsorBenefit.new_copy(
             self.sponsorship_benefit, sponsorship=self.sponsorship
         )
 
-        self.assertEqual(0, TieredQuantity.objects.count())
+        self.assertEqual(0, TieredBenefit.objects.count())
         self.assertFalse(sponsor_benefit.features.exists())
 
     def test_sponsor_benefit_name_for_display(self):
@@ -620,21 +711,21 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(sponsor_benefit.name_for_display, name)
         # apply display modifier from features
         benefit_config = baker.make(
-            TieredQuantity,
+            TieredBenefit,
             sponsor_benefit=sponsor_benefit,
             quantity=10
         )
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
-    def test_sponsor_benefit_from_a_la_carte_one(self):
-        self.sponsorship_benefit.a_la_carte = True
+    def test_sponsor_benefit_from_standalone_one(self):
+        self.sponsorship_benefit.standalone = True
         self.sponsorship_benefit.save()
         sponsor_benefit = SponsorBenefit.new_copy(
             self.sponsorship_benefit, sponsorship=self.sponsorship
         )
 
         self.assertTrue(sponsor_benefit.added_by_user)
-        self.assertTrue(sponsor_benefit.a_la_carte)
+        self.assertTrue(sponsor_benefit.standalone)
 
     def test_reset_attributes_updates_all_basic_information(self):
         benefit = baker.make(
@@ -651,7 +742,7 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(benefit.program_name, self.sponsorship_benefit.program.name)
         self.assertEqual(benefit.program, self.sponsorship_benefit.program)
         self.assertEqual(benefit.benefit_internal_value, self.sponsorship_benefit.internal_value)
-        self.assertEqual(benefit.a_la_carte, self.sponsorship_benefit.a_la_carte)
+        self.assertEqual(benefit.standalone, self.sponsorship_benefit.standalone)
 
     def test_reset_attributes_add_new_features(self):
         RequiredTextAssetConfiguration.objects.create(
@@ -715,6 +806,90 @@ class SponsorBenefitModelTests(TestCase):
         asset = benefit.features.required_assets().get()
         self.assertEqual(asset.label, "New text")
         self.assertEqual(asset.value, "foo")
+
+    def test_clone_benefit_regular_attributes_to_a_new_year(self):
+        benefit = baker.make(
+            SponsorshipBenefit,
+            name='Benefit',
+            description="desc",
+            program__name="prog",
+            package_only=False,
+            new=True,
+            unavailable=True,
+            standalone=True,
+            internal_description="internal desc",
+            internal_value=300,
+            capacity=100,
+            soft_capacity=True,
+            year=2022
+        )
+        benefit_2023, created = benefit.clone(year=2023)
+        self.assertTrue(created)
+        self.assertEqual("Benefit", benefit_2023.name)
+        self.assertEqual("desc", benefit_2023.description)
+        self.assertEqual(benefit.program, benefit_2023.program)
+        self.assertFalse(benefit_2023.package_only)
+        self.assertTrue(benefit_2023.new)
+        self.assertTrue(benefit_2023.unavailable)
+        self.assertTrue(benefit_2023.standalone)
+        self.assertEqual("internal desc", benefit_2023.internal_description)
+        self.assertEqual(300, benefit_2023.internal_value)
+        self.assertEqual(100, benefit_2023.capacity)
+        self.assertTrue(benefit_2023.soft_capacity)
+        self.assertEqual(2023, benefit_2023.year)
+        self.assertEqual(benefit.order, benefit_2023.order)
+
+    def test_clone_benefit_should_be_idempotent(self):
+        benefit_2023, created = self.sponsorship_benefit.clone(year=2023)
+        repeated, created = self.sponsorship_benefit.clone(year=2023)
+        self.assertFalse(created)
+        self.assertEqual(benefit_2023.pk, repeated.pk)
+
+    def test_clone_related_objects_as_well(self):
+        pkgs = baker.make(SponsorshipPackage, _quantity=2)
+        clauses = baker.make(LegalClause, _quantity=2)
+        self.sponsorship_benefit.legal_clauses.add(*clauses)
+        self.sponsorship_benefit.packages.add(*pkgs)
+
+        benefit_2023, _ = self.sponsorship_benefit.clone(2023)
+        benefit_2023.refresh_from_db()
+
+        self.assertEqual(4, SponsorshipPackage.objects.count())
+        self.assertEqual(2023, benefit_2023.packages.values_list("year", flat=True).distinct().first())
+        self.assertEqual(4, LegalClause.objects.count())
+        self.assertEqual(2, benefit_2023.legal_clauses.count())
+
+    def test_clone_benefit_feature_configurations(self):
+        cfg_1 = baker.make(
+            LogoPlacementConfiguration,
+            publisher = PublisherChoices.FOUNDATION,
+            logo_place = LogoPlacementChoices.FOOTER,
+            benefit=self.sponsorship_benefit
+        )
+        cfg_2 = baker.make(
+            RequiredTextAssetConfiguration,
+            related_to=AssetsRelatedTo.SPONSOR.value,
+            internal_name="config_name",
+            benefit=self.sponsorship_benefit
+        )
+
+        benefit_2023, _ = self.sponsorship_benefit.clone(2023)
+
+        self.assertEqual(2, LogoPlacementConfiguration.objects.count())
+        self.assertEqual(2, RequiredTextAssetConfiguration.objects.count())
+        self.assertEqual(1, RequiredTextAssetConfiguration.objects.filter(benefit=benefit_2023).count())
+        self.assertEqual(1, RequiredTextAssetConfiguration.objects.filter(benefit=benefit_2023).count())
+
+
+class LegalClauseTests(TestCase):
+
+    def test_clone_legal_clause(self):
+        clause = baker.make(LegalClause)
+        new_clause = clause.clone()
+        self.assertEqual(clause.internal_name, new_clause.internal_name)
+        self.assertEqual(clause.clause, new_clause.clause)
+        self.assertEqual(clause.notes, new_clause.notes)
+        self.assertEqual(clause.order, new_clause.order)
 
 
 ###########
@@ -798,14 +973,30 @@ class LogoPlacementConfigurationModelTests(TestCase):
         name = 'Benefit'
         self.assertEqual(name, self.config.display_modifier(name))
 
+    def test_clone_configuration_for_new_sponsorship_benefit(self):
+        sp_benefit = baker.make(SponsorshipBenefit)
 
-class TieredQuantityConfigurationModelTests(TestCase):
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, LogoPlacementConfiguration.objects.count())
+        self.assertEqual(PublisherChoices.FOUNDATION, new_cfg.publisher)
+        self.assertEqual(LogoPlacementChoices.FOOTER, new_cfg.logo_place)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
+
+
+class TieredBenefitConfigurationModelTests(TestCase):
 
     def setUp(self):
-        self.package = baker.make(SponsorshipPackage)
+        self.package = baker.make(SponsorshipPackage, year=2022)
         self.config = baker.make(
-            TieredQuantityConfiguration,
+            TieredBenefitConfiguration,
             package=self.package,
+            display_label="Foo",
             quantity=10,
         )
 
@@ -814,9 +1005,10 @@ class TieredQuantityConfigurationModelTests(TestCase):
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
-        self.assertIsInstance(benefit_feature, TieredQuantity)
+        self.assertIsInstance(benefit_feature, TieredBenefit)
         self.assertEqual(benefit_feature.package, self.package)
         self.assertEqual(benefit_feature.quantity, self.config.quantity)
+        self.assertEqual(benefit_feature.display_label, "Foo")
 
     def test_do_not_return_feature_if_benefit_from_other_package(self):
         sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name='Other')
@@ -829,13 +1021,38 @@ class TieredQuantityConfigurationModelTests(TestCase):
         name = "Benefit"
         other_package = baker.make(SponsorshipPackage)
 
+        # modifies for the same package as the config + label prioritized
+        self.config.save(update_fields=["display_label"])
+        modified_name = self.config.display_modifier(name, package=self.package)
+        self.assertEqual(modified_name, f"{name} (Foo)")
+
         # modifies for the same package as the config
+        self.config.display_label = ""
+        self.config.save(update_fields=["display_label"])
         modified_name = self.config.display_modifier(name, package=self.package)
         self.assertEqual(modified_name, f"{name} (10)")
 
         # for a package different from the config's one
         modified_name = self.config.display_modifier(name, package=other_package)
         self.assertEqual(modified_name, name)
+
+    def test_clone_tiered_quantity_configuration(self):
+        benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = self.config.clone(benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, TieredBenefitConfiguration.objects.count())
+        self.assertEqual(self.config.quantity, new_cfg.quantity)
+        self.assertEqual("Foo", new_cfg.display_label)
+        self.assertNotEqual(self.package, new_cfg.package)
+        self.assertEqual(self.package.slug, new_cfg.package.slug)
+        self.assertEqual(2023, new_cfg.package.year)
+        self.assertEqual(benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
 
 
 class LogoPlacementTests(TestCase):
@@ -846,12 +1063,17 @@ class LogoPlacementTests(TestCase):
         self.assertEqual(placement.display_modifier(name), name)
 
 
-class TieredQuantityTests(TestCase):
+class TieredBenefitTests(TestCase):
 
     def test_display_modifier_adds_quantity_to_the_name(self):
-        placement = baker.make(TieredQuantity, quantity=10)
+        placement = baker.make(TieredBenefit, quantity=10)
         name = 'Benefit'
         self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
+
+    def test_display_modifier_adds_display_label_to_the_name(self):
+        placement = baker.make(TieredBenefit, quantity=10, display_label="Foo")
+        name = 'Benefit'
+        self.assertEqual(placement.display_modifier(name), 'Benefit (Foo)')
 
 
 class RequiredImgAssetConfigurationTests(TestCase):
@@ -884,6 +1106,25 @@ class RequiredImgAssetConfigurationTests(TestCase):
         self.assertEqual(self.config.internal_name, asset.internal_name)
         self.assertEqual(sponsor, asset.content_object)
         self.assertFalse(asset.image.name)
+
+    def test_clone_configuration_for_new_sponsorship_benefit_without_due_date(self):
+        sp_benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, RequiredImgAssetConfiguration.objects.count())
+        self.assertEqual(new_cfg.internal_name, f"{self.config.internal_name}_2023")
+        self.assertEqual(new_cfg.max_width, self.config.max_width)
+        self.assertEqual(new_cfg.min_width, self.config.min_width)
+        self.assertEqual(new_cfg.max_height, self.config.max_height)
+        self.assertEqual(new_cfg.min_height, self.config.min_height)
+        self.assertEqual(new_cfg.due_date, new_cfg.due_date)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
 
 
 class RequiredTextAssetConfigurationTests(TestCase):
@@ -931,6 +1172,28 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.sponsor_benefit.refresh_from_db()
         self.config.create_benefit_feature(self.sponsor_benefit)
         self.assertEqual(1, TextAsset.objects.count())
+
+    def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
+        sp_benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        self.config.due_date = timezone.now().replace(year=2022)
+        self.config.save()
+        new_cfg, created = self.config.clone(sp_benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, RequiredTextAssetConfiguration.objects.count())
+        self.assertEqual(new_cfg.internal_name, f"{self.config.internal_name}_2023")
+        self.assertEqual(new_cfg.label, self.config.label)
+        self.assertEqual(new_cfg.help_text, self.config.help_text)
+        self.assertEqual(new_cfg.max_length, self.config.max_length)
+        self.assertEqual(new_cfg.due_date.day, self.config.due_date.day)
+        self.assertEqual(new_cfg.due_date.month, self.config.due_date.month)
+        self.assertEqual(new_cfg.due_date.year, 2023)
+        self.assertEqual(sp_benefit, new_cfg.benefit)
+
+        repeated, created = self.config.clone(sp_benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
 
 
 class RequiredTextAssetTests(TestCase):
@@ -1004,3 +1267,20 @@ class RequiredImgAssetTests(TestCase):
         self.assertEqual(text_asset.help_text, field.help_text)
         self.assertEqual(text_asset.label, field.label)
         self.assertIsInstance(field.widget, forms.ClearableFileInput)
+
+
+class EmailTargetableConfigurationTest(TestCase):
+
+    def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
+        config = baker.make(EmailTargetableConfiguration)
+        benefit = baker.make(SponsorshipBenefit, year=2023)
+
+        new_cfg, created = config.clone(benefit)
+
+        self.assertTrue(created)
+        self.assertEqual(2, EmailTargetableConfiguration.objects.count())
+        self.assertEqual(benefit, new_cfg.benefit)
+
+        repeated, created = config.clone(benefit)
+        self.assertFalse(created)
+        self.assertEqual(new_cfg.pk, repeated.pk)
