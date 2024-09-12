@@ -68,10 +68,6 @@ class MembershipForm(ModelForm):
         code_of_conduct = self.fields['psf_code_of_conduct']
         code_of_conduct.widget = forms.Select(choices=self.COC_CHOICES)
 
-        announcements = self.fields['psf_announcements']
-        announcements.widget = forms.CheckboxInput()
-        announcements.initial = False
-
     class Meta:
         model = Membership
         fields = [
@@ -83,7 +79,6 @@ class MembershipForm(ModelForm):
             'country',
             'postal_code',
             'psf_code_of_conduct',
-            'psf_announcements',
         ]
 
     def clean_psf_code_of_conduct(self):
@@ -105,4 +100,3 @@ class MembershipUpdateForm(MembershipForm):
         super().__init__(*args, **kwargs)
 
         del(self.fields['psf_code_of_conduct'])
-        del(self.fields['psf_announcements'])

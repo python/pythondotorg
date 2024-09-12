@@ -1,3 +1,5 @@
+import logging
+
 from datetime import timedelta
 from icalendar import Calendar as ICalendar
 import requests
@@ -7,6 +9,8 @@ from .utils import extract_date_or_datetime
 
 DATE_RESOLUTION = timedelta(1)
 TIME_RESOLUTION = timedelta(0, 0, 1)
+
+logger = logging.getLogger(__name__)
 
 
 class ICSImporter:
@@ -37,19 +41,20 @@ class ICSImporter:
     def import_event(self, event_data):
         uid = event_data['UID']
         title = event_data['SUMMARY']
-        description = event_data['DESCRIPTION']
+        description = event_data.get('DESCRIPTION', '')
         location, _ = EventLocation.objects.get_or_create(
             calendar=self.calendar,
             name=event_data['LOCATION']
         )
         defaults = {
             'title': title,
-            'description': description,
-            'description_markup_type': 'html',
             'venue': location,
             'calendar': self.calendar,
         }
         event, _ = Event.objects.update_or_create(uid=uid, defaults=defaults)
+        event.description.raw = description
+        event.description.markup_type = "html"
+        event.save()
         self.import_occurrence(event, event_data)
 
     def fetch(self, url):
@@ -69,4 +74,7 @@ class ICSImporter:
     def import_events_from_text(self, ical):
         events = self.get_events(ical)
         for event in events:
-            self.import_event(event)
+            try:
+                self.import_event(event)
+            except Exception as exc:
+                logger.exception(event)

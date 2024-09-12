@@ -1,4 +1,5 @@
 from datetime import date, timedelta
+import random
 
 from django.core.cache import cache
 from django.db import IntegrityError
@@ -432,6 +433,22 @@ class SponsorshipPackageTests(TestCase):
         repeated_pkg_2023, created = self.package.clone(year=2023)
         self.assertFalse(created)
         self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
+
+    def test_get_default_revenue_split(self):
+        benefits = baker.make(SponsorshipBenefit, internal_value=int(random.random() * 1000), _quantity=12)
+        program_names = set((b.program.name for b in benefits))
+        pkg1 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[:3])
+        pkg2 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[3:7])
+        pkg3 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[7:])
+        splits = [pkg.get_default_revenue_split() for pkg in (pkg1, pkg2, pkg3)]
+        split_names = set((name for split in splits for name, _ in split))
+        totals = [sum((pct for _, pct in split)) for split in splits]
+        # since the split percentages are rounded, they may not always total exactly 100.000
+        self.assertAlmostEqual(totals[0], 100, delta=0.1)
+        self.assertAlmostEqual(totals[1], 100, delta=0.1)
+        self.assertAlmostEqual(totals[2], 100, delta=0.1)
+        self.assertEqual(split_names, program_names)
+
 
 class SponsorContactModelTests(TestCase):
     def test_get_primary_contact_for_sponsor(self):

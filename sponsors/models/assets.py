@@ -106,7 +106,7 @@ class ImgAsset(GenericAsset):
 
 
 class TextAsset(GenericAsset):
-    text = models.TextField(default="")
+    text = models.TextField(default="", blank=True)
 
     def __str__(self):
         return f"Text asset: {self.internal_name}"

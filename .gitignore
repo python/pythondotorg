@@ -10,6 +10,7 @@
 # $ git config --global core.excludesfile ~/.gitignore_global
 
 .sass-cache/
+docs/build
 media/*
 static-root/
 static/stylesheets/mq.css
@@ -25,3 +26,4 @@ __pycache__
 .env
 .DS_Store
 .envrc
+.state/

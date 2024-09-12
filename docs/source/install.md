@@ -12,13 +12,13 @@ Docker Compose will be installed by [Docker Mac](https://docs.docker.com/desktop
 Getting started
 ---------------
 
-To get the Pythondotorg source code, [fork](https://docs.github.com/en/get-started/quickstart/fork-a-repo) the repository on [GitHub](https://github.com/python/pythondotorg) and [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) it to your local machine: 
+To get the Pythondotorg source code, [fork](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo) the repository on [GitHub](https://github.com/python/pythondotorg) and [clone](https://docs.github.com/en/repositories/creating-and-managing-repositories/cloning-a-repository) it to your local machine: 
 
 ```
 git clone git@github.com:YOUR-USERNAME/pythondotorg.git
 ```
 
-Add a [remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-for-a-fork) and [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) regularly to stay current with the repository. 
+Add a [remote](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/configuring-a-remote-repository-for-a-fork) and [sync](https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/syncing-a-fork) regularly to stay current with the repository. 
 
 ```
 git remote add upstream https://github.com/python/pythondotorg
@@ -33,7 +33,7 @@ Installing Docker
 Install [Docker Engine](https://docs.docker.com/engine/install/) 
 
 ```{note}
-The best experience for building Pythondotorg on Windows is to use the [Windows Subsystem for Linux](https://docs.microsoft.com/en-us/windows/wsl/)(WSL) in combination with both [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/) and [Docker for Linux](https://docs.docker.com/engine/install/).
+The best experience for building Pythondotorg on Windows is to use the [Windows Subsystem for Linux](https://learn.microsoft.com/en-us/windows/wsl/)(WSL) in combination with both [Docker for Windows](https://docs.docker.com/desktop/install/windows-install/) and [Docker for Linux](https://docs.docker.com/engine/install/).
 ```
 
 Verify that the Docker installation is successful by running: `docker -v`
@@ -197,7 +197,7 @@ Once you have it installed, update the URL value of `HAYSTACK_CONNECTIONS` set
 Generating CSS files automatically
 ----------------------------------
 
-Due to performance issues of [django-pipeline](https://github.com/cyberdelia/django-pipeline/issues/313), we are using a dummy compiler `pydotorg.compilers.DummySASSCompiler` in development mode. To generate CSS files, use `sass` itself in a separate terminal window:
+Due to performance issues of [django-pipeline](https://github.com/jazzband/django-pipeline/issues/313), we are using a dummy compiler `pydotorg.compilers.DummySASSCompiler` in development mode. To generate CSS files, use `sass` itself in a separate terminal window:
 
 ```
 $ cd static

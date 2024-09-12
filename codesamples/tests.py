@@ -16,9 +16,7 @@ class CodeSampleModelTests(TestCase):
             is_published=False)
 
     def test_published(self):
-        self.assertQuerysetEqual(CodeSample.objects.published(),
-                                 ['<CodeSample: Copy One>'])
+        self.assertQuerySetEqual(CodeSample.objects.published(),['<CodeSample: Copy One>'], transform=repr)
 
     def test_draft(self):
-        self.assertQuerysetEqual(CodeSample.objects.draft(),
-                                 ['<CodeSample: Copy Two>'])
+        self.assertQuerySetEqual(CodeSample.objects.draft(),['<CodeSample: Copy Two>'], transform=repr)

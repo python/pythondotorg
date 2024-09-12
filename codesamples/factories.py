@@ -27,11 +27,11 @@ def initial_data():
         (
             """\
             <pre><code><span class=\"comment\"># Simple output (with Unicode)</span>
-            >>> print(\"Hello, I'm Python!\")
+            >>> print("Hello, I'm Python!")
             <span class=\"output\">Hello, I'm Python!</span>
 
             <span class=\"comment\"># Input, assignment</span>
-            >>> name = input('What is your name?\\n')
+            >>> name = input('What is your name?\n')
             <span class=\"output\">What is your name?
             Python</span>
             >>> print(f'Hi, {name}.')
