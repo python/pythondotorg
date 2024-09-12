@@ -110,6 +110,7 @@ class BenefitFeatureConfigurationInline(StackedPolymorphicInline):
         ProvidedFileAssetConfigurationInline,
     ]
 
+
 @admin.register(SponsorshipBenefit)
 class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
     change_form_template = "sponsors/admin/sponsorshipbenefit_change_form.html"
@@ -179,12 +180,12 @@ class SponsorshipBenefitAdmin(PolymorphicInlineSupportMixin, OrderedModelAdmin):
 @admin.register(SponsorshipPackage)
 class SponsorshipPackageAdmin(OrderedModelAdmin):
     ordering = ("-year", "order",)
-    list_display = ["name", "year", "advertise", "allow_a_la_carte", "move_up_down_links"]
+    list_display = ["name", "year", "advertise", "allow_a_la_carte", "get_benefit_split", "move_up_down_links"]
     list_filter = ["advertise", "year", "allow_a_la_carte"]
     search_fields = ["name"]
 
     def get_readonly_fields(self, request, obj=None):
-        readonly = []
+        readonly = ["get_benefit_split"]
         if obj:
             readonly.append("slug")
         if not request.user.is_superuser:
@@ -195,6 +196,30 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         if not obj:
             return {'slug': ['name']}
         return {}
+
+    def get_benefit_split(self, obj: SponsorshipPackage) -> str:
+        colors = [
+            "#ffde57",  # Python Gold
+            "#4584b6",  # Python Blue
+            "#646464",  # Python Grey
+        ]
+        split = obj.get_default_revenue_split()
+        # rotate colors through our available palette
+        if len(split) > len(colors):
+            colors = colors * (1 + (len(split) // len(colors)))
+        # build some span elements to show the percentages and have the program name in the title (to show on hover)
+        widths, spans = [], []
+        for i, (name, pct) in enumerate(split):
+            pct_str = f"{pct:.0f}%"
+            widths.append(pct_str)
+            spans.append(f"<span title='{name}' style='background-color:var(--{colors[i]})'>{pct_str}</span>")
+        # define a style that will show our span elements like a single horizontal stacked bar chart
+        style = f'color:#fff;text-align:center;cursor:pointer;display:grid;grid-template-columns:{" ".join(widths)}'
+        # wrap it all up and put a bow on it
+        html = f"<div style='{style}'>{''.join(spans)}</div>"
+        return mark_safe(html)
+
+    get_benefit_split.short_description = "Revenue split"
 
 
 class SponsorContactInline(admin.TabularInline):
