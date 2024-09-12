@@ -1,10 +1,10 @@
 dj-database-url==0.5.0
-django-pipeline==2.0.6
-django-sitetree==1.18.0
+django-pipeline==3.0.0  # 3.0.0 is first version that supports Django 4.2
+django-sitetree==1.18.0  # >=1.17.1 is (?) first version that supports Django 4.2
 django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
-Django==2.2.28
+Django==4.2.16
 docutils==0.12
 Markdown==3.3.4
 cmarkgfm==0.6.0
@@ -22,32 +22,31 @@ chardet==4.0.0
 celery[redis]==5.3.6
 django-celery-beat==2.5.0
 # TODO: We may drop 'django-imagekit' completely.
-django-imagekit==4.0.2
+django-imagekit==5.0  # 5.0 is first version that supports Django 4.2
 django-haystack==3.2.1
 elasticsearch>=7,<8
 # TODO: 0.14.0 only supports Django 1.8 and 1.11.
-django-tastypie==0.14.3
+django-tastypie==0.14.6  # 0.14.6 is first version that supports Django 4.2
 
 pytz==2021.1
 python-dateutil==2.8.2
 
 requests[security]>=2.26.0
 
-django-honeypot==1.0.1
-django-markupfield==2.0.0
-django-markupfield-helpers==0.1.1
+django-honeypot==1.0.4  # 1.0.4 is first version that supports Django 4.2
+django-markupfield==2.0.1
 
-django-allauth==0.50.0
+django-allauth==0.57.2 # 0.55.0 is first version that supports Django 4.2
 
 django-waffle==2.2.1
 
-djangorestframework==3.12.2
+djangorestframework==3.14.0  # 3.14.0 is first version that supports Django 4.1, 4.2 support hasnt been "released"
 django-filter==2.4.0
 django-ordered-model==3.4.3
 django-widget-tweaks==1.4.8
 django-countries==7.2.1
 num2words==0.5.10
-django-polymorphic==3.0.0
+django-polymorphic==3.1.0  # 3.1.0 is first version that supports Django 4.0, unsure if it fully supports 4.2
 sorl-thumbnail==12.7.0
 django-extensions==3.1.4
 django-import-export==2.7.1
