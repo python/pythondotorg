@@ -237,10 +237,7 @@ class OccurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return (
-            f'{self.event.title} {date(self.dt_start, strftime)} - '
-            f'{date(self.dt_end, strftime)}'
-        )
+        return f'{self.event.title} {date(self.dt_start, strftime)} - {date(self.dt_end, strftime)}'
 
     @property
     def begin(self):
