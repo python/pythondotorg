@@ -343,33 +343,47 @@ resource "fastly_service_vcl" "python_org" {
     status            = 403
   }
 
-  # NGWAF Configuration
-  dictionary {
-    name     = var.edge_security_dictionary
+  dynamic "dictionary" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name = var.edge_security_dictionary
+    }
   }
 
-  dynamicsnippet {
-    name     = "ngwaf_config_init"
-    type     = "init"
-    priority = 0
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_init"
+      type     = "init"
+      priority = 0
+    }
   }
 
-  dynamicsnippet {
-    name     = "ngwaf_config_miss"
-    type     = "miss"
-    priority = 9000
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_miss"
+      type     = "miss"
+      priority = 9000
+    }
   }
 
-  dynamicsnippet {
-    name     = "ngwaf_config_pass"
-    type     = "pass"
-    priority = 9000
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_pass"
+      type     = "pass"
+      priority = 9000
+    }
   }
 
-  dynamicsnippet {
-    name     = "ngwaf_config_deliver"
-    type     = "deliver"
-    priority = 9000
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_deliver"
+      type     = "deliver"
+      priority = 9000
+    }
   }
 
   lifecycle {
