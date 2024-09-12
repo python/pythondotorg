@@ -117,6 +117,18 @@ class SponsorshipPackage(OrderedModel):
             slug=self.slug, year=year, defaults=defaults
         )
 
+    def get_default_revenue_split(self) -> list[tuple[str, float]]:
+        """
+        Give the admin an indication of how revenue for sponsorships in this package will be divvied up
+        """
+        values, key = {}, "program__name"
+        for benefit in self.benefits.values(key).annotate(amount=Sum("internal_value", default=0)).order_by("-amount"):
+            values[benefit[key]] = values.get(benefit[key], 0) + (benefit["amount"] or 0)
+        total = sum(values.values())
+        if not total:
+            return []  # nothing to split!
+        return [(k, round(v / total * 100, 3)) for k, v in values.items()]
+
 
 class SponsorshipProgram(OrderedModel):
     """
