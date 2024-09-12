@@ -41,7 +41,7 @@ class DownloadViewsTests(BaseDownloadTests):
         self.assertEqual(response.status_code, 200)
 
         with self.subTest("Release file sizes should be human-readable"):
-            self.assertInHTML("<td>11.8 MB</td>", response.content.decode())
+            self.assertInHTML("<td>11.8&nbsp;MB</td>", response.content.decode())
 
         url = reverse('download:download_release_detail', kwargs={'release_slug': 'fake_slug'})
         response = self.client.get(url)
@@ -122,7 +122,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(response.status_code, 401)
 
         url = self.create_url('os')
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization_invalid)
+        response = self.client.get(url, headers={"authorization": self.Authorization_invalid})
         # TODO: API v1 returns 200 for a GET request even if token is invalid.
         # 'StaffAuthorization.read_list` returns 'object_list' unconditionally,
         # and 'StaffAuthorization.read_detail` returns 'True'.
@@ -222,7 +222,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(len(content), 4)
 
         # Login to get all releases.
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 5)
@@ -258,7 +258,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.client.get(new_url)
         # TODO: API v1 returns 401; and API v2 returns 404.
         self.assertIn(response.status_code, [401, 404])
-        response = self.client.get(new_url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(new_url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(content['name'], data['name'])
@@ -490,15 +490,15 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
     )
     def test_throttling_user(self):
         url = self.create_url('os')
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
 
         # Second request should be okay for a user.
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
 
         # Third request should return '429 TOO MANY REQUESTS'.
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 429)
 
     def test_filter_release_file_delete_by_release(self):
@@ -552,6 +552,6 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
                 'release_file/delete_by_release',
                 filters={'release': self.release_275.pk},
             ),
-            HTTP_AUTHORIZATION=self.Authorization,
+            headers={"authorization": self.Authorization}
         )
         self.assertEqual(response.status_code, 405)

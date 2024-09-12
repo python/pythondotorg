@@ -23,6 +23,21 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
     imports in comments. Ref: https://code.djangoproject.com/ticket/21080
     """
 
+    # Skip map files
+    # https://code.djangoproject.com/ticket/33353#comment:13
+    patterns = (
+        (
+            "*.css",
+            (
+                "(?P<matched>url\\(['\"]{0,1}\\s*(?P<url>.*?)[\"']{0,1}\\))",
+                (
+                    "(?P<matched>@import\\s*[\"']\\s*(?P<url>.*?)[\"'])",
+                    '@import url("%(url)s")',
+                ),
+            ),
+        ),
+    )
+
     def get_comment_blocks(self, content):
         """
         Return a list of (start, end) tuples for each comment block.
@@ -32,65 +47,6 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             for match in re.finditer(r'\/\*.*?\*\/', content, flags=re.DOTALL)
         ]
 
-    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
-        """
-        Return the custom URL converter for the given file name.
-        """
-        if comment_blocks is None:
-            comment_blocks = []
-
-        if template is None:
-            template = self.default_template
-
-        def converter(matchobj):
-            """
-            Convert the matched URL to a normalized and hashed URL.
-            This requires figuring out which files the matched URL resolves
-            to and calling the url() method of the storage.
-            """
-            matched, url = matchobj.groups()
-
-            # Ignore URLs in comments.
-            if self.is_in_comment(matchobj.start(), comment_blocks):
-                return matched
-
-            # Ignore absolute/protocol-relative and data-uri URLs.
-            if re.match(r'^[a-z]+:', url):
-                return matched
-
-            # Ignore absolute URLs that don't point to a static file (dynamic
-            # CSS / JS?). Note that STATIC_URL cannot be empty.
-            if url.startswith('/') and not url.startswith(settings.STATIC_URL):
-                return matched
-
-            # Strip off the fragment so a path-like fragment won't interfere.
-            url_path, fragment = urldefrag(url)
-
-            if url_path.startswith('/'):
-                # Otherwise the condition above would have returned prematurely.
-                assert url_path.startswith(settings.STATIC_URL)
-                target_name = url_path[len(settings.STATIC_URL):]
-            else:
-                # We're using the posixpath module to mix paths and URLs conveniently.
-                source_name = name if os.sep == '/' else name.replace(os.sep, '/')
-                target_name = posixpath.join(posixpath.dirname(source_name), url_path)
-
-            # Determine the hashed name of the target file with the storage backend.
-            hashed_url = self._url(
-                self._stored_name, unquote(target_name),
-                force=True, hashed_files=hashed_files,
-            )
-
-            transformed_url = '/'.join(url_path.split('/')[:-1] + hashed_url.split('/')[-1:])
-
-            # Restore the fragment that was stripped off earlier.
-            if fragment:
-                transformed_url += ('?#' if '?#' in url else '#') + fragment
-
-            # Return the hashed version to the file
-            return template % unquote(transformed_url)
-
-        return converter
 
     def is_in_comment(self, pos, comments):
         for start, end in comments:
@@ -99,6 +55,77 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             if pos < start:
                 return False
         return False
+
+
+    def url_converter(self, name, hashed_files, template=None, comment_blocks=[]):
+        """
+        Return the custom URL converter for the given file name.
+        """
+        if template is None:
+            template = self.default_template
+
+        def converter(matchobj):
+            """
+            Convert the matched URL to a normalized and hashed URL.
+
+            This requires figuring out which files the matched URL resolves
+            to and calling the url() method of the storage.
+            """
+            matches = matchobj.groupdict()
+            matched = matches["matched"]
+            url = matches["url"]
+
+            # Ignore URLs in comments.
+            if self.is_in_comment(matchobj.start(), comment_blocks):
+                return matched
+
+            # Ignore absolute/protocol-relative and data-uri URLs.
+            if re.match(r"^[a-z]+:", url):
+                return matched
+
+            # Ignore absolute URLs that don't point to a static file (dynamic
+            # CSS / JS?). Note that STATIC_URL cannot be empty.
+            if url.startswith("/") and not url.startswith(settings.STATIC_URL):
+                return matched
+
+            # Strip off the fragment so a path-like fragment won't interfere.
+            url_path, fragment = urldefrag(url)
+
+            # Ignore URLs without a path
+            if not url_path:
+                return matched
+
+            if url_path.startswith("/"):
+                # Otherwise the condition above would have returned prematurely.
+                assert url_path.startswith(settings.STATIC_URL)
+                target_name = url_path[len(settings.STATIC_URL) :]
+            else:
+                # We're using the posixpath module to mix paths and URLs conveniently.
+                source_name = name if os.sep == "/" else name.replace(os.sep, "/")
+                target_name = posixpath.join(posixpath.dirname(source_name), url_path)
+
+            # Determine the hashed name of the target file with the storage backend.
+            hashed_url = self._url(
+                self._stored_name,
+                unquote(target_name),
+                force=True,
+                hashed_files=hashed_files,
+            )
+
+            transformed_url = "/".join(
+                url_path.split("/")[:-1] + hashed_url.split("/")[-1:]
+            )
+
+            # Restore the fragment that was stripped off earlier.
+            if fragment:
+                transformed_url += ("?#" if "?#" in url else "#") + fragment
+
+            # Return the hashed version to the file
+            matches["url"] = unquote(transformed_url)
+            return template % matches
+
+        return converter
+
 
     def _post_process(self, paths, adjustable_paths, hashed_files):
         # Sort the files by directory level
@@ -122,7 +149,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                     hashed_name = hashed_files[hash_key]
 
                 # then get the original's file content..
-                if hasattr(original_file, 'seek'):
+                if hasattr(original_file, "seek"):
                     original_file.seek(0)
 
                 hashed_file_exists = self.exists(hashed_name)
@@ -131,12 +158,14 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 # ..to apply each replacement pattern to the content
                 if name in adjustable_paths:
                     old_hashed_name = hashed_name
-                    content = original_file.read().decode(settings.FILE_CHARSET)
+                    content = original_file.read().decode("utf-8")
                     for extension, patterns in self._patterns.items():
                         if matches_patterns(path, (extension,)):
                             comment_blocks = self.get_comment_blocks(content)
                             for pattern, template in patterns:
-                                converter = self.url_converter(name, hashed_files, template, comment_blocks)
+                                converter = self.url_converter(
+                                    name, hashed_files, template, comment_blocks
+                                )
                                 try:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:
@@ -145,8 +174,9 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         self.delete(hashed_name)
                     # then save the processed result
                     content_file = ContentFile(content.encode())
-                    # Save intermediate file for reference
-                    saved_name = self._save(hashed_name, content_file)
+                    if self.keep_intermediate_files:
+                        # Save intermediate file for reference
+                        self._save(hashed_name, content_file)
                     hashed_name = self.hashed_name(name, content_file)
 
                     if self.exists(hashed_name):
