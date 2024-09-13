@@ -5,7 +5,7 @@ django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
 Django==4.2.16
-docutils==0.12
+docutils==0.21.2
 Markdown==3.3.4
 cmarkgfm==0.6.0
 Pillow==9.4.0
