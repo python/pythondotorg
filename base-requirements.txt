@@ -36,7 +36,7 @@ requests[security]>=2.26.0
 django-honeypot==1.0.4  # 1.0.4 is first version that supports Django 4.2
 django-markupfield==2.0.1
 
-django-allauth==0.57.2 # 0.55.0 is first version that supports Django 4.2
+django-allauth==64.2.1
 
 django-waffle==2.2.1
 
