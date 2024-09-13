@@ -38,7 +38,7 @@ django-markupfield==2.0.1
 
 django-allauth==64.2.1
 
-django-waffle==2.2.1
+django-waffle==4.1.0
 
 djangorestframework==3.14.0  # 3.14.0 is first version that supports Django 4.1, 4.2 support hasnt been "released"
 django-filter==2.4.0
