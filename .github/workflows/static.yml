@@ -23,7 +23,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -U pip setuptools wheel
-          pip install -r dev-requirements.txt
+          pip install -r requirements.txt -r prod-requirements.txt
       - name: Run Tests
         run: |
           DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
