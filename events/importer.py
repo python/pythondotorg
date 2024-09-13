@@ -22,7 +22,13 @@ class ICSImporter:
         # but won't add any timezone information. We will convert them to
         # aware datetime objects manually.
         dt_start = extract_date_or_datetime(event_data['DTSTART'].dt)
-        dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
+        if 'DTEND' in event_data:
+            # DTEND is not always set on events, in particular it seems that
+            # events which have the same start and end time, don't provide
+            # DTEND.  See #2021.
+            dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
+        else:
+            dt_end = dt_start
 
         # Let's mark those occurrences as 'all-day'.
         all_day = (
