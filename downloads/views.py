@@ -1,4 +1,3 @@
-import logging
 from typing import Any
 
 import requests
@@ -16,7 +15,6 @@ from django.utils.feedgenerator import Rss201rev2Feed
 
 from .models import OS, Release, ReleaseFile
 
-logger = logging.getLogger(__name__)
 
 class DownloadLatestPython2(RedirectView):
     """ Redirect to latest Python 2 release """
