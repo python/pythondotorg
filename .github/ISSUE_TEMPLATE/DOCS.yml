@@ -1,0 +1,14 @@
+name: "Documentation Update"
+description: Create an issue for documentation changes
+title: "Docs: <title>"
+labels: ["Documentation"]
+
+body:
+  - type: textarea
+    id: summary
+    attributes:
+      label: "Summary"
+      description: Provide a brief summary of your request
+      placeholder: We need to update the documentation to include information about...
+    validations:
+      required: true
