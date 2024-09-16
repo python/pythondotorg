@@ -210,12 +210,15 @@ class ReleaseFeed(Feed):
         """Return the URL to the release page on python.org."""
         return reverse("downloads:download_release_detail", args=[item.slug])
 
-    def item_pubdate(self, item: Release) -> datetime:
+    def item_pubdate(self, item: Release) -> datetime | None:
         """Return the release date as the item publication date."""
-        return timezone.make_aware(item.release_date) if item.release_date else None
+        if item.release_date:
+            if timezone.is_naive(item.release_date):
+                return timezone.make_aware(item.release_date)
+            return item.release_date
+        return None
 
-    @staticmethod
-    def item_guid(item: Release) -> str:
+    def item_guid(self, item: Release) -> str:
         """Return a unique ID for the item based on DB record."""
         return str(item.pk)
 
