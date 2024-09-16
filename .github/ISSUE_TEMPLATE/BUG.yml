@@ -1,19 +1,17 @@
 name: "Bug Report"
 description: Report a bug with Python.org website to help us improve
 title: "Bug: <title>"
-labels: ["Bug", "Triage Required"]
+labels: ["bug", "Triage Required"]
 
 body:
   - type: markdown
     attributes:
       value: |
-        This is the repository and issue tracker for https://www.python.org website.
+        This is the repository and issue tracker for the https://www.Python.org website.
 
-        If you're looking to file an issue with CPython itself, please go to
-        https://github.com/python/cpython/issues/new/choose
+        If you're looking to file an issue with CPython itself, please click here: [CPython Issues](https://github.com/python/cpython/issues/new/choose).
 
-        Issues related to Python's documentation (https://docs.python.org) can
-        also be filed at https://github.com/python/cpython/issues/new?assignees=&labels=docs&template=documentation.md.
+        Issues related to [Python's documentation](https://docs.python.org) can also be filed [here](https://github.com/python/cpython/issues/new?assignees=&labels=docs&template=documentation.md).
 
   - type: textarea
     id: description
