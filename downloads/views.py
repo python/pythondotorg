@@ -199,10 +199,7 @@ class ReleaseFeed(Feed):
 
     @staticmethod
     def _fetch_releases(url: str) -> list[dict[str, Any]]:
-        """Grabs the latest Python releases from API.
-
-
-        """
+        """Grabs the latest Python releases from API."""
         response = requests.get(url, timeout=10)
         response.raise_for_status()
         data = response.json()
