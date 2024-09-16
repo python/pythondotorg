@@ -176,17 +176,16 @@ class ReleaseFeed(Feed):
     @staticmethod
     def link() -> str:
         """Return the URL to the main downloads page."""
-        return reverse('downloads:download')
+        return reverse("downloads:download")
 
     def get_feed(self, obj: Any, request: WSGIRequest) -> Feed:
         """Store the request object for later use."""
         self.request = request
         return super().get_feed(obj, request)
 
-    @staticmethod
-    def items() -> list[dict[str, Any]]:
+    def items(self) -> list[dict[str, Any]]:
         """Return the latest Python releases."""
-        return Release.objects.filter(is_published=True).order_by('-release_date')[:10]
+        return Release.objects.filter(is_published=True).order_by("-release_date")[:10]
 
     @staticmethod
     def _fetch_releases(url: str) -> list[dict[str, Any]]:
