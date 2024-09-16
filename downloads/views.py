@@ -202,11 +202,11 @@ class ReleaseFeed(Feed):
         """Return the release name as the item title."""
         return item.name
 
-    def item_description(self, item):
+    def item_description(self, item: Release) -> str:
         """Return the release version and release date as the item description."""
         return f"Version: {item.version}, Release Date: {item.release_date}"
 
-    def item_link(self, item):
+    def item_link(self, item: Release) -> str:
         """Return the URL to the release page on python.org."""
         return reverse("downloads:download_release_detail", args=[item.slug])
 
