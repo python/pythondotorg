@@ -52,6 +52,6 @@ module "fastly_production" {
 ## Requirements
 
 Tested on
-- Terraform 1.8.5
+- Terraform 1.9.5
 - Fastly provider 5.13.0
 - SigSci provider 3.3.0
