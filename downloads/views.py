@@ -8,11 +8,11 @@ from django.contrib.sites.shortcuts import get_current_site
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Prefetch
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import DetailView, TemplateView, ListView, RedirectView
 from django.http import Http404
 from django.contrib.syndication.views import Feed
 from django.utils.feedgenerator import Rss201rev2Feed
-import pytz
 
 from .models import OS, Release, ReleaseFile
 
@@ -198,38 +198,26 @@ class ReleaseFeed(Feed):
         sorted_releases = sorted(data, key=lambda x: x["release_date"], reverse=True)
         return sorted_releases[:10]
 
-    def item_title(self, item: dict[str, Any]) -> str:
+    def item_title(self, item: Release) -> str:
         """Return the release name as the item title."""
-        return item.get("name", "Unknown Release")
+        return item.name
 
-    def item_description(self, item: dict[str, Any]) -> str:
+    def item_description(self, item):
         """Return the release version and release date as the item description."""
-        version = item.get("version", "Unknown")
-        release_date = item.get("release_date", "Unknown")
-        return f"Version: {version}, Release Date: {release_date}"
+        return f"Version: {item.version}, Release Date: {item.release_date}"
 
-    def item_link(self, item: dict[str, Any]) -> str:
+    def item_link(self, item):
         """Return the URL to the release page on python.org."""
-        return reverse("downloads:download_release_detail", args=[item.get("slug", "")])
+        return reverse("downloads:download_release_detail", args=[item.slug])
 
-    @staticmethod
-    def item_pubdate(item: dict[str, Any]) -> datetime:
+    def item_pubdate(self, item: Release) -> datetime:
         """Return the release date as the item publication date."""
-        try:
-            release_date = datetime.strptime(
-                item.get("release_date", ""), "%Y-%m-%dT%H:%M:%SZ"
-            )
-            return pytz.utc.localize(release_date)
-        except ValueError:
-            logger.error(
-                f"Invalid release date format for item: {item.get('name', 'Unknown')}"
-            )
-            return pytz.utc.localize(datetime.now())
+        return timezone.make_aware(item.release_date) if item.release_date else None
 
     @staticmethod
-    def item_guid(item: dict[str, Any]) -> str:
-        """Return the release URI as the item GUID."""
-        return item.get("resource_uri", "")
+    def item_guid(item: Release) -> str:
+        """Return a unique ID for the item based on DB record."""
+        return str(item.pk)
 
     def create_url(self, path: str) -> str:
         """Create a full URL using the current site domain."""
