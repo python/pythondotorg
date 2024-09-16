@@ -47,7 +47,7 @@ class EventHomepage(ListView):
         return Event.objects.all().order_by("-occurring_rule__dt_start")
 
     def get_context_data(self, **kwargs: dict) -> dict:
-        """Add more ctx, specifically events that are happening now, just misse, and upcoming."""
+        """Add more ctx, specifically events that are happening now, just missed, and upcoming."""
         context = super().get_context_data(**kwargs)
         context["events_just_missed"] = Event.objects.until_datetime(timezone.now())[:2]
         context["upcoming_events"] = Event.objects.for_datetime(timezone.now())
