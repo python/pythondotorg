@@ -237,7 +237,7 @@ class OccurringRule(RuleMixin, models.Model):
 
     def __str__(self):
         strftime = settings.SHORT_DATETIME_FORMAT
-        return f'{self.event.title} {date(self.dt_start.strftime, strftime)} - {date(self.dt_end.strftime, strftime)}'
+        return f'{self.event.title} {date(self.dt_start, strftime)} - {date(self.dt_end, strftime)}'
 
     @property
     def begin(self):
@@ -283,8 +283,8 @@ class RecurringRule(RuleMixin, models.Model):
     all_day = models.BooleanField(default=False)
 
     def __str__(self):
-        strftime = settings.SHORT_DATETIME_FORMAT
-        return f'{self.event.title} every {timedelta_nice_repr(self.interval)} since {date(self.dt_start.strftime, strftime)}'
+        return (f'{self.event.title} every {timedelta_nice_repr(self.freq_interval_as_timedelta)} since '
+                f'{date(self.dt_start, settings.SHORT_DATETIME_FORMAT)}')
 
     def to_rrule(self):
         return rrule(

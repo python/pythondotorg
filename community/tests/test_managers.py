@@ -16,6 +16,6 @@ class CommunityManagersTest(TestCase):
             status=Post.STATUS_PUBLIC
         )
 
-        self.assertQuerysetEqual(Post.objects.all(), [public_post, private_post], lambda x: x)
-        self.assertQuerysetEqual(Post.objects.public(), [public_post], lambda x: x)
-        self.assertQuerysetEqual(Post.objects.private(), [private_post], lambda x: x)
+        self.assertQuerySetEqual(Post.objects.all(), [public_post, private_post], lambda x: x)
+        self.assertQuerySetEqual(Post.objects.public(), [public_post], lambda x: x)
+        self.assertQuerySetEqual(Post.objects.private(), [private_post], lambda x: x)

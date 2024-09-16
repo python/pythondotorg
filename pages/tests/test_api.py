@@ -30,7 +30,7 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
     def test_get_all_pages(self):
         # Login to get all pages.
         url = self.create_url('page')
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 3)
 
@@ -41,7 +41,7 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
         self.assertEqual(len(response.data), 1)
 
         # Login to filter all pages.
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 2)
 
@@ -53,7 +53,7 @@ class PageApiViewsTest(BaseAPITestCase, APITestCase):
         self.assertEqual(len(response.data), 0)
 
         # This should return only unpublished pages.
-        response = self.client.get(url, HTTP_AUTHORIZATION=self.Authorization)
+        response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.data), 1)
 
