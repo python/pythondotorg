@@ -347,6 +347,7 @@ resource "fastly_service_vcl" "python_org" {
     for_each = var.activate_ngwaf_service ? [1] : []
     content {
       name = var.edge_security_dictionary
+      force_destroy = true
     }
   }
 
