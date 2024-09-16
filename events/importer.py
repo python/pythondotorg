@@ -22,7 +22,13 @@ class ICSImporter:
         # but won't add any timezone information. We will convert them to
         # aware datetime objects manually.
         dt_start = extract_date_or_datetime(event_data['DTSTART'].dt)
-        dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
+        if 'DTEND' in event_data:
+            # DTEND is not always set on events, in particular it seems that
+            # events which have the same start and end time, don't provide
+            # DTEND.  See #2021.
+            dt_end = extract_date_or_datetime(event_data['DTEND'].dt)
+        else:
+            dt_end = dt_start
 
         # Let's mark those occurrences as 'all-day'.
         all_day = (
@@ -48,12 +54,13 @@ class ICSImporter:
         )
         defaults = {
             'title': title,
-            'description': description,
-            'description_markup_type': 'html',
             'venue': location,
             'calendar': self.calendar,
         }
         event, _ = Event.objects.update_or_create(uid=uid, defaults=defaults)
+        event.description.raw = description
+        event.description.markup_type = "html"
+        event.save()
         self.import_occurrence(event, event_data)
 
     def fetch(self, url):
