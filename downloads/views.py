@@ -183,19 +183,10 @@ class ReleaseFeed(Feed):
         self.request = request
         return super().get_feed(obj, request)
 
-    def items(self) -> list[dict[str, Any]]:
+    @staticmethod
+    def items() -> list[dict[str, Any]]:
         """Return the latest Python releases."""
-        url = self.create_url("/api/v2/downloads/release/")
-        logger.info(f"Fetching releases from: {url}")
-        try:
-            return self._fetch_releases(url)
-        except requests.RequestException as e:
-            logger.error(f"Error fetching releases from API: {str(e)}")
-        except ValueError as e:
-            logger.error(f"Error parsing JSON from API response: {str(e)}")
-        except Exception as e:
-            logger.error(f"Unexpected error in items method: {str(e)}")
-        return []
+        return Release.objects.filter(is_published=True).order_by('-release_date')[:10]
 
     @staticmethod
     def _fetch_releases(url: str) -> list[dict[str, Any]]:
