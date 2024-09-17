@@ -1,9 +1,7 @@
 from typing import Any
 
-import requests
 from datetime import datetime
 
-from django.contrib.sites.shortcuts import get_current_site
 from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Prefetch
 from django.urls import reverse
