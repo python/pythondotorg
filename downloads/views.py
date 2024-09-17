@@ -168,6 +168,11 @@ class ReleaseFeed(Feed):
     title = "Python Releases"
     description = "Latest Python releases from Python.org"
 
+    @staticmethod
+    def link() -> str:
+        """Return the URL to the main downloads page."""
+        return reverse("downloads:download")
+
     def items(self) -> list[dict[str, Any]]:
         """Return the latest Python releases."""
         return Release.objects.filter(is_published=True).order_by("-release_date")[:10]
