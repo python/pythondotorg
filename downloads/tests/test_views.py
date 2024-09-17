@@ -554,3 +554,46 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             headers={"authorization": self.Authorization}
         )
         self.assertEqual(response.status_code, 405)
+
+class ReleaseFeedTests(BaseDownloadTests):
+    """Tests for the downloads/feed.rss endpoint.
+
+    Content is ensured via setUp in BaseDownloadTests.
+    """
+
+    def setUp(self) -> None:
+        super().setUp()
+        self.url = reverse("downloads:feed")
+
+    def test_endpoint_reachable(self) -> None:
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 200)
+
+    def test_feed_content(self) -> None:
+        """Ensure feed content is as expected.
+
+        Some things we want to check:
+         - Feed title, description, pubdate
+         - Feed items (releases) are in the correct order
+         - We get the expected number of releases (10)
+        """
+        response = self.client.get(self.url)
+        content = response.content.decode()
+
+        self.assertIn("Python 2.7.5", content)
+        self.assertIn("Python 3.10", content)
+        # Published but hidden show up in the API and thus the feed
+        self.assertIn("Python 0.0.0", content)
+
+        # No unpublished releases
+        self.assertNotIn("Python 9.7.2", content)
+
+        # Pre-releases are shown
+        self.assertIn("Python 3.9.90", content)
+
+    def test_feed_item_count(self) -> None:
+        response = self.client.get(self.url)
+        content = response.content.decode()
+
+        # In BaseDownloadTests, we create 5 releases, 4 of which are published, 1 of those published are hidden..
+        self.assertEqual(content.count("<item>"), 4)
