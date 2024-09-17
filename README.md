@@ -5,12 +5,14 @@
 
 ### General information
 
-This is the repository and issue tracker for [python.org](https://www.python.org).
-The repository for CPython itself is at https://github.com/python/cpython, and the
-issue tracker is at https://github.com/python/cpython/issues/.
+This is the repository and issue tracker for [python.org](https://www.python.org). 
 
-Issues related to [Python's documentation](https://docs.python.org) can be filed in
-https://github.com/python/cpython/issues/.
+> [!NOTE]
+> The repository for CPython itself is at https://github.com/python/cpython, and the 
+> issue tracker is at https://github.com/python/cpython/issues/. 
+> 
+> Similarly, issues related to [Python's documentation](https://docs.python.org) can be filed in
+> https://github.com/python/cpython/issues/.
 
 ### Contributing
 
@@ -19,5 +21,4 @@ https://github.com/python/cpython/issues/.
 * Documentation: https://pythondotorg.readthedocs.io/
 * Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
 * IRC: `#pydotorg` on Freenode
-* Staging site: https://staging.python.org/ (`main` branch)
 * License: Apache License

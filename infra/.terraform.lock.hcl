@@ -22,3 +22,25 @@ provider "registry.terraform.io/fastly/fastly" {
     "zh:ec8d899cafd925d3492f00c6523c90599aebc43c1373ad4bd6c55f12d2376230",
   ]
 }
+
+provider "registry.terraform.io/signalsciences/sigsci" {
+  version     = "3.3.0"
+  constraints = "3.3.0"
+  hashes = [
+    "h1:DIoFVzfofY8lQSxFTw9wmQQC28PPMq+5l3xbPNw9gLc=",
+    "zh:07c25e1cca9c13314429a8430c2e999ad94c7d5e2f2a11501ee2608182387e61",
+    "zh:07daf79b672f3e0bec7b48e3ac8dcdeec02af06b10d653bd8158a74236b0746b",
+    "zh:1e24a050c3d3571ec3224c4bb5c82635caf636e707b5993a1cc97c9a1f19fa8f",
+    "zh:24293ae24b3de13bda8512c47967f01814724805396a1bfbfbfc56f5627615cc",
+    "zh:2cc6ba7a38d9854146d1d05f4b7a2f8e18a33c1267b768506cbe37168dad01dc",
+    "zh:42065bfee0cfde04096d6140c65379253359bed49b481a97aff70aa65bf568b3",
+    "zh:6f7f4d96967dfd92f098b57647d396679b70d92548db6d100c4dc8723569d175",
+    "zh:a2e4431f045cef16ed152c0d1f8a377b6468351b775ad1ca7ce3fe74fb874be2",
+    "zh:b0ed1cb03d6f191fe211f10bb59ef8daed6f89e3d99136e7bb5d38f2ac72fa45",
+    "zh:b61ea18442a65d27b97dd1cd43bdd8d0a56c2b4b8db6355480e89f8507c6782a",
+    "zh:c31bb2f50ac2a636758f93afec0b9d173be6d7d7476f9e250b4554e70c6d8d82",
+    "zh:cb7337f7b4678ad7ece28741069c07ce5601d2a103a9667db568cf10ed0ee5a2",
+    "zh:d521a7dac51733aebb0905e25b8f7c1279d83c06136e87826e010c667528fd3e",
+    "zh:ef791688acee3b8b1191b3c6dc54dabf69612dbfb666720280b492ce348a3a06",
+  ]
+}
