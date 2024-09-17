@@ -2,7 +2,6 @@ from typing import Any
 
 from datetime import datetime
 
-from django.core.handlers.wsgi import WSGIRequest
 from django.db.models import Prefetch
 from django.urls import reverse
 from django.utils import timezone
@@ -173,11 +172,6 @@ class ReleaseFeed(Feed):
     def link() -> str:
         """Return the URL to the main downloads page."""
         return reverse("downloads:download")
-
-    def get_feed(self, obj: Any, request: WSGIRequest) -> Feed:
-        """Store the request object for later use."""
-        self.request = request
-        return super().get_feed(obj, request)
 
     def items(self) -> list[dict[str, Any]]:
         """Return the latest Python releases."""
