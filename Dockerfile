@@ -32,10 +32,10 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-COPY dev-requirements.txt /code/
-COPY base-requirements.txt /code/
-COPY prod-requirements.txt /code/
-COPY requirements.txt /code/
+COPY requirements/dev-requirements.txt /code/
+COPY requirements/base-requirements.txt /code/
+COPY requirements/prod-requirements.txt /code/
+COPY requirements/requirements.txt /code/
 
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
 

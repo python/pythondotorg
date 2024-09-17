@@ -38,7 +38,7 @@ jobs:
           cache-name: pythondotorg-cache-pip
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements/requirements.txt', 'requirements/*-requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
             ${{ runner.os }}-${{ github.job }}-
@@ -46,7 +46,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -U pip setuptools wheel
-          pip install -r dev-requirements.txt
+          pip install -r requirements/dev-requirements.txt
       - name: Check for ungenerated database migrations
         run: |
           python manage.py makemigrations --check --dry-run

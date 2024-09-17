@@ -11,7 +11,7 @@
 
 .sass-cache/
 docs/build
-media/*
+app/media/*
 static-root/
 static/stylesheets/mq.css
 static/stylesheets/no-mq.css

@@ -25,7 +25,7 @@ services:
   web:
     build: .
     image: pythondotorg:docker-compose
-    command: python manage.py runserver 0.0.0.0:8000
+    command: python app/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
@@ -41,7 +41,7 @@ services:
 
   worker:
     image: pythondotorg:docker-compose
-    command: celery -A pydotorg worker -B -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
+    command: celery -A app.pydotorg worker -B -l INFO --scheduler django_celery_beat.schedulers:DatabaseScheduler
     volumes:
       - .:/code
     environment:

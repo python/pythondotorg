@@ -10,6 +10,6 @@ build:
     python: "3"
 
   commands:
-      - python -m pip install -r docs-requirements.txt
+      - python -m pip install -r requirements/docs-requirements.txt
       - make -C docs html JOBS=$(nproc) BUILDDIR=_readthedocs
       - mv docs/_readthedocs _readthedocs

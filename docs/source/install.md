@@ -105,7 +105,7 @@ $ python3.9 -m venv venv
 And then you'll need to install dependencies. You don't need to use `pip3` inside a Python 3 virtual environment:
 
 ```
-$ pip install -r dev-requirements.txt
+$ pip install -r requirements/dev-requirements.txt
 ```
 
 *pythondotorg* will look for a PostgreSQL database named `pythondotorg` by default. Run the following command to create a new database:
