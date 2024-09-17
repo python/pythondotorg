@@ -561,9 +561,8 @@ class ReleaseFeedTests(BaseDownloadTests):
     Content is ensured via setUp in BaseDownloadTests.
     """
 
-    def setUp(self) -> None:
-        super().setUp()
-        self.url = reverse("downloads:feed")
+    url = reverse("downloads:feed")
+
 
     def test_endpoint_reachable(self) -> None:
         response = self.client.get(self.url)

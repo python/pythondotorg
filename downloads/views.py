@@ -185,16 +185,6 @@ class ReleaseFeed(Feed):
         """Return the latest Python releases."""
         return Release.objects.filter(is_published=True).order_by("-release_date")[:10]
 
-    @staticmethod
-    def _fetch_releases(url: str) -> list[dict[str, Any]]:
-        """Grabs the latest Python releases from API."""
-        response = requests.get(url, timeout=10)
-        response.raise_for_status()
-        data = response.json()
-
-        sorted_releases = sorted(data, key=lambda x: x["release_date"], reverse=True)
-        return sorted_releases[:10]
-
     def item_title(self, item: Release) -> str:
         """Return the release name as the item title."""
         return item.name
@@ -218,9 +208,3 @@ class ReleaseFeed(Feed):
     def item_guid(self, item: Release) -> str:
         """Return a unique ID for the item based on DB record."""
         return str(item.pk)
-
-    def create_url(self, path: str) -> str:
-        """Create a full URL using the current site domain."""
-        current_site = get_current_site(self.request)
-        scheme = "https" if self.request.is_secure() else "http"
-        return f"{scheme}://{current_site.domain}{path}"
