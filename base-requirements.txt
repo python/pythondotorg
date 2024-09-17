@@ -5,18 +5,18 @@ django-apptemplates==1.5
 django-admin-interface==0.24.2
 django-translation-aliases==0.1.0
 Django==4.2.16
-docutils==0.12
-Markdown==3.3.4
+docutils==0.21.2
+Markdown==3.7
 cmarkgfm==0.6.0
-Pillow==9.4.0
-psycopg2-binary==2.8.6
+Pillow==10.4.0
+psycopg2-binary==2.9.9
 python3-openid==3.2.0
 python-decouple==3.4
 # lxml used by BeautifulSoup.
 lxml==5.2.2
 cssselect==1.1.0
-feedparser==6.0.8
-beautifulsoup4==4.11.2
+feedparser==6.0.11
+beautifulsoup4==4.12.3
 icalendar==4.0.7
 chardet==4.0.0
 celery[redis]==5.3.6
@@ -36,14 +36,14 @@ requests[security]>=2.26.0
 django-honeypot==1.0.4  # 1.0.4 is first version that supports Django 4.2
 django-markupfield==2.0.1
 
-django-allauth==0.57.2 # 0.55.0 is first version that supports Django 4.2
+django-allauth==64.2.1
 
 django-waffle==2.2.1
 
 djangorestframework==3.14.0  # 3.14.0 is first version that supports Django 4.1, 4.2 support hasnt been "released"
 django-filter==2.4.0
-django-ordered-model==3.4.3
-django-widget-tweaks==1.4.8
+django-ordered-model==3.7.4
+django-widget-tweaks==1.5.0
 django-countries==7.2.1
 num2words==0.5.10
 django-polymorphic==3.1.0  # 3.1.0 is first version that supports Django 4.0, unsure if it fully supports 4.2
@@ -52,5 +52,5 @@ django-extensions==3.1.4
 django-import-export==2.7.1
 
 pypandoc==1.12
-panflute==2.3.0
+panflute==2.3.1
 Unidecode==1.3.8

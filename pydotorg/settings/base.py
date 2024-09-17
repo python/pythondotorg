@@ -222,7 +222,6 @@ INSTALLED_APPS = [
     'minutes',
     'nominations',
     'pages',
-    'peps',
     'sponsors',
     'successstories',
     'users',
@@ -230,11 +229,6 @@ INSTALLED_APPS = [
 
     'allauth',
     'allauth.account',
-    'allauth.socialaccount',
-    #'allauth.socialaccount.providers.facebook',
-    #'allauth.socialaccount.providers.github',
-    #'allauth.socialaccount.providers.openid',
-    #'allauth.socialaccount.providers.twitter',
 
     # Tastypie needs the `users` app to be already loaded.
     'tastypie',
@@ -289,10 +283,6 @@ PYTHON_BLOG_URL = "https://blog.python.org"
 
 ### Registration mailing lists
 MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
-
-### PEP Repo Location
-PEP_REPO_PATH = None
-PEP_ARTIFACT_URL = 'https://pythondotorg-assets-staging.s3.amazonaws.com/fake-peps.tar.gz'
 
 ### Fastly ###
 FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
