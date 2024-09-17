@@ -392,8 +392,6 @@ resource "fastly_service_vcl" "python_org" {
       product_enablement,
     ]
   }
-
-  force_destroy = true
 }
 
 output "service_id" {
