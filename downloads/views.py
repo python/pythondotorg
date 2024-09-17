@@ -168,11 +168,6 @@ class ReleaseFeed(Feed):
     title = "Python Releases"
     description = "Latest Python releases from Python.org"
 
-    @staticmethod
-    def link() -> str:
-        """Return the URL to the main downloads page."""
-        return reverse("downloads:download")
-
     def items(self) -> list[dict[str, Any]]:
         """Return the latest Python releases."""
         return Release.objects.filter(is_published=True).order_by("-release_date")[:10]
@@ -184,10 +179,6 @@ class ReleaseFeed(Feed):
     def item_description(self, item: Release) -> str:
         """Return the release version and release date as the item description."""
         return f"Version: {item.version}, Release Date: {item.release_date}"
-
-    def item_link(self, item: Release) -> str:
-        """Return the URL to the release page on python.org."""
-        return reverse("downloads:download_release_detail", args=[item.slug])
 
     def item_pubdate(self, item: Release) -> datetime | None:
         """Return the release date as the item publication date."""
