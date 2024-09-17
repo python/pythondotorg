@@ -4,7 +4,7 @@ resource "fastly_service_vcl" "python_org" {
   http3              = false
   stale_if_error     = false
   stale_if_error_ttl = 43200
-  activate           = false
+  activate           = true
 
   domain {
     name = var.domain
@@ -347,6 +347,7 @@ resource "fastly_service_vcl" "python_org" {
     for_each = var.activate_ngwaf_service ? [1] : []
     content {
       name = var.edge_security_dictionary
+      force_destroy = true
     }
   }
 
