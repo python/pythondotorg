@@ -13,7 +13,7 @@ module "fastly_production" {
   fastly_header_token = var.FASTLY_HEADER_TOKEN
   s3_logging_keys     = var.fastly_s3_logging
 
-  ngwaf_site_name        = "prod"
+  ngwaf_site_name        = "pythondotorg-prod"
   ngwaf_email            = "infrastructure-staff@python.org"
   ngwaf_token            = var.ngwaf_token
   activate_ngwaf_service = false
@@ -35,7 +35,7 @@ module "fastly_staging" {
   fastly_header_token = var.FASTLY_HEADER_TOKEN
   s3_logging_keys     = var.fastly_s3_logging
 
-  ngwaf_site_name        = "test"
+  ngwaf_site_name        = "pythondotorg-test"
   ngwaf_email            = "infrastructure-staff@python.org"
   ngwaf_token            = var.ngwaf_token
   activate_ngwaf_service = true
