@@ -50,7 +50,7 @@ variable "activate_ngwaf_service" {
 variable "edge_security_dictionary" {
   type        = string
   description = "The dictionary name for the Edge Security product."
-  default     = ""
+  default     = "Edge_Security"
 }
 variable "ngwaf_corp_name" {
   type        = string
