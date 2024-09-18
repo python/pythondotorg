@@ -199,4 +199,4 @@ class ReleaseFeed(Feed):
         ``guid`` must be a full URL, unless `isPermaLink` attribute is false
         https://validator.w3.org/feed/docs/error/InvalidHttpGUID.html
         """
-        return str(self.link())
+        return str(item.get_absolute_url())
