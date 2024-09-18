@@ -192,7 +192,3 @@ class ReleaseFeed(Feed):
                 return timezone.make_aware(item.release_date)
             return item.release_date
         return None
-
-    def item_guid(self, item: Release) -> str:
-        """Return a unique ID for the item based on DB record."""
-        return str(item.pk)
