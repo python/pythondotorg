@@ -194,5 +194,9 @@ class ReleaseFeed(Feed):
         return None
 
     def item_guid(self, item: Release) -> str:
-        """Return a unique ID for the item based on DB record."""
-        return str(item.pk)
+        """Return a link as the GUID for the item.
+
+        ``guid`` must be a full URL, unless `isPermaLink` attribute is false
+        https://validator.w3.org/feed/docs/error/InvalidHttpGUID.html
+        """
+        return str(self.link())
