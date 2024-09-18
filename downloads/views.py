@@ -192,11 +192,3 @@ class ReleaseFeed(Feed):
                 return timezone.make_aware(item.release_date)
             return item.release_date
         return None
-
-    def item_guid(self, item: Release) -> str:
-        """Return a link as the GUID for the item.
-
-        ``guid`` must be a full URL, unless `isPermaLink` attribute is false
-        https://validator.w3.org/feed/docs/error/InvalidHttpGUID.html
-        """
-        return str(item.get_absolute_url())
