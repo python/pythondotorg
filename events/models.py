@@ -183,14 +183,14 @@ class Event(ContentManageable):
 
     def is_scheduled_to_start_this_year(self) -> bool:
         if self.next_time:
-            current_year: int = datetime.datetime.now().year
+            current_year: int = timezone.now().year
             if self.next_time.dt_start.year == current_year:
                 return True
         return False
 
     def is_scheduled_to_end_this_year(self) -> bool:
         if self.next_time:
-            current_year: int = datetime.datetime.now().year
+            current_year: int = timezone.now().year
             if self.next_time.dt_end.year == current_year:
                 return True
         return False
