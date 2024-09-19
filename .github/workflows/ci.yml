@@ -49,12 +49,15 @@ jobs:
           pip install -r requirements/dev-requirements.txt
       - name: Check for ungenerated database migrations
         run: |
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
           cd app
           python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
       - name: Run Tests
         run: |
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          cd app
           python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
