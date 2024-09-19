@@ -114,9 +114,17 @@
           <p><small>Assets from the PSF related to your sponsorship.</small></p>
           <br/>
           <ul>
-            {% for asset in provided_assets %}
-              <li><b>{{ asset.label }}</b>: <a href="{{ asset.user_view_url }}">View asset</a>.</li>
-            {% endfor %}
+              {% for asset in provided_assets %}
+                <li><b>{{ asset.label }}</b>:
+                    {% if asset.polymorphic_ctype.name == "Provided File" %}
+                        <a href="{{ asset.value.url }}">View asset</a>
+                    {% elif asset.polymorphic_ctype.name == "Provided Text" %}
+                        <pre>{{ asset.value|urlize }}</pre>
+                    {% else %}
+                        <a href="{{ asset.value }}">View asset</a>
+                    {% endif %}
+                </li>
+              {% endfor %}
           </ul>
           <br/>
           <small>Or you can also <a href="{% url 'users:view_provided_sponsorship_assets' sponsorship.pk %}">click here</a> to view all the assets under the same page.</small>
