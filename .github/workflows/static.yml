@@ -30,14 +30,6 @@ jobs:
           pip install -U pip setuptools wheel
           pip install -r requirements/requirements.txt -r requirements/prod-requirements.txt
 
-      - name: Debug Information
-        run: |
-          pwd
-          ls -R
-          cat app/manage.py
-          cat app/pydotorg/settings/static.py
-          grep -n "INSTALLED_APPS" app/pydotorg/settings/base.py
-
       - name: Run collectstatic
         run: |
           export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}

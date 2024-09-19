@@ -1,5 +1,7 @@
 name: CI
+
 on: [push, pull_request]
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -17,6 +19,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
       - name: Install platform dependencies
         run: |
           sudo apt -y update
@@ -25,6 +28,7 @@ jobs:
               texlive-latex-recommended \
               texlive-plain-generic \
               lmodern
+
       - name: Install pandoc
         run: |
           wget https://github.com/jgm/pandoc/releases/download/2.17.1.1/pandoc-2.17.1.1-1-amd64.deb
@@ -32,6 +36,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
             python-version-file: '.python-version'
+
       - name: Cache Python dependencies
         uses: actions/cache@v4
         env:
@@ -43,24 +48,29 @@ jobs:
             ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
             ${{ runner.os }}-${{ github.job }}-
             ${{ runner.os }}-
+
       - name: Install Python dependencies
         run: |
           pip install -U pip setuptools wheel
           pip install -r requirements/dev-requirements.txt
+
       - name: Check for ungenerated database migrations
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          export PYTHONPATH=${{ github.workspace }}:${{ github.workspace }}/app:$PYTHONPATH
           cd app
-          python manage.py makemigrations --check --dry-run
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python -c "import django; print(django.__file__); from django.conf import settings; print(settings.BASE_DIR)"
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+
       - name: Run Tests
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          export PYTHONPATH=${{ github.workspace }}:${{ github.workspace }}/app:$PYTHONPATH
           cd app
-          python -Wd -m coverage run manage.py test -v2
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
+
       - name: Coverage
         run: |
           coverage report -m --fail-under=75
