@@ -46,4 +46,4 @@ RUN --mount=type=cache,target=/root/.cache/pip \
         install \
         -r requirements.txt -r prod-requirements.txt
 COPY . /code/
-RUN DJANGO_SETTINGS_MODULE=pydotorg.settings.static python app/manage.py collectstatic --noinput
+RUN DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python app/manage.py collectstatic --noinput

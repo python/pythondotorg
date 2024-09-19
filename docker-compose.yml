@@ -32,7 +32,7 @@ services:
       - "8000:8000"
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
-      DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+      DJANGO_SETTINGS_MODULE: app.pydotorg.settings.local
     depends_on:
       postgres:
         condition: service_healthy
@@ -46,7 +46,7 @@ services:
       - .:/code
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
-      DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+      DJANGO_SETTINGS_MODULE: app.pydotorg.settings.local
     depends_on:
       postgres:
         condition: service_healthy
