@@ -1,14 +1,18 @@
 name: Check collectstatic
+
 on: [push, pull_request]
+
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+
       - uses: actions/setup-python@v5
         with:
             python-version-file: '.python-version'
+
       - name: Cache Python dependencies
         uses: actions/cache@v4
         env:
@@ -20,12 +24,28 @@ jobs:
             ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
             ${{ runner.os }}-${{ github.job }}-
             ${{ runner.os }}-
+
       - name: Install Python dependencies
         run: |
           pip install -U pip setuptools wheel
           pip install -r requirements/requirements.txt -r requirements/prod-requirements.txt
+
+      - name: Debug Information
+        run: |
+          pwd
+          ls -R
+          cat app/manage.py
+          cat app/pydotorg/settings/static.py
+          grep -n "INSTALLED_APPS" app/pydotorg/settings/base.py
+
       - name: Run collectstatic
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
-          cd app
-          DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}
+          cd ${{ github.workspace }}
+          echo "PYTHONPATH: $PYTHONPATH"
+          echo "Current directory: $(pwd)"
+          ls -la
+          python -c "import sys; print('Python path:', sys.path)"
+          python -c "import django; print('Django version:', django.__version__)"
+          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python -c "from django.conf import settings; print('INSTALLED_APPS:', settings.INSTALLED_APPS)"
+          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python app/manage.py collectstatic --noinput

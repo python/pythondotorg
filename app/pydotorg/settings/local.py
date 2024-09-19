@@ -1,4 +1,4 @@
-from .base import *
+from app.pydotorg.settings.base import *
 import os
 
 DEBUG = True

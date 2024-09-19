@@ -1,6 +1,6 @@
 from decouple import Csv
 
-from .base import *
+from app.pydotorg.settings.base import *
 
 DEBUG = TEMPLATE_DEBUG = False
 

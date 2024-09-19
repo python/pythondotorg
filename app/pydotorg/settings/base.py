@@ -309,7 +309,7 @@ DEFAULT_FROM_EMAIL = 'noreply@python.org'
 
 ### Pipeline
 
-from .pipeline import PIPELINE
+from app.pydotorg.settings.pipeline import PIPELINE
 
 ### contrib.messages
 
