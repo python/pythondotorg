@@ -29,5 +29,29 @@ N/A
 ## Requirements
 
 Tested on 
-- Tested on Terraform 1.8.5
+- Tested on Terraform 1.9.5
 - Fastly provider 5.13.0
+
+# Fastly's NGWAF
+
+This module also conditionally can set up the Fastly Next-Gen Web Application Firewall (NGWAF) 
+for our Fastly services related to python.org / test.python.org. 
+
+## Usage
+
+```hcl
+module "fastly_production" {
+  source = "./cdn"
+
+  ...
+  activate_ngwaf_service = true
+  ...
+}
+```
+
+## Requirements
+
+Tested on
+- Terraform 1.9.5
+- Fastly provider 5.13.0
+- SigSci provider 3.3.0

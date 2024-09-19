@@ -12,15 +12,20 @@ module "fastly_production" {
   fastly_key          = var.FASTLY_API_KEY
   fastly_header_token = var.FASTLY_HEADER_TOKEN
   s3_logging_keys     = var.fastly_s3_logging
+
+  ngwaf_site_name        = "prod"
+  ngwaf_email            = "infrastructure-staff@python.org"
+  ngwaf_token            = var.ngwaf_token
+  activate_ngwaf_service = false
 }
 
 module "fastly_staging" {
   source = "./cdn"
 
-  name            = "test.python.org"
-  domain          = "test.python.org"
-  subdomain       = "www.test.python.org"
-  extra_domains   = ["www.test.python.org"]
+  name          = "test.python.org"
+  domain        = "test.python.org"
+  subdomain     = "www.test.python.org"
+  extra_domains = ["www.test.python.org"]
   # TODO: adjust to test-pythondotorg when done testing NGWAF
   backend_address = "pythondotorg.ingress.us-east-2.psfhosted.computer"
   default_ttl     = 3600
@@ -29,4 +34,9 @@ module "fastly_staging" {
   fastly_key          = var.FASTLY_API_KEY
   fastly_header_token = var.FASTLY_HEADER_TOKEN
   s3_logging_keys     = var.fastly_s3_logging
+
+  ngwaf_site_name        = "test"
+  ngwaf_email            = "infrastructure-staff@python.org"
+  ngwaf_token            = var.ngwaf_token
+  activate_ngwaf_service = true
 }
