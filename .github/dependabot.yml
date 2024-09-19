@@ -2,8 +2,12 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
+  groups:
+    pip:
+      patterns:
+        - "*"
   schedule:
-    interval: daily
+    interval: weekly
   open-pull-requests-limit: 10
   ignore:
   - dependency-name: docutils
