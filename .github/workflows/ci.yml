@@ -57,17 +57,17 @@ jobs:
 
       - name: Check for ungenerated database migrations
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}
-          cd ${{ github.workspace }}
-          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.dev python app/manage.py makemigrations --check --dry-run
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          cd ${{ github.workspace }}/app
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
       - name: Run Tests
         run: |
-          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}
-          cd ${{ github.workspace }}
-          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.dev python -Wd -m coverage run app/manage.py test -v2
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          cd ${{ github.workspace }}/app
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
