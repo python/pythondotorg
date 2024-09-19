@@ -59,7 +59,7 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
           cd ${{ github.workspace }}/app
-          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python manage.py makemigrations --check --dry-run
+          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.dev python manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
@@ -67,7 +67,7 @@ jobs:
         run: |
           export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
           cd ${{ github.workspace }}/app
-          DJANGO_SETTINGS_MODULE=pydotorg.settings.dev python -Wd -m coverage run manage.py test -v2
+          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.dev python -Wd -m coverage run manage.py test -v2
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
