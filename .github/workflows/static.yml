@@ -33,11 +33,4 @@ jobs:
       - name: Run collectstatic
         run: |
           export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}
-          cd ${{ github.workspace }}
-          echo "PYTHONPATH: $PYTHONPATH"
-          echo "Current directory: $(pwd)"
-          ls -la
-          python -c "import sys; print('Python path:', sys.path)"
-          python -c "import django; print('Django version:', django.__version__)"
-          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python -c "from django.conf import settings; print('INSTALLED_APPS:', settings.INSTALLED_APPS)"
           DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python app/manage.py collectstatic --noinput
