@@ -1,3 +1,3 @@
-from pydotorg.celery import app as celery_app
+from app.pydotorg.celery import app as celery_app
 
 __all__ = ("celery_app",)
