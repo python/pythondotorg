@@ -49,7 +49,7 @@ jobs:
           pip install -r requirements/dev-requirements.txt
       - name: Check for ungenerated database migrations
         run: |
-          python manage.py makemigrations --check --dry-run
+          python ./app/manage.py makemigrations --check --dry-run
         env:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
       - name: Run Tests
