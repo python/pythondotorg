@@ -26,4 +26,6 @@ jobs:
           pip install -r requirements/requirements.txt -r requirements/prod-requirements.txt
       - name: Run Tests
         run: |
-          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python ./app/manage.py collectstatic --noinput
+          export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
+          cd app
+          DJANGO_SETTINGS_MODULE=app.pydotorg.settings.static python manage.py collectstatic --noinput
