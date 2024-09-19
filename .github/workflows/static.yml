@@ -24,17 +24,8 @@ jobs:
         run: |
           pip install -U pip setuptools wheel
           pip install -r requirements/requirements.txt -r requirements/prod-requirements.txt
-      - name: Debug bc im bad
-        run: |
-          pwd
-          ls -R
-          echo $PYTHONPATH
-          python -c "import sys; print(sys.path)"
-          pip freeze
       - name: Run collectstatic
         run: |
           export PYTHONPATH=$PYTHONPATH:${{ github.workspace }}/app
           cd app
-          echo "Current directory: $(pwd)"
-          ls -la
           DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
