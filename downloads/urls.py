@@ -10,4 +10,5 @@ urlpatterns = [
     path('release/<slug:release_slug>/', views.DownloadReleaseDetail.as_view(), name='download_release_detail'),
     path('<slug:slug>/', views.DownloadOSList.as_view(), name='download_os_list'),
     path('', views.DownloadHome.as_view(), name='download'),
+    path("feed.rss", views.ReleaseFeed(), name="feed"),
 ]
