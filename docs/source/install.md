@@ -99,7 +99,7 @@ $ git clone git://github.com/python/pythondotorg.git
 Then create a virtual environment:
 
 ```
-$ python3.9 -m venv venv
+$ python3 -m venv venv
 ```
 
 And then you'll need to install dependencies. You don't need to use `pip3` inside a Python 3 virtual environment:
