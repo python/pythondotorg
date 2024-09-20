@@ -7,7 +7,7 @@ django-translation-aliases==0.1.0
 Django==4.2.16
 docutils==0.21.2
 Markdown==3.7
-cmarkgfm==0.6.0
+cmarkgfm==2024.1.14
 Pillow==10.4.0
 psycopg2-binary==2.9.9
 python3-openid==3.2.0
