@@ -272,6 +272,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
     if instance.is_published:
         # Purge our common pages
         purge_url('/downloads/')
+        purge_url('/downloads/feed.rss')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
         purge_url('/downloads/macos/')
