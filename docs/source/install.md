@@ -55,7 +55,7 @@ web_1       | Starting development server at http://0.0.0.0:8000/
 web_1       | Quit the server with CONTROL-C.
 ``` 
 
-You can view these results in your local web browser at: `http://localhost:8000`
+You can view these results in your local web browser at: <http://localhost:8000>
 
 To reset your local environment, run:
 
