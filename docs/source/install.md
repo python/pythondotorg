@@ -88,7 +88,7 @@ This is a simple wrapper around running `python manage.py` in the container, all
 Manual setup
 ------------
 
-First, install [PostgreSQL](https://www.postgresql.org/download/) on your machine and run it. *pythondotorg* currently uses Postgres 10.21.
+First, install [PostgreSQL](https://www.postgresql.org/download/) on your machine and run it. *pythondotorg* currently uses Postgres 15.x.
 
 Then clone the repository:
 
