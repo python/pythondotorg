@@ -24,6 +24,9 @@ class StoryForm(ContentManageableModelForm):
         labels = {
             'name': 'Story name',
         }
+        help_texts = {
+            "content": "Note: Submissions in Markdown are strongly preferred and can be processed faster.",
+        }
 
     def clean_name(self):
         name = self.cleaned_data.get('name')

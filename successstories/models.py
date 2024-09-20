@@ -53,7 +53,7 @@ class Story(NameSlugModel, ContentManageable):
     author = models.CharField(max_length=500, help_text='Author of the content')
     author_email = models.EmailField(max_length=100, blank=True, null=True)
     pull_quote = models.TextField()
-    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE, help_text="Note: Submissions in Markdown are strongly preferred and can be processed faster.")
+    content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)
     featured = models.BooleanField(default=False, help_text="Set to use story in the supernav")
     image = models.ImageField(upload_to='successstories', blank=True, null=True)
