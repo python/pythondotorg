@@ -25,7 +25,8 @@ class StoryForm(ContentManageableModelForm):
             'name': 'Story name',
         }
         help_texts = {
-            "content": "Note: Submissions in Markdown are strongly preferred and can be processed faster.",
+            "content": "Note: Submissions in <a href='https://www.markdownguide.org/basic-syntax/'>Markdown</a> "
+                       "are strongly preferred and can be processed faster.",
         }
 
     def clean_name(self):
