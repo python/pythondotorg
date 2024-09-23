@@ -26,7 +26,7 @@ django-imagekit==5.0  # 5.0 is first version that supports Django 4.2
 django-haystack==3.2.1
 elasticsearch>=7,<8
 # TODO: 0.14.0 only supports Django 1.8 and 1.11.
-django-tastypie==0.14.6  # 0.14.6 is first version that supports Django 4.2
+django-tastypie==0.14.7  # 0.14.6 is first version that supports Django 4.2
 
 pytz==2021.1
 python-dateutil==2.8.2
