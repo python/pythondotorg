@@ -55,7 +55,7 @@ web_1       | Starting development server at http://0.0.0.0:8000/
 web_1       | Quit the server with CONTROL-C.
 ``` 
 
-You can view these results in your local web browser at: <http://localhost:8000>
+You can view these results in your local web browser at: `http://localhost:8000`
 
 To reset your local environment, run:
 
@@ -88,7 +88,7 @@ This is a simple wrapper around running `python manage.py` in the container, all
 Manual setup
 ------------
 
-First, install [PostgreSQL](https://www.postgresql.org/download/) on your machine and run it. *pythondotorg* currently uses Postgres 15.x.
+First, install [PostgreSQL](https://www.postgresql.org/download/) on your machine and run it. *pythondotorg* currently uses Postgres 10.21.
 
 Then clone the repository:
 
@@ -99,7 +99,7 @@ $ git clone git://github.com/python/pythondotorg.git
 Then create a virtual environment:
 
 ```
-$ python3 -m venv venv
+$ python3.9 -m venv venv
 ```
 
 And then you'll need to install dependencies. You don't need to use `pip3` inside a Python 3 virtual environment:

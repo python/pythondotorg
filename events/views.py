@@ -40,21 +40,10 @@ class EventListBase(ListView):
 
 class EventHomepage(ListView):
     """ Main Event Landing Page """
-    template_name = "events/event_list.html"
+    template_name = 'events/event_list.html'
 
-    def get_queryset(self) -> Event:
-        """Queryset to return all events, ordered by START date."""
-        return Event.objects.all().order_by("-occurring_rule__dt_start")
-
-    def get_context_data(self, **kwargs: dict) -> dict:
-        """Add more ctx, specifically events that are happening now, just missed, and upcoming."""
-        context = super().get_context_data(**kwargs)
-        context["events_just_missed"] = Event.objects.until_datetime(timezone.now())[:2]
-        context["upcoming_events"] = Event.objects.for_datetime(timezone.now())
-        context["events_now"] = Event.objects.filter(
-            occurring_rule__dt_start__lte=timezone.now(),
-            occurring_rule__dt_end__gte=timezone.now())[:2]
-        return context
+    def get_queryset(self):
+        return Event.objects.for_datetime(timezone.now()).order_by('occurring_rule__dt_start')
 
 
 class EventDetail(DetailView):
@@ -79,13 +68,11 @@ class EventDetail(DetailView):
 class EventList(EventListBase):
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by(
-            'occurring_rule__dt_start')
+        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(
-            calendar__slug=self.kwargs['calendar_slug'])[:2]
+        context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])[:2]
         context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
         return context
 

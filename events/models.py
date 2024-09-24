@@ -211,15 +211,8 @@ class Event(ContentManageable):
             return None
 
     @property
-    def next_or_previous_time(self) -> models.Model:
-        """Return the next or previous time of the event OR the occurring rule."""
-        if next_time := self.next_time:
-            return next_time
-
-        if previous_time := self.previous_time:
-            return previous_time
-
-        return self.occurring_rule if hasattr(self, "occurring_rule") else None
+    def next_or_previous_time(self):
+        return self.next_time or self.previous_time
 
     @property
     def is_past(self):

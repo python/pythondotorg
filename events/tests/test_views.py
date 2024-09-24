@@ -35,50 +35,11 @@ class EventsViewsTests(TestCase):
             finish=cls.now - datetime.timedelta(days=1),
         )
 
-        # Future event
-        cls.future_event = Event.objects.create(title='Future Event', creator=cls.user, calendar=cls.calendar, featured=True)
-        RecurringRule.objects.create(
-            event=cls.future_event,
-            begin=cls.now + datetime.timedelta(days=1),
-            finish=cls.now + datetime.timedelta(days=2),
-        )
-
-        # Happening now event
-        cls.current_event = Event.objects.create(title='Current Event', creator=cls.user, calendar=cls.calendar)
-        RecurringRule.objects.create(
-            event=cls.current_event,
-            begin=cls.now - datetime.timedelta(hours=1),
-            finish=cls.now + datetime.timedelta(hours=1),
-        )
-
-        # Just missed event
-        cls.just_missed_event = Event.objects.create(title='Just Missed Event', creator=cls.user, calendar=cls.calendar)
-        RecurringRule.objects.create(
-            event=cls.just_missed_event,
-            begin=cls.now - datetime.timedelta(hours=3),
-            finish=cls.now - datetime.timedelta(hours=1),
-        )
-
-        # Past event
-        cls.past_event = Event.objects.create(title='Past Event', creator=cls.user, calendar=cls.calendar)
-        RecurringRule.objects.create(
-            event=cls.past_event,
-            begin=cls.now - datetime.timedelta(days=2),
-            finish=cls.now - datetime.timedelta(days=1),
-        )
-
     def test_events_homepage(self):
         url = reverse('events:events')
         response = self.client.get(url)
-        events = response.context['object_list']
-        event_titles = [event.title for event in events]
-
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(events), 6)
-
-        self.assertIn('Future Event', event_titles)
-        self.assertIn('Current Event', event_titles)
-        self.assertIn('Past Event', event_titles)
+        self.assertEqual(len(response.context['object_list']), 1)
 
     def test_calendar_list(self):
         calendars_count = Calendar.objects.count()
@@ -93,7 +54,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 3)
+        self.assertEqual(len(response.context['object_list']), 1)
 
         url = reverse('events:event_list_past', kwargs={"calendar_slug": 'unexisting'})
         response = self.client.get(url)
@@ -105,7 +66,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertEqual(len(response.context['object_list']), 4)
+        self.assertEqual(len(response.context['object_list']), 1)
 
     def test_event_list_category(self):
         category = EventCategory.objects.create(
@@ -153,7 +114,7 @@ class EventsViewsTests(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.context['object'], dt.date())
-        self.assertEqual(len(response.context['object_list']), 6)
+        self.assertEqual(len(response.context['object_list']), 2)
 
     def test_eventlocation_list(self):
         venue = EventLocation.objects.create(
@@ -189,20 +150,12 @@ class EventsViewsTests(TestCase):
         self.assertEqual(self.event, response.context['object'])
 
     def test_upcoming_tag(self):
-        self.assertEqual(len(get_events_upcoming()), 3)
-        self.assertEqual(len(get_events_upcoming(only_featured=True)), 1)
+        self.assertEqual(len(get_events_upcoming()), 1)
+        self.assertEqual(len(get_events_upcoming(only_featured=True)), 0)
         self.rule.begin = self.now - datetime.timedelta(days=3)
         self.rule.finish = self.now - datetime.timedelta(days=2)
         self.rule.save()
-        self.assertEqual(len(get_events_upcoming()), 2)
-
-    def test_context_data(self):
-        url = reverse("events:events")
-        response = self.client.get(url)
-
-        self.assertIn("events_just_missed", response.context)
-        self.assertIn("upcoming_events", response.context)
-        self.assertIn("events_now", response.context)
+        self.assertEqual(len(get_events_upcoming()), 0)
 
 
 class EventSubmitTests(TestCase):
