@@ -285,8 +285,10 @@ PYTHON_BLOG_URL = "https://blog.python.org"
 MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 
 ### Fastly ###
-FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
-                        # be purged on save
+FASTLY_SERVICE_ID = False  # Set to a Fastly Service ID in production to allow
+                           # purges by Surrogate-Key
+FASTLY_API_KEY = False     # Set to Fastly API key in production to allow
+                           # pages to be purged on save
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90
@@ -348,6 +350,10 @@ REST_FRAMEWORK = {
 ### pydotorg.middleware.GlobalSurrogateKey
 
 GLOBAL_SURROGATE_KEY = 'pydotorg-app'
+
+### pydotorg.settings.cabotage.add_surrogate_keys_to_static
+
+STATIC_SURROGATE_KEY = 'pydotorg-static'
 
 ### PyCon Integration for Sponsor Voucher Codes
 PYCON_API_KEY = config("PYCON_API_KEY", default="deadbeef-dead-beef-dead-beefdeadbeef")
