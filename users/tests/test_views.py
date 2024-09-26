@@ -474,7 +474,7 @@ class SponsorshipDetailViewTests(TestCase):
         expected_asset_link = f'href="{asset.value.url}"'
 
         # and finally check that the asset link is ACTUALLY pointing to the asset and not the list view page
-        self.assertIn("View asset", content, "View asset text not found.")
+        self.assertIn("View File", content, "View file text not found.")
         self.assertIn(expected_asset_link, content, "Asset link not found in the page.")
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, "users/sponsorship_detail.html")
