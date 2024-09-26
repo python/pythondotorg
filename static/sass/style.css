@@ -2881,10 +2881,11 @@ p.quote-by-organization {
           background-color: #bcc2c7;
           *zoom: 1;
           filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
+          background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIxMCUiIHN0b3AtY29sb3I9IiNlNmU4ZWEiLz48c3RvcCBvZmZzZXQ9IjkwJSIgc3RvcC1jb2xvcj0iI2JjYzJjNyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+          background-size: 100%;
           background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
-          background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
           background-image: -moz-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
-          background-image: -o-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
+          background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
           background-image: linear-gradient(#e6e8ea 10%, #bcc2c7 90%); }
   .user-profile-controls + .return-link {
     margin-top: -1.3125em; }
@@ -3354,11 +3355,11 @@ span.highlighted {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1646853871'); }
+      content: url('../img/python-logo_print.png?1726783859'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1646853871'); } }
+      content: url('../img/psf-logo_print.png?1726783859'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
@@ -3635,7 +3636,6 @@ span.highlighted {
   src: url("../fonts/SourceSansPro-It-webfont.eot?#iefix") format("embedded-opentype"), url("../fonts/SourceSansPro-It-webfont.woff") format("woff"), url("../fonts/SourceSansPro-It-webfont.ttf") format("truetype"), url("../fonts/SourceSansPro-It-webfont.svg#source_sans_proitalic") format("svg");
   font-weight: normal;
   font-style: italic; }
-
 /* ! ===== SPONSORSHIP APP ===== */
 .ui-tooltip-content {
   font-size: 75%; }
@@ -3686,14 +3686,15 @@ span.highlighted {
   margin-top: 0.5em;
   font-size: 65%;
   border-color: #82b043;
-  color: white !important;
+  color: #fff !important;
   background-color: #82b043;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB2D287', endColorstr='#FF82B043');
+  background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIxMCUiIHN0b3AtY29sb3I9IiNiMmQyODciLz48c3RvcCBvZmZzZXQ9IjkwJSIgc3RvcC1jb2xvcj0iIzgyYjA0MyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background-size: 100%;
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b2d287), color-stop(90%, #82b043));
-  background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
-  background-image: -o-linear-gradient(#b2d287 10%, #82b043 90%);
+  background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: linear-gradient(#b2d287 10%, #82b043 90%); }
 #new_sponsorship_application_container .sponsor-contacts-container .contact-form, #edit-sponsor-information .sponsor-contacts-container .contact-form {
   margin-bottom: 1em; }
@@ -3905,7 +3906,7 @@ span.highlighted {
     border-radius: 20px;
     text-align: center; }
     #select_sponsorship_benefits_container .submit-row .btn:hover, #select_sponsorship_benefits_container .submit-row .btn:focus {
-      background: #ffd95c;
+      background: #ffd95d;
       text-shadow: 0 0 5px rgba(255, 211, 67, 0.2); }
   @media (max-width: 1200px) {
     #select_sponsorship_benefits_container .submit-row {
@@ -3923,7 +3924,11 @@ span.highlighted {
      */
     flex-flow: column wrap !important; }
     #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
-      width: 50%; }
+      width: 50%; } }
+    @media (max-width: 1200px) and (max-width: 640px) {
+      #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
+        width: 80%; } }
+@media (max-width: 1200px) {
     #select_sponsorship_benefits_container #package-selection .row .col:first-child {
       width: 20%; }
   #select_sponsorship_benefits_container #package-selection .col, #select_sponsorship_benefits_container #package-selection .col-items {
@@ -3944,9 +3949,6 @@ span.highlighted {
       padding-right: 1em; }
     #select_sponsorship_benefits_container #package-selection .package-input input {
       order: 1; } }
-    @media (max-width: 1200px) and (max-width: 640px) {
-      #select_sponsorship_benefits_container #package-selection .row .col:not(first-child) {
-        width: 80%; } }
 @media (min-width: 1200px) {
   #select_sponsorship_benefits_container {
     /* Destkop version have the package selection row as a fixed header after some scrolling.
@@ -3960,10 +3962,11 @@ span.highlighted {
       background-color: #fcfcfc;
       *zoom: 1;
       filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
+      background-image: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJvYmplY3RCb3VuZGluZ0JveCIgeDE9IjAuNSIgeTE9IjAuMCIgeDI9IjAuNSIgeTI9IjEuMCI+PHN0b3Agb2Zmc2V0PSIxMCUiIHN0b3AtY29sb3I9IiNmOWY5ZjkiLz48c3RvcCBvZmZzZXQ9IjkwJSIgc3RvcC1jb2xvcj0iI2ZjZmNmYyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+      background-size: 100%;
       background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
-      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
       background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
-      background-image: -o-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
+      background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
       background-image: linear-gradient(#f9f9f9 10%, #fcfcfc 90%); } }
 
 #thank-you-container {
@@ -3979,25 +3982,103 @@ span.highlighted {
 .hidden {
   display: none; }
 
-#sponsorship-detail-container .info-cards {
-  display: flex;
-  width: 100%;
-  align-content: center;
-  flex-wrap: wrap; }
-#sponsorship-detail-container .card {
-  flex: 1 0 48%; }
-#sponsorship-detail-container .card-info {
-  margin: 0.5em 0.5em;
-  padding: 1em 1em;
-  border: 1px solid #caccce;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  -ms-border-radius: 6px;
-  -o-border-radius: 6px;
-  border-radius: 6px;
-  background: #e6e8ea; }
-  #sponsorship-detail-container .card-info h3 {
-    margin: 0; }
+#sponsorship-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem; }
+  #sponsorship-detail-container .info-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem; }
+  @media (max-width: 768px) {
+    #sponsorship-detail-container .info-cards {
+      grid-template-columns: 1fr; } }
+  #sponsorship-detail-container .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem; }
+  #sponsorship-detail-container .card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem; }
+  #sponsorship-detail-container .card ul li {
+    margin-bottom: 0.5rem; }
+  #sponsorship-detail-container .wide-column {
+    grid-column: 1 / -1; }
+  #sponsorship-detail-container .assets-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem; }
+  #sponsorship-detail-container .asset-item {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem; }
+  #sponsorship-detail-container .asset-item h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem; }
+  #sponsorship-detail-container .asset-item p {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem; }
+  #sponsorship-detail-container .asset-item.incomplete {
+    border-left: 3px solid #dc3545; }
+  #sponsorship-detail-container .asset-item.fulfilled {
+    border-left: 3px solid #28a745; }
+  #sponsorship-detail-container .due-date {
+    font-weight: bold;
+    color: #dc3545; }
+  #sponsorship-detail-container .btn {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease; }
+  #sponsorship-detail-container .btn-link {
+    color: #007bff; }
+  #sponsorship-detail-container .edit-all-assets {
+    margin-top: 1.5rem;
+    text-align: right; }
+  #sponsorship-detail-container .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem; }
+  #sponsorship-detail-container .benefit-item {
+    display: flex;
+    align-items: center;
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.75rem;
+    transition: background-color 0.2s ease; }
+  #sponsorship-detail-container .benefit-item:hover {
+    background-color: #f8f9fa; }
+  #sponsorship-detail-container .benefit-icon {
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+    color: #28a745;
+    font-size: 1rem; }
+  #sponsorship-detail-container .benefit-content {
+    flex-grow: 1; }
+  #sponsorship-detail-container .benefit-name {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.2; }
+  #sponsorship-detail-container .benefit-description {
+    margin-left: 0.25rem;
+    color: #6c757d;
+    cursor: help;
+    font-size: 0.8rem; }
+  @media (max-width: 768px) {
+    #sponsorship-detail-container .info-cards {
+      grid-template-columns: 1fr; }
+    #sponsorship-detail-container .assets-list {
+      grid-template-columns: 1fr; } }
 
 #update-sponsorship-assets input {
   padding: 0.25em;
@@ -4007,3 +4088,5 @@ span.highlighted {
   font-size: 75%; }
 #update-sponsorship-assets .form-actions {
   margin: 0.5em 0; }
+
+/*# sourceMappingURL=style.css.map */
