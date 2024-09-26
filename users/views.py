@@ -324,6 +324,7 @@ class UpdateSponsorshipAssetsView(UpdateView):
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class ProvidedSponsorshipAssetsView(DetailView):
+    """TODO: Deprecate this view now that everything lives in the SponsorshipDetailView"""
     object_name = "sponsorship"
     template_name = 'users/sponsorship_assets_view.html'
 
