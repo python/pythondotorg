@@ -16,7 +16,7 @@ module "fastly_production" {
   ngwaf_site_name        = "prod"
   ngwaf_email            = "infrastructure-staff@python.org"
   ngwaf_token            = var.ngwaf_token
-  activate_ngwaf_service = false
+  activate_ngwaf_service = true
 }
 
 module "fastly_staging" {
