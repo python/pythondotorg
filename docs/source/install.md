@@ -197,28 +197,17 @@ Once you have it installed, update the URL value of `HAYSTACK_CONNECTIONS` setti
 Generating CSS files automatically
 ----------------------------------
 
-Due to performance issues of [django-pipeline](https://github.com/jazzband/django-pipeline/issues/313), we are using 
-a dummy compiler `pydotorg.compilers.DummySASSCompiler` in development mode. 
+```{warning}
+When editing frontend styles, ensure you ONLY edit the `.scss` files. 
 
-To generate CSS files, use `sass` itself in a separate terminal window:
-
-````{note}
-To get up an running with SASS, 
-you need to [install Ruby 2 (>= 2.0.0, < 3.0.0)](https://www.ruby-lang.org/en/documentation/installation/), 
-the `sussy` gem, and the `sass` gem. 
-
-The gems are defined in the `Gemfile` and can be installed by running the following command:
-```bash
-bundle install
+These will then be compiled into `.css` files automatically.
 ```
-````
 
-Then run the following command to generate CSS files:
+Static files are automatically compiled inside the [Docker Compose `static` container](../../docker-compose.yml)
+when running `make serve`.
 
-```
-$ cd static
-$ sass --compass --scss -I $(dirname $(dirname $(gem which susy))) --trace --watch sass/style.scss:sass/style.css
-```
+When your pull request has stylesheet changes, commit the `.scss` files and the compiled `.css` files. 
+Otherwise, ignore committing and pushing the `.css` files.
 
 Running tests
 -------------
