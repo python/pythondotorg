@@ -33,5 +33,5 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: 'Changes detected in the `infra/` directory. Don\'t forget to apply these changes in Terraform Cloud!'
+              body: 'Changes detected in the `infra/` directory. Don\'t forget to apply these changes in Terraform Cloud and/or Fastly!'
             })
