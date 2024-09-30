@@ -68,6 +68,14 @@ resource "fastly_service_vcl" "python_org" {
     ttl             = 0
   }
 
+  cache_setting {
+    action          = "pass"
+    cache_condition = "Don't cache 404s for /static"
+    name            = "No caching for /static 404s"
+    stale_ttl       = 0
+    ttl             = 0
+  }
+
   condition {
     name      = "Force Pass No-Cache No-Store"
     priority  = 10
@@ -127,6 +135,13 @@ resource "fastly_service_vcl" "python_org" {
     priority  = 1
     statement = "req.http.host == \"python.org\""
     type      = "REQUEST"
+  }
+
+  condition {
+    name      = "Don't cache 404s for /static"
+    priority  = 10
+    statement = "req.url ~ \"^/static/\" && beresp.status == 404"
+    type      = "CACHE"
   }
 
   gzip {
