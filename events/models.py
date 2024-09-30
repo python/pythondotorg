@@ -181,6 +181,20 @@ class Event(ContentManageable):
         except IndexError:
             return None
 
+    def is_scheduled_to_start_this_year(self) -> bool:
+        if self.next_time:
+            current_year: int = timezone.now().year
+            if self.next_time.dt_start.year == current_year:
+                return True
+        return False
+
+    def is_scheduled_to_end_this_year(self) -> bool:
+        if self.next_time:
+            current_year: int = timezone.now().year
+            if self.next_time.dt_end.year == current_year:
+                return True
+        return False
+
     @property
     def previous_time(self):
         now = timezone.now()
@@ -211,8 +225,15 @@ class Event(ContentManageable):
             return None
 
     @property
-    def next_or_previous_time(self):
-        return self.next_time or self.previous_time
+    def next_or_previous_time(self) -> models.Model:
+        """Return the next or previous time of the event OR the occurring rule."""
+        if next_time := self.next_time:
+            return next_time
+
+        if previous_time := self.previous_time:
+            return previous_time
+
+        return self.occurring_rule if hasattr(self, "occurring_rule") else None
 
     @property
     def is_past(self):

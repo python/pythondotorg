@@ -1,0 +1,3 @@
+#!/bin/bash
+cd static
+bundle exec sass --compass --scss -I $(dirname $(dirname $(gem which susy))) --trace --watch sass:sass
