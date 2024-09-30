@@ -129,6 +129,13 @@ resource "fastly_service_vcl" "python_org" {
     type      = "REQUEST"
   }
 
+  condition {
+    name      = "Don't cache 404s for /static"
+    priority  = 10
+    statement = "req.url ~ \"^/static/\" && beresp.status == 404"
+    type      = "CACHE"
+  }
+
   gzip {
     name = "Default rules"
     content_types = [
