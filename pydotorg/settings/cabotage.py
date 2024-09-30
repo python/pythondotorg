@@ -53,6 +53,11 @@ STORAGES = {
     },
 }
 
+def add_surrogate_keys_to_static(headers, path, url):
+    headers['Surrogate-Key'] = STATIC_SURROGATE_KEY
+
+WHITENOISE_ADD_HEADERS_FUNCTION = add_surrogate_keys_to_static
+
 EMAIL_HOST = config('EMAIL_HOST')
 EMAIL_HOST_USER = config('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')
@@ -63,7 +68,8 @@ DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL')
 PEP_REPO_PATH = None
 PEP_ARTIFACT_URL = config('PEP_ARTIFACT_URL')
 
-# Fastly API Key
+# Fastly
+FASTLY_SERVICE_ID = config('FASTLY_SERVICE_ID')
 FASTLY_API_KEY = config('FASTLY_API_KEY')
 
 SECURE_SSL_REDIRECT = True

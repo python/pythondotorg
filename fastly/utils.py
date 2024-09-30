@@ -20,3 +20,23 @@ def purge_url(path):
         return response
 
     return None
+
+
+def purge_surrogate_key(key):
+    """
+    Purge a Fastly.com Surrogate-Key given a key.
+    """
+    if settings.DEBUG:
+        return
+
+    api_key = getattr(settings, 'FASTLY_API_KEY', None)
+    service_id = getattr(settings, 'FASTLY_SERVICE_ID', None)
+    if api_key and service_id:
+        response = requests.request(
+            "POST",
+            f'https://api.fastly.com/service/{service_id}/purge/{key}',
+            headers={'Fastly-Key': api_key},
+        )
+        return response
+
+    return None
