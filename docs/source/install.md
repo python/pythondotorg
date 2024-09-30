@@ -197,7 +197,23 @@ Once you have it installed, update the URL value of `HAYSTACK_CONNECTIONS` set
 Generating CSS files automatically
 ----------------------------------
 
-Due to performance issues of [django-pipeline](https://github.com/jazzband/django-pipeline/issues/313), we are using a dummy compiler `pydotorg.compilers.DummySASSCompiler` in development mode. To generate CSS files, use `sass` itself in a separate terminal window:
+Due to performance issues of [django-pipeline](https://github.com/jazzband/django-pipeline/issues/313), we are using 
+a dummy compiler `pydotorg.compilers.DummySASSCompiler` in development mode. 
+
+To generate CSS files, use `sass` itself in a separate terminal window:
+
+````{note}
+To get up an running with SASS, 
+you need to [install Ruby 2 (>= 2.0.0, < 3.0.0)](https://www.ruby-lang.org/en/documentation/installation/), 
+the `sussy` gem, and the `sass` gem. 
+
+The gems are defined in the `Gemfile` and can be installed by running the following command:
+```bash
+bundle install
+```
+````
+
+Then run the following command to generate CSS files:
 
 ```
 $ cd static
