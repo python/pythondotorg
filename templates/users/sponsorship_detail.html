@@ -110,16 +110,14 @@
                 <div class="benefits-grid">
                     {% for benefit in sponsorship.benefits.all %}
                         <div class="benefit-item">
-                            <div class="benefit-icon">
-                                <i class="fa fa-check-circle"></i>
-                            </div>
                             <div class="benefit-content">
                                 <span class="benefit-name">{{ benefit.name_for_display }}</span>
                                 {% if benefit.description %}
                                     <span class="benefit-description" title="{{ benefit.description }}">
-                      <i class="fa fa-info-circle"></i>
-                    </span>
+                            <i class="fa fa-info-circle"></i>
+                        </span>
                                 {% endif %}
+                                <span class="benefit-category">{{ benefit.program.name }}</span>
                             </div>
                         </div>
                     {% endfor %}

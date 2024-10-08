@@ -3037,7 +3037,7 @@ $breakpoint-desktop: 1200px;
         text-align: right;
     }
 
-    .benefits-grid {
+     .benefits-grid {
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
         gap: 1rem;
@@ -3046,7 +3046,7 @@ $breakpoint-desktop: 1200px;
 
     .benefit-item {
         display: flex;
-        align-items: center;
+        flex-direction: column;
         background-color: #ffffff;
         border: 1px solid #e9ecef;
         border-radius: 4px;
@@ -3058,13 +3058,6 @@ $breakpoint-desktop: 1200px;
         background-color: #f8f9fa;
     }
 
-    .benefit-icon {
-        flex-shrink: 0;
-        margin-right: 0.75rem;
-        color: #28a745;
-        font-size: 1rem;
-    }
-
     .benefit-content {
         flex-grow: 1;
     }
@@ -3074,13 +3067,23 @@ $breakpoint-desktop: 1200px;
         font-weight: 500;
         font-size: 0.9rem;
         line-height: 1.2;
+        margin-bottom: 0.25rem;
     }
 
     .benefit-description {
-        margin-left: 0.25rem;
         color: #6c757d;
         cursor: help;
         font-size: 0.8rem;
+    }
+
+    .benefit-category {
+        display: inline-block;
+        background-color: #e9ecef;
+        color: #495057;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.5rem;
     }
 
     @media (max-width: 768px) {
