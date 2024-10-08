@@ -1,3 +1,5 @@
+import sys
+
 from .base import *
 import os
 
@@ -5,10 +7,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 INTERNAL_IPS = ['127.0.0.1']
-
-DEBUG_TOOLBAR_CONFIG = {
-    "SHOW_TOOLBAR_CALLBACK" : lambda request: True,
-}
 
 # Set the path to the location of the content files for python.org
 # For example,
@@ -58,9 +56,12 @@ PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')
 # yui-compressor.
 # PIPELINE['YUI_BINARY'] = '/usr/bin/java -Xss200048k -jar /usr/share/yui-compressor/yui-compressor.jar'
 
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
+
+if "test" not in sys.argv and DEBUG:
+    INSTALLED_APPS += ["debug_toolbar"]
+    DEBUG_TOOLBAR_CONFIG = {
+        "SHOW_TOOLBAR_CALLBACK": lambda request: True,
+    }
 
 MIDDLEWARE += [
     'debug_toolbar.middleware.DebugToolbarMiddleware',
