@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   postgres:
     image: postgres:15.3-bullseye
@@ -21,6 +19,13 @@ services:
     healthcheck:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
+
+  static:
+    command: bin/static
+    build:
+      dockerfile: Dockerfile.static
+    volumes:
+      - .:/code
 
   web:
     build: .

@@ -62,8 +62,8 @@ variable "ngwaf_site_name" {
   description = "Site SHORT name for NGWAF"
 
   validation {
-    condition     = can(regex("^(test|stage|prod)$", var.ngwaf_site_name))
-    error_message = "'ngwaf_site_name' must be one of the following: test, stage, or prod"
+    condition     = can(regex("^(pythondotorg-test|pythondotorg-prod)$", var.ngwaf_site_name))
+    error_message = "'ngwaf_site_name' must be one of the following: pythondotorg-test, or pythondotorg-prod"
   }
 }
 variable "ngwaf_email" {

@@ -7,9 +7,6 @@ import requests
 from .models import EventLocation, Event, OccurringRule
 from .utils import extract_date_or_datetime
 
-DATE_RESOLUTION = timedelta(1)
-TIME_RESOLUTION = timedelta(0, 0, 1)
-
 logger = logging.getLogger(__name__)
 
 
@@ -31,10 +28,7 @@ class ICSImporter:
             dt_end = dt_start
 
         # Let's mark those occurrences as 'all-day'.
-        all_day = (
-            dt_start.resolution == DATE_RESOLUTION or
-            dt_end.resolution == DATE_RESOLUTION
-        )
+        all_day = dt_end - dt_start >= timedelta(days=1)
 
         defaults = {
             'dt_start': dt_start,
