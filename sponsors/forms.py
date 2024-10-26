@@ -54,6 +54,10 @@ SponsorContactFormSet = forms.formset_factory(
     max_num=5,
 )
 
+formset = SponsorContactFormSet(
+    initial=[{"primary": True}]
+)
+
 
 class SponsorshipsBenefitsForm(forms.Form):
     """
@@ -285,7 +289,10 @@ class SponsorshipApplicationForm(forms.Form):
         if self.data:
             self.contacts_formset = SponsorContactFormSet(self.data, **formset_kwargs)
         else:
-            self.contacts_formset = SponsorContactFormSet(**formset_kwargs)
+            self.contacts_formset = SponsorContactFormSet(
+                initial=[{"primary": True}],
+                **formset_kwargs
+            )
 
     def clean(self):
         cleaned_data = super().clean()
