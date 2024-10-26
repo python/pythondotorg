@@ -54,10 +54,6 @@ SponsorContactFormSet = forms.formset_factory(
     max_num=5,
 )
 
-formset = SponsorContactFormSet(
-    initial=[{"primary": True}]
-)
-
 
 class SponsorshipsBenefitsForm(forms.Form):
     """
