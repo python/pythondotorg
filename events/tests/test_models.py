@@ -1,4 +1,6 @@
 import datetime
+from types import SimpleNamespace
+from unittest.mock import patch
 
 from django.contrib.auth import get_user_model
 from django.test import TestCase
@@ -61,7 +63,6 @@ class EventsModelsTests(TestCase):
         self.assertEqual(Event.objects.for_datetime().count(), 1)
         self.assertEqual(self.event.next_time.dt_start, recurring_time_dtstart)
         self.assertTrue(rt.valid_dt_end())
-
 
         rt.begin = now - datetime.timedelta(days=5)
         rt.finish = now - datetime.timedelta(days=3)
@@ -186,3 +187,61 @@ class EventsModelsTests(TestCase):
         # 'Event.previous_event' can return None if there is no
         # OccurringRule or RecurringRule found.
         self.assertIsNone(self.event.previous_event)
+
+    def test_scheduled_to_start_this_year_method(self):
+        test_datetime = SimpleNamespace(
+            now=lambda: timezone.datetime(timezone.now().year,
+                                          6, 1, tzinfo=timezone.now().tzinfo)
+        )
+
+        with patch("django.utils.timezone", new=test_datetime) as mock_timezone:
+            with patch("events.models.timezone", new=test_datetime):
+                now = seconds_resolution(mock_timezone.now())
+
+                occurring_time_dtstart = now + datetime.timedelta(days=1)
+                OccurringRule.objects.create(
+                    event=self.event,
+                    dt_start=occurring_time_dtstart,
+                    dt_end=occurring_time_dtstart + datetime.timedelta(days=3)
+                )
+                self.assertTrue(self.event.is_scheduled_to_start_this_year())
+
+                OccurringRule.objects.get(event=self.event).delete()
+
+                event_not_scheduled_to_start_this_year_occurring_time_dtstart = now + datetime.timedelta(days=365)
+                OccurringRule.objects.create(
+                    event=self.event,
+                    dt_start=event_not_scheduled_to_start_this_year_occurring_time_dtstart,
+                    dt_end=event_not_scheduled_to_start_this_year_occurring_time_dtstart + datetime.timedelta(days=3)
+                )
+
+                self.assertFalse(self.event.is_scheduled_to_start_this_year())
+
+    def test_scheduled_to_end_this_year_method(self):
+        test_datetime = SimpleNamespace(
+            now=lambda: timezone.datetime(timezone.now().year,
+                                          6, 1, tzinfo=timezone.now().tzinfo)
+        )
+
+        with patch("django.utils.timezone", new=test_datetime) as mock_timezone:
+            with patch("events.models.timezone", new=test_datetime):
+                now = seconds_resolution(mock_timezone.now())
+                occurring_time_dtstart = now + datetime.timedelta(days=1)
+
+                OccurringRule.objects.create(
+                    event=self.event,
+                    dt_start=occurring_time_dtstart,
+                    dt_end=occurring_time_dtstart
+                )
+
+                self.assertTrue(self.event.is_scheduled_to_end_this_year())
+
+                OccurringRule.objects.get(event=self.event).delete()
+
+                OccurringRule.objects.create(
+                    event=self.event,
+                    dt_start=now,
+                    dt_end=now + datetime.timedelta(days=365)
+                )
+
+                self.assertFalse(self.event.is_scheduled_to_end_this_year())

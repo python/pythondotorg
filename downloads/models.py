@@ -179,13 +179,15 @@ def update_supernav():
         'last_updated': timezone.now(),
     })
 
-    box, _ = Box.objects.update_or_create(
+    box, created = Box.objects.update_or_create(
         label='supernav-python-downloads',
         defaults={
             'content': content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        box.save()
 
 
 def update_download_landing_sources_box():
@@ -208,13 +210,15 @@ def update_download_landing_sources_box():
         return
 
     source_content = render_to_string('downloads/download-sources-box.html', context)
-    source_box, _ = Box.objects.update_or_create(
+    source_box, created = Box.objects.update_or_create(
         label='download-sources',
         defaults={
             'content': source_content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        source_box.save()
 
 
 def update_homepage_download_box():
@@ -234,13 +238,15 @@ def update_homepage_download_box():
 
     content = render_to_string('downloads/homepage-downloads-box.html', context)
 
-    box, _ = Box.objects.update_or_create(
+    box, created = Box.objects.update_or_create(
         label='homepage-downloads',
         defaults={
             'content': content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        box.save()
 
 
 @receiver(post_save, sender=Release)
@@ -272,6 +278,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
     if instance.is_published:
         # Purge our common pages
         purge_url('/downloads/')
+        purge_url('/downloads/feed.rss')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
         purge_url('/downloads/macos/')

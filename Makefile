@@ -4,13 +4,13 @@ default:
 	@$(MAKE) -pRrq -f $(lastword $(MAKEFILE_LIST)) : 2>/dev/null\
         | awk -v RS= -F: '/^# File/,/^# Finished Make data base/ {if ($$1 !~ "^[#.]") {print $$1}}'\
         | sort\
-        | egrep -v -e '^[^[:alnum:]]' -e '^$@$$'
+        | grep -E -v -e '^[^[:alnum:]]' -e '^$@$$'
 	@echo
 	@exit 1
 
 .state/docker-build-web: Dockerfile dev-requirements.txt base-requirements.txt
 	# Build web container for this project
-	docker-compose build --force-rm web
+	docker compose build --force-rm web
 
 	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/docker-build-web
@@ -24,35 +24,35 @@ default:
 
 .state/db-initialized: .state/docker-build-web .state/db-migrated
 	# Load all fixtures
-	docker-compose run --rm web ./manage.py loaddata fixtures/*.json
+	docker compose run --rm web ./manage.py loaddata fixtures/*.json
 
 	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/db-initialized
 
 serve: .state/db-initialized
-	docker-compose up --remove-orphans
+	docker compose up --remove-orphans
 
 migrations: .state/db-initialized 
 	# Run Django makemigrations
-	docker-compose run --rm web ./manage.py makemigrations  
+	docker compose run --rm web ./manage.py makemigrations  
 	
 migrate: .state/docker-build-web
 	# Run Django migrate
-	docker-compose run --rm web ./manage.py migrate 
+	docker compose run --rm web ./manage.py migrate 
 
 manage: .state/db-initialized
 	# Run Django manage to accept arbitrary arguments
-	docker-compose run --rm web ./manage.py $(filter-out $@,$(MAKECMDGOALS))
+	docker compose run --rm web ./manage.py $(filter-out $@,$(MAKECMDGOALS))
 
 shell: .state/db-initialized 
-	docker-compose run --rm web ./manage.py shell
+	docker compose run --rm web ./manage.py shell
 
 clean:
-	docker-compose down -v
+	docker compose down -v
 	rm -f .state/docker-build-web .state/db-initialized .state/db-migrated 
 
 test: .state/db-initialized
-	docker-compose run --rm web ./manage.py test
+	docker compose run --rm web ./manage.py test
 
 docker_shell: .state/db-initialized
-	docker-compose run --rm web /bin/bash
+	docker compose run --rm web /bin/bash

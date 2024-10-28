@@ -1,4 +1,4 @@
-FROM python:3.9-bullseye
+FROM python:3.12.6-bookworm
 COPY --from=ewdurbin/nginx-static:1.25.x /usr/bin/nginx /usr/bin/nginx
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1

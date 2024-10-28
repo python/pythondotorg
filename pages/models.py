@@ -137,6 +137,8 @@ def purge_fastly_cache(sender, instance, **kwargs):
     Requires settings.FASTLY_API_KEY being set
     """
     purge_url(f'/{instance.path}')
+    if not instance.path.endswith('/'):
+        purge_url(f'/{instance.path}/')
 
 
 def page_image_path(instance, filename):

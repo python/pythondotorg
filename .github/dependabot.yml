@@ -16,6 +16,10 @@ updates:
     - 0.13.0
     - 0.13.1
     - 0.13.2
+  - dependency-name: "boto3"
+  - dependency-name: "boto3-stubs"
+  - dependency-name: "botocore"
+  - dependency-name: "botocore-stubs"
   - dependency-name: lxml
     versions:
     - 4.6.2

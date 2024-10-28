@@ -1,0 +1,31 @@
+name: Check collectstatic
+on: [push, pull_request]
+jobs:
+  collectstatic:
+    # Avoid running CI more than once on pushes to main repo open PRs
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+            python-version-file: '.python-version'
+      - name: Cache Python dependencies
+        uses: actions/cache@v4
+        env:
+          cache-name: pythondotorg-cache-pip
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
+            ${{ runner.os }}-${{ github.job }}-
+            ${{ runner.os }}-
+      - name: Install Python dependencies
+        run: |
+          pip install -U pip setuptools wheel
+          pip install -r requirements.txt -r prod-requirements.txt
+      - name: Run Tests
+        run: |
+          DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput

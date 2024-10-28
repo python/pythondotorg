@@ -4,7 +4,7 @@ resource "fastly_service_vcl" "python_org" {
   http3              = false
   stale_if_error     = false
   stale_if_error_ttl = 43200
-  activate           = false
+  activate           = true
 
   domain {
     name = var.domain
@@ -68,6 +68,14 @@ resource "fastly_service_vcl" "python_org" {
     ttl             = 0
   }
 
+  cache_setting {
+    action          = "pass"
+    cache_condition = "Don't cache 404s for /static"
+    name            = "No caching for /static 404s"
+    stale_ttl       = 0
+    ttl             = 0
+  }
+
   condition {
     name      = "Force Pass No-Cache No-Store"
     priority  = 10
@@ -127,6 +135,13 @@ resource "fastly_service_vcl" "python_org" {
     priority  = 1
     statement = "req.http.host == \"python.org\""
     type      = "REQUEST"
+  }
+
+  condition {
+    name      = "Don't cache 404s for /static"
+    priority  = 10
+    statement = "req.url ~ \"^/static/\" && beresp.status == 404"
+    type      = "CACHE"
   }
 
   gzip {
@@ -342,4 +357,74 @@ resource "fastly_service_vcl" "python_org" {
     response          = "Forbidden"
     status            = 403
   }
+
+  dynamic "dictionary" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name = var.edge_security_dictionary
+      force_destroy = true
+    }
+  }
+
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_init"
+      type     = "init"
+      priority = 0
+    }
+  }
+
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_miss"
+      type     = "miss"
+      priority = 9000
+    }
+  }
+
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_pass"
+      type     = "pass"
+      priority = 9000
+    }
+  }
+
+  dynamic "dynamicsnippet" {
+    for_each = var.activate_ngwaf_service ? [1] : []
+    content {
+      name     = "ngwaf_config_deliver"
+      type     = "deliver"
+      priority = 9000
+    }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      product_enablement,
+    ]
+  }
+}
+
+output "service_id" {
+  value       = fastly_service_vcl.python_org.id
+  description = "The ID of the Fastly service"
+}
+
+output "backend_address" {
+  value       = var.backend_address
+  description = "The backend address for the service."
+}
+
+output "service_name" {
+  value       = var.name
+  description = "The name of the Fastly service"
+}
+
+output "domain" {
+  value       = var.domain
+  description = "The domain of the Fastly service"
 }

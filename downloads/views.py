@@ -1,7 +1,14 @@
+from typing import Any
+
+from datetime import datetime
+
 from django.db.models import Prefetch
 from django.urls import reverse
+from django.utils import timezone
 from django.views.generic import DetailView, TemplateView, ListView, RedirectView
 from django.http import Http404
+from django.contrib.syndication.views import Feed
+from django.utils.feedgenerator import Rss201rev2Feed
 
 from .models import OS, Release, ReleaseFile
 
@@ -147,3 +154,41 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
         )
 
         return context
+
+
+class ReleaseFeed(Feed):
+    """Generate an RSS feed of the latest Python releases.
+
+    .. note:: It may seem like these are unused methods, but the superclass uses them
+        using Django's Syndication framework.
+        Docs: https://docs.djangoproject.com/en/4.2/ref/contrib/syndication/
+    """
+
+    feed_type = Rss201rev2Feed
+    title = "Python Releases"
+    description = "Latest Python releases from Python.org"
+
+    @staticmethod
+    def link() -> str:
+        """Return the URL to the main downloads page."""
+        return reverse("downloads:download")
+
+    def items(self) -> list[dict[str, Any]]:
+        """Return the latest Python releases."""
+        return Release.objects.filter(is_published=True).order_by("-release_date")[:10]
+
+    def item_title(self, item: Release) -> str:
+        """Return the release name as the item title."""
+        return item.name
+
+    def item_description(self, item: Release) -> str:
+        """Return the release date as the item description."""
+        return f"Release date: {item.release_date}"
+
+    def item_pubdate(self, item: Release) -> datetime | None:
+        """Return the release date as the item publication date."""
+        if item.release_date:
+            if timezone.is_naive(item.release_date):
+                return timezone.make_aware(item.release_date)
+            return item.release_date
+        return None

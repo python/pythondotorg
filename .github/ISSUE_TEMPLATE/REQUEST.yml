@@ -1,0 +1,66 @@
+name: "Feature Request"
+description: Suggest an idea for www.pyton.org
+title: "Enhancement: <title>"
+labels: ["enhancement"]
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        This is the repository and issue tracker for the https://www.pyton.org website.
+
+        If you're looking to file an issue with CPython itself, please click here: [CPython Issues](https://github.com/python/cpython/issues/new/choose).
+
+        Issues related to [Python's documentation](https://docs.python.org) can also be filed [here](https://github.com/python/cpython/issues/new?assignees=&labels=docs&template=documentation.md).
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: "Is your feature request related to a problem? Please describe."
+      description: A clear and concise description of what the problem is.
+      placeholder: Ex. I'm always frustrated when [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: solution
+    attributes:
+      label: "Describe the solution you'd like"
+      description: A clear and concise description of what you want to happen.
+      placeholder: Ex. It would be great if [...]
+    validations:
+      required: true
+
+  - type: textarea
+    id: basic_example
+    attributes:
+      label: "Basic Example"
+      description: Provide some basic examples of your feature request.
+      placeholder: Describe how your feature would work with a simple example.
+    validations:
+      required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "Describe alternatives you've considered"
+      description: A clear and concise description of any alternative solutions or features you've considered.
+    validations:
+      required: false
+
+  - type: textarea
+    id: drawbacks
+    attributes:
+      label: "Drawbacks and Impact"
+      description: What are the drawbacks or impacts of your feature request?
+      placeholder: Describe any potential drawbacks or impacts of implementing this feature.
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional_context
+    attributes:
+      label: "Additional context"
+      description: Add any other context or screenshots about the feature request here.
+    validations:
+      required: false

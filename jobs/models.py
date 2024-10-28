@@ -30,8 +30,8 @@ class JobType(NameSlugModel):
     objects = JobTypeQuerySet.as_manager()
 
     class Meta:
-        verbose_name = 'job technologies'
-        verbose_name_plural = 'job technologies'
+        verbose_name = 'job types'
+        verbose_name_plural = 'job types'
         ordering = ('name', )
 
 
@@ -59,11 +59,11 @@ class Job(ContentManageable):
         JobType,
         related_name='jobs',
         blank=True,
-        verbose_name='Job technologies',
+        verbose_name='Job types',
         limit_choices_to={'active': True},
     )
     other_job_type = models.CharField(
-        verbose_name='Other job technologies',
+        verbose_name='Other job types',
         max_length=100,
         blank=True,
     )

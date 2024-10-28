@@ -18,3 +18,8 @@ variable "fastly_s3_logging" {
   description = "S3 bucket keys for Fastly logging"
   sensitive   = true
 }
+variable "ngwaf_token" {
+  type        = string
+  description = "Secret token for the NGWAF API."
+  sensitive   = true
+}
