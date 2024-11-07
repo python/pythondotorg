@@ -137,7 +137,7 @@ resource "fastly_service_vcl" "python_org" {
     type      = "REQUEST"
   }
   condition {
-    name      = "False"
+    name      = "Always False"
     priority  = 10
     statement = "false"
     type      = "RESPONSE"
@@ -271,7 +271,7 @@ resource "fastly_service_vcl" "python_org" {
     name               = "ratelimit-debug"
     token              = var.datadog_key
     region             = "US"
-    response_condition = "False"
+    response_condition = "Always False"
   }
 
   logging_s3 {
