@@ -136,6 +136,12 @@ resource "fastly_service_vcl" "python_org" {
     statement = "req.http.host == \"python.org\""
     type      = "REQUEST"
   }
+  condition {
+    name      = "Always False"
+    priority  = 10
+    statement = "false"
+    type      = "RESPONSE"
+  }
 
   condition {
     name      = "Don't cache 404s for /static"
@@ -262,9 +268,10 @@ resource "fastly_service_vcl" "python_org" {
   }
 
   logging_datadog {
-    name   = "ratelimit-debug"
-    token  = var.datadog_key
-    region = "US"
+    name               = "ratelimit-debug"
+    token              = var.datadog_key
+    region             = "US"
+    response_condition = "Always False"
   }
 
   logging_s3 {
@@ -361,7 +368,7 @@ resource "fastly_service_vcl" "python_org" {
   dynamic "dictionary" {
     for_each = var.activate_ngwaf_service ? [1] : []
     content {
-      name = var.edge_security_dictionary
+      name          = var.edge_security_dictionary
       force_destroy = true
     }
   }
