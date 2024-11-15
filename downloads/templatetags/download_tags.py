@@ -9,6 +9,11 @@ def strip_minor_version(version):
 
 
 @register.filter
+def has_gpg(files: list) -> bool:
+    return any(f.gpg_signature_file for f in files)
+
+
+@register.filter
 def has_sigstore_materials(files):
     return any(
         f.sigstore_bundle_file or f.sigstore_cert_file or f.sigstore_signature_file
