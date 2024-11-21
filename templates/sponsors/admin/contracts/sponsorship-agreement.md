@@ -33,9 +33,9 @@ and international community of Python programmers (the **"Programs"**);
 and the PSF previously entered into a Sponsorship Agreement
 with the effective date of the
 {{ previous_effective|date:"j" }}{{ previous_effective_english_suffix }} of {{ previous_effective|date:"F Y" }}
-
-**WHEREAS**, Sponsor wishes to renew its support the Programs by making a contribution to the PSF.
 and a term of one year (the “Sponsorship Agreement”).
+
+**WHEREAS**, Sponsor wishes to renew its support of the Programs by making a contribution to the PSF.
 {% else %}
 wishes to support the Programs by making a contribution to the PSF.
 {% endif %}
