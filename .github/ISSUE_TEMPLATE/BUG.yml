@@ -1,5 +1,5 @@
 name: "Bug Report"
-description: Report a bug with pyton.org website to help us improve
+description: Report a bug with python.org website to help us improve
 title: "Bug: <title>"
 labels: ["bug", "Triage Required"]
 
