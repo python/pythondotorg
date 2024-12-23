@@ -52,3 +52,5 @@ test: .state/db-initialized ## Run tests
 
 docker_shell: .state/db-initialized ## Open a bash shell in the web container
 	docker compose run --rm web /bin/bash
+
+.PHONY: help serve migrations migrate manage shell clean test docker_shell
