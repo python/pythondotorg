@@ -1,0 +1,21 @@
+name: Combine Dependabot PRs
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 7 * * 1"
+
+jobs:
+  combine-prs:
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+    runs-on: ubuntu-latest
+    steps:
+      - name: combine-prs
+        id: combine-prs
+        uses: github/combine-prs@v5.1.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: dependencies
