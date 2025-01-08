@@ -58,6 +58,7 @@ class FilterLogoPlacementsSerializer(serializers.Serializer):
         choices=[(c.value, c.name.replace("_", " ").title()) for c in LogoPlacementChoices],
         required=False,
     )
+    year = serializers.IntegerField(required=False)
 
     @property
     def by_publisher(self):
@@ -66,6 +67,10 @@ class FilterLogoPlacementsSerializer(serializers.Serializer):
     @property
     def by_flight(self):
         return self.validated_data.get("flight")
+
+    @property
+    def by_year(self):
+        return self.validated_data.get("year")
 
     def skip_logo(self, logo):
         if self.by_publisher and self.by_publisher != logo.publisher:
