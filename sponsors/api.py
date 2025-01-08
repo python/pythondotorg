@@ -29,6 +29,8 @@ class LogoPlacementeAPIList(APIView):
         logo_filters.is_valid(raise_exception=True)
 
         sponsorships = Sponsorship.objects.enabled().with_logo_placement()
+        if logo_filters.by_year:
+            sponsorships = sponsorships.filter(year=logo_filters.by_year)
         for sponsorship in sponsorships.select_related("sponsor").iterator():
             sponsor = sponsorship.sponsor
             base_data = {

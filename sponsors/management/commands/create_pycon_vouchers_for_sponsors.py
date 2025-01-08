@@ -20,24 +20,24 @@ from sponsors.models import (
 )
 
 BENEFITS = {
-    183: {
-        "internal_name": "full_conference_passes_code_2024",
+    241: {
+        "internal_name": "full_conference_passes_code_2025",
         "voucher_type": "SPNS_COMP_",
     },
-    201: {
-        "internal_name": "expo_hall_only_passes_code_2024",
+    259: {
+        "internal_name": "pycon_expo_hall_only_passes_code_2025",
         "voucher_type": "SPNS_EXPO_COMP_",
     },
-    208: {
-        "internal_name": "additional_full_conference_passes_code_2024",
+    265: {
+        "internal_name": "pycon_additional_full_conference_passes_code_2025",
         "voucher_type": "SPNS_ADDL_DISC_REG_",
     },
-    225: {
-        "internal_name": "online_only_conference_passes_2024",
-        "voucher_type": "SPNS_ONLINE_COMP_",
-    },
-    237: {
-        "internal_name": "additional_expo_hall_only_passes_2024",
+    #225: {
+    #    "internal_name": "online_only_conference_passes_2025",
+    #    "voucher_type": "SPNS_ONLINE_COMP_",
+    #},
+    292: {
+        "internal_name": "pycon_additional_expo_hall_only_passes_2025",
         "voucher_type": "SPNS_EXPO_DISC_",
     },
 }
