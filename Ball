@@ -1,0 +1,90 @@
+import random
+import time
+
+# Game setup
+class Player:
+    def __init__(self, name):
+        self.name = name
+        self.health = 100
+        self.weapon = None
+
+    def pick_weapon(self, weapon):
+        self.weapon = weapon
+        print(f"{self.name} picked up a {weapon}!")
+
+    def attack(self, zombie):
+        if self.weapon:
+            damage = random.randint(10, 30)
+            print(f"{self.name} attacked the zombie with a {self.weapon} and dealt {damage} damage!")
+            zombie.take_damage(damage)
+        else:
+            print(f"{self.name} has no weapon and can't attack!")
+
+    def is_alive(self):
+        return self.health > 0
+
+class Zombie:
+    def __init__(self, health):
+        self.health = health
+
+    def take_damage(self, damage):
+        self.health -= damage
+        if self.health <= 0:
+            print("The zombie is killed!")
+        else:
+            print(f"The zombie has {self.health} health left!")
+
+    def attack(self, player):
+        damage = random.randint(5, 15)
+        player.health -= damage
+        print(f"The zombie attacked {player.name} and dealt {damage} damage!")
+        if player.health <= 0:
+            print(f"{player.name} has been killed!")
+
+def display_status(player):
+    print("\n=== Game Status ===")
+    print(f"Player: {player.name} | Health: {player.health} | Weapon: {player.weapon if player.weapon else 'None'}")
+    print("===================\n")
+
+# Main game loop
+def game_loop():
+    print("Welcome to the Zombie Survival Game!")
+    player_name = input("Enter your name: ")
+    player = Player(player_name)
+
+    print("You are in a dark forest. You must survive the zombie attacks.")
+    weapons = ["knife", "baseball bat", "pistol", "shotgun"]
+    zombies = [Zombie(random.randint(50, 100)) for _ in range(3)]
+
+    for i, zombie in enumerate(zombies, start=1):
+        print(f"\nZombie {i} appears! Prepare for battle!")
+        time.sleep(1)
+
+        if not player.weapon:
+            weapon = random.choice(weapons)
+            player.pick_weapon(weapon)
+
+        while zombie.health > 0 and player.is_alive():
+            display_status(player)
+            action = input("Do you want to [A]ttack or [R]un? ").lower()
+            if action == 'a':
+                player.attack(zombie)
+                if zombie.health > 0:
+                    zombie.attack(player)
+            elif action == 'r':
+                print("You chose to run away! The zombie attacks you as you flee!")
+                zombie.attack(player)
+                break
+            else:
+                print("Invalid choice! Try again.")
+
+        if not player.is_alive():
+            print("Game Over! You have been killed.")
+            break
+
+    if player.is_alive():
+        print("Congratulations! You survived all the zombies!")
+
+# Start the game
+if __name__ == "__main__":
+    game_loop()
