@@ -1,193 +1,57 @@
-/**
-*  This file was taken from  http://www.tomato-root.com/sandbox/holmes/
-*  and adapted to remove some annoying warnings that I really don't care about.
-*  Also removed .holmes-debug namespace, so I can just include stylesheet as following.
-*
-*    <%= stylesheet_link_tag "debug" if Rails.env.development? %>
-*
-*  ------------------------
-*
-*  Debug colours and what they mean
-*
-*  - tomato       denotes an error, invalid markup or a missing attribute
-*  - gold         denotes a warning, so potentionally erroneous markup or bad practice
-*  - goldenrod    denotes a deprecated element or element with deprecated or Non-W3C attributes
-*  - darkorchid   denotes missing translation. Authors should add the class in while working, and remove it when done. 
-*
-*  -------------------------
+@charset "UTF-8";
+/* Define constants for the application and to configure the blueprint framework. */
+/* ===== Compass Imports ===== */
+/* DO NOT include Blueprint here. We are using Susy for the grid, and if Blueprint is here, it will mess things up */
+/* @import "compass/css3/columns" */
+/* @import "compass/css3/hyphenation"; */
+/* Needed for the link-colors() function */
+/* Needed for the horizontal-list() function */
+/* When remembering whether or not there's a hyphen in white-space is too hard */
+/* Use pie-clearfix when there is no width set ont the element to avoid edge cases */
+/* Use to calculate color legibility: http://compass-style.org/reference/compass/utilities/color/contrast/ */
+/* Other interesting functions: 
+	@import "compass/utilities/color/contrast";
+		detailed here: http://compass-style.org/reference/compass/utilities/color/contrast/
+		Used to pass two colors into a get out the most readable color. 
+		Good for situations where we dont want to create a new color, 
+		but be sure that colors from variables are always going to be readable
 */
-
-
-/****************
-  Modernizr Tests
-****************/
-
-@mixin modernizr_links {
-
-    /*modernizr*/ .fontface .fontface-test, 
-    .generatedcontent .generatedcontent-test,
-    .svg .svg-test,
-    .inlinesvg .inlinesvg-test, 
-    .retina .retina-test {
-        display: block; 
-        color: #ff7; 
-        background-color: #333; 
-        
-        .yes { font-weight: bold; display: inline; color: green; }
-        .no { display: none; color: white; }
-    }
-    .no-fontface .fontface-test, 
-    .no-generatedcontent .generatedcontent-test,
-    .no-svg .svg-test,
-    .no-inlinesvg .inlinesvg-test,
-    .no-retina .retina-test {
-        display: block; 
-        color: #ff7; 
-        background-color: red;
-        
-        .yes { display: none; color: white; }
-        .no { font-weight: bold; display: inline; color: white; }
-    }
-    
-    .lt-ie8 .test-suite {
-        display: block !important; 
-    }
-}
-
-/**************
-  LINKS
-**************/
-
-@mixin debug_links {
-    
-    a:not([href]),
-    a[href=""], 
-    a[href="%"] {
-        outline: 2px solid tomato;
-    }
-    
-    a[href="#"],
-    a[href^="javascript"] {
-        outline: 2px solid gold;
-    }
-}
-
-/**************
-  IMAGES
-**************/
-
-@mixin debug_images {
-    
-    img:not([alt]),
-    img[alt=""] {
-        outline: 2px solid tomato;
-    }
-}
-
-/*************************
-  MISC ATTRIBUTES
-**************************/
-
-@mixin debug_misc {
-
-    /* empty or missing "for" tags on labels, "names" on inputs, selects and textareas, abbr without a title, empty class or is declarations */
-    label:not([for]),
-    label[for=""],
-    input:not([name]),
-    input[name=""],
-    select:not([name]),
-    select[name=""],
-    textarea:not([name]),
-    textarea[name=""],
-    
-    abbr:not([title]),
-    abbr[title=""],
-    
-    [class=""],
-    [id=""] {
-        outline: 2px solid tomato;
-    }
-    
-    /*
-      Warnings here, for inline styles and event calls,
-      ideally they should be external (CSS) and JS applied by JS scripts,
-      keep markup purely presentational!
-    */
-    [style],
-    [onclick],
-    [onblur],
-    [onfocus],
-    [onselect],
-    [onload],
-    [onunload] {
-        outline: 2px solid gold;
-    }
-}
-
-/*************************************************************************
-  DEPRECATED & NON-W3C CONTENT ELEMENTS (goldenrod)
-  Based largely on http://www.w3.org/TR/html5/obsolete.html#obsolete
-*************************************************************************/
-
-@mixin debug_deprecated {
-
-    applet,
-    acronym,
-    center,
-    dir,
-    font,
-    strike,
-    u,
-    /*i, apparently not deprecated
-    b,  apparently not deprecated  */
-    big,
-    tt,
-    marquee, /* i've left this because it is a stupid thing to use */
-    plaintext,
-    xmp {
-        outline: 2px solid goldenrod;
-    }
-
-    /************************************************************************
-      DEPRECATED NON-W3C ATTRIBUTES (goldenrod)
-      Based largely on http://www.w3.org/TR/html5/obsolete.html#obsolete
-    ************************************************************************/
-    
-    body[bgproperties],
-    body[topmargin],
-    body[rightmargin],
-    body[bottommargin],
-    body[leftmargin] {
-        outline: 2px solid goldenrod;
-    }
-    
-    *[bordercolor],
-    *[bordercolordark],
-    *[bordercolorlight],
-    table[frame] {
-        outline: 2px solid goldenrod;
-    }
-}
-
-/*********************
-  EMPTY ELEMENTS (warning level for now)
-**********************/
-
-@mixin debug_empty {
-
-    div:empty,
-    span:empty,
-    li:empty,
-    p:empty,
-    td:empty,
-    th:empty {
-        outline: 2px solid gold;
-    }
-
-    /*********************
-      MISSING TRANSLATIONS
-    **********************/
-    .translation_missing {
-        outline: 2px solid #B516A9;
-    }
-}
+/* ! ===== Grid ===== */
+/*
+ * Susy: Un-obtrusive grids for designers
+ * By: Eric A. Meyer and OddBird
+ * Site: susy.oddbird.net
+ * 
+ * Would like to remove the dependence on Susy by using a simpler grid structure : J. Hogue
+ */
+/* Settings  - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ * Susy & Compass use HTML hacks to support IE 6 and 7. You can turn that on or off. 
+ * We are using Susy 1.0. Update your GEM file by deleting the old and downloading the new. 
+ */
+/* ! ===== Variables ===== */
+/* Colors */
+/* Confusing, but in some cases, this can be set to a dark color */
+/* Python blue */
+/* Python yellow */
+/* Also used for error messages */
+/* Set a generic border color here to keep them consistent */
+/* Typography */
+/* True here means that all computed values will be in EMs */
+/* Allows the adjust-font-size-to and lines-for-font-size mixins to round to the nearest half line height to avoid large spacing between lines. */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Useful to set this here, but don't echo it anywhere. Used in calculations */
+/* Calculate the font-size-adjust of Flux:
+ * http://www.cs.tut.fi/~jkorpela/x-height.html
+ * Or, in this case, we did it by hand by comparing Flux to Arial, side by side. 
+ * We then adjusted it further visually, as Flux is more condensed and therefore line-length changes pretty dramatically. 
+ */
+/* 
+	Compass will convert the font sizes from px to em and fit it into the vertical rhythm automatically with the necessary margin 
+	A neat trick, for sure. More on using the vertical rhythm properties and mixins: http://compass-style.org/reference/compass/typography/vertical_rhythm/
+	
+	Note: The line height is relative to the constant $base-line-height. 
+	The number you specify for the leader, trailer and leading will be multiplied by the constant, then converted to its relative value in ems. 
+	Don’t worry about nested elements etc, Compass will do the maths for you :)
+*/
+/* Defaults */
+/* Positive is down */
