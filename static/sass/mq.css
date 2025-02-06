@@ -412,7 +412,9 @@ html[xmlns] .slides { display: block; }
     content: "animatebody";
     display: none;
     speak: none; }
-
+.tier-1 {
+        position: static !important;
+    }
   .slideshow {
     display: none; } }
 /* - - - Larger than 400px - - - */
