@@ -36,6 +36,9 @@
     body:after {
         @include javascript_tag( 'animatebody' ); 
     }
+     .tier-1 {
+        position: static !important;
+    }
     
     @include max_width_480(); 
 }
