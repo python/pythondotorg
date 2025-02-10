@@ -68,6 +68,14 @@ resource "fastly_service_vcl" "python_org" {
     ttl             = 0
   }
 
+  cache_setting {
+    action          = "pass"
+    cache_condition = "Don't cache 404s for /static"
+    name            = "No caching for /static 404s"
+    stale_ttl       = 0
+    ttl             = 0
+  }
+
   condition {
     name      = "Force Pass No-Cache No-Store"
     priority  = 10
@@ -127,6 +135,19 @@ resource "fastly_service_vcl" "python_org" {
     priority  = 1
     statement = "req.http.host == \"python.org\""
     type      = "REQUEST"
+  }
+  condition {
+    name      = "Always False"
+    priority  = 10
+    statement = "false"
+    type      = "RESPONSE"
+  }
+
+  condition {
+    name      = "Don't cache 404s for /static"
+    priority  = 10
+    statement = "req.url ~ \"^/static/\" && beresp.status == 404"
+    type      = "CACHE"
   }
 
   gzip {
@@ -247,9 +268,10 @@ resource "fastly_service_vcl" "python_org" {
   }
 
   logging_datadog {
-    name   = "ratelimit-debug"
-    token  = var.datadog_key
-    region = "US"
+    name               = "ratelimit-debug"
+    token              = var.datadog_key
+    region             = "US"
+    response_condition = "Always False"
   }
 
   logging_s3 {
@@ -346,7 +368,7 @@ resource "fastly_service_vcl" "python_org" {
   dynamic "dictionary" {
     for_each = var.activate_ngwaf_service ? [1] : []
     content {
-      name = var.edge_security_dictionary
+      name          = var.edge_security_dictionary
       force_destroy = true
     }
   }

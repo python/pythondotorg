@@ -182,8 +182,8 @@ class ReleaseFeed(Feed):
         return item.name
 
     def item_description(self, item: Release) -> str:
-        """Return the release version and release date as the item description."""
-        return f"Version: {item.version}, Release Date: {item.release_date}"
+        """Return the release date as the item description."""
+        return f"Release date: {item.release_date}"
 
     def item_pubdate(self, item: Release) -> datetime | None:
         """Return the release date as the item publication date."""

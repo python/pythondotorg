@@ -1,5 +1,5 @@
 name: "Feature Request"
-description: Suggest an idea for www.pyton.org
+description: Suggest an idea for www.python.org
 title: "Enhancement: <title>"
 labels: ["enhancement"]
 
@@ -7,7 +7,7 @@ body:
   - type: markdown
     attributes:
       value: |
-        This is the repository and issue tracker for the https://www.pyton.org website.
+        This is the repository and issue tracker for the https://www.python.org website.
 
         If you're looking to file an issue with CPython itself, please click here: [CPython Issues](https://github.com/python/cpython/issues/new/choose).
 

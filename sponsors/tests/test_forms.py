@@ -534,6 +534,15 @@ class SponsorshipApplicationFormTests(TestCase):
         msg = "You have to mark at least one contact as the primary one."
         self.assertIn(msg, form.errors["__all__"])
 
+    def test_initial_primary_contact(self):
+        form = SponsorshipApplicationForm()
+        formset = form.contacts_formset
+
+        self.assertTrue(
+            formset.forms[0].initial.get("primary"),
+            "The primary field in the first contact form should be initially set to True."
+        )
+
 
 class SponsorContactFormSetTests(TestCase):
     def setUp(self):
