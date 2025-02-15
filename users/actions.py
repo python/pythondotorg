@@ -5,7 +5,7 @@ from django.http import HttpResponse
 
 def export_csv(modeladmin, request, queryset):
     membership_name = {
-        0: 'Basic', 1: 'Supporting', 2: 'Sponsor', 3: 'Managing',
+        0: 'Basic', 1: 'Supporting', 2: 'Sponsor',
         4: 'Contributing', 5: 'Fellow'
     }
     response = HttpResponse(content_type='text/csv')
