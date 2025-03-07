@@ -8,7 +8,7 @@
 {% block content_attributes %}with-right-sidebar{% endblock %}
 
 {% block og_title %}Job: {{ object.job_title }} at {{ object.company_name }}{% endblock %}
-{% block og-descript %}{{ object.description|escape|truncatechars:200 }}{% endblock %}
+{% block og-descript %}{{ object.description|striptags|truncatechars:200 }}{% endblock %}
 
 {% block content %}
 {% load companies %}
