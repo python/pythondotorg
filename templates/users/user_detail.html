@@ -1,7 +1,7 @@
 {% extends "users/base.html" %}
 {% load users_tags %}
 
-{% block page_title %}{% firstof object.get_full_name object %} | Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
+{% block page_title %}Our Users &amp; Members | {{ SITE_INFO.site_name }}{% endblock %}
 
 {% block body_attributes %}class="psf users default-page"{% endblock %}
 

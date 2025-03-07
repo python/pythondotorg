@@ -3,6 +3,7 @@ from collections import defaultdict
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.models import AnonymousUser
 from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Subquery
@@ -126,12 +127,19 @@ class UserUpdate(LoginRequiredMixin, UpdateView):
 
 class UserDetail(DetailView):
     slug_field = 'username'
+    template_name = 'users/user_detail.html'
 
     def get_queryset(self):
         queryset = User.objects.select_related()
         if self.request.user.username == self.kwargs['slug']:
             return queryset
         return queryset.searchable()
+
+    def get_object(self, queryset=None):
+        try:
+            return super().get_object(queryset)
+        except Http404:
+            return AnonymousUser()
 
 
 class HoneypotSignupView(SignupView):
