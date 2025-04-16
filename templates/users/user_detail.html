@@ -24,20 +24,9 @@
                 <p><span class="profile-label"><span class="icon-python" aria-hidden="true"></span>PSF Basic Member?</span> {{ object.has_membership|yesno|capfirst }}</p>
                 {% if object.has_membership %}
                 <div style="margin-left: 1em;">
-                  <p>
-                    Basic membership is <b>not a voting membership class</b>.<br>For more information see Article IV
-                    of the <a href="https://www.python.org/psf/bylaws/">PSF Bylaws</a>.
-                  </p>
-                  <p>
-                    All other membership classes are recorded on <a href="https://psfmember.org">psfmember.org</a>.<br>
-                    Please log in there and review your <a href="https://psfmember.org/user-information/">user profile</a>
-                    to see your membership status.<br>
-                    If you believe you are a member but do not have an account on psfmember.org, please
-                    <a href="https://psfmember.org/wp-login.php?action=register">create an account</a> and verify your
-                    email, then email <a href="mailto:psf-donations@python.org">psf-donations@python.org</a> to get your account linked to your membership.
-                  </p>
+                  {% include 'users/_membership_detail.html' %}
                 </div>
-              {% endif %}
+                {% endif %}
             </div>
             {% comment %}
             <div class="user-profile-location">
