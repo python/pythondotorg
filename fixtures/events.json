@@ -1,0 +1,143 @@
+[
+{
+    "model": "events.calendar",
+    "pk": 1,
+    "fields": {
+        "created": "2024-10-08T18:43:33.081Z",
+        "updated": "2024-10-08T18:43:33.123Z",
+        "creator": 1,
+        "last_modified_by": null,
+        "url": null,
+        "rss": "http://python.org/downloads/feed.rss",
+        "embed": null,
+        "twitter": "https://x.com/ThePSF",
+        "name": "python-events",
+        "slug": "python-events",
+        "description": "Example"
+    }
+},
+{
+    "model": "events.eventcategory",
+    "pk": 1,
+    "fields": {
+        "name": "test category",
+        "slug": "test-category",
+        "calendar": 1
+    }
+},
+{
+    "model": "events.eventlocation",
+    "pk": 1,
+    "fields": {
+        "calendar": 1,
+        "name": "Location",
+        "address": "123 Python Way",
+        "url": null
+    }
+},
+{
+    "model": "events.event",
+    "pk": 1,
+    "fields": {
+        "created": "2024-10-08T18:45:00.226Z",
+        "updated": "2024-10-08T18:45:00.243Z",
+        "creator": 1,
+        "last_modified_by": null,
+        "uid": null,
+        "title": "Example event",
+        "calendar": 1,
+        "description": "Example event",
+        "description_markup_type": "restructuredtext",
+        "venue": null,
+        "_description_rendered": "<p>Example event</p>\n",
+        "featured": true,
+        "categories": [
+            1
+        ]
+    }
+},
+{
+    "model": "events.event",
+    "pk": 2,
+    "fields": {
+        "created": "2024-10-08T18:45:16.377Z",
+        "updated": "2024-10-08T18:45:16.387Z",
+        "creator": 1,
+        "last_modified_by": null,
+        "uid": null,
+        "title": "Example event 2",
+        "calendar": 1,
+        "description": "event",
+        "description_markup_type": "restructuredtext",
+        "venue": null,
+        "_description_rendered": "<p>event</p>\n",
+        "featured": false,
+        "categories": [
+            1
+        ]
+    }
+},
+{
+    "model": "events.event",
+    "pk": 3,
+    "fields": {
+        "created": "2024-10-08T18:47:21.240Z",
+        "updated": "2024-10-08T18:47:21.249Z",
+        "creator": 1,
+        "last_modified_by": null,
+        "uid": null,
+        "title": "Example event 3",
+        "calendar": 1,
+        "description": "event",
+        "description_markup_type": "restructuredtext",
+        "venue": null,
+        "_description_rendered": "<p>event</p>\n",
+        "featured": false,
+        "categories": []
+    }
+},
+{
+    "model": "events.occurringrule",
+    "pk": 1,
+    "fields": {
+        "event": 1,
+        "dt_start": "2024-10-07T18:42:45Z",
+        "dt_end": "2030-10-08T18:42:45Z",
+        "all_day": true
+    }
+},
+{
+    "model": "events.occurringrule",
+    "pk": 2,
+    "fields": {
+        "event": 2,
+        "dt_start": "2020-10-08T18:45:00Z",
+        "dt_end": "2023-10-08T18:45:00Z",
+        "all_day": false
+    }
+},
+{
+    "model": "events.occurringrule",
+    "pk": 3,
+    "fields": {
+        "event": 3,
+        "dt_start": "2025-10-08T18:45:16Z",
+        "dt_end": "2025-10-31T18:45:16Z",
+        "all_day": false
+    }
+},
+{
+    "model": "events.recurringrule",
+    "pk": 1,
+    "fields": {
+        "event": 3,
+        "begin": "2024-10-08T18:45:16Z",
+        "finish": "2024-10-09T18:45:16Z",
+        "duration_internal": "00:15:00",
+        "duration": "15 min",
+        "interval": 1,
+        "frequency": 3,
+        "all_day": false
+    }
+}
+]
