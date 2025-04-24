@@ -9,11 +9,11 @@ docutils==0.21.2
 Markdown==3.7
 cmarkgfm==0.6.0
 Pillow==10.4.0
-#psycopg2-binary==2.9.9
+psycopg2-binary==2.9.9
 python3-openid==3.2.0
 python-decouple==3.8
 # lxml used by BeautifulSoup.
-lxml==5.4.0
+lxml==5.2.2
 cssselect==1.2.0
 feedparser==6.0.11
 beautifulsoup4==4.12.3
