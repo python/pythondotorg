@@ -22,7 +22,7 @@
                         <a class="button" href="{{ data.pymanager.url }}">Download Python install manager</a>
                     </p>
                     {% if data.python3 %}
-                        <p>Or get the standalone installer for <a href="{{ data.python3.url }}">Download {{ data.python3.release.name }}</a></p>
+                        <p>Or get the standalone installer for <a href="{{ data.python3.url }}">{{ data.python3.release.name }}</a></p>
                     {% endif %}
                     {% else %}
                     <p class="download-buttons">
