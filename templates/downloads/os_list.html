@@ -48,7 +48,7 @@
                                 <p>Download using the <a href="{{ latest_pymanager.get_absolute_url }}">Python install manager</a>.</p>
                                 {% else %}
                                 <p>Download using the <a href="https://docs.python.org/using/windows.html">Python install manager</a>.</p>
-                                {% elif %}
+                                {% endif %}
                             {% elif r.is_version_at_least_3_9 %}
                             <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows 7 or earlier.</strong></p>
                             {% elif r.is_version_at_least_3_5 %}
