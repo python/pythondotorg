@@ -34,6 +34,7 @@ class LogoPlacementeAPIList(APIView):
         for sponsorship in sponsorships.select_related("sponsor").iterator():
             sponsor = sponsorship.sponsor
             base_data = {
+                "sponsor_id": sponsor.id,
                 "sponsor": sponsor.name,
                 "sponsor_slug": sponsor.slug,
                 "level_name": sponsorship.level_name,
