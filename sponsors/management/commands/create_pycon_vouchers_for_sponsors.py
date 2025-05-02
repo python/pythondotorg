@@ -66,8 +66,10 @@ def api_call(uri, query):
     scheme = "http" if settings.DEBUG else "https"
     url = f"{scheme}://{settings.PYCON_API_HOST}{uri}"
     try:
-        return requests.get(url, headers=headers, params=query).json()
+        r = requests.get(url, headers=headers, params=query)
+        return r.json()
     except RequestException:
+        print(r, r.content)
         raise
 
 
@@ -103,6 +105,7 @@ def generate_voucher_codes(year):
                     "voucher_type": code["voucher_type"],
                     "quantity": quantity.quantity,
                     "sponsor_name": sponsorbenefit.sponsorship.sponsor.name,
+                    "sponsor_id": sponsorbenefit.sponsorship.sponsor.id,
                 },
             )
             if result["code"] == 200:
