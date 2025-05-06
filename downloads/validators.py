@@ -1,4 +1,4 @@
-"""Model valdators for the DOwnloads app."""
+"""Model validators for the Downloads app."""
 
 from django.core.exceptions import ValidationError
 from django.core import validators
