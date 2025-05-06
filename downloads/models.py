@@ -146,6 +146,20 @@ class Release(ContentManageable, NameSlugModel):
     def is_version_at_least_3_9(self):
         return self.is_version_at_least((3, 9))
 
+    def clean(self):
+        super().clean()
+        if not re.match(r'^Python\s[\d.]+%', self.name):
+            raise ValidationError({
+                "name": "Release name must be in the format 'Python X.Y.Z' (e.g., 'Python 3.14.0')"
+            })
+
+    # def clean(self):
+    #     super().clean()
+    #     if not re.match(r'^Python\s[\d.]+$', self.name):
+    #         raise ValidationError({
+    #             'name': 'Name must be in the format "Python X.Y.Z" (e.g., "Python 3.9.0")'
+    #         })
+
 
 def update_supernav():
     latest_python3 = Release.objects.latest_python3()
