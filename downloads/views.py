@@ -58,7 +58,7 @@ class DownloadLatestPyManager(RedirectView):
         if latest_pymanager:
             return latest_pymanager.get_absolute_url()
         else:
-            return reverse('download')
+            return reverse('downloads')
 
 
 class DownloadBase:
