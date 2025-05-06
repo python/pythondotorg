@@ -148,7 +148,7 @@ class Release(ContentManageable, NameSlugModel):
 
     def clean(self):
         super().clean()
-        if not re.match(r'^Python\s[\d.]+%', self.name):
+        if not re.match(r'^Python\s[\d.]+$', self.name):
             raise ValidationError({
                 "name": "Release name must be in the format 'Python X.Y.Z' (e.g., 'Python 3.14.0')"
             })
