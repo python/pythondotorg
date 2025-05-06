@@ -17,7 +17,7 @@ from fastly.utils import purge_url
 from pages.models import Page
 
 from .managers import ReleaseManager
-
+from .validators import is_valid_python_release
 
 DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
 
@@ -50,6 +50,7 @@ class Release(ContentManageable, NameSlugModel):
         (PYTHON2, 'Python 2.x.x'),
         (PYTHON1, 'Python 1.x.x'),
     )
+    name = models.CharField(max_length=200, validators=[is_valid_python_release])
     version = models.IntegerField(default=PYTHON3, choices=PYTHON_VERSION_CHOICES)
     is_latest = models.BooleanField(
         verbose_name='Is this the latest release?',
@@ -145,13 +146,6 @@ class Release(ContentManageable, NameSlugModel):
     @property
     def is_version_at_least_3_9(self):
         return self.is_version_at_least((3, 9))
-
-    def clean(self):
-        super().clean()
-        if not re.match(r'^Python\s[\d.]+$', self.name):
-            raise ValidationError({
-                "name": "Release name must be in the format 'Python X.Y.Z' (e.g., 'Python 3.14.0')"
-            })
 
 
 def update_supernav():
