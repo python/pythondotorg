@@ -17,11 +17,20 @@
                     {% else %}
                     <h1 class="call-to-action">Download the latest version for {{ data.os.name }}</h1>
                     {% endif %}
+                    {% if data.pymanager %}
+                    <p class="download-buttons">
+                        <a class="button" href="{{ data.pymanager.url }}">Download Python install manager</a>
+                    </p>
+                    {% if data.python3 %}
+                        <p>Or get the standalone installer for <a href="{{ data.python3.url }}">{{ data.python3.release.name }}</a></p>
+                    {% endif %}
+                    {% else %}
                     <p class="download-buttons">
                         {% if data.python3 %}
                         <a class="button" href="{{ data.python3.url }}">Download {{ data.python3.release.name }}</a>
                         {% endif %}
                     </p>
+                    {% endif %}
                 </div>
             {% endfor %}
             <div class="download-unknown">
