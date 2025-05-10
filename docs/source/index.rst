@@ -32,8 +32,6 @@ Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
 
 .. _python.org: https://www.python.org
 .. _pydotorg-www: https://mail.python.org/mailman/listinfo/pydotorg-www
