@@ -17,7 +17,7 @@ lxml==5.2.2
 cssselect==1.2.0
 feedparser==6.0.11
 beautifulsoup4==4.12.3
-icalendar==4.0.7
+icalendar==6.3.1
 chardet==4.0.0
 celery[redis]==5.4.0
 django-celery-beat==2.5.0
