@@ -40,6 +40,7 @@
                 <h2>Stable Releases</h2>
                 <ul>
                     {% for r in releases %}
+                    {% if r.files.all %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         {% if os.slug == 'windows' %}
@@ -63,6 +64,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>
@@ -71,6 +73,7 @@
                 <h2>Pre-releases</h2>
                 <ul>
                     {% for r in pre_releases %}
+                    {% if r.files.all %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         <ul>
@@ -81,6 +84,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>
