@@ -33,7 +33,7 @@ python-dateutil==2.8.2
 
 requests>=2.26.0
 
-django-honeypot>=1.2.0 # TODO: 5.2 support
+django-honeypot>=1.3.0
 django-markupfield==2.0.1
 
 django-allauth==64.2.1
