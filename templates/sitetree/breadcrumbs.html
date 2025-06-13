@@ -1,5 +1,5 @@
 {% load sitetree %}
-{% if sitetree_items|length_is:"1" %}
+{% if sitetree_items|length == 1 %}
 {% else %}
 <ul class="breadcrumbs menu">
 	{% for item in sitetree_items %}
