@@ -44,7 +44,7 @@ djangorestframework==3.14.0  # 3.14.0 is first version that supports Django 4.1,
 django-filter==2.4.0
 django-ordered-model==3.7.4
 django-widget-tweaks==1.5.0
-django-countries==7.2.1
+django-countries==7.6.1
 num2words==0.5.13
 django-polymorphic==3.1.0  # 3.1.0 is first version that supports Django 4.0, unsure if it fully supports 4.2
 sorl-thumbnail==12.11.0
