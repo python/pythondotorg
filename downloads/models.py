@@ -45,10 +45,12 @@ class Release(ContentManageable, NameSlugModel):
     PYTHON1 = 1
     PYTHON2 = 2
     PYTHON3 = 3
+    PYMANAGER = 100
     PYTHON_VERSION_CHOICES = (
         (PYTHON3, 'Python 3.x.x'),
         (PYTHON2, 'Python 2.x.x'),
         (PYTHON1, 'Python 1.x.x'),
+        (PYMANAGER, 'Python install manager'),
     )
     version = models.IntegerField(default=PYTHON3, choices=PYTHON_VERSION_CHOICES)
     is_latest = models.BooleanField(
@@ -146,6 +148,10 @@ class Release(ContentManageable, NameSlugModel):
     def is_version_at_least_3_9(self):
         return self.is_version_at_least((3, 9))
 
+    @property
+    def is_version_at_least_3_14(self):
+        return self.is_version_at_least((3, 14))
+
 
 def update_supernav():
     latest_python3 = Release.objects.latest_python3()
@@ -179,13 +185,15 @@ def update_supernav():
         'last_updated': timezone.now(),
     })
 
-    box, _ = Box.objects.update_or_create(
+    box, created = Box.objects.update_or_create(
         label='supernav-python-downloads',
         defaults={
             'content': content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        box.save()
 
 
 def update_download_landing_sources_box():
@@ -208,13 +216,15 @@ def update_download_landing_sources_box():
         return
 
     source_content = render_to_string('downloads/download-sources-box.html', context)
-    source_box, _ = Box.objects.update_or_create(
+    source_box, created = Box.objects.update_or_create(
         label='download-sources',
         defaults={
             'content': source_content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        source_box.save()
 
 
 def update_homepage_download_box():
@@ -234,13 +244,15 @@ def update_homepage_download_box():
 
     content = render_to_string('downloads/homepage-downloads-box.html', context)
 
-    box, _ = Box.objects.update_or_create(
+    box, created = Box.objects.update_or_create(
         label='homepage-downloads',
         defaults={
             'content': content,
             'content_markup_type': 'html',
         }
     )
+    if not created:
+        box.save()
 
 
 @receiver(post_save, sender=Release)

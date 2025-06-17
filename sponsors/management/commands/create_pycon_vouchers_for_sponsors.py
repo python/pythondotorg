@@ -20,24 +20,24 @@ from sponsors.models import (
 )
 
 BENEFITS = {
-    183: {
-        "internal_name": "full_conference_passes_code_2024",
+    241: {
+        "internal_name": "full_conference_passes_code_2025",
         "voucher_type": "SPNS_COMP_",
     },
-    201: {
-        "internal_name": "expo_hall_only_passes_code_2024",
+    259: {
+        "internal_name": "pycon_expo_hall_only_passes_code_2025",
         "voucher_type": "SPNS_EXPO_COMP_",
     },
-    208: {
-        "internal_name": "additional_full_conference_passes_code_2024",
+    265: {
+        "internal_name": "pycon_additional_full_conference_passes_code_2025",
         "voucher_type": "SPNS_ADDL_DISC_REG_",
     },
-    225: {
-        "internal_name": "online_only_conference_passes_2024",
-        "voucher_type": "SPNS_ONLINE_COMP_",
-    },
-    237: {
-        "internal_name": "additional_expo_hall_only_passes_2024",
+    #225: {
+    #    "internal_name": "online_only_conference_passes_2025",
+    #    "voucher_type": "SPNS_ONLINE_COMP_",
+    #},
+    292: {
+        "internal_name": "pycon_additional_expo_hall_only_passes_2025",
         "voucher_type": "SPNS_EXPO_DISC_",
     },
 }
@@ -66,8 +66,10 @@ def api_call(uri, query):
     scheme = "http" if settings.DEBUG else "https"
     url = f"{scheme}://{settings.PYCON_API_HOST}{uri}"
     try:
-        return requests.get(url, headers=headers, params=query).json()
+        r = requests.get(url, headers=headers, params=query)
+        return r.json()
     except RequestException:
+        print(r, r.content)
         raise
 
 
@@ -103,6 +105,7 @@ def generate_voucher_codes(year):
                     "voucher_type": code["voucher_type"],
                     "quantity": quantity.quantity,
                     "sponsor_name": sponsorbenefit.sponsorship.sponsor.name,
+                    "sponsor_id": sponsorbenefit.sponsorship.sponsor.id,
                 },
             )
             if result["code"] == 200:

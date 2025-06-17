@@ -17,7 +17,7 @@
                 {% include result.include_template %}
             </li>
             {% empty %}
-                <p>No results found.</p>
+                <li>No results found.</li>
             {% endfor %}
             </ul>
             {% if page.has_previous or page.has_next %}
@@ -27,6 +27,11 @@
                     {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
                 </div>
             {% endif %}
+
+            <h3>Python language documentation</h3>
+            <p>If you didn't find what you need, try your search in the 
+                <a href="https://docs.python.org/3/search.html?q={{ request.GET.q | urlencode }}">Python language documentation</a>.
+            </p>
         {% else %}
             {# Show some example queries to run, maybe query syntax, something else? #}
         {% endif %}

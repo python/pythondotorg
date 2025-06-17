@@ -2350,7 +2350,7 @@ table tfoot {
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1646853871') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1726783859') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -3354,11 +3354,11 @@ span.highlighted {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1646853871'); }
+      content: url('../img/python-logo_print.png?1726783859'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1646853871'); } }
+      content: url('../img/psf-logo_print.png?1726783859'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
@@ -3979,25 +3979,106 @@ span.highlighted {
 .hidden {
   display: none; }
 
-#sponsorship-detail-container .info-cards {
-  display: flex;
-  width: 100%;
-  align-content: center;
-  flex-wrap: wrap; }
-#sponsorship-detail-container .card {
-  flex: 1 0 48%; }
-#sponsorship-detail-container .card-info {
-  margin: .5em .5em;
-  padding: 1em 1em;
-  border: 1px solid #caccce;
-  -webkit-border-radius: 6px;
-  -moz-border-radius: 6px;
-  -ms-border-radius: 6px;
-  -o-border-radius: 6px;
-  border-radius: 6px;
-  background: #e6e8ea; }
-  #sponsorship-detail-container .card-info h3 {
-    margin: 0; }
+#sponsorship-detail-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem; }
+  #sponsorship-detail-container .info-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem; }
+  @media (max-width: 768px) {
+    #sponsorship-detail-container .info-cards {
+      grid-template-columns: 1fr; } }
+  #sponsorship-detail-container .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding: 0.75rem; }
+  #sponsorship-detail-container .card h3 {
+    margin-top: 0;
+    margin-bottom: 1rem; }
+  #sponsorship-detail-container .card ul li {
+    margin-bottom: 0.5rem; }
+  #sponsorship-detail-container .wide-column {
+    grid-column: 1 / -1; }
+  #sponsorship-detail-container .assets-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem; }
+  #sponsorship-detail-container .asset-item {
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 6px;
+    padding: 1rem; }
+  #sponsorship-detail-container .asset-item h4 {
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    font-size: 1rem; }
+  #sponsorship-detail-container .asset-item p {
+    margin-bottom: 0.75rem;
+    font-size: 0.9rem; }
+  #sponsorship-detail-container .asset-item.incomplete {
+    border-left: 3px solid #dc3545; }
+  #sponsorship-detail-container .asset-item.fulfilled {
+    border-left: 3px solid #28a745; }
+  #sponsorship-detail-container .due-date {
+    font-weight: bold;
+    color: #dc3545; }
+  #sponsorship-detail-container .btn {
+    display: inline-block;
+    padding: 0.375rem 0.75rem;
+    font-size: 0.9rem;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 4px;
+    transition: background-color 0.2s ease; }
+  #sponsorship-detail-container .btn-link {
+    color: #007bff; }
+  #sponsorship-detail-container .edit-all-assets {
+    margin-top: 1.5rem;
+    text-align: right; }
+  #sponsorship-detail-container .benefits-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem; }
+  #sponsorship-detail-container .benefit-item {
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    padding: 0.75rem;
+    transition: background-color 0.2s ease; }
+  #sponsorship-detail-container .benefit-item:hover {
+    background-color: #f8f9fa; }
+  #sponsorship-detail-container .benefit-content {
+    flex-grow: 1; }
+  #sponsorship-detail-container .benefit-name {
+    display: block;
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.2;
+    margin-bottom: 0.25rem; }
+  #sponsorship-detail-container .benefit-description {
+    color: #6c757d;
+    cursor: help;
+    font-size: 0.8rem; }
+  #sponsorship-detail-container .benefit-category {
+    display: inline-block;
+    background-color: #e9ecef;
+    color: #495057;
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem; }
+  @media (max-width: 768px) {
+    #sponsorship-detail-container .info-cards {
+      grid-template-columns: 1fr; }
+    #sponsorship-detail-container .assets-list {
+      grid-template-columns: 1fr; } }
 
 #update-sponsorship-assets input {
   padding: 0.25em;

@@ -1,8 +1,9 @@
+from django.core.files.uploadedfile import SimpleUploadedFile
 from model_bakery import baker
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.urls import reverse
-from django.test import TestCase, override_settings
+from django.test import TestCase
 
 from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
 from sponsors.models import Sponsorship, RequiredTextAssetConfiguration, SponsorBenefit
@@ -447,6 +448,36 @@ class SponsorshipDetailViewTests(TestCase):
         self.assertEqual(0, len(context["required_assets"]))
         self.assertEqual(1, len(context["fulfilled_assets"]))
         self.assertIn(asset, context["fulfilled_assets"])
+
+    def test_asset_links_are_direct(self) -> None:
+        """Ensure that assets listed under 'Provided Assets' in `/users/sponsorships/#/` are directly accessible."""
+        # Create a sponsorship with a provided file asset
+        cfg = baker.make(
+            "sponsors.ProvidedFileAssetConfiguration",
+            internal_name="test_provided_file_asset",
+            related_to="sponsorship",
+        )
+        benefit = baker.make("sponsors.SponsorBenefit",sponsorship=self.sponsorship)
+        asset = cfg.create_benefit_feature(benefit)
+        file_content = b"This is a test file."
+        test_file = SimpleUploadedFile(
+            "test_file.pdf",
+            file_content,
+            content_type="application/pdf"
+        )
+        asset.value = test_file
+        asset.save()
+
+        # Then we can read the page
+        response = self.client.get(self.url)
+        content = response.content.decode("utf-8")
+        expected_asset_link = f'href="{asset.value.url}"'
+
+        # and finally check that the asset link is ACTUALLY pointing to the asset and not the list view page
+        self.assertIn("View File", content, "View file text not found.")
+        self.assertIn(expected_asset_link, content, "Asset link not found in the page.")
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "users/sponsorship_detail.html")
 
 
 class UpdateSponsorInfoViewTests(TestCase):

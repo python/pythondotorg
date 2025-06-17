@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load boxes %}
 {% load sitetree %}
+{% load has_gpg from download_tags %}
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
 {% load sort_windows from download_tags %}
@@ -51,7 +52,9 @@
               <th>Description</th>
               <th>MD5 Sum</th>
               <th>File Size</th>
+              {% if release_files|has_gpg %}
               <th>GPG</th>
+              {% endif %}
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
@@ -68,7 +71,9 @@
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
                 <td>{{ f.filesize|filesizeformat }}</td>
+                {% if release_files|has_gpg %}
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
+                {% endif %}
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
                   <td colspan="2">{% if f.sigstore_bundle_file %}<a href="{{ f.sigstore_bundle_file}}">.sigstore</a>{% endif %}</td>

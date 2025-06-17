@@ -45,6 +45,22 @@ class DownloadLatestPython3(RedirectView):
             return reverse('download')
 
 
+class DownloadLatestPyManager(RedirectView):
+    """ Redirect to latest Python install manager release """
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        try:
+            latest_pymanager = Release.objects.latest_pymanager()
+        except Release.DoesNotExist:
+            latest_pymanager = None
+
+        if latest_pymanager:
+            return latest_pymanager.get_absolute_url()
+        else:
+            return reverse('downloads')
+
+
 class DownloadBase:
     """ Include latest releases in all views """
     def get_context_data(self, **kwargs):
@@ -52,6 +68,7 @@ class DownloadBase:
         context.update({
             'latest_python2': Release.objects.latest_python2(),
             'latest_python3': Release.objects.latest_python3(),
+            'latest_pymanager': Release.objects.latest_pymanager(),
         })
         return context
 
@@ -71,6 +88,8 @@ class DownloadHome(DownloadBase, TemplateView):
         except Release.DoesNotExist:
             latest_python3 = None
 
+        latest_pymanager = context.get('latest_pymanager')
+
         python_files = []
         for o in OS.objects.all():
             data = {
@@ -80,6 +99,8 @@ class DownloadHome(DownloadBase, TemplateView):
                 data['python2'] = latest_python2.download_file_for_os(o.slug)
             if latest_python3 is not None:
                 data['python3'] = latest_python3.download_file_for_os(o.slug)
+            if latest_pymanager is not None:
+                data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
             python_files.append(data)
 
         context.update({
@@ -182,8 +203,8 @@ class ReleaseFeed(Feed):
         return item.name
 
     def item_description(self, item: Release) -> str:
-        """Return the release version and release date as the item description."""
-        return f"Version: {item.version}, Release Date: {item.release_date}"
+        """Return the release date as the item description."""
+        return f"Release date: {item.release_date}"
 
     def item_pubdate(self, item: Release) -> datetime | None:
         """Return the release date as the item publication date."""

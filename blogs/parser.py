@@ -48,10 +48,12 @@ def update_blog_supernav():
         pass
     else:
         rendered_box = _render_blog_supernav(latest_entry)
-        box, _ = Box.objects.update_or_create(
+        box, created = Box.objects.update_or_create(
             label='supernav-python-blog',
             defaults={
                 'content': rendered_box,
                 'content_markup_type': 'html',
             }
         )
+        if not created:
+            box.save()

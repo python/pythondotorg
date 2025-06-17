@@ -23,11 +23,17 @@ class ReleaseQuerySet(QuerySet):
     def python3(self):
         return self.filter(version=3, is_published=True)
 
+    def pymanager(self):
+        return self.filter(version=100, is_published=True)
+
     def latest_python2(self):
         return self.python2().filter(is_latest=True)
 
     def latest_python3(self):
         return self.python3().filter(is_latest=True)
+
+    def latest_pymanager(self):
+        return self.pymanager().filter(is_latest=True)
 
     def pre_release(self):
         return self.filter(pre_release=True)
@@ -46,6 +52,13 @@ class ReleaseManager(Manager.from_queryset(ReleaseQuerySet)):
 
     def latest_python3(self):
         qs = self.get_queryset().latest_python3()
+        if qs:
+            return qs[0]
+        else:
+            return None
+
+    def latest_pymanager(self):
+        qs = self.get_queryset().latest_pymanager()
         if qs:
             return qs[0]
         else:
