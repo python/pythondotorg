@@ -227,6 +227,7 @@ class SponsorshipModelTests(TestCase):
             Sponsorship.APPLIED,
             Sponsorship.APPROVED,
             Sponsorship.REJECTED,
+            Sponsorship.CANCELLED,
         ]
         for status in can_rollback_from:
             sponsorship.status = status
@@ -300,6 +301,16 @@ class SponsorshipModelTests(TestCase):
             sponsorship.save()
 
             self.assertEqual(sponsorship.agreed_fee, 2000)
+
+    def test_cancel_sponsorship(self):
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits)
+        sponsorship.status = Sponsorship.APPROVED
+        sponsorship.save()
+
+        sponsorship.cancel()
+
+        self.assertEqual(sponsorship.status, Sponsorship.CANCELLED)
+        self.assertIsNotNone(sponsorship.cancelled_on)
 
 
 class SponsorshipCurrentYearTests(TestCase):
