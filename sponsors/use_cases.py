@@ -46,6 +46,19 @@ class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
         return sponsorship
 
 
+class CancelSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
+    notifications = [
+        notifications.CancelledSponsorshipNotificationToPSF(),
+        notifications.CancelledSponsorshipNotificationToSponsors(),
+    ]
+
+    def execute(self, sponsorship, request=None):
+        sponsorship.cancel()
+        sponsorship.save()
+        self.notify(request=request, sponsorship=sponsorship)
+        return sponsorship
+
+
 class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
     notifications = [
         notifications.SponsorshipApprovalLogger(),

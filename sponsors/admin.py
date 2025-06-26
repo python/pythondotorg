@@ -589,6 +589,11 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                 name=f"{base_name}_approve",
             ),
             path(
+                "<int:pk>/cancel",
+                self.admin_site.admin_view(self.cancel_sponsorship_view),
+                name=f"{base_name}_cancel",
+            ),
+            path(
                 "<int:pk>/enable-edit",
                 self.admin_site.admin_view(self.rollback_to_editing_view),
                 name=f"{base_name}_rollback_to_edit",
@@ -744,6 +749,9 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
 
     def approve_sponsorship_view(self, request, pk):
         return views_admin.approve_sponsorship_view(self, request, pk)
+
+    def cancel_sponsorship_view(self, request, pk):
+        return views_admin.cancel_sponsorship_view(self, request, pk)
 
     def approve_signed_sponsorship_view(self, request, pk):
         return views_admin.approve_signed_sponsorship_view(self, request, pk)

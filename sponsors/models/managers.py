@@ -17,7 +17,7 @@ class SponsorshipQuerySet(QuerySet):
 
     def visible_to(self, user):
         contacts = user.sponsorcontact_set.values_list('sponsor_id', flat=True)
-        status = [self.model.APPLIED, self.model.APPROVED, self.model.FINALIZED]
+        status = [self.model.APPLIED, self.model.APPROVED, self.model.FINALIZED, self.model.CANCELLED]
         return self.filter(
             Q(submited_by=user) | Q(sponsor_id__in=Subquery(contacts)),
             status__in=status,

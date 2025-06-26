@@ -86,6 +86,21 @@ class RejectedSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification
     def get_recipient_list(self, context):
         return context["sponsorship"].verified_emails
 
+class CancelledSponsorshipNotificationToPSF:
+    subject_template = "sponsors/email/psf_cancelled_sponsorship_subject.txt"
+    message_template = "sponsors/email/psf_cancelled_sponsorship.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        return [settings.SPONSORSHIP_NOTIFICATION_TO_EMAIL]
+
+class CancelledSponsorshipNotificationToSponsors(BaseEmailSponsorshipNotification):
+    subject_template = "sponsors/email/sponsor_cancelled_sponsorship_subject.txt"
+    message_template = "sponsors/email/sponsor_cancelled_sponsorship.txt"
+    email_context_keys = ["sponsorship"]
+
+    def get_recipient_list(self, context):
+        return context["sponsorship"].verified_emails
 
 class ContractNotificationToPSF(BaseEmailSponsorshipNotification):
     subject_template = "sponsors/email/psf_contract_subject.txt"

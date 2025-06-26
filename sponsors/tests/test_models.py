@@ -101,10 +101,11 @@ class SponsorshipModelTests(TestCase):
 
     def test_control_sponsorship_next_status(self):
         states_map = {
-            Sponsorship.APPLIED: [Sponsorship.APPROVED, Sponsorship.REJECTED],
-            Sponsorship.APPROVED: [Sponsorship.FINALIZED],
+            Sponsorship.APPLIED: [Sponsorship.APPROVED, Sponsorship.REJECTED, Sponsorship.CANCELLED],
+            Sponsorship.APPROVED: [Sponsorship.FINALIZED, Sponsorship.CANCELLED],
             Sponsorship.REJECTED: [],
             Sponsorship.FINALIZED: [],
+            Sponsorship.CANCELLED: [],
         }
         for status, exepcted in states_map.items():
             sponsorship = baker.prepare(Sponsorship, status=status)

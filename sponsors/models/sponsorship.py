@@ -156,12 +156,14 @@ class Sponsorship(models.Model):
     REJECTED = "rejected"
     APPROVED = "approved"
     FINALIZED = "finalized"
+    CANCELLED = "cancelled"
 
     STATUS_CHOICES = [
         (APPLIED, "Applied"),
         (REJECTED, "Rejected"),
         (APPROVED, "Approved"),
         (FINALIZED, "Finalized"),
+        (CANCELLED, "Cancelled"),
     ]
 
     objects = SponsorshipQuerySet.as_manager()
@@ -180,6 +182,7 @@ class Sponsorship(models.Model):
     applied_on = models.DateField(auto_now_add=True)
     approved_on = models.DateField(null=True, blank=True)
     rejected_on = models.DateField(null=True, blank=True)
+    cancelled_on = models.DateField(null=True, blank=True)
     finalized_on = models.DateField(null=True, blank=True)
     year = models.PositiveIntegerField(null=True, validators=YEAR_VALIDATORS, db_index=True)
 
@@ -218,7 +221,14 @@ class Sponsorship(models.Model):
     @cached_property
     def user_customizations(self):
         benefits = [b.sponsorship_benefit for b in self.benefits.select_related("sponsorship_benefit")]
-        return self.package.get_user_customization(benefits)
+        if self.package:
+            return self.package.get_user_customization(benefits)
+        else:
+            # Return default customization structure for sponsorships without packages
+            return {
+                "added_by_user": [],
+                "removed_by_user": []
+            }
 
     def __str__(self):
         repr = f"{self.level_name} - {self.year} - ({self.get_status_display()}) for sponsor {self.sponsor.name}"
@@ -327,8 +337,17 @@ class Sponsorship(models.Model):
         self.end_date = end_date
         self.approved_on = timezone.now().date()
 
+
+    def cancel(self):
+        if self.CANCELLED not in self.next_status:
+            msg = f"Can't cancel a {self.get_status_display()} sponsorship."
+            raise InvalidStatusException(msg)
+        self.status = self.CANCELLED
+        self.locked = True
+        self.cancelled_on = timezone.now().date()
+
     def rollback_to_editing(self):
-        accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED]
+        accepts_rollback = [self.APPLIED, self.APPROVED, self.REJECTED, self.CANCELLED]
         if self.status not in accepts_rollback:
             msg = f"Can't rollback to edit a {self.get_status_display()} sponsorship."
             raise InvalidStatusException(msg)
@@ -345,6 +364,7 @@ class Sponsorship(models.Model):
         self.status = self.APPLIED
         self.approved_on = None
         self.rejected_on = None
+        self.cancelled_on = None
 
     @property
     def unlocked(self):
@@ -388,10 +408,11 @@ class Sponsorship(models.Model):
     @property
     def next_status(self):
         states_map = {
-            self.APPLIED: [self.APPROVED, self.REJECTED],
-            self.APPROVED: [self.FINALIZED],
+            self.APPLIED: [self.APPROVED, self.REJECTED, self.CANCELLED],
+            self.APPROVED: [self.FINALIZED, self.CANCELLED],
             self.REJECTED: [],
             self.FINALIZED: [],
+            self.CANCELLED: [],
         }
         return states_map[self.status]
 

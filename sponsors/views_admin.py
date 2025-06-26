@@ -52,6 +52,30 @@ def reject_sponsorship_view(ModelAdmin, request, pk):
     return render(request, "sponsors/admin/reject_application.html", context=context)
 
 
+
+
+def cancel_sponsorship_view(ModelAdmin, request, pk):
+    sponsorship = get_object_or_404(ModelAdmin.get_queryset(request), pk=pk)
+
+    if request.method.upper() == "POST" and request.POST.get("confirm") == "yes":
+        try:
+            use_case = use_cases.CancelSponsorshipApplicationUseCase.build()
+            use_case.execute(sponsorship)
+            ModelAdmin.message_user(
+                request, "Sponsorship was cancelled!", messages.SUCCESS
+            )
+        except InvalidStatusException as e:
+            ModelAdmin.message_user(request, str(e), messages.ERROR)
+
+        redirect_url = reverse(
+            "admin:sponsors_sponsorship_change", args=[sponsorship.pk]
+        )
+        return redirect(redirect_url)
+
+    context = {"sponsorship": sponsorship}
+    return render(request, "sponsors/admin/cancel_application.html", context=context)
+
+
 def approve_sponsorship_view(ModelAdmin, request, pk):
     """
     Approves a sponsorship and create an empty contract

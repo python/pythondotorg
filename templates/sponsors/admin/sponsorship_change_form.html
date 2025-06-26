@@ -23,6 +23,12 @@
     </li>
     {% endif %}
 
+    {% if sp.CANCELLED in sp.next_status %}
+    <li>
+        <a href="{% url 'admin:sponsors_sponsorship_cancel' sp.pk %}"  style="background: #d9534f">Cancel</a>
+    </li>
+    {% endif %}
+
     {% if sp.FINALIZED in sp.next_status %}
     <li>
         <a href="{{ sp.contract_admin_url }}"  style="background: #417690">Review Contract</a>

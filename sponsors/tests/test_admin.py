@@ -31,6 +31,7 @@ class TestCustomSponsorshipStatusListFilter(TestCase):
             ("rejected", "Rejected"),
             ("approved", "Approved"),
             ("finalized", "Finalized"),
+            ("cancelled", "Cancelled"),
         ]
         self.assertEqual(expected, self.filter.lookups(self.request, self.model_admin))
 
