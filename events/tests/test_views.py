@@ -253,6 +253,200 @@ class EventsViewsTests(TestCase):
             response.content.decode()
         )
 
+    def test_single_day_event_only_renders_event_date_year_string_if_relevant(self):
+        url = reverse('events:events')
+        single_day_event_starting_and_ending_in_current_year = Event.objects.create(
+            title='Single Day Event Starting & Ending In Current Year', creator=self.user, calendar=self.calendar)
+        single_day_all_day_event_starting_and_ending_in_current_year = Event.objects.create(
+            title='Single Day All Day Event Starting & Ending In Current Year',
+            creator=self.user,
+            calendar=self.calendar)
+        single_day_event_starting_and_ending_in_future_year = Event.objects.create(
+            title='Single Day Event Staring And Ending In Future Year', creator=self.user,
+            calendar=self.calendar)
+        single_day_all_day_event_starting_and_ending_in_future_year = Event.objects.create(
+            title='Single Day All Day Event Starting And Ending In Future Year',
+            creator=self.user,
+            calendar=self.calendar)
+
+        occurring_time_dtstart = self.now + datetime.timedelta(minutes=2)
+
+        OccurringRule.objects.create(
+            event=single_day_event_starting_and_ending_in_current_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(minutes=5)
+        )
+        OccurringRule.objects.create(
+            all_day=True,
+            event=single_day_all_day_event_starting_and_ending_in_current_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(minutes=5)
+        )
+        OccurringRule.objects.create(
+            event=single_day_event_starting_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart + datetime.timedelta(days=366),
+            dt_end=occurring_time_dtstart + datetime.timedelta(minutes=10)
+        )
+        OccurringRule.objects.create(
+            all_day=True,
+            event=single_day_all_day_event_starting_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart + datetime.timedelta(days=366),
+            dt_end=occurring_time_dtstart + datetime.timedelta(minutes=10)
+        )
+
+        response = self.client.get(url)
+
+        # Single Day Event Starting & Ending In Current Year
+        self.assertIn(
+            f'<span id="start-{single_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_event_starting_and_ending_in_current_year.id}">',
+            response.content.decode())
+
+        # Single Day All Day Event Starting & Ending In Current Year
+        self.assertIn(
+            f'<span id="start-{single_day_all_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_all_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_all_day_event_starting_and_ending_in_current_year.id}">',
+            response.content.decode())
+
+        # Single Day Event Staring And Ending In Future Year
+        self.assertIn(
+            f'<span id="start-{single_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+        # Single Day All Day Event Starting And Ending In Future Year
+        self.assertIn(
+            f'<span id="start-{single_day_all_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{single_day_all_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+    def test_multi_day_event_only_render_end_year_information_when_dt_end_is_valid(self):
+        url = reverse('events:events')
+        multi_day_event_starting_and_ending_in_current_year = Event.objects.create(
+            title='Multi-Day Event Starting & Ending In Current Year', creator=self.user, calendar=self.calendar)
+        multi_day_all_day_event_starting_and_ending_in_current_year = Event.objects.create(
+            title='Multi-Day All Day Event Starting & Ending In Current Year',
+            creator=self.user,
+            calendar=self.calendar)
+        multi_day_event_starting_in_current_year_and_ending_in_future_year = Event.objects.create(
+            title='Multi-Day Event Staring In Current Year And Ending In Future Year', creator=self.user,
+            calendar=self.calendar)
+        multi_day_all_day_event_starting_in_current_year_and_ending_in_future_year = Event.objects.create(
+            title='Multi-Day All Day Event Starting In Current Year And Ending In Future Year',
+            creator=self.user,
+            calendar=self.calendar)
+        multi_day_event_starting_and_ending_in_future_year = Event.objects.create(
+            title='Multi-Day Event Staring And Ending In Future Year', creator=self.user,
+            calendar=self.calendar)
+        multi_day_all_day_event_starting_and_ending_in_future_year = Event.objects.create(
+            title='Multi-Day All Day Event Starting And Ending In Future Year',
+            creator=self.user,
+            calendar=self.calendar)
+
+        occurring_time_dtstart = self.now + datetime.timedelta(minutes=2)
+
+        OccurringRule.objects.create(
+            event=multi_day_event_starting_and_ending_in_current_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=1)
+        )
+        OccurringRule.objects.create(
+            all_day=True,
+            event=multi_day_all_day_event_starting_and_ending_in_current_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=1)
+        )
+        OccurringRule.objects.create(
+            event=multi_day_event_starting_in_current_year_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=366)
+        )
+        OccurringRule.objects.create(
+            all_day=True,
+            event=multi_day_all_day_event_starting_in_current_year_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart,
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=366)
+        )
+        OccurringRule.objects.create(
+            event=multi_day_event_starting_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart + datetime.timedelta(days=366),
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=367)
+        )
+        OccurringRule.objects.create(
+            all_day=True,
+            event=multi_day_all_day_event_starting_and_ending_in_future_year,
+            dt_start=occurring_time_dtstart + datetime.timedelta(days=366),
+            dt_end=occurring_time_dtstart + datetime.timedelta(days=367)
+        )
+        response = self.client.get(url)
+
+        # Multi-Day All Day Event Starting & Ending In Current Year
+        self.assertIn(
+            f'<span id="start-{multi_day_all_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertIn(
+            f'<span id="end-{multi_day_all_day_event_starting_and_ending_in_current_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="start-{multi_day_all_day_event_starting_and_ending_in_current_year.id}">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="end-{multi_day_all_day_event_starting_and_ending_in_current_year.id}">',
+            response.content.decode())
+
+        # Multi-Day Event Staring In Current Year And Ending In Future Year
+        self.assertIn(
+            f'<span id="end-{multi_day_event_starting_in_current_year_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertIn(
+            f'<span id="start-{multi_day_event_starting_in_current_year_and_ending_in_future_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="start-{multi_day_event_starting_in_current_year_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+        # Multi-Day All Day Event Starting In Current Year And Ending In Future Year
+        self.assertIn(
+            f'<span id="end-{multi_day_all_day_event_starting_in_current_year_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertIn(
+            f'<span id="start-{multi_day_all_day_event_starting_in_current_year_and_ending_in_future_year.id}" class="say-no-more">',
+            response.content.decode())
+        self.assertNotIn(
+            f'<span id="start-{multi_day_all_day_event_starting_in_current_year_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+        # Multi-Day Event Staring And Ending In Future Year
+        self.assertIn(
+            f'<span id="start-{multi_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertIn(
+            f'<span id="end-{multi_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+        # Multi-Day All Day Event Starting And Ending In Future Year
+        self.assertIn(
+            f'<span id="start-{multi_day_all_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+        self.assertIn(
+            f'<span id="end-{multi_day_all_day_event_starting_and_ending_in_future_year.id}">',
+            response.content.decode())
+
+
 class EventSubmitTests(TestCase):
     event_submit_url = reverse_lazy('events:event_submit')
 
