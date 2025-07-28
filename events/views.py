@@ -87,6 +87,7 @@ class EventList(EventListBase):
         context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(
             calendar__slug=self.kwargs['calendar_slug'])[:2]
         context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
+        context['upcoming_events'] = self.get_queryset()
         return context
 
 
