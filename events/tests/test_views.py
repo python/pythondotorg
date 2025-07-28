@@ -116,6 +116,8 @@ class EventsViewsTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(len(response.context['object_list']), 6)
+        self.assertIn('upcoming_events', response.context)
+        self.assertEqual(list(response.context['upcoming_events']), list(response.context['object_list']))
 
         url = reverse('events:event_list_past', kwargs={"calendar_slug": 'unexisting'})
         response = self.client.get(url)
