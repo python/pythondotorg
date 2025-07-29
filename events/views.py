@@ -94,7 +94,7 @@ class EventList(EventListBase):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         
-        # Get today's events sorted by most recent
+        # today's events, most recent first
         today_events = list(Event.objects.until_datetime(timezone.now()).filter(
             calendar__slug=self.kwargs['calendar_slug']))
         today_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
@@ -102,7 +102,7 @@ class EventList(EventListBase):
         
         context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
         
-        # Get upcoming events sorted by nearest first
+        # upcoming events, soonest first
         upcoming = list(self.get_queryset())
         upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else timezone.now())
         context['upcoming_events'] = upcoming
