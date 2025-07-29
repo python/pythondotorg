@@ -44,16 +44,26 @@ class EventHomepage(ListView):
 
     def get_queryset(self) -> Event:
         """Queryset to return all events, ordered by START date."""
-        return Event.objects.all().order_by("-occurring_rule__dt_start")
+        return Event.objects.all().order_by("occurring_rule__dt_start")
 
     def get_context_data(self, **kwargs: dict) -> dict:
         """Add more ctx, specifically events that are happening now, just missed, and upcoming."""
         context = super().get_context_data(**kwargs)
-        context["events_just_missed"] = Event.objects.until_datetime(timezone.now())[:2]
-        context["upcoming_events"] = Event.objects.for_datetime(timezone.now())
+
+        # past events, most recent first
+        past_events = list(Event.objects.until_datetime(timezone.now()))
+        past_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
+        context["events_just_missed"] = past_events[:2]
+        
+        # upcoming events, soonest first
+        upcoming = list(Event.objects.for_datetime(timezone.now()))
+        upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else timezone.now())
+        context["upcoming_events"] = upcoming
+        
+        # right now, soonest first
         context["events_now"] = Event.objects.filter(
             occurring_rule__dt_start__lte=timezone.now(),
-            occurring_rule__dt_end__gte=timezone.now())[:2]
+            occurring_rule__dt_end__gte=timezone.now()).order_by('occurring_rule__dt_start')[:2]
         return context
 
 
@@ -79,15 +89,19 @@ class EventDetail(DetailView):
 class EventList(EventListBase):
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by(
-            'occurring_rule__dt_start')
+        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['events_today'] = Event.objects.until_datetime(timezone.now()).filter(
-            calendar__slug=self.kwargs['calendar_slug'])[:2]
+        
+        # today's events, most recent first
+        today_events = list(Event.objects.until_datetime(timezone.now()).filter(
+            calendar__slug=self.kwargs['calendar_slug']))
+        today_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
+        context['events_today'] = today_events[:2]
         context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
-        context['upcoming_events'] = self.get_queryset()
+        context['upcoming_events'] = context['object_list']
+        
         return context
 
 
