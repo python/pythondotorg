@@ -87,7 +87,6 @@ class EventLocation(models.Model):
 
 class EventManager(models.Manager):
     def for_datetime(self, dt=None):
-        """Returns all events that are scheduled to START AFTER the given datetime."""
         if dt is None:
             dt = timezone.now()
         else:
@@ -95,7 +94,6 @@ class EventManager(models.Manager):
         return self.filter(Q(occurring_rule__dt_start__gt=dt) | Q(recurring_rules__finish__gt=dt))
 
     def until_datetime(self, dt=None):
-        """Returns all events that are scheduled to END BEFORE the given datetime."""
         if dt is None:
             dt = timezone.now()
         else:
