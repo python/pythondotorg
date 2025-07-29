@@ -89,7 +89,7 @@ class EventDetail(DetailView):
 class EventList(EventListBase):
 
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -99,13 +99,8 @@ class EventList(EventListBase):
             calendar__slug=self.kwargs['calendar_slug']))
         today_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
         context['events_today'] = today_events[:2]
-        
         context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
-        
-        # upcoming events, soonest first
-        upcoming = list(self.get_queryset())
-        upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else timezone.now())
-        context['upcoming_events'] = upcoming
+        context['upcoming_events'] = context['object_list']
         
         return context
 
