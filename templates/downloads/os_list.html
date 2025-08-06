@@ -35,6 +35,11 @@
 
             <li><a href="{{ latest_python3.get_absolute_url }}">Latest Python 3 Release - {{ latest_python3.name }}</a></li>
         </ul>
+
+        {% if os.slug == 'android' %}
+        <p>Rather than using these packages directly, in most cases you should use one of the tools recommended in the <a href="https://docs.python.org/3/using/android.html">Python documentation</a>.</p>
+        {% endif %}
+
         <div class="col-row two-col">
             <div class="column">
                 <h2>Stable Releases</h2>
