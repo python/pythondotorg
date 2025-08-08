@@ -39,7 +39,7 @@
       },
       "repositoryUrl": {
         "url": "https://github.com/pypi/warehouse",
-        "wellKnown": "https://github.com/pypi/warehouse/blob/main/warehouse/templates/funding-manifest-urls.txt"
+        "wellKnown": "https://github.com/pypi/warehouse/blob/main/warehouse/.well-known/funding-manifest-urls"
       },
       "licenses": [
         "Apache 2.0 License"
