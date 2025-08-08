@@ -1,5 +1,7 @@
+import json
+import os
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.generic.base import RedirectView, TemplateView
 
 from codesamples.models import CodeSample
@@ -8,6 +10,19 @@ from downloads.models import Release
 
 def health(request):
     return HttpResponse('OK')
+
+
+def serve_funding_json(request):
+    """Serve the funding.json file from the static directory."""
+    funding_json_path = os.path.join(settings.BASE, 'static', 'funding.json')
+    try:
+        with open(funding_json_path, 'r') as f:
+            data = json.load(f)
+        return JsonResponse(data)
+    except FileNotFoundError:
+        return JsonResponse({'error': 'funding.json not found'}, status=404)
+    except json.JSONDecodeError:
+        return JsonResponse({'error': 'Invalid JSON in funding.json'}, status=500)
 
 
 class IndexView(TemplateView):

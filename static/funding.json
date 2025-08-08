@@ -1,0 +1,205 @@
+{
+  "version": "v1.0.0",
+  "entity": {
+    "type": "organisation",
+    "role": "owner",
+    "name": "Python Software Foundation",
+    "email": "sponsors@python.org",
+    "description": "The Python Software Foundation is the charitable organization behind the Python programming language. The mission of the Python Software Foundation is to promote, protect, and advance the Python programming language, and to support and facilitate the growth of a diverse and international community of Python programmers.",
+    "webpageUrl": {
+      "url": "https://www.python.org/psf"
+    }
+  },
+  "projects": [
+    {
+      "guid": "cpython",
+      "name": "CPython",
+      "description": "Python is an open-source programming language. By several measures, it is the most widely used programming language in the world. At our last measurement, python.org served over 110 billion downloads for Python releases annually.",
+      "webpageUrl": {
+        "url": "https://www.python.org/"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/python/cpython",
+        "wellKnown": "https://github.com/python/cpython/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "Python Software Foundation License Version 2"
+      ],
+      "tags": [
+        "python"
+      ]
+    },
+    {
+      "guid": "pypi",
+      "name": "Python Package Index",
+      "description": "PyPI is a public repository of software that is free to use for distributing and downloading bundles of Python software. PyPI is a free service the Python Software Foundation maintains and provides to the public.",
+      "webpageUrl": {
+        "url": "https://pypi.org/",
+        "wellKnown": "https://pypi.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/pypi/warehouse",
+        "wellKnown": "https://github.com/pypi/warehouse/blob/main/warehouse/templates/funding-manifest-urls.txt"
+      },
+      "licenses": [
+        "Apache 2.0 License"
+      ],
+      "tags": [
+        "python",
+        "packaging"
+      ]
+    },
+    {
+      "guid": "pyconus",
+      "name": "PyCon US",
+      "description": "PyCon US is the largest annual gathering for the Python community. Each year, the community comes together to network, learn, share ideas, and create new relationships and partnerships.",
+      "webpageUrl": {
+        "url": "https://us.pycon.org/",
+        "wellKnown": "https://us.pycon.org/.well-known/funding-manifest-urls"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/psf/pycon-us-mobile",
+        "wellKnown": "https://github.com/psf/pycon-us-mobile/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "MIT"
+      ],
+      "tags": [
+        "python",
+        "community",
+        "events"
+      ]
+    },
+    {
+      "guid": "community",
+      "name": "Global Community Support",
+      "description": "The PSF Grants Program supports a thriving global network of regional Python events, workshops, user groups, communities, and initiatives.",
+      "webpageUrl": {
+        "url": "https://www.python.org/psf/grants/"
+      },
+      "repositoryUrl": {
+        "url": "https://github.com/psf/.github",
+        "wellKnown": "https://github.com/psf/.github/blob/main/.well-known/funding-manifest-urls"
+      },
+      "licenses": [
+        "MIT"
+      ],
+      "tags": [
+        "python",
+        "community",
+        "networking"
+      ]
+    }
+  ],
+  "funding": {
+    "channels": [
+      {
+        "guid": "paypal",
+        "type": "payment-provider",
+        "address": "https://psfmember.org/civicrm/contribute/transact?reset=1&id=2",
+        "description": "Donate directly via PayPal"
+      },
+      {
+        "guid": "paypal-member",
+        "type": "payment-provider",
+        "address": "https://psfmember.org/civicrm/contribute/transact/?reset=1&id=1",
+        "description": "Become a Supporting Member via PayPal"
+      },
+      {
+        "guid": "github",
+        "type": "payment-provider",
+        "address": "https://github.com/sponsors/psf",
+        "description": "Donate via GitHub Sponsors, and get recognized on your GitHub profile"
+      },
+      {
+        "guid": "bank",
+        "type": "bank",
+        "address": "sponsors@python.org",
+        "description": "Please email us for ACH payment details."
+      }
+    ],
+    "plans": [
+      {
+        "guid": "supportingmember",
+        "status": "active",
+        "name": "Supporting Member - Individual",
+        "amount": 99,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["paypal-member"]
+      },
+      {
+        "guid": "visionary",
+        "status": "active",
+        "name": "Visionary Sponsor",
+        "amount": 155000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "sustainability",
+        "status": "active",
+        "name": "Sustainability Sponsor",
+        "amount": 95000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "maintaining",
+        "status": "active",
+        "name": "Maintaining Sponsor",
+        "amount": 63000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "contributing",
+        "status": "active",
+        "name": "Contributing Sponsor",
+        "amount": 33000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "supporting",
+        "status": "active",
+        "name": "Supporting Sponsor",
+        "amount": 16500,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "partner",
+        "status": "active",
+        "name": "Partner Sponsor",
+        "amount": 11000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["bank"]
+      },
+      {
+        "guid": "participating",
+        "status": "active",
+        "name": "Participating Sponsor",
+        "amount": 4000,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["paypal", "github", "bank"]
+      },
+      {
+        "guid": "associate",
+        "status": "active",
+        "name": "Associate Sponsor",
+        "amount": 1500,
+        "currency": "USD",
+        "frequency": "yearly",
+        "channels": ["paypal", "github", "bank"]
+      }
+    ]
+  }
+}
