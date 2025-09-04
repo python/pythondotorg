@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v5
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v6
         with:
             python-version-file: '.python-version'
       - name: Cache Python dependencies
