@@ -157,6 +157,7 @@ FORM_RENDERER = 'django.forms.renderers.DjangoTemplates'
 
 ROOT_URLCONF = 'pydotorg.urls'
 
+
 # Note that we don't need to activate 'XFrameOptionsMiddleware' and
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE = [
@@ -172,6 +173,7 @@ MIDDLEWARE = [
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+	'django.middleware.locale.LocaleMiddleware'
 ]
 
 AUTH_USER_MODEL = 'users.User'

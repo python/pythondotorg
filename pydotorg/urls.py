@@ -73,6 +73,9 @@ urlpatterns = [
 
     # storage migration
     re_path(r'^m/(?P<url>.*)/$', views.MediaMigrationView.as_view(prefix='media'), name='media_migration_view'),
+
+    # i18n
+    path('i18n/', include('django.conf.urls.i18n')),
 ]
 
 urlpatterns += staticfiles_urlpatterns()
