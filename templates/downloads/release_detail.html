@@ -53,7 +53,7 @@
               <th>MD5 Sum</th>
               <th>File Size</th>
               {% if release_files|has_gpg %}
-              <th>GPG</th>
+              <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
