@@ -157,7 +157,6 @@ FORM_RENDERER = 'django.forms.renderers.DjangoTemplates'
 
 ROOT_URLCONF = 'pydotorg.urls'
 
-
 # Note that we don't need to activate 'XFrameOptionsMiddleware' and
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE = [
