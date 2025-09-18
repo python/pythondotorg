@@ -661,7 +661,7 @@
     "fields": {
         "title": "Non-English Docs",
         "hint": "",
-        "url": "http://wiki.python.org/moin/Languages",
+        "url": "https://python-docs-translations.github.io/dashboard/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
