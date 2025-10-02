@@ -172,6 +172,7 @@ MIDDLEWARE = [
     'pages.middleware.PageFallbackMiddleware',
     'django.contrib.redirects.middleware.RedirectFallbackMiddleware',
     'allauth.account.middleware.AccountMiddleware',
+	'django.middleware.locale.LocaleMiddleware'
 ]
 
 AUTH_USER_MODEL = 'users.User'
