@@ -278,7 +278,7 @@ HONEYPOT_FIELD_NAME = 'email_body_text'
 HONEYPOT_VALUE = 'write your message'
 
 ### Blog Feed URL
-PYTHON_BLOG_FEED_URL = "https://feeds.feedburner.com/PythonInsider"
+PYTHON_BLOG_FEED_URL = "https://blog.python.org/feeds/posts/default?alt=rss"
 PYTHON_BLOG_URL = "https://blog.python.org"
 
 ### Registration mailing lists
