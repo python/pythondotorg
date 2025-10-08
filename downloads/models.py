@@ -125,14 +125,11 @@ class Release(ContentManageable, NameSlugModel):
         version = re.match(r'Python\s([\d.]+)', self.name)
         if version is not None:
             return version.group(1)
-        return None
+        return ""
 
     def is_version_at_least(self, min_version_tuple):
-        version = self.get_version()
-        if version is None:
-            return False
         v1 = []
-        for b in version.split('.'):
+        for b in self.get_version().split('.'):
             try:
                 v1.append(int(b))
             except ValueError:
@@ -294,7 +291,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
         purge_url('/ftp/python/')
-        if instance.get_version() is not None:
+        if instance.get_version():
             purge_url(f'/ftp/python/{instance.get_version()}/')
         # See issue #584 for details
         purge_url('/box/supernav-python-downloads/')
