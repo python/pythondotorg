@@ -1,7 +1,6 @@
 import os
 
 import dj_database_url
-import raven
 from decouple import Csv
 
 from .base import *

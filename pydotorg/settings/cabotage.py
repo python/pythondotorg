@@ -1,7 +1,8 @@
 import os
 
 import dj_database_url
-import raven
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 from decouple import Csv
 
 from .base import *
@@ -71,14 +72,14 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_FASTLY_SSL', '1')
 SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
 
-INSTALLED_APPS += [
-    "raven.contrib.django.raven_compat",
-]
-
-RAVEN_CONFIG = {
-    "dsn": config('SENTRY_DSN'),
-    "release": config('SOURCE_COMMIT'),
-}
+sentry_sdk.init(
+    dsn=config('SENTRY_DSN'),
+    integrations=[DjangoIntegration()],
+    release=config('SOURCE_COMMIT'),
+    send_default_pii=True,
+    traces_sample_rate=0.1,
+    profiles_sample_rate=0.1,
+)
 
 AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY')
