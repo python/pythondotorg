@@ -128,8 +128,11 @@ class Release(ContentManageable, NameSlugModel):
         return None
 
     def is_version_at_least(self, min_version_tuple):
+        version = self.get_version()
+        if version is None:
+            return False
         v1 = []
-        for b in self.get_version().split('.'):
+        for b in version.split('.'):
             try:
                 v1.append(int(b))
             except ValueError:
