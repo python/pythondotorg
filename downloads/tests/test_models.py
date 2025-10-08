@@ -74,7 +74,7 @@ class DownloadModelTests(BaseDownloadTests):
             with self.subTest(name=name):
                 release = Release.objects.create(name=name)
                 self.assertEqual(release.name, name)
-                self.assertIsNone(release.get_version())
+                self.assertEqual(release.get_version(), "")
 
     def test_is_version_at_least(self):
         self.assertFalse(self.release_275.is_version_at_least_3_5)
@@ -87,3 +87,11 @@ class DownloadModelTests(BaseDownloadTests):
         release_310 = Release.objects.create(name='Python 3.10.0')
         self.assertTrue(release_310.is_version_at_least_3_9)
         self.assertTrue(release_310.is_version_at_least_3_5)
+
+    def test_is_version_at_least_with_invalid_name(self):
+        """Test that is_version_at_least returns False for releases with invalid names"""
+        invalid_release = Release.objects.create(name='Python install manager')
+        # Should return False instead of raising AttributeError
+        self.assertFalse(invalid_release.is_version_at_least_3_5)
+        self.assertFalse(invalid_release.is_version_at_least_3_9)
+        self.assertFalse(invalid_release.is_version_at_least_3_14)
