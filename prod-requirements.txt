@@ -1,6 +1,6 @@
 gunicorn==23.0.0
 
-raven==6.10.0
+sentry-sdk[django]==2.40.0
 
 # Heroku
 Whitenoise==6.11.0  # 6.4.0 is first version that supports Django 4.2
