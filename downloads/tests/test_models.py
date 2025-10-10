@@ -1,4 +1,4 @@
-from ..models import Release
+from ..models import Release, ReleaseFile
 from .base import BaseDownloadTests
 
 
@@ -95,3 +95,54 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertFalse(invalid_release.is_version_at_least_3_5)
         self.assertFalse(invalid_release.is_version_at_least_3_9)
         self.assertFalse(invalid_release.is_version_at_least_3_14)
+
+    def test_update_supernav(self):
+        from ..models import update_supernav
+        from boxes.models import Box
+
+        release = Release.objects.create(
+            name='Python install manager 25.0',
+            version=Release.PYMANAGER,
+            is_latest=True,
+            is_published=True,
+        )
+
+        for os, slug in [
+            (self.windows, 'python3.10-windows'),
+            (self.osx, 'python3.10-macos'),
+            (self.linux, 'python3.10-linux'),
+        ]:
+            ReleaseFile.objects.create(
+                os=os,
+                release=self.python_3,
+                slug=slug,
+                name='Python 3.10',
+                url='/ftp/python/{}.zip'.format(slug),
+                download_button=True,
+            )
+
+        update_supernav()
+
+        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        self.assertIn('class="download-os-windows"', content)
+        self.assertNotIn('pymanager-25.0.msix', content)
+        self.assertIn('python3.10-windows.zip', content)
+        self.assertIn('class="download-os-macos"', content)
+        self.assertIn('python3.10-macos.zip', content)
+        self.assertIn('class="download-os-linux"', content)
+        self.assertIn('python3.10-linux.zip', content)
+
+        ReleaseFile.objects.create(
+            os=self.windows,
+            release=release,
+            name='MSIX',
+            url='/ftp/python/pymanager/pymanager-25.0.msix',
+            download_button=True,
+        )
+
+        update_supernav()
+
+        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        self.assertIn('class="download-os-windows"', content)
+        self.assertIn('pymanager-25.0.msix', content)
+        self.assertIn('python3.10-windows.zip', content)
