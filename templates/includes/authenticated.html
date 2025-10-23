@@ -8,7 +8,6 @@
                 <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
                 {% if request.user.has_membership %}
                 <li class="tier-2 element-3" role="treeitem">
-                    <!-- <a href="{% url 'users:user_membership_edit' %}">Edit your PSF Basic membership</a> -->
                      {% if user.is_authenticated %}
                         {% if user.has_membership %}
                             <a href="{% url 'users:user_membership_edit' %}">Edit your membership</a>
