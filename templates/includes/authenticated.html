@@ -13,7 +13,7 @@
                         {% if user.has_membership %}
                             <a href="{% url 'users:user_membership_edit' %}">Edit your membership</a>
                         {% else %}
-                            <a href="{% url 'users:user_membership_create' %}">Join PSF Membership</a>
+                            <a href="{% url 'users:user_membership_create' %}">Join the PSF</a>
                         {% endif %}
                     {% else %}
                         <a href="{% url 'account_login' %}?next=https://psfmember.org/membership/">
