@@ -10,7 +10,7 @@
                 <li class="tier-2 element-3" role="treeitem">
                      {% if user.is_authenticated %}
                         {% if user.has_membership %}
-                            <a href="{% url 'users:user_membership_edit' %}">Edit your membership</a>
+                            <a href="{% url 'users:user_membership_edit' %}">Edit your PSF Basic membership</a>
                         {% else %}
                             <a href="{% url 'users:user_membership_create' %}">Join the PSF</a>
                         {% endif %}
