@@ -208,6 +208,7 @@ INSTALLED_APPS = [
     'django_countries',
     'sorl.thumbnail',
 
+    'pydotorg',
     'banners',
     'blogs',
     'boxes',

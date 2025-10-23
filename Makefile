@@ -17,11 +17,14 @@ default: help
 .state/db-migrated:
 	# Call migrate target
 	make migrate 
+	docker compose run --rm web ./manage.py createcachetable
 
 	# Mark the state so we don't rebuild this needlessly.
 	mkdir -p .state && touch .state/db-migrated
 
 .state/db-initialized: .state/docker-build-web .state/db-migrated
+	# Ensure cache table
+	docker compose run --rm web ./manage.py createcachetable
 	# Load all fixtures
 	docker compose run --rm web ./manage.py loaddata fixtures/*.json
 
