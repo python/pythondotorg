@@ -1,3 +1,4 @@
+
 """
 This module holds models related to the Sponsorship entity.
 """
@@ -17,7 +18,7 @@ from django.utils import timezone
 from django.utils.functional import cached_property
 from num2words import num2words
 
-from ordered_model.models import OrderedModel
+from ordered_model.models import OrderedModel, OrderedModelManager
 
 from sponsors.exceptions import SponsorWithExistingApplicationException, InvalidStatusException, \
     SponsorshipInvalidDateRangeException
@@ -37,7 +38,12 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
-    objects = SponsorshipPackageQuerySet.as_manager()
+   
+    objects = OrderedModelManager()
+
+
+
+
 
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
@@ -407,6 +413,7 @@ class SponsorshipBenefit(OrderedModel):
     Benefit that sponsors can pick which are organized under
     package and program.
     """
+    
 
     objects = SponsorshipBenefitQuerySet.as_manager()
 
