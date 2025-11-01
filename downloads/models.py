@@ -19,7 +19,7 @@ from pages.models import Page
 from .managers import ReleaseManager
 
 
-DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
 
 class OS(ContentManageable, NameSlugModel):
