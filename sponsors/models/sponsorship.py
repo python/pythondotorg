@@ -1,4 +1,3 @@
-
 """
 This module holds models related to the Sponsorship entity.
 """
