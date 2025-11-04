@@ -413,7 +413,6 @@ class SponsorshipBenefit(OrderedModel):
     Benefit that sponsors can pick which are organized under
     package and program.
     """
-    
 
     objects = SponsorshipBenefitQuerySet.as_manager()
 
