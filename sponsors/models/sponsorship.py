@@ -40,10 +40,6 @@ class SponsorshipPackage(OrderedModel):
     """
     objects = OrderedModelManager()
 
-
-
-
-
     name = models.CharField(max_length=64)
     sponsorship_amount = models.PositiveIntegerField()
     advertise = models.BooleanField(default=False, blank=True, help_text="If checked, this package will be advertised "
