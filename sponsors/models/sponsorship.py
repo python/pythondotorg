@@ -38,7 +38,6 @@ class SponsorshipPackage(OrderedModel):
     """
     Represent default packages of benefits (visionary, sustainability etc)
     """
-   
     objects = OrderedModelManager()
 
 
