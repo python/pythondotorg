@@ -27,4 +27,3 @@ __pycache__
 .DS_Store
 .envrc
 .state/
-venv*/
