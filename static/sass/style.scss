@@ -1098,6 +1098,46 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     p:last-child a { white-space: nowrap; }
 }
 
+.featured-downloads-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5em;
+    justify-content: center;
+    margin-bottom: 2em;
+}
+
+.featured-download-box {
+    background-color: $grey-lighterest;
+    border: 1px solid $default-border-color;
+    border-radius: 5px;
+    display: flex;
+    flex: 1 1 300px;
+    flex-direction: column;
+    min-width: 250px;
+    max-width: 400px;
+    padding: 1.25em;
+
+    h3 {
+        margin-top: 0;
+    }
+
+    .button {
+        @include vertical-gradient( lighten($yellow, 10%), $yellow );
+        border: 1px solid darken($yellow, 20%);
+        white-space: normal;
+
+        &:hover, &:active {
+            background-color: inherit;
+            @include vertical-gradient( lighten($yellow, 20%), $yellow );
+        }
+    }
+
+    .download-buttons {
+        margin-bottom: 0;
+        text-align: center;
+    }
+}
+
 .documentation-widget { }
 
 .jobs-widget { }

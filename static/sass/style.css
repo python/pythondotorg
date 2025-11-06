@@ -2113,6 +2113,50 @@ table tfoot {
 .download-widget p:last-child a {
   white-space: nowrap; }
 
+.featured-downloads-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5em;
+  justify-content: center;
+  margin-bottom: 2em; }
+
+.featured-download-box {
+  background-color: #f2f4f6;
+  border: 1px solid #caccce;
+  border-radius: 5px;
+  display: flex;
+  flex: 1 1 300px;
+  flex-direction: column;
+  min-width: 250px;
+  max-width: 400px;
+  padding: 1.25em; }
+  .featured-download-box h3 {
+    margin-top: 0; }
+  .featured-download-box .button {
+    background-color: #ffd343;
+    *zoom: 1;
+    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffdf76), color-stop(90%, #ffd343));
+    background-image: -webkit-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: -moz-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: -o-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: linear-gradient(#ffdf76 10%, #ffd343 90%);
+    border: 1px solid #dca900;
+    white-space: normal; }
+    .featured-download-box .button:hover, .featured-download-box .button:active {
+      background-color: inherit;
+      background-color: #ffd343;
+      *zoom: 1;
+      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFEBA9', endColorstr='#FFFFD343');
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffeba9), color-stop(90%, #ffd343));
+      background-image: -webkit-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: -moz-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
+  .featured-download-box .download-buttons {
+    margin-bottom: 0;
+    text-align: center; }
+
 .time-posted {
   display: block;
   font-size: 0.875em;
