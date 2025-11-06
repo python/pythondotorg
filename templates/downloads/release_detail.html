@@ -41,8 +41,21 @@
         {% endif %}
 
         <header class="article-header">
-            <h1 class="page-title">Files</h1>
+            <h2 class="page-title">Files</h2>
         </header>
+
+        {% if featured_files %}
+        <div class="featured-downloads-list">
+            {% for f in featured_files %}
+            <div class="featured-download-box">
+                <h3>{{ f.os.name }}</h3>
+                <p class="download-buttons">
+                    <a class="button" href="{{ f.url }}">Download {{ f.name }}</a>
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <table>
           <thead>

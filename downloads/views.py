@@ -2,7 +2,7 @@ from typing import Any
 
 from datetime import datetime
 
-from django.db.models import Prefetch
+from django.db.models import Case, IntegerField, Prefetch, When
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, TemplateView, ListView, RedirectView
@@ -156,6 +156,20 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Add featured files (files with download_button=True)
+        # Order: macOS first, Windows second, Source last
+        context['featured_files'] = self.object.files.filter(
+            download_button=True
+        ).annotate(
+            os_order=Case(
+                When(os__slug='macos', then=1),
+                When(os__slug='windows', then=2),
+                When(os__slug='source', then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        ).order_by('os_order')
 
         # Manually add release files for better ordering
         context['release_files'] = []
