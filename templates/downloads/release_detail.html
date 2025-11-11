@@ -41,8 +41,25 @@
         {% endif %}
 
         <header class="article-header">
-            <h1 class="page-title">Files</h1>
+            <h2 class="page-title">Files</h2>
         </header>
+
+        {% if featured_files %}
+        <div class="featured-downloads-list">
+            {% for f in featured_files %}
+            <div class="featured-download-box">
+                <h3>{{ f.os.name }}</h3>
+                <p class="download-buttons">
+                    {% if f.os.slug == 'windows' and latest_pymanager and release.is_version_at_least_3_5 %}
+                    <a class="button" href="https://www.python.org/downloads/latest/pymanager/">Download Python install manager</a>
+                    {% else %}
+                    <a class="button" href="{{ f.url }}">Download {{ f.name }}</a>
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <table>
           <thead>
