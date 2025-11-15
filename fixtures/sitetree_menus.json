@@ -637,7 +637,7 @@
     "fields": {
         "title": "FAQ",
         "hint": "",
-        "url": "https://docs.python.org/faq/",
+        "url": "https://docs.python.org/3/faq/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
@@ -661,7 +661,7 @@
     "fields": {
         "title": "Non-English Docs",
         "hint": "",
-        "url": "https://python-docs-translations.github.io/dashboard/",
+        "url": "https://translations.python.org",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
