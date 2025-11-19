@@ -13,3 +13,10 @@ urlpatterns = [
     path('', views.DownloadHome.as_view(), name='download'),
     path("feed.rss", views.ReleaseFeed(), name="feed"),
 ]
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    # otras rutas existentes...
+    path('api/', views.downloads_api, name='downloads_api'),
+]

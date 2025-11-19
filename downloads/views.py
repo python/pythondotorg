@@ -227,3 +227,10 @@ class ReleaseFeed(Feed):
                 return timezone.make_aware(item.release_date)
             return item.release_date
         return None
+from django.shortcuts import render
+
+def downloads_api(request):
+    """
+    Render the Downloads API documentation page.
+    """
+    return render(request, "downloads/api.html")

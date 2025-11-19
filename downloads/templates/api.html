@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block content %}
+  <h1>Downloads API</h1>
+
+  <p>La <strong>Downloads API</strong> de Python.org proporciona acceso programático a la información de versiones (releases) y archivos descargables.</p>
+
+  <h2>Base URL</h2>
+  <pre><code>https://www.python.org/api/v2/downloads/</code></pre>
+
+  <h2>Endpoints</h2>
+
+  <h3>Listar releases</h3>
+  <p><code>GET /api/v2/downloads/release/</code></p>
+  <p>Devuelve una lista de todas las versiones publicadas.</p>
+
+  <h3>Detalle de un release</h3>
+  <p><code>GET /api/v2/downloads/release/&lt;id&gt;/</code></p>
+  <p>Devuelve los metadatos de un release específico.</p>
+
+  <h3>Archivos de un release</h3>
+  <p><code>GET /api/v2/downloads/release_file/</code></p>
+  <p>Permite filtrar por `release` para obtener los archivos descargables.</p>
+
+  <h2>Notas</h2>
+  <ul>
+    <li>Los resultados están paginados.</li>
+    <li>No se requiere autenticación.</li>
+    <li>Las URLs de los archivos pueden ser relativas; conviértelas a absolutas si las usas en scripts.</li>
+  </ul>
+
+{% endblock %}
