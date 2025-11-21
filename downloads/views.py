@@ -56,7 +56,7 @@ class DownloadLatestPython3x(RedirectView):
 
         try:
             minor_version_int = int(minor_version)
-            latest_release = Release.objects.latest_python3x(minor_version_int)
+            latest_release = Release.objects.latest_python3(minor_version_int)
         except (ValueError, Release.DoesNotExist):
             latest_release = None
 
