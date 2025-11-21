@@ -1,4 +1,3 @@
 static/sass/*.css linguist-vendored
-peps/tests/fake_pep_repo/*.html linguist-vendored
 static/js/libs/*.js linguist-vendored
 static/js/plugins/*.js linguist-vendored
