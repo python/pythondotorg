@@ -1219,6 +1219,7 @@ a.button {
 
 .release-version,
 .release-status,
+.release-dl,
 .release-start,
 .release-end,
 .release-pep {
@@ -1228,16 +1229,19 @@ a.button {
   vertical-align: middle; }
 
 .release-version {
-  width: 15%; }
+  width: 10%; }
 
 .release-status {
   width: 20%; }
 
+.release-dl {
+  width: 15%; }
+
 .release-start {
-  width: 25%; }
+  width: 20%; }
 
 .release-end {
-  width: 25%; }
+  width: 20%; }
 
 .release-pep {
   width: 15%; }

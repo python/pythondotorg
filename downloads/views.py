@@ -45,6 +45,27 @@ class DownloadLatestPython3(RedirectView):
             return reverse('download')
 
 
+class DownloadLatestPython3x(RedirectView):
+    """ Redirect to latest Python 3.x release for a specific minor version """
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        minor_version = kwargs.get('minor')
+        if not minor_version:
+            return reverse('downloads:download')
+
+        try:
+            minor_version_int = int(minor_version)
+            latest_release = Release.objects.latest_python3(minor_version_int)
+        except (ValueError, Release.DoesNotExist):
+            latest_release = None
+
+        if latest_release:
+            return latest_release.get_absolute_url()
+        else:
+            return reverse('downloads:download')
+
+
 class DownloadLatestPyManager(RedirectView):
     """ Redirect to latest Python install manager release """
     permanent = False
