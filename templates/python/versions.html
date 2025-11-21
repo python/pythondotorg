@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load boxes %}
+{% load sitetree %}
+
+{% block page_title %}Python documentation by version | {{ SITE_INFO.site_name }}{% endblock %}
+
+{% block body_attributes %}class="python pages default-page"{% endblock %}
+
+{% block breadcrumbs %}
+{% sitetree_breadcrumbs from "main" %}
+{% endblock breadcrumbs %}
+
+{% block content_attributes %}with-left-sidebar{% endblock %}
+
+{% block content %}
+    <article class="text">
+        <header class="article-header">
+            <h1 class="page-title">Python documentation by version</h1>
+        </header>
+
+        <p>Some previous versions of the documentation remain available online. Use the list below to select a version to view.</p>
+
+        <p>For unreleased (in development) documentation, see <a href="#in-development-versions">In development versions</a>.</p>
+
+        <h2>Release versions</h2>
+
+        {% for version_data in version_list %}
+            <h3>Python {{ version_data.version }}</h3>
+            <ul>
+            {% for release in version_data.releases %}
+                <li>
+                    {% if release.stage %}
+                        <a href="https://docs.python.org/release/{{ release.stage|cut:" " }}/">Python {{ release.stage }}</a>{% if release.date %}, documentation released on {{ release.date }}{% endif %}
+                    {% endif %}
+                </li>
+            {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <h2 id="in-development-versions">In development versions</h2>
+        <p>The latest, and unreleased, documentation for versions of Python still under development:</p>
+        <ul>
+            <li><a href="https://docs.python.org/dev/">Development version</a></li>
+            <li><a href="https://docs.python.org/3/">Python 3.x</a></li>
+        </ul>
+
+    </article>
+{% endblock content %}
+
+{% block left_sidebar %}
+<aside class="left-sidebar" role="secondary">
+    {% include "components/navigation-widget.html" %}
+
+    <div class="psf-sidebar-widget sidebar-widget">
+        {% box 'widget-sidebar-aboutpsf' %}
+    </div>
+</aside>
+{% endblock left_sidebar %}
