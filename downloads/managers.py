@@ -48,29 +48,13 @@ class ReleaseQuerySet(QuerySet):
 
 class ReleaseManager(Manager.from_queryset(ReleaseQuerySet)):
     def latest_python2(self):
-        qs = self.get_queryset().latest_python2()
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_python2().first()
 
     def latest_python3(self):
-        qs = self.get_queryset().latest_python3()
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_python3().first()
 
     def latest_python3x(self, minor_version: int):
-        qs = self.get_queryset().latest_python3x(minor_version)
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_python3x(minor_version).first()
 
     def latest_pymanager(self):
-        qs = self.get_queryset().latest_pymanager()
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_pymanager().first()
