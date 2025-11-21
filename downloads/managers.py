@@ -32,6 +32,10 @@ class ReleaseQuerySet(QuerySet):
     def latest_python3(self):
         return self.python3().filter(is_latest=True)
 
+    def latest_python3x(self, minor_version: int):
+        pattern = rf"^Python 3\.{minor_version}\."
+        return self.python3().filter(name__regex=pattern).order_by("-release_date")
+
     def latest_pymanager(self):
         return self.pymanager().filter(is_latest=True)
 
@@ -52,6 +56,13 @@ class ReleaseManager(Manager.from_queryset(ReleaseQuerySet)):
 
     def latest_python3(self):
         qs = self.get_queryset().latest_python3()
+        if qs:
+            return qs[0]
+        else:
+            return None
+
+    def latest_python3x(self, minor_version: int):
+        qs = self.get_queryset().latest_python3x(minor_version)
         if qs:
             return qs[0]
         else:
