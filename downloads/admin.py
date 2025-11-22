@@ -25,3 +25,9 @@ class ReleaseAdmin(ContentManageableModelAdmin):
     list_filter = ['version', 'is_published', 'show_on_download_page']
     search_fields = ['name', 'slug']
     ordering = ['-release_date']
+
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super().formfield_for_dbfield(db_field, request, **kwargs)
+        if db_field.name == "name":
+            field.widget.attrs["placeholder"] = "Python 3.X.YaN"
+        return field
