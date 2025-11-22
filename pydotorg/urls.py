@@ -19,9 +19,9 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='home'),
     re_path(r'^_health/?', views.health, name='health'),
     path('authenticated', views.AuthenticatedView.as_view(), name='authenticated'),
-    re_path(r'^humans.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
-    re_path(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    re_path(r'^funding.json$', views.serve_funding_json, name='funding_json'),
+    path('humans.txt', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('funding.json', views.serve_funding_json, name='funding_json'),
     path('shell/', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
     # python section landing pages
