@@ -218,13 +218,13 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         # 'self.draft_release' won't shown here.
-        self.assertEqual(len(content), 4)
+        self.assertEqual(len(content), 7)
 
         # Login to get all releases.
         response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
-        self.assertEqual(len(content), 5)
+        self.assertEqual(len(content), 8)
         self.assertFalse(content[0]['is_latest'])
 
     def test_post_release(self):
@@ -594,5 +594,5 @@ class ReleaseFeedTests(BaseDownloadTests):
         response = self.client.get(self.url)
         content = response.content.decode()
 
-        # In BaseDownloadTests, we create 5 releases, 4 of which are published, 1 of those published are hidden..
-        self.assertEqual(content.count("<item>"), 4)
+        # In BaseDownloadTests, we create 8 releases, 7 of which are published, 1 of those published are hidden..
+        self.assertEqual(content.count("<item>"), 7)

@@ -10,14 +10,14 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_published(self):
         published_releases = Release.objects.published()
-        self.assertEqual(len(published_releases), 4)
+        self.assertEqual(len(published_releases), 7)
         self.assertIn(self.release_275, published_releases)
         self.assertIn(self.hidden_release, published_releases)
         self.assertNotIn(self.draft_release, published_releases)
 
     def test_release(self):
         released_versions = Release.objects.released()
-        self.assertEqual(len(released_versions), 3)
+        self.assertEqual(len(released_versions), 6)
         self.assertIn(self.release_275, released_versions)
         self.assertIn(self.hidden_release, released_versions)
         self.assertNotIn(self.draft_release, released_versions)
@@ -37,7 +37,7 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_downloads(self):
         downloads = Release.objects.downloads()
-        self.assertEqual(len(downloads), 2)
+        self.assertEqual(len(downloads), 5)
         self.assertIn(self.release_275, downloads)
         self.assertNotIn(self.hidden_release, downloads)
         self.assertNotIn(self.draft_release, downloads)
@@ -50,7 +50,7 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_python3(self):
         versions = Release.objects.python3()
-        self.assertEqual(len(versions), 3)
+        self.assertEqual(len(versions), 6)
         self.assertNotIn(self.release_275, versions)
         self.assertNotIn(self.draft_release, versions)
         self.assertIn(self.hidden_release, versions)

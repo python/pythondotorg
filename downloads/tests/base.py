@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.test import TestCase
 from django.utils import timezone
@@ -32,7 +32,7 @@ class BaseDownloadTests(DownloadMixin, TestCase):
             is_latest=True,
             is_published=True,
             release_page=self.release_275_page,
-            release_date=timezone.now() - datetime.timedelta(days=-1)
+            release_date=dt.datetime.fromisoformat("2013-05-15T00:00Z"),
         )
         self.release_275_windows_32bit = ReleaseFile.objects.create(
             os=self.windows,
@@ -102,9 +102,31 @@ class BaseDownloadTests(DownloadMixin, TestCase):
 
         self.python_3 = Release.objects.create(
             version=Release.PYTHON3,
-            name='Python 3.10',
+            name="Python 3.10.19",
             is_latest=True,
             is_published=True,
             show_on_download_page=True,
-            release_page=self.release_275_page
+            release_page=self.release_275_page,
+            release_date=dt.datetime.fromisoformat("2025-10-09T00:00Z"),
+        )
+
+        self.python_3_10_18 = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.10.18",
+            is_published=True,
+            release_date=dt.datetime.fromisoformat("2025-06-03T00:00Z"),
+        )
+
+        self.python_3_8_20 = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.8.20",
+            is_published=True,
+            release_date=dt.datetime.fromisoformat("2024-09-06T00:00Z"),
+        )
+
+        self.python_3_8_19 = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.8.19",
+            is_published=True,
+            release_date=dt.datetime.fromisoformat("2024-03-19T00:00Z"),
         )
