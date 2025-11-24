@@ -66,6 +66,23 @@ class DownloadLatestPython3x(RedirectView):
             return reverse('downloads:download')
 
 
+class DownloadLatestPrerelease(RedirectView):
+    """Redirect to latest Python 3 prerelease"""
+
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        try:
+            latest_prerelease = Release.objects.latest_prerelease()
+        except Release.DoesNotExist:
+            latest_prerelease = None
+
+        if latest_prerelease:
+            return latest_prerelease.get_absolute_url()
+        else:
+            return reverse("downloads:download")
+
+
 class DownloadLatestPyManager(RedirectView):
     """ Redirect to latest Python install manager release """
     permanent = False

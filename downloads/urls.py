@@ -6,6 +6,7 @@ urlpatterns = [
     re_path(r'latest/python2/?$', views.DownloadLatestPython2.as_view(), name='download_latest_python2'),
     re_path(r'latest/python3/?$', views.DownloadLatestPython3.as_view(), name='download_latest_python3'),
     re_path(r'latest/python3\.(?P<minor>\d+)/?$', views.DownloadLatestPython3x.as_view(), name='download_latest_python3x'),
+    re_path(r'latest/prerelease/?$', views.DownloadLatestPrerelease.as_view(), name='download_latest_prerelease'),
     re_path(r'latest/pymanager/?$', views.DownloadLatestPyManager.as_view(), name='download_latest_pymanager'),
     re_path(r'latest/?$', views.DownloadLatestPython3.as_view(), name='download_latest_python3'),
     path('operating-systems/', views.DownloadFullOSList.as_view(), name='download_full_os_list'),
