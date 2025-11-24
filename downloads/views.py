@@ -124,8 +124,17 @@ class DownloadHome(DownloadBase, TemplateView):
                 data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
             python_files.append(data)
 
+        def version_key(release: Release) -> tuple[int, ...]:
+            try:
+                return tuple(int(x) for x in release.get_version().split("."))
+            except ValueError:
+                return (0,)
+
+        releases = list(Release.objects.downloads())
+        releases.sort(key=version_key, reverse=True)
+
         context.update({
-            'releases': Release.objects.downloads(),
+            'releases': releases,
             'latest_python2': latest_python2,
             'latest_python3': latest_python3,
             'python_files': python_files,

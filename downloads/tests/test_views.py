@@ -56,6 +56,21 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_download_releases_ordered_by_version(self):
+        url = reverse("download:download")
+        response = self.client.get(url)
+        releases = response.context["releases"]
+        self.assertEqual(
+            releases,
+            [
+                self.python_3,
+                self.python_3_10_18,
+                self.python_3_8_20,
+                self.python_3_8_19,
+                self.release_275,
+            ],
+        )
+
     def test_latest_redirects(self):
         latest_python2 = Release.objects.released().python2().latest()
         url = reverse('download:download_latest_python2')
