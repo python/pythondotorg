@@ -1,3 +1,5 @@
+import datetime as dt
+
 from ..models import Release, ReleaseFile
 from .base import BaseDownloadTests
 
@@ -55,6 +57,22 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertNotIn(self.draft_release, versions)
         self.assertIn(self.hidden_release, versions)
         self.assertIn(self.pre_release, versions)
+
+    def test_latest_python3(self):
+        latest_3 = Release.objects.latest_python3()
+        self.assertEqual(latest_3, self.python_3)
+        self.assertNotEqual(latest_3, self.python_3_10_18)
+
+        latest_3_10 = Release.objects.latest_python3(minor_version=10)
+        self.assertEqual(latest_3_10, self.python_3)
+        self.assertNotEqual(latest_3_10, self.python_3_10_18)
+
+        latest_3_8 = Release.objects.latest_python3(minor_version=8)
+        self.assertEqual(latest_3_8, self.python_3_8_20)
+        self.assertNotEqual(latest_3_8, self.python_3_8_19)
+
+        latest_3_99 = Release.objects.latest_python3(minor_version=99)
+        self.assertIsNone(latest_3_99)
 
     def test_get_version(self):
         self.assertEqual(self.release_275.name, 'Python 2.7.5')
