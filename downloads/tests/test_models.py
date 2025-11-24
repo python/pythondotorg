@@ -74,6 +74,28 @@ class DownloadModelTests(BaseDownloadTests):
         latest_3_99 = Release.objects.latest_python3(minor_version=99)
         self.assertIsNone(latest_3_99)
 
+    def test_latest_prerelease(self):
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertEqual(latest_prerelease, self.pre_release)
+
+        # Create a newer prerelease with a future date
+        newer_prerelease = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.9.99",
+            is_published=True,
+            pre_release=True,
+            release_date=self.pre_release.release_date + dt.timedelta(days=1),
+        )
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertEqual(latest_prerelease, newer_prerelease)
+        self.assertNotEqual(latest_prerelease, self.pre_release)
+
+    def test_latest_prerelease_when_no_prerelease(self):
+        # Delete the prerelease
+        self.pre_release.delete()
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertIsNone(latest_prerelease)
+
     def test_get_version(self):
         self.assertEqual(self.release_275.name, 'Python 2.7.5')
         self.assertEqual(self.release_275.get_version(), '2.7.5')
