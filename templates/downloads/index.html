@@ -50,7 +50,7 @@
                 <div class="row active-release-list-widget">
                     {% render_active_banner %}
 
-                    <h2 class="widget-title">Active Python Releases</h2>
+                    <h2 class="widget-title">Active Python releases</h2>
                     <p class="success-quote"><a href="https://devguide.python.org/versions/#versions">For more information visit the Python Developer's Guide</a>.</p>
 
                     {% box 'downloads-active-releases' %}
@@ -74,7 +74,7 @@
                             <span class="release-number"><a href="{{ r.get_absolute_url }}">{{ r.name }}</a></span>
                             <span class="release-date">{{ r.release_date|date }}</span>
                             <span class="release-download"><a href="{{ r.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release Notes</a></span>
+                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release notes</a></span>
                         </li>
                         {% endfor %}
                     </ol>
