@@ -292,6 +292,12 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/feed.rss')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
+        # Purge minor version specific URLs (like /downloads/latest/python3.14/)
+        version = instance.get_version()
+        if instance.version == Release.PYTHON3 and version:
+            match = re.match(r'^3\.(\d+)', version)
+            if match:
+                purge_url(f'/downloads/latest/python3.{match.group(1)}/')
         purge_url('/downloads/latest/pymanager/')
         purge_url('/downloads/macos/')
         purge_url('/downloads/source/')

@@ -56,6 +56,21 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_download_releases_ordered_by_version(self):
+        url = reverse("download:download")
+        response = self.client.get(url)
+        releases = response.context["releases"]
+        self.assertEqual(
+            releases,
+            [
+                self.python_3,
+                self.python_3_10_18,
+                self.python_3_8_20,
+                self.python_3_8_19,
+                self.release_275,
+            ],
+        )
+
     def test_latest_redirects(self):
         latest_python2 = Release.objects.released().python2().latest()
         url = reverse('download:download_latest_python2')
@@ -66,6 +81,19 @@ class DownloadViewsTests(BaseDownloadTests):
         url = reverse('download:download_latest_python3')
         response = self.client.get(url)
         self.assertRedirects(response, latest_python3.get_absolute_url())
+
+    def test_latest_python3x_redirects(self):
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "10"})
+        response = self.client.get(url)
+        self.assertRedirects(response, self.python_3.get_absolute_url())
+
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "8"})
+        response = self.client.get(url)
+        self.assertRedirects(response, self.python_3_8_20.get_absolute_url())
+
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "99"})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("download:download"))
 
     def test_redirect_page_object_to_release_detail_page(self):
         self.release_275.release_page = None
@@ -218,13 +246,13 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         # 'self.draft_release' won't shown here.
-        self.assertEqual(len(content), 4)
+        self.assertEqual(len(content), 7)
 
         # Login to get all releases.
         response = self.client.get(url, headers={"authorization": self.Authorization})
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
-        self.assertEqual(len(content), 5)
+        self.assertEqual(len(content), 8)
         self.assertFalse(content[0]['is_latest'])
 
     def test_post_release(self):
@@ -594,5 +622,5 @@ class ReleaseFeedTests(BaseDownloadTests):
         response = self.client.get(self.url)
         content = response.content.decode()
 
-        # In BaseDownloadTests, we create 5 releases, 4 of which are published, 1 of those published are hidden..
-        self.assertEqual(content.count("<item>"), 4)
+        # In BaseDownloadTests, we create 8 releases, 7 of which are published, 1 of those published are hidden..
+        self.assertEqual(content.count("<item>"), 7)

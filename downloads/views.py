@@ -2,7 +2,7 @@ from typing import Any
 
 from datetime import datetime
 
-from django.db.models import Prefetch
+from django.db.models import Case, IntegerField, Prefetch, When
 from django.urls import reverse
 from django.utils import timezone
 from django.views.generic import DetailView, TemplateView, ListView, RedirectView
@@ -30,19 +30,21 @@ class DownloadLatestPython2(RedirectView):
 
 
 class DownloadLatestPython3(RedirectView):
-    """ Redirect to latest Python 3 release """
+    """Redirect to latest Python 3 release, optionally for a specific minor"""
+
     permanent = False
 
     def get_redirect_url(self, **kwargs):
+        minor_version = kwargs.get('minor')
         try:
-            latest_python3 = Release.objects.latest_python3()
-        except Release.DoesNotExist:
-            latest_python3 = None
+            minor_version_int = int(minor_version) if minor_version else None
+            latest_release = Release.objects.latest_python3(minor_version_int)
+        except (ValueError, Release.DoesNotExist):
+            latest_release = None
 
-        if latest_python3:
-            return latest_python3.get_absolute_url()
-        else:
-            return reverse('download')
+        if latest_release:
+            return latest_release.get_absolute_url()
+        return reverse("downloads:download")
 
 
 class DownloadLatestPyManager(RedirectView):
@@ -103,8 +105,17 @@ class DownloadHome(DownloadBase, TemplateView):
                 data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
             python_files.append(data)
 
+        def version_key(release: Release) -> tuple[int, ...]:
+            try:
+                return tuple(int(x) for x in release.get_version().split("."))
+            except ValueError:
+                return (0,)
+
+        releases = list(Release.objects.downloads())
+        releases.sort(key=version_key, reverse=True)
+
         context.update({
-            'releases': Release.objects.downloads(),
+            'releases': releases,
             'latest_python2': latest_python2,
             'latest_python3': latest_python3,
             'python_files': python_files,
@@ -156,6 +167,20 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+
+        # Add featured files (files with download_button=True)
+        # Order: macOS first, Windows second, Source last
+        context['featured_files'] = self.object.files.filter(
+            download_button=True
+        ).annotate(
+            os_order=Case(
+                When(os__slug='macos', then=1),
+                When(os__slug='windows', then=2),
+                When(os__slug='source', then=3),
+                default=4,
+                output_field=IntegerField(),
+            )
+        ).order_by('os_order')
 
         # Manually add release files for better ordering
         context['release_files'] = []

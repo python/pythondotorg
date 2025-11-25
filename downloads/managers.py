@@ -29,8 +29,11 @@ class ReleaseQuerySet(QuerySet):
     def latest_python2(self):
         return self.python2().filter(is_latest=True)
 
-    def latest_python3(self):
-        return self.python3().filter(is_latest=True)
+    def latest_python3(self, minor_version: int | None = None):
+        if minor_version is None:
+            return self.python3().filter(is_latest=True)
+        pattern = rf"^Python 3\.{minor_version}\."
+        return self.python3().filter(name__regex=pattern).order_by("-release_date")
 
     def latest_pymanager(self):
         return self.pymanager().filter(is_latest=True)
@@ -44,22 +47,10 @@ class ReleaseQuerySet(QuerySet):
 
 class ReleaseManager(Manager.from_queryset(ReleaseQuerySet)):
     def latest_python2(self):
-        qs = self.get_queryset().latest_python2()
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_python2().first()
 
-    def latest_python3(self):
-        qs = self.get_queryset().latest_python3()
-        if qs:
-            return qs[0]
-        else:
-            return None
+    def latest_python3(self, minor_version: int | None = None):
+        return self.get_queryset().latest_python3(minor_version).first()
 
     def latest_pymanager(self):
-        qs = self.get_queryset().latest_pymanager()
-        if qs:
-            return qs[0]
-        else:
-            return None
+        return self.get_queryset().latest_pymanager().first()

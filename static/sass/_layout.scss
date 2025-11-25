@@ -415,6 +415,7 @@
 
     .release-version,
     .release-status,
+    .release-dl,
     .release-start,
     .release-end,
     .release-pep {
@@ -424,10 +425,11 @@
         vertical-align: middle;
     }
 
-    .release-version { width: 15%; }
+    .release-version { width: 10%; }
     .release-status { width: 20%; }
-    .release-start { width: 25%; }
-    .release-end { width: 25%; }
+    .release-dl { width: 15%; }
+    .release-start { width: 20%; }
+    .release-end { width: 20%; }
     .release-pep { width: 15%; }
 
     /* Previous Next pattern */
