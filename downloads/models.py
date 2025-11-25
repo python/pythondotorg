@@ -298,6 +298,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
             match = re.match(r'^3\.(\d+)', version)
             if match:
                 purge_url(f'/downloads/latest/python3.{match.group(1)}/')
+        purge_url('/downloads/latest/prerelease/')
         purge_url('/downloads/latest/pymanager/')
         purge_url('/downloads/macos/')
         purge_url('/downloads/source/')

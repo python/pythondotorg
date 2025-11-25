@@ -95,6 +95,18 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertRedirects(response, reverse("download:download"))
 
+    def test_latest_prerelease_redirect(self):
+        url = reverse("download:download_latest_prerelease")
+        response = self.client.get(url)
+        self.assertRedirects(response, self.pre_release.get_absolute_url())
+
+    def test_latest_prerelease_redirect_when_no_prerelease(self):
+        # Delete the prerelease to test fallback
+        self.pre_release.delete()
+        url = reverse("download:download_latest_prerelease")
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("download:download"))
+
     def test_redirect_page_object_to_release_detail_page(self):
         self.release_275.release_page = None
         self.release_275.save()
