@@ -112,7 +112,7 @@ wishes to support the Programs by making a contribution to the PSF.
     > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 9450 SW Gemini Dr. ECM # 90772  
     > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Beaverton, OR 97008 USA  
     > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Facsimile: +1 (858) 712-8966  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: deb@python.org  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: deb@python.org, with a copy to: legal@python.org  
 
     &nbsp;
 
@@ -172,7 +172,7 @@ wishes to support the Programs by making a contribution to the PSF.
 
 >    By:        ________________________________  
 >    Name:   Loren Crary  
->    Title:     Director of Resource Development
+>    Title:     Deputy Executive Director
 
 &nbsp;  
 

@@ -34,15 +34,6 @@ HAYSTACK_CONNECTIONS = {
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# Set the local pep repository path to fetch PEPs from,
-# or none to fallback to the tarball specified by PEP_ARTIFACT_URL.
-PEP_REPO_PATH = config('PEP_REPO_PATH', default=None)  # directory path or None
-
-# Set the path to where to fetch PEP artifacts from.
-# The value can be a local path or a remote URL.
-# Ignored if PEP_REPO_PATH is set.
-PEP_ARTIFACT_URL = os.path.join(BASE, 'peps/tests/peps.tar.gz')
-
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
 # have a sass compiler installed at all during local development if you aren't
 # adjusting the CSS at all.  Comment this out or adjust it to suit your local

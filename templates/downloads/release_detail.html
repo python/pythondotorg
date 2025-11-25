@@ -41,8 +41,25 @@
         {% endif %}
 
         <header class="article-header">
-            <h1 class="page-title">Files</h1>
+            <h2 class="page-title">Files</h2>
         </header>
+
+        {% if featured_files %}
+        <div class="featured-downloads-list">
+            {% for f in featured_files %}
+            <div class="featured-download-box">
+                <h3>{{ f.os.name }}</h3>
+                <p class="download-buttons">
+                    {% if f.os.slug == 'windows' and latest_pymanager and release.is_version_at_least_3_5 %}
+                    <a class="button" href="https://www.python.org/downloads/latest/pymanager/">Download Python install manager</a>
+                    {% else %}
+                    <a class="button" href="{{ f.url }}">Download {{ f.name }}</a>
+                    {% endif %}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
 
         <table>
           <thead>
@@ -52,14 +69,14 @@
               <th>Description</th>
               <th>MD5 Sum</th>
               <th>File Size</th>
-              {% if release_files|has_gpg %}
-              <th>GPG</th>
-              {% endif %}
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
               {% if release_files|has_sbom %}
               <th><a href="https://www.python.org/download/sbom/">SBOM</a></th>
+              {% endif %}
+              {% if release_files|has_gpg %}
+              <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
             </tr>
           </thead>
@@ -71,9 +88,6 @@
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
                 <td>{{ f.filesize|filesizeformat }}</td>
-                {% if release_files|has_gpg %}
-                <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
-                {% endif %}
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
                   <td colspan="2">{% if f.sigstore_bundle_file %}<a href="{{ f.sigstore_bundle_file}}">.sigstore</a>{% endif %}</td>
@@ -84,6 +98,9 @@
                 {% endif %}
                 {% if release_files|has_sbom %}
                   <td>{% if f.sbom_spdx2_file %}<a href="{{ f.sbom_spdx2_file }}">SPDX</a>{% endif %}</td>
+                {% endif %}
+                {% if release_files|has_gpg %}
+                <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% endif %}
               </tr>
             {% endfor %}
