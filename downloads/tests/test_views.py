@@ -82,6 +82,19 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertRedirects(response, latest_python3.get_absolute_url())
 
+    def test_latest_python3x_redirects(self):
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "10"})
+        response = self.client.get(url)
+        self.assertRedirects(response, self.python_3.get_absolute_url())
+
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "8"})
+        response = self.client.get(url)
+        self.assertRedirects(response, self.python_3_8_20.get_absolute_url())
+
+        url = reverse("download:download_latest_python3x", kwargs={"minor": "99"})
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse("download:download"))
+
     def test_redirect_page_object_to_release_detail_page(self):
         self.release_275.release_page = None
         self.release_275.save()
