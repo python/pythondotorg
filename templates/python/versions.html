@@ -30,7 +30,7 @@
             {% for release in version_data.releases %}
                 <li>
                     {% if release.stage %}
-                        <a href="https://docs.python.org/release/{{ release.stage|cut:" " }}/">Python {{ release.stage }}</a>{% if release.date %}, documentation released on {{ release.date }}{% endif %}
+                        <a href="https://docs.python.org/release/{{ release.stage|cut:" " }}/">Python {{ release.stage }}</a>{% if release.date %}, released on {{ release.date }}{% endif %}
                     {% endif %}
                 </li>
             {% endfor %}
