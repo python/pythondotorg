@@ -133,7 +133,7 @@
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
+.most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
   background-color: #d8dbde;
   *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
@@ -146,12 +146,12 @@
   -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
 
-.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
+.most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
   padding: 1.25em;
   *zoom: 1; }
-  .pep-widget:after, .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
+  .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
     content: "";
     display: table;
     clear: both; }
@@ -973,7 +973,7 @@ h2.not-column {
 
 /* ! ===== HELPFUL CLASSES ===== */
 /* A useful class that helps control how lines might break. Use carefully and always test. */
-.pre, .rss-link {
+.pre {
   white-space: nowrap; }
 
 /* Our own little class for progressive text. Yes, it is a Monty Python reference */
@@ -2263,133 +2263,6 @@ table tfoot {
 .draft-preview {
   color: #b55863;
   font-family: SourceSansProBold, Arial, sans-serif; }
-
-/* ! ===== PEP Widget ===== */
-.pep-widget {
-  margin-bottom: 1.3125em; }
-  .pep-widget .widget-title {
-    color: #737373;
-    margin-bottom: 0.35em;
-    font-size: 1.125em; }
-    .fontface .pep-widget .widget-title {
-      font-size: 1.29375em; }
-      .fontface .pep-widget .widget-title span:before {
-        font-size: .875em; }
-    .pep-widget .widget-title a {
-      color: #3776ab; }
-      .pep-widget .widget-title a:hover, .pep-widget .widget-title a:active {
-        color: #1f3b47; }
-  .pep-widget .pep-number {
-    color: #666666;
-    font-family: SourceSansProBold, Arial, sans-serif;
-    display: inline-block;
-    width: 3em; }
-
-.pep-list {
-  border-top: 1px solid #caccce;
-  line-height: 1.2em;
-  margin: 0; }
-  .pep-list li {
-    display: block;
-    line-height: 1.35em; }
-    .pep-list li a {
-      display: block;
-      color: #3776ab;
-      background-color: #f2f4f6;
-      border-bottom: 1px solid #e6eaee;
-      padding: .6em .75em .5em; }
-      .pep-list li a:hover, .pep-list li a:focus, .pep-list li a:active {
-        color: #222222;
-        background-color: #fefefe; }
-
-.rss-link {
-  line-height: 1em; }
-  .rss-link span:before {
-    color: #cc9547; }
-
-/* ! ===== PEP landing page ===== */
-/*<div class="pep-list-header list-row-headings">
-    <span class="pep-type">Type</span>
-    <span class="pep-num">Number</span>
-    <span class="pep-title">Title <span class="say-no-more">(click for more)</span></span>
-    <span class="pep-owner">Owner</span>
-</div>
-<ul class="pep-index-list menu">
-    <li>
-        <div class="pep-type"><span class="label">Type</span>info-act</div>
-        <div class="pep-num"><span class="label">Number</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">20</a></div>
-        <div class="pep-title"><span class="label">Title</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">The Zen of Python</a></div>
-        <div class="pep-owner"><span class="label">Owner</span>Tim Peters</div>
-    </li>
-</ul>*/
-.pep-list-header {
-  font-family: SourceSansProBold, Arial, sans-serif;
-  display: none; }
-
-.pep-index-list {
-  margin-bottom: 2.625em; }
-  .pep-index-list .label {
-    font-family: SourceSansProBold, Arial, sans-serif;
-    display: inline-block;
-    width: 20%; }
-  .pep-index-list li {
-    background-color: #f2f4f6;
-    border-bottom: 1px solid #caccce; }
-  .pep-index-list a {
-    display: inline-block;
-    color: #3776ab; }
-    .pep-index-list a:hover, .pep-index-list a:focus, .pep-index-list a:active {
-      color: #222222; }
-
-.pep-type, .pep-num, .pep-title, .pep-owner {
-  padding: .5em .5em .4em;
-  border-bottom: 1px solid #e3e7ec; }
-
-.footnote .label {
-  width: 4em; }
-
-/*dl*/
-.info-key dt, .info-key dd {
-  display: block;
-  float: left;
-  padding: .5em .5em .4em; }
-.info-key dt {
-  width: 25%; }
-.info-key dd {
-  width: 75%;
-  border-bottom: 1px solid #e6e8ea; }
-
-/* <div class="pep-owner-header">
-        <div class="label">Name</div>
-        <div class="label">Email Address</div>
-    </div>
-    <ul class="pep-owner-list menu">
-        <li>
-            <div class="owner-name">Tim Peters</div>
-            <div class="owner-email">tim at zope.com</div>
-        </li>
-    </ul> */
-.pep-owner-header {
-  margin: 0 -.5em;
-  overflow: hidden;
-  *zoom: 1; }
-  .pep-owner-header .label {
-    font-family: SourceSansProBold, Arial, sans-serif;
-    float: left;
-    width: 50%;
-    padding: .25em .5em .2em; }
-
-.pep-owner-list li {
-  background-color: #f2f4f6;
-  border-bottom: 1px solid #caccce;
-  overflow: hidden;
-  *zoom: 1; }
-  .pep-owner-list li:hover {
-    background-color: #fefefe; }
-.pep-owner-list .owner-name, .pep-owner-list .owner-email {
-  float: left;
-  width: 50%;
-  padding: .5em .5em .4em; }
 
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {

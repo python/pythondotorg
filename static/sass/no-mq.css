@@ -115,17 +115,11 @@
 /* Other elements */
 .container,
 .row,
-.pep-list-header,
-.pep-index-list li,
-.info-key,
 .listing-company,
 .list-recent-jobs li {
   *zoom: 1; }
   .container:after,
   .row:after,
-  .pep-list-header:after,
-  .pep-index-list li:after,
-  .info-key:after,
   .listing-company:after,
   .list-recent-jobs li:after {
     content: "";
@@ -338,17 +332,11 @@ html[xmlns] .slides { display: block; }
 /* Other elements */
 .container,
 .row,
-.pep-list-header,
-.pep-index-list li,
-.info-key,
 .listing-company,
 .list-recent-jobs li {
   *zoom: 1; }
   .container:after,
   .row:after,
-  .pep-list-header:after,
-  .pep-index-list li:after,
-  .info-key:after,
   .listing-company:after,
   .list-recent-jobs li:after {
     content: "";
@@ -1137,47 +1125,10 @@ a.button {
   float: left;
   margin-right: 2.12766%; }
 
-.pep-widget,
 .psf-widget,
 .python-needs-you-widget {
   padding: 1.5em 1.75em;
   clear: both; }
-
-/* PEP landing page */
-.pep-list-header,
-.pep-index-list li,
-.info-key {
-  margin: 0 -.5em; }
-
-.pep-list-header {
-  display: block; }
-
-.pep-index-list .label {
-  display: none; }
-.pep-index-list a {
-  display: block; }
-.pep-index-list li {
-  border-bottom: 1px solid #e3e7ec;
-  margin-bottom: 0; }
-
-.pep-type,
-.pep-num,
-.pep-title,
-.pep-owner {
-  float: left;
-  border-bottom: 0; }
-
-.pep-type {
-  width: 15%; }
-
-.pep-num {
-  width: 10%; }
-
-.pep-title {
-  width: 50%; }
-
-.pep-owner {
-  width: 25%; }
 
 /* Jobs landing page */
 .jobs-intro {
@@ -1990,7 +1941,6 @@ a.button {
   display: inline;
   visibility: visible; }
 
-.pep-widget,
 .psf-widget,
 .python-needs-you-widget {
   padding: 1.5em 1.75em; }
@@ -2036,15 +1986,6 @@ a.button {
     vertical-align: auto;
     zoom: 1;
     display: inline; }
-
-.pep-widget .widget-title {
-  position: relative;
-  padding-right: 6em; }
-
-.rss-link {
-  position: absolute;
-  top: 0;
-  right: 0; }
 
 /* Footer */
 .sitemap a {
