@@ -46,6 +46,37 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_download_release_detail_not_superseded(self):
+        """Test that latest releases and Python 2 do not show a superseded notice."""
+        for release in [self.python_3, self.python_3_8_20, self.release_275]:
+            with self.subTest(release=release.name):
+                url = reverse(
+                    "download:download_release_detail",
+                    kwargs={"release_slug": release.slug},
+                )
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotIn("latest_in_series", response.context)
+                self.assertNotContains(response, "has been superseded by")
+
+    def test_download_release_detail_superseded(self):
+        """Test that older releases show a superseded notice."""
+        tests = [
+            (self.python_3_10_18, self.python_3),
+            (self.python_3_8_19, self.python_3_8_20),
+        ]
+        for old_release, latest_release in tests:
+            with self.subTest(release=old_release.name):
+                url = reverse(
+                    "download:download_release_detail",
+                    kwargs={"release_slug": old_release.slug},
+                )
+                response = self.client.get(url)
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.context["latest_in_series"], latest_release)
+                self.assertContains(response, "has been superseded by")
+                self.assertContains(response, latest_release.name)
+
     def test_download_os_list(self):
         url = reverse('download:download_os_list', kwargs={'slug': self.linux.slug})
         response = self.client.get(url)
