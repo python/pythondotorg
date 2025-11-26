@@ -26,7 +26,11 @@
             <h1 class="page-title">{{ release.name }}</h1>
         </header>
 
-        <p><strong>Release Date:</strong> {{ release.release_date|date }}</p>
+        {% if latest_in_series %}
+        <p><strong>Note:</strong> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.</p>
+        {% endif %}
+
+        <p><strong>Release date:</strong> {{ release.release_date|date }}</p>
 
         {% if release.content.raw %}
         {{ release.content.rendered|safe }}
