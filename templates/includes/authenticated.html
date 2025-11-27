@@ -7,7 +7,19 @@
                 <li class="tier-2 element-1" role="treeitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
                 <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
                 {% if request.user.has_membership %}
-                <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_edit' %}">Edit your PSF Basic membership</a></li>
+                <li class="tier-2 element-3" role="treeitem">
+                     {% if user.is_authenticated %}
+                        {% if user.has_membership %}
+                            <a href="{% url 'users:user_membership_edit' %}">Edit your PSF Basic membership</a>
+                        {% else %}
+                            <a href="{% url 'users:user_membership_create' %}">Join the PSF</a>
+                        {% endif %}
+                    {% else %}
+                        <a href="{% url 'account_login' %}?next=https://psfmember.org/membership/">
+                            Log in to manage membership
+                        </a>
+                    {% endif %}
+                </li>
                 {% else %}
                 <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF Basic member</a></li>
                 {% endif %}

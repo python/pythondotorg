@@ -1,5 +1,6 @@
 from typing import Any
 
+import re
 from datetime import datetime
 
 from django.db.models import Case, IntegerField, Prefetch, When
@@ -45,6 +46,23 @@ class DownloadLatestPython3(RedirectView):
         if latest_release:
             return latest_release.get_absolute_url()
         return reverse("downloads:download")
+
+
+class DownloadLatestPrerelease(RedirectView):
+    """Redirect to latest Python 3 prerelease"""
+
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        try:
+            latest_prerelease = Release.objects.latest_prerelease()
+        except Release.DoesNotExist:
+            latest_prerelease = None
+
+        if latest_prerelease:
+            return latest_prerelease.get_absolute_url()
+        else:
+            return reverse("downloads:download")
 
 
 class DownloadLatestPyManager(RedirectView):
@@ -198,6 +216,17 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
                 ).order_by('os__slug', 'name')
             )
         )
+
+        # Find the latest release in the feature series (such as 3.14.x)
+        # to show a "superseded by" notice on older releases
+        version = self.object.get_version()
+        if version and self.object.version == Release.PYTHON3:
+            match = re.match(r"^3\.(\d+)", version)
+            if match:
+                minor_version = int(match.group(1))
+                latest_in_series = Release.objects.latest_python3(minor_version)
+                if latest_in_series and latest_in_series.pk != self.object.pk:
+                    context["latest_in_series"] = latest_in_series
 
         return context
 
