@@ -31,3 +31,6 @@ class ReleaseAdmin(ContentManageableModelAdmin):
         if db_field.name == "name":
             field.widget.attrs["placeholder"] = "Python 3.X.YaN"
         return field
+
+    class Media:
+        js = ["js/admin/releaseAdmin.js"]
