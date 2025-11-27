@@ -7,10 +7,18 @@
         {% else %}
         <h4>Download for {{ data.os.name }}</h4>
         {% endif %}
+
+        {% if data.pymanager %}
+        <p><a class="button" href="{{ data.pymanager.url }}">Python install manager</a></p>
+        {% if data.python3 %}
+        <p>Or get the standalone installer for <a class="button" href="{{ data.python3.url }}">{{ data.python3.release.name }}</a></p>
+        {% endif %}
+        {% elif data.python3 %}
         <p>
             <a class="button" href="{{ data.python3.url }}">{{ data.python3.release.name }}</a>
         </p>
         {% if data.os.slug == 'windows' %}<p><strong>Note that Python 3.9+ <em>cannot</em> be used on Windows 7 or earlier.</strong></p>{% endif %}
+        {% endif %}
         <p>Not the OS you are looking for? Python can be used on many operating systems and environments. <a href="{% url 'download:download' %}">View the full list of downloads</a>.</p>
     </div>
     {% endfor %}

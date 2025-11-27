@@ -5,16 +5,7 @@
 <!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
 {% load pipeline sitetree %}
 <head>
-    <!-- Google tag (gtag.js) -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TF35YF9CVH"></script>
-    <script>
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-TF35YF9CVH');
-    </script>
-    <!-- Plausible.io analytics -->
-    <script defer data-domain="python.org" src="https://plausible.io/js/script.js"></script>
+    <script defer data-domain="python.org" src="https://analytics.python.org/js/script.outbound-links.js"></script>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -93,9 +84,9 @@
     <link rel="alternate" type="application/rss+xml" title="Python Job Opportunities"
           href="https://www.python.org/jobs/feed/rss/">
     <link rel="alternate" type="application/rss+xml" title="Python Software Foundation News"
-          href="https://feeds.feedburner.com/PythonSoftwareFoundationNews">
+          href="https://pyfound.blogspot.com/feeds/posts/default?alt=rss">
     <link rel="alternate" type="application/rss+xml" title="Python Insider"
-          href="https://feeds.feedburner.com/PythonInsider">
+          href="https://blog.python.org/feeds/posts/default?alt=rss">
    <link rel="alternate" type="application/rss+xml" title="Python Releases"
          href="https://www.python.org/downloads/feed.rss">
 
@@ -205,7 +196,7 @@
                 </h1>
 
                 <div class="options-bar-container do-not-print">
-                    <a href="https://psfmember.org/civicrm/contribute/transact?reset=1&id=2" class="donate-button">Donate</a>
+                    <a href="https://donate.python.org/" class="donate-button">Donate</a>
                     <div class="options-bar">
                         {# Its a little ugly, but no space between elements makes the inline-block style work better #}
                         <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">

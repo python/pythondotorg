@@ -89,6 +89,11 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
                 self.request, f"Nominations for {election.name} Election are closed"
             )
             raise Http404(f"Nominations for {election.name} Election are closed")
+        if not election.nominations_open:
+            messages.error(
+                self.request, f"Nominations for {election.name} Election are not open"
+            )
+            raise Http404(f"Nominations for {election.name} Election are not open")
 
         return NominationCreateForm
 

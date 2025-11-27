@@ -1,4 +1,6 @@
-from ..models import Release
+import datetime as dt
+
+from ..models import Release, ReleaseFile
 from .base import BaseDownloadTests
 
 
@@ -10,14 +12,14 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_published(self):
         published_releases = Release.objects.published()
-        self.assertEqual(len(published_releases), 4)
+        self.assertEqual(len(published_releases), 7)
         self.assertIn(self.release_275, published_releases)
         self.assertIn(self.hidden_release, published_releases)
         self.assertNotIn(self.draft_release, published_releases)
 
     def test_release(self):
         released_versions = Release.objects.released()
-        self.assertEqual(len(released_versions), 3)
+        self.assertEqual(len(released_versions), 6)
         self.assertIn(self.release_275, released_versions)
         self.assertIn(self.hidden_release, released_versions)
         self.assertNotIn(self.draft_release, released_versions)
@@ -37,7 +39,7 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_downloads(self):
         downloads = Release.objects.downloads()
-        self.assertEqual(len(downloads), 2)
+        self.assertEqual(len(downloads), 5)
         self.assertIn(self.release_275, downloads)
         self.assertNotIn(self.hidden_release, downloads)
         self.assertNotIn(self.draft_release, downloads)
@@ -50,11 +52,49 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_python3(self):
         versions = Release.objects.python3()
-        self.assertEqual(len(versions), 3)
+        self.assertEqual(len(versions), 6)
         self.assertNotIn(self.release_275, versions)
         self.assertNotIn(self.draft_release, versions)
         self.assertIn(self.hidden_release, versions)
         self.assertIn(self.pre_release, versions)
+
+    def test_latest_python3(self):
+        latest_3 = Release.objects.latest_python3()
+        self.assertEqual(latest_3, self.python_3)
+        self.assertNotEqual(latest_3, self.python_3_10_18)
+
+        latest_3_10 = Release.objects.latest_python3(minor_version=10)
+        self.assertEqual(latest_3_10, self.python_3)
+        self.assertNotEqual(latest_3_10, self.python_3_10_18)
+
+        latest_3_8 = Release.objects.latest_python3(minor_version=8)
+        self.assertEqual(latest_3_8, self.python_3_8_20)
+        self.assertNotEqual(latest_3_8, self.python_3_8_19)
+
+        latest_3_99 = Release.objects.latest_python3(minor_version=99)
+        self.assertIsNone(latest_3_99)
+
+    def test_latest_prerelease(self):
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertEqual(latest_prerelease, self.pre_release)
+
+        # Create a newer prerelease with a future date
+        newer_prerelease = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.9.99",
+            is_published=True,
+            pre_release=True,
+            release_date=self.pre_release.release_date + dt.timedelta(days=1),
+        )
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertEqual(latest_prerelease, newer_prerelease)
+        self.assertNotEqual(latest_prerelease, self.pre_release)
+
+    def test_latest_prerelease_when_no_prerelease(self):
+        # Delete the prerelease
+        self.pre_release.delete()
+        latest_prerelease = Release.objects.latest_prerelease()
+        self.assertIsNone(latest_prerelease)
 
     def test_get_version(self):
         self.assertEqual(self.release_275.name, 'Python 2.7.5')
@@ -74,7 +114,7 @@ class DownloadModelTests(BaseDownloadTests):
             with self.subTest(name=name):
                 release = Release.objects.create(name=name)
                 self.assertEqual(release.name, name)
-                self.assertIsNone(release.get_version())
+                self.assertEqual(release.get_version(), "")
 
     def test_is_version_at_least(self):
         self.assertFalse(self.release_275.is_version_at_least_3_5)
@@ -87,3 +127,62 @@ class DownloadModelTests(BaseDownloadTests):
         release_310 = Release.objects.create(name='Python 3.10.0')
         self.assertTrue(release_310.is_version_at_least_3_9)
         self.assertTrue(release_310.is_version_at_least_3_5)
+
+    def test_is_version_at_least_with_invalid_name(self):
+        """Test that is_version_at_least returns False for releases with invalid names"""
+        invalid_release = Release.objects.create(name='Python install manager')
+        # Should return False instead of raising AttributeError
+        self.assertFalse(invalid_release.is_version_at_least_3_5)
+        self.assertFalse(invalid_release.is_version_at_least_3_9)
+        self.assertFalse(invalid_release.is_version_at_least_3_14)
+
+    def test_update_supernav(self):
+        from ..models import update_supernav
+        from boxes.models import Box
+
+        release = Release.objects.create(
+            name='Python install manager 25.0',
+            version=Release.PYMANAGER,
+            is_latest=True,
+            is_published=True,
+        )
+
+        for os, slug in [
+            (self.windows, 'python3.10-windows'),
+            (self.osx, 'python3.10-macos'),
+            (self.linux, 'python3.10-linux'),
+        ]:
+            ReleaseFile.objects.create(
+                os=os,
+                release=self.python_3,
+                slug=slug,
+                name='Python 3.10',
+                url='/ftp/python/{}.zip'.format(slug),
+                download_button=True,
+            )
+
+        update_supernav()
+
+        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        self.assertIn('class="download-os-windows"', content)
+        self.assertNotIn('pymanager-25.0.msix', content)
+        self.assertIn('python3.10-windows.zip', content)
+        self.assertIn('class="download-os-macos"', content)
+        self.assertIn('python3.10-macos.zip', content)
+        self.assertIn('class="download-os-linux"', content)
+        self.assertIn('python3.10-linux.zip', content)
+
+        ReleaseFile.objects.create(
+            os=self.windows,
+            release=release,
+            name='MSIX',
+            url='/ftp/python/pymanager/pymanager-25.0.msix',
+            download_button=True,
+        )
+
+        update_supernav()
+
+        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        self.assertIn('class="download-os-windows"', content)
+        self.assertIn('pymanager-25.0.msix', content)
+        self.assertIn('python3.10-windows.zip', content)

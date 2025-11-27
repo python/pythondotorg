@@ -29,17 +29,33 @@
         </header>
 
         <ul>
+            {% if os.slug == 'windows' and latest_pymanager %}
+            <li><a href="{{ latest_pymanager.get_absolute_url }}">Latest Python install manager - {{ latest_pymanager.name }}</a></li>
+            {% endif %}
+
             <li><a href="{{ latest_python3.get_absolute_url }}">Latest Python 3 Release - {{ latest_python3.name }}</a></li>
         </ul>
+
+        {% if os.slug == 'android' %}
+        <p>Rather than using these packages directly, in most cases you should use one of the tools recommended in the <a href="https://docs.python.org/3/using/android.html">Python documentation</a>.</p>
+        {% endif %}
+
         <div class="col-row two-col">
             <div class="column">
                 <h2>Stable Releases</h2>
                 <ul>
                     {% for r in releases %}
+                    {% if r.files.all %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         {% if os.slug == 'windows' %}
-                            {% if r.is_version_at_least_3_9 %}
+                            {% if latest_pymanager and r.is_version_at_least_3_14 %}
+                                {% if latest_pymanager %}
+                                <p>Download using the <a href="{{ latest_pymanager.get_absolute_url }}">Python install manager</a>.</p>
+                                {% else %}
+                                <p>Download using the <a href="https://docs.python.org/using/windows.html">Python install manager</a>.</p>
+                                {% endif %}
+                            {% elif r.is_version_at_least_3_9 %}
                             <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows 7 or earlier.</strong></p>
                             {% elif r.is_version_at_least_3_5 %}
                             <p><strong>Note that {{ r.name }} <em>cannot</em> be used on Windows XP or earlier.</strong></p>
@@ -53,6 +69,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>
@@ -61,6 +78,7 @@
                 <h2>Pre-releases</h2>
                 <ul>
                     {% for r in pre_releases %}
+                    {% if r.files.all %}
                     <li>
                         <a href="{{ r.get_absolute_url }}">{{ r.name }} - {{ r.release_date|date }}</a>
                         <ul>
@@ -71,6 +89,7 @@
                             {% endfor %}
                         </ul>
                     </li>
+                    {% endif %}
                     {% endfor %}
                 </ul>
             </div>

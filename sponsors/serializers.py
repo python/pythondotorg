@@ -8,6 +8,7 @@ class LogoPlacementSerializer(serializers.Serializer):
     publisher = serializers.CharField()
     flight = serializers.CharField()
     sponsor = serializers.CharField()
+    sponsor_id = serializers.CharField()
     sponsor_slug = serializers.CharField()
     description = serializers.CharField()
     logo = serializers.URLField()

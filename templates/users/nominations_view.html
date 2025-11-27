@@ -15,11 +15,13 @@
 {% block user_content %}
 
 <div>
+  <h1>Your History of PSF Board Nominations</h1>
+
   {% for election, nominations in elections.items %}
-  <h1><a href="{% url 'nominations:nominees_list' election=election.slug %}">{{ election.name }} Election</a></h1>
+  <h2><a href="{% url 'nominations:nominees_list' election=election.slug %}">{{ election.name }} Election</a></h2>
 
   {% if nominations.nominations_recieved|length > 0 %}
-  <h2>Nominations Received</h2>
+  <h3>Nominations Received</h3>
   <ul>
     {% for nomination in nominations.nominations_recieved %}
     <li>
@@ -45,7 +47,7 @@
   {% endif %}
 
   {% if nominations.nominations_made|length > 0 %}
-  <h2>Nominations Made</h2>
+  <h3>Nominations Made</h3>
   <ul>
     {% for nomination in nominations.nominations_made %}
     <li>

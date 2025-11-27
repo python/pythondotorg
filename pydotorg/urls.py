@@ -21,6 +21,7 @@ urlpatterns = [
     path('authenticated', views.AuthenticatedView.as_view(), name='authenticated'),
     re_path(r'^humans.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
     re_path(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    re_path(r'^funding.json$', views.serve_funding_json, name='funding_json'),
     path('shell/', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
     # python section landing pages
@@ -31,6 +32,7 @@ urlpatterns = [
     path('getit/', include('downloads.urls', namespace='getit')),
     path('downloads/', include('downloads.urls', namespace='download')),
     path('doc/', views.DocumentationIndexView.as_view(), name='documentation'),
+    path('doc/versions/', views.DocsByVersionView.as_view(), name='docs-versions'),
     path('blogs/', include('blogs.urls')),
     path('inner/', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 
