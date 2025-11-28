@@ -2645,7 +2645,8 @@ p.quote-by-organization {
   background-color: #fff7dc;
   border: 2px solid #ffd343; }
   .level-notice span {
-    color: #dca900; }
+    color: #765a00;
+    font-weight: bold; }
 
 /* Something went wrong */
 .level-error {

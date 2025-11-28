@@ -1758,7 +1758,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: lighten( $yellow, 30% );
     border: 2px solid $yellow;
 
-    span { color: darken( $yellow, 20% ); }
+    span {
+        color: darken( $yellow, 40% );
+        font-weight: bold;
+    }
 }
 
 /* Something went wrong */

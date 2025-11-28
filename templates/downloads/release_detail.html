@@ -38,7 +38,9 @@
         {% endif %}
 
         {% if latest_in_series %}
-        <p><strong>Note:</strong> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.</p>
+        <div class="user-feedback level-notice">
+            <span>Note:</span> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.
+        </div>
         {% endif %}
 
         <p><strong>Release date:</strong> {{ release.release_date|date }}</p>
