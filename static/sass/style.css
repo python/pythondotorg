@@ -2652,7 +2652,12 @@ p.quote-by-organization {
   background-color: #ecd4d7;
   border: 2px solid #b55863; }
   .level-error span {
-    color: #b55863; }
+    color: #853b44;
+    font-weight: bold; }
+  .level-error a {
+    color: #2b5b84; }
+    .level-error a:hover, .level-error a:focus {
+      color: #1e415e; }
 
 /* Yeah! It worked correctly */
 .level-success {
