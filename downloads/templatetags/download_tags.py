@@ -1,6 +1,76 @@
+import logging
+import re
+
+import requests
 from django import template
+from django.core.cache import cache
 
 register = template.Library()
+logger = logging.getLogger(__name__)
+
+PYTHON_RELEASES_URL = "https://peps.python.org/api/python-releases.json"
+PYTHON_RELEASES_CACHE_KEY = "python_python_releases"
+PYTHON_RELEASES_CACHE_TIMEOUT = 3600  # 1 hour
+
+
+def get_python_releases_data() -> dict | None:
+    """Fetch and cache the Python release cycle data from PEPs API."""
+    data = cache.get(PYTHON_RELEASES_CACHE_KEY)
+    if data is not None:
+        return data
+
+    try:
+        response = requests.get(PYTHON_RELEASES_URL, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        cache.set(PYTHON_RELEASES_CACHE_KEY, data, PYTHON_RELEASES_CACHE_TIMEOUT)
+        return data
+    except (requests.RequestException, ValueError) as e:
+        logger.warning("Failed to fetch release cycle data: %s", e)
+        return None
+
+
+@register.simple_tag
+def get_eol_info(release) -> dict:
+    """
+    Check if a release's minor version is end-of-life.
+
+    Returns a dict with 'is_eol' boolean and 'eol_date' if available.
+    Python 2 releases not found in the release cycle data, assumes EOL.
+    """
+    result = {"is_eol": False, "eol_date": None}
+
+    version = release.get_version()
+    if not version:
+        return result
+
+    # Extract minor version (e.g. "3.9" from "3.9.14")
+    match = re.match(r"^(\d+)\.(\d+)", version)
+    if not match:
+        return result
+
+    major = int(match.group(1))
+    minor_version = f"{match.group(1)}.{match.group(2)}"
+
+    python_releases = get_python_releases_data()
+    if python_releases is None:
+        # Can't determine EOL status, don't show warning
+        return result
+
+    metadata = python_releases.get("metadata", {})
+    version_info = metadata.get(minor_version)
+
+    if version_info is None:
+        # Python 2 releases not in the list are EOL
+        if major <= 2:
+            result["is_eol"] = True
+        return result
+
+    if version_info.get("status") == "end-of-life":
+        result["is_eol"] = True
+        result["eol_date"] = version_info.get("end_of_life")
+
+    return result
 
 
 @register.filter

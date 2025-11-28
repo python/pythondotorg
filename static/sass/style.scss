@@ -1758,7 +1758,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: lighten( $yellow, 30% );
     border: 2px solid $yellow;
 
-    span { color: darken( $yellow, 20% ); }
+    span {
+        color: darken( $yellow, 40% );
+        font-weight: bold;
+    }
 }
 
 /* Something went wrong */
@@ -1766,7 +1769,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: lighten( $red, 35% );
     border: 2px solid $red;
 
-    span { color: $red; }
+    span {
+        color: darken( $red, 15% );
+        font-weight: bold;
+    }
+    a {
+        color: darken( $blue, 10% );
+        &:hover, &:focus { color: darken( $blue, 20% ); }
+    }
 }
 
 /* Yeah! It worked correctly */
