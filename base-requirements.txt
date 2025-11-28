@@ -31,7 +31,7 @@ django-tastypie==0.14.7  # 0.14.6 is first version that supports Django 4.2
 pytz==2021.1
 python-dateutil==2.8.2
 
-requests[security]>=2.26.0
+requests>=2.26.0
 
 django-honeypot==1.0.4  # 1.0.4 is first version that supports Django 4.2
 django-markupfield==2.0.1
