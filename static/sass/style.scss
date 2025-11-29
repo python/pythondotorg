@@ -1690,6 +1690,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
     .list-row-container { margin-bottom: .5em; }
 
+    .release-cycle-chart img {
+        display: block;
+        margin: 0 auto;
+        width: 80%;
+        @media screen and (max-width: 860px) {
+            width: 100%;
+        }
+    }
 }
 
 .download-list-widget {

@@ -2588,6 +2588,13 @@ p.quote-by-organization {
   font-size: 0.875em; }
 .active-release-list-widget .list-row-container {
   margin-bottom: .5em; }
+.active-release-list-widget .release-cycle-chart img {
+  display: block;
+  margin: 0 auto;
+  width: 80%; }
+  @media screen and (max-width: 860px) {
+    .active-release-list-widget .release-cycle-chart img {
+      width: 100%; } }
 
 .download-list-widget {
   /*modernizr*/ }
