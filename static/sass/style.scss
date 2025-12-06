@@ -96,7 +96,7 @@ h1, .alpha {
 }
 
 h2, .beta {
-    color: $grey-light;
+    color: $grey-darker;
     font-family: $default-font;
     font-size: px2em( $headertwo );
     @include leader(.75);
