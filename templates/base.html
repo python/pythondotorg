@@ -1,6 +1,5 @@
 <!doctype html>
-<!--[if IE 8]>      <html class="no-js ie8 lt-ie9">                 <![endif]-->
-<!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
+<html class="no-js" lang="en" dir="ltr">
 {% load pipeline sitetree %}
 <head>
     <script defer
@@ -44,11 +43,6 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
     {% endcomment %}
 
-    <!--[if (lte IE 8)&(!IEMobile)]>
-    {% stylesheet 'no-mq' %}
-    {# equivalent to: #}
-    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
-    <![endif]-->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
@@ -143,15 +137,6 @@
         <div id="nojs" class="do-not-print">
             <p><strong>Notice:</strong> While JavaScript is not essential for this website, your interaction with the content will be limited. Please turn JavaScript on for the full experience. </p>
         </div>
-
-        <!--[if lte IE 8]>
-        <div id="oldie-warning" class="do-not-print">
-            <p>
-                <strong>Notice:</strong> Your browser is <em>ancient</em>. Please
-                <a href="http://browsehappy.com/">upgrade to a different browser</a> to experience a better web.
-            </p>
-        </div>
-        <![endif]-->
 
         <!-- Sister Site Links -->
         <div id="top" class="top-bar do-not-print">
@@ -345,18 +330,6 @@
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/script.js"></script>
     {% endcomment %}
-
-    <!--[if lte IE 7]>
-    {% javascript 'IE8' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
-    <![endif]-->
-
-    <!--[if lte IE 8]>
-    {% javascript 'getComputedStyle' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
-    <![endif]-->
 
     {% endblock javascript %}
 

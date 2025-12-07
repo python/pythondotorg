@@ -238,7 +238,7 @@
 /* Keep this in all mix-in files if you can. Useful stuff */
 @mixin no_js_warning {
 
-    #nojs, #oldie-warning {
+    #nojs {
     	padding: .75em .75em .65em;
     	text-align: center; 
     	background-color: #c33; 
@@ -257,20 +257,6 @@
             	text-decoration: none; 
         	}
     	}
-    }
-    #oldie-warning {
-        background-color: #ff7; 
-        
-        p {
-            color: #444;
-        }
-        a {
-            color: #444;
-            
-            &:hover, &:focus {
-            	color: #000; 
-        	}
-        }
     }
     .js #nojs {
         display: none;
