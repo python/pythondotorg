@@ -621,13 +621,6 @@ abbr.initialism {
 abbr.truncation {
   speak: normal; }
 
-/* Stupid IE: http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/ */
-@-ms-viewport {
-  width: device-width; }
-
-canvas {
-  -ms-touch-action: double-tap-zoom; }
-
 /*
  * Main CSS styles for linear content. Design for Mobile first!
  *
