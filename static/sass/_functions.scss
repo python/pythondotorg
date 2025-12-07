@@ -362,7 +362,6 @@
     /* Stupid IE: http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/ */
     @-ms-viewport{ width: device-width; }
     canvas { -ms-touch-action: double-tap-zoom; }
-    svg:not(:root) { overflow: hidden; } /* fixes an issue in IE9 */
 }
 
 

@@ -628,10 +628,6 @@ abbr.truncation {
 canvas {
   -ms-touch-action: double-tap-zoom; }
 
-svg:not(:root) {
-  overflow: hidden; }
-
-/* fixes an issue in IE9 */
 /*
  * Main CSS styles for linear content. Design for Mobile first!
  *
