@@ -113,7 +113,6 @@
 /* Color Spaces: use for consistency */
 .psf-widget, .python-needs-you-widget, .main-header, .site-base {
   background-color: #2b5b84;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF1E415E', endColorstr='#FF2B5B84');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #1e415e), color-stop(90%, #2b5b84));
   background-image: -webkit-linear-gradient(#1e415e 10%, #2b5b84 90%);
@@ -126,8 +125,7 @@
 
 .psf-widget, .python-needs-you-widget {
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
+  padding: 1.25em; }
   .psf-widget:after, .python-needs-you-widget:after {
     content: "";
     display: table;
@@ -135,7 +133,6 @@
 
 .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
   background-color: #d8dbde;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #d8dbde));
   background-image: -webkit-linear-gradient(#e6e8ea 10%, #d8dbde 90%);
@@ -149,8 +146,7 @@
 .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
+  padding: 1.25em; }
   .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
     content: "";
     display: table;
@@ -158,7 +154,6 @@
 
 .single-event-date {
   background-color: #ffdd6c;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe89f), color-stop(90%, #ffdd6c));
   background-image: -webkit-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
@@ -172,8 +167,7 @@
 .single-event-date {
   border: 1px solid #ffcc24;
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
+  padding: 1.25em; }
   .single-event-date:after {
     content: "";
     display: table;
@@ -192,7 +186,6 @@
   white-space: nowrap;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
   background-color: #cccccc;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFD9D9D9', endColorstr='#FFCCCCCC');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #d9d9d9), color-stop(90%, #cccccc));
   background-image: -webkit-linear-gradient(#d9d9d9 10%, #cccccc 90%);
@@ -220,7 +213,6 @@
   .sidebar-widget form input[type=submit]:active, #update-sponsorship-assets .btn:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
     background-color: #d9d9d9;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E6E6', endColorstr='#FFD9D9D9');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e6e6), color-stop(90%, #d9d9d9));
     background-image: -webkit-linear-gradient(#e6e6e6 10%, #d9d9d9 90%);
@@ -230,7 +222,6 @@
 
 .psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span {
   background-color: #ffd343;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffdf76), color-stop(90%, #ffd343));
   background-image: -webkit-linear-gradient(#ffdf76 10%, #ffd343 90%);
@@ -244,7 +235,6 @@
   .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .user-profile-controls div.section span:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active, .user-profile-controls div.section span:active {
     background-color: inherit;
     background-color: #ffd343;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFEBA9', endColorstr='#FFFFD343');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffeba9), color-stop(90%, #ffd343));
     background-image: -webkit-linear-gradient(#ffeba9 10%, #ffd343 90%);
@@ -254,7 +244,6 @@
 
 a.delete, form.deletion-form button[type="submit"] {
   background-color: #b55863;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFC57B84', endColorstr='#FFB55863');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #c57b84), color-stop(90%, #b55863));
   background-image: -webkit-linear-gradient(#c57b84 10%, #b55863 90%);
@@ -270,7 +259,6 @@ a.delete, form.deletion-form button[type="submit"] {
     background-color: inherit;
     color: white !important;
     background-color: #b55863;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFD49FA5', endColorstr='#FFB55863');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #d49fa5), color-stop(90%, #b55863));
     background-image: -webkit-linear-gradient(#d49fa5 10%, #b55863 90%);
@@ -284,7 +272,6 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
   color: #e6e8ea !important;
   text-shadow: none;
   background-color: #2b5b84;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF3776AB', endColorstr='#FF2B5B84');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #3776ab), color-stop(90%, #2b5b84));
   background-image: -webkit-linear-gradient(#3776ab 10%, #2b5b84 90%);
@@ -306,7 +293,6 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
     background: inherit;
     color: #f2f4f6 !important;
     background-color: #244e71;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF316998', endColorstr='#FF244E71');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #316998), color-stop(90%, #244e71));
     background-image: -webkit-linear-gradient(#316998 10%, #244e71 90%);
@@ -344,12 +330,10 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
   border: 1px solid #caccce;
   background-color: transparent; }
 
-form, .header-banner, .success-stories-widget .quote-from {
-  *zoom: 1; }
-  form:after, .header-banner:after, .success-stories-widget .quote-from:after {
-    content: "";
-    display: table;
-    clear: both; }
+form:after, .header-banner:after, .success-stories-widget .quote-from:after {
+  content: "";
+  display: table;
+  clear: both; }
 
 /* ! ===== Mixins ===== */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
@@ -613,27 +597,16 @@ textarea {
   vertical-align: top;
   resize: vertical; }
 
-.ie7 legend {
-  border: 0;
-  padding: 0;
-  white-space: normal;
-  *margin-left: -7px; }
-
 input[type="radio"] {
   vertical-align: text-bottom; }
 
 input[type="checkbox"] {
   vertical-align: baseline; }
 
-.ie7 input[type="checkbox"] {
-  vertical-align: bottom; }
-
 button, input[type="button"], input[type="reset"], input[type="submit"] {
   cursor: pointer;
   -webkit-appearance: button;
   -moz-appearance: button; }
-  .lt-ie8 button, .lt-ie8 input[type="button"], .lt-ie8 input[type="reset"], .lt-ie8 input[type="submit"] {
-    overflow: visible; }
 
 button[disabled], input[disabled] {
   cursor: default; }
@@ -651,9 +624,6 @@ input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-s
 
 .no-boxshadow input:invalid, .no-boxshadow textarea:invalid {
   background-color: #f0dddd; }
-
-.ie7 img {
-  -ms-interpolation-mode: bicubic; }
 
 /* Aural rulesets */
 abbr.initialism {
@@ -694,9 +664,6 @@ svg:not(:root) {
  *
  * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well.
  * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE.
- *
- * Search for properties that begin with * and make them ie7 specific instead.
- * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance.
  */
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 html {
@@ -914,7 +881,6 @@ input[type=submit], input[type=reset], button, a.button, .button {
 
 input[type=reset], button.secondaryAction[type=submit] {
   background-color: #999999;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB3B3B3', endColorstr='#FF999999');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b3b3b3), color-stop(90%, #999999));
   background-image: -webkit-linear-gradient(#b3b3b3 10%, #999999 90%);
@@ -928,7 +894,6 @@ input[type=reset], button.secondaryAction[type=submit] {
   input[type=reset]:hover, input[type=reset]:focus, input[type=reset]:active, button.secondaryAction[type=submit]:hover, button.secondaryAction[type=submit]:focus, button.secondaryAction[type=submit]:active {
     color: white;
     background-color: #b3b3b3;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF999999', endColorstr='#FFB3B3B3');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #999999), color-stop(90%, #b3b3b3));
     background-image: -webkit-linear-gradient(#999999 10%, #b3b3b3 90%);
@@ -952,8 +917,7 @@ abbr, dfn {
 /* ! ===== Simple Column Structure – Need to roll this out more widely ===== */
 .col-row {
   margin: -1em;
-  overflow: hidden;
-  *zoom: 1; }
+  overflow: hidden; }
 
 .column, .not-column {
   padding-left: 1em;
@@ -1004,7 +968,6 @@ h2.not-column {
 .top-bar a:hover, .top-bar a:focus, .python .top-bar .python-meta a, .psf .top-bar .psf-meta a, .docs .top-bar .docs-meta a, .pypi .top-bar .pypi-meta a, .jobs .top-bar .jobs-meta a, .shop .top-bar .shop-meta a {
   color: white;
   background-color: #1f2a32;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF13191E', endColorstr='#FF1F2A32');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #13191e), color-stop(90%, #1f2a32));
   background-image: -webkit-linear-gradient(#13191e 10%, #1f2a32 90%);
@@ -1139,18 +1102,6 @@ input#s,
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: middle; }
-  .lt-ie8 #site-map-link, .lt-ie8
-  .jump-to-menu, .lt-ie8
-  .search-the-site, .lt-ie8
-  .icon-search, .lt-ie8
-  .icon-search:before, .lt-ie8
-  input#s, .lt-ie8
-  .adjust-font-size, .lt-ie8
-  .winkwink-nudgenudge, .lt-ie8
-  .account-signin {
-    vertical-align: auto;
-    zoom: 1;
-    display: inline; }
 
 .touch .search-the-site,
 .winkwink-nudgenudge,
@@ -1286,38 +1237,18 @@ input#s,
   .winkwink-nudgenudge .tier-2 > a,
   .account-signin .tier-2 > a {
     text-align: left; }
-  .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
-  .adjust-font-size .sidebar-widget form label + ul,
-  .sidebar-widget form .adjust-font-size label + ul,
-  .winkwink-nudgenudge .menu,
-  .winkwink-nudgenudge form ul,
-  form .winkwink-nudgenudge ul,
-  .winkwink-nudgenudge .errorlist,
-  .winkwink-nudgenudge .text form label + ul,
-  .text form .winkwink-nudgenudge label + ul,
-  .winkwink-nudgenudge .sidebar-widget form label + ul,
-  .sidebar-widget form .winkwink-nudgenudge label + ul,
-  .account-signin .menu,
-  .account-signin form ul,
-  form .account-signin ul,
-  .account-signin .errorlist,
-  .account-signin .text form label + ul,
-  .text form .account-signin label + ul,
-  .account-signin .sidebar-widget form label + ul,
-  .sidebar-widget form .account-signin label + ul {
-    *zoom: 1; }
-    .adjust-font-size .menu:after, .adjust-font-size form ul:after, form .adjust-font-size ul:after, .adjust-font-size .errorlist:after,
-    .winkwink-nudgenudge .menu:after,
-    .winkwink-nudgenudge form ul:after,
-    form .winkwink-nudgenudge ul:after,
-    .winkwink-nudgenudge .errorlist:after,
-    .account-signin .menu:after,
-    .account-signin form ul:after,
-    form .account-signin ul:after,
-    .account-signin .errorlist:after {
-      content: "";
-      display: table;
-      clear: both; }
+  .adjust-font-size .menu:after, .adjust-font-size form ul:after, form .adjust-font-size ul:after, .adjust-font-size .errorlist:after,
+  .winkwink-nudgenudge .menu:after,
+  .winkwink-nudgenudge form ul:after,
+  form .winkwink-nudgenudge ul:after,
+  .winkwink-nudgenudge .errorlist:after,
+  .account-signin .menu:after,
+  .account-signin form ul:after,
+  form .account-signin ul:after,
+  .account-signin .errorlist:after {
+    content: "";
+    display: table;
+    clear: both; }
   .adjust-font-size .tier-1,
   .winkwink-nudgenudge .tier-1,
   .account-signin .tier-1 {
@@ -1699,7 +1630,6 @@ input#s,
 .content-wrapper {
   padding: 0;
   background-color: #f9f9f9;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFCFCFC', endColorstr='#FFF9F9F9');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #fcfcfc), color-stop(90%, #f9f9f9));
   background-image: -webkit-linear-gradient(#fcfcfc 10%, #f9f9f9 90%);
@@ -1784,7 +1714,7 @@ input#s,
   .sidebar-widget dd,
   .sidebar-widget blockquote,
   .sidebar-widget address {
-    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE7-8 */
+    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE8 */
     /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
     /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
     -webkit-hyphens: auto;
@@ -2133,7 +2063,6 @@ table tfoot {
     margin-top: 0; }
   .featured-download-box .button {
     background-color: #ffd343;
-    *zoom: 1;
     filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffdf76), color-stop(90%, #ffd343));
     background-image: -webkit-linear-gradient(#ffdf76 10%, #ffd343 90%);
@@ -2145,7 +2074,6 @@ table tfoot {
     .featured-download-box .button:hover, .featured-download-box .button:active {
       background-color: inherit;
       background-color: #ffd343;
-      *zoom: 1;
       filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFEBA9', endColorstr='#FFFFD343');
       background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffeba9), color-stop(90%, #ffd343));
       background-image: -webkit-linear-gradient(#ffeba9 10%, #ffd343 90%);
@@ -2175,7 +2103,6 @@ table tfoot {
   font-size: 1em;
   line-height: 1.75em;
   background-color: #ffdf76;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE58F', endColorstr='#FFFFDF76');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe58f), color-stop(90%, #ffdf76));
   background-image: -webkit-linear-gradient(#ffe58f 10%, #ffdf76 90%);
@@ -2266,7 +2193,7 @@ table tfoot {
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1646853871') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1687447167') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -2496,10 +2423,6 @@ p.quote-by-organization {
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: baseline; }
-  .lt-ie8 .pagination li {
-    vertical-align: auto;
-    zoom: 1;
-    display: inline; }
 .pagination a:hover, .pagination a:focus {
   color: #333333;
   background-color: #ffd343; }
@@ -2717,8 +2640,7 @@ p.quote-by-organization {
   clear: both;
   border: 1px solid #caccce;
   padding: 0.875em 0.5em;
-  overflow: hidden;
-  *zoom: 1; }
+  overflow: hidden; }
   .job-post-meta span {
     display: block; }
   .job-post-meta .listing-actions {
@@ -2738,10 +2660,6 @@ p.quote-by-organization {
     display: -moz-inline-stack;
     display: inline-block;
     vertical-align: baseline; }
-    .lt-ie8 .breadcrumbs li {
-      vertical-align: auto;
-      zoom: 1;
-      display: inline; }
   .breadcrumbs .prompt, .breadcrumbs .readmore:before, .breadcrumbs .give-me-more a:before, .give-me-more .breadcrumbs a:before {
     margin-left: .5em; }
 
@@ -2761,7 +2679,6 @@ p.quote-by-organization {
 .psf-sidebar-widget {
   color: #f2f4f6;
   background-color: #3776ab;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF2B5B84', endColorstr='#FF3776AB');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #2b5b84), color-stop(90%, #3776ab));
   background-image: -webkit-linear-gradient(#2b5b84 10%, #3776ab 90%);
@@ -2801,7 +2718,6 @@ p.quote-by-organization {
         padding: 0.25em 0.25em; }
         .user-profile-controls div.section-links ul li:hover {
           background-color: #bcc2c7;
-          *zoom: 1;
           filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
           background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
           background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
@@ -2847,10 +2763,6 @@ p.quote-by-organization {
     display: -moz-inline-stack;
     display: inline-block;
     vertical-align: baseline; }
-    .lt-ie8 .horizontal-menu li {
-      vertical-align: auto;
-      zoom: 1;
-      display: inline; }
 
 /* ! ===== FOOTER elements ===== */
 .main-footer .jump-link, .sitemap a, .footer-links a {
@@ -3029,20 +2941,18 @@ span.highlighted {
   /*ul*/
   /*li*/
   /*li*/ }
-  .flex-slideshow .slides {
-    *zoom: 1; }
-    .flex-slideshow .slides:after {
-      content: "";
-      display: table;
-      clear: both; }
-    .flex-slideshow .slides > li {
-      display: none;
-      -webkit-backface-visibility: hidden;
-      /* Hide the slides before the JS is loaded. Avoids image jumping */ }
-    * html .flex-slideshow .slides {
-      height: 1%; }
-    .no-js .flex-slideshow .slides > li:first-child {
-      display: block; }
+  .flex-slideshow .slides:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .flex-slideshow .slides > li {
+    display: none;
+    -webkit-backface-visibility: hidden;
+    /* Hide the slides before the JS is loaded. Avoids image jumping */ }
+  * html .flex-slideshow .slides {
+    height: 1%; }
+  .no-js .flex-slideshow .slides > li:first-child {
+    display: block; }
   .flex-slideshow .slide-container {
     position: relative; }
   .flex-slideshow .frame-wrapper {
@@ -3276,11 +3186,11 @@ span.highlighted {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1646853871'); }
+      content: url('../img/python-logo_print.png?1687447167'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1646853871'); } }
+      content: url('../img/psf-logo_print.png?1687447167'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
@@ -3610,7 +3520,6 @@ span.highlighted {
   border-color: #82b043;
   color: white !important;
   background-color: #82b043;
-  *zoom: 1;
   filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB2D287', endColorstr='#FF82B043');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b2d287), color-stop(90%, #82b043));
   background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
@@ -3880,7 +3789,6 @@ span.highlighted {
       position: sticky;
       top: 0;
       background-color: #fcfcfc;
-      *zoom: 1;
       filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
       background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
       background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);

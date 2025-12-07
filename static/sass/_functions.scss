@@ -90,13 +90,6 @@
     display: inline-block;
     @if $alignment and $alignment != none
         { vertical-align: $alignment; }
-    @if $legacy-support-for-ie {
-        .lt-ie8 & {
-            vertical-align: auto; 
-            zoom: 1; 
-            display: inline; 
-        }
-    }
 }
 
 
@@ -223,7 +216,7 @@
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 @mixin pe-hyphenate() {
-/*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE7-8 */
+/*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE8 */
 /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
 /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
     -webkit-hyphens: auto;
@@ -360,17 +353,13 @@
     var { font-style: italic; }
     
     textarea { overflow: auto; vertical-align: top; resize: vertical; }
-    .ie7 legend { border: 0; padding: 0; white-space: normal;*margin-left: -7px; } 
     input[type="radio"] { vertical-align: text-bottom; }
     input[type="checkbox"] { vertical-align: baseline; }
-    .ie7 input[type="checkbox"] { vertical-align: bottom; }
-    
+
     button, input[type="button"], input[type="reset"], input[type="submit"] { 
         cursor: pointer; 
         -webkit-appearance: button; 
         -moz-appearance: button; 
-        
-        .lt-ie8 & { overflow: visible; }
     }
     input:valid, textarea:valid {  }
     button[disabled], input[disabled] { cursor: default; }
@@ -379,8 +368,7 @@
     input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
     
     .no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
-    .ie7 img { -ms-interpolation-mode: bicubic; }
-        
+
     /* Aural rulesets */
     abbr.initialism { speak: spell-out; }
     abbr.truncation { speak: normal; }
