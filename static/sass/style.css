@@ -68,7 +68,7 @@
 /* Since we can't use the above, let's create our own way to do it. */
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
-/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE7 */
 /* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
@@ -1784,7 +1784,7 @@ input#s,
   .sidebar-widget dd,
   .sidebar-widget blockquote,
   .sidebar-widget address {
-    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE6-8 */
+    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE7-8 */
     /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
     /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
     -webkit-hyphens: auto;

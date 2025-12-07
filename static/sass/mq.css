@@ -68,7 +68,7 @@
 /* Since we can't use the above, let's create our own way to do it. */
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
-/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE7 */
 /* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
@@ -285,7 +285,7 @@ html[xmlns] .slides { display: block; }
 /* Since we can't use the above, let's create our own way to do it. */
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
-/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE7 */
 /* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
