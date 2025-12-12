@@ -175,14 +175,11 @@ def update_supernav():
         if latest_pymanager:
             data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
 
-        python_files.append(data)
+        # Only include OSes that have at least one download file
+        if data['python3'] or data['pymanager']:
+            python_files.append(data)
 
     if not python_files:
-        return
-
-    if not all(f['python3'] or f['pymanager'] for f in python_files):
-        # We have a latest Python release, different OSes, but don't have release
-        # files for the release, so return early.
         return
 
     content = render_to_string('downloads/supernav.html', {
