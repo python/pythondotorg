@@ -201,6 +201,7 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
             return {'slug': ['name']}
         return {}
 
+    @admin.display(description="Revenue split")
     def get_benefit_split(self, obj: SponsorshipPackage) -> str:
         colors = [
             "#ffde57",  # Python Gold
@@ -223,7 +224,6 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         html = f"<div style='{style}'>{''.join(spans)}</div>"
         return mark_safe(html)
 
-    get_benefit_split.short_description = "Revenue split"
 
 
 class SponsorContactInline(admin.TabularInline):
