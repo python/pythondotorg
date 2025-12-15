@@ -7,12 +7,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
       - uses: actions/setup-python@v6
         with:
             python-version-file: '.python-version'
       - name: Cache Python dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: pythondotorg-cache-pip
         with:

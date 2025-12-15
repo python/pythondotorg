@@ -175,14 +175,11 @@ def update_supernav():
         if latest_pymanager:
             data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
 
-        python_files.append(data)
+        # Only include OSes that have at least one download file
+        if data['python3'] or data['pymanager']:
+            python_files.append(data)
 
     if not python_files:
-        return
-
-    if not all(f['python3'] or f['pymanager'] for f in python_files):
-        # We have a latest Python release, different OSes, but don't have release
-        # files for the release, so return early.
         return
 
     content = render_to_string('downloads/supernav.html', {
@@ -292,6 +289,13 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/feed.rss')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
+        # Purge minor version specific URLs (like /downloads/latest/python3.14/)
+        version = instance.get_version()
+        if instance.version == Release.PYTHON3 and version:
+            match = re.match(r'^3\.(\d+)', version)
+            if match:
+                purge_url(f'/downloads/latest/python3.{match.group(1)}/')
+        purge_url('/downloads/latest/prerelease/')
         purge_url('/downloads/latest/pymanager/')
         purge_url('/downloads/macos/')
         purge_url('/downloads/source/')
@@ -353,6 +357,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
         "SPDX-2 SBOM URL", blank=True, help_text="SPDX-2 SBOM URL"
     )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
+    sha256_sum = models.CharField('SHA256 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
 

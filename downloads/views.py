@@ -1,5 +1,6 @@
 from typing import Any
 
+import re
 from datetime import datetime
 
 from django.db.models import Case, IntegerField, Prefetch, When
@@ -30,19 +31,38 @@ class DownloadLatestPython2(RedirectView):
 
 
 class DownloadLatestPython3(RedirectView):
-    """ Redirect to latest Python 3 release """
+    """Redirect to latest Python 3 release, optionally for a specific minor"""
+
+    permanent = False
+
+    def get_redirect_url(self, **kwargs):
+        minor_version = kwargs.get('minor')
+        try:
+            minor_version_int = int(minor_version) if minor_version else None
+            latest_release = Release.objects.latest_python3(minor_version_int)
+        except (ValueError, Release.DoesNotExist):
+            latest_release = None
+
+        if latest_release:
+            return latest_release.get_absolute_url()
+        return reverse("downloads:download")
+
+
+class DownloadLatestPrerelease(RedirectView):
+    """Redirect to latest Python 3 prerelease"""
+
     permanent = False
 
     def get_redirect_url(self, **kwargs):
         try:
-            latest_python3 = Release.objects.latest_python3()
+            latest_prerelease = Release.objects.latest_prerelease()
         except Release.DoesNotExist:
-            latest_python3 = None
+            latest_prerelease = None
 
-        if latest_python3:
-            return latest_python3.get_absolute_url()
+        if latest_prerelease:
+            return latest_prerelease.get_absolute_url()
         else:
-            return reverse('download')
+            return reverse("downloads:download")
 
 
 class DownloadLatestPyManager(RedirectView):
@@ -103,8 +123,17 @@ class DownloadHome(DownloadBase, TemplateView):
                 data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
             python_files.append(data)
 
+        def version_key(release: Release) -> tuple[int, ...]:
+            try:
+                return tuple(int(x) for x in release.get_version().split("."))
+            except ValueError:
+                return (0,)
+
+        releases = list(Release.objects.downloads())
+        releases.sort(key=version_key, reverse=True)
+
         context.update({
-            'releases': Release.objects.downloads(),
+            'releases': releases,
             'latest_python2': latest_python2,
             'latest_python3': latest_python3,
             'python_files': python_files,
@@ -187,6 +216,17 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
                 ).order_by('os__slug', 'name')
             )
         )
+
+        # Find the latest release in the feature series (such as 3.14.x)
+        # to show a "superseded by" notice on older releases
+        version = self.object.get_version()
+        if version and self.object.version == Release.PYTHON3:
+            match = re.match(r"^3\.(\d+)", version)
+            if match:
+                minor_version = int(match.group(1))
+                latest_in_series = Release.objects.latest_python3(minor_version)
+                if latest_in_series and latest_in_series.pk != self.object.pk:
+                    context["latest_in_series"] = latest_in_series
 
         return context
 

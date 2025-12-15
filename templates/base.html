@@ -5,7 +5,10 @@
 <!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
 {% load pipeline sitetree %}
 <head>
-    <script defer data-domain="python.org" src="https://analytics.python.org/js/script.outbound-links.js"></script>
+    <script defer
+            file-types="bz2,chm,dmg,exe,gz,json,msi,msix,pdf,pkg,tgz,xz,zip"
+            data-domain="python.org"
+            src="https://analytics.python.org/js/script.file-downloads.outbound-links.js"></script>
 
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -31,6 +34,9 @@
             crossorigin="anonymous"
     ></script>
     <script src="{{ STATIC_URL }}js/libs/modernizr.js"></script>
+    <script async
+            src="https://donate.python.org/fundraiser-banner/fundraiser-banner.js"></script>
+
 
     {% stylesheet 'style' %}
     {% stylesheet 'mq' %}
@@ -130,18 +136,6 @@
      }
     </script>
 
-    {# Asynchronous Analytics snippet #}
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-39055973-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
     {% block head %}{% endblock %}
 </head>
 
@@ -191,9 +185,9 @@
         <header class="main-header" role="banner">
             <div class="container">
 
-                <h1 class="site-headline">
+                <div class="site-headline">
                     {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
-                </h1>
+                </div>
 
                 <div class="options-bar-container do-not-print">
                     <a href="https://donate.python.org/" class="donate-button">Donate</a>

@@ -96,7 +96,7 @@ h1, .alpha {
 }
 
 h2, .beta {
-    color: $grey-light;
+    color: $grey-darker;
     font-family: $default-font;
     font-size: px2em( $headertwo );
     @include leader(.75);
@@ -411,7 +411,7 @@ h2.not-column {
     }
 }
 
-/*h1*/ .site-headline {
+.site-headline {
     color: $white;
     margin: 0.15em auto 0.2em;
 
@@ -1265,166 +1265,6 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 .draft-preview { color: $red; font-family: $default-font-bold; }
 
 
-/* ! ===== PEP Widget ===== */
-.pep-widget {
-    @extend %grey-colorbox;
-    margin-bottom: rhythm( .75 );
-
-    .widget-title {
-        color: lighten($grey, 5%);
-        margin-bottom: 0.35em;
-        @include fontface-adjust( 18px );
-
-        a {
-            color: $blue;
-
-            &:hover, &:active { color: $darkblue; }
-        }
-    }
-
-    .pep-number {
-        color: $grey;
-        font-family: $default-font-bold;
-        display: inline-block;
-        width: 3em;
-    }
-}
-
-    .pep-list {
-        border-top: 1px solid $default-border-color;
-        line-height: 1.2em;
-        margin: 0;
-
-        li {
-            display: block;
-            line-height: 1.35em;
-
-            a {
-                display: block;
-                color: $blue;
-                background-color: $grey-lighterest;
-                border-bottom: 1px solid darken($grey-lighterest, 4%);
-                padding: .6em .75em .5em;
-
-                &:hover, &:focus, &:active {
-                    color: $grey-darker;
-                    background-color: lighten($grey-lighterest, 4%);
-                }
-            }
-        }
-    }
-
-.rss-link {
-    @extend .pre;
-    line-height: 1em;
-
-    span:before { color: $orange; }
-}
-
-/* ! ===== PEP landing page ===== */
-    /*<div class="pep-list-header list-row-headings">
-        <span class="pep-type">Type</span>
-        <span class="pep-num">Number</span>
-        <span class="pep-title">Title <span class="say-no-more">(click for more)</span></span>
-        <span class="pep-owner">Owner</span>
-    </div>
-    <ul class="pep-index-list menu">
-        <li>
-            <div class="pep-type"><span class="label">Type</span>info-act</div>
-            <div class="pep-num"><span class="label">Number</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">20</a></div>
-            <div class="pep-title"><span class="label">Title</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">The Zen of Python</a></div>
-            <div class="pep-owner"><span class="label">Owner</span>Tim Peters</div>
-        </li>
-    </ul>*/
-.pep-list-header, .pep-index-list li { }
-
-.pep-list-header {
-    font-family: $default-font-bold;
-    display: none;
-}
-
-.pep-index-list {
-    margin-bottom: rhythm( 1.5 );
-
-    .label {
-        font-family: $default-font-bold;
-        display: inline-block;
-        width: 20%;
-    }
-
-    li {
-        background-color: $grey-lighterest;
-        border-bottom: 1px solid $grey-lighter;
-    }
-
-    a {
-        display: inline-block;
-        color: $blue;
-
-        &:hover, &:focus, &:active { color: $grey-darker; }
-    }
-}
-
-.pep-type, .pep-num, .pep-title, .pep-owner {
-    padding: .5em .5em .4em;
-    border-bottom: 1px solid darken($grey-lighterest, 5%);
-}
-
-.footnote .label {
-    width: 4em;
-}
-
-/*dl*/ .info-key {
-
-    dt, dd {
-        display: block;
-        float: left;
-        padding: .5em .5em .4em;
-    }
-
-    dt { width: 25%; }
-    dd { width: 75%; border-bottom: 1px solid $grey-lightest; }
-}
-
-/* <div class="pep-owner-header">
-        <div class="label">Name</div>
-        <div class="label">Email Address</div>
-    </div>
-    <ul class="pep-owner-list menu">
-        <li>
-            <div class="owner-name">Tim Peters</div>
-            <div class="owner-email">tim at zope.com</div>
-        </li>
-    </ul> */
-.pep-owner-header {
-    margin: 0 -.5em;
-    @include clearfix();
-
-    .label {
-        font-family: $default-font-bold;
-        float: left;
-        width: 50%;
-        padding: .25em .5em .2em;
-    }
-}
-.pep-owner-list {
-
-    li {
-        background-color: $grey-lighterest;
-        border-bottom: 1px solid $grey-lighter;
-        @include clearfix();
-
-        &:hover { background-color: lighten($grey-lighterest, 4%); }
-    }
-
-    .owner-name, .owner-email {
-        float: left;
-        width: 50%;
-        padding: .5em .5em .4em;
-    }
-}
-
-
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
     padding: rhythm( .75 ) 0;
@@ -1918,7 +1758,10 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: lighten( $yellow, 30% );
     border: 2px solid $yellow;
 
-    span { color: darken( $yellow, 20% ); }
+    span {
+        color: darken( $yellow, 40% );
+        font-weight: bold;
+    }
 }
 
 /* Something went wrong */
@@ -1926,7 +1769,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
     background-color: lighten( $red, 35% );
     border: 2px solid $red;
 
-    span { color: $red; }
+    span {
+        color: darken( $red, 15% );
+        font-weight: bold;
+    }
+    a {
+        color: darken( $blue, 10% );
+        &:hover, &:focus { color: darken( $blue, 20% ); }
+    }
 }
 
 /* Yeah! It worked correctly */

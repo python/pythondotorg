@@ -5,6 +5,7 @@
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
 {% load sort_windows from download_tags %}
+{% load get_eol_info from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -21,12 +22,31 @@
 
 {% block content %}
     <article class="text">
+        {% if request.user.is_staff %}
+        <a role="button" class="button" href="{% url 'admin:downloads_release_change' release.pk %}">Edit this release</a>
+        {% endif %}
 
         <header class="article-header">
             <h1 class="page-title">{{ release.name }}</h1>
         </header>
 
-        <p><strong>Release Date:</strong> {{ release.release_date|date }}</p>
+        {% get_eol_info release as eol_info %}
+        {% if eol_info.is_eol %}
+        <div class="user-feedback level-error">
+            <span>Warning:</span>
+            Python {{ release.get_version|default:release.name }} reached end-of-life{% if eol_info.eol_date %} on {{ eol_info.eol_date }}{% endif %}.
+            It is no longer supported and does not receive security updates.
+            We recommend upgrading to the <a href="{% url 'downloads:download_latest_python3' %}">latest Python release</a>.
+        </div>
+        {% endif %}
+
+        {% if latest_in_series %}
+        <div class="user-feedback level-notice">
+            <span>Note:</span> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.
+        </div>
+        {% endif %}
+
+        <p><strong>Release date:</strong> {{ release.release_date|date }}</p>
 
         {% if release.content.raw %}
         {{ release.content.rendered|safe }}
@@ -67,7 +87,8 @@
               <th>Version</th>
               <th>Operating System</th>
               <th>Description</th>
-              <th>MD5 Sum</th>
+              <th>MD5 Checksum</th>
+              <th>SHA256 Checksum</th>
               <th>File Size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
@@ -87,6 +108,7 @@
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
+                <td>{{ f.sha256_sum|default:"n/a" }}</td>
                 <td>{{ f.filesize|filesizeformat }}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
