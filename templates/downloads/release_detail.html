@@ -5,6 +5,7 @@
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
 {% load sort_windows from download_tags %}
+{% load get_eol_info from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -29,8 +30,20 @@
             <h1 class="page-title">{{ release.name }}</h1>
         </header>
 
+        {% get_eol_info release as eol_info %}
+        {% if eol_info.is_eol %}
+        <div class="user-feedback level-error">
+            <span>Warning:</span>
+            Python {{ release.get_version|default:release.name }} reached end-of-life{% if eol_info.eol_date %} on {{ eol_info.eol_date }}{% endif %}.
+            It is no longer supported and does not receive security updates.
+            We recommend upgrading to the <a href="{% url 'downloads:download_latest_python3' %}">latest Python release</a>.
+        </div>
+        {% endif %}
+
         {% if latest_in_series %}
-        <p><strong>Note:</strong> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.</p>
+        <div class="user-feedback level-notice">
+            <span>Note:</span> {{ release.name }} has been superseded by <a href="{{ latest_in_series.get_absolute_url }}">{{ latest_in_series.name }}</a>.
+        </div>
         {% endif %}
 
         <p><strong>Release date:</strong> {{ release.release_date|date }}</p>
