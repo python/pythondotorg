@@ -66,6 +66,12 @@ a, a:active, a:visited, a:hover, a:visited:hover {
 	text-decoration: none;
 }
 
+table tr td {
+    a, a:active, a:visited, a:hover, a:visited:hover {
+        color: darken($link-color, 2%);
+    }
+}
+
 a:hover, a:focus { color: $link-hover; }
 
 /*modernizr*/ .touch a[href^="tel:"] { border-bottom: 1px dotted $default-color; }
