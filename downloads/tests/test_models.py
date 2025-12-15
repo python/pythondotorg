@@ -157,7 +157,7 @@ class DownloadModelTests(BaseDownloadTests):
                 release=self.python_3,
                 slug=slug,
                 name='Python 3.10',
-                url='/ftp/python/{}.zip'.format(slug),
+                url=f'/ftp/python/{slug}.zip',
                 download_button=True,
             )
 
@@ -186,3 +186,47 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertIn('class="download-os-windows"', content)
         self.assertIn('pymanager-25.0.msix', content)
         self.assertIn('python3.10-windows.zip', content)
+
+    def test_update_supernav_skips_os_without_files(self):
+        """Test that update_supernav works when an OS has no download files.
+
+        Regression test for a bug where adding an OS (like Android) without
+        any release files would cause update_supernav to silently abort,
+        leaving the supernav showing outdated version information.
+        """
+        # Arrange
+        from ..models import OS, update_supernav
+        from boxes.models import Box
+
+        # Create an OS without any release files
+        OS.objects.create(name="Android", slug="android")
+
+        # Create download files for other operating systems
+        for os, slug in [
+            (self.osx, "python3.10-macos"),
+            (self.linux, "python3.10-linux"),
+            (self.windows, "python3.10-windows"),
+        ]:
+            ReleaseFile.objects.create(
+                os=os,
+                release=self.python_3,
+                slug=slug,
+                name="Python 3.10",
+                url=f"/ftp/python/{slug}.zip",
+                download_button=True,
+            )
+
+        # Act
+        update_supernav()
+
+        # Assert: verify supernav was updated
+        box = Box.objects.get(label="supernav-python-downloads")
+        content = box.content.rendered
+
+        # OSes with files should be present
+        self.assertIn('class="download-os-windows"', content)
+        self.assertIn('class="download-os-macos"', content)
+        self.assertIn('class="download-os-linux"', content)
+
+        # Android (no files) should not be present
+        self.assertNotIn("android", content.lower())
