@@ -125,6 +125,12 @@ resource "fastly_service_vcl" "python_org" {
     type      = "REQUEST"
   }
   condition {
+    name      = "Authenticated Downloads"
+    priority  = 10
+    statement = "req.url ~ \"^/downloads/\" && req.http.Cookie ~ \"sessionid=\""
+    type      = "REQUEST"
+  }
+  condition {
     name      = "apex redirect"
     priority  = 10
     statement = "req.http.Host == \"python.org\""
@@ -348,6 +354,15 @@ resource "fastly_service_vcl" "python_org" {
     max_stale_age     = 60
     name              = "Force Pass"
     request_condition = "Uncacheable URLs"
+    xff               = "append"
+  }
+  request_setting {
+    action            = "pass"
+    bypass_busy_wait  = false
+    force_ssl         = false
+    max_stale_age     = 60
+    name              = "Pass Authenticated Downloads"
+    request_condition = "Authenticated Downloads"
     xff               = "append"
   }
 
