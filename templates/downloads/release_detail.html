@@ -72,6 +72,7 @@
               <th>Operating System</th>
               <th>Description</th>
               <th>MD5 Sum</th>
+              <th>SHA256 Sum</th>
               <th>File Size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
@@ -91,6 +92,7 @@
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
                 <td>{{ f.md5_sum }}</td>
+                <td>{{ f.sha256_sum|default:"n/a" }}</td>
                 <td>{{ f.filesize|filesizeformat }}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
