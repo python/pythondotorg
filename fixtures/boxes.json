@@ -472,11 +472,11 @@
     "pk": 40,
     "fields": {
       "created": "2014-02-13T18:27:24.143Z",
-      "updated": "2014-07-20T16:52:47.929Z",
+      "updated": "2025-04-21T17:45:00.000Z",
       "label": "blogs-subscriptions",
-      "content": "<h2 class=\"widget-title\"><span class=\"blog-name\">Python Insider</span> Subscriptions</h2>\r\n<p>Subscribe to Python Insider via:</p>\r\n<ul class=\"subscription-channels menu\">\r\n    <li><a href=\"http://feeds.feedburner.com/PythonInsider\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>RSS</a></li>\r\n    <li><a href=\"https://twitter.com/pythoninsider\"><span aria-hidden=\"true\" class=\"icon-twitter\"></span>Twitter</a></li>\r\n</ul>\r\n<p>Also check out the <a href=\"https://mail.python.org/pipermail/python-dev/\">Python-Dev mailing list</a></p>",
+      "content": "<h2 class=\"widget-title\"><span class=\"blog-name\">Python Insider</span> Subscriptions</h2>\r\n<p>Subscribe to Python Insider via:</p>\r\n<ul class=\"subscription-channels menu\">\r\n    <li><a href=\"https://blog.python.org/feeds/posts/default?alt=rss\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>RSS</a></li>\r\n</ul>\r\n<p>Also check out the <a href=\"https://discuss.python.org/\">Discussions on Python.org</a></p>",
       "content_markup_type": "html",
-      "_content_rendered": "<h2 class=\"widget-title\"><span class=\"blog-name\">Python Insider</span> Subscriptions</h2>\r\n<p>Subscribe to Python Insider via:</p>\r\n<ul class=\"subscription-channels menu\">\r\n    <li><a href=\"http://feeds.feedburner.com/PythonInsider\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>RSS</a></li>\r\n    <li><a href=\"https://twitter.com/pythoninsider\"><span aria-hidden=\"true\" class=\"icon-twitter\"></span>Twitter</a></li>\r\n</ul>\r\n<p>Also check out the <a href=\"https://mail.python.org/pipermail/python-dev/\">Python-Dev mailing list</a></p>"
+      "_content_rendered": "<h2 class=\"widget-title\"><span class=\"blog-name\">Python Insider</span> Subscriptions</h2>\r\n<p>Subscribe to Python Insider via:</p>\r\n<ul class=\"subscription-channels menu\">\r\n    <li><a href=\"https://blog.python.org/feeds/posts/default?alt=rss\"><span aria-hidden=\"true\" class=\"icon-feed\"></span>RSS</a></li>\r\n</ul>\r\n<p>Also check out the <a href=\"https://discuss.python.org/\">Discussions on Python.org</a></p>"
     }
   },
   {
