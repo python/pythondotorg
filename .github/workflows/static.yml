@@ -1,13 +1,17 @@
 name: Check collectstatic
-on: [push, pull_request]
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
 jobs:
   collectstatic:
-    # Avoid running CI more than once on pushes to main repo open PRs
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+
       - uses: actions/setup-python@v6
         with:
             python-version-file: '.python-version'
