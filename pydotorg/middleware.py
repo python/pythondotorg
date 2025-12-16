@@ -29,7 +29,7 @@ class GlobalSurrogateKey:
         """Store the get_response callable."""
         self.get_response = get_response
 
-    def _get_section_key(self, path):
+    def get_section_key(self, path):
         """Extract section surrogate key from URL path.
 
         Examples:
@@ -37,6 +37,7 @@ class GlobalSurrogateKey:
             /downloads/release/python-3141/ -> downloads
             /events/python-events/ -> events
             / -> None
+
         """
         parts = path.strip("/").split("/")
         if parts and parts[0]:
@@ -50,7 +51,7 @@ class GlobalSurrogateKey:
         if hasattr(settings, "GLOBAL_SURROGATE_KEY"):
             keys.append(settings.GLOBAL_SURROGATE_KEY)
 
-        section_key = self._get_section_key(request.path)
+        section_key = self.get_section_key(request.path)
         if section_key:
             keys.append(section_key)
 

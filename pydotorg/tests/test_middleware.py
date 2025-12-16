@@ -26,21 +26,21 @@ class MiddlewareTests(TestCase):
 
 
 class GlobalSurrogateKeyTests(TestCase):
-    def test_get_section_key(self):
+    def testget_section_key(self):
         """Test section key extraction from URL paths."""
-        middleware = GlobalSurrogateKey(lambda r: None)
+        middleware = GlobalSurrogateKey(lambda _: None)
 
-        self.assertEqual(middleware._get_section_key("/downloads/"), "downloads")
-        self.assertEqual(middleware._get_section_key("/downloads/release/python-3141/"), "downloads")
-        self.assertEqual(middleware._get_section_key("/events/"), "events")
-        self.assertEqual(middleware._get_section_key("/events/python-events/123/"), "events")
-        self.assertEqual(middleware._get_section_key("/sponsors/"), "sponsors")
+        self.assertEqual(middleware.get_section_key("/downloads/"), "downloads")
+        self.assertEqual(middleware.get_section_key("/downloads/release/python-3141/"), "downloads")
+        self.assertEqual(middleware.get_section_key("/events/"), "events")
+        self.assertEqual(middleware.get_section_key("/events/python-events/123/"), "events")
+        self.assertEqual(middleware.get_section_key("/sponsors/"), "sponsors")
 
-        #  returns None
-        self.assertIsNone(middleware._get_section_key("/"))
+        # returns None
+        self.assertIsNone(middleware.get_section_key("/"))
 
-        self.assertEqual(middleware._get_section_key("/downloads"), "downloads")
-        self.assertEqual(middleware._get_section_key("downloads/"), "downloads")
+        self.assertEqual(middleware.get_section_key("/downloads"), "downloads")
+        self.assertEqual(middleware.get_section_key("downloads/"), "downloads")
 
     @override_settings(GLOBAL_SURROGATE_KEY="pydotorg-app")
     def test_surrogate_key_header_includes_section(self):
@@ -58,4 +58,4 @@ class GlobalSurrogateKeyTests(TestCase):
         response = self.client.get("/")
         self.assertTrue(response.has_header("Surrogate-Key"))
         surrogate_key = response["Surrogate-Key"]
-        self.assertIn("pydotorg-app", surrogate_key)
+        self.assertEqual(surrogate_key, "pydotorg-app")

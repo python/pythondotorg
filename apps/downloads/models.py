@@ -290,9 +290,10 @@ def promote_latest_release(sender, instance, **kwargs):
 def purge_fastly_download_pages(sender, instance, **kwargs):
     """Purge Fastly caches so new Downloads show up more quickly.
 
-    Uses surrogate key purging to clear ALL pages under /downloads/ in one request,
-    including dynamically added pages like /downloads/android/, /downloads/ios/, etc.
-    Falls back to individual URL purges if surrogate key purging is not configured.
+    Uses surrogate key purging to attempt to clear ALL pages under /downloads/
+    in one request, including dynamically added pages like /downloads/android/,
+    /downloads/ios/, etc. Independently purges a set of specific non-/downloads/
+    URLs via individual URL purges.
     """
     # Don't purge on fixture loads
     if kwargs.get("raw", False):
