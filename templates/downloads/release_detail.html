@@ -99,11 +99,10 @@
               {% if release_files|has_gpg %}
               <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
-              {% if release_files|has_md5 %}
-              <th>MD5 checksum</th>
-              {% endif %}
               {% if release_files|has_sha256 %}
               <th>SHA-256 checksum</th>
+              {% elif release_files|has_md5 %}
+              <th>MD5 checksum</th>
               {% endif %}
             </tr>
           </thead>
@@ -128,11 +127,10 @@
                 {% if release_files|has_gpg %}
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% endif %}
-                {% if release_files|has_md5 %}
-                <td>{{ f.md5_sum }}</td>
-                {% endif %}
                 {% if release_files|has_sha256 %}
                 <td>{{ f.sha256_sum }}</td>
+                {% elif release_files|has_md5 %}
+                <td>{{ f.md5_sum }}</td>
                 {% endif %}
               </tr>
             {% endfor %}
