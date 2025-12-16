@@ -4,6 +4,8 @@
 {% load has_gpg from download_tags %}
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
+{% load has_md5 from download_tags %}
+{% load has_sha256 from download_tags %}
 {% load sort_windows from download_tags %}
 {% load get_eol_info from download_tags %}
 
@@ -87,8 +89,12 @@
               <th>Version</th>
               <th>Operating System</th>
               <th>Description</th>
+              {% if release_files|has_md5 %}
               <th>MD5 Checksum</th>
+              {% endif %}
+              {% if release_files|has_sha256 %}
               <th>SHA256 Checksum</th>
+              {% endif %}
               <th>File Size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
@@ -107,8 +113,12 @@
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
+                {% if release_files|has_md5 %}
                 <td>{{ f.md5_sum }}</td>
-                <td>{{ f.sha256_sum|default:"n/a" }}</td>
+                {% endif %}
+                {% if release_files|has_sha256 %}
+                <td>{{ f.sha256_sum }}</td>
+                {% endif %}
                 <td>{{ f.filesize|filesizeformat }}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
