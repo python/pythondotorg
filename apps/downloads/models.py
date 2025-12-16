@@ -16,7 +16,7 @@ from apps.boxes.models import Box
 from apps.cms.models import ContentManageable, NameSlugModel
 from apps.downloads.managers import ReleaseManager
 from apps.pages.models import Page
-from fastly.utils import purge_url
+from fastly.utils import purge_surrogate_key, purge_url
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
 
@@ -288,38 +288,30 @@ def promote_latest_release(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Release)
 def purge_fastly_download_pages(sender, instance, **kwargs):
-    """Purge Fastly caches so new Downloads show up more quickly."""
+    """Purge Fastly caches so new Downloads show up more quickly.
+
+    Uses surrogate key purging to clear ALL pages under /downloads/ in one request,
+    including dynamically added pages like /downloads/android/, /downloads/ios/, etc.
+    Falls back to individual URL purges if surrogate key purging is not configured.
+    """
     # Don't purge on fixture loads
     if kwargs.get("raw", False):
         return
 
     # Only purge on published instances
     if instance.is_published:
-        # Purge our common pages
-        purge_url("/downloads/")
-        purge_url("/downloads/feed.rss")
-        purge_url("/downloads/latest/python2/")
-        purge_url("/downloads/latest/python3/")
-        # Purge minor version specific URLs (like /downloads/latest/python3.14/)
-        version = instance.get_version()
-        if instance.version == Release.PYTHON3 and version:
-            match = re.match(r"^3\.(\d+)", version)
-            if match:
-                purge_url(f"/downloads/latest/python3.{match.group(1)}/")
-        purge_url("/downloads/latest/prerelease/")
-        purge_url("/downloads/latest/pymanager/")
-        purge_url("/downloads/macos/")
-        purge_url("/downloads/source/")
-        purge_url("/downloads/windows/")
+        # Purge all /downloads/* pages via surrogate key (preferred method)
+        # This catches everything: /downloads/android/, /downloads/release/*, etc.
+        purge_surrogate_key("downloads")
+
+        # Also purge related pages outside /downloads/
         purge_url("/ftp/python/")
         if instance.get_version():
             purge_url(f"/ftp/python/{instance.get_version()}/")
-        # See issue #584 for details
+        # See issue #584 for details - these are under /box/, not /downloads/
         purge_url("/box/supernav-python-downloads/")
         purge_url("/box/homepage-downloads/")
         purge_url("/box/download-sources/")
-        # Purge the release page itself
-        purge_url(instance.get_absolute_url())
 
 
 @receiver(post_save, sender=Release)
