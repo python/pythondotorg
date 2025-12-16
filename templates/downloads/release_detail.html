@@ -89,12 +89,6 @@
               <th>Version</th>
               <th>Operating System</th>
               <th>Description</th>
-              {% if release_files|has_md5 %}
-              <th>MD5 Checksum</th>
-              {% endif %}
-              {% if release_files|has_sha256 %}
-              <th>SHA256 Checksum</th>
-              {% endif %}
               <th>File Size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
@@ -105,6 +99,12 @@
               {% if release_files|has_gpg %}
               <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
+              {% if release_files|has_md5 %}
+              <th>MD5 Checksum</th>
+              {% endif %}
+              {% if release_files|has_sha256 %}
+              <th>SHA256 Checksum</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -113,12 +113,6 @@
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
-                {% if release_files|has_md5 %}
-                <td>{{ f.md5_sum }}</td>
-                {% endif %}
-                {% if release_files|has_sha256 %}
-                <td>{{ f.sha256_sum }}</td>
-                {% endif %}
                 <td>{{ f.filesize|filesizeformat }}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
@@ -133,6 +127,12 @@
                 {% endif %}
                 {% if release_files|has_gpg %}
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
+                {% endif %}
+                {% if release_files|has_md5 %}
+                <td>{{ f.md5_sum }}</td>
+                {% endif %}
+                {% if release_files|has_sha256 %}
+                <td>{{ f.sha256_sum }}</td>
                 {% endif %}
               </tr>
             {% endfor %}
