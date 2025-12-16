@@ -87,9 +87,9 @@
           <thead>
             <tr>
               <th>Version</th>
-              <th>Operating System</th>
+              <th>Operating system</th>
               <th>Description</th>
-              <th>File Size</th>
+              <th>File size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
@@ -100,10 +100,10 @@
               <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
               {% if release_files|has_md5 %}
-              <th>MD5 Checksum</th>
+              <th>MD5 checksum</th>
               {% endif %}
               {% if release_files|has_sha256 %}
-              <th>SHA256 Checksum</th>
+              <th>SHA-256 checksum</th>
               {% endif %}
             </tr>
           </thead>
