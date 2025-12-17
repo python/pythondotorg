@@ -1,0 +1,3 @@
+{% if request.user.is_staff %}
+<a role="button" class="button" href="{% url 'admin:downloads_release_change' release_pk %}">Edit this release</a>
+{% endif %}
