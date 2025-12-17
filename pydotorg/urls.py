@@ -8,6 +8,7 @@ from django.views.generic.base import TemplateView
 from django.conf import settings
 
 from cms.views import custom_404
+from downloads.views import ReleaseEditButton
 from users.views import HoneypotSignupView, CustomPasswordChangeView
 
 from . import views, urls_api
@@ -19,6 +20,7 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='home'),
     re_path(r'^_health/?', views.health, name='health'),
     path('authenticated', views.AuthenticatedView.as_view(), name='authenticated'),
+    path('release-edit-button/<int:pk>', ReleaseEditButton.as_view(), name='release_edit_button'),
     path('humans.txt', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
     path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
     path('funding.json', views.serve_funding_json, name='funding_json'),
