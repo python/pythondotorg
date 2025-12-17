@@ -43,6 +43,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
   test:
+    if: github.event_name != 'push' || github.event.repository.fork == true
     runs-on: ubuntu-latest
     services:
       postgres:
