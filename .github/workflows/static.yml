@@ -7,6 +7,7 @@ on:
 
 jobs:
   collectstatic:
+    if: github.event_name != 'push' || github.event.repository.fork == true
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
