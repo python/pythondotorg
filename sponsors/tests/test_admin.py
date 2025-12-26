@@ -57,6 +57,7 @@ class TestCustomSponsorshipStatusListFilter(TestCase):
     def test_choices_with_custom_text_for_all(self):
         lookups = self.filter.lookups(self.request, self.model_admin)
         changelist = Mock(ChangeList, autospec=True)
+        changelist.add_facets = False
         choices = self.filter.choices(changelist)
 
         self.assertEqual(len(choices), len(lookups) + 1)
