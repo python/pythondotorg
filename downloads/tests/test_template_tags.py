@@ -5,15 +5,13 @@ from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from ..templatetags.download_tags import get_eol_info, get_python_releases_data
+from ..templatetags.download_tags import get_eol_info, get_release_cycle_data
 from .base import BaseDownloadTests
 
-MOCK_PYTHON_RELEASE = {
-    "metadata": {
-        "2.7": {"status": "end-of-life", "end_of_life": "2020-01-01"},
-        "3.8": {"status": "end-of-life", "end_of_life": "2024-10-07"},
-        "3.10": {"status": "security", "end_of_life": "2026-10-04"},
-    }
+MOCK_RELEASE_CYCLE = {
+    "2.7": {"status": "end-of-life", "end_of_life": "2020-01-01"},
+    "3.8": {"status": "end-of-life", "end_of_life": "2024-10-07"},
+    "3.10": {"status": "security", "end_of_life": "2026-10-04"},
 }
 
 
@@ -31,11 +29,11 @@ class GetEOLInfoTests(BaseDownloadTests):
         super().setUp()
         cache.clear()
 
-    @mock.patch("downloads.templatetags.download_tags.get_python_releases_data")
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
     def test_eol_status(self, mock_get_data):
         """Test get_eol_info returns correct EOL status."""
         # Arrange
-        mock_get_data.return_value = MOCK_PYTHON_RELEASE
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
         tests = [
             (self.release_275, True, "2020-01-01"),  # EOL
             (self.python_3_8_20, True, "2024-10-07"),  # EOL
@@ -51,7 +49,7 @@ class GetEOLInfoTests(BaseDownloadTests):
                 self.assertEqual(result["is_eol"], expected_is_eol)
                 self.assertEqual(result["eol_date"], expected_eol_date)
 
-    @mock.patch("downloads.templatetags.download_tags.get_python_releases_data")
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
     def test_eol_status_api_failure(self, mock_get_data):
         """Test that API failure results in not showing EOL warning."""
         # Arrange
@@ -75,15 +73,15 @@ class GetReleaseCycleDataTests(TestCase):
         """Test successful API fetch."""
         # Arrange
         mock_response = mock.Mock()
-        mock_response.json.return_value = MOCK_PYTHON_RELEASE
+        mock_response.json.return_value = MOCK_RELEASE_CYCLE
         mock_response.raise_for_status = mock.Mock()
         mock_get.return_value = mock_response
 
         # Act
-        result = get_python_releases_data()
+        result = get_release_cycle_data()
 
         # Assert
-        self.assertEqual(result, MOCK_PYTHON_RELEASE)
+        self.assertEqual(result, MOCK_RELEASE_CYCLE)
         mock_get.assert_called_once()
 
     @mock.patch("downloads.templatetags.download_tags.requests.get")
@@ -91,13 +89,13 @@ class GetReleaseCycleDataTests(TestCase):
         """Test that the result is cached."""
         # Arrange
         mock_response = mock.Mock()
-        mock_response.json.return_value = MOCK_PYTHON_RELEASE
+        mock_response.json.return_value = MOCK_RELEASE_CYCLE
         mock_response.raise_for_status = mock.Mock()
         mock_get.return_value = mock_response
 
         # Act
-        result1 = get_python_releases_data()
-        result2 = get_python_releases_data()
+        result1 = get_release_cycle_data()
+        result2 = get_release_cycle_data()
 
         # Assert
         self.assertEqual(result1, result2)
@@ -110,7 +108,7 @@ class GetReleaseCycleDataTests(TestCase):
         mock_get.side_effect = requests.RequestException("Connection error")
 
         # Act
-        result = get_python_releases_data()
+        result = get_release_cycle_data()
 
         # Assert
         self.assertIsNone(result)
@@ -125,7 +123,7 @@ class GetReleaseCycleDataTests(TestCase):
         mock_get.return_value = mock_response
 
         # Act
-        result = get_python_releases_data()
+        result = get_release_cycle_data()
 
         # Assert
         self.assertIsNone(result)
@@ -138,14 +136,14 @@ class EOLBannerViewTests(BaseDownloadTests):
         super().setUp()
         cache.clear()
 
-    @mock.patch("downloads.templatetags.download_tags.get_python_releases_data")
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
     def test_eol_banner_visibility(self, mock_get_data):
         """Test EOL banner is shown or hidden correctly."""
         # Arrange
         tests = [
-            ("release_275", MOCK_PYTHON_RELEASE, True),
-            ("python_3_8_20", MOCK_PYTHON_RELEASE, True),
-            ("python_3_10_18", MOCK_PYTHON_RELEASE, False),
+            ("release_275", MOCK_RELEASE_CYCLE, True),
+            ("python_3_8_20", MOCK_RELEASE_CYCLE, True),
+            ("python_3_10_18", MOCK_RELEASE_CYCLE, False),
             ("python_3_8_20", None, False),
         ]
 
