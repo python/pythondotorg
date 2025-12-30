@@ -5,13 +5,20 @@ from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from ..templatetags.download_tags import get_eol_info, get_release_cycle_data
+from ..templatetags.download_tags import (
+    get_eol_info,
+    get_release_cycle_data,
+    render_active_releases,
+)
 from .base import BaseDownloadTests
 
 MOCK_RELEASE_CYCLE = {
-    "2.7": {"status": "end-of-life", "end_of_life": "2020-01-01"},
-    "3.8": {"status": "end-of-life", "end_of_life": "2024-10-07"},
-    "3.10": {"status": "security", "end_of_life": "2026-10-04"},
+    "2.7": {"status": "end-of-life", "end_of_life": "2020-01-01", "pep": 373},
+    "3.8": {"status": "end-of-life", "end_of_life": "2024-10-07", "pep": 569},
+    "3.9": {"status": "end-of-life", "end_of_life": "2025-10-31", "pep": 596},
+    "3.10": {"status": "security", "end_of_life": "2026-10-04", "pep": 619},
+    "3.14": {"status": "bugfix", "first_release": "2025-10-07", "end_of_life": "2030-10", "pep": 745},
+    "3.15": {"status": "feature", "first_release": "2026-10-01", "end_of_life": "2031-10", "pep": 790},
 }
 
 
@@ -166,3 +173,77 @@ class EOLBannerViewTests(BaseDownloadTests):
                     self.assertContains(response, "no longer supported")
                 else:
                     self.assertNotContains(response, "level-error")
+
+
+@override_settings(CACHES=TEST_CACHES)
+class RenderActiveReleasesTests(BaseDownloadTests):
+    def setUp(self):
+        super().setUp()
+        cache.clear()
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_versions_sorted_descending(self, mock_get_data):
+        """Test that versions are sorted in descending order."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        versions = [r["version"] for r in result["releases"]]
+        # 3.15, 3.14, 3.10, 3.9 (first EOL); 3.8 and 2.7 skipped (older EOL)
+        self.assertEqual(versions, ["3.15", "3.14", "3.10", "3.9"])
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_feature_status_becomes_prerelease(self, mock_get_data):
+        """Test that 'feature' status is converted to 'pre-release'."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        prerelease = result["releases"][0]
+        self.assertEqual(prerelease["version"], "3.15")
+        self.assertEqual(prerelease["status"], "pre-release")
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_feature_first_release_shows_planned(self, mock_get_data):
+        """Test that feature releases show (planned) in first_release."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        prerelease = result["releases"][0]
+        self.assertEqual(prerelease["first_release"], "2026-10-01 (planned)")
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_only_one_eol_release_included(self, mock_get_data):
+        """Test that only the most recent EOL release is included."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        versions = [r["version"] for r in result["releases"]]
+        # 3.9 is included (most recent EOL), 3.8 and 2.7 are not
+        self.assertIn("3.9", versions)
+        self.assertNotIn("3.8", versions)
+        self.assertNotIn("2.7", versions)
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_eol_status_includes_last_release_link(self, mock_get_data):
+        """Test that EOL status includes last release link."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        eol_release = next(r for r in result["releases"] if r["version"] == "3.9")
+        status = str(eol_release["status"])
+        self.assertIn("end-of-life", status)
+        self.assertIn("last release was", status)
+        self.assertIn("<a href=", status)
+
+    @mock.patch("downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_api_failure_returns_empty_releases(self, mock_get_data):
+        """Test that API failure returns empty releases list."""
+        mock_get_data.return_value = None
+
+        result = render_active_releases()
+
+        self.assertEqual(result["releases"], [])
