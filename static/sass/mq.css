@@ -1569,24 +1569,24 @@ html[xmlns] .slides { display: block; }
     padding-top: 1em; }
 
   .about-banner {
-    background: 120% 0 no-repeat url('../img/landing-about.png?1687447167') transparent;
+    background: 120% 0 no-repeat url('../img/landing-about.png?1694722768') transparent;
     min-height: 345px;
     padding-bottom: 3.5em;
     margin-bottom: -2.5em; }
 
   .download-for-current-os {
-    background: 130% 0 no-repeat url('../img/landing-downloads.png?1687447167') transparent;
+    background: 130% 0 no-repeat url('../img/landing-downloads.png?1694722768') transparent;
     min-height: 345px;
     padding-bottom: 4em;
     margin-bottom: -3em; }
 
   .documentation-banner {
-    background: 130% 0 no-repeat url('../img/landing-docs.png?1687447167') transparent;
+    background: 130% 0 no-repeat url('../img/landing-docs.png?1694722768') transparent;
     padding-bottom: 1em; }
 
   .community-banner {
     text-align: left;
-    background: 110% 0 no-repeat url('../img/landing-community.png?1687447167') transparent;
+    background: 110% 0 no-repeat url('../img/landing-community.png?1694722768') transparent;
     min-height: 345px;
     padding-bottom: 2em;
     margin-bottom: -1.25em; }
@@ -1684,7 +1684,7 @@ html[xmlns] .slides { display: block; }
       right: 1em;
       width: 210px;
       height: 210px;
-      background: top left no-repeat url('../img/python-logo-large.png?1687447167') transparent; }
+      background: top left no-repeat url('../img/python-logo-large.png?1694722768') transparent; }
     .psf-widget .widget-title, .psf-widget p, .python-needs-you-widget .widget-title, .python-needs-you-widget p {
       margin-right: 34.04255%; }
 
