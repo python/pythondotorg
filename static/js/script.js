@@ -1,6 +1,5 @@
 var hastouch = Modernizr.touch;
 var hasplaceholder = Modernizr.placeholder;
-var is_ltie9 = $("html").hasClass( "lt-ie9" );
 
 if( !window.Retina ) {
     var is_retina = false;
@@ -71,7 +70,7 @@ function on_resize_orientationchange() {
     /* Load a supernav into the About dropdown */
     if ( ! hastouch ) {
 
-        if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded || is_ltie9 ) {
+        if ( mq_tag.indexOf("load_supernavs") !=-1 && ! supernavs_loaded ) {
 
             $.get("/box/supernav-python-about/",
                 function(data){

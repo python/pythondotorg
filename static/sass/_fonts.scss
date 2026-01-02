@@ -159,21 +159,6 @@
     }
 }
 
-/* Show in IE8: supports FontFace (eot) but not SVG. */
-.ie8 {
-    
-    .icon-megaphone, .icon-python-alt, .icon-pypi, .icon-news, .icon-moderate, .icon-mercurial, .icon-jobs, .icon-help, .icon-download, .icon-documentation, .icon-community, .icon-code, .icon-close, .icon-calendar, .icon-beginner, .icon-advanced, .icon-sitemap, .icon-search, .icon-search-alt, .icon-python, .icon-github, .icon-get-started, .icon-feed, .icon-facebook, .icon-email, .icon-arrow-up, .icon-arrow-right, .icon-arrow-left, .icon-arrow-down, .icon-freenode, .icon-alert, .icon-versions, .icon-twitter, .icon-thumbs-up, .icon-thumbs-down, .icon-text-resize, .icon-success-stories, .icon-statistics, .icon-stack-overflow, .icon-mastodon {
-        
-        &:before {
-            display: inline; 
-        }
-        span {
-            display: none; 
-        }
-    }
-}
-
-
 /* @license
  * MyFonts Webfont Build ID 2421639, 2012-11-30T11:51:21-0500
  * 
