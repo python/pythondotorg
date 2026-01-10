@@ -29,9 +29,6 @@
  *
  * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well.
  * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE.
- *
- * Search for properties that begin with * and make them ie7 specific instead.
- * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance.
  */
 
 

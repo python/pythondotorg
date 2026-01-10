@@ -90,17 +90,10 @@
     display: inline-block;
     @if $alignment and $alignment != none
         { vertical-align: $alignment; }
-    @if $legacy-support-for-ie {
-        .lt-ie8 & {
-            vertical-align: auto; 
-            zoom: 1; 
-            display: inline; 
-        }
-    }
 }
 
 
-/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE7 */
 @mixin pe-box-sizing( $sizing: border-box ) {
     @include box-sizing( $sizing ); 
 }
@@ -223,7 +216,7 @@
  * Should be able to use the built-in Compass method, hyphenation(), but the library won't load right now
  */
 @mixin pe-hyphenate() {
-/*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE6-8 */
+/*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE8 */
 /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
 /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
     -webkit-hyphens: auto;
@@ -245,7 +238,7 @@
 /* Keep this in all mix-in files if you can. Useful stuff */
 @mixin no_js_warning {
 
-    #nojs, #oldie-warning {
+    #nojs {
     	padding: .75em .75em .65em;
     	text-align: center; 
     	background-color: #c33; 
@@ -264,20 +257,6 @@
             	text-decoration: none; 
         	}
     	}
-    }
-    #oldie-warning {
-        background-color: #ff7; 
-        
-        p {
-            color: #444;
-        }
-        a {
-            color: #444;
-            
-            &:hover, &:focus {
-            	color: #000; 
-        	}
-        }
     }
     .js #nojs {
         display: none;
@@ -360,17 +339,13 @@
     var { font-style: italic; }
     
     textarea { overflow: auto; vertical-align: top; resize: vertical; }
-    .ie7 legend { border: 0; padding: 0; white-space: normal;*margin-left: -7px; } 
     input[type="radio"] { vertical-align: text-bottom; }
     input[type="checkbox"] { vertical-align: baseline; }
-    .ie7 input[type="checkbox"] { vertical-align: bottom; }
-    
+
     button, input[type="button"], input[type="reset"], input[type="submit"] { 
         cursor: pointer; 
         -webkit-appearance: button; 
         -moz-appearance: button; 
-        
-        .lt-ie8 & { overflow: visible; }
     }
     input:valid, textarea:valid {  }
     button[disabled], input[disabled] { cursor: default; }
@@ -379,16 +354,10 @@
     input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-search-cancel-button { -webkit-appearance: none; }
     
     .no-boxshadow input:invalid, .no-boxshadow textarea:invalid { background-color: #f0dddd; }
-    .ie7 img { -ms-interpolation-mode: bicubic; }
-        
+
     /* Aural rulesets */
     abbr.initialism { speak: spell-out; }
     abbr.truncation { speak: normal; }
-    
-    /* Stupid IE: http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/ */
-    @-ms-viewport{ width: device-width; }
-    canvas { -ms-touch-action: double-tap-zoom; }
-    svg:not(:root) { overflow: hidden; } /* fixes an issue in IE9 */
 }
 
 
