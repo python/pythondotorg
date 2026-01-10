@@ -22,20 +22,11 @@ PIPELINE_CSS = {
             'media': 'not print, braille, embossed, speech, tty',
         },
     },
-    'no-mq': {
-        'source_filenames': (
-            'sass/no-mq.css',
-        ),
-        'output_filename': 'stylesheets/no-mq.css',
-        'extra_context': {
-            'media': 'screen',
-        },
-    },
     'font-awesome': {
         'source_filenames': (
             'stylesheets/font-awesome.min.css',
         ),
-        'output_filename': 'stylesheets/no-mq.css',
+        'output_filename': 'stylesheets/font-awesome.css',
         'extra_context': {
             'media': 'screen',
         },
@@ -55,18 +46,6 @@ PIPELINE_JS = {
             'js/sponsors/applicationForm.js',
         ),
         'output_filename': 'js/sponsors-min.js',
-    },
-    'IE8': {
-        'source_filenames': (
-            'js/plugins/IE8.js',
-        ),
-        'output_filename': 'js/plugins/IE8-min.js',
-    },
-    'getComputedStyle': {
-        'source_filenames': (
-            'js/plugins/getComputedStyle-min.js',
-        ),
-        'output_filename': 'js/plugins/getComputedStyle-min.js',
     },
 }
 

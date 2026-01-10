@@ -29,9 +29,6 @@
  *
  * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well.
  * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE.
- *
- * Search for properties that begin with * and make them ie7 specific instead.
- * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance.
  */
 
 
@@ -64,6 +61,12 @@ body, input, textarea, select, button {
 a, a:active, a:visited, a:hover, a:visited:hover {
 	color: $link-color;
 	text-decoration: none;
+}
+
+table tr td {
+    a, a:active, a:visited, a:hover, a:visited:hover {
+        color: darken($link-color, 2%);
+    }
 }
 
 a:hover, a:focus { color: $link-hover; }
@@ -953,7 +956,7 @@ $show-baseline-grid-backgrounds: false;
         margin: 0 .25em;
     }
 
-    code, kbd {
+    kbd {
         padding: .125em .375em 0;
         margin: 0 -.0625em;
         background: $grey-lightest;
@@ -1690,6 +1693,14 @@ $colors: $blue, $psf, $yellow, $green, $purple, $red;
 
     .list-row-container { margin-bottom: .5em; }
 
+    .release-cycle-chart img {
+        display: block;
+        margin: 0 auto;
+        width: 80%;
+        @media screen and (max-width: 860px) {
+            width: 100%;
+        }
+    }
 }
 
 .download-list-widget {
