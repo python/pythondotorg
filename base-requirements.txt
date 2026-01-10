@@ -36,7 +36,7 @@ requests>=2.26.0
 django-honeypot>=1.3.0
 django-markupfield==2.0.1
 
-django-allauth==64.2.1
+django-allauth==65.13.0
 
 django-waffle==2.2.1
 
