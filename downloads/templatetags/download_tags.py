@@ -4,30 +4,16 @@ import re
 import requests
 from django import template
 from django.core.cache import cache
+from django.utils.html import format_html
+
+from downloads.models import Release
 
 register = template.Library()
 logger = logging.getLogger(__name__)
 
-PYTHON_RELEASES_URL = "https://peps.python.org/api/python-releases.json"
-PYTHON_RELEASES_CACHE_KEY = "python_python_releases"
-PYTHON_RELEASES_CACHE_TIMEOUT = 3600  # 1 hour
-
-
-def get_python_releases_data() -> dict | None:
-    """Fetch and cache the Python release cycle data from PEPs API."""
-    data = cache.get(PYTHON_RELEASES_CACHE_KEY)
-    if data is not None:
-        return data
-
-    try:
-        response = requests.get(PYTHON_RELEASES_URL, timeout=5)
-        response.raise_for_status()
-        data = response.json()
-        cache.set(PYTHON_RELEASES_CACHE_KEY, data, PYTHON_RELEASES_CACHE_TIMEOUT)
-        return data
-    except (requests.RequestException, ValueError) as e:
-        logger.warning("Failed to fetch release cycle data: %s", e)
-        return None
+RELEASE_CYCLE_URL = "https://peps.python.org/api/release-cycle.json"
+RELEASE_CYCLE_CACHE_KEY = "python_release_cycle"
+RELEASE_CYCLE_CACHE_TIMEOUT = 3600  # 1 hour
 
 
 @register.simple_tag
@@ -52,14 +38,12 @@ def get_eol_info(release) -> dict:
     major = int(match.group(1))
     minor_version = f"{match.group(1)}.{match.group(2)}"
 
-    python_releases = get_python_releases_data()
-    if python_releases is None:
+    release_cycle = get_release_cycle_data()
+    if release_cycle is None:
         # Can't determine EOL status, don't show warning
         return result
 
-    metadata = python_releases.get("metadata", {})
-    version_info = metadata.get(minor_version)
-
+    version_info = release_cycle.get(minor_version)
     if version_info is None:
         # Python 2 releases not in the list are EOL
         if major <= 2:
@@ -128,3 +112,73 @@ def sort_windows(files):
             other_files.append(file)
 
     return other_files + windows_files
+
+
+def get_release_cycle_data() -> dict | None:
+    """Fetch and cache the release cycle data from PEPs API."""
+    data = cache.get(RELEASE_CYCLE_CACHE_KEY)
+    if data is not None:
+        return data
+
+    try:
+        response = requests.get(RELEASE_CYCLE_URL, timeout=5)
+        response.raise_for_status()
+        data = response.json()
+        cache.set(RELEASE_CYCLE_CACHE_KEY, data, RELEASE_CYCLE_CACHE_TIMEOUT)
+        return data
+    except (requests.RequestException, ValueError) as e:
+        logger.warning("Failed to fetch release cycle data: %s", e)
+        return None
+
+
+@register.inclusion_tag("downloads/active-releases.html")
+def render_active_releases():
+    """Render the active Python releases table from PEPs API data."""
+    releases = []
+    release_cycle = get_release_cycle_data()
+
+    if release_cycle:
+        # Sort releases in descending order (newest first)
+        sorted_releases = sorted(
+            release_cycle.keys(),
+            key=lambda v: [int(x) for x in v.split(".")],
+            reverse=True,
+        )
+
+        found_eol = False
+        for release in sorted_releases:
+            info = release_cycle[release]
+            status = info.get("status", "")
+            first_release = info.get("first_release", "")
+
+            if status == "feature" and first_release:
+                first_release = f"{first_release} (planned)"
+
+            if status == "feature":
+                status = "pre-release"
+
+            if status == "end-of-life":
+                # Include only the most recent EOL release
+                if found_eol:
+                    continue
+                found_eol = True
+
+                # Get last release for EOL versions
+                minor = int(release.split(".")[1])
+                last_release = Release.objects.latest_python3(minor)
+                if last_release:
+                    status = format_html(
+                        'end-of-life, last release was <a href="{}">{}</a>',
+                        last_release.get_absolute_url(),
+                        last_release.get_version(),
+                    )
+
+            releases.append({
+                "version": release,
+                "status": status,
+                "first_release": first_release,
+                "end_of_life": info.get("end_of_life", ""),
+                "pep": info.get("pep"),
+            })
+
+    return {"releases": releases}
