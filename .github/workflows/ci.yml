@@ -1,10 +1,17 @@
 name: CI
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   migrations:
-    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,7 +47,6 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
   test:
-    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     services:
       postgres:
