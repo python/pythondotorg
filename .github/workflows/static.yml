@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   collectstatic:
-    if: github.event_name != 'push' || github.event.repository.fork == true
+    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
