@@ -123,9 +123,15 @@ TEMPLATES_DIR = os.path.join(BASE, 'templates')
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [TEMPLATES_DIR],
-        'APP_DIRS': True,
+        'DIRS': [
+            TEMPLATES_DIR,
+        ],
         'OPTIONS': {
+            'loaders': [
+                'apptemplates.Loader',
+                'django.template.loaders.filesystem.Loader',
+                'django.template.loaders.app_directories.Loader',
+            ],
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.i18n',
@@ -184,10 +190,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
 
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.admindocs',
 
     'django_celery_beat',
+    'django_translation_aliases',
     'pipeline',
     'sitetree',
     'imagekit',
