@@ -1,10 +1,10 @@
-{% extends "admin/base.html" %}
+{% extends "admin_interface:admin/base_site.html" %}
 {% load i18n %}
 
 {% block title %}{{ title }} | {% trans 'python.org' %}{% endblock %}
 
 {% block branding %}
-<h1 id="site-name"><a href="{% url 'admin:index' %}">{% trans 'python.org administration' %}</a></h1>
+<h1 id="site-name">{% trans 'python.org administration' %}</h1>
 {% endblock %}
 
 {% block nav-global %}{% endblock %}

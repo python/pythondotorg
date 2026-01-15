@@ -1,6 +1,9 @@
 dj-database-url==0.5.0
 django-pipeline==3.1.0  # 3.0.0 is first version that supports Django 4.2
 django-sitetree==1.18.0  # >=1.17.1 is (?) first version that supports Django 4.2
+django-apptemplates==1.5
+django-admin-interface==0.28.9
+django-translation-aliases==0.1.0
 Django==4.2.27
 docutils==0.21.2
 Markdown==3.7
