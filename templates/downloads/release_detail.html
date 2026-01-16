@@ -24,9 +24,7 @@
 
 {% block content %}
     <article class="text">
-        {% if request.user.is_staff %}
-        <a role="button" class="button" href="{% url 'admin:downloads_release_change' release.pk %}">Edit this release</a>
-        {% endif %}
+        <span data-html-include="{% url 'release_edit_button' release.pk %}"></span>
 
         <header class="article-header">
             <h1 class="page-title">{{ release.name }}</h1>

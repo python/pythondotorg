@@ -267,3 +267,17 @@ class ReleaseFeed(Feed):
                 return timezone.make_aware(item.release_date)
             return item.release_date
         return None
+
+
+class ReleaseEditButton(TemplateView):
+    """Render the release edit button (shown only to staff users).
+
+    This endpoint is not cached, allowing the edit button to appear
+    for staff users even when the release page itself is cached.
+    """
+    template_name = "downloads/release_edit_button.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["release_pk"] = self.kwargs["pk"]
+        return context
