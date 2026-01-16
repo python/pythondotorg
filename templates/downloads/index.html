@@ -2,6 +2,7 @@
 {% load boxes %}
 {% load banners %}
 {% load sponsors %}
+{% load download_tags %}
 
 {% block page_title %}Download Python | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}Download Python{% endblock %}
@@ -55,9 +56,8 @@
 
                     <p class="release-cycle-chart"><img src="https://devguide.python.org/_static/release-cycle.svg" alt="Python release cycle"></p>
 
-                    {% box 'downloads-active-releases' %}
+                    {% render_active_releases %}
                 </div>
-
 
                 <div class="row download-list-widget">
 
