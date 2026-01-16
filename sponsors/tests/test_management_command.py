@@ -19,6 +19,7 @@ from sponsors.models import (
     TieredBenefitConfiguration,
 )
 from sponsors.models.enums import AssetsRelatedTo
+from sponsors.models.assets import TextAsset
 from django.contrib.contenttypes.models import ContentType
 
 from sponsors.management.commands.create_pycon_vouchers_for_sponsors import (
@@ -208,8 +209,9 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
 
         # Create some GenericAssets with 2025 references
         sponsorship_ct = ContentType.objects.get_for_model(sponsorship)
-        asset_2025 = baker.make(
-            "sponsors.TextAsset",
+        # Use TextAsset.objects.create() instead of baker.make() because
+        # model_bakery doesn't support GenericForeignKey fields
+        asset_2025 = TextAsset.objects.create(
             content_type=sponsorship_ct,
             object_id=sponsorship.id,
             internal_name="conference_passes_code_2025",
