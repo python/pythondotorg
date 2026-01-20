@@ -4,7 +4,7 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   migrations:
-    if: github.event_name != 'push' || github.event.repository.fork == true
+    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     services:
       postgres:
@@ -40,7 +40,7 @@ jobs:
           DATABASE_URL: postgres://postgres:postgres@localhost:5432/pythonorg
 
   test:
-    if: github.event_name != 'push' || github.event.repository.fork == true
+    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     services:
       postgres:

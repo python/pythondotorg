@@ -81,6 +81,16 @@ def has_sbom(files):
 
 
 @register.filter
+def has_md5(files):
+    return any(f.md5_sum for f in files)
+
+
+@register.filter
+def has_sha256(files):
+    return any(f.sha256_sum for f in files)
+
+
+@register.filter
 def sort_windows(files):
     if not files:
         return files

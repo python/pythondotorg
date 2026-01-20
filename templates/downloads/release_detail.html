@@ -4,6 +4,8 @@
 {% load has_gpg from download_tags %}
 {% load has_sigstore_materials from download_tags %}
 {% load has_sbom from download_tags %}
+{% load has_md5 from download_tags %}
+{% load has_sha256 from download_tags %}
 {% load sort_windows from download_tags %}
 {% load get_eol_info from download_tags %}
 
@@ -22,9 +24,7 @@
 
 {% block content %}
     <article class="text">
-        {% if request.user.is_staff %}
-        <a role="button" class="button" href="{% url 'admin:downloads_release_change' release.pk %}">Edit this release</a>
-        {% endif %}
+        <span data-html-include="{% url 'release_edit_button' release.pk %}"></span>
 
         <header class="article-header">
             <h1 class="page-title">{{ release.name }}</h1>
@@ -85,11 +85,9 @@
           <thead>
             <tr>
               <th>Version</th>
-              <th>Operating System</th>
+              <th>Operating system</th>
               <th>Description</th>
-              <th>MD5 Checksum</th>
-              <th>SHA256 Checksum</th>
-              <th>File Size</th>
+              <th>File size</th>
               {% if release_files|has_sigstore_materials %}
               <th colspan="2"><a href="https://www.python.org/download/sigstore/">Sigstore</a></th>
               {% endif %}
@@ -99,6 +97,11 @@
               {% if release_files|has_gpg %}
               <th><a href="https://www.python.org/downloads/#gpg">GPG</a></th>
               {% endif %}
+              {% if release_files|has_sha256 %}
+              <th>SHA-256 checksum</th>
+              {% elif release_files|has_md5 %}
+              <th>MD5 checksum</th>
+              {% endif %}
             </tr>
           </thead>
           <tbody>
@@ -107,8 +110,6 @@
                 <td><a href="{{ f.url }}">{{ f.name }}</a></td>
                 <td>{{ f.os.name }}</td>
                 <td>{{ f.description }}</td>
-                <td>{{ f.md5_sum }}</td>
-                <td>{{ f.sha256_sum|default:"n/a" }}</td>
                 <td>{{ f.filesize|filesizeformat }}</td>
                 {% if release_files|has_sigstore_materials %}
                   {% if f.sigstore_bundle_file %}
@@ -123,6 +124,11 @@
                 {% endif %}
                 {% if release_files|has_gpg %}
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
+                {% endif %}
+                {% if release_files|has_sha256 %}
+                <td>{{ f.sha256_sum }}</td>
+                {% elif release_files|has_md5 %}
+                <td>{{ f.md5_sum }}</td>
                 {% endif %}
               </tr>
             {% endfor %}
