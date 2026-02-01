@@ -161,6 +161,7 @@ ROOT_URLCONF = 'pydotorg.urls'
 # 'SecurityMiddleware' because we set appropriate headers in python/psf-salt.
 MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'pydotorg.middleware.AdminNoCaching',
