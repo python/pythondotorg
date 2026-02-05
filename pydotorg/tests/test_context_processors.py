@@ -123,7 +123,7 @@ class TemplateProcessorsTestCase(TestCase):
         request = self.factory.get('/this-does-not-exist/')
         result = context_processors.url_name(request)
 
-        # kyes should always be present
+        # keys should always be present
         self.assertIn('URL_NAME', result)
         self.assertIn('URL_NAMESPACE', result)
 
