@@ -10,7 +10,7 @@ def url_name(request):
     try:
         match = resolve(request.path)
     except Resolver404:
-        return {}
+        return {'URL_NAMESPACE': None, 'URL_NAME': None}
     else:
         namespace, url_name_ = match.namespace, match.url_name
         if namespace:
