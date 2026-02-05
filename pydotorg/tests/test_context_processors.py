@@ -116,9 +116,8 @@ class TemplateProcessorsTestCase(TestCase):
         self.assertEqual({"USER_NAV_BAR": {}}, context_processors.user_nav_bar_links(request))
 
     def test_url_name_always_returns_keys(self):
-        """Ensure URL_NAME and URL_NAMESPACE are always present in context, even for 404s.
-        Because it makes sentry unhappy: https://python-software-foundation.sentry.io/issues/6931306293/
-        """
+        # Ensure URL_NAME and URL_NAMESPACE are always present in context, even for 404s,
+        # otherwise it makes sentry unhappy: https://python-software-foundation.sentry.io/issues/6931306293/
         # test with a 404 path
         request = self.factory.get('/this-does-not-exist/')
         result = context_processors.url_name(request)
