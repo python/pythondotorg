@@ -609,35 +609,11 @@
 },
 {
     "model": "sitetree.treeitem",
-    "pk": 28,
-    "fields": {
-        "title": "Developer's Guide",
-        "hint": "",
-        "url": "https://devguide.python.org/",
-        "urlaspattern": false,
-        "tree": 1,
-        "hidden": false,
-        "alias": null,
-        "description": "",
-        "inmenu": true,
-        "inbreadcrumbs": true,
-        "insitetree": true,
-        "access_loggedin": false,
-        "access_guest": false,
-        "access_restricted": false,
-        "access_perm_type": 1,
-        "parent": 9,
-        "sort_order": 28,
-        "access_permissions": []
-    }
-},
-{
-    "model": "sitetree.treeitem",
     "pk": 29,
     "fields": {
         "title": "FAQ",
         "hint": "",
-        "url": "https://docs.python.org/faq/",
+        "url": "https://docs.python.org/3/faq/",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,
@@ -661,7 +637,7 @@
     "fields": {
         "title": "Non-English Docs",
         "hint": "",
-        "url": "https://python-docs-translations.github.io/dashboard/",
+        "url": "https://translations.python.org",
         "urlaspattern": false,
         "tree": 1,
         "hidden": false,

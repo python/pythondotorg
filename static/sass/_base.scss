@@ -85,7 +85,7 @@ $darkerblue: #1e2933;
 $link-color: $blue;
 $link-hover: $darkerblue;
 
-$code-green: #11a611; 
+$code-green: #0d870d;
 $default-border-color: $grey-lighter; /* Set a generic border color here to keep them consistent */
 
 
@@ -130,10 +130,10 @@ $font-size-adjust-value: 1.15;
 /* Defaults */
 $relative-assets: false; 
 
-$legacy-support-for-ie : true;
+$legacy-support-for-ie : false;
 $legacy-support-for-ie6 : false;
-$legacy-support-for-ie7 : true;
-$legacy-support-for-ie8 : true;
+$legacy-support-for-ie7 : false;
+$legacy-support-for-ie8 : false;
 $legacy-support-for-mozilla : true;
 
 $inline-block-alignment: baseline; 

@@ -8,6 +8,7 @@ from django.views.generic.base import TemplateView
 from django.conf import settings
 
 from cms.views import custom_404
+from downloads.views import ReleaseEditButton
 from users.views import HoneypotSignupView, CustomPasswordChangeView
 
 from . import views, urls_api
@@ -19,9 +20,10 @@ urlpatterns = [
     path('', views.IndexView.as_view(), name='home'),
     re_path(r'^_health/?', views.health, name='health'),
     path('authenticated', views.AuthenticatedView.as_view(), name='authenticated'),
-    re_path(r'^humans.txt$', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
-    re_path(r'^robots.txt$', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
-    re_path(r'^funding.json$', views.serve_funding_json, name='funding_json'),
+    path('release-edit-button/<int:pk>', ReleaseEditButton.as_view(), name='release_edit_button'),
+    path('humans.txt', TemplateView.as_view(template_name='humans.txt', content_type='text/plain')),
+    path('robots.txt', TemplateView.as_view(template_name='robots.txt', content_type='text/plain')),
+    path('funding.json', views.serve_funding_json, name='funding_json'),
     path('shell/', TemplateView.as_view(template_name="python/shell.html"), name='shell'),
 
     # python section landing pages
@@ -32,6 +34,7 @@ urlpatterns = [
     path('getit/', include('downloads.urls', namespace='getit')),
     path('downloads/', include('downloads.urls', namespace='download')),
     path('doc/', views.DocumentationIndexView.as_view(), name='documentation'),
+    path('doc/versions/', views.DocsByVersionView.as_view(), name='docs-versions'),
     path('blogs/', include('blogs.urls')),
     path('inner/', TemplateView.as_view(template_name="python/inner.html"), name='inner'),
 

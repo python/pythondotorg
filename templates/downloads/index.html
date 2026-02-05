@@ -2,6 +2,7 @@
 {% load boxes %}
 {% load banners %}
 {% load sponsors %}
+{% load download_tags %}
 
 {% block page_title %}Download Python | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}Download Python{% endblock %}
@@ -50,12 +51,13 @@
                 <div class="row active-release-list-widget">
                     {% render_active_banner %}
 
-                    <h2 class="widget-title">Active Python Releases</h2>
+                    <h2 class="widget-title">Active Python releases</h2>
                     <p class="success-quote"><a href="https://devguide.python.org/versions/#versions">For more information visit the Python Developer's Guide</a>.</p>
 
-                    {% box 'downloads-active-releases' %}
-                </div>
+                    <p class="release-cycle-chart"><img src="https://devguide.python.org/_static/release-cycle.svg" alt="Python release cycle"></p>
 
+                    {% render_active_releases %}
+                </div>
 
                 <div class="row download-list-widget">
 
@@ -74,7 +76,7 @@
                             <span class="release-number"><a href="{{ r.get_absolute_url }}">{{ r.name }}</a></span>
                             <span class="release-date">{{ r.release_date|date }}</span>
                             <span class="release-download"><a href="{{ r.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release Notes</a></span>
+                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release notes</a></span>
                         </li>
                         {% endfor %}
                     </ol>
@@ -89,9 +91,9 @@
                     </div>
                 </div>
 
-        		<div class="row">
+                <div class="row">
 
-        		    <div class="small-widget download-widget1">
+                    <div class="small-widget download-widget1">
                         {% box 'download-widget1' %}
 
                     </div>
@@ -101,7 +103,7 @@
 
                     </div>
 
-        		    <div class="small-widget download-widget3">
+                    <div class="small-widget download-widget3">
                         {% box 'download-widget3' %}
 
                     </div>

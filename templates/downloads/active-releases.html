@@ -1,0 +1,20 @@
+<div class="list-row-headings">
+    <span class="release-version">Python version</span>
+    <span class="release-status">Maintenance status</span>
+    <span class="release-dl">&nbsp;</span>
+    <span class="release-start">First released</span>
+    <span class="release-end">End of support</span>
+    <span class="release-pep">Release schedule</span>
+</div>
+<ol class="list-row-container menu">
+{% for release in releases %}
+    <li>
+        <span class="release-version">{{ release.version }}</span>
+        <span class="release-status">{{ release.status }}</span>
+        <span class="release-dl"><a href="/downloads/latest/python{{ release.version }}/"><span aria-hidden="true" class="icon-download"></span>Download</a></span>
+        <span class="release-start">{{ release.first_release }}</span>
+        <span class="release-end">{{ release.end_of_life }}</span>
+        <span class="release-pep">{% if release.pep %}<a href="https://peps.python.org/pep-{{ release.pep|stringformat:"04d" }}/">PEP {{ release.pep }}</a>{% endif %}</span>
+    </li>
+{% endfor %}
+</ol>

@@ -10,8 +10,10 @@
 
         {% if data.pymanager %}
         <p><a class="button" href="{{ data.pymanager.url }}">Python install manager</a></p>
+        {% if data.python3 %}
         <p>Or get the standalone installer for <a class="button" href="{{ data.python3.url }}">{{ data.python3.release.name }}</a></p>
-        {% else %}
+        {% endif %}
+        {% elif data.python3 %}
         <p>
             <a class="button" href="{{ data.python3.url }}">{{ data.python3.release.name }}</a>
         </p>

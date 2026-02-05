@@ -43,6 +43,7 @@ class ReleaseFileSerializer(serializers.HyperlinkedModelSerializer):
             'url',
             'gpg_signature_file',
             'md5_sum',
+            'sha256_sum',
             'filesize',
             'download_button',
             'resource_uri',

@@ -1,20 +1,18 @@
 <!doctype html>
-<!--[if lt IE 7]>   <html class="no-js ie6 lt-ie7 lt-ie8 lt-ie9">   <![endif]-->
-<!--[if IE 7]>      <html class="no-js ie7 lt-ie8 lt-ie9">          <![endif]-->
-<!--[if IE 8]>      <html class="no-js ie8 lt-ie9">                 <![endif]-->
-<!--[if gt IE 8]><!--><html class="no-js" lang="en" dir="ltr">  <!--<![endif]-->
+<html class="no-js" lang="en" dir="ltr">
 {% load pipeline sitetree %}
 <head>
-    <script defer data-domain="python.org" src="https://analytics.python.org/js/script.outbound-links.js"></script>
+    <script defer
+            file-types="bz2,chm,dmg,exe,gz,json,msi,msix,pdf,pkg,tgz,xz,zip"
+            data-domain="python.org"
+            src="https://analytics.python.org/js/script.file-downloads.outbound-links.js"></script>
 
     <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
     <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js">
 
     <meta name="application-name" content="{{ SITE_INFO.site_name }}">
-    <meta name="msapplication-tooltip" content="{{ SITE_INFO.site_descript }}">
     <meta name="apple-mobile-web-app-title" content="{{ SITE_INFO.site_name }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
@@ -22,8 +20,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="HandheldFriendly" content="True">
     <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="cleartype" content="on">
-    <meta http-equiv="imagetoolbar" content="false">{# Kills IE6's images toolbar. Still useful. #}
 
     <script async
             src="https://media.ethicalads.io/media/client/v1.4.0/ethicalads.min.js"
@@ -41,11 +37,6 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, braille, embossed, speech, tty">
     {% endcomment %}
 
-    <!--[if (lte IE 8)&(!IEMobile)]>
-    {% stylesheet 'no-mq' %}
-    {# equivalent to: #}
-    {#<link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/no-mq.css" media="screen">#}
-    <![endif]-->
     <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
@@ -130,18 +121,6 @@
      }
     </script>
 
-    {# Asynchronous Analytics snippet #}
-    <script type="text/javascript">
-    var _gaq = _gaq || [];
-    _gaq.push(['_setAccount', 'UA-39055973-1']);
-    _gaq.push(['_trackPageview']);
-
-    (function() {
-        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-    })();
-    </script>
     {% block head %}{% endblock %}
 </head>
 
@@ -150,17 +129,8 @@
     <div id="touchnav-wrapper">
 
         <div id="nojs" class="do-not-print">
-            <p><strong>Notice:</strong> While JavaScript is not essential for this website, your interaction with the content will be limited. Please turn JavaScript on for the full experience. </p>
+            <p><strong>Notice:</strong> This page displays a fallback because interactive scripts did not run. Possible causes include disabled JavaScript or failure to load scripts or stylesheets.</p>
         </div>
-
-        <!--[if lte IE 8]>
-        <div id="oldie-warning" class="do-not-print">
-            <p>
-                <strong>Notice:</strong> Your browser is <em>ancient</em>. Please
-                <a href="http://browsehappy.com/">upgrade to a different browser</a> to experience a better web.
-            </p>
-        </div>
-        <![endif]-->
 
         <!-- Sister Site Links -->
         <div id="top" class="top-bar do-not-print">
@@ -191,12 +161,12 @@
         <header class="main-header" role="banner">
             <div class="container">
 
-                <h1 class="site-headline">
+                <div class="site-headline">
                     {% block section-logo %}<a href="/"><img class="python-logo" src="{{ STATIC_URL }}img/python-logo.png" alt="python&trade;"></a>{% endblock %}
-                </h1>
+                </div>
 
                 <div class="options-bar-container do-not-print">
-                    <a href="https://psfmember.org/civicrm/contribute/transact?reset=1&id=2" class="donate-button">Donate</a>
+                    <a href="https://donate.python.org/" class="donate-button">Donate</a>
                     <div class="options-bar">
                         {# Its a little ugly, but no space between elements makes the inline-block style work better #}
                         <a id="site-map-link" class="jump-to-menu" href="#site-map"><span class="menu-icon">&equiv;</span> Menu</a><form class="search-the-site" action="/search/" method="get">
@@ -210,9 +180,6 @@
                                 <button type="submit" name="submit" id="submit" class="search-button" title="Submit this Search" tabindex="3">
                                     GO
                                 </button>
-
-                                {# I heard IE needs this in order to have the form submit by pressing the enter key. True? #}
-                                <!--[if IE]><input type="text" style="display: none;" disabled="disabled" size="1" tabindex="4"><![endif]-->
 
                             </fieldset>
                         </form><span class="breaker"></span><div class="adjust-font-size" aria-hidden="true">
@@ -354,18 +321,6 @@
     <script src="{{ STATIC_URL }}js/plugins.js"></script>
     <script src="{{ STATIC_URL }}js/script.js"></script>
     {% endcomment %}
-
-    <!--[if lte IE 7]>
-    {% javascript 'IE8' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/IE8.js"></script>#}
-    <![endif]-->
-
-    <!--[if lte IE 8]>
-    {% javascript 'getComputedStyle' %}
-    {# equivalent to: #}
-    {#<script src="{{ STATIC_URL }}js/plugins/getComputedStyle.js"></script>#}
-    <![endif]-->
 
     {% endblock javascript %}
 

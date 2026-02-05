@@ -68,7 +68,7 @@
 /* Since we can't use the above, let's create our own way to do it. */
 /* Quickly apply border styles to elements */
 /* Talk of depreciating the Compass mixin, so we pull it in here and make small adjustments */
-/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE6/7 */
+/* Namespace the box-sizing mixin so we can add support (a polyfill?) for IE7 */
 /* Vertical and Horizontal gradient mixins to make things easier. */
 /* 
  * Set all the up-and-coming input text types here for easier reference 
@@ -113,8 +113,6 @@
 /* Color Spaces: use for consistency */
 .psf-widget, .python-needs-you-widget, .main-header, .site-base {
   background-color: #2b5b84;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF1E415E', endColorstr='#FF2B5B84');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #1e415e), color-stop(90%, #2b5b84));
   background-image: -webkit-linear-gradient(#1e415e 10%, #2b5b84 90%);
   background-image: -moz-linear-gradient(#1e415e 10%, #2b5b84 90%);
@@ -126,17 +124,14 @@
 
 .psf-widget, .python-needs-you-widget {
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
+  padding: 1.25em; }
   .psf-widget:after, .python-needs-you-widget:after {
     content: "";
     display: table;
     clear: both; }
 
-.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
+.most-recent-events .more-by-location, .user-profile-controls div.section-links ul li, .more-by-location {
   background-color: #d8dbde;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFD8DBDE');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #d8dbde));
   background-image: -webkit-linear-gradient(#e6e8ea 10%, #d8dbde 90%);
   background-image: -moz-linear-gradient(#e6e8ea 10%, #d8dbde 90%);
@@ -146,20 +141,17 @@
   -moz-box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01);
   box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.01); }
 
-.pep-widget, .most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
+.most-recent-events .more-by-location, .user-profile-controls div.section-links ul li {
   border: 1px solid #caccce;
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
-  .pep-widget:after, .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
+  padding: 1.25em; }
+  .most-recent-events .more-by-location:after, .user-profile-controls div.section-links ul li:after {
     content: "";
     display: table;
     clear: both; }
 
 .single-event-date {
   background-color: #ffdd6c;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE89F', endColorstr='#FFFFDD6C');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe89f), color-stop(90%, #ffdd6c));
   background-image: -webkit-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
   background-image: -moz-linear-gradient(#ffe89f 10%, #ffdd6c 90%);
@@ -172,8 +164,7 @@
 .single-event-date {
   border: 1px solid #ffcc24;
   margin-bottom: 0.5em;
-  padding: 1.25em;
-  *zoom: 1; }
+  padding: 1.25em; }
   .single-event-date:after {
     content: "";
     display: table;
@@ -192,8 +183,6 @@
   white-space: nowrap;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
   background-color: #cccccc;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFD9D9D9', endColorstr='#FFCCCCCC');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #d9d9d9), color-stop(90%, #cccccc));
   background-image: -webkit-linear-gradient(#d9d9d9 10%, #cccccc 90%);
   background-image: -moz-linear-gradient(#d9d9d9 10%, #cccccc 90%);
@@ -220,8 +209,6 @@
   .sidebar-widget form input[type=submit]:active, #update-sponsorship-assets .btn:active, input[type=submit]:active, input[type=reset]:active, button:active, .button:active {
     color: #1a1a1a !important;
     background-color: #d9d9d9;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E6E6', endColorstr='#FFD9D9D9');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e6e6), color-stop(90%, #d9d9d9));
     background-image: -webkit-linear-gradient(#e6e6e6 10%, #d9d9d9 90%);
     background-image: -moz-linear-gradient(#e6e6e6 10%, #d9d9d9 90%);
@@ -230,8 +217,6 @@
 
 .psf-widget .button, .python-needs-you-widget .button, .donate-button, .header-banner .button, .header-banner a.button, .user-profile-controls div.section span {
   background-color: #ffd343;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFDF76', endColorstr='#FFFFD343');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffdf76), color-stop(90%, #ffd343));
   background-image: -webkit-linear-gradient(#ffdf76 10%, #ffd343 90%);
   background-image: -moz-linear-gradient(#ffdf76 10%, #ffd343 90%);
@@ -244,8 +229,6 @@
   .psf-widget .button:hover, .python-needs-you-widget .button:hover, .donate-button:hover, .header-banner .button:hover, .user-profile-controls div.section span:hover, .psf-widget .button:active, .python-needs-you-widget .button:active, .donate-button:active, .header-banner .button:active, .user-profile-controls div.section span:active {
     background-color: inherit;
     background-color: #ffd343;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFEBA9', endColorstr='#FFFFD343');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffeba9), color-stop(90%, #ffd343));
     background-image: -webkit-linear-gradient(#ffeba9 10%, #ffd343 90%);
     background-image: -moz-linear-gradient(#ffeba9 10%, #ffd343 90%);
@@ -254,8 +237,6 @@
 
 a.delete, form.deletion-form button[type="submit"] {
   background-color: #b55863;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFC57B84', endColorstr='#FFB55863');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #c57b84), color-stop(90%, #b55863));
   background-image: -webkit-linear-gradient(#c57b84 10%, #b55863 90%);
   background-image: -moz-linear-gradient(#c57b84 10%, #b55863 90%);
@@ -270,8 +251,6 @@ a.delete, form.deletion-form button[type="submit"] {
     background-color: inherit;
     color: white !important;
     background-color: #b55863;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFD49FA5', endColorstr='#FFB55863');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #d49fa5), color-stop(90%, #b55863));
     background-image: -webkit-linear-gradient(#d49fa5 10%, #b55863 90%);
     background-image: -moz-linear-gradient(#d49fa5 10%, #b55863 90%);
@@ -284,8 +263,6 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
   color: #e6e8ea !important;
   text-shadow: none;
   background-color: #2b5b84;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF3776AB', endColorstr='#FF2B5B84');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #3776ab), color-stop(90%, #2b5b84));
   background-image: -webkit-linear-gradient(#3776ab 10%, #2b5b84 90%);
   background-image: -moz-linear-gradient(#3776ab 10%, #2b5b84 90%);
@@ -306,8 +283,6 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
     background: inherit;
     color: #f2f4f6 !important;
     background-color: #244e71;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF316998', endColorstr='#FF244E71');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #316998), color-stop(90%, #244e71));
     background-image: -webkit-linear-gradient(#316998 10%, #244e71 90%);
     background-image: -moz-linear-gradient(#316998 10%, #244e71 90%);
@@ -344,12 +319,10 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
   border: 1px solid #caccce;
   background-color: transparent; }
 
-form, .header-banner, .success-stories-widget .quote-from {
-  *zoom: 1; }
-  form:after, .header-banner:after, .success-stories-widget .quote-from:after {
-    content: "";
-    display: table;
-    clear: both; }
+form:after, .header-banner:after, .success-stories-widget .quote-from:after {
+  content: "";
+  display: table;
+  clear: both; }
 
 /* ! ===== Mixins ===== */
 /* An element than can force a line break, to be used inside certain breakpoints on lines of text or bwteen elements */
@@ -603,7 +576,7 @@ pre {
   /* IE 5.5+ and up */ }
 
 code {
-  color: #11a611; }
+  color: #0d870d; }
 
 var {
   font-style: italic; }
@@ -613,27 +586,16 @@ textarea {
   vertical-align: top;
   resize: vertical; }
 
-.ie7 legend {
-  border: 0;
-  padding: 0;
-  white-space: normal;
-  *margin-left: -7px; }
-
 input[type="radio"] {
   vertical-align: text-bottom; }
 
 input[type="checkbox"] {
   vertical-align: baseline; }
 
-.ie7 input[type="checkbox"] {
-  vertical-align: bottom; }
-
 button, input[type="button"], input[type="reset"], input[type="submit"] {
   cursor: pointer;
   -webkit-appearance: button;
   -moz-appearance: button; }
-  .lt-ie8 button, .lt-ie8 input[type="button"], .lt-ie8 input[type="reset"], .lt-ie8 input[type="submit"] {
-    overflow: visible; }
 
 button[disabled], input[disabled] {
   cursor: default; }
@@ -652,9 +614,6 @@ input[type="search"]::-webkit-search-decoration, input[type="search"]::-webkit-s
 .no-boxshadow input:invalid, .no-boxshadow textarea:invalid {
   background-color: #f0dddd; }
 
-.ie7 img {
-  -ms-interpolation-mode: bicubic; }
-
 /* Aural rulesets */
 abbr.initialism {
   speak: spell-out; }
@@ -662,17 +621,6 @@ abbr.initialism {
 abbr.truncation {
   speak: normal; }
 
-/* Stupid IE: http://timkadlec.com/2012/10/ie10-snap-mode-and-responsive-design/ */
-@-ms-viewport {
-  width: device-width; }
-
-canvas {
-  -ms-touch-action: double-tap-zoom; }
-
-svg:not(:root) {
-  overflow: hidden; }
-
-/* fixes an issue in IE9 */
 /*
  * Main CSS styles for linear content. Design for Mobile first!
  *
@@ -694,9 +642,6 @@ svg:not(:root) {
  *
  * Get rid of the need for Susy to do column calculations. Use the .col-row negative margins, .column right and left padding technique instead. Removes the need for .last as well.
  * DRAWBACK: relies heavily on border-sizing: border-box which may be a headache in old IE.
- *
- * Search for properties that begin with * and make them ie7 specific instead.
- * Try to remove as many as possible, or don't rely on SASS functions that inject that rule for older browser compliance.
  */
 /* ===== GLOBAL TYPOGRAPHIC & ELEMENT STYLES ===== */
 html {
@@ -723,6 +668,9 @@ body, input, textarea, select, button {
 a, a:active, a:visited, a:hover, a:visited:hover {
   color: #3776ab;
   text-decoration: none; }
+
+table tr td a, table tr td a:active, table tr td a:visited, table tr td a:hover, table tr td a:visited:hover {
+  color: #3571a3; }
 
 a:hover, a:focus {
   color: #1e2933; }
@@ -781,7 +729,7 @@ h1, .alpha {
   margin-bottom: 0.4375em; }
 
 h2, .beta {
-  color: #999999;
+  color: #222222;
   font-family: SourceSansProRegular, Arial, sans-serif;
   font-size: 1.5em;
   margin-top: 1.3125em;
@@ -914,8 +862,6 @@ input[type=submit], input[type=reset], button, a.button, .button {
 
 input[type=reset], button.secondaryAction[type=submit] {
   background-color: #999999;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB3B3B3', endColorstr='#FF999999');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b3b3b3), color-stop(90%, #999999));
   background-image: -webkit-linear-gradient(#b3b3b3 10%, #999999 90%);
   background-image: -moz-linear-gradient(#b3b3b3 10%, #999999 90%);
@@ -928,8 +874,6 @@ input[type=reset], button.secondaryAction[type=submit] {
   input[type=reset]:hover, input[type=reset]:focus, input[type=reset]:active, button.secondaryAction[type=submit]:hover, button.secondaryAction[type=submit]:focus, button.secondaryAction[type=submit]:active {
     color: white;
     background-color: #b3b3b3;
-    *zoom: 1;
-    filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF999999', endColorstr='#FFB3B3B3');
     background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #999999), color-stop(90%, #b3b3b3));
     background-image: -webkit-linear-gradient(#999999 10%, #b3b3b3 90%);
     background-image: -moz-linear-gradient(#999999 10%, #b3b3b3 90%);
@@ -952,8 +896,7 @@ abbr, dfn {
 /* ! ===== Simple Column Structure – Need to roll this out more widely ===== */
 .col-row {
   margin: -1em;
-  overflow: hidden;
-  *zoom: 1; }
+  overflow: hidden; }
 
 .column, .not-column {
   padding-left: 1em;
@@ -973,7 +916,7 @@ h2.not-column {
 
 /* ! ===== HELPFUL CLASSES ===== */
 /* A useful class that helps control how lines might break. Use carefully and always test. */
-.pre, .rss-link {
+.pre {
   white-space: nowrap; }
 
 /* Our own little class for progressive text. Yes, it is a Monty Python reference */
@@ -1004,8 +947,6 @@ h2.not-column {
 .top-bar a:hover, .top-bar a:focus, .python .top-bar .python-meta a, .psf .top-bar .psf-meta a, .docs .top-bar .docs-meta a, .pypi .top-bar .pypi-meta a, .jobs .top-bar .jobs-meta a, .shop .top-bar .shop-meta a {
   color: white;
   background-color: #1f2a32;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF13191E', endColorstr='#FF1F2A32');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #13191e), color-stop(90%, #1f2a32));
   background-image: -webkit-linear-gradient(#13191e 10%, #1f2a32 90%);
   background-image: -moz-linear-gradient(#13191e 10%, #1f2a32 90%);
@@ -1078,7 +1019,6 @@ h2.not-column {
     text-align: center;
     padding: .75em 1em; }
 
-/*h1*/
 .site-headline {
   color: white;
   margin: 0.15em auto 0.2em; }
@@ -1140,18 +1080,6 @@ input#s,
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: middle; }
-  .lt-ie8 #site-map-link, .lt-ie8
-  .jump-to-menu, .lt-ie8
-  .search-the-site, .lt-ie8
-  .icon-search, .lt-ie8
-  .icon-search:before, .lt-ie8
-  input#s, .lt-ie8
-  .adjust-font-size, .lt-ie8
-  .winkwink-nudgenudge, .lt-ie8
-  .account-signin {
-    vertical-align: auto;
-    zoom: 1;
-    display: inline; }
 
 .touch .search-the-site,
 .winkwink-nudgenudge,
@@ -1287,38 +1215,18 @@ input#s,
   .winkwink-nudgenudge .tier-2 > a,
   .account-signin .tier-2 > a {
     text-align: left; }
-  .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
-  .adjust-font-size .sidebar-widget form label + ul,
-  .sidebar-widget form .adjust-font-size label + ul,
-  .winkwink-nudgenudge .menu,
-  .winkwink-nudgenudge form ul,
-  form .winkwink-nudgenudge ul,
-  .winkwink-nudgenudge .errorlist,
-  .winkwink-nudgenudge .text form label + ul,
-  .text form .winkwink-nudgenudge label + ul,
-  .winkwink-nudgenudge .sidebar-widget form label + ul,
-  .sidebar-widget form .winkwink-nudgenudge label + ul,
-  .account-signin .menu,
-  .account-signin form ul,
-  form .account-signin ul,
-  .account-signin .errorlist,
-  .account-signin .text form label + ul,
-  .text form .account-signin label + ul,
-  .account-signin .sidebar-widget form label + ul,
-  .sidebar-widget form .account-signin label + ul {
-    *zoom: 1; }
-    .adjust-font-size .menu:after, .adjust-font-size form ul:after, form .adjust-font-size ul:after, .adjust-font-size .errorlist:after,
-    .winkwink-nudgenudge .menu:after,
-    .winkwink-nudgenudge form ul:after,
-    form .winkwink-nudgenudge ul:after,
-    .winkwink-nudgenudge .errorlist:after,
-    .account-signin .menu:after,
-    .account-signin form ul:after,
-    form .account-signin ul:after,
-    .account-signin .errorlist:after {
-      content: "";
-      display: table;
-      clear: both; }
+  .adjust-font-size .menu:after, .adjust-font-size form ul:after, form .adjust-font-size ul:after, .adjust-font-size .errorlist:after,
+  .winkwink-nudgenudge .menu:after,
+  .winkwink-nudgenudge form ul:after,
+  form .winkwink-nudgenudge ul:after,
+  .winkwink-nudgenudge .errorlist:after,
+  .account-signin .menu:after,
+  .account-signin form ul:after,
+  form .account-signin ul:after,
+  .account-signin .errorlist:after {
+    content: "";
+    display: table;
+    clear: both; }
   .adjust-font-size .tier-1,
   .winkwink-nudgenudge .tier-1,
   .account-signin .tier-1 {
@@ -1620,7 +1528,7 @@ input#s,
   padding: 1.25em 1.5em; }
   .slide-code code {
     display: inline-block;
-    color: #11a611; }
+    color: #0d870d; }
     .slide-code code .comment {
       color: #666666; }
     .slide-code code .output {
@@ -1647,14 +1555,11 @@ input#s,
   width: 50%;
   max-width: 30.75em; }
   #dive-into-python .flex-control-paging a {
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
     opacity: 0.7; }
     #dive-into-python .flex-control-paging a:hover, #dive-into-python .flex-control-paging a:focus {
-      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
       opacity: 1; }
   #dive-into-python .flex-control-paging .flex-active {
     color: #ffd343 !important;
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
     opacity: 1; }
 
 .introduction {
@@ -1700,8 +1605,6 @@ input#s,
 .content-wrapper {
   padding: 0;
   background-color: #f9f9f9;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFCFCFC', endColorstr='#FFF9F9F9');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #fcfcfc), color-stop(90%, #f9f9f9));
   background-image: -webkit-linear-gradient(#fcfcfc 10%, #f9f9f9 90%);
   background-image: -moz-linear-gradient(#fcfcfc 10%, #f9f9f9 90%);
@@ -1785,7 +1688,7 @@ input#s,
   .sidebar-widget dd,
   .sidebar-widget blockquote,
   .sidebar-widget address {
-    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE6-8 */
+    /*  -ms-word-break: break-all; AWFUL! Surprise... breaks words arbitrarily, not according to hyphenation tables. IE8 */
     /*   word-break: break-all; Used when we need to break long strings (URLs) in small containers. Use with care. */
     /*   word-break: break-word; Non standard for older webkit. Hyphenation tables aren't great, so don't use. */
     -webkit-hyphens: auto;
@@ -1933,8 +1836,7 @@ input#s,
     background-color: #e6e8ea;
     padding: .125em .375em 0;
     margin: 0 .25em; }
-  .text code, .text kbd,
-  .sidebar-widget code,
+  .text kbd,
   .sidebar-widget kbd {
     padding: .125em .375em 0;
     margin: 0 -.0625em;
@@ -1951,7 +1853,7 @@ input#s,
   .text pre,
   .sidebar-widget pre {
     padding: .5em;
-    border-left: 5px solid #11a611;
+    border-left: 5px solid #0d870d;
     background: #e6e8ea;
     -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
     -moz-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
@@ -1997,6 +1899,10 @@ table th, table td {
     border-left: none; }
 table tfoot {
   border-top: 1px solid #dddddd; }
+table .checksum {
+  font-size: 0.85em; }
+  table .checksum .checksum-half {
+    display: inline-block; }
 
 .row-title {
   border-top: 5px solid #d4dbe1;
@@ -2113,6 +2019,46 @@ table tfoot {
 .download-widget p:last-child a {
   white-space: nowrap; }
 
+.featured-downloads-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5em;
+  justify-content: center;
+  margin-bottom: 2em; }
+
+.featured-download-box {
+  background-color: #f2f4f6;
+  border: 1px solid #caccce;
+  border-radius: 5px;
+  display: flex;
+  flex: 1 1 300px;
+  flex-direction: column;
+  min-width: 250px;
+  max-width: 400px;
+  padding: 1.25em; }
+  .featured-download-box h3 {
+    margin-top: 0; }
+  .featured-download-box .button {
+    background-color: #ffd343;
+    background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffdf76), color-stop(90%, #ffd343));
+    background-image: -webkit-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: -moz-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: -o-linear-gradient(#ffdf76 10%, #ffd343 90%);
+    background-image: linear-gradient(#ffdf76 10%, #ffd343 90%);
+    border: 1px solid #dca900;
+    white-space: normal; }
+    .featured-download-box .button:hover, .featured-download-box .button:active {
+      background-color: inherit;
+      background-color: #ffd343;
+      background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffeba9), color-stop(90%, #ffd343));
+      background-image: -webkit-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: -moz-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: -o-linear-gradient(#ffeba9 10%, #ffd343 90%);
+      background-image: linear-gradient(#ffeba9 10%, #ffd343 90%); }
+  .featured-download-box .download-buttons {
+    margin-bottom: 0;
+    text-align: center; }
+
 .time-posted {
   display: block;
   font-size: 0.875em;
@@ -2132,8 +2078,6 @@ table tfoot {
   font-size: 1em;
   line-height: 1.75em;
   background-color: #ffdf76;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFFFE58F', endColorstr='#FFFFDF76');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #ffe58f), color-stop(90%, #ffdf76));
   background-image: -webkit-linear-gradient(#ffe58f 10%, #ffdf76 90%);
   background-image: -moz-linear-gradient(#ffe58f 10%, #ffdf76 90%);
@@ -2220,137 +2164,10 @@ table tfoot {
   color: #b55863;
   font-family: SourceSansProBold, Arial, sans-serif; }
 
-/* ! ===== PEP Widget ===== */
-.pep-widget {
-  margin-bottom: 1.3125em; }
-  .pep-widget .widget-title {
-    color: #737373;
-    margin-bottom: 0.35em;
-    font-size: 1.125em; }
-    .fontface .pep-widget .widget-title {
-      font-size: 1.29375em; }
-      .fontface .pep-widget .widget-title span:before {
-        font-size: .875em; }
-    .pep-widget .widget-title a {
-      color: #3776ab; }
-      .pep-widget .widget-title a:hover, .pep-widget .widget-title a:active {
-        color: #1f3b47; }
-  .pep-widget .pep-number {
-    color: #666666;
-    font-family: SourceSansProBold, Arial, sans-serif;
-    display: inline-block;
-    width: 3em; }
-
-.pep-list {
-  border-top: 1px solid #caccce;
-  line-height: 1.2em;
-  margin: 0; }
-  .pep-list li {
-    display: block;
-    line-height: 1.35em; }
-    .pep-list li a {
-      display: block;
-      color: #3776ab;
-      background-color: #f2f4f6;
-      border-bottom: 1px solid #e6eaee;
-      padding: .6em .75em .5em; }
-      .pep-list li a:hover, .pep-list li a:focus, .pep-list li a:active {
-        color: #222222;
-        background-color: #fefefe; }
-
-.rss-link {
-  line-height: 1em; }
-  .rss-link span:before {
-    color: #cc9547; }
-
-/* ! ===== PEP landing page ===== */
-/*<div class="pep-list-header list-row-headings">
-    <span class="pep-type">Type</span>
-    <span class="pep-num">Number</span>
-    <span class="pep-title">Title <span class="say-no-more">(click for more)</span></span>
-    <span class="pep-owner">Owner</span>
-</div>
-<ul class="pep-index-list menu">
-    <li>
-        <div class="pep-type"><span class="label">Type</span>info-act</div>
-        <div class="pep-num"><span class="label">Number</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">20</a></div>
-        <div class="pep-title"><span class="label">Title</span><a href="http://hg.python.org/peps/file/tip/pep-0020.txt">The Zen of Python</a></div>
-        <div class="pep-owner"><span class="label">Owner</span>Tim Peters</div>
-    </li>
-</ul>*/
-.pep-list-header {
-  font-family: SourceSansProBold, Arial, sans-serif;
-  display: none; }
-
-.pep-index-list {
-  margin-bottom: 2.625em; }
-  .pep-index-list .label {
-    font-family: SourceSansProBold, Arial, sans-serif;
-    display: inline-block;
-    width: 20%; }
-  .pep-index-list li {
-    background-color: #f2f4f6;
-    border-bottom: 1px solid #caccce; }
-  .pep-index-list a {
-    display: inline-block;
-    color: #3776ab; }
-    .pep-index-list a:hover, .pep-index-list a:focus, .pep-index-list a:active {
-      color: #222222; }
-
-.pep-type, .pep-num, .pep-title, .pep-owner {
-  padding: .5em .5em .4em;
-  border-bottom: 1px solid #e3e7ec; }
-
-.footnote .label {
-  width: 4em; }
-
-/*dl*/
-.info-key dt, .info-key dd {
-  display: block;
-  float: left;
-  padding: .5em .5em .4em; }
-.info-key dt {
-  width: 25%; }
-.info-key dd {
-  width: 75%;
-  border-bottom: 1px solid #e6e8ea; }
-
-/* <div class="pep-owner-header">
-        <div class="label">Name</div>
-        <div class="label">Email Address</div>
-    </div>
-    <ul class="pep-owner-list menu">
-        <li>
-            <div class="owner-name">Tim Peters</div>
-            <div class="owner-email">tim at zope.com</div>
-        </li>
-    </ul> */
-.pep-owner-header {
-  margin: 0 -.5em;
-  overflow: hidden;
-  *zoom: 1; }
-  .pep-owner-header .label {
-    font-family: SourceSansProBold, Arial, sans-serif;
-    float: left;
-    width: 50%;
-    padding: .25em .5em .2em; }
-
-.pep-owner-list li {
-  background-color: #f2f4f6;
-  border-bottom: 1px solid #caccce;
-  overflow: hidden;
-  *zoom: 1; }
-  .pep-owner-list li:hover {
-    background-color: #fefefe; }
-.pep-owner-list .owner-name, .pep-owner-list .owner-email {
-  float: left;
-  width: 50%;
-  padding: .5em .5em .4em; }
-
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1726783859') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1694722768') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -2580,10 +2397,6 @@ p.quote-by-organization {
   display: -moz-inline-stack;
   display: inline-block;
   vertical-align: baseline; }
-  .lt-ie8 .pagination li {
-    vertical-align: auto;
-    zoom: 1;
-    display: inline; }
 .pagination a:hover, .pagination a:focus {
   color: #333333;
   background-color: #ffd343; }
@@ -2671,6 +2484,13 @@ p.quote-by-organization {
   font-size: 0.875em; }
 .active-release-list-widget .list-row-container {
   margin-bottom: .5em; }
+.active-release-list-widget .release-cycle-chart img {
+  display: block;
+  margin: 0 auto;
+  width: 80%; }
+  @media screen and (max-width: 860px) {
+    .active-release-list-widget .release-cycle-chart img {
+      width: 100%; } }
 
 .download-list-widget {
   /*modernizr*/ }
@@ -2728,14 +2548,20 @@ p.quote-by-organization {
   background-color: #fff7dc;
   border: 2px solid #ffd343; }
   .level-notice span {
-    color: #dca900; }
+    color: #765a00;
+    font-weight: bold; }
 
 /* Something went wrong */
 .level-error {
   background-color: #ecd4d7;
   border: 2px solid #b55863; }
   .level-error span {
-    color: #b55863; }
+    color: #853b44;
+    font-weight: bold; }
+  .level-error a {
+    color: #2b5b84; }
+    .level-error a:hover, .level-error a:focus {
+      color: #1e415e; }
 
 /* Yeah! It worked correctly */
 .level-success {
@@ -2795,8 +2621,7 @@ p.quote-by-organization {
   clear: both;
   border: 1px solid #caccce;
   padding: 0.875em 0.5em;
-  overflow: hidden;
-  *zoom: 1; }
+  overflow: hidden; }
   .job-post-meta span {
     display: block; }
   .job-post-meta .listing-actions {
@@ -2816,10 +2641,6 @@ p.quote-by-organization {
     display: -moz-inline-stack;
     display: inline-block;
     vertical-align: baseline; }
-    .lt-ie8 .breadcrumbs li {
-      vertical-align: auto;
-      zoom: 1;
-      display: inline; }
   .breadcrumbs .prompt, .breadcrumbs .readmore:before, .breadcrumbs .give-me-more a:before, .give-me-more .breadcrumbs a:before {
     margin-left: .5em; }
 
@@ -2839,8 +2660,6 @@ p.quote-by-organization {
 .psf-sidebar-widget {
   color: #f2f4f6;
   background-color: #3776ab;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FF2B5B84', endColorstr='#FF3776AB');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #2b5b84), color-stop(90%, #3776ab));
   background-image: -webkit-linear-gradient(#2b5b84 10%, #3776ab 90%);
   background-image: -moz-linear-gradient(#2b5b84 10%, #3776ab 90%);
@@ -2879,8 +2698,6 @@ p.quote-by-organization {
         padding: 0.25em 0.25em; }
         .user-profile-controls div.section-links ul li:hover {
           background-color: #bcc2c7;
-          *zoom: 1;
-          filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFE6E8EA', endColorstr='#FFBCC2C7');
           background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #e6e8ea), color-stop(90%, #bcc2c7));
           background-image: -webkit-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
           background-image: -moz-linear-gradient(#e6e8ea 10%, #bcc2c7 90%);
@@ -2925,10 +2742,6 @@ p.quote-by-organization {
     display: -moz-inline-stack;
     display: inline-block;
     vertical-align: baseline; }
-    .lt-ie8 .horizontal-menu li {
-      vertical-align: auto;
-      zoom: 1;
-      display: inline; }
 
 /* ! ===== FOOTER elements ===== */
 .main-footer .jump-link, .sitemap a, .footer-links a {
@@ -3107,20 +2920,18 @@ span.highlighted {
   /*ul*/
   /*li*/
   /*li*/ }
-  .flex-slideshow .slides {
-    *zoom: 1; }
-    .flex-slideshow .slides:after {
-      content: "";
-      display: table;
-      clear: both; }
-    .flex-slideshow .slides > li {
-      display: none;
-      -webkit-backface-visibility: hidden;
-      /* Hide the slides before the JS is loaded. Avoids image jumping */ }
-    * html .flex-slideshow .slides {
-      height: 1%; }
-    .no-js .flex-slideshow .slides > li:first-child {
-      display: block; }
+  .flex-slideshow .slides:after {
+    content: "";
+    display: table;
+    clear: both; }
+  .flex-slideshow .slides > li {
+    display: none;
+    -webkit-backface-visibility: hidden;
+    /* Hide the slides before the JS is loaded. Avoids image jumping */ }
+  * html .flex-slideshow .slides {
+    height: 1%; }
+  .no-js .flex-slideshow .slides > li:first-child {
+    display: block; }
   .flex-slideshow .slide-container {
     position: relative; }
   .flex-slideshow .frame-wrapper {
@@ -3183,7 +2994,6 @@ span.highlighted {
     line-height: 1em;
     color: #999999; }
     .flex-direction-nav .flex-prev:hover, .flex-direction-nav .flex-prev:focus, .flex-direction-nav .flex-next:hover, .flex-direction-nav .flex-next:focus {
-      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
       opacity: 1; }
     .text .flex-direction-nav .flex-prev, .text .flex-direction-nav .flex-next {
       text-decoration: none; }
@@ -3194,10 +3004,8 @@ span.highlighted {
   .home-slideshow .flex-direction-nav .flex-prev, .home-slideshow .flex-direction-nav .flex-next {
     top: 33%;
     bottom: auto;
-    filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=70);
     opacity: 0.7; }
     .home-slideshow .flex-direction-nav .flex-prev:hover, .home-slideshow .flex-direction-nav .flex-prev:focus, .home-slideshow .flex-direction-nav .flex-next:hover, .home-slideshow .flex-direction-nav .flex-next:focus {
-      filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=100);
       opacity: 1; }
   .home-slideshow .flex-direction-nav .flex-prev {
     left: .75em; }
@@ -3212,29 +3020,20 @@ span.highlighted {
   .flex-control-paging {
     display: none; } }
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
-#nojs, #oldie-warning {
+#nojs {
   padding: .75em .75em .65em;
   text-align: center;
   background-color: #c33; }
-  #nojs p, #oldie-warning p {
+  #nojs p {
     color: #e6e6e6;
     font-weight: bold;
     margin: 0; }
-  #nojs a, #oldie-warning a {
+  #nojs a {
     color: #e6e6e6;
     text-decoration: underline; }
-    #nojs a:hover, #nojs a:focus, #oldie-warning a:hover, #oldie-warning a:focus {
+    #nojs a:hover, #nojs a:focus {
       color: #fff;
       text-decoration: none; }
-
-#oldie-warning {
-  background-color: #ff7; }
-  #oldie-warning p {
-    color: #444; }
-  #oldie-warning a {
-    color: #444; }
-    #oldie-warning a:hover, #oldie-warning a:focus {
-      color: #000; }
 
 .js #nojs {
   display: none; }
@@ -3354,11 +3153,11 @@ span.highlighted {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1726783859'); }
+      content: url('../img/python-logo_print.png?1694722768'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1726783859'); } }
+      content: url('../img/psf-logo_print.png?1694722768'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
@@ -3550,12 +3349,6 @@ span.highlighted {
   .no-fontface .icon-megaphone span, .no-fontface .icon-python-alt span, .no-fontface .icon-pypi span, .no-fontface .icon-news span, .no-fontface .icon-moderate span, .no-fontface .icon-mercurial span, .no-fontface .icon-jobs span, .no-fontface .icon-help span, .no-fontface .icon-download span, .no-fontface .icon-documentation span, .no-fontface .icon-community span, .no-fontface .icon-code span, .no-fontface .icon-close span, .no-fontface .icon-calendar span, .no-fontface .icon-beginner span, .no-fontface .icon-advanced span, .no-fontface .icon-sitemap span, .no-fontface .icon-search span, .no-fontface .icon-search-alt span, .no-fontface .icon-python span, .no-fontface .icon-github span, .no-fontface .icon-get-started span, .no-fontface .icon-feed span, .no-fontface .icon-facebook span, .no-fontface .icon-email span, .no-fontface .icon-arrow-up span, .no-fontface .icon-arrow-right span, .no-fontface .icon-arrow-left span, .no-fontface .icon-arrow-down span, .no-fontface .errorlist:before span, .no-fontface .icon-freenode span, .no-fontface .icon-alert span, .no-fontface .icon-versions span, .no-fontface .icon-twitter span, .no-fontface .icon-thumbs-up span, .no-fontface .icon-thumbs-down span, .no-fontface .icon-text-resize span, .no-fontface .icon-success-stories span, .no-fontface .icon-statistics span, .no-fontface .icon-stack-overflow span, .no-fontface .icon-mastodon span, .no-svg .icon-megaphone span, .no-svg .icon-python-alt span, .no-svg .icon-pypi span, .no-svg .icon-news span, .no-svg .icon-moderate span, .no-svg .icon-mercurial span, .no-svg .icon-jobs span, .no-svg .icon-help span, .no-svg .icon-download span, .no-svg .icon-documentation span, .no-svg .icon-community span, .no-svg .icon-code span, .no-svg .icon-close span, .no-svg .icon-calendar span, .no-svg .icon-beginner span, .no-svg .icon-advanced span, .no-svg .icon-sitemap span, .no-svg .icon-search span, .no-svg .icon-search-alt span, .no-svg .icon-python span, .no-svg .icon-github span, .no-svg .icon-get-started span, .no-svg .icon-feed span, .no-svg .icon-facebook span, .no-svg .icon-email span, .no-svg .icon-arrow-up span, .no-svg .icon-arrow-right span, .no-svg .icon-arrow-left span, .no-svg .icon-arrow-down span, .no-svg .errorlist:before span, .no-svg .icon-freenode span, .no-svg .icon-alert span, .no-svg .icon-versions span, .no-svg .icon-twitter span, .no-svg .icon-thumbs-up span, .no-svg .icon-thumbs-down span, .no-svg .icon-text-resize span, .no-svg .icon-success-stories span, .no-svg .icon-statistics span, .no-svg .icon-stack-overflow span, .no-svg .icon-mastodon span, .no-generatedcontent .icon-megaphone span, .no-generatedcontent .icon-python-alt span, .no-generatedcontent .icon-pypi span, .no-generatedcontent .icon-news span, .no-generatedcontent .icon-moderate span, .no-generatedcontent .icon-mercurial span, .no-generatedcontent .icon-jobs span, .no-generatedcontent .icon-help span, .no-generatedcontent .icon-download span, .no-generatedcontent .icon-documentation span, .no-generatedcontent .icon-community span, .no-generatedcontent .icon-code span, .no-generatedcontent .icon-close span, .no-generatedcontent .icon-calendar span, .no-generatedcontent .icon-beginner span, .no-generatedcontent .icon-advanced span, .no-generatedcontent .icon-sitemap span, .no-generatedcontent .icon-search span, .no-generatedcontent .icon-search-alt span, .no-generatedcontent .icon-python span, .no-generatedcontent .icon-github span, .no-generatedcontent .icon-get-started span, .no-generatedcontent .icon-feed span, .no-generatedcontent .icon-facebook span, .no-generatedcontent .icon-email span, .no-generatedcontent .icon-arrow-up span, .no-generatedcontent .icon-arrow-right span, .no-generatedcontent .icon-arrow-left span, .no-generatedcontent .icon-arrow-down span, .no-generatedcontent .errorlist:before span, .no-generatedcontent .icon-freenode span, .no-generatedcontent .icon-alert span, .no-generatedcontent .icon-versions span, .no-generatedcontent .icon-twitter span, .no-generatedcontent .icon-thumbs-up span, .no-generatedcontent .icon-thumbs-down span, .no-generatedcontent .icon-text-resize span, .no-generatedcontent .icon-success-stories span, .no-generatedcontent .icon-statistics span, .no-generatedcontent .icon-stack-overflow span, .no-generatedcontent .icon-mastodon span {
     display: inline; }
 
-/* Show in IE8: supports FontFace (eot) but not SVG. */
-.ie8 .icon-megaphone:before, .ie8 .icon-python-alt:before, .ie8 .icon-pypi:before, .ie8 .icon-news:before, .ie8 .icon-moderate:before, .ie8 .icon-mercurial:before, .ie8 .icon-jobs:before, .ie8 .icon-help:before, .ie8 .icon-download:before, .ie8 .icon-documentation:before, .ie8 .icon-community:before, .ie8 .icon-code:before, .ie8 .icon-close:before, .ie8 .icon-calendar:before, .ie8 .icon-beginner:before, .ie8 .icon-advanced:before, .ie8 .icon-sitemap:before, .ie8 .icon-search:before, .ie8 .icon-search-alt:before, .ie8 .icon-python:before, .ie8 .icon-github:before, .ie8 .icon-get-started:before, .ie8 .icon-feed:before, .ie8 .icon-facebook:before, .ie8 .icon-email:before, .ie8 .icon-arrow-up:before, .ie8 .icon-arrow-right:before, .ie8 .icon-arrow-left:before, .ie8 .icon-arrow-down:before, .ie8 .errorlist:before, .ie8 .icon-freenode:before, .ie8 .icon-alert:before, .ie8 .icon-versions:before, .ie8 .icon-twitter:before, .ie8 .icon-thumbs-up:before, .ie8 .icon-thumbs-down:before, .ie8 .icon-text-resize:before, .ie8 .icon-success-stories:before, .ie8 .icon-statistics:before, .ie8 .icon-stack-overflow:before, .ie8 .icon-mastodon:before {
-  display: inline; }
-.ie8 .icon-megaphone span, .ie8 .icon-python-alt span, .ie8 .icon-pypi span, .ie8 .icon-news span, .ie8 .icon-moderate span, .ie8 .icon-mercurial span, .ie8 .icon-jobs span, .ie8 .icon-help span, .ie8 .icon-download span, .ie8 .icon-documentation span, .ie8 .icon-community span, .ie8 .icon-code span, .ie8 .icon-close span, .ie8 .icon-calendar span, .ie8 .icon-beginner span, .ie8 .icon-advanced span, .ie8 .icon-sitemap span, .ie8 .icon-search span, .ie8 .icon-search-alt span, .ie8 .icon-python span, .ie8 .icon-github span, .ie8 .icon-get-started span, .ie8 .icon-feed span, .ie8 .icon-facebook span, .ie8 .icon-email span, .ie8 .icon-arrow-up span, .ie8 .icon-arrow-right span, .ie8 .icon-arrow-left span, .ie8 .icon-arrow-down span, .ie8 .errorlist:before span, .ie8 .icon-freenode span, .ie8 .icon-alert span, .ie8 .icon-versions span, .ie8 .icon-twitter span, .ie8 .icon-thumbs-up span, .ie8 .icon-thumbs-down span, .ie8 .icon-text-resize span, .ie8 .icon-success-stories span, .ie8 .icon-statistics span, .ie8 .icon-stack-overflow span, .ie8 .icon-mastodon span {
-  display: none; }
-
 /* @license
  * MyFonts Webfont Build ID 2421639, 2012-11-30T11:51:21-0500
  * 
@@ -3688,8 +3481,6 @@ span.highlighted {
   border-color: #82b043;
   color: white !important;
   background-color: #82b043;
-  *zoom: 1;
-  filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFB2D287', endColorstr='#FF82B043');
   background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #b2d287), color-stop(90%, #82b043));
   background-image: -webkit-linear-gradient(#b2d287 10%, #82b043 90%);
   background-image: -moz-linear-gradient(#b2d287 10%, #82b043 90%);
@@ -3958,8 +3749,6 @@ span.highlighted {
       position: sticky;
       top: 0;
       background-color: #fcfcfc;
-      *zoom: 1;
-      filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0, startColorstr='#FFF9F9F9', endColorstr='#FFFCFCFC');
       background-image: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(10%, #f9f9f9), color-stop(90%, #fcfcfc));
       background-image: -webkit-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);
       background-image: -moz-linear-gradient(#f9f9f9 10%, #fcfcfc 90%);

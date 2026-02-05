@@ -1,18 +1,20 @@
 name: Check collectstatic
-on: [push, pull_request]
+
+on: [push, pull_request, workflow_dispatch]
+
 jobs:
   collectstatic:
-    # Avoid running CI more than once on pushes to main repo open PRs
-    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name != github.event.pull_request.base.repo.full_name
+    if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
+
       - uses: actions/setup-python@v6
         with:
             python-version-file: '.python-version'
       - name: Cache Python dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: pythondotorg-cache-pip
         with:

@@ -19,7 +19,7 @@ from pages.models import Page
 from .managers import ReleaseManager
 
 
-DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'restructuredtext')
+DEFAULT_MARKUP_TYPE = getattr(settings, 'DEFAULT_MARKUP_TYPE', 'markdown')
 
 
 class OS(ContentManageable, NameSlugModel):
@@ -125,7 +125,7 @@ class Release(ContentManageable, NameSlugModel):
         version = re.match(r'Python\s([\d.]+)', self.name)
         if version is not None:
             return version.group(1)
-        return None
+        return ""
 
     def is_version_at_least(self, min_version_tuple):
         v1 = []
@@ -158,26 +158,28 @@ def update_supernav():
     if not latest_python3:
         return
 
+    try:
+        latest_pymanager = Release.objects.latest_pymanager()
+    except Release.DoesNotExist:
+        latest_pymanager = None
+
     python_files = []
     for o in OS.objects.all():
         data = {
             'os': o,
             'python3': None,
+            'pymanager': None,
         }
 
-        release_file = latest_python3.download_file_for_os(o.slug)
-        if not release_file:
-            continue
-        data['python3'] = release_file
+        data['python3'] = latest_python3.download_file_for_os(o.slug)
+        if latest_pymanager:
+            data['pymanager'] = latest_pymanager.download_file_for_os(o.slug)
 
-        python_files.append(data)
+        # Only include OSes that have at least one download file
+        if data['python3'] or data['pymanager']:
+            python_files.append(data)
 
     if not python_files:
-        return
-
-    if not all(f['python3'] for f in python_files):
-        # We have a latest Python release, different OSes, but don't have release
-        # files for the release, so return early.
         return
 
     content = render_to_string('downloads/supernav.html', {
@@ -287,11 +289,19 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
         purge_url('/downloads/feed.rss')
         purge_url('/downloads/latest/python2/')
         purge_url('/downloads/latest/python3/')
+        # Purge minor version specific URLs (like /downloads/latest/python3.14/)
+        version = instance.get_version()
+        if instance.version == Release.PYTHON3 and version:
+            match = re.match(r'^3\.(\d+)', version)
+            if match:
+                purge_url(f'/downloads/latest/python3.{match.group(1)}/')
+        purge_url('/downloads/latest/prerelease/')
+        purge_url('/downloads/latest/pymanager/')
         purge_url('/downloads/macos/')
         purge_url('/downloads/source/')
         purge_url('/downloads/windows/')
         purge_url('/ftp/python/')
-        if instance.get_version() is not None:
+        if instance.get_version():
             purge_url(f'/ftp/python/{instance.get_version()}/')
         # See issue #584 for details
         purge_url('/box/supernav-python-downloads/')
@@ -308,9 +318,7 @@ def update_download_supernav_and_boxes(sender, instance, **kwargs):
         return
 
     if instance.is_published:
-        # Supernav only has download buttons for Python 3.
-        if instance.version == instance.PYTHON3:
-            update_supernav()
+        update_supernav()
         update_download_landing_sources_box()
         update_homepage_download_box()
 
@@ -349,6 +357,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
         "SPDX-2 SBOM URL", blank=True, help_text="SPDX-2 SBOM URL"
     )
     md5_sum = models.CharField('MD5 Sum', max_length=200, blank=True)
+    sha256_sum = models.CharField('SHA256 Sum', max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
 
