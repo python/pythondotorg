@@ -1899,6 +1899,10 @@ table th, table td {
     border-left: none; }
 table tfoot {
   border-top: 1px solid #dddddd; }
+table .checksum {
+  font-size: 0.85em; }
+  table .checksum .checksum-half {
+    display: inline-block; }
 
 .row-title {
   border-top: 5px solid #d4dbe1;
