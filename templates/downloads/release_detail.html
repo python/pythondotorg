@@ -8,6 +8,7 @@
 {% load has_sha256 from download_tags %}
 {% load sort_windows from download_tags %}
 {% load get_eol_info from download_tags %}
+{% load wbr_wrap from download_tags %}
 
 {% block body_attributes %}class="python downloads"{% endblock %}
 
@@ -126,9 +127,9 @@
                 <td>{% if f.gpg_signature_file %}<a href="{{ f.gpg_signature_file }}">SIG</a>{% endif %}</td>
                 {% endif %}
                 {% if release_files|has_sha256 %}
-                <td>{{ f.sha256_sum }}</td>
+                <td><code class="checksum">{{ f.sha256_sum|wbr_wrap }}</code></td>
                 {% elif release_files|has_md5 %}
-                <td>{{ f.md5_sum }}</td>
+                <td><code class="checksum">{{ f.md5_sum|wbr_wrap }}</code></td>
                 {% endif %}
               </tr>
             {% endfor %}
