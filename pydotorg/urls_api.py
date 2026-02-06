@@ -4,7 +4,7 @@ from django.urls import re_path
 from rest_framework import routers
 from tastypie.api import Api
 
-from downloads.api import (
+from apps.downloads.api import (
     OSResource,
     OSViewSet,
     ReleaseFileResource,
@@ -12,8 +12,8 @@ from downloads.api import (
     ReleaseResource,
     ReleaseViewSet,
 )
-from pages.api import PageResource, PageViewSet
-from sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
+from apps.pages.api import PageResource, PageViewSet
+from apps.sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
 
 v1_api = Api(api_name="v1")
 v1_api.register(PageResource())

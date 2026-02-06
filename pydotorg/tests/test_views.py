@@ -3,7 +3,7 @@ from django.db.models import signals
 from django.test import TestCase
 from django.urls import reverse
 
-from downloads.models import Release
+from apps.downloads.models import Release
 
 
 class ViewsTests(TestCase):

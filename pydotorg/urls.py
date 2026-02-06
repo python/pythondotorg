@@ -7,10 +7,10 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views.generic.base import TemplateView
 
-from cms.views import custom_404
-from downloads.views import ReleaseEditButton
+from apps.cms.views import custom_404
+from apps.downloads.views import ReleaseEditButton
+from apps.users.views import CustomPasswordChangeView, HoneypotSignupView
 from pydotorg import urls_api, views
-from users.views import CustomPasswordChangeView, HoneypotSignupView
 
 handler404 = custom_404
 
@@ -28,11 +28,11 @@ urlpatterns = [
     path("about/", TemplateView.as_view(template_name="python/about.html"), name="about"),
     # duplicated downloads to getit to bypass China's firewall. See
     # https://github.com/python/pythondotorg/issues/427 for more info.
-    path("getit/", include("downloads.urls", namespace="getit")),
-    path("downloads/", include("downloads.urls", namespace="download")),
+    path("getit/", include("apps.downloads.urls", namespace="getit")),
+    path("downloads/", include("apps.downloads.urls", namespace="download")),
     path("doc/", views.DocumentationIndexView.as_view(), name="documentation"),
     path("doc/versions/", views.DocsByVersionView.as_view(), name="docs-versions"),
-    path("blogs/", include("blogs.urls")),
+    path("blogs/", include("apps.blogs.urls")),
     path("inner/", TemplateView.as_view(template_name="python/inner.html"), name="inner"),
     # other section landing pages
     path("psf-landing/", TemplateView.as_view(template_name="psf/index.html"), name="psf-landing"),
@@ -46,18 +46,18 @@ urlpatterns = [
     # and change success URL.
     path("accounts/password/change/", CustomPasswordChangeView.as_view(), name="account_change_password"),
     path("accounts/", include("allauth.urls")),
-    path("box/", include("boxes.urls")),
-    path("community/", include("community.urls", namespace="community")),
+    path("box/", include("apps.boxes.urls")),
+    path("community/", include("apps.community.urls", namespace="community")),
     path("community/microbit/", TemplateView.as_view(template_name="community/microbit.html"), name="microbit"),
-    path("events/", include("events.urls", namespace="events")),
-    path("jobs/", include("jobs.urls", namespace="jobs")),
-    path("sponsors/", include("sponsors.urls")),
-    path("success-stories/", include("successstories.urls")),
-    path("users/", include("users.urls", namespace="users")),
-    path("psf/records/board/minutes/", include("minutes.urls")),
-    path("membership/", include("membership.urls")),
+    path("events/", include("apps.events.urls", namespace="events")),
+    path("jobs/", include("apps.jobs.urls", namespace="jobs")),
+    path("sponsors/", include("apps.sponsors.urls")),
+    path("success-stories/", include("apps.successstories.urls")),
+    path("users/", include("apps.users.urls", namespace="users")),
+    path("psf/records/board/minutes/", include("apps.minutes.urls")),
+    path("membership/", include("apps.membership.urls")),
     path("search/", include("haystack.urls")),
-    path("nominations/", include("nominations.urls")),
+    path("nominations/", include("apps.nominations.urls")),
     # admin
     path("admin/doc/", include("django.contrib.admindocs.urls")),
     path("admin/", admin.site.urls),
