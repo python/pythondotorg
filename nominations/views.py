@@ -263,8 +263,8 @@ class FellowNominationCreate(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         current_round = FellowNominationRound.objects.filter(is_open=True).first()
-        if current_round is None:
-            raise Http404("No open Fellow nomination round at this time.")
+        if current_round is None or not current_round.is_accepting_nominations:
+            raise Http404("Fellow nominations are not currently open.")
         context["nomination_round"] = current_round
         return context
 
