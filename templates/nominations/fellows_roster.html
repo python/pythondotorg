@@ -10,85 +10,221 @@ Fellows of the Python Software Foundation
 
 {% block head %}
 <style>
+/* ---- Controls bar ---- */
 .fellows-controls {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 12px 16px;
-    background: #f0f0f0;
-    border-radius: 4px;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: #f2f4f6;
+    border: 1px solid #caccce;
+    border-radius: 3px;
 }
 .fellows-controls input[type="text"],
 .fellows-controls select {
-    padding: 6px 10px;
-    border: 1px solid #ccc;
+    padding: 7px 11px;
+    border: 1px solid #caccce;
     border-radius: 3px;
     font-size: 14px;
+    background: #fff;
+    color: #444;
+    transition: border-color .15s;
+}
+.fellows-controls input[type="text"]:focus,
+.fellows-controls select:focus {
+    border-color: #3776ab;
+    outline: none;
 }
 .fellows-controls input[type="text"] {
-    width: 200px;
+    width: 220px;
 }
+
+/* ---- Status tabs ---- */
 .fellows-status-tabs {
     display: flex;
-    gap: 4px;
+    gap: 3px;
 }
 .fellows-status-tabs .tab-btn {
-    padding: 5px 12px;
-    border: 1px solid #ccc;
+    padding: 6px 13px;
+    border: 1px solid #caccce;
     border-radius: 3px;
     background: #fff;
     cursor: pointer;
     font-size: 13px;
-    color: #333;
+    color: #444;
+    transition: background .15s, border-color .15s;
+    line-height: 1.4;
 }
 .fellows-status-tabs .tab-btn:hover {
-    background: #e8e8e8;
+    background: #e6e8ea;
+    border-color: #999;
 }
 .fellows-status-tabs .tab-btn.active {
-    background: #306998;
-    color: #fff;
-    border-color: #306998;
+    background: #3776ab;
+    color: #fff !important;
+    border-color: #3776ab;
 }
+
+/* ---- Sort toggle ---- */
 .fellows-sort-toggle {
-    padding: 5px 12px;
-    border: 1px solid #ccc;
+    padding: 6px 13px;
+    border: 1px solid #caccce;
     border-radius: 3px;
     background: #fff;
     cursor: pointer;
     font-size: 13px;
-    color: #333;
+    color: #444;
+    transition: background .15s;
+    line-height: 1.4;
 }
 .fellows-sort-toggle:hover {
-    background: #e8e8e8;
+    background: #e6e8ea;
+    border-color: #999;
 }
+
+/* ---- Counter ---- */
 .fellows-count {
     margin-left: auto;
     font-size: 13px;
     color: #666;
+    white-space: nowrap;
 }
+
+/* ---- Grid layout ---- */
+#fellows-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid #caccce;
+    border-radius: 3px;
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#fellows-list li {
+    padding: 9px 14px;
+    margin: 0;
+    border-bottom: 1px solid #e6e8ea;
+    border-right: 1px solid #e6e8ea;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #fff;
+    transition: background .1s;
+}
+#fellows-list li:nth-child(6n+1),
+#fellows-list li:nth-child(6n+2),
+#fellows-list li:nth-child(6n+3) {
+    background: #f2f4f6;
+}
+#fellows-list li:hover {
+    background: #e8eef4;
+}
+/* Remove right border on every 3rd column */
+#fellows-list li:nth-child(3n) {
+    border-right: none;
+}
+
+/* ---- Fellow item content ---- */
+.fellow-name {
+    font-weight: 600;
+    color: #333;
+}
+.fellow-year {
+    color: #666;
+    font-size: 13px;
+    margin-left: 2px;
+}
+.fellow-notes {
+    display: block;
+    font-style: italic;
+    color: #666;
+    font-size: 12px;
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+/* ---- Status badges ---- */
 .fellow-badge {
     display: inline-block;
-    font-size: 11px;
-    padding: 1px 7px;
-    border-radius: 3px;
-    margin-left: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-left: 5px;
     vertical-align: middle;
+    line-height: 1.6;
 }
 .fellow-badge.emeritus {
     background: #fff3cd;
     color: #856404;
+    border: 1px solid #f0e0a0;
 }
 .fellow-badge.deceased {
-    background: #e2e3e5;
-    color: #383d41;
+    background: #e6e8ea;
+    color: #555;
+    border: 1px solid #caccce;
 }
+
+/* ---- No results ---- */
 .fellows-no-results {
-    padding: 20px;
+    padding: 32px 20px;
     text-align: center;
     color: #666;
     display: none;
+    font-size: 15px;
+}
+
+/* ---- Responsive: 2 columns ---- */
+@media screen and (max-width: 860px) {
+    #fellows-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    #fellows-list li:nth-child(6n+1),
+    #fellows-list li:nth-child(6n+2),
+    #fellows-list li:nth-child(6n+3) {
+        background: #fff;
+    }
+    #fellows-list li:nth-child(4n+1),
+    #fellows-list li:nth-child(4n+2) {
+        background: #f2f4f6;
+    }
+    #fellows-list li:nth-child(2n) {
+        border-right: none;
+    }
+    #fellows-list li:nth-child(3n) {
+        border-right: 1px solid #e6e8ea;
+    }
+    .fellows-controls input[type="text"] {
+        width: 100%;
+    }
+}
+
+/* ---- Responsive: 1 column ---- */
+@media screen and (max-width: 520px) {
+    #fellows-list {
+        grid-template-columns: 1fr;
+    }
+    #fellows-list li {
+        border-right: none !important;
+    }
+    #fellows-list li:nth-child(4n+1),
+    #fellows-list li:nth-child(4n+2) {
+        background: #fff;
+    }
+    #fellows-list li:nth-child(odd) {
+        background: #f2f4f6;
+    }
+    .fellows-status-tabs {
+        flex-wrap: wrap;
+    }
+    .fellows-controls {
+        gap: 8px;
+    }
 }
 </style>
 {% endblock %}
@@ -141,7 +277,7 @@ Fellows of the Python Software Foundation
             <span class="fellow-name">{{ fellow.name }}</span>
             <span class="fellow-year">({{ fellow.year_elected }})</span>
             <span class="fellow-badge deceased">In Memoriam</span>
-            {% if fellow.notes %}<br><em>{{ fellow.notes }}</em>{% endif %}
+            {% if fellow.notes %}<span class="fellow-notes">{{ fellow.notes }}</span>{% endif %}
         </li>
         {% endfor %}
     </ol>
