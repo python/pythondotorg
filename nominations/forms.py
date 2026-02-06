@@ -5,7 +5,7 @@ from django.utils.safestring import mark_safe
 
 from markupfield.widgets import MarkupTextarea
 
-from .models import (
+from nominations.models import (
     FellowNomination,
     FellowNominationRound,
     FellowNominationVote,

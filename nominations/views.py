@@ -17,7 +17,7 @@ from django.views.generic import (
 
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
-from .forms import (
+from nominations.forms import (
     FellowNominationForm,
     FellowNominationManageForm,
     FellowNominationRoundForm,
@@ -27,7 +27,7 @@ from .forms import (
     NominationCreateForm,
     NominationForm,
 )
-from .models import (
+from nominations.models import (
     Election,
     Fellow,
     FellowNomination,
@@ -36,7 +36,7 @@ from .models import (
     Nomination,
     Nominee,
 )
-from .notifications import (
+from nominations.notifications import (
     FellowNominationAcceptedNotification,
     FellowNominationNotAcceptedNotification,
     FellowNominationSubmittedToNominator,

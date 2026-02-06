@@ -14,7 +14,7 @@ from markupfield.fields import MarkupField
 from cms.models import ContentManageable
 from users.models import User
 
-from .managers import FellowNominationQuerySet
+from nominations.managers import FellowNominationQuerySet
 
 
 class Election(models.Model):
