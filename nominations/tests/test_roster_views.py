@@ -15,10 +15,11 @@ class FellowsRosterViewTests(TestCase):
         response = self.client.get(self.url)
         self.assertEqual(response.status_code, 200)
 
-    def test_alt_url_works(self):
-        """The alternate URL /psf/fellows-roster/ should also work."""
+    def test_alt_url_redirects(self):
+        """The alternate URL /psf/fellows-roster/ should 301 redirect to the canonical URL."""
         response = self.client.get(self.alt_url)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url, "/psf/fellows/")
 
     def test_only_fellows_shown(self):
         """All Fellow records should appear on the roster."""
