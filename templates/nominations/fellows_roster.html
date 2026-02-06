@@ -1,7 +1,7 @@
 {% extends "psf/default.html" %}
 
 {% block page_title %}
-PSF Fellows | Python Software Foundation
+Fellows of the Python Software Foundation
 {% endblock %}
 
 {% block body_attributes %}class="nominations fellows_roster"{% endblock %}
@@ -16,30 +16,37 @@ PSF Fellows | Python Software Foundation
 
     <p>There are currently {{ total_count }} PSF Fellows.</p>
 
-    {% if fellows %}
+    {% if active_fellows %}
+    <h2>Fellows ({{ active_count }})</h2>
     <ul>
-        {% for fellow in fellows %}
+        {% for fellow in active_fellows %}
+        <li>{{ fellow.name }} ({{ fellow.year_elected }})</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if emeritus_fellows %}
+    <h2>Emeritus Fellows ({{ emeritus_count }})</h2>
+    <ul>
+        {% for fellow in emeritus_fellows %}
+        <li>{{ fellow.name }} ({{ fellow.year_elected }}{% if fellow.emeritus_year %}/{{ fellow.emeritus_year }}{% endif %})</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+
+    {% if deceased_fellows %}
+    <h2>In Memoriam ({{ deceased_count }})</h2>
+    <ul>
+        {% for fellow in deceased_fellows %}
         <li>
-            <strong>
-                {% if fellow.creator %}
-                    {{ fellow.creator.get_full_name|default:fellow.creator.username }}
-                {% elif fellow.preferred_name %}
-                    {{ fellow.preferred_name }}
-                {% else %}
-                    {{ fellow.legal_name }}
-                {% endif %}
-            </strong>
-            {% if fellow.city and fellow.country %}
-                &mdash; {{ fellow.city }}, {{ fellow.country }}
-            {% elif fellow.city %}
-                &mdash; {{ fellow.city }}
-            {% elif fellow.country %}
-                &mdash; {{ fellow.country }}
-            {% endif %}
+            {{ fellow.name }} ({{ fellow.year_elected }})
+            {% if fellow.notes %}<br><em>{{ fellow.notes }}</em>{% endif %}
         </li>
         {% endfor %}
     </ul>
-    {% else %}
+    {% endif %}
+
+    {% if not active_fellows and not emeritus_fellows and not deceased_fellows %}
     <p>No PSF Fellows found.</p>
     {% endif %}
 </article>
