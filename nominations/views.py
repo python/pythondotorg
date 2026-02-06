@@ -17,8 +17,6 @@ from django.views.generic import (
 
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
 
-from users.models import Membership
-
 from .forms import (
     FellowNominationForm,
     FellowNominationManageForm,
@@ -31,6 +29,7 @@ from .forms import (
 )
 from .models import (
     Election,
+    Fellow,
     FellowNomination,
     FellowNominationRound,
     FellowNominationVote,
@@ -294,14 +293,14 @@ class FellowNominationCreate(LoginRequiredMixin, CreateView):
             form.instance.nominee_user = nominee_user
             # Check if nominee is already a Fellow
             try:
-                if nominee_user.membership.membership_type == Membership.FELLOW:
+                if nominee_user.fellow is not None:
                     form.instance.nominee_is_fellow_at_submission = True
                     messages.warning(
                         self.request,
                         f"{form.cleaned_data['nominee_name']} is already a PSF Fellow. "
                         "The nomination has been saved but may not need further action.",
                     )
-            except Membership.DoesNotExist:
+            except Fellow.DoesNotExist:
                 pass
         except User.DoesNotExist:
             pass
@@ -638,13 +637,16 @@ class FellowsRoster(ListView):
     context_object_name = "fellows"
 
     def get_queryset(self):
-        return Membership.objects.filter(
-            membership_type=Membership.FELLOW,
-        ).select_related("creator").order_by(
-            "creator__last_name", "creator__first_name"
-        )
+        return Fellow.objects.all()
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["total_count"] = context["fellows"].count()
+        qs = context["fellows"]
+        context["active_fellows"] = qs.filter(status=Fellow.ACTIVE)
+        context["emeritus_fellows"] = qs.filter(status=Fellow.EMERITUS)
+        context["deceased_fellows"] = qs.filter(status=Fellow.DECEASED)
+        context["active_count"] = context["active_fellows"].count()
+        context["emeritus_count"] = context["emeritus_fellows"].count()
+        context["deceased_count"] = context["deceased_fellows"].count()
+        context["total_count"] = qs.count()
         return context

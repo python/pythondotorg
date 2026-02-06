@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -12,7 +13,7 @@ from fastly.utils import purge_url
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-from users.models import Membership, User
+from users.models import User
 
 from .managers import FellowNominationQuerySet
 
@@ -278,6 +279,43 @@ def purge_nomination_pages(sender, instance, created, **kwargs):
         )
 
 
+class Fellow(models.Model):
+    """A PSF Fellow — reference data managed via Django admin."""
+
+    ACTIVE = "active"
+    EMERITUS = "emeritus"
+    DECEASED = "deceased"
+    STATUS_CHOICES = (
+        (ACTIVE, "Active"),
+        (EMERITUS, "Emeritus"),
+        (DECEASED, "Deceased"),
+    )
+
+    name = models.CharField(max_length=255)
+    year_elected = models.PositiveIntegerField()
+    status = models.CharField(
+        max_length=10,
+        choices=STATUS_CHOICES,
+        default=ACTIVE,
+        db_index=True,
+    )
+    emeritus_year = models.PositiveIntegerField(null=True, blank=True)
+    notes = models.TextField(blank=True)
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="fellow",
+    )
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
 class FellowNominationRound(models.Model):
     """Quarterly round for PSF Fellow Work Group consideration."""
 
@@ -413,8 +451,8 @@ class FellowNomination(ContentManageable):
     def nominee_is_already_fellow(self):
         if self.nominee_user:
             try:
-                return self.nominee_user.membership.membership_type == Membership.FELLOW
-            except Membership.DoesNotExist:
+                return self.nominee_user.fellow is not None
+            except Fellow.DoesNotExist:
                 return False
         return False
 

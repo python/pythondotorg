@@ -4,6 +4,7 @@ from django.db.models.functions import Lower
 
 from nominations.models import (
     Election,
+    Fellow,
     FellowNomination,
     FellowNominationRound,
     FellowNominationVote,
@@ -36,6 +37,14 @@ class NominationAdmin(admin.ModelAdmin):
 
     def get_ordering(self, request):
         return ['election', Lower('nominee__user__last_name')]
+
+
+@admin.register(Fellow)
+class FellowAdmin(admin.ModelAdmin):
+    list_display = ("name", "year_elected", "status", "emeritus_year")
+    list_filter = ("status", "year_elected")
+    search_fields = ("name",)
+    raw_id_fields = ("user",)
 
 
 @admin.register(FellowNominationRound)
