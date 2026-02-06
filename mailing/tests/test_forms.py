@@ -1,5 +1,6 @@
 """Tests for mailing app forms."""
 from django.test import TestCase
+from django.contrib.contenttypes.models import ContentType
 
 from mailing.tests.forms import TestBaseEmailTemplateForm
 
@@ -12,6 +13,10 @@ class BaseEmailTemplateFormTests(TestCase):
             "subject": "Hello",
             "internal_name": "notification 01",
         }
+
+    def tearDown(self):
+        super().tearDown()
+        ContentType.objects.clear_cache()
 
     def test_validate_required_fields(self):
         required = set(self.data)
