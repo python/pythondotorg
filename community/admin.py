@@ -1,7 +1,8 @@
 from django.contrib import admin
 
-from .models import Link, Photo, Post, Video
 from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
+
+from .models import Link, Photo, Post, Video
 
 
 class LinkInline(ContentManageableStackedInline):
@@ -21,9 +22,9 @@ class VideoInline(ContentManageableStackedInline):
 
 @admin.register(Post)
 class PostAdmin(ContentManageableModelAdmin):
-    date_hierarchy = 'created'
-    list_display = ['__str__', 'status', 'media_type']
-    list_filter = ['status', 'media_type']
+    date_hierarchy = "created"
+    list_display = ["__str__", "status", "media_type"]
+    list_filter = ["status", "media_type"]
     inlines = [
         LinkInline,
         PhotoInline,
@@ -33,5 +34,5 @@ class PostAdmin(ContentManageableModelAdmin):
 
 @admin.register(Link, Photo, Video)
 class PostTypeAdmin(ContentManageableModelAdmin):
-    date_hierarchy = 'created'
-    raw_id_fields = ['post']
+    date_hierarchy = "created"
+    raw_id_fields = ["post"]

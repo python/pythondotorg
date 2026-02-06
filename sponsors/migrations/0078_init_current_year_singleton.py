@@ -9,11 +9,8 @@ def populate_singleton(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0077_sponsorshipcurrentyear'),
+        ("sponsors", "0077_sponsorshipcurrentyear"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_singleton, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(populate_singleton, migrations.RunPython.noop)]

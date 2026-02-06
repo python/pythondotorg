@@ -1,8 +1,8 @@
-
 from rest_framework import serializers
 
 from sponsors.models import GenericAsset
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices
+from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
+
 
 class LogoPlacementSerializer(serializers.Serializer):
     publisher = serializers.CharField()
@@ -76,10 +76,7 @@ class FilterLogoPlacementsSerializer(serializers.Serializer):
     def skip_logo(self, logo):
         if self.by_publisher and self.by_publisher != logo.publisher:
             return True
-        if self.by_flight and self.by_flight != logo.logo_place:
-            return True
-        else:
-            return False
+        return bool(self.by_flight and self.by_flight != logo.logo_place)
 
 
 class FilterAssetsSerializer(serializers.Serializer):

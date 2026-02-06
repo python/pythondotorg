@@ -5,7 +5,7 @@ from ..models import Membership
 register = template.Library()
 
 
-@register.filter(name='user_location')
+@register.filter(name="user_location")
 def parse_location(user):
     """
     Returns a formatted string of user location data.
@@ -14,25 +14,25 @@ def parse_location(user):
     Returns empty if no location data is present
     """
 
-    path = ''
+    path = ""
 
     try:
         membership = user.membership
     except Membership.DoesNotExist:
-        return ''
+        return ""
 
     if membership.city:
-        path += "%s" % (membership.city)
+        path += f"{membership.city}"
     if membership.region:
         if membership.city:
             path += ", "
-        path += "%s" % (membership.region)
+        path += f"{membership.region}"
     if membership.country:
         if membership.region:
             path += " "
         else:
             if membership.city:
                 path += ", "
-        path += "%s" % (membership.country)
+        path += f"{membership.country}"
 
     return path

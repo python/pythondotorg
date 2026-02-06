@@ -1,11 +1,10 @@
-from django.db import models, migrations
-import markupfield.fields
 import django.utils.timezone
+import markupfield.fields
 from django.conf import settings
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
         ("companies", "0001_initial"),
@@ -26,9 +25,7 @@ class Migration(migrations.Migration):
                 ),
                 (
                     "created",
-                    models.DateTimeField(
-                        db_index=True, default=django.utils.timezone.now, blank=True
-                    ),
+                    models.DateTimeField(db_index=True, default=django.utils.timezone.now, blank=True),
                 ),
                 (
                     "updated",

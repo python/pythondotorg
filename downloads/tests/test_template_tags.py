@@ -138,7 +138,6 @@ class GetReleaseCycleDataTests(TestCase):
 
 @override_settings(CACHES=TEST_CACHES)
 class EOLBannerViewTests(BaseDownloadTests):
-
     def setUp(self):
         super().setUp()
         cache.clear()

@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0090_auto_20220812_1314'),
+        ("sponsors", "0090_auto_20220812_1314"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorshippackage',
-            name='allow_a_la_carte',
-            field=models.BooleanField(default=True, help_text='If disabled, a la carte benefits will be disabled in application form'),
+            model_name="sponsorshippackage",
+            name="allow_a_la_carte",
+            field=models.BooleanField(
+                default=True, help_text="If disabled, a la carte benefits will be disabled in application form"
+            ),
         ),
     ]

@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 
 from django.contrib import messages
@@ -5,12 +6,12 @@ from django.core.mail import BadHeaderError
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
-from django.views.generic import DetailView, ListView, FormView
+from django.views.generic import DetailView, FormView, ListView
 
 from pydotorg.mixins import LoginRequiredMixin
 
-from .models import Calendar, Event, EventCategory, EventLocation
 from .forms import EventForm
+from .models import Calendar, Event, EventCategory, EventLocation
 
 
 class CalendarList(ListView):
@@ -27,19 +28,18 @@ class EventListBase(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         featured_events = self.get_queryset().filter(featured=True)
-        try:
-            context['featured'] = featured_events[0]
-        except IndexError:
-            pass
+        with contextlib.suppress(IndexError):
+            context["featured"] = featured_events[0]
 
-        context['event_categories'] = EventCategory.objects.all()[:10]
-        context['event_locations'] = EventLocation.objects.all()[:10]
-        context['object'] = self.get_object()
+        context["event_categories"] = EventCategory.objects.all()[:10]
+        context["event_locations"] = EventLocation.objects.all()[:10]
+        context["object"] = self.get_object()
         return context
 
 
 class EventHomepage(ListView):
-    """ Main Event Landing Page """
+    """Main Event Landing Page"""
+
     template_name = "events/event_list.html"
 
     def get_queryset(self) -> Event:
@@ -54,16 +54,16 @@ class EventHomepage(ListView):
         past_events = list(Event.objects.until_datetime(timezone.now()))
         past_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
         context["events_just_missed"] = past_events[:2]
-        
+
         # upcoming events, soonest first
         upcoming = list(Event.objects.for_datetime(timezone.now()))
         upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else timezone.now())
         context["upcoming_events"] = upcoming
-        
+
         # right now, soonest first
         context["events_now"] = Event.objects.filter(
-            occurring_rule__dt_start__lte=timezone.now(),
-            occurring_rule__dt_end__gte=timezone.now()).order_by('occurring_rule__dt_start')[:2]
+            occurring_rule__dt_start__lte=timezone.now(), occurring_rule__dt_end__gte=timezone.now()
+        ).order_by("occurring_rule__dt_start")[:2]
         return context
 
 
@@ -75,70 +75,76 @@ class EventDetail(DetailView):
 
     def get_context_data(self, **kwargs):
         data = super().get_context_data(**kwargs)
-        if data['object'].next_time:
-            dt = data['object'].next_time.dt_start
-            data.update({
-                'next_7': dt + datetime.timedelta(days=7),
-                'next_30': dt + datetime.timedelta(days=30),
-                'next_90': dt + datetime.timedelta(days=90),
-                'next_365': dt + datetime.timedelta(days=365),
-            })
+        if data["object"].next_time:
+            dt = data["object"].next_time.dt_start
+            data.update(
+                {
+                    "next_7": dt + datetime.timedelta(days=7),
+                    "next_30": dt + datetime.timedelta(days=30),
+                    "next_90": dt + datetime.timedelta(days=90),
+                    "next_365": dt + datetime.timedelta(days=365),
+                }
+            )
         return data
 
 
 class EventList(EventListBase):
-
     def get_queryset(self):
-        return Event.objects.for_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug']).order_by('occurring_rule__dt_start')
+        return (
+            Event.objects.for_datetime(timezone.now())
+            .filter(calendar__slug=self.kwargs["calendar_slug"])
+            .order_by("occurring_rule__dt_start")
+        )
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        
+
         # today's events, most recent first
-        today_events = list(Event.objects.until_datetime(timezone.now()).filter(
-            calendar__slug=self.kwargs['calendar_slug']))
+        today_events = list(
+            Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs["calendar_slug"])
+        )
         today_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
-        context['events_today'] = today_events[:2]
-        context['calendar'] = get_object_or_404(Calendar, slug=self.kwargs['calendar_slug'])
-        context['upcoming_events'] = context['object_list']
-        
+        context["events_today"] = today_events[:2]
+        context["calendar"] = get_object_or_404(Calendar, slug=self.kwargs["calendar_slug"])
+        context["upcoming_events"] = context["object_list"]
+
         return context
 
 
 class PastEventList(EventList):
-    template_name = 'events/event_list_past.html'
+    template_name = "events/event_list_past.html"
 
     def get_queryset(self):
-        return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventListByDate(EventList):
     def get_object(self):
-        year = int(self.kwargs['year'])
-        month = int(self.kwargs['month'])
-        day = int(self.kwargs['day'])
+        year = int(self.kwargs["year"])
+        month = int(self.kwargs["month"])
+        day = int(self.kwargs["day"])
         return datetime.date(year, month, day)
 
     def get_queryset(self):
-        return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs['calendar_slug'])
+        return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventListByCategory(EventList):
     def get_object(self, queryset=None):
-        return get_object_or_404(EventCategory, calendar__slug=self.kwargs['calendar_slug'], slug=self.kwargs['slug'])
+        return get_object_or_404(EventCategory, calendar__slug=self.kwargs["calendar_slug"], slug=self.kwargs["slug"])
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(categories__slug=self.kwargs['slug'])
+        return qs.filter(categories__slug=self.kwargs["slug"])
 
 
 class EventListByLocation(EventList):
     def get_object(self, queryset=None):
-        return get_object_or_404(EventLocation, calendar__slug=self.kwargs['calendar_slug'], pk=self.kwargs['pk'])
+        return get_object_or_404(EventLocation, calendar__slug=self.kwargs["calendar_slug"], pk=self.kwargs["pk"])
 
     def get_queryset(self):
         qs = super().get_queryset()
-        return qs.filter(venue__pk=self.kwargs['pk'])
+        return qs.filter(venue__pk=self.kwargs["pk"])
 
 
 class EventCategoryList(ListView):
@@ -146,10 +152,10 @@ class EventCategoryList(ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])
+        return self.model.objects.filter(calendar__slug=self.kwargs["calendar_slug"])
 
     def get_context_data(self, **kwargs):
-        kwargs['event_categories'] = self.get_queryset()[:10]
+        kwargs["event_categories"] = self.get_queryset()[:10]
 
         return super().get_context_data(**kwargs)
 
@@ -159,18 +165,18 @@ class EventLocationList(ListView):
     paginate_by = 30
 
     def get_queryset(self):
-        return self.model.objects.filter(calendar__slug=self.kwargs['calendar_slug'])
+        return self.model.objects.filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventSubmit(LoginRequiredMixin, FormView):
-    template_name = 'events/event_form.html'
+    template_name = "events/event_form.html"
     form_class = EventForm
-    success_url = reverse_lazy('events:event_thanks')
+    success_url = reverse_lazy("events:event_thanks")
 
     def form_valid(self, form):
         try:
             form.send_email(self.request.user)
         except BadHeaderError:
-            messages.add_message(self.request, messages.ERROR, 'Invalid header found.')
-            return redirect('events:event_submit')
+            messages.add_message(self.request, messages.ERROR, "Invalid header found.")
+            return redirect("events:event_submit")
         return super().form_valid(form)

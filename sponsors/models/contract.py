@@ -1,6 +1,7 @@
 """
 This module holds models related to the process to generate contracts
 """
+
 import uuid
 from itertools import chain
 from pathlib import Path
@@ -12,8 +13,8 @@ from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 
 from sponsors.exceptions import InvalidStatusException
-from sponsors.utils import file_from_storage
 from sponsors.models.sponsorship import Sponsorship
+from sponsors.utils import file_from_storage
 
 
 class LegalClause(OrderedModel):
@@ -32,9 +33,7 @@ class LegalClause(OrderedModel):
         help_text="Legal clause text to be added to contract",
         blank=False,
     )
-    notes = models.TextField(
-        verbose_name="Notes", help_text="PSF staff notes", blank=True, default=""
-    )
+    notes = models.TextField(verbose_name="Notes", help_text="PSF staff notes", blank=True, default="")
 
     def __str__(self):
         return f"Clause: {self.internal_name}"
@@ -84,9 +83,7 @@ class Contract(models.Model):
     FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True)
     revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
     document = models.FileField(
         upload_to=FINAL_VERSION_PDF_DIR,
@@ -146,6 +143,11 @@ class Contract(models.Model):
     def __str__(self):
         return f"Contract: {self.sponsorship}"
 
+    def save(self, **kwargs):
+        if all([self.pk, self.is_draft]):
+            self.revision += 1
+        return super().save(**kwargs)
+
     @classmethod
     def new(cls, sponsorship):
         """
@@ -175,9 +177,7 @@ class Contract(models.Model):
                 item += f" {index_str}"
             benefits_list.append(item)
 
-        legal_clauses_text = "\n".join(
-            [f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
-        )
+        legal_clauses_text = "\n".join([f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)])
         return cls.objects.create(
             sponsorship=sponsorship,
             sponsor_info=sponsor_info,
@@ -208,11 +208,6 @@ class Contract(models.Model):
             self.NULLIFIED: [self.DRAFT],
         }
         return states_map[self.status]
-
-    def save(self, **kwargs):
-        if all([self.pk, self.is_draft]):
-            self.revision += 1
-        return super().save(**kwargs)
 
     def set_final_version(self, pdf_file, docx_file=None):
         if self.AWAITING_SIGNATURE not in self.next_status:

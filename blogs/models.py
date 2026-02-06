@@ -1,8 +1,6 @@
 import feedparser
-
 from bs4 import BeautifulSoup
 from bs4.element import Comment
-
 from django.db import models
 
 from cms.models import ContentManageable
@@ -18,9 +16,7 @@ def tag_visible(element):
         "[document]",
     ]:
         return False
-    if isinstance(element, Comment):
-        return False
-    return True
+    return not isinstance(element, Comment)
 
 
 def text_from_html(body):

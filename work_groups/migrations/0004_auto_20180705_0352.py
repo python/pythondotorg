@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('work_groups', '0003_auto_20170821_2000'),
+        ("work_groups", "0003_auto_20170821_2000"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='workgroup',
-            name='slug',
+            model_name="workgroup",
+            name="slug",
             field=models.SlugField(max_length=200, unique=True),
         ),
     ]

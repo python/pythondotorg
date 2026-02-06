@@ -4,24 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('jobs', '0021_alter_job_creator_alter_job_last_modified_by_and_more'),
+        ("jobs", "0021_alter_job_creator_alter_job_last_modified_by_and_more"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='jobtype',
-            options={'ordering': ('name',), 'verbose_name': 'job types', 'verbose_name_plural': 'job types'},
+            name="jobtype",
+            options={"ordering": ("name",), "verbose_name": "job types", "verbose_name_plural": "job types"},
         ),
         migrations.AlterField(
-            model_name='job',
-            name='job_types',
-            field=models.ManyToManyField(blank=True, limit_choices_to={'active': True}, related_name='jobs', to='jobs.jobtype', verbose_name='Job types'),
+            model_name="job",
+            name="job_types",
+            field=models.ManyToManyField(
+                blank=True,
+                limit_choices_to={"active": True},
+                related_name="jobs",
+                to="jobs.jobtype",
+                verbose_name="Job types",
+            ),
         ),
         migrations.AlterField(
-            model_name='job',
-            name='other_job_type',
-            field=models.CharField(blank=True, max_length=100, verbose_name='Other job types'),
+            model_name="job",
+            name="other_job_type",
+            field=models.CharField(blank=True, max_length=100, verbose_name="Other job types"),
         ),
     ]

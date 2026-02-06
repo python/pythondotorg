@@ -2,15 +2,15 @@
 This module holds models to store generic assets
 from Sponsors or Sponsorships
 """
+
 import uuid
 from enum import Enum
 from pathlib import Path
 
-from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.db.models.fields.files import ImageFieldFile, FileField
-from polymorphic.managers import PolymorphicManager
+from django.db import models
+from django.db.models.fields.files import FileField, ImageFieldFile
 from polymorphic.models import PolymorphicModel
 
 from sponsors.models.managers import GenericAssetQuerySet
@@ -30,6 +30,7 @@ class GenericAsset(PolymorphicModel):
     """
     Base class used to add required assets to Sponsor or Sponsorship objects
     """
+
     objects = GenericAssetQuerySet.as_manager()
     non_polymorphic = models.Manager()
 
@@ -52,7 +53,7 @@ class GenericAsset(PolymorphicModel):
         verbose_name = "Asset"
         verbose_name_plural = "Assets"
         unique_together = ["content_type", "object_id", "internal_name"]
-        base_manager_name = 'non_polymorphic'
+        base_manager_name = "non_polymorphic"
 
     @property
     def value(self):
@@ -60,7 +61,7 @@ class GenericAsset(PolymorphicModel):
 
     @property
     def is_file(self):
-        return isinstance(self.value, FileField) or isinstance(self.value, ImageFieldFile)
+        return isinstance(self.value, FileField | ImageFieldFile)
 
     @property
     def from_sponsorship(self):
@@ -157,9 +158,7 @@ class Response(Enum):
 
 
 class ResponseAsset(GenericAsset):
-    response = models.CharField(
-        max_length=32, choices=Response.choices(), blank=False, null=True
-    )
+    response = models.CharField(max_length=32, choices=Response.choices(), blank=False)
 
     def __str__(self):
         return f"Response Asset: {self.internal_name}"

@@ -1,6 +1,5 @@
 from django import forms
 from django.utils.safestring import mark_safe
-
 from markupfield.widgets import MarkupTextarea
 
 from .models import Nomination
@@ -17,9 +16,7 @@ class NominationForm(forms.ModelForm):
             "other_affiliations",
             "nomination_statement",
         )
-        widgets = {
-            "nomination_statement": MarkupTextarea()
-        }  # , "self_nomination": forms.CheckboxInput()}
+        widgets = {"nomination_statement": MarkupTextarea()}  # , "self_nomination": forms.CheckboxInput()}
         help_texts = {
             "name": "Name of the person you are nominating.",
             "email": "Email address for the person you are nominating.",
@@ -42,13 +39,12 @@ class NominationCreateForm(NominationForm):
 
     def clean_self_nomination(self):
         data = self.cleaned_data["self_nomination"]
-        if data:
-            if not self.request.user.first_name or not self.request.user.last_name:
-                raise forms.ValidationError(
-                    mark_safe(
-                        'You must set your First and Last name in your <a href="/users/edit/">User Profile</a> to self nominate.'
-                    )
+        if data and (not self.request.user.first_name or not self.request.user.last_name):
+            raise forms.ValidationError(
+                mark_safe(
+                    'You must set your First and Last name in your <a href="/users/edit/">User Profile</a> to self nominate.'
                 )
+            )
 
         return data
 
@@ -56,9 +52,7 @@ class NominationCreateForm(NominationForm):
 class NominationAcceptForm(forms.ModelForm):
     class Meta:
         model = Nomination
-        fields = (
-            "accepted",
-        )
+        fields = ("accepted",)
         help_texts = {
             "accepted": "If selected, this nomination will be considered accepted and displayed once nominations are public.",
         }

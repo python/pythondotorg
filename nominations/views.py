@@ -1,14 +1,13 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-
-from django.views.generic import CreateView, UpdateView, DetailView, ListView
-from django.urls import reverse
 from django.http import Http404
+from django.urls import reverse
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
 from pydotorg.mixins import LoginRequiredMixin
 
-from .models import Nomination, Nominee, Election
-from .forms import NominationForm, NominationCreateForm, NominationAcceptForm
+from .forms import NominationAcceptForm, NominationCreateForm, NominationForm
+from .models import Election, Nomination, Nominee
 
 
 class ElectionsList(ListView):
@@ -45,9 +44,7 @@ class NomineeList(NominationMixin, ListView):
     def get_queryset(self, *args, **kwargs):
         election = Election.objects.get(slug=self.kwargs["election"])
         if election.nominations_complete or self.request.user.is_superuser:
-            return Nominee.objects.filter(
-                accepted=True, approved=True, election=election
-            ).exclude(user=None)
+            return Nominee.objects.filter(accepted=True, approved=True, election=election).exclude(user=None)
 
         elif self.request.user.is_authenticated:
             return Nominee.objects.filter(user=self.request.user)
@@ -85,14 +82,10 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     def get_form_class(self):
         election = Election.objects.get(slug=self.kwargs["election"])
         if election.nominations_complete:
-            messages.error(
-                self.request, f"Nominations for {election.name} Election are closed"
-            )
+            messages.error(self.request, f"Nominations for {election.name} Election are closed")
             raise Http404(f"Nominations for {election.name} Election are closed")
         if not election.nominations_open:
-            messages.error(
-                self.request, f"Nominations for {election.name} Election are not open"
-            )
+            messages.error(self.request, f"Nominations for {election.name} Election are not open")
             raise Http404(f"Nominations for {election.name} Election are not open")
 
         return NominationCreateForm
@@ -108,9 +101,7 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
         form.instance.election = Election.objects.get(slug=self.kwargs["election"])
         if form.cleaned_data.get("self_nomination", False):
             try:
-                nominee = Nominee.objects.get(
-                    user=self.request.user, election=form.instance.election
-                )
+                nominee = Nominee.objects.get(user=self.request.user, election=form.instance.election)
             except Nominee.DoesNotExist:
                 nominee = Nominee.objects.create(
                     user=self.request.user,
@@ -155,7 +146,7 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
 class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, UpdateView):
     model = Nomination
     form_class = NominationAcceptForm
-    template_name_suffix = '_accept_form'
+    template_name_suffix = "_accept_form"
 
     def test_func(self):
         return self.request.user == self.get_object().nominee.user

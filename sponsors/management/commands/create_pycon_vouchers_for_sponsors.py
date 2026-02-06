@@ -1,21 +1,17 @@
-import os
-from hashlib import sha1
 from calendar import timegm
 from datetime import datetime
-import sys
+from hashlib import sha1
 from urllib.parse import urlencode
 
 import requests
-from requests.exceptions import RequestException
-
-from django.db.models import Q
 from django.conf import settings
 from django.core.management import BaseCommand
+from requests.exceptions import RequestException
 
 from sponsors.models import (
-    SponsorBenefit,
     BenefitFeature,
     ProvidedTextAsset,
+    SponsorBenefit,
     TieredBenefit,
 )
 
@@ -77,18 +73,14 @@ def generate_voucher_codes(year):
             .all()
         ):
             try:
-                quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(
-                    sponsor_benefit=sponsorbenefit
-                )
+                quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(sponsor_benefit=sponsorbenefit)
             except BenefitFeature.DoesNotExist:
-                print(
-                    f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code['internal_name']}"
-                )
+                print(f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code['internal_name']}")
                 continue
             try:
-                asset = ProvidedTextAsset.objects.filter(
-                    sponsor_benefit=sponsorbenefit
-                ).get(internal_name=code["internal_name"])
+                asset = ProvidedTextAsset.objects.filter(sponsor_benefit=sponsorbenefit).get(
+                    internal_name=code["internal_name"]
+                )
             except ProvidedTextAsset.DoesNotExist:
                 print(
                     f"No provided asset found for {sponsorbenefit.sponsorship.sponsor.name} with internal name {code['internal_name']}"
@@ -115,7 +107,7 @@ def generate_voucher_codes(year):
                 print(
                     f"Error from PyCon when fullfilling {code['internal_name']} for {sponsorbenefit.sponsorship.sponsor.name}: {result}"
                 )
-    print(f"Done!")
+    print("Done!")
 
 
 class Command(BaseCommand):

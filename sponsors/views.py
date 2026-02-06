@@ -1,23 +1,24 @@
 from itertools import chain
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.forms.utils import ErrorList
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
-from django.views.generic import FormView, DetailView, RedirectView
+from django.views.generic import FormView
+
+from sponsors import cookies, use_cases
+from sponsors.forms import SponsorshipApplicationForm, SponsorshipsBenefitsForm
 
 from .models import (
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
-    SponsorshipProgram, SponsorshipCurrentYear,
+    SponsorshipProgram,
 )
-
-from sponsors import cookies
-from sponsors import use_cases
-from sponsors.forms import SponsorshipsBenefitsForm, SponsorshipApplicationForm
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
@@ -28,12 +29,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         programs = SponsorshipProgram.objects.all()
         packages = SponsorshipPackage.objects.all()
         benefits_qs = SponsorshipBenefit.objects.select_related("program")
-        capacities_met = any(
-            [
-                any([not b.has_capacity for b in benefits_qs.filter(program=p)])
-                for p in programs
-            ]
-        )
+        capacities_met = any([any([not b.has_capacity for b in benefits_qs.filter(program=p)]) for p in programs])
         kwargs.update(
             {
                 "benefit_model": SponsorshipBenefit,
@@ -90,7 +86,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         for fname, benefits in [
             (f, v)
             for f, v in form.cleaned_data.items()
-            if f.startswith("benefits_") or f in ['a_la_carte_benefits', 'standalone_benefits']
+            if f.startswith("benefits_") or f in ["a_la_carte_benefits", "standalone_benefits"]
         ]:
             data[fname] = sorted(b.id for b in benefits)
 
@@ -123,12 +119,8 @@ class NewSponsorshipApplicationView(FormView):
 
     def get_context_data(self, *args, **kwargs):
         package_id = self.benefits_data.get("package")
-        package = (
-            None if not package_id else SponsorshipPackage.objects.get(id=package_id)
-        )
-        benefits_ids = chain(
-            *(self.benefits_data[k] for k in self.benefits_data if k != "package")
-        )
+        package = None if not package_id else SponsorshipPackage.objects.get(id=package_id)
+        benefits_ids = chain(*(self.benefits_data[k] for k in self.benefits_data if k != "package"))
         benefits = SponsorshipBenefit.objects.filter(id__in=benefits_ids)
 
         # sponsorship benefits holds selected package's benefits
@@ -174,9 +166,7 @@ class NewSponsorshipApplicationView(FormView):
             benefits_form.get_package(),
             request=self.request,
         )
-        notified = uc.notifications[1].get_recipient_list(
-            {"user": self.request.user, "sponsorship": sponsorship}
-        )
+        notified = uc.notifications[1].get_recipient_list({"user": self.request.user, "sponsorship": sponsorship})
 
         response = render(
             self.request,

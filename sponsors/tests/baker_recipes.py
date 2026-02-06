@@ -28,9 +28,7 @@ awaiting_signature_contract = Recipe(
     status=Contract.AWAITING_SIGNATURE,
 )
 
-package = Recipe(
-    SponsorshipPackage
-)
+package = Recipe(SponsorshipPackage)
 
 finalized_sponsorship = Recipe(
     Sponsorship,

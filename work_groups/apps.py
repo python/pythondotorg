@@ -2,5 +2,4 @@ from django.apps import AppConfig
 
 
 class WorkGroupsAppConfig(AppConfig):
-
-    name = 'work_groups'
+    name = "work_groups"

@@ -1,9 +1,8 @@
-from django.db.models.query import QuerySet
 from django.contrib.auth.models import UserManager as DjangoUserManager
+from django.db.models.query import QuerySet
 
 
 class UserQuerySet(QuerySet):
-
     def active(self):
         return self.filter(is_active=True)
 

@@ -6,15 +6,9 @@ from ..models import Post
 class CommunityManagersTest(TestCase):
     def test_post_manager(self):
         private_post = Post.objects.create(
-            content='private post',
-            media_type=Post.MEDIA_TEXT,
-            status=Post.STATUS_PRIVATE
+            content="private post", media_type=Post.MEDIA_TEXT, status=Post.STATUS_PRIVATE
         )
-        public_post = Post.objects.create(
-            content='public post',
-            media_type=Post.MEDIA_TEXT,
-            status=Post.STATUS_PUBLIC
-        )
+        public_post = Post.objects.create(content="public post", media_type=Post.MEDIA_TEXT, status=Post.STATUS_PUBLIC)
 
         self.assertQuerySetEqual(Post.objects.all(), [public_post, private_post], lambda x: x)
         self.assertQuerySetEqual(Post.objects.public(), [public_post], lambda x: x)

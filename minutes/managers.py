@@ -9,4 +9,4 @@ class MinutesQuerySet(QuerySet):
         return self.filter(is_published=True)
 
     def latest(self):
-        return self.published().order_by('-date')
+        return self.published().order_by("-date")

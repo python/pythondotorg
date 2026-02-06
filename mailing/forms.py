@@ -1,11 +1,10 @@
 from django import forms
-from django.template import Template, Context, TemplateSyntaxError
+from django.template import Context, Template, TemplateSyntaxError
 
 from mailing.models import BaseEmailTemplate
 
 
 class BaseEmailTemplateForm(forms.ModelForm):
-
     def clean_content(self):
         content = self.cleaned_data["content"]
         try:
@@ -13,8 +12,8 @@ class BaseEmailTemplateForm(forms.ModelForm):
             template.render(Context({}))
             return content
         except TemplateSyntaxError as e:
-            raise forms.ValidationError(e)
+            raise forms.ValidationError(e) from e
 
     class Meta:
         model = BaseEmailTemplate
-        fields = "__all__"
+        fields = ["internal_name", "subject", "content"]

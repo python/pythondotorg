@@ -1,14 +1,12 @@
 import os
 import posixpath
 import re
-
 from urllib.parse import unquote, urldefrag
 
 from django.conf import settings
 from django.contrib.staticfiles.storage import ManifestFilesMixin, StaticFilesStorage
 from django.contrib.staticfiles.utils import matches_patterns
 from django.core.files.base import ContentFile
-
 from pipeline.storage import PipelineMixin
 from storages.backends.s3boto3 import S3Boto3Storage
 
@@ -42,11 +40,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
         """
         Return a list of (start, end) tuples for each comment block.
         """
-        return [
-            (match.start(), match.end())
-            for match in re.finditer(r'\/\*.*?\*\/', content, flags=re.DOTALL)
-        ]
-
+        return [(match.start(), match.end()) for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)]
 
     def is_in_comment(self, pos, comments):
         for start, end in comments:
@@ -56,11 +50,12 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 return False
         return False
 
-
-    def url_converter(self, name, hashed_files, template=None, comment_blocks=[]):
+    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
         """
         Return the custom URL converter for the given file name.
         """
+        if comment_blocks is None:
+            comment_blocks = []
         if template is None:
             template = self.default_template
 
@@ -112,9 +107,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                 hashed_files=hashed_files,
             )
 
-            transformed_url = "/".join(
-                url_path.split("/")[:-1] + hashed_url.split("/")[-1:]
-            )
+            transformed_url = "/".join(url_path.split("/")[:-1] + hashed_url.split("/")[-1:])
 
             # Restore the fragment that was stripped off earlier.
             if fragment:
@@ -125,7 +118,6 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
             return template % matches
 
         return converter
-
 
     def _post_process(self, paths, adjustable_paths, hashed_files):
         # Sort the files by directory level
@@ -163,9 +155,7 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         if matches_patterns(path, (extension,)):
                             comment_blocks = self.get_comment_blocks(content)
                             for pattern, template in patterns:
-                                converter = self.url_converter(
-                                    name, hashed_files, template, comment_blocks
-                                )
+                                converter = self.url_converter(name, hashed_files, template, comment_blocks)
                                 try:
                                     content = pattern.sub(converter, content)
                                 except ValueError as exc:
@@ -189,13 +179,10 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
                         substitutions = False
                     processed = True
 
-                if not processed:
-                    # or handle the case in which neither processing nor
-                    # a change to the original file happened
-                    if not hashed_file_exists:
-                        processed = True
-                        saved_name = self._save(hashed_name, original_file)
-                        hashed_name = self.clean_name(saved_name)
+                if not processed and not hashed_file_exists:
+                    processed = True
+                    saved_name = self._save(hashed_name, original_file)
+                    hashed_name = self.clean_name(saved_name)
 
                 # and then set the cache accordingly
                 hashed_files[hash_key] = hashed_name

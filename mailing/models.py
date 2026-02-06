@@ -1,6 +1,6 @@
 from django.core.mail import EmailMessage
 from django.db import models
-from django.template import Template, Context
+from django.template import Context, Template
 from django.urls import reverse
 
 
@@ -12,6 +12,12 @@ class BaseEmailTemplate(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+    def __str__(self):
+        return f"Email template: {self.internal_name}"
 
     @property
     def preview_content_url(self):
@@ -38,9 +44,3 @@ class BaseEmailTemplate(models.Model):
 
     def get_email_context_data(self, **kwargs):
         return kwargs
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return f"Email template: {self.internal_name}"

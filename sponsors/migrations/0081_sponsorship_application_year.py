@@ -5,15 +5,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0080_auto_20220728_1644'),
+        ("sponsors", "0080_auto_20220728_1644"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorship',
-            name='application_year',
-            field=models.PositiveIntegerField(null=True, validators=[django.core.validators.MinValueValidator(limit_value=2022, message='The min year value is 2022.'), django.core.validators.MaxValueValidator(limit_value=2050, message='The max year value is 2050.')]),
+            model_name="sponsorship",
+            name="application_year",
+            field=models.PositiveIntegerField(
+                null=True,
+                validators=[
+                    django.core.validators.MinValueValidator(limit_value=2022, message="The min year value is 2022."),
+                    django.core.validators.MaxValueValidator(limit_value=2050, message="The max year value is 2050."),
+                ],
+            ),
         ),
     ]

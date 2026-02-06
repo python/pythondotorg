@@ -1,7 +1,8 @@
 from django.contrib import admin
+
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
 
-from .models import Calendar, EventCategory, Event, OccurringRule, RecurringRule, Alarm, EventLocation
+from .models import Alarm, Calendar, Event, EventCategory, EventLocation, OccurringRule, RecurringRule
 
 
 class EventInline(admin.StackedInline):
@@ -28,15 +29,15 @@ class AlarmInline(admin.StackedInline):
 @admin.register(Event)
 class EventAdmin(ContentManageableModelAdmin):
     inlines = [OccurringRuleInline, RecurringRuleInline]
-    list_display = ['__str__', 'calendar', 'featured']
-    list_filter = ['calendar', 'featured']
-    raw_id_fields = ['venue']
-    search_fields = ['title']
+    list_display = ["__str__", "calendar", "featured"]
+    list_filter = ["calendar", "featured"]
+    raw_id_fields = ["venue"]
+    search_fields = ["title"]
 
 
 @admin.register(EventLocation)
 class EventLocationAdmin(admin.ModelAdmin):
-    list_filter = ['calendar']
+    list_filter = ["calendar"]
 
 
 admin.site.register(EventCategory, NameSlugAdmin)

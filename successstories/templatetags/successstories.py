@@ -2,7 +2,6 @@ from django import template
 
 from ..models import Story, StoryCategory
 
-
 register = template.Library()
 
 

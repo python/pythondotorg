@@ -5,10 +5,9 @@ from .base import BaseDownloadTests
 
 
 class DownloadModelTests(BaseDownloadTests):
-
     def test_stringification(self):
-        self.assertEqual(str(self.osx), 'macOS')
-        self.assertEqual(str(self.release_275), 'Python 2.7.5')
+        self.assertEqual(str(self.osx), "macOS")
+        self.assertEqual(str(self.release_275), "Python 2.7.5")
 
     def test_published(self):
         published_releases = Release.objects.published()
@@ -97,18 +96,21 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertIsNone(latest_prerelease)
 
     def test_get_version(self):
-        self.assertEqual(self.release_275.name, 'Python 2.7.5')
-        self.assertEqual(self.release_275.get_version(), '2.7.5')
+        self.assertEqual(self.release_275.name, "Python 2.7.5")
+        self.assertEqual(self.release_275.get_version(), "2.7.5")
 
     def test_get_version_27(self):
-        release = Release.objects.create(name='Python 2.7.12')
-        self.assertEqual(release.name, 'Python 2.7.12')
-        self.assertEqual(release.get_version(), '2.7.12')
+        release = Release.objects.create(name="Python 2.7.12")
+        self.assertEqual(release.name, "Python 2.7.12")
+        self.assertEqual(release.get_version(), "2.7.12")
 
     def test_get_version_invalid(self):
         names = [
-            'spam', 'Python2.7.5', 'Python   2.7.7', r'Python\t2.7.9',
-            r'\tPython 2.8.0',
+            "spam",
+            "Python2.7.5",
+            "Python   2.7.7",
+            r"Python\t2.7.9",
+            r"\tPython 2.8.0",
         ]
         for name in names:
             with self.subTest(name=name):
@@ -120,72 +122,73 @@ class DownloadModelTests(BaseDownloadTests):
         self.assertFalse(self.release_275.is_version_at_least_3_5)
         self.assertFalse(self.release_275.is_version_at_least_3_9)
 
-        release_38 = Release.objects.create(name='Python 3.8.0')
+        release_38 = Release.objects.create(name="Python 3.8.0")
         self.assertFalse(release_38.is_version_at_least_3_9)
         self.assertTrue(release_38.is_version_at_least_3_5)
 
-        release_310 = Release.objects.create(name='Python 3.10.0')
+        release_310 = Release.objects.create(name="Python 3.10.0")
         self.assertTrue(release_310.is_version_at_least_3_9)
         self.assertTrue(release_310.is_version_at_least_3_5)
 
     def test_is_version_at_least_with_invalid_name(self):
         """Test that is_version_at_least returns False for releases with invalid names"""
-        invalid_release = Release.objects.create(name='Python install manager')
+        invalid_release = Release.objects.create(name="Python install manager")
         # Should return False instead of raising AttributeError
         self.assertFalse(invalid_release.is_version_at_least_3_5)
         self.assertFalse(invalid_release.is_version_at_least_3_9)
         self.assertFalse(invalid_release.is_version_at_least_3_14)
 
     def test_update_supernav(self):
-        from ..models import update_supernav
         from boxes.models import Box
 
+        from ..models import update_supernav
+
         release = Release.objects.create(
-            name='Python install manager 25.0',
+            name="Python install manager 25.0",
             version=Release.PYMANAGER,
             is_latest=True,
             is_published=True,
         )
 
         for os, slug in [
-            (self.windows, 'python3.10-windows'),
-            (self.osx, 'python3.10-macos'),
-            (self.linux, 'python3.10-linux'),
+            (self.windows, "python3.10-windows"),
+            (self.osx, "python3.10-macos"),
+            (self.linux, "python3.10-linux"),
         ]:
             ReleaseFile.objects.create(
                 os=os,
                 release=self.python_3,
                 slug=slug,
-                name='Python 3.10',
-                url=f'/ftp/python/{slug}.zip',
+                name="Python 3.10",
+                url=f"/ftp/python/{slug}.zip",
                 download_button=True,
             )
 
         update_supernav()
 
-        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        content = Box.objects.get(label="supernav-python-downloads").content.rendered
         self.assertIn('class="download-os-windows"', content)
-        self.assertNotIn('pymanager-25.0.msix', content)
-        self.assertIn('python3.10-windows.zip', content)
+        self.assertNotIn("pymanager-25.0.msix", content)
+        self.assertIn("python3.10-windows.zip", content)
         self.assertIn('class="download-os-macos"', content)
-        self.assertIn('python3.10-macos.zip', content)
+        self.assertIn("python3.10-macos.zip", content)
         self.assertIn('class="download-os-linux"', content)
-        self.assertIn('python3.10-linux.zip', content)
+        self.assertIn("python3.10-linux.zip", content)
 
         ReleaseFile.objects.create(
             os=self.windows,
             release=release,
-            name='MSIX',
-            url='/ftp/python/pymanager/pymanager-25.0.msix',
+            name="MSIX",
+            url="/ftp/python/pymanager/pymanager-25.0.msix",
             download_button=True,
         )
 
         update_supernav()
 
-        content = Box.objects.get(label='supernav-python-downloads').content.rendered
+        content = Box.objects.get(label="supernav-python-downloads").content.rendered
         self.assertIn('class="download-os-windows"', content)
-        self.assertIn('pymanager-25.0.msix', content)
-        self.assertIn('python3.10-windows.zip', content)
+        self.assertIn("pymanager-25.0.msix", content)
+        self.assertIn("python3.10-windows.zip", content)
 
     def test_update_supernav_skips_os_without_files(self):
         """Test that update_supernav works when an OS has no download files.
@@ -195,8 +198,9 @@ class DownloadModelTests(BaseDownloadTests):
         leaving the supernav showing outdated version information.
         """
         # Arrange
-        from ..models import OS, update_supernav
         from boxes.models import Box
+
+        from ..models import OS, update_supernav
 
         # Create an OS without any release files
         OS.objects.create(name="Android", slug="android")
