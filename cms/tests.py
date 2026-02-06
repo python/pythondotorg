@@ -72,7 +72,8 @@ class TemplateTagsTest(unittest.TestCase):
         template = Template("{% load cms %}{% iso_time_tag now %}")
         rendered = template.render(Context({"now": now}))
         self.assertIn(
-            '<time datetime="2014-01-01T12:00:00"><span class="say-no-more">2014-</span>01-01</time>', rendered
+            '<time datetime="2014-01-01T12:00:00+00:00"><span class="say-no-more">2014-</span>01-01</time>',
+            rendered,
         )
 
 

@@ -11,3 +11,4 @@ class UsersAppConfig(AppConfig):
 
     def ready(self):
         """Perform app initialization when Django starts."""
+        import users.listeners  # noqa: F401
