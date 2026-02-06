@@ -87,12 +87,20 @@ class FellowNominationForm(forms.ModelForm):
         help_texts = {
             "nominee_name": "Full name of the person you are nominating.",
             "nominee_email": "Email address for the person you are nominating.",
-            "nomination_statement": "Why should this person be recognized as a PSF Fellow? Markdown supported.",
+            "nomination_statement": "Why should this person be recognized as a PSF Fellow? Minimum 120 characters. Markdown supported.",
         }
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
+
+    def clean_nomination_statement(self):
+        statement = self.cleaned_data["nomination_statement"]
+        if len(statement.raw.strip()) < 120:
+            raise forms.ValidationError(
+                "Please provide a more detailed nomination statement (at least 120 characters)."
+            )
+        return statement
 
     def clean_nominee_email(self):
         email = self.cleaned_data["nominee_email"]
