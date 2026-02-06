@@ -14,9 +14,9 @@ class Company(NameSlugModel):
     """A company that uses Python, displayed in the company directory."""
 
     about = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
-    contact = models.CharField(blank=True, max_length=100)
-    email = models.EmailField(blank=True)
-    url = models.URLField("URL", blank=True)
+    contact = models.CharField(blank=True, null=True, max_length=100)  # noqa: DJ001
+    email = models.EmailField(blank=True, null=True)  # noqa: DJ001
+    url = models.URLField("URL", blank=True, null=True)  # noqa: DJ001
     logo = models.ImageField(upload_to="companies/logos/", blank=True, null=True)
 
     class Meta:

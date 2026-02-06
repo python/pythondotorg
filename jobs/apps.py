@@ -11,3 +11,4 @@ class JobsAppConfig(AppConfig):
 
     def ready(self):
         """Perform app initialization on startup."""
+        import jobs.listeners  # noqa: F401

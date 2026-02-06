@@ -70,6 +70,8 @@ class Command(BaseCommand):
 
         for path in image_paths:
             new_url = self.fix_image(path, page)
+            if not new_url:
+                continue
             content = page.content.raw
             new_content = content.replace(path, new_url)
             page.content = new_content
