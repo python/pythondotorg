@@ -136,25 +136,25 @@ class FellowNominationRoundForm(forms.ModelForm):
 
     # Quarter start/end date ranges per quarter number
     QUARTER_DATES = {
-        FellowNominationRound.Q1: {
+        FellowNominationRound.Quarter.Q1: {
             "quarter_start": (1, 1),
             "quarter_end": (3, 31),
             "nominations_cutoff": (2, 20),
             "review_end": (3, 20),
         },
-        FellowNominationRound.Q2: {
+        FellowNominationRound.Quarter.Q2: {
             "quarter_start": (4, 1),
             "quarter_end": (6, 30),
             "nominations_cutoff": (5, 20),
             "review_end": (6, 20),
         },
-        FellowNominationRound.Q3: {
+        FellowNominationRound.Quarter.Q3: {
             "quarter_start": (7, 1),
             "quarter_end": (9, 30),
             "nominations_cutoff": (8, 20),
             "review_end": (9, 20),
         },
-        FellowNominationRound.Q4: {
+        FellowNominationRound.Quarter.Q4: {
             "quarter_start": (10, 1),
             "quarter_end": (12, 31),
             "nominations_cutoff": (11, 20),

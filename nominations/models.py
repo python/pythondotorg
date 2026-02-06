@@ -318,19 +318,14 @@ class Fellow(models.Model):
 class FellowNominationRound(models.Model):
     """Quarterly round for PSF Fellow Work Group consideration."""
 
-    Q1 = 1
-    Q2 = 2
-    Q3 = 3
-    Q4 = 4
-    QUARTER_CHOICES = (
-        (Q1, "Q1 (Jan-Mar)"),
-        (Q2, "Q2 (Apr-Jun)"),
-        (Q3, "Q3 (Jul-Sep)"),
-        (Q4, "Q4 (Oct-Dec)"),
-    )
+    class Quarter(models.IntegerChoices):
+        Q1 = 1, "Q1 (Jan-Mar)"
+        Q2 = 2, "Q2 (Apr-Jun)"
+        Q3 = 3, "Q3 (Jul-Sep)"
+        Q4 = 4, "Q4 (Oct-Dec)"
 
     year = models.PositiveIntegerField()
-    quarter = models.PositiveSmallIntegerField(choices=QUARTER_CHOICES)
+    quarter = models.PositiveSmallIntegerField(choices=Quarter.choices)
     quarter_start = models.DateField(help_text="First day of the quarter.")
     quarter_end = models.DateField(help_text="Last day of the quarter.")
     nominations_cutoff = models.DateField(
