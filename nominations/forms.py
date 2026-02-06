@@ -169,8 +169,14 @@ class FellowNominationRoundForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Default year to current year on create (not edit)
-        if not self.instance.pk and not self.initial.get("year"):
+        if self.instance.pk:
+            # Prevent changing year/quarter on existing rounds — doing so
+            # would break the slug and FK relationships.  disabled=True
+            # ensures the value is also ignored on POST (tamper-proof).
+            self.fields["year"].disabled = True
+            self.fields["quarter"].disabled = True
+        elif not self.initial.get("year"):
+            # Default year to current year on create
             self.fields["year"].initial = datetime.date.today().year
         # Date fields are optional — auto-populated from year+quarter in clean()
         for field_name in ("quarter_start", "quarter_end", "nominations_cutoff",
