@@ -211,7 +211,7 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
         sponsorship_ct = ContentType.objects.get_for_model(sponsorship)
         # Use TextAsset.objects.create() instead of baker.make() because
         # model_bakery doesn't support GenericForeignKey fields
-        asset_2025 = TextAsset.objects.create(
+        TextAsset.objects.create(
             content_type=sponsorship_ct,
             object_id=sponsorship.id,
             internal_name="conference_passes_code_2025",
