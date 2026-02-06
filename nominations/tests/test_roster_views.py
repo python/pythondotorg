@@ -58,13 +58,15 @@ class FellowsRosterViewTests(TestCase):
         """Fellow year elected should be displayed in parentheses."""
         Fellow.objects.create(name="Year Fellow", year_elected=2019, status="active")
         response = self.client.get(self.url)
-        self.assertContains(response, "Year Fellow (2019)")
+        self.assertContains(response, "(2019)")
 
     def test_emeritus_year_displayed(self):
-        """Emeritus fellows should show both elected and emeritus year."""
+        """Emeritus fellows should show elected year, en-dash, and emeritus year."""
         Fellow.objects.create(name="Old Fellow", year_elected=2005, status="emeritus", emeritus_year=2020)
         response = self.client.get(self.url)
-        self.assertContains(response, "Old Fellow (2005/2020)")
+        self.assertContains(response, "Old Fellow")
+        # Template uses &ndash; HTML entity for en-dash separator
+        self.assertContains(response, "(2005&ndash;2020)")
 
     def test_deceased_notes_displayed(self):
         """Deceased fellows should show notes if present."""
@@ -90,12 +92,41 @@ class FellowsRosterViewTests(TestCase):
         self.assertEqual(response.context["deceased_count"], 1)
         self.assertEqual(response.context["total_count"], 4)
 
-    def test_section_headings_rendered(self):
-        """Each section heading should appear when fellows of that status exist."""
+    def test_status_tabs_rendered(self):
+        """Status tab buttons should appear when fellows exist."""
         Fellow.objects.create(name="Active Fellow", year_elected=2020, status="active")
         Fellow.objects.create(name="Emeritus Fellow", year_elected=2010, status="emeritus")
         Fellow.objects.create(name="Deceased Fellow", year_elected=2005, status="deceased")
         response = self.client.get(self.url)
-        self.assertContains(response, "Fellows (1)")
-        self.assertContains(response, "Emeritus Fellows (1)")
+        self.assertContains(response, "Active (1)")
+        self.assertContains(response, "Emeritus (1)")
         self.assertContains(response, "In Memoriam (1)")
+
+    def test_years_in_context(self):
+        """Context should include distinct years sorted descending."""
+        Fellow.objects.create(name="Fellow A", year_elected=2015, status="active")
+        Fellow.objects.create(name="Fellow B", year_elected=2020, status="active")
+        Fellow.objects.create(name="Fellow C", year_elected=2015, status="emeritus")
+        response = self.client.get(self.url)
+        years = list(response.context["years"])
+        self.assertEqual(years, [2020, 2015])
+
+    def test_data_attributes_rendered(self):
+        """Each fellow list item should have data-name, data-year, data-status attributes."""
+        Fellow.objects.create(name="Data Fellow", year_elected=2021, status="active")
+        response = self.client.get(self.url)
+        self.assertContains(response, 'data-name="data fellow"')
+        self.assertContains(response, 'data-year="2021"')
+        self.assertContains(response, 'data-status="active"')
+
+    def test_emeritus_badge_shown(self):
+        """Emeritus fellows should have a badge."""
+        Fellow.objects.create(name="Badge Fellow", year_elected=2010, status="emeritus")
+        response = self.client.get(self.url)
+        self.assertContains(response, "fellow-badge emeritus")
+
+    def test_deceased_badge_shown(self):
+        """Deceased fellows should have a badge."""
+        Fellow.objects.create(name="Memorial Fellow", year_elected=2005, status="deceased")
+        response = self.client.get(self.url)
+        self.assertContains(response, "fellow-badge deceased")
