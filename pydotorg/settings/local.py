@@ -32,7 +32,9 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = config('EMAIL_HOST', default='maildev')
+EMAIL_PORT = config('EMAIL_PORT', default=1025, cast=int)
 
 # Use Dummy SASS compiler to avoid performance issues and remove the need to
 # have a sass compiler installed at all during local development if you aren't

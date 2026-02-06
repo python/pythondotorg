@@ -1,0 +1,108 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Fellow Nomination: {{ nomination.nominee_name }} | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_detail"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Fellow Nomination: {{ nomination.nominee_name }}</h1>
+    </header>
+
+    {% if nomination.nominee_is_fellow_at_submission %}
+    <div class="user-feedback level-warning">
+        <p role="warning">Note: {{ nomination.nominee_name }} was already a PSF Fellow at the time of this nomination.</p>
+    </div>
+    {% endif %}
+
+    <div>
+        <ul>
+            <li><b>Nominee</b>: {{ nomination.nominee_name }}</li>
+            <li><b>Nominated by</b>: {{ nomination.nominator.get_full_name|default:nomination.nominator.username }}</li>
+            <li><b>Round</b>: {{ nomination.nomination_round }}</li>
+            <li><b>Status</b>:
+                <span class="badge badge-{{ nomination.status }}">
+                    {{ nomination.get_status_display }}
+                </span>
+            </li>
+            <li><b>Submitted</b>: {{ nomination.created|date:"N j, Y" }}</li>
+            {% if nomination.expiry_round %}
+            <li><b>Active until</b>: {{ nomination.expiry_round }}</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div>
+        <h2>Nomination Statement</h2>
+        {{ nomination.nomination_statement.rendered|safe }}
+    </div>
+
+    {% if is_wg_member %}
+    <div>
+        <h2>WG Review</h2>
+
+        <h3>Vote Summary</h3>
+        {% if yes_count or no_count or abstain_count %}
+        <ul>
+            <li><b>Yes</b>: {{ yes_count }}</li>
+            <li><b>No</b>: {{ no_count }}</li>
+            <li><b>Abstain</b>: {{ abstain_count }}</li>
+        </ul>
+        {% if vote_result %}
+        <p><span class="badge badge-accepted">Threshold met (50%+1)</span></p>
+        {% elif vote_result == False %}
+        <p><span class="badge badge-not_accepted">Threshold not met</span></p>
+        {% endif %}
+        {% else %}
+        <p>No votes cast yet.</p>
+        {% endif %}
+
+        <h3>Individual Votes</h3>
+        {% if votes %}
+        <table class="listing">
+            <thead>
+                <tr>
+                    <th>Voter</th>
+                    <th>Vote</th>
+                    <th>Comment</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for vote in votes %}
+                <tr>
+                    <td>{{ vote.voter.get_full_name }}</td>
+                    <td>{{ vote.get_vote_display }}</td>
+                    <td>{{ vote.comment|default:"" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No votes have been cast.</p>
+        {% endif %}
+
+        <p>
+            <a href="{% url 'nominations:fellow_nomination_vote' pk=nomination.pk %}">Cast Vote</a>
+            | <a href="{% url 'nominations:fellow_nomination_status_update' pk=nomination.pk %}">Update Status</a>
+            | <a href="{% url 'nominations:fellow_nomination_edit' pk=nomination.pk %}">Edit Nomination</a>
+        </p>
+    </div>
+    {% endif %}
+
+    <p>
+        {% if is_wg_member %}
+        <a href="{% url 'nominations:fellow_nomination_dashboard' %}">&larr; Back to Dashboard</a>
+        | <a href="{% url 'nominations:fellow_nomination_review' %}">Review Nominations</a>
+        {% endif %}
+        {% if is_wg_member and request.user == nomination.nominator %}| {% endif %}
+        {% if request.user == nomination.nominator %}
+        <a href="{% url 'nominations:fellow_my_nominations' %}">&larr; My Nominations</a>
+        {% endif %}
+    </p>
+</article>
+{% endblock content %}

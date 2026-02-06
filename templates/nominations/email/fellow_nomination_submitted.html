@@ -1,0 +1,150 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>PSF Fellow Nomination Submitted</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f7;">
+    <tr>
+      <td align="center" style="padding:24px 16px;">
+
+        <!-- Container -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#306998;padding:32px 40px;text-align:center;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:28px;font-weight:bold;color:#FFD43B;text-align:center;letter-spacing:-0.5px;">
+                    Python Software Foundation
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:14px;color:rgba(255,255,255,0.85);text-align:center;padding-top:6px;letter-spacing:0.5px;">
+                    Fellow Nominations Program
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px 40px 16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:16px;line-height:24px;color:#333333;">
+                    Hello {{ nomination.nominator.get_full_name|default:nomination.nominator.username }},
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:16px;line-height:24px;color:#333333;padding-top:16px;">
+                    Thank you for submitting a PSF Fellow nomination for <strong>{{ nomination.nominee_name }}</strong>.
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:16px;line-height:24px;color:#333333;padding-top:12px;">
+                    Your nomination has been received and will be reviewed by the PSF Fellow Work Group during the {{ nomination.nomination_round }} review period.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Details Card -->
+          <tr>
+            <td style="padding:16px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f4f8;border-radius:6px;border-left:4px solid #306998;">
+                <tr>
+                  <td style="padding:20px 24px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <tr>
+                        <td style="font-size:13px;font-weight:bold;color:#306998;text-transform:uppercase;letter-spacing:1px;padding-bottom:12px;">
+                          Nomination Details
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="font-size:15px;line-height:28px;color:#333333;">
+                          <strong style="color:#555555;">Nominee:</strong> {{ nomination.nominee_name }}<br>
+                          <strong style="color:#555555;">Round:</strong> {{ nomination.nomination_round }}<br>
+                          <strong style="color:#555555;">Submitted:</strong> {{ nomination.created|date:"N j, Y" }}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA Buttons -->
+          <tr>
+            <td style="padding:16px 40px 8px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom:12px;">
+                    <a href="{{ site_url }}{{ nomination.get_absolute_url }}" target="_blank" style="display:inline-block;background-color:#306998;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:6px;mso-padding-alt:0;">
+                      <!--[if mso]><i style="mso-font-width:150%;mso-text-raise:18pt;" hidden>&emsp;</i><![endif]-->
+                      View Your Nomination
+                      <!--[if mso]><i style="mso-font-width:150%;" hidden>&emsp;&#8203;</i><![endif]-->
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <a href="{{ site_url }}{% url 'nominations:fellow_my_nominations' %}" target="_blank" style="display:inline-block;background-color:transparent;color:#306998;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 24px;border-radius:6px;border:2px solid #306998;">
+                      Track All Your Nominations
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Closing -->
+          <tr>
+            <td style="padding:24px 40px 40px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:16px;line-height:24px;color:#333333;">
+                    Thank you for contributing to the Python community!
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#1e1e1e;padding:24px 40px;text-align:center;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:13px;line-height:20px;color:rgba(255,255,255,0.6);text-align:center;">
+                    The Python Software Foundation
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:12px;line-height:18px;color:rgba(255,255,255,0.4);text-align:center;padding-top:8px;">
+                    9450 SW Gemini Dr., ECM# 90772, Beaverton, OR 97008, USA
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Container -->
+
+      </td>
+    </tr>
+  </table>
+  <!-- /Wrapper -->
+
+</body>
+</html>

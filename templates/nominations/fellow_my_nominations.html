@@ -1,0 +1,50 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+My Fellow Nominations | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_my_nominations"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">My Fellow Nominations</h1>
+    </header>
+
+    <p>
+        <a href="{% url 'nominations:fellow_nomination_create' %}">Submit a new Fellow nomination</a>
+    </p>
+
+    {% if nominations %}
+    <table class="listing">
+        <thead>
+            <tr>
+                <th>Nominee</th>
+                <th>Round</th>
+                <th>Status</th>
+                <th>Submitted</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nom in nominations %}
+            <tr>
+                <td><a href="{{ nom.get_absolute_url }}">{{ nom.nominee_name }}</a></td>
+                <td>{{ nom.nomination_round }}</td>
+                <td>
+                    <span class="badge badge-{{ nom.status }}">
+                        {{ nom.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ nom.created|date:"N j, Y" }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>You have not submitted any Fellow nominations yet.</p>
+    {% endif %}
+</article>
+{% endblock content %}

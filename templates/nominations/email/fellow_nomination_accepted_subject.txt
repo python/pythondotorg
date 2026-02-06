@@ -1,0 +1,1 @@
+Your PSF Fellow nomination for {{ nomination.nominee_name }} has been accepted

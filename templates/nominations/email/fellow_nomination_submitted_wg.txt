@@ -1,0 +1,14 @@
+A new PSF Fellow nomination has been submitted.
+
+Nominee: {{ nomination.nominee_name }}
+Nominee Email: {{ nomination.nominee_email }}
+Nominated by: {{ nomination.nominator.get_full_name|default:nomination.nominator.username }} ({{ nomination.nominator.email }})
+Round: {{ nomination.nomination_round }}
+{% if nomination.nominee_is_fellow_at_submission %}
+NOTE: This nominee is already a PSF Fellow.
+{% endif %}
+Review this nomination:
+{{ site_url }}{{ nomination.get_absolute_url }}
+
+WG Dashboard:
+{{ site_url }}{% url 'nominations:fellow_nomination_dashboard' %}

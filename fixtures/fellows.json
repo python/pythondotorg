@@ -1,0 +1,5774 @@
+[
+  {
+    "model": "nominations.fellow",
+    "pk": 1,
+    "fields": {
+      "name": "Aaron Yankey",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 2,
+    "fields": {
+      "name": "Abhijeet Mote",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 3,
+    "fields": {
+      "name": "Abigail Afi Gbadago",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 4,
+    "fields": {
+      "name": "Abigail Mesrenyame Dogbe",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 5,
+    "fields": {
+      "name": "Abhishek Mishra",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 6,
+    "fields": {
+      "name": "Adam Johnson",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 7,
+    "fields": {
+      "name": "Adrian Holovaty",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 8,
+    "fields": {
+      "name": "Aidis Stukas",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 9,
+    "fields": {
+      "name": "Aisha Bello",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 10,
+    "fields": {
+      "name": "Al Sweigart",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 11,
+    "fields": {
+      "name": "Alex Gaynor",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 12,
+    "fields": {
+      "name": "Alex Martelli",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 13,
+    "fields": {
+      "name": "Alex Willmer",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 14,
+    "fields": {
+      "name": "Alexander Hendorf",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 15,
+    "fields": {
+      "name": "Alexandre Savio",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 16,
+    "fields": {
+      "name": "Allison Randal",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 17,
+    "fields": {
+      "name": "Alyssa Coghlan",
+      "year_elected": 2007,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 18,
+    "fields": {
+      "name": "Amaury Forgeot d'Arc",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 19,
+    "fields": {
+      "name": "Amber Brown",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 20,
+    "fields": {
+      "name": "Ana Dulce Padovan",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 21,
+    "fields": {
+      "name": "Anand Chitipothu",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 22,
+    "fields": {
+      "name": "Anand Pillai",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 23,
+    "fields": {
+      "name": "Andrew Godwin",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 24,
+    "fields": {
+      "name": "Andrew Kuchling",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 25,
+    "fields": {
+      "name": "Anna Martelli Ravenscroft",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 26,
+    "fields": {
+      "name": "Anne Gentle",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 27,
+    "fields": {
+      "name": "Anthony Baxter",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 28,
+    "fields": {
+      "name": "Anthony Scopatz",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 29,
+    "fields": {
+      "name": "Anthony Shaw",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 30,
+    "fields": {
+      "name": "Anthony Sottile",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 31,
+    "fields": {
+      "name": "Antoine Pitrou",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 32,
+    "fields": {
+      "name": "Anton Caceres",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 33,
+    "fields": {
+      "name": "Antonio Cuni",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 34,
+    "fields": {
+      "name": "Anwesha Das",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 35,
+    "fields": {
+      "name": "Arc Riley",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 36,
+    "fields": {
+      "name": "Archana Vaidheeswaran",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 37,
+    "fields": {
+      "name": "Armin Ronacher",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 38,
+    "fields": {
+      "name": "Armin Stroß-Radschinski",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 39,
+    "fields": {
+      "name": "Artur Czepiel",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 40,
+    "fields": {
+      "name": "Asheesh Laroia",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 41,
+    "fields": {
+      "name": "Audrey Roy",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 42,
+    "fields": {
+      "name": "Bae KwonHan",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 43,
+    "fields": {
+      "name": "Baptiste Mispelon",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 44,
+    "fields": {
+      "name": "Batuhan Taskaya",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 45,
+    "fields": {
+      "name": "Barbara Shaurette",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 46,
+    "fields": {
+      "name": "Barney Gale",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 47,
+    "fields": {
+      "name": "Barry Warsaw",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 48,
+    "fields": {
+      "name": "Becky Smith",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 49,
+    "fields": {
+      "name": "Belinda Weaver",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 50,
+    "fields": {
+      "name": "Ben Bangert",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 51,
+    "fields": {
+      "name": "Benjamin Peterson",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 52,
+    "fields": {
+      "name": "Benoit Chesneau",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 53,
+    "fields": {
+      "name": "Berker Peksag",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 54,
+    "fields": {
+      "name": "Bernát Gábor",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 55,
+    "fields": {
+      "name": "Brandon Rhodes",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 56,
+    "fields": {
+      "name": "Brett Cannon",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 57,
+    "fields": {
+      "name": "Brian Costlow",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 58,
+    "fields": {
+      "name": "Brian Curtin",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 59,
+    "fields": {
+      "name": "Brian K. Jones",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 60,
+    "fields": {
+      "name": "Brian Zimmer",
+      "year_elected": 2005,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 61,
+    "fields": {
+      "name": "Briana Augenreich",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 62,
+    "fields": {
+      "name": "Bruno Oliveira",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 63,
+    "fields": {
+      "name": "Bruno Rocha",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 64,
+    "fields": {
+      "name": "C Titus Brown",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 65,
+    "fields": {
+      "name": "Cameron Laird",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 66,
+    "fields": {
+      "name": "Carl F. Karsten",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 67,
+    "fields": {
+      "name": "Carl Friedrich Bolz",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 68,
+    "fields": {
+      "name": "Carl Meyer",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 69,
+    "fields": {
+      "name": "Carol Willing",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 70,
+    "fields": {
+      "name": "Carlton Gibson",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 71,
+    "fields": {
+      "name": "Carrie Anne Philbin",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 72,
+    "fields": {
+      "name": "Catherine Devlin",
+      "year_elected": 2007,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 73,
+    "fields": {
+      "name": "Chandan Kumar",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 74,
+    "fields": {
+      "name": "Charlie Marsh",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 75,
+    "fields": {
+      "name": "Cheuk Ting Ho",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 76,
+    "fields": {
+      "name": "Chris Brousseau",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 77,
+    "fields": {
+      "name": "Chris Jerdonek",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 78,
+    "fields": {
+      "name": "Chris Neugebauer",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 79,
+    "fields": {
+      "name": "Chris Withers",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 80,
+    "fields": {
+      "name": "Christian Barra",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 81,
+    "fields": {
+      "name": "Christian Heimes",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 82,
+    "fields": {
+      "name": "Christian Scholz",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 83,
+    "fields": {
+      "name": "Christian Theune",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 84,
+    "fields": {
+      "name": "Christian Tismer",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 85,
+    "fields": {
+      "name": "Christoph Gohlke",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 86,
+    "fields": {
+      "name": "Christopher Armstrong",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 87,
+    "fields": {
+      "name": "Christopher Bailey",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 88,
+    "fields": {
+      "name": "Christopher MacGowan",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 89,
+    "fields": {
+      "name": "Chukwudi Nwachukwu",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 90,
+    "fields": {
+      "name": "Claudiu Popa",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 91,
+    "fields": {
+      "name": "Cory Benfield",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 92,
+    "fields": {
+      "name": "Cristián Danilo Maureira-Fredes",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 93,
+    "fields": {
+      "name": "Damien George",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 94,
+    "fields": {
+      "name": "Dana Bauer",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 95,
+    "fields": {
+      "name": "Daniel Greenfeld",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 96,
+    "fields": {
+      "name": "Daniel Pope",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 97,
+    "fields": {
+      "name": "Daniele Procida",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 98,
+    "fields": {
+      "name": "Danny Adair",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 99,
+    "fields": {
+      "name": "Darya Chyzhyk",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 100,
+    "fields": {
+      "name": "Dave Forgac",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 101,
+    "fields": {
+      "name": "Dave Malcolm",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 102,
+    "fields": {
+      "name": "David Goodger",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 103,
+    "fields": {
+      "name": "David Lord",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 104,
+    "fields": {
+      "name": "David Markey",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 105,
+    "fields": {
+      "name": "Dawn Wages",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 106,
+    "fields": {
+      "name": "Dean Troyer",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 107,
+    "fields": {
+      "name": "Débora Azevedo",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 108,
+    "fields": {
+      "name": "Denny Perez",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 109,
+    "fields": {
+      "name": "Diana Clarke",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 110,
+    "fields": {
+      "name": "Dino Viehland",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 111,
+    "fields": {
+      "name": "Don Sheu",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 112,
+    "fields": {
+      "name": "Donald Beaudry",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 113,
+    "fields": {
+      "name": "Donald Stufft",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 114,
+    "fields": {
+      "name": "Doug Hellmann",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 115,
+    "fields": {
+      "name": "Doug Napoleone",
+      "year_elected": 2007,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 116,
+    "fields": {
+      "name": "Duncan McGreggor",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 117,
+    "fields": {
+      "name": "Dustin Ingram",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 118,
+    "fields": {
+      "name": "Dusty Phillips",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 119,
+    "fields": {
+      "name": "Eduardo Mendes",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 120,
+    "fields": {
+      "name": "Elaine Wong",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 121,
+    "fields": {
+      "name": "Elana Hashman",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 122,
+    "fields": {
+      "name": "Emily Morehouse-Valcarcel",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 123,
+    "fields": {
+      "name": "Emmanuelle Gouillart",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 124,
+    "fields": {
+      "name": "Eric Holscher",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 125,
+    "fields": {
+      "name": "Eric Jones",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 126,
+    "fields": {
+      "name": "Eric S. Raymond",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 127,
+    "fields": {
+      "name": "Eric Traut",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 128,
+    "fields": {
+      "name": "Eric V. Smith",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 129,
+    "fields": {
+      "name": "Érico Andrei",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 130,
+    "fields": {
+      "name": "Esteban Maya Cadavid",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 131,
+    "fields": {
+      "name": "Ee Durbin",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 132,
+    "fields": {
+      "name": "Ewa Jodlowska",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 133,
+    "fields": {
+      "name": "Eyitemi Egbejule",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 134,
+    "fields": {
+      "name": "Fabio Pliger",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 135,
+    "fields": {
+      "name": "Facundo Batista",
+      "year_elected": 2005,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 136,
+    "fields": {
+      "name": "Felipe de Morais",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 137,
+    "fields": {
+      "name": "Fernando Masanori Ashikaga",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 138,
+    "fields": {
+      "name": "Fernando Perez",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 139,
+    "fields": {
+      "name": "Filip Kłębczyk",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 140,
+    "fields": {
+      "name": "Finn Bock",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 141,
+    "fields": {
+      "name": "Fiorella De Luca",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 142,
+    "fields": {
+      "name": "Florian Bruhin",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 143,
+    "fields": {
+      "name": "Francisco Palm",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 144,
+    "fields": {
+      "name": "Frank Wierzbicki",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 145,
+    "fields": {
+      "name": "Frank Wiles",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 146,
+    "fields": {
+      "name": "Fred L. Drake, Jr.",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 147,
+    "fields": {
+      "name": "Gael Varoquaux",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 148,
+    "fields": {
+      "name": "Gautier Hayoun",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 149,
+    "fields": {
+      "name": "Gavin M. Roy",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 150,
+    "fields": {
+      "name": "Georg Brandl",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 151,
+    "fields": {
+      "name": "George Paci",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 152,
+    "fields": {
+      "name": "Georgi Ker",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 153,
+    "fields": {
+      "name": "Giles Thomas",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 154,
+    "fields": {
+      "name": "Gina Häußge",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 155,
+    "fields": {
+      "name": "Giovanni Bajo",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 156,
+    "fields": {
+      "name": "Glyph Lefkowitz",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 157,
+    "fields": {
+      "name": "Graham Dumpleton",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 158,
+    "fields": {
+      "name": "Greg Ewing",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 159,
+    "fields": {
+      "name": "Greg Stein",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 160,
+    "fields": {
+      "name": "Greg Ward",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "converted to emeritus in 2008, re-activated in 2013",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 161,
+    "fields": {
+      "name": "Greg Wilson",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 162,
+    "fields": {
+      "name": "Gregory Smith",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 163,
+    "fields": {
+      "name": "Grishma Jena",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 164,
+    "fields": {
+      "name": "Guido van Rossum",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 165,
+    "fields": {
+      "name": "Gustavo Niemeyer",
+      "year_elected": 2004,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 166,
+    "fields": {
+      "name": "Hamdalah Adetunji",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 167,
+    "fields": {
+      "name": "Hanno Schlichting",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 168,
+    "fields": {
+      "name": "Harald Armin Massa",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 169,
+    "fields": {
+      "name": "Henrique Bastos",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 170,
+    "fields": {
+      "name": "Hugo van Kemenade",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 171,
+    "fields": {
+      "name": "Humphrey Butau",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 172,
+    "fields": {
+      "name": "Hye-Shik Chang",
+      "year_elected": 2004,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 173,
+    "fields": {
+      "name": "Hynek Schlawack",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 174,
+    "fields": {
+      "name": "Ian Bicking",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 175,
+    "fields": {
+      "name": "Ines Montani",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 176,
+    "fields": {
+      "name": "Inessa Pawson",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 177,
+    "fields": {
+      "name": "Iqbal Abdullah",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 178,
+    "fields": {
+      "name": "Ivan Levkivskyi",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 179,
+    "fields": {
+      "name": "Ivaylo Bachvarov",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 180,
+    "fields": {
+      "name": "Ivy Fung Oi Wei",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 181,
+    "fields": {
+      "name": "Jack Jansen",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 182,
+    "fields": {
+      "name": "Jackie Kazil",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 183,
+    "fields": {
+      "name": "Jacob Hallén",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 184,
+    "fields": {
+      "name": "Jacob Kaplan-Moss",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 185,
+    "fields": {
+      "name": "Jakub Baláš",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 186,
+    "fields": {
+      "name": "James Abel",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 187,
+    "fields": {
+      "name": "James Bennett",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 188,
+    "fields": {
+      "name": "James Blair",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 189,
+    "fields": {
+      "name": "James Tauber",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 190,
+    "fields": {
+      "name": "Jan Ulrich Hasecke",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 191,
+    "fields": {
+      "name": "Jannis Leidel",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 192,
+    "fields": {
+      "name": "Jason Pellerin",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 193,
+    "fields": {
+      "name": "Jason Tishler",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 194,
+    "fields": {
+      "name": "Jay Miller",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 195,
+    "fields": {
+      "name": "Jean-Paul Calderone",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 196,
+    "fields": {
+      "name": "Jeff Elkner",
+      "year_elected": 2004,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 197,
+    "fields": {
+      "name": "Jeff Reback",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 198,
+    "fields": {
+      "name": "Jeff Rush",
+      "year_elected": 2007,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 199,
+    "fields": {
+      "name": "Jeff Triplett",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 200,
+    "fields": {
+      "name": "Jelle Zijlstra",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 201,
+    "fields": {
+      "name": "Jeremy Dunck",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 202,
+    "fields": {
+      "name": "Jeremy Hylton",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 203,
+    "fields": {
+      "name": "Jesse Noller",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 204,
+    "fields": {
+      "name": "Jessica McKellar",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 205,
+    "fields": {
+      "name": "Jim Baker",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 206,
+    "fields": {
+      "name": "Jimena Escobar Bermúdez",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 207,
+    "fields": {
+      "name": "Jim Fulton",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 208,
+    "fields": {
+      "name": "Jim Hugunin",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 209,
+    "fields": {
+      "name": "João Sebastião de Oliveira Bueno",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 210,
+    "fields": {
+      "name": "Joe Banks",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 211,
+    "fields": {
+      "name": "John Roa",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 212,
+    "fields": {
+      "name": "John Hawley",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 213,
+    "fields": {
+      "name": "Jonathan Hartley",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 214,
+    "fields": {
+      "name": "Jonathan LaCour",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 215,
+    "fields": {
+      "name": "Jon Banafato",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 216,
+    "fields": {
+      "name": "Joris Van den Bossche",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 217,
+    "fields": {
+      "name": "Josef Heinen",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 218,
+    "fields": {
+      "name": "Joshua McKenty",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 219,
+    "fields": {
+      "name": "Juan Luis Cano",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 220,
+    "fields": {
+      "name": "Jukka Lehtosalo",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 221,
+    "fields": {
+      "name": "Julia Duimovich",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 222,
+    "fields": {
+      "name": "Julien Palard",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 223,
+    "fields": {
+      "name": "Jürgen Gmach",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 224,
+    "fields": {
+      "name": "Just van Rossum",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 225,
+    "fields": {
+      "name": "Ka-Ping Yee",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 226,
+    "fields": {
+      "name": "Kamon Ayeva",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 227,
+    "fields": {
+      "name": "Karen Dalton",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 228,
+    "fields": {
+      "name": "Karolina Ladino",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 229,
+    "fields": {
+      "name": "Katia Lira",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 230,
+    "fields": {
+      "name": "Katie Cunningham",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 231,
+    "fields": {
+      "name": "Katie McLaughlin",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 232,
+    "fields": {
+      "name": "Ken Manheimer",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 233,
+    "fields": {
+      "name": "Kenneth Love",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 234,
+    "fields": {
+      "name": "Kenneth Reitz",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 235,
+    "fields": {
+      "name": "Kevin Altis",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 236,
+    "fields": {
+      "name": "Kevin O'Brien",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 237,
+    "fields": {
+      "name": "Kirby Urner",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 238,
+    "fields": {
+      "name": "Kristian Glass",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 239,
+    "fields": {
+      "name": "Kojo Idrissa",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 240,
+    "fields": {
+      "name": "Kurt B. Kaiser",
+      "year_elected": 2004,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 241,
+    "fields": {
+      "name": "Kushal Das",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 242,
+    "fields": {
+      "name": "Laís Carvalho",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 243,
+    "fields": {
+      "name": "Lance Ellinghaus",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 244,
+    "fields": {
+      "name": "Larry Hastings",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 245,
+    "fields": {
+      "name": "Laura Cassell",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 246,
+    "fields": {
+      "name": "Laurens Van Houtven",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 247,
+    "fields": {
+      "name": "Leah Silen",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 248,
+    "fields": {
+      "name": "Leah Wasser",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 249,
+    "fields": {
+      "name": "Leandro Enrique Colombo Viña",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 250,
+    "fields": {
+      "name": "Lennart Regebro",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 251,
+    "fields": {
+      "name": "Leon Sandøy",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 252,
+    "fields": {
+      "name": "Leonard Richardson",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 253,
+    "fields": {
+      "name": "Lorena Mesa",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 254,
+    "fields": {
+      "name": "Luciano Ramalho",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 255,
+    "fields": {
+      "name": "Łukasz Langa",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 256,
+    "fields": {
+      "name": "Lynn Root",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 257,
+    "fields": {
+      "name": "Maaya Ishida",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 258,
+    "fields": {
+      "name": "Mabel Delgado",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 259,
+    "fields": {
+      "name": "Mahmoud Hashemi",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 260,
+    "fields": {
+      "name": "Mai Giménez",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 261,
+    "fields": {
+      "name": "Manabu Terada",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 262,
+    "fields": {
+      "name": "Mannie Young",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 263,
+    "fields": {
+      "name": "Manuel Kaufmann",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 264,
+    "fields": {
+      "name": "Marc-André Lemburg",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 265,
+    "fields": {
+      "name": "Marcelo Elizeche Landó",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 266,
+    "fields": {
+      "name": "Marco Rougeth",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 267,
+    "fields": {
+      "name": "Mark Smith",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 268,
+    "fields": {
+      "name": "Mariano Reingart",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 269,
+    "fields": {
+      "name": "Mariatta Wijaya",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 270,
+    "fields": {
+      "name": "Mario Corchero",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 271,
+    "fields": {
+      "name": "Mário Sérgio Oliveira de Queiroz",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 272,
+    "fields": {
+      "name": "Mark Dickinson",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 273,
+    "fields": {
+      "name": "Mark Hammond",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 274,
+    "fields": {
+      "name": "Mark Lutz",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 275,
+    "fields": {
+      "name": "Mark McLoughlin",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 276,
+    "fields": {
+      "name": "Mark Ramm",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 277,
+    "fields": {
+      "name": "Marlene Mhangami",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 278,
+    "fields": {
+      "name": "Martijn Faassen",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 279,
+    "fields": {
+      "name": "Martijn Pieters",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 280,
+    "fields": {
+      "name": "Martin Aspeli",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 281,
+    "fields": {
+      "name": "Martin von Löwis",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 282,
+    "fields": {
+      "name": "Mason Egger",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 283,
+    "fields": {
+      "name": "Massimo DiPierro",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 284,
+    "fields": {
+      "name": "Mathieu Leduc-Hamel",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 285,
+    "fields": {
+      "name": "Matt Lebrun",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 286,
+    "fields": {
+      "name": "Matteo Benci",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 287,
+    "fields": {
+      "name": "Matthew Dixon Cowles",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 288,
+    "fields": {
+      "name": "Matthew Lagoe",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 289,
+    "fields": {
+      "name": "Matthias Klose",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 290,
+    "fields": {
+      "name": "Melissa Weber Mendonça",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 291,
+    "fields": {
+      "name": "Mia Bajić",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 292,
+    "fields": {
+      "name": "Micaela Reyes",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 293,
+    "fields": {
+      "name": "Michael Bayer",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 294,
+    "fields": {
+      "name": "Michael Hudson",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 295,
+    "fields": {
+      "name": "Michael Iyanda",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 296,
+    "fields": {
+      "name": "Michael Kennedy",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 297,
+    "fields": {
+      "name": "Michael Sparks",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 298,
+    "fields": {
+      "name": "Michael J. Sullivan",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 299,
+    "fields": {
+      "name": "Michael Young",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 300,
+    "fields": {
+      "name": "Michelle Rowley",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 301,
+    "fields": {
+      "name": "Mike Driscoll",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 302,
+    "fields": {
+      "name": "Mike Fletcher",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 303,
+    "fields": {
+      "name": "Mike McLay",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 304,
+    "fields": {
+      "name": "Mike Müller",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 305,
+    "fields": {
+      "name": "Mike Olson",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 306,
+    "fields": {
+      "name": "Mike Orr",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 307,
+    "fields": {
+      "name": "Mike Pirnat",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 308,
+    "fields": {
+      "name": "Miguel Grinberg",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 309,
+    "fields": {
+      "name": "Miroslav Šedivý",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 310,
+    "fields": {
+      "name": "Monty Taylor",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 311,
+    "fields": {
+      "name": "Moshe Zadka",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 312,
+    "fields": {
+      "name": "Naomi Ceder",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 313,
+    "fields": {
+      "name": "Nathaniel Smith",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 314,
+    "fields": {
+      "name": "Neal Norwitz",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 315,
+    "fields": {
+      "name": "Ned Batchelder",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 316,
+    "fields": {
+      "name": "Ned Deily",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 317,
+    "fields": {
+      "name": "Neil Schemenauer",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 318,
+    "fields": {
+      "name": "Ng Swee Meng",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 319,
+    "fields": {
+      "name": "Ngazetungue Muheue",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 320,
+    "fields": {
+      "name": "Nick Barcet",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 321,
+    "fields": {
+      "name": "Nicolas Chauvat",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 322,
+    "fields": {
+      "name": "Nicolás Demarchi",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 323,
+    "fields": {
+      "name": "Nicolas Laurance",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 324,
+    "fields": {
+      "name": "Nicole Harris",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 325,
+    "fields": {
+      "name": "Nikita Sobolev",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 326,
+    "fields": {
+      "name": "Nilo Ney Coutinho Menezes",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 327,
+    "fields": {
+      "name": "Noah Alorwu",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 328,
+    "fields": {
+      "name": "Noah Kantrowitz",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 329,
+    "fields": {
+      "name": "Noufal Ibrahim",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 330,
+    "fields": {
+      "name": "Ola Sendecka",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 331,
+    "fields": {
+      "name": "Ola Sitarska",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 332,
+    "fields": {
+      "name": "Olivier Grisel",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 333,
+    "fields": {
+      "name": "Osvaldo Santana",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 334,
+    "fields": {
+      "name": "Pablo Galindo Salgado",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 335,
+    "fields": {
+      "name": "Pablo Rivera",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 336,
+    "fields": {
+      "name": "Park Hyun-woo",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 337,
+    "fields": {
+      "name": "Patrick Arminio",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 338,
+    "fields": {
+      "name": "Paul Everitt",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 339,
+    "fields": {
+      "name": "Paul Kehrer",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 340,
+    "fields": {
+      "name": "Paul McGuire",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 341,
+    "fields": {
+      "name": "Paul McMillan",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 342,
+    "fields": {
+      "name": "Paolo Melchiorre",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 343,
+    "fields": {
+      "name": "Paulo Nuin",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 344,
+    "fields": {
+      "name": "Peter Inglesby",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 345,
+    "fields": {
+      "name": "Peter Kropf",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 346,
+    "fields": {
+      "name": "Peter Schneider-Kamp",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 347,
+    "fields": {
+      "name": "Peter Wang",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 348,
+    "fields": {
+      "name": "Philip James",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 349,
+    "fields": {
+      "name": "Philip Jenvey",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 350,
+    "fields": {
+      "name": "Philip Jones",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 351,
+    "fields": {
+      "name": "Prabhu Ramachandran",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 352,
+    "fields": {
+      "name": "Pradyun Gedam",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 353,
+    "fields": {
+      "name": "Quentin Wright",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 354,
+    "fields": {
+      "name": "David Murray",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 355,
+    "fields": {
+      "name": "Ralph Green",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 356,
+    "fields": {
+      "name": "Ram Rachum",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 357,
+    "fields": {
+      "name": "Rami Chowdhury",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 358,
+    "fields": {
+      "name": "Raquel Dou",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 359,
+    "fields": {
+      "name": "Reimar Bauer",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 360,
+    "fields": {
+      "name": "Reshama Shaikh",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 361,
+    "fields": {
+      "name": "Richard Jones",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 362,
+    "fields": {
+      "name": "Richard Kellner",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 363,
+    "fields": {
+      "name": "Richard Taylor",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 364,
+    "fields": {
+      "name": "Rick Copeland",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 365,
+    "fields": {
+      "name": "Rizky Ariestiyansyah",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 366,
+    "fields": {
+      "name": "Robert Collins",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 367,
+    "fields": {
+      "name": "Robert Kern",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 368,
+    "fields": {
+      "name": "Robin Dunn",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 369,
+    "fields": {
+      "name": "Ronald Oussoren",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 370,
+    "fields": {
+      "name": "Roy Hyunjin Han",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 371,
+    "fields": {
+      "name": "Ruben Orduz",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 372,
+    "fields": {
+      "name": "Russell Keith-Magee",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 373,
+    "fields": {
+      "name": "Sage Sharp",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 374,
+    "fields": {
+      "name": "Sammy Fung",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 375,
+    "fields": {
+      "name": "Samuel Colvin",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 376,
+    "fields": {
+      "name": "Samuele Pedroni",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 377,
+    "fields": {
+      "name": "Saptak Sengupta",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 378,
+    "fields": {
+      "name": "Sarah Kaiser",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 379,
+    "fields": {
+      "name": "Sean Reifschneider",
+      "year_elected": 2007,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 380,
+    "fields": {
+      "name": "Sebastiaan Zeeff",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 381,
+    "fields": {
+      "name": "Sebastian Vetter",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 382,
+    "fields": {
+      "name": "Selena Deckelman",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 383,
+    "fields": {
+      "name": "Serhiy Storchaka",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 384,
+    "fields": {
+      "name": "Seth Michael Larson",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 385,
+    "fields": {
+      "name": "Simon Cross",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 386,
+    "fields": {
+      "name": "Simon Willison",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 387,
+    "fields": {
+      "name": "Sjoerd Mullender",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 388,
+    "fields": {
+      "name": "Soon Seng Goh",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 389,
+    "fields": {
+      "name": "Soong Chee Gi",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 390,
+    "fields": {
+      "name": "Stefan Behnel",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 391,
+    "fields": {
+      "name": "Stefan van der Walt",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 392,
+    "fields": {
+      "name": "Stephan Deibel",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 393,
+    "fields": {
+      "name": "Stephane Wirtel",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 394,
+    "fields": {
+      "name": "Stephen Hawkes",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 395,
+    "fields": {
+      "name": "Stephen Thorne",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 396,
+    "fields": {
+      "name": "Steven d’Aprano",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 397,
+    "fields": {
+      "name": "Tania Allard",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 398,
+    "fields": {
+      "name": "Tatiana Andrea Delgadillo Garzofino",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 399,
+    "fields": {
+      "name": "Ted Pollari",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 400,
+    "fields": {
+      "name": "Tereza Iofciu",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 401,
+    "fields": {
+      "name": "Terri Oda",
+      "year_elected": 2013,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 402,
+    "fields": {
+      "name": "Terry Peppers",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 403,
+    "fields": {
+      "name": "Terry Reedy",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 404,
+    "fields": {
+      "name": "Tetsuya Morimoto",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 405,
+    "fields": {
+      "name": "Thea Flowers",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 406,
+    "fields": {
+      "name": "Thierry Carrez",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 407,
+    "fields": {
+      "name": "Thomas A Caswell",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 408,
+    "fields": {
+      "name": "Thomas Waldmann",
+      "year_elected": 2009,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 409,
+    "fields": {
+      "name": "Thomas Wouters",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 410,
+    "fields": {
+      "name": "Tim Ansell",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 411,
+    "fields": {
+      "name": "Tim Couper",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 412,
+    "fields": {
+      "name": "Tim Golden",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 413,
+    "fields": {
+      "name": "Tim Peters",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 414,
+    "fields": {
+      "name": "Tom Augspurger",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 415,
+    "fields": {
+      "name": "Tom Christie",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 416,
+    "fields": {
+      "name": "Tom Viner",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 417,
+    "fields": {
+      "name": "Travis Oliphant",
+      "year_elected": 2006,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 418,
+    "fields": {
+      "name": "Trent Mick",
+      "year_elected": 2001,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 419,
+    "fields": {
+      "name": "Tres Seaver",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 420,
+    "fields": {
+      "name": "Trevor Toenjes",
+      "year_elected": 2004,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 421,
+    "fields": {
+      "name": "Trey Hunner",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 422,
+    "fields": {
+      "name": "Uche Ogbuji",
+      "year_elected": 2002,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 423,
+    "fields": {
+      "name": "Valentin Dombrovsky",
+      "year_elected": 2019,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 424,
+    "fields": {
+      "name": "Van Lindberg",
+      "year_elected": 2008,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 425,
+    "fields": {
+      "name": "Vasudev Ram",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 426,
+    "fields": {
+      "name": "Velda Kiara",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 427,
+    "fields": {
+      "name": "Vicky Twomey-Lee",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 428,
+    "fields": {
+      "name": "Victor Stinner",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 429,
+    "fields": {
+      "name": "Vinay Sajip",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 430,
+    "fields": {
+      "name": "Vish Ishaya",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 431,
+    "fields": {
+      "name": "Walter Dörwald",
+      "year_elected": 2003,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 432,
+    "fields": {
+      "name": "Wes McKinney",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 433,
+    "fields": {
+      "name": "Wesley Chun",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 434,
+    "fields": {
+      "name": "Wilfredo Sanchez Vega",
+      "year_elected": 2012,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 435,
+    "fields": {
+      "name": "Will McGugan",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 436,
+    "fields": {
+      "name": "William Vincent",
+      "year_elected": 2025,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 437,
+    "fields": {
+      "name": "Winnie Ke",
+      "year_elected": 2024,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 438,
+    "fields": {
+      "name": "Yamila Moreno",
+      "year_elected": 2017,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 439,
+    "fields": {
+      "name": "Yannick Gingras",
+      "year_elected": 2011,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 440,
+    "fields": {
+      "name": "Yifei Wang",
+      "year_elected": 2023,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 441,
+    "fields": {
+      "name": "Younggun Kim",
+      "year_elected": 2020,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 442,
+    "fields": {
+      "name": "Yung-Yu Chen",
+      "year_elected": 2022,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 443,
+    "fields": {
+      "name": "Yury Selivanov",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 444,
+    "fields": {
+      "name": "Zac Hatfield-Dodds",
+      "year_elected": 2021,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 445,
+    "fields": {
+      "name": "Zachary Ware",
+      "year_elected": 2018,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 446,
+    "fields": {
+      "name": "Zeth Green",
+      "year_elected": 2010,
+      "status": "active",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 447,
+    "fields": {
+      "name": "David Abrahams",
+      "year_elected": 2002,
+      "status": "emeritus",
+      "emeritus_year": 2008,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 448,
+    "fields": {
+      "name": "Paul Boddie",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2015,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 449,
+    "fields": {
+      "name": "Paul F. Dubois",
+      "year_elected": 2002,
+      "status": "emeritus",
+      "emeritus_year": 2008,
+      "notes": "Paul Dubois was an original contributor to Numerical Python, and its coordinator for five years. Paul also hosted the Fourth International Python Conference in 1996.",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 450,
+    "fields": {
+      "name": "Lars Marius Garshol",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2005,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 451,
+    "fields": {
+      "name": "Charles G. Waldman",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2005,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 452,
+    "fields": {
+      "name": "Skip Montanaro",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2008,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 453,
+    "fields": {
+      "name": "Sam Rushing",
+      "year_elected": 2002,
+      "status": "emeritus",
+      "emeritus_year": 2008,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 454,
+    "fields": {
+      "name": "Danny Yoo",
+      "year_elected": 2004,
+      "status": "emeritus",
+      "emeritus_year": 2008,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 455,
+    "fields": {
+      "name": "Thomas Heller",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2009,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 456,
+    "fields": {
+      "name": "Neil Hodgson",
+      "year_elected": 2002,
+      "status": "emeritus",
+      "emeritus_year": 2009,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 457,
+    "fields": {
+      "name": "Armin Rigo",
+      "year_elected": 2004,
+      "status": "emeritus",
+      "emeritus_year": 2010,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 458,
+    "fields": {
+      "name": "David Ascher",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2011,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 459,
+    "fields": {
+      "name": "Steven Bethard",
+      "year_elected": 2007,
+      "status": "emeritus",
+      "emeritus_year": 2011,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 460,
+    "fields": {
+      "name": "Maciej Fijalkowski",
+      "year_elected": 2011,
+      "status": "emeritus",
+      "emeritus_year": 2012,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 461,
+    "fields": {
+      "name": "Paul Prescod",
+      "year_elected": 2001,
+      "status": "emeritus",
+      "emeritus_year": 2013,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 462,
+    "fields": {
+      "name": "André Roberge",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2013,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 463,
+    "fields": {
+      "name": "Tarek Ziadé",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2013,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 464,
+    "fields": {
+      "name": "Gloria W. Jacobs",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2013,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 465,
+    "fields": {
+      "name": "Holger Krekel",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2018,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 466,
+    "fields": {
+      "name": "Nicholas H. Tollervey",
+      "year_elected": 2012,
+      "status": "emeritus",
+      "emeritus_year": 2019,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 467,
+    "fields": {
+      "name": "Steve Holden",
+      "year_elected": 2003,
+      "status": "emeritus",
+      "emeritus_year": 2020,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 468,
+    "fields": {
+      "name": "David M. Beazley",
+      "year_elected": 2002,
+      "status": "emeritus",
+      "emeritus_year": 2020,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 469,
+    "fields": {
+      "name": "Raymond Hettinger",
+      "year_elected": 2003,
+      "status": "emeritus",
+      "emeritus_year": 2020,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 470,
+    "fields": {
+      "name": "Jack Diederich",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2020,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 471,
+    "fields": {
+      "name": "Laura Creighton",
+      "year_elected": 2007,
+      "status": "emeritus",
+      "emeritus_year": 2021,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 472,
+    "fields": {
+      "name": "David Mertz",
+      "year_elected": 2008,
+      "status": "emeritus",
+      "emeritus_year": 2024,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 473,
+    "fields": {
+      "name": "Chris McDonough",
+      "year_elected": 2010,
+      "status": "emeritus",
+      "emeritus_year": 2024,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 474,
+    "fields": {
+      "name": "Marc Garcia",
+      "year_elected": 2018,
+      "status": "emeritus",
+      "emeritus_year": 2024,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 475,
+    "fields": {
+      "name": "Andrew Dalke",
+      "year_elected": 2004,
+      "status": "emeritus",
+      "emeritus_year": 2025,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 476,
+    "fields": {
+      "name": "Aahz",
+      "year_elected": 2002,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "emeritus since 2013",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 477,
+    "fields": {
+      "name": "Fredrik Lundh",
+      "year_elected": 2001,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 478,
+    "fields": {
+      "name": "James Lopeman",
+      "year_elected": 2022,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 479,
+    "fields": {
+      "name": "John Pinner",
+      "year_elected": 2008,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "member from 2008-2015",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 480,
+    "fields": {
+      "name": "Malcolm Tredinnick",
+      "year_elected": 2009,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  },
+  {
+    "model": "nominations.fellow",
+    "pk": 481,
+    "fields": {
+      "name": "Michael Foord",
+      "year_elected": 2009,
+      "status": "deceased",
+      "emeritus_year": null,
+      "notes": "",
+      "user": null
+    }
+  }
+]

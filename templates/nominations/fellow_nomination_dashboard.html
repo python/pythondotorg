@@ -1,0 +1,87 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Fellow Nominations — WG Dashboard | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_dashboard"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Fellow Nominations — WG Dashboard</h1>
+    </header>
+
+    {% if current_round %}
+    <div>
+        <h2>Current Round: {{ current_round }}</h2>
+        <ul>
+            <li><b>Total nominations</b>: {{ total_nominations }}</li>
+            <li><b>Pending</b>: {{ pending_count }}</li>
+            <li><b>Under review</b>: {{ under_review_count }}</li>
+            <li><b>Accepted</b>: {{ accepted_count }}</li>
+            <li><b>Not accepted</b>: {{ not_accepted_count }}</li>
+        </ul>
+    </div>
+    {% else %}
+    <div class="user-feedback level-warning">
+        <p role="warning">No nomination round is currently open.</p>
+    </div>
+    {% endif %}
+
+    {% if needs_votes_count %}
+    <div>
+        <h2>Attention</h2>
+        <p><b>{{ needs_votes_count }}</b> nomination{{ needs_votes_count|pluralize }} waiting for your vote:</p>
+        <ul>
+            {% for nom in needs_votes_nominations %}
+            <li>
+                <a href="{% url 'nominations:fellow_nomination_vote' pk=nom.pk %}">{{ nom.nominee_name }}</a>
+                <span class="badge badge-{{ nom.status }}">{{ nom.get_status_display }}</span>
+                — {{ nom.nomination_round }}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+
+    <div>
+        <h2>Quick Links</h2>
+        <ul>
+            <li><a href="{% url 'nominations:fellow_nomination_review' %}">Review Nominations</a></li>
+            <li><a href="{% url 'nominations:fellow_round_list' %}">Manage Rounds</a></li>
+            <li><a href="{% url 'nominations:fellow_round_create' %}">Create New Round</a></li>
+        </ul>
+    </div>
+
+    {% if recent_rounds %}
+    <div>
+        <h2>Recent Rounds</h2>
+        <table class="listing">
+            <thead>
+                <tr>
+                    <th>Round</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for round in recent_rounds %}
+                <tr>
+                    <td>{{ round }}</td>
+                    <td>
+                        {% if round.is_open %}
+                        <span class="badge badge-accepted">Open</span>
+                        {% else %}
+                        <span class="badge badge-not_accepted">Closed</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+</article>
+{% endblock content %}

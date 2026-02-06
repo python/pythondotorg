@@ -1,0 +1,171 @@
+{% load i18n %}<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>New PSF Fellow Nomination</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f4f4f7;font-family:Arial,Helvetica,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
+
+  <!-- Wrapper -->
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f4f7;">
+    <tr>
+      <td align="center" style="padding:24px 16px;">
+
+        <!-- Container -->
+        <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+
+          <!-- Header -->
+          <tr>
+            <td style="background-color:#306998;padding:24px 40px;text-align:center;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:22px;font-weight:bold;color:#FFD43B;text-align:center;letter-spacing:-0.5px;">
+                    Fellow Work Group
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-size:13px;color:rgba(255,255,255,0.85);text-align:center;padding-top:4px;letter-spacing:0.5px;">
+                    New Nomination Alert
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Alert Banner -->
+          <tr>
+            <td style="padding:0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#e8f0fe;">
+                <tr>
+                  <td style="padding:14px 40px;font-size:14px;font-weight:bold;color:#306998;text-align:center;">
+                    A new PSF Fellow nomination has been submitted and requires review.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          {% if nomination.nominee_is_fellow_at_submission %}
+          <!-- Existing Fellow Warning -->
+          <tr>
+            <td style="padding:16px 40px 0;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#fff3cd;border-radius:6px;border-left:4px solid #ffc107;">
+                <tr>
+                  <td style="padding:14px 20px;font-size:14px;color:#856404;font-weight:bold;">
+                    NOTE: This nominee is already a PSF Fellow.
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          {% endif %}
+
+          <!-- Details Card -->
+          <tr>
+            <td style="padding:24px 40px 16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f8f9fa;border-radius:6px;border:1px solid #e0e0e0;">
+                <tr>
+                  <td style="padding:24px;">
+                    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                      <!-- Nominee -->
+                      <tr>
+                        <td width="35%" style="font-size:13px;font-weight:bold;color:#666666;padding:6px 0;vertical-align:top;">
+                          Nominee
+                        </td>
+                        <td style="font-size:15px;color:#333333;padding:6px 0;vertical-align:top;">
+                          {{ nomination.nominee_name }}
+                        </td>
+                      </tr>
+                      <!-- Email -->
+                      <tr>
+                        <td width="35%" style="font-size:13px;font-weight:bold;color:#666666;padding:6px 0;vertical-align:top;">
+                          Nominee Email
+                        </td>
+                        <td style="font-size:15px;color:#333333;padding:6px 0;vertical-align:top;">
+                          <a href="mailto:{{ nomination.nominee_email }}" style="color:#306998;text-decoration:none;">{{ nomination.nominee_email }}</a>
+                        </td>
+                      </tr>
+                      <!-- Separator -->
+                      <tr>
+                        <td colspan="2" style="padding:8px 0;">
+                          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr><td style="border-top:1px solid #e0e0e0;font-size:0;line-height:0;">&nbsp;</td></tr>
+                          </table>
+                        </td>
+                      </tr>
+                      <!-- Nominator -->
+                      <tr>
+                        <td width="35%" style="font-size:13px;font-weight:bold;color:#666666;padding:6px 0;vertical-align:top;">
+                          Nominated by
+                        </td>
+                        <td style="font-size:15px;color:#333333;padding:6px 0;vertical-align:top;">
+                          {{ nomination.nominator.get_full_name|default:nomination.nominator.username }}
+                          <br>
+                          <a href="mailto:{{ nomination.nominator.email }}" style="color:#306998;text-decoration:none;font-size:13px;">{{ nomination.nominator.email }}</a>
+                        </td>
+                      </tr>
+                      <!-- Round -->
+                      <tr>
+                        <td width="35%" style="font-size:13px;font-weight:bold;color:#666666;padding:6px 0;vertical-align:top;">
+                          Round
+                        </td>
+                        <td style="font-size:15px;color:#333333;padding:6px 0;vertical-align:top;">
+                          {{ nomination.nomination_round }}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- CTA Buttons -->
+          <tr>
+            <td style="padding:8px 40px 16px;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td align="center" style="padding-bottom:12px;">
+                    <a href="{{ site_url }}{{ nomination.get_absolute_url }}" target="_blank" style="display:inline-block;background-color:#306998;color:#ffffff;font-size:15px;font-weight:bold;text-decoration:none;padding:12px 28px;border-radius:6px;mso-padding-alt:0;">
+                      <!--[if mso]><i style="mso-font-width:150%;mso-text-raise:18pt;" hidden>&emsp;</i><![endif]-->
+                      Review This Nomination
+                      <!--[if mso]><i style="mso-font-width:150%;" hidden>&emsp;&#8203;</i><![endif]-->
+                    </a>
+                  </td>
+                </tr>
+                <tr>
+                  <td align="center">
+                    <a href="{{ site_url }}{% url 'nominations:fellow_nomination_dashboard' %}" target="_blank" style="display:inline-block;background-color:transparent;color:#306998;font-size:14px;font-weight:bold;text-decoration:none;padding:10px 24px;border-radius:6px;border:2px solid #306998;">
+                      WG Dashboard
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#1e1e1e;padding:20px 40px;text-align:center;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td style="font-size:12px;line-height:18px;color:rgba(255,255,255,0.5);text-align:center;">
+                    Fellow Work Group Internal Notification &mdash; Python Software Foundation
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+        <!-- /Container -->
+
+      </td>
+    </tr>
+  </table>
+  <!-- /Wrapper -->
+
+</body>
+</html>

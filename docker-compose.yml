@@ -20,6 +20,15 @@ services:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
 
+  maildev:
+    image: maildev/maildev:2.1.0
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:1080"]
+      interval: 5s
+
   static:
     command: bin/static
     build:
