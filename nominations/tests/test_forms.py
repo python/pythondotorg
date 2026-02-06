@@ -1,10 +1,7 @@
-from django.test import TestCase, RequestFactory
-
-from users.models import User
+from django.test import RequestFactory, TestCase
 
 from nominations.forms import FellowNominationForm
-from nominations.models import FellowNominationRound
-from nominations.tests.factories import UserFactory, FellowNominationRoundFactory
+from nominations.tests.factories import FellowNominationRoundFactory, UserFactory
 
 
 class FellowNominationFormTests(TestCase):

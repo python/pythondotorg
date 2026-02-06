@@ -1,9 +1,10 @@
 import datetime
+
 import factory
 from factory.django import DjangoModelFactory
 
+from nominations.models import FellowNomination, FellowNominationRound
 from users.models import User
-from nominations.models import FellowNominationRound, FellowNomination
 
 
 class UserFactory(DjangoModelFactory):

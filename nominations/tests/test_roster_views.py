@@ -1,4 +1,4 @@
-from django.test import TestCase, Client
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from nominations.models import Fellow
@@ -44,9 +44,7 @@ class FellowsRosterViewTests(TestCase):
     def test_total_count_in_context(self):
         """The context should include the total count of Fellows."""
         for i in range(3):
-            Fellow.objects.create(
-                name=f"Fellow{i} User{i}", year_elected=2020, status="active"
-            )
+            Fellow.objects.create(name=f"Fellow{i} User{i}", year_elected=2020, status="active")
         response = self.client.get(self.url)
         self.assertEqual(response.context["total_count"], 3)
 
@@ -64,9 +62,7 @@ class FellowsRosterViewTests(TestCase):
 
     def test_emeritus_year_displayed(self):
         """Emeritus fellows should show both elected and emeritus year."""
-        Fellow.objects.create(
-            name="Old Fellow", year_elected=2005, status="emeritus", emeritus_year=2020
-        )
+        Fellow.objects.create(name="Old Fellow", year_elected=2005, status="emeritus", emeritus_year=2020)
         response = self.client.get(self.url)
         self.assertContains(response, "Old Fellow (2005/2020)")
 

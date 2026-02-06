@@ -18,6 +18,4 @@ class Command(BaseCommand):
             nomination.status = FellowNomination.NOT_ACCEPTED
             nomination.save()
             count += 1
-        self.stdout.write(
-            self.style.SUCCESS(f"Closed {count} expired Fellow nomination(s).")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Closed {count} expired Fellow nomination(s)."))

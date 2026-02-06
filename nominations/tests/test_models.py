@@ -1,19 +1,19 @@
 import datetime
 from unittest.mock import patch
 
+from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
 
 from nominations.models import (
     Fellow,
-    FellowNominationRound,
     FellowNomination,
     FellowNominationVote,
 )
 from nominations.tests.factories import (
-    UserFactory,
-    FellowNominationRoundFactory,
     FellowNominationFactory,
+    FellowNominationRoundFactory,
+    UserFactory,
 )
 
 
@@ -37,64 +37,51 @@ class FellowNominationRoundTests(TestCase):
 
     @patch("nominations.models.timezone.now")
     def test_is_current_true(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 15, 12, 0))
         self.assertTrue(self.round.is_current)
 
     @patch("nominations.models.timezone.now")
     def test_is_current_false(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 5, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 5, 1, 12, 0))
         self.assertFalse(self.round.is_current)
 
     @patch("nominations.models.timezone.now")
     def test_is_accepting_nominations_true(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 1, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 1, 15, 12, 0))
         self.assertTrue(self.round.is_accepting_nominations)
 
     @patch("nominations.models.timezone.now")
     def test_is_accepting_nominations_false_after_cutoff(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 21, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 21, 12, 0))
         self.assertFalse(self.round.is_accepting_nominations)
 
     @patch("nominations.models.timezone.now")
     def test_is_accepting_nominations_false_when_closed(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 1, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 1, 15, 12, 0))
         self.round.is_open = False
         self.round.save()
         self.assertFalse(self.round.is_accepting_nominations)
 
     @patch("nominations.models.timezone.now")
     def test_is_in_review_true(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 3, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 3, 1, 12, 0))
         self.assertTrue(self.round.is_in_review)
 
     @patch("nominations.models.timezone.now")
     def test_is_in_review_false(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 1, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 1, 15, 12, 0))
         self.assertFalse(self.round.is_in_review)
 
     def test_unique_together(self):
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             FellowNominationRoundFactory(year=2026, quarter=1)
 
 
 class FellowNominationTests(TestCase):
     def setUp(self):
         self.round = FellowNominationRoundFactory(
-            year=2026, quarter=1,
+            year=2026,
+            quarter=1,
             quarter_start=datetime.date(2026, 1, 1),
             quarter_end=datetime.date(2026, 3, 31),
             nominations_cutoff=datetime.date(2026, 2, 20),
@@ -102,7 +89,8 @@ class FellowNominationTests(TestCase):
             review_end=datetime.date(2026, 3, 20),
         )
         self.expiry_round = FellowNominationRoundFactory(
-            year=2026, quarter=4,
+            year=2026,
+            quarter=4,
             quarter_start=datetime.date(2026, 10, 1),
             quarter_end=datetime.date(2026, 12, 31),
             nominations_cutoff=datetime.date(2026, 11, 20),
@@ -126,9 +114,7 @@ class FellowNominationTests(TestCase):
 
     @patch("nominations.models.timezone.now")
     def test_is_active_pending(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
         self.assertTrue(self.nomination.is_active)
 
     def test_is_active_false_when_accepted(self):
@@ -143,9 +129,7 @@ class FellowNominationTests(TestCase):
 
     @patch("nominations.models.timezone.now")
     def test_is_active_false_when_expired(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2027, 2, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2027, 2, 1, 12, 0))
         self.assertFalse(self.nomination.is_active)
 
     def test_nominee_is_already_fellow_false_no_user(self):
@@ -239,7 +223,7 @@ class FellowNominationVoteResultTests(TestCase):
             voter=voter,
             vote="yes",
         )
-        with self.assertRaises(Exception):
+        with self.assertRaises(IntegrityError):
             FellowNominationVote.objects.create(
                 nomination=self.nomination,
                 voter=voter,
@@ -250,7 +234,8 @@ class FellowNominationVoteResultTests(TestCase):
 class FellowNominationQuerySetTests(TestCase):
     def setUp(self):
         self.round = FellowNominationRoundFactory(
-            year=2026, quarter=1,
+            year=2026,
+            quarter=1,
             quarter_start=datetime.date(2026, 1, 1),
             quarter_end=datetime.date(2026, 3, 31),
             nominations_cutoff=datetime.date(2026, 2, 20),
@@ -258,7 +243,8 @@ class FellowNominationQuerySetTests(TestCase):
             review_end=datetime.date(2026, 3, 20),
         )
         self.future_round = FellowNominationRoundFactory(
-            year=2026, quarter=4,
+            year=2026,
+            quarter=4,
             quarter_start=datetime.date(2026, 10, 1),
             quarter_end=datetime.date(2026, 12, 31),
             nominations_cutoff=datetime.date(2026, 11, 20),
@@ -268,10 +254,8 @@ class FellowNominationQuerySetTests(TestCase):
 
     @patch("nominations.managers.timezone.now")
     def test_active_excludes_accepted(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
-        nom = FellowNominationFactory(
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
+        FellowNominationFactory(
             nomination_round=self.round,
             expiry_round=self.future_round,
             status="accepted",
@@ -280,10 +264,8 @@ class FellowNominationQuerySetTests(TestCase):
 
     @patch("nominations.managers.timezone.now")
     def test_active_includes_pending(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
-        nom = FellowNominationFactory(
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
+        FellowNominationFactory(
             nomination_round=self.round,
             expiry_round=self.future_round,
             status="pending",
@@ -291,19 +273,20 @@ class FellowNominationQuerySetTests(TestCase):
         self.assertEqual(FellowNomination.objects.active().count(), 1)
 
     def test_for_round(self):
-        nom1 = FellowNominationFactory(
+        FellowNominationFactory(
             nomination_round=self.round,
             expiry_round=self.future_round,
         )
         round2 = FellowNominationRoundFactory(
-            year=2026, quarter=2,
+            year=2026,
+            quarter=2,
             quarter_start=datetime.date(2026, 4, 1),
             quarter_end=datetime.date(2026, 6, 30),
             nominations_cutoff=datetime.date(2026, 5, 20),
             review_start=datetime.date(2026, 5, 20),
             review_end=datetime.date(2026, 6, 20),
         )
-        nom2 = FellowNominationFactory(
+        FellowNominationFactory(
             nomination_round=round2,
             expiry_round=self.future_round,
         )

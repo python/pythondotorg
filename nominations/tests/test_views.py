@@ -1,16 +1,16 @@
 import datetime
 from unittest.mock import patch
 
-from django.test import TestCase, Client
+from django.contrib.auth.models import Group
+from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import Group
 
-from nominations.models import Fellow, FellowNomination, FellowNominationRound
+from nominations.models import Fellow, FellowNomination
 from nominations.tests.factories import (
-    UserFactory,
-    FellowNominationRoundFactory,
     FellowNominationFactory,
+    FellowNominationRoundFactory,
+    UserFactory,
 )
 
 
@@ -20,7 +20,8 @@ class FellowNominationCreateViewTests(TestCase):
         self.user = UserFactory()
         self.client.login(username=self.user.username, password="testpass123")
         self.round = FellowNominationRoundFactory(
-            year=2026, quarter=1,
+            year=2026,
+            quarter=1,
             quarter_start=datetime.date(2026, 1, 1),
             quarter_end=datetime.date(2026, 3, 31),
             nominations_cutoff=datetime.date(2026, 2, 20),
@@ -50,9 +51,7 @@ class FellowNominationCreateViewTests(TestCase):
     @patch("nominations.views.FellowNominationSubmittedToWG.notify")
     @patch("nominations.models.timezone.now")
     def test_successful_submission(self, mock_now, mock_wg_notify, mock_nominator_notify):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 1, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 1, 15, 12, 0))
         data = {
             "nominee_name": "Jane Doe",
             "nominee_email": "jane@example.com",
@@ -70,9 +69,7 @@ class FellowNominationCreateViewTests(TestCase):
     @patch("nominations.views.FellowNominationSubmittedToWG.notify")
     @patch("nominations.models.timezone.now")
     def test_fellow_warning_shown(self, mock_now, mock_wg_notify, mock_nominator_notify):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 1, 15, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 1, 15, 12, 0))
         fellow_user = UserFactory(email="fellow@example.com")
         Fellow.objects.create(
             name="Fellow User",
@@ -85,7 +82,7 @@ class FellowNominationCreateViewTests(TestCase):
             "nomination_statement": "This person has been an incredible contributor to the Python community through years of sustained effort across multiple projects and initiatives.",
             "nomination_statement_markup_type": "markdown",
         }
-        response = self.client.post(self.url, data, follow=True)
+        self.client.post(self.url, data, follow=True)
         self.assertEqual(FellowNomination.objects.count(), 1)
         nom = FellowNomination.objects.first()
         self.assertTrue(nom.nominee_is_fellow_at_submission)

@@ -1,14 +1,14 @@
 import datetime
 
-from django.test import TestCase, Client
-from django.urls import reverse
 from django.contrib.auth.models import Group
+from django.test import Client, TestCase
+from django.urls import reverse
 
 from nominations.models import FellowNomination, FellowNominationRound
 from nominations.tests.factories import (
-    UserFactory,
-    FellowNominationRoundFactory,
     FellowNominationFactory,
+    FellowNominationRoundFactory,
+    UserFactory,
 )
 
 
@@ -127,26 +127,14 @@ class FellowNominationRoundCreateViewTests(TestCase):
         }
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)
-        self.assertTrue(
-            FellowNominationRound.objects.filter(year=2026, quarter=2).exists()
-        )
+        self.assertTrue(FellowNominationRound.objects.filter(year=2026, quarter=2).exists())
         created_round = FellowNominationRound.objects.get(year=2026, quarter=2)
         # Verify auto-populated dates from the form's clean method
-        self.assertEqual(
-            created_round.quarter_start, datetime.date(2026, 4, 1)
-        )
-        self.assertEqual(
-            created_round.quarter_end, datetime.date(2026, 6, 30)
-        )
-        self.assertEqual(
-            created_round.nominations_cutoff, datetime.date(2026, 5, 20)
-        )
-        self.assertEqual(
-            created_round.review_start, datetime.date(2026, 5, 20)
-        )
-        self.assertEqual(
-            created_round.review_end, datetime.date(2026, 6, 20)
-        )
+        self.assertEqual(created_round.quarter_start, datetime.date(2026, 4, 1))
+        self.assertEqual(created_round.quarter_end, datetime.date(2026, 6, 30))
+        self.assertEqual(created_round.nominations_cutoff, datetime.date(2026, 5, 20))
+        self.assertEqual(created_round.review_start, datetime.date(2026, 5, 20))
+        self.assertEqual(created_round.review_end, datetime.date(2026, 6, 20))
 
     def test_non_wg_user_gets_403(self):
         self.client.login(username=self.regular_user.username, password="testpass123")
@@ -191,9 +179,7 @@ class FellowNominationRoundCreateViewTests(TestCase):
         # Should re-render the form with validation errors (200, not 302)
         self.assertEqual(response.status_code, 200)
         # Only one round for 2026 Q3 should exist
-        self.assertEqual(
-            FellowNominationRound.objects.filter(year=2026, quarter=3).count(), 1
-        )
+        self.assertEqual(FellowNominationRound.objects.filter(year=2026, quarter=3).count(), 1)
 
 
 class FellowNominationRoundUpdateViewTests(TestCase):
@@ -232,12 +218,8 @@ class FellowNominationRoundUpdateViewTests(TestCase):
         response = self.client.post(self.url, data)
         self.assertEqual(response.status_code, 302)
         self.round.refresh_from_db()
-        self.assertEqual(
-            self.round.nominations_cutoff, datetime.date(2026, 2, 25)
-        )
-        self.assertEqual(
-            self.round.review_end, datetime.date(2026, 3, 25)
-        )
+        self.assertEqual(self.round.nominations_cutoff, datetime.date(2026, 2, 25))
+        self.assertEqual(self.round.review_end, datetime.date(2026, 3, 25))
 
     def test_non_wg_user_gets_403(self):
         self.client.login(username=self.regular_user.username, password="testpass123")

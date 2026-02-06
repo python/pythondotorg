@@ -36,13 +36,15 @@ class Command(BaseCommand):
         self._create_votes()
         self._create_fellows()
 
-        self.stdout.write(self.style.SUCCESS(
-            f"Created test nomination data: "
-            f"{FellowNominationRound.objects.count()} rounds, "
-            f"{FellowNomination.objects.count()} nominations, "
-            f"{FellowNominationVote.objects.count()} votes, "
-            f"{Fellow.objects.count()} fellows"
-        ))
+        self.stdout.write(
+            self.style.SUCCESS(
+                f"Created test nomination data: "
+                f"{FellowNominationRound.objects.count()} rounds, "
+                f"{FellowNomination.objects.count()} nominations, "
+                f"{FellowNominationVote.objects.count()} votes, "
+                f"{Fellow.objects.count()} fellows"
+            )
+        )
 
     # -- helpers ---------------------------------------------------------------
 
@@ -64,14 +66,30 @@ class Command(BaseCommand):
 
     def _get_or_create_round(self, year, quarter, is_open=True):
         quarter_dates = {
-            1: (datetime.date(year, 1, 1), datetime.date(year, 3, 31),
-                datetime.date(year, 2, 20), datetime.date(year, 3, 20)),
-            2: (datetime.date(year, 4, 1), datetime.date(year, 6, 30),
-                datetime.date(year, 5, 20), datetime.date(year, 6, 20)),
-            3: (datetime.date(year, 7, 1), datetime.date(year, 9, 30),
-                datetime.date(year, 8, 20), datetime.date(year, 9, 20)),
-            4: (datetime.date(year, 10, 1), datetime.date(year, 12, 31),
-                datetime.date(year, 11, 20), datetime.date(year, 12, 20)),
+            1: (
+                datetime.date(year, 1, 1),
+                datetime.date(year, 3, 31),
+                datetime.date(year, 2, 20),
+                datetime.date(year, 3, 20),
+            ),
+            2: (
+                datetime.date(year, 4, 1),
+                datetime.date(year, 6, 30),
+                datetime.date(year, 5, 20),
+                datetime.date(year, 6, 20),
+            ),
+            3: (
+                datetime.date(year, 7, 1),
+                datetime.date(year, 9, 30),
+                datetime.date(year, 8, 20),
+                datetime.date(year, 9, 20),
+            ),
+            4: (
+                datetime.date(year, 10, 1),
+                datetime.date(year, 12, 31),
+                datetime.date(year, 11, 20),
+                datetime.date(year, 12, 20),
+            ),
         }
         start, end, cutoff, review_end = quarter_dates[quarter]
         obj, created = FellowNominationRound.objects.get_or_create(
@@ -90,16 +108,22 @@ class Command(BaseCommand):
             self.stdout.write(f"  Created round: {obj}")
         return obj
 
-    def _create_nomination(self, nominator, nominee_name, nominee_email, nomination_round,
-                           status="pending", expiry_round=None, nominee_user=None,
-                           nominee_is_fellow_at_submission=False):
+    def _create_nomination(
+        self,
+        nominator,
+        nominee_name,
+        nominee_email,
+        nomination_round,
+        status="pending",
+        expiry_round=None,
+        nominee_user=None,
+        nominee_is_fellow_at_submission=False,
+    ):
         return FellowNomination.objects.create(
             nominator=nominator,
             nominee_name=nominee_name,
             nominee_email=nominee_email,
-            nomination_statement=(
-                f"{nominee_name} has made outstanding contributions to the Python community."
-            ),
+            nomination_statement=(f"{nominee_name} has made outstanding contributions to the Python community."),
             nomination_round=nomination_round,
             status=status,
             expiry_round=expiry_round,
@@ -107,8 +131,7 @@ class Command(BaseCommand):
             nominee_is_fellow_at_submission=nominee_is_fellow_at_submission,
         )
 
-    def _get_or_create_fellow(self, name, year_elected, status="active",
-                              emeritus_year=None, notes="", user=None):
+    def _get_or_create_fellow(self, name, year_elected, status="active", emeritus_year=None, notes="", user=None):
         obj, created = Fellow.objects.get_or_create(
             name=name,
             defaults={
@@ -139,15 +162,9 @@ class Command(BaseCommand):
         for member in self.wg_members:
             member.groups.add(self.wg_group)
 
-        self.staff_user = self._get_or_create_user(
-            "staff_admin", "Staff", "Admin", is_staff=True
-        )
-        self.nominator1 = self._get_or_create_user(
-            "nominator1", "Nominator", "One", "nominator1@example.com"
-        )
-        self.nominator2 = self._get_or_create_user(
-            "nominator2", "Nominator", "Two", "nominator2@example.com"
-        )
+        self.staff_user = self._get_or_create_user("staff_admin", "Staff", "Admin", is_staff=True)
+        self.nominator1 = self._get_or_create_user("nominator1", "Nominator", "One", "nominator1@example.com")
+        self.nominator2 = self._get_or_create_user("nominator2", "Nominator", "Two", "nominator2@example.com")
 
     def _create_rounds(self):
         self.stdout.write("Creating nomination rounds...")
@@ -163,55 +180,91 @@ class Command(BaseCommand):
 
         # Past round (2025-Q3)
         self._create_nomination(
-            self.nominator1, "Past Accepted One", "past1@example.com",
-            self.past_round, status="accepted",
+            self.nominator1,
+            "Past Accepted One",
+            "past1@example.com",
+            self.past_round,
+            status="accepted",
         )
         self._create_nomination(
-            self.nominator2, "Past Accepted Two", "past2@example.com",
-            self.past_round, status="accepted",
+            self.nominator2,
+            "Past Accepted Two",
+            "past2@example.com",
+            self.past_round,
+            status="accepted",
         )
         self._create_nomination(
-            self.nominator1, "Past Not Accepted", "past_na@example.com",
-            self.past_round, status="not_accepted",
+            self.nominator1,
+            "Past Not Accepted",
+            "past_na@example.com",
+            self.past_round,
+            status="not_accepted",
         )
 
         # Current round (2026-Q1) — pending
-        for i, (nominator, name, email) in enumerate([
+        for nominator, name, email in [
             (self.nominator1, "Pending Person One", "pending1@example.com"),
             (self.nominator2, "Pending Person Two", "pending2@example.com"),
             (self.nominator1, "Pending Person Three", "pending3@example.com"),
-        ], 1):
+        ]:
             self._create_nomination(
-                nominator, name, email,
-                self.current_round, status="pending", expiry_round=self.expiry_round,
+                nominator,
+                name,
+                email,
+                self.current_round,
+                status="pending",
+                expiry_round=self.expiry_round,
             )
 
         # Current round — under_review (votes added separately)
         self.under_review_majority_yes = self._create_nomination(
-            self.nominator1, "Review Majority Yes", "review_yes@example.com",
-            self.current_round, status="under_review", expiry_round=self.expiry_round,
+            self.nominator1,
+            "Review Majority Yes",
+            "review_yes@example.com",
+            self.current_round,
+            status="under_review",
+            expiry_round=self.expiry_round,
         )
         self.under_review_majority_no = self._create_nomination(
-            self.nominator2, "Review Majority No", "review_no@example.com",
-            self.current_round, status="under_review", expiry_round=self.expiry_round,
+            self.nominator2,
+            "Review Majority No",
+            "review_no@example.com",
+            self.current_round,
+            status="under_review",
+            expiry_round=self.expiry_round,
         )
         self.under_review_tie = self._create_nomination(
-            self.nominator1, "Review Tie Vote", "review_tie@example.com",
-            self.current_round, status="under_review", expiry_round=self.expiry_round,
+            self.nominator1,
+            "Review Tie Vote",
+            "review_tie@example.com",
+            self.current_round,
+            status="under_review",
+            expiry_round=self.expiry_round,
         )
         self.under_review_abstains = self._create_nomination(
-            self.nominator2, "Review All Abstain", "review_abstain@example.com",
-            self.current_round, status="under_review", expiry_round=self.expiry_round,
+            self.nominator2,
+            "Review All Abstain",
+            "review_abstain@example.com",
+            self.current_round,
+            status="under_review",
+            expiry_round=self.expiry_round,
         )
         self.under_review_one_vote = self._create_nomination(
-            self.nominator1, "Review One Vote", "review_onevote@example.com",
-            self.current_round, status="under_review", expiry_round=self.expiry_round,
+            self.nominator1,
+            "Review One Vote",
+            "review_onevote@example.com",
+            self.current_round,
+            status="under_review",
+            expiry_round=self.expiry_round,
         )
 
         # Current round — accepted
         self._create_nomination(
-            self.nominator2, "Current Accepted", "current_accepted@example.com",
-            self.current_round, status="accepted",
+            self.nominator2,
+            "Current Accepted",
+            "current_accepted@example.com",
+            self.current_round,
+            status="accepted",
         )
 
         # Nominee who is already a Fellow
@@ -220,15 +273,24 @@ class Command(BaseCommand):
         )
         self._get_or_create_fellow("Already Fellow", 2020, user=fellow_nominee_user)
         self._create_nomination(
-            self.nominator1, "Already Fellow", "already_fellow@example.com",
-            self.current_round, status="pending", expiry_round=self.expiry_round,
-            nominee_user=fellow_nominee_user, nominee_is_fellow_at_submission=True,
+            self.nominator1,
+            "Already Fellow",
+            "already_fellow@example.com",
+            self.current_round,
+            status="pending",
+            expiry_round=self.expiry_round,
+            nominee_user=fellow_nominee_user,
+            nominee_is_fellow_at_submission=True,
         )
 
         # Expired nomination (expiry_round in the past)
         self._create_nomination(
-            self.nominator2, "Expired Pending", "expired@example.com",
-            self.past_round, status="pending", expiry_round=self.old_expiry,
+            self.nominator2,
+            "Expired Pending",
+            "expired@example.com",
+            self.past_round,
+            status="pending",
+            expiry_round=self.old_expiry,
         )
 
         self.stdout.write(f"  Created {FellowNomination.objects.count()} nominations")
@@ -245,7 +307,8 @@ class Command(BaseCommand):
             (wg4, "no", "Need more info."),
         ]:
             FellowNominationVote.objects.get_or_create(
-                nomination=self.under_review_majority_yes, voter=voter,
+                nomination=self.under_review_majority_yes,
+                voter=voter,
                 defaults={"vote": vote, "comment": comment},
             )
 
@@ -257,27 +320,31 @@ class Command(BaseCommand):
             (wg4, "abstain", "Conflict of interest."),
         ]:
             FellowNominationVote.objects.get_or_create(
-                nomination=self.under_review_majority_no, voter=voter,
+                nomination=self.under_review_majority_no,
+                voter=voter,
                 defaults={"vote": vote, "comment": comment},
             )
 
         # Tie (2 yes, 2 no)
         for voter, vote in [(wg1, "yes"), (wg2, "yes"), (wg3, "no"), (wg4, "no")]:
             FellowNominationVote.objects.get_or_create(
-                nomination=self.under_review_tie, voter=voter,
+                nomination=self.under_review_tie,
+                voter=voter,
                 defaults={"vote": vote},
             )
 
         # All abstains
         for voter in self.wg_members:
             FellowNominationVote.objects.get_or_create(
-                nomination=self.under_review_abstains, voter=voter,
+                nomination=self.under_review_abstains,
+                voter=voter,
                 defaults={"vote": "abstain"},
             )
 
         # One vote cast
         FellowNominationVote.objects.get_or_create(
-            nomination=self.under_review_one_vote, voter=wg1,
+            nomination=self.under_review_one_vote,
+            voter=wg1,
             defaults={"vote": "yes", "comment": "Looks promising."},
         )
 

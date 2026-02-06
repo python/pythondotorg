@@ -1,16 +1,16 @@
 import datetime
 from unittest.mock import patch
 
-from django.test import TestCase, Client
+from django.contrib.auth.models import Group
+from django.test import Client, TestCase
 from django.urls import reverse
 from django.utils import timezone
-from django.contrib.auth.models import Group
 
 from nominations.models import FellowNomination, FellowNominationVote
 from nominations.tests.factories import (
-    UserFactory,
-    FellowNominationRoundFactory,
     FellowNominationFactory,
+    FellowNominationRoundFactory,
+    UserFactory,
 )
 
 
@@ -56,9 +56,7 @@ class FellowNominationReviewViewTests(TestCase):
 
     @patch("nominations.managers.timezone.now")
     def test_active_view_default(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
         # Create an active nomination (pending with valid expiry)
         expiry_round = FellowNominationRoundFactory(
             year=2026,
@@ -88,9 +86,7 @@ class FellowNominationReviewViewTests(TestCase):
 
     @patch("nominations.managers.timezone.now")
     def test_all_view(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
         expiry_round = FellowNominationRoundFactory(
             year=2026,
             quarter=4,
@@ -118,9 +114,7 @@ class FellowNominationReviewViewTests(TestCase):
 
     @patch("nominations.managers.timezone.now")
     def test_round_filter(self, mock_now):
-        mock_now.return_value = timezone.make_aware(
-            datetime.datetime(2026, 2, 1, 12, 0)
-        )
+        mock_now.return_value = timezone.make_aware(datetime.datetime(2026, 2, 1, 12, 0))
         round_q2 = FellowNominationRoundFactory(
             year=2026,
             quarter=2,
@@ -183,39 +177,27 @@ class FellowNominationStatusUpdateViewTests(TestCase):
         self.client.login(username=self.wg_user.username, password="testpass123")
 
     def test_wg_member_can_update_status(self):
-        response = self.client.post(
-            self.url, {"status": FellowNomination.UNDER_REVIEW}
-        )
+        response = self.client.post(self.url, {"status": FellowNomination.UNDER_REVIEW})
         self.assertEqual(response.status_code, 302)
         self.nomination.refresh_from_db()
         self.assertEqual(self.nomination.status, FellowNomination.UNDER_REVIEW)
 
     def test_non_wg_user_gets_403(self):
         self.client.login(username=self.regular_user.username, password="testpass123")
-        response = self.client.post(
-            self.url, {"status": FellowNomination.UNDER_REVIEW}
-        )
+        response = self.client.post(self.url, {"status": FellowNomination.UNDER_REVIEW})
         self.assertEqual(response.status_code, 403)
 
-    @patch(
-        "nominations.views.FellowNominationAcceptedNotification.notify"
-    )
+    @patch("nominations.views.FellowNominationAcceptedNotification.notify")
     def test_notification_sent_on_accept(self, mock_notify):
-        response = self.client.post(
-            self.url, {"status": FellowNomination.ACCEPTED}
-        )
+        response = self.client.post(self.url, {"status": FellowNomination.ACCEPTED})
         self.assertEqual(response.status_code, 302)
         self.nomination.refresh_from_db()
         self.assertEqual(self.nomination.status, FellowNomination.ACCEPTED)
         mock_notify.assert_called_once()
 
-    @patch(
-        "nominations.views.FellowNominationNotAcceptedNotification.notify"
-    )
+    @patch("nominations.views.FellowNominationNotAcceptedNotification.notify")
     def test_notification_sent_on_not_accept(self, mock_notify):
-        response = self.client.post(
-            self.url, {"status": FellowNomination.NOT_ACCEPTED}
-        )
+        response = self.client.post(self.url, {"status": FellowNomination.NOT_ACCEPTED})
         self.assertEqual(response.status_code, 302)
         self.nomination.refresh_from_db()
         self.assertEqual(self.nomination.status, FellowNomination.NOT_ACCEPTED)
