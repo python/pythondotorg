@@ -1012,6 +1012,12 @@ table {
     }
 
     tfoot { border-top: 1px solid $grey-lighterer; }
+
+    .checksum {
+        font-size: 0.85em;
+
+        .checksum-half { display: inline-block; }
+    }
 }
 
 .documentation-help { }

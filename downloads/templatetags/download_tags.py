@@ -5,6 +5,7 @@ import requests
 from django import template
 from django.core.cache import cache
 from django.utils.html import format_html
+from django.utils.safestring import mark_safe
 
 from downloads.models import Release
 
@@ -88,6 +89,31 @@ def has_md5(files):
 @register.filter
 def has_sha256(files):
     return any(f.sha256_sum for f in files)
+
+
+@register.filter
+def wbr_wrap(value: str | None) -> str:
+    """
+    Insert <wbr> tags for optional line breaking, prioritising halfway break.
+
+    Uses inline-block spans for halves so the browser prefers breaking
+    at the midpoint first, then within each half if still too wide.
+    """
+    if not value:
+        return value or ""
+
+    interval = 16
+    chunks = [value[i : i + interval] for i in range(0, len(value), interval)]
+
+    # Split into two halves, each half has internal <wbr> breaks
+    midpoint = len(chunks) // 2
+    first_half = "<wbr>".join(chunks[:midpoint])
+    second_half = "<wbr>".join(chunks[midpoint:])
+
+    return mark_safe(
+        f'<span class="checksum-half">{first_half}</span><wbr>'
+        f'<span class="checksum-half">{second_half}</span>'
+    )
 
 
 @register.filter

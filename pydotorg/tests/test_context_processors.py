@@ -19,13 +19,13 @@ class TemplateProcessorsTestCase(TestCase):
         self.assertEqual({'URL_NAMESPACE': 'events', 'URL_NAME': 'events:calendar_list'}, context_processors.url_name(request))
 
         request = self.factory.get('/getit-404/releases/3.3.3/not-an-actual-thing/')
-        self.assertEqual({}, context_processors.url_name(request))
+        self.assertEqual({'URL_NAMESPACE': None, 'URL_NAME': None}, context_processors.url_name(request))
 
         request = self.factory.get('/getit-404/releases/3.3.3/\r\n/')
-        self.assertEqual({}, context_processors.url_name(request))
+        self.assertEqual({'URL_NAMESPACE': None, 'URL_NAME': None}, context_processors.url_name(request))
 
         request = self.factory.get('/nothing/here/')
-        self.assertEqual({}, context_processors.url_name(request))
+        self.assertEqual({'URL_NAMESPACE': None, 'URL_NAME': None}, context_processors.url_name(request))
 
     def test_blog_url(self):
         request = self.factory.get('/about/')
@@ -114,3 +114,18 @@ class TemplateProcessorsTestCase(TestCase):
         request.user = AnonymousUser()
 
         self.assertEqual({"USER_NAV_BAR": {}}, context_processors.user_nav_bar_links(request))
+
+    def test_url_name_always_returns_keys(self):
+        # Ensure URL_NAME and URL_NAMESPACE are always present in context, even for 404s,
+        # otherwise it makes sentry unhappy: https://python-software-foundation.sentry.io/issues/6931306293/
+        # test with a 404 path
+        request = self.factory.get('/this-does-not-exist/')
+        result = context_processors.url_name(request)
+
+        # keys should always be present
+        self.assertIn('URL_NAME', result)
+        self.assertIn('URL_NAMESPACE', result)
+
+        # values should be None for unresolved URLs
+        self.assertIsNone(result['URL_NAME'])
+        self.assertIsNone(result['URL_NAMESPACE'])
