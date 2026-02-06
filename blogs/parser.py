@@ -5,7 +5,6 @@ import datetime
 import feedparser
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.utils.timezone import make_aware
 
 from blogs.models import BlogEntry, Feed
 from boxes.models import Box
@@ -17,9 +16,7 @@ def get_all_entries(feed_url):
     entries = []
 
     for e in d["entries"]:
-        published = make_aware(
-            datetime.datetime(*e["published_parsed"][:7], tzinfo=datetime.UTC), timezone=datetime.UTC
-        )
+        published = datetime.datetime(*e["published_parsed"][:7], tzinfo=datetime.UTC)
 
         entry = {
             "title": e["title"],

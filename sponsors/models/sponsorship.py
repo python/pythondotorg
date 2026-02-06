@@ -425,7 +425,8 @@ class SponsorshipBenefit(OrderedModel):
         verbose_name="Benefit Name",
         help_text="For display in the application form, contract, and sponsor dashboard.",
     )
-    description = models.TextField(
+    description = models.TextField(  # noqa: DJ001
+        null=True,
         blank=True,
         verbose_name="Benefit Description",
         help_text="For display on generated prospectuses and the website.",
@@ -474,7 +475,8 @@ class SponsorshipBenefit(OrderedModel):
         help_text="Legal clauses to be displayed in the contract",
         blank=True,
     )
-    internal_description = models.TextField(
+    internal_description = models.TextField(  # noqa: DJ001
+        null=True,
         blank=True,
         verbose_name="Internal Description or Notes",
         help_text="Any description or notes for internal use.",
