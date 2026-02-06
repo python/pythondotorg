@@ -310,7 +310,6 @@ SPONSORSHIP_NOTIFICATION_TO_EMAIL = config(
 )
 PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
 
-# Fellow Nominations
 FELLOW_WG_NOTIFICATION_EMAIL = config(
     "FELLOW_WG_NOTIFICATION_EMAIL", default="psf-fellow@python.org"
 )
