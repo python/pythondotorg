@@ -1,11 +1,11 @@
-import os
+from pathlib import Path
 
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management import call_command
 from django.test import TestCase
 
-from ..models import Page
-from ..parser import determine_page_content_type
+from pages.models import Page
+from pages.parser import determine_page_content_type
 
 
 class PagesParserTests(TestCase):
@@ -14,7 +14,7 @@ class PagesParserTests(TestCase):
         Using a fake reconstruction of the SVN content repo, test our import
         command
         """
-        fake_svn_path = os.path.join(os.path.dirname(__file__), "fake_svn_content_checkout")
+        fake_svn_path = str(Path(__file__).parent / "fake_svn_content_checkout")
 
         with self.settings(PYTHON_ORG_CONTENT_SVN_PATH=None), self.assertRaises(ImproperlyConfigured):
             call_command("import_pages_from_svn")

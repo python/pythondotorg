@@ -1,3 +1,5 @@
+"""URL configuration for the success stories app."""
+
 from django.urls import path
 
 from . import views

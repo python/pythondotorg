@@ -1,4 +1,4 @@
-import os
+from pathlib import Path
 
 from django.test import TestCase
 from django.utils.timezone import datetime, make_aware
@@ -6,8 +6,8 @@ from django.utils.timezone import datetime, make_aware
 from events.importer import ICSImporter
 from events.models import Calendar, Event
 
-CUR_DIR = os.path.dirname(__file__)
-EVENTS_CALENDAR = os.path.join(CUR_DIR, "events.ics")
+CUR_DIR = Path(__file__).parent
+EVENTS_CALENDAR = str(CUR_DIR / "events.ics")
 EVENTS_CALENDAR_URL = (
     "https://www.google.com/calendar/ical/j7gov1cmnqr9tvg14k621j7t5c@group.calendar.google.com/public/basic.ics"
 )
@@ -22,7 +22,7 @@ class EventsImporterTestCase(TestCase):
 
     def test_injest(self):
         importer = ICSImporter(self.calendar)
-        with open(EVENTS_CALENDAR) as fh:
+        with Path(EVENTS_CALENDAR).open() as fh:
             ical = fh.read()
         importer.import_events_from_text(ical)
 

@@ -1,3 +1,5 @@
+"""Public-facing views for the sponsorship application workflow."""
+
 from itertools import chain
 
 from django.conf import settings
@@ -22,14 +24,17 @@ from .models import (
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):
+    """View for selecting sponsorship package and benefits before applying."""
+
     form_class = SponsorshipsBenefitsForm
     template_name = "sponsors/sponsorship_benefits_form.html"
 
     def get_context_data(self, *args, **kwargs):
+        """Add benefit programs, packages, and capacity info to the context."""
         programs = SponsorshipProgram.objects.all()
         packages = SponsorshipPackage.objects.all()
         benefits_qs = SponsorshipBenefit.objects.select_related("program")
-        capacities_met = any([any([not b.has_capacity for b in benefits_qs.filter(program=p)]) for p in programs])
+        capacities_met = any(any(not b.has_capacity for b in benefits_qs.filter(program=p)) for p in programs)
         kwargs.update(
             {
                 "benefit_model": SponsorshipBenefit,
@@ -41,15 +46,17 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return super().get_context_data(*args, **kwargs)
 
     def get_success_url(self):
+        """Return the URL for the sponsorship application form, with login redirect if needed."""
         if self.request.user.is_authenticated:
             return reverse_lazy("new_sponsorship_application")
-        else:
-            return f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
+        return f"{settings.LOGIN_URL}?next={reverse('new_sponsorship_application')}"
 
     def get_initial(self):
+        """Load previously selected benefits from the cookie."""
         return cookies.get_sponsorship_selected_benefits(self.request)
 
     def get_form_kwargs(self):
+        """Add custom year to form kwargs if configured by staff."""
         kwargs = super().get_form_kwargs()
         custom_year = self.get_form_custom_year()
         if custom_year:
@@ -57,17 +64,20 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return kwargs
 
     def get_form_custom_year(self):
+        """Return a custom configuration year if the staff user specifies one via query param."""
         custom_year = self.request.GET.get("config_year")
         if self.request.user.is_staff and custom_year:
             custom_year = int(custom_year)
             if custom_year != SponsorshipCurrentYear.get_year():
                 return custom_year
+        return None
 
     def form_valid(self, form):
+        """Validate the cookie and store selected benefits for the next step."""
         if not self.request.session.test_cookie_worked():
             error = ErrorList()
             error.append("You must allow cookies from python.org to proceed.")
-            form._errors.setdefault("__all__", error)
+            form._errors.setdefault("__all__", error)  # noqa: SLF001 - Django form internal API for adding non-field errors
             return self.form_invalid(form)
 
         response = super().form_valid(form)
@@ -75,6 +85,7 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
         return response
 
     def get(self, request, *args, **kwargs):
+        """Set a test cookie and render the benefits selection form."""
         request.session.set_test_cookie()
         return super().get(request, *args, **kwargs)
 
@@ -95,6 +106,8 @@ class SelectSponsorshipApplicationBenefitsView(FormView):
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class NewSponsorshipApplicationView(FormView):
+    """View for submitting a new sponsorship application with sponsor details."""
+
     form_class = SponsorshipApplicationForm
     template_name = "sponsors/new_sponsorship_application_form.html"
 
@@ -105,19 +118,23 @@ class NewSponsorshipApplicationView(FormView):
 
     @property
     def benefits_data(self):
+        """Return the selected benefits data stored in the cookie."""
         return cookies.get_sponsorship_selected_benefits(self.request)
 
     def get(self, *args, **kwargs):
+        """Redirect to benefits selection if no benefits have been chosen yet."""
         if not self.benefits_data:
             return self._redirect_back_to_benefits()
         return super().get(*args, **kwargs)
 
     def get_form_kwargs(self, *args, **kwargs):
+        """Add the current user to the form kwargs."""
         form_kwargs = super().get_form_kwargs(*args, **kwargs)
         form_kwargs["user"] = self.request.user
         return form_kwargs
 
     def get_context_data(self, *args, **kwargs):
+        """Add package, benefits, and pricing information to the template context."""
         package_id = self.benefits_data.get("package")
         package = None if not package_id else SponsorshipPackage.objects.get(id=package_id)
         benefits_ids = chain(*(self.benefits_data[k] for k in self.benefits_data if k != "package"))
@@ -152,6 +169,7 @@ class NewSponsorshipApplicationView(FormView):
 
     @transaction.atomic
     def form_valid(self, form):
+        """Create the sponsor and sponsorship application, then clear the cookie."""
         benefits_form = SponsorshipsBenefitsForm(data=self.benefits_data)
         if not benefits_form.is_valid():
             return self._redirect_back_to_benefits()

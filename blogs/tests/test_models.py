@@ -1,7 +1,7 @@
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import BlogEntry, Feed
+from blogs.models import BlogEntry, Feed
 
 
 class BlogModelTest(TestCase):

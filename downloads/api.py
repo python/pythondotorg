@@ -1,3 +1,5 @@
+"""REST API endpoints for downloads using Tastypie and Django REST Framework."""
+
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
@@ -14,7 +16,11 @@ from .serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 
 
 class OSResource(GenericResource):
+    """Tastypie resource for operating systems."""
+
     class Meta(GenericResource.Meta):
+        """Meta configuration for OSResource."""
+
         queryset = OS.objects.all()
         resource_name = "downloads/os"
         fields = [
@@ -34,9 +40,13 @@ class OSResource(GenericResource):
 
 
 class ReleaseResource(GenericResource):
+    """Tastypie resource for Python releases."""
+
     release_page = fields.ToOneField(PageResource, "release_page", null=True, blank=True)
 
     class Meta(GenericResource.Meta):
+        """Meta configuration for ReleaseResource."""
+
         queryset = Release.objects.all()
         resource_name = "downloads/release"
         authorization = OnlyPublishedAuthorization()
@@ -69,10 +79,14 @@ class ReleaseResource(GenericResource):
 
 
 class ReleaseFileResource(GenericResource):
+    """Tastypie resource for individual release files."""
+
     os = fields.ToOneField(OSResource, "os")
     release = fields.ToOneField(ReleaseResource, "release")
 
     class Meta(GenericResource.Meta):
+        """Meta configuration for ReleaseFileResource."""
+
         queryset = ReleaseFile.objects.all()
         resource_name = "downloads/release_file"
         fields = [
@@ -109,6 +123,8 @@ class ReleaseFileResource(GenericResource):
 
 
 class OSViewSet(viewsets.ModelViewSet):
+    """DRF viewset for CRUD operations on operating systems."""
+
     queryset = OS.objects.all()
     serializer_class = OSSerializer
     authentication_classes = (TokenAuthentication,)
@@ -117,6 +133,8 @@ class OSViewSet(viewsets.ModelViewSet):
 
 
 class ReleaseViewSet(BaseAPIViewSet):
+    """DRF viewset for CRUD operations on releases."""
+
     model = Release
     serializer_class = ReleaseSerializer
     authentication_classes = (TokenAuthentication,)
@@ -132,7 +150,11 @@ class ReleaseViewSet(BaseAPIViewSet):
 
 
 class ReleaseFileFilter(BaseFilterSet):
+    """Filter set for release file queries."""
+
     class Meta:
+        """Meta configuration for ReleaseFileFilter."""
+
         model = ReleaseFile
         fields = {
             "name": ["exact"],
@@ -144,6 +166,8 @@ class ReleaseFileFilter(BaseFilterSet):
 
 
 class ReleaseFileViewSet(viewsets.ModelViewSet):
+    """DRF viewset for CRUD operations on release files."""
+
     queryset = ReleaseFile.objects.all()
     serializer_class = ReleaseFileSerializer
     authentication_classes = (TokenAuthentication,)
@@ -152,6 +176,7 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=["delete"])
     def delete_by_release(self, request):
+        """Delete all release files associated with a given release."""
         release = request.query_params.get("release")
         if release is None:
             return Response(status=status.HTTP_400_BAD_REQUEST)

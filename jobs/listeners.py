@@ -1,3 +1,5 @@
+"""Signal listeners for sending email notifications on job board events."""
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import send_mail
@@ -18,9 +20,7 @@ EMAIL_JOBS_BOARD = "jobs@python.org"
 
 @receiver(comment_was_posted)
 def on_comment_was_posted(sender, comment, **kwargs):
-    """
-    Notify the author of the post when the first comment has been posted.
-    """
+    """Notify the author of the post when the first comment has been posted."""
     if not comment.comment:
         return False
     job = comment.job
@@ -54,11 +54,11 @@ def on_comment_was_posted(sender, comment, **kwargs):
 
     text_message = text_message_template.render(context)
     send_mail(subject, text_message, settings.JOB_FROM_EMAIL, send_to)
+    return None
 
 
 def send_job_review_message(job, user, subject_template_path, message_template_path):
-    """Helper function wrapping logic of sending the review message concerning
-    a job.
+    """Send the review message concerning a job.
 
     `user` param holds user that performed the review action.
     """
@@ -79,8 +79,9 @@ def send_job_review_message(job, user, subject_template_path, message_template_p
 
 @receiver(job_was_approved)
 def on_job_was_approved(sender, job, approving_user, **kwargs):
-    """Handle approving job offer. Currently an email should be sent to the
-    person that sent the offer.
+    """Handle approving job offer.
+
+    Currently an email should be sent to the person that sent the offer.
     """
     send_job_review_message(
         job, approving_user, "jobs/email/job_was_approved_subject.txt", "jobs/email/job_was_approved.txt"
@@ -89,8 +90,9 @@ def on_job_was_approved(sender, job, approving_user, **kwargs):
 
 @receiver(job_was_rejected)
 def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
-    """Handle rejecting job offer. Currently an email should be sent to the
-    person that sent the offer.
+    """Handle rejecting job offer.
+
+    Currently an email should be sent to the person that sent the offer.
     """
     send_job_review_message(
         job, rejecting_user, "jobs/email/job_was_rejected_subject.txt", "jobs/email/job_was_rejected.txt"
@@ -99,10 +101,7 @@ def on_job_was_rejected(sender, job, rejecting_user, **kwargs):
 
 @receiver(job_was_submitted)
 def on_job_was_submitted(sender, job, **kwargs):
-    """
-    Notify the jobs board when a new job has been submitted for approval
-
-    """
+    """Notify the jobs board when a new job has been submitted for approval."""
     subject_template = loader.get_template("jobs/email/job_was_submitted_subject.txt")
     message_template = loader.get_template("jobs/email/job_was_submitted.txt")
 

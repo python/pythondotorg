@@ -1,3 +1,5 @@
+"""Models for PSF working groups."""
+
 from django.conf import settings
 from django.db import models
 from markupfield.fields import MarkupField
@@ -8,9 +10,7 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 
 
 class WorkGroup(ContentManageable, NameSlugModel):
-    """
-    Model to store Python Working Groups
-    """
+    """Model to store Python Working Groups."""
 
     active = models.BooleanField(default=True, db_index=True)
     approved = models.BooleanField(default=False, db_index=True)

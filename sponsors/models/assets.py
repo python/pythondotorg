@@ -1,6 +1,7 @@
-"""
-This module holds models to store generic assets
-from Sponsors or Sponsorships
+"""Generic asset models for Sponsors and Sponsorships.
+
+Store and manage generic assets (files, images, text) that are
+associated with Sponsors or Sponsorships.
 """
 
 import uuid
@@ -17,9 +18,7 @@ from sponsors.models.managers import GenericAssetQuerySet
 
 
 def generic_asset_path(instance, filename):
-    """
-    Uses internal name + content type + obj id to avoid name collisions
-    """
+    """Generate upload path using UUID to avoid name collisions."""
     directory = "sponsors-app-assets"
     ext = "".join(Path(filename).suffixes)
     name = f"{instance.uuid}"
@@ -27,9 +26,7 @@ def generic_asset_path(instance, filename):
 
 
 class GenericAsset(PolymorphicModel):
-    """
-    Base class used to add required assets to Sponsor or Sponsorship objects
-    """
+    """Base class used to add required assets to Sponsor or Sponsorship objects."""
 
     objects = GenericAssetQuerySet.as_manager()
     non_polymorphic = models.Manager()
@@ -50,6 +47,8 @@ class GenericAsset(PolymorphicModel):
     )
 
     class Meta:
+        """Meta configuration for GenericAsset."""
+
         verbose_name = "Asset"
         verbose_name_plural = "Assets"
         unique_together = ["content_type", "object_id", "internal_name"]
@@ -57,33 +56,40 @@ class GenericAsset(PolymorphicModel):
 
     @property
     def value(self):
+        """Return the asset's value; overridden by subclasses."""
         return None
 
     @property
     def is_file(self):
+        """Return True if this asset's value is a file-based field."""
         return isinstance(self.value, FileField | ImageFieldFile)
 
     @property
     def from_sponsorship(self):
+        """Return True if this asset belongs to a Sponsorship."""
         return self.content_type.name == "sponsorship"
 
     @property
     def from_sponsor(self):
+        """Return True if this asset belongs to a Sponsor."""
         return self.content_type.name == "sponsor"
 
     @property
     def has_value(self):
+        """Return True if this asset has a non-empty value."""
         if self.is_file:
             return self.value and getattr(self.value, "url", None)
-        else:
-            return bool(self.value)
+        return bool(self.value)
 
     @classmethod
     def all_asset_types(cls):
+        """Return all concrete asset subclasses."""
         return cls.__subclasses__()
 
 
 class ImgAsset(GenericAsset):
+    """Asset storing an uploaded image file."""
+
     image = models.ImageField(
         upload_to=generic_asset_path,
         blank=False,
@@ -91,14 +97,18 @@ class ImgAsset(GenericAsset):
     )
 
     def __str__(self):
+        """Return string representation."""
         return f"Image asset: {self.internal_name}"
 
     class Meta:
+        """Meta configuration for ImgAsset."""
+
         verbose_name = "Image Asset"
         verbose_name_plural = "Image Assets"
 
     @property
     def value(self):
+        """Return the image field."""
         return self.image
 
     @value.setter
@@ -107,17 +117,23 @@ class ImgAsset(GenericAsset):
 
 
 class TextAsset(GenericAsset):
+    """Asset storing a text value."""
+
     text = models.TextField(default="", blank=True)
 
     def __str__(self):
+        """Return string representation."""
         return f"Text asset: {self.internal_name}"
 
     class Meta:
+        """Meta configuration for TextAsset."""
+
         verbose_name = "Text Asset"
         verbose_name_plural = "Text Assets"
 
     @property
     def value(self):
+        """Return the text content."""
         return self.text
 
     @value.setter
@@ -126,6 +142,8 @@ class TextAsset(GenericAsset):
 
 
 class FileAsset(GenericAsset):
+    """Asset storing an uploaded file."""
+
     file = models.FileField(
         upload_to=generic_asset_path,
         blank=False,
@@ -133,14 +151,18 @@ class FileAsset(GenericAsset):
     )
 
     def __str__(self):
+        """Return string representation."""
         return f"File asset: {self.internal_name}"
 
     class Meta:
+        """Meta configuration for FileAsset."""
+
         verbose_name = "File Asset"
         verbose_name_plural = "File Assets"
 
     @property
     def value(self):
+        """Return the file field."""
         return self.file
 
     @value.setter
@@ -149,26 +171,35 @@ class FileAsset(GenericAsset):
 
 
 class Response(Enum):
+    """Yes/No response choices for response-type assets."""
+
     YES = "Yes"
     NO = "No"
 
     @classmethod
     def choices(cls):
+        """Return enum values as Django-compatible choice tuples."""
         return tuple((i.name, i.value) for i in cls)
 
 
 class ResponseAsset(GenericAsset):
+    """Asset storing a yes/no response value."""
+
     response = models.CharField(max_length=32, choices=Response.choices(), blank=False)
 
     def __str__(self):
+        """Return string representation."""
         return f"Response Asset: {self.internal_name}"
 
     class Meta:
+        """Meta configuration for ResponseAsset."""
+
         verbose_name = "Response Asset"
         verbose_name_plural = "Response Assets"
 
     @property
     def value(self):
+        """Return the response value."""
         return self.response
 
     @value.setter

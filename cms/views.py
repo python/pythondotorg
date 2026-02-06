@@ -1,3 +1,5 @@
+"""Views for the cms app, including custom error handlers."""
+
 from urllib.parse import urljoin
 
 from django.shortcuts import render
@@ -13,7 +15,7 @@ def legacy_path(path):
 
 
 def custom_404(request, exception, template_name="404.html"):
-    """Custom 404 handler to only cache 404s for 5 minutes."""
+    """Handle 404 responses and cache them for 5 minutes."""
     context = {
         "legacy_path": legacy_path(request.path),
         "download_path": reverse("download:download"),

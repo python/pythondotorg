@@ -1,3 +1,5 @@
+"""Factory Boy factories for generating test Page instances."""
+
 import factory
 from django.template.defaultfilters import slugify
 from factory.django import DjangoModelFactory
@@ -8,7 +10,11 @@ from .models import Page
 
 
 class PageFactory(DjangoModelFactory):
+    """Factory for creating Page instances in tests."""
+
     class Meta:
+        """Meta configuration for PageFactory."""
+
         model = Page
         django_get_or_create = ("path",)
 
@@ -19,6 +25,7 @@ class PageFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Generate a batch of 50 sample Page instances for development seeding."""
     return {
         "pages": PageFactory.create_batch(size=50),
     }

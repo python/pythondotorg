@@ -1,3 +1,5 @@
+"""API URL configuration for v1 (Tastypie) and v2 (DRF) endpoints."""
+
 from django.urls import re_path
 from rest_framework import routers
 from tastypie.api import Api

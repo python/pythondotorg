@@ -1,12 +1,11 @@
 from calendar import timegm
-from datetime import datetime
+from datetime import UTC, datetime
 from hashlib import sha1
 from urllib.parse import urlencode
 
 import requests
 from django.conf import settings
 from django.core.management import BaseCommand
-from requests.exceptions import RequestException
 
 from sponsors.models import (
     BenefitFeature,
@@ -39,7 +38,7 @@ def api_call(uri, query):
     method = "GET"
     body = ""
 
-    timestamp = timegm(datetime.utcnow().timetuple())
+    timestamp = timegm(datetime.now(tz=UTC).timetuple())
     base_string = "".join(
         (
             settings.PYCON_API_SECRET,
@@ -52,17 +51,16 @@ def api_call(uri, query):
 
     headers = {
         "X-API-Key": str(settings.PYCON_API_KEY),
-        "X-API-Signature": str(sha1(base_string.encode("utf-8")).hexdigest()),
+        "X-API-Signature": str(sha1(base_string.encode("utf-8")).hexdigest()),  # noqa: S324 - API signature, not for security storage
         "X-API-Timestamp": str(timestamp),
     }
     scheme = "http" if settings.DEBUG else "https"
     url = f"{scheme}://{settings.PYCON_API_HOST}{uri}"
-    try:
-        r = requests.get(url, headers=headers, params=query)
-        return r.json()
-    except RequestException:
-        print(r, r.content)
-        raise
+    r = requests.get(url, headers=headers, params=query, timeout=30)
+    return r.json()
+
+
+HTTP_OK = 200
 
 
 def generate_voucher_codes(year):
@@ -75,16 +73,12 @@ def generate_voucher_codes(year):
             try:
                 quantity = BenefitFeature.objects.instance_of(TieredBenefit).get(sponsor_benefit=sponsorbenefit)
             except BenefitFeature.DoesNotExist:
-                print(f"No quantity found for {sponsorbenefit.sponsorship.sponsor.name} and {code['internal_name']}")
                 continue
             try:
                 asset = ProvidedTextAsset.objects.filter(sponsor_benefit=sponsorbenefit).get(
                     internal_name=code["internal_name"]
                 )
             except ProvidedTextAsset.DoesNotExist:
-                print(
-                    f"No provided asset found for {sponsorbenefit.sponsorship.sponsor.name} with internal name {code['internal_name']}"
-                )
                 continue
 
             result = api_call(
@@ -96,18 +90,12 @@ def generate_voucher_codes(year):
                     "sponsor_id": sponsorbenefit.sponsorship.sponsor.id,
                 },
             )
-            if result["code"] == 200:
-                print(
-                    f"Fullfilling {code['internal_name']} for {sponsorbenefit.sponsorship.sponsor.name}: {quantity.quantity}"
-                )
+            if result["code"] == HTTP_OK:
                 promo_code = result["data"]["promo_code"]
                 asset.value = promo_code
                 asset.save()
             else:
-                print(
-                    f"Error from PyCon when fullfilling {code['internal_name']} for {sponsorbenefit.sponsorship.sponsor.name}: {result}"
-                )
-    print("Done!")
+                pass
 
 
 class Command(BaseCommand):

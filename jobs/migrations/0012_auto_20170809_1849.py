@@ -11,7 +11,7 @@ content_type = "job"
 
 def migrate_old_content(apps, schema_editor):
     try:
-        Comment = apps.get_model(comments_app_name, "XtdComment")
+        Comment = apps.get_model(comments_app_name, "XtdComment")  # noqa: N806 - Django migration convention
     except LookupError:
         # django_comments_xtd isn't installed.
         return

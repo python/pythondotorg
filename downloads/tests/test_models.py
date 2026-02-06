@@ -1,6 +1,7 @@
 import datetime as dt
 
-from ..models import Release, ReleaseFile
+from downloads.models import Release, ReleaseFile
+
 from .base import BaseDownloadTests
 
 
@@ -140,8 +141,7 @@ class DownloadModelTests(BaseDownloadTests):
 
     def test_update_supernav(self):
         from boxes.models import Box
-
-        from ..models import update_supernav
+        from downloads.models import update_supernav
 
         release = Release.objects.create(
             name="Python install manager 25.0",
@@ -199,8 +199,7 @@ class DownloadModelTests(BaseDownloadTests):
         """
         # Arrange
         from boxes.models import Box
-
-        from ..models import OS, update_supernav
+        from downloads.models import OS, update_supernav
 
         # Create an OS without any release files
         OS.objects.create(name="Android", slug="android")

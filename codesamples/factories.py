@@ -1,3 +1,5 @@
+"""Factory functions for creating code sample test and seed data."""
+
 import textwrap
 
 import factory
@@ -9,7 +11,11 @@ from .models import CodeSample
 
 
 class CodeSampleFactory(DjangoModelFactory):
+    """Factory for creating CodeSample instances in tests."""
+
     class Meta:
+        """Meta configuration for CodeSampleFactory."""
+
         model = CodeSample
         django_get_or_create = ("code",)
 
@@ -22,6 +28,7 @@ class CodeSampleFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Create the default set of homepage code samples."""
     code_samples = [
         (
             """\

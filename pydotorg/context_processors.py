@@ -1,12 +1,16 @@
+"""Template context processors for python.org site-wide variables."""
+
 from django.conf import settings
 from django.urls import Resolver404, resolve, reverse
 
 
 def site_info(request):
+    """Add SITE_INFO variables to the template context."""
     return {"SITE_INFO": settings.SITE_VARIABLES}
 
 
 def url_name(request):
+    """Add the current URL namespace and name to the template context."""
     try:
         match = resolve(request.path)
     except Resolver404:
@@ -19,18 +23,21 @@ def url_name(request):
 
 
 def get_host_with_scheme(request):
+    """Add the absolute host URL with scheme to the template context."""
     return {
         "GET_HOST_WITH_SCHEME": request.build_absolute_uri("/").rstrip("/"),
     }
 
 
 def blog_url(request):
+    """Add the Python blog URL to the template context."""
     return {
         "BLOG_URL": settings.PYTHON_BLOG_URL,
     }
 
 
 def user_nav_bar_links(request):
+    """Build navigation bar links for the authenticated user."""
     nav = {}
     if request.user.is_authenticated:
         user = request.user

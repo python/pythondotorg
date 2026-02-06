@@ -2,7 +2,7 @@ import datetime
 
 from django.test import SimpleTestCase
 
-from ..forms import EventForm
+from events.forms import EventForm
 
 
 class EventFormTests(SimpleTestCase):
@@ -13,8 +13,8 @@ class EventFormTests(SimpleTestCase):
             "python_focus": "Country-wide conference",
             "expected_attendees": "500",
             "location": "Complejo San Francisco, Caceres, Spain",
-            "date_from": datetime.datetime(2017, 9, 22),
-            "date_to": datetime.datetime(2017, 9, 25),
+            "date_from": datetime.datetime(2017, 9, 22, tzinfo=datetime.UTC),
+            "date_to": datetime.datetime(2017, 9, 25, tzinfo=datetime.UTC),
             "recurrence": "None",
             "link": "https://2017.es.pycon.org/en/",
             "description": "A conference no one can afford to miss",
@@ -30,7 +30,7 @@ class EventFormTests(SimpleTestCase):
             "python_focus": "Country-wide conference",
             "expected_attendees": "500",
             "location": "Complejo San Francisco, Caceres, Spain",
-            "date_to": datetime.datetime(2017, 9, 25),
+            "date_to": datetime.datetime(2017, 9, 25, tzinfo=datetime.UTC),
             "recurrence": "None",
             "link": "https://2017.es.pycon.org/en/",
             "description": "A conference no one can afford to miss",

@@ -1,6 +1,5 @@
 import importlib
 import inspect
-import pprint
 
 from django.apps import apps
 from django.core.management import BaseCommand, call_command
@@ -29,7 +28,7 @@ class Command(BaseCommand):
                 app_list = [apps.get_app_config(app_label)]
             except LookupError:
                 self.stdout.write(self.style.ERROR("The app label provided does not exist as an application."))
-                return
+                return None
         else:
             app_list = apps.get_app_configs()
         for app in app_list:
@@ -44,14 +43,16 @@ class Command(BaseCommand):
                         break
         return functions
 
+    VERBOSE = 2
+
     def output(self, app_name, verbosity, *, done=False, result=False):
         if verbosity > 0:
             if done:
                 self.stdout.write(self.style.SUCCESS("DONE"))
             else:
                 self.stdout.write(f"Creating initial data for {app_name!r}... ", ending="")
-        if verbosity >= 2 and result:
-            pprint.pprint(result)
+        if verbosity >= self.VERBOSE and result:
+            pass
 
     def flush_handler(self, do_flush, verbosity):
         if do_flush:
@@ -72,7 +73,7 @@ class Command(BaseCommand):
         if do_flush and confirm in ("y", "yes"):
             try:
                 call_command("flush", verbosity=verbosity, interactive=False)
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - management command catches all errors from flush
                 self.stdout.write(self.style.ERROR(f"{type(exc).__name__}: {exc}"))
         return confirm
 
@@ -90,7 +91,7 @@ class Command(BaseCommand):
             self.output("sitetree", verbosity)
             try:
                 call_command("loaddata", "sitetree_menus", "-v0")
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - management command catches all errors from loaddata
                 self.stdout.write(self.style.ERROR(f"{type(exc).__name__}: {exc}"))
             else:
                 self.output("sitetree", verbosity, done=True)
@@ -104,7 +105,7 @@ class Command(BaseCommand):
             self.output(app_name, verbosity)
             try:
                 result = function()
-            except Exception as exc:
+            except Exception as exc:  # noqa: BLE001 - catches errors from arbitrary factory functions
                 self.stdout.write(self.style.ERROR(f"{type(exc).__name__}: {exc}"))
                 continue
             else:

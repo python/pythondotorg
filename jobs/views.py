@@ -1,3 +1,5 @@
+"""Views for the Python job board."""
+
 from django.contrib import messages
 from django.http import Http404, HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, redirect
@@ -11,30 +13,45 @@ from .models import Job, JobCategory, JobReviewComment, JobType
 
 
 class JobListMenu:
+    """Mixin that flags the job list navigation item as active."""
+
     def job_list_view(self):
+        """Return True to indicate the job list view is active."""
         return True
 
 
 class JobTypeMenu:
+    """Mixin that flags the job type navigation item as active."""
+
     def job_type_view(self):
+        """Return True to indicate the job type view is active."""
         return True
 
 
 class JobCategoryMenu:
+    """Mixin that flags the job category navigation item as active."""
+
     def job_category_view(self):
+        """Return True to indicate the job category view is active."""
         return True
 
 
 class JobLocationMenu:
+    """Mixin that flags the job location navigation item as active."""
+
     def job_location_view(self):
+        """Return True to indicate the job location view is active."""
         return True
 
 
 class JobBoardAdminRequiredMixin(GroupRequiredMixin):
+    """Require the user to be a Job Board Admin or staff member."""
+
     group_required = "Job Board Admin"
     raise_exception = True
 
     def check_membership(self, group):
+        """Allow staff users in addition to group members."""
         # Add is_staff check to stay compatible with current staff members.
         # is_superuser check is already in base class.
         if self.request.user.is_staff:
@@ -43,7 +60,10 @@ class JobBoardAdminRequiredMixin(GroupRequiredMixin):
 
 
 class JobMixin:
+    """Mixin providing shared job board context data for all views."""
+
     def get_context_data(self, **kwargs):
+        """Add job counts, active types, categories, and locations to context."""
         context = super().get_context_data(**kwargs)
 
         active_locations = (
@@ -67,6 +87,7 @@ class JobMixin:
         return context
 
     def has_jobs_board_admin_access(self):
+        """Return True if the current user can administer the job board."""
         # Add is_staff and is_superuser checks to stay compatible
         # with current staff members.
         if self.request.user.is_staff or self.request.user.is_superuser:
@@ -76,63 +97,81 @@ class JobMixin:
 
 
 class JobList(JobListMenu, JobMixin, ListView):
+    """List all publicly visible job listings."""
+
     model = Job
     paginate_by = 25
 
     def get_queryset(self):
+        """Return visible jobs with related data."""
         return super().get_queryset().visible().select_related()
 
 
 class JobListMine(LoginRequiredMixin, JobMixin, ListView):
+    """List job listings created by the current user."""
+
     paginate_by = 25
 
     def get_queryset(self):
+        """Return jobs created by the current user."""
         return Job.objects.by(self.request.user).select_related()
 
     def get_context_data(self, **kwargs):
+        """Add mine_listing flag to context."""
         context = super().get_context_data(**kwargs)
         context["mine_listing"] = True
         return context
 
 
 class JobListType(JobTypeMenu, JobMixin, ListView):
+    """List jobs filtered by job type."""
+
     paginate_by = 25
     template_name = "jobs/job_type_list.html"
 
     def get_queryset(self):
+        """Return visible jobs matching the specified job type."""
         self.current_type = get_object_or_404(JobType, slug=self.kwargs["slug"])
         return Job.objects.visible().select_related().filter(job_types__slug=self.kwargs["slug"])
 
     def get_context_data(self, **kwargs):
+        """Add the current job type to context."""
         context = super().get_context_data(**kwargs)
         context["current_type"] = self.current_type
         return context
 
 
 class JobListCategory(JobCategoryMenu, JobMixin, ListView):
+    """List jobs filtered by job category."""
+
     paginate_by = 25
     template_name = "jobs/job_category_list.html"
 
     def get_queryset(self):
+        """Return visible jobs matching the specified category."""
         self.current_category = get_object_or_404(JobCategory, slug=self.kwargs["slug"])
         return Job.objects.visible().select_related().filter(category__slug=self.kwargs["slug"])
 
     def get_context_data(self, **kwargs):
+        """Add the current category to context."""
         context = super().get_context_data(**kwargs)
         context["current_category"] = self.current_category
         return context
 
 
 class JobListLocation(JobLocationMenu, JobMixin, ListView):
+    """List jobs filtered by location."""
+
     paginate_by = 25
     template_name = "jobs/job_location_list.html"
 
     def get_queryset(self):
+        """Return visible jobs at the specified location slug."""
         return Job.objects.visible().select_related().filter(location_slug=self.kwargs["slug"])
 
 
 class JobTypes(JobTypeMenu, JobMixin, ListView):
-    """View to simply list JobType instances that have current jobs"""
+    """View to simply list JobType instances that have current jobs."""
 
     template_name = "jobs/job_types.html"
     queryset = JobType.objects.with_active_jobs().order_by("name")
@@ -140,7 +179,7 @@ class JobTypes(JobTypeMenu, JobMixin, ListView):
 
 
 class JobCategories(JobCategoryMenu, JobMixin, ListView):
-    """View to simply list JobCategory instances that have current jobs"""
+    """View to simply list JobCategory instances that have current jobs."""
 
     template_name = "jobs/job_categories.html"
     queryset = JobCategory.objects.with_active_jobs().order_by("name")
@@ -148,11 +187,12 @@ class JobCategories(JobCategoryMenu, JobMixin, ListView):
 
 
 class JobLocations(JobLocationMenu, JobMixin, TemplateView):
-    """View to simply list distinct Countries that have current jobs"""
+    """View to simply list distinct Countries that have current jobs."""
 
     template_name = "jobs/job_locations.html"
 
     def get_context_data(self, **kwargs):
+        """Add distinct country/city job pairs to context."""
         context = super().get_context_data(**kwargs)
 
         context["jobs"] = Job.objects.visible().distinct("country", "city").order_by("country", "city")
@@ -161,14 +201,16 @@ class JobLocations(JobLocationMenu, JobMixin, TemplateView):
 
 
 class JobTelecommute(JobLocationMenu, JobList):
-    """Specific view for telecommute jobs"""
+    """Specific view for telecommute jobs."""
 
     template_name = "jobs/job_telecommute_list.html"
 
     def get_queryset(self):
+        """Return visible telecommute-friendly jobs."""
         return super().get_queryset().visible().select_related().filter(telecommuting=True)
 
     def get_context_data(self, **kwargs):
+        """Add telecommute job count and list to context."""
         context = super().get_context_data(**kwargs)
         context["jobs_count"] = len(self.object_list)
         context["jobs"] = self.object_list
@@ -176,14 +218,18 @@ class JobTelecommute(JobLocationMenu, JobList):
 
 
 class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListView):
+    """Admin view for reviewing pending job submissions."""
+
     template_name = "jobs/job_review.html"
     paginate_by = 20
     redirect_url = "jobs:job_review"
 
     def get_queryset(self):
+        """Return jobs pending review."""
         return Job.objects.review()
 
     def post(self, request):
+        """Handle approve, reject, remove, or archive actions on a job."""
         try:
             job = Job.objects.get(id=request.POST["job_id"])
             action = request.POST["action"]
@@ -213,13 +259,17 @@ class JobReview(LoginRequiredMixin, JobBoardAdminRequiredMixin, JobMixin, ListVi
         return redirect(self.redirect_url)
 
     def get_context_data(self, **kwargs):
+        """Add review mode flag to context."""
         context = super().get_context_data(**kwargs)
         context["mode"] = "review"
         return context
 
 
 class JobRemove(LoginRequiredMixin, View):
+    """Allow a user to remove their own job listing."""
+
     def get(self, request, pk):
+        """Mark the user's job as removed and redirect."""
         try:
             job = Job.objects.get(id=pk, creator=request.user)
         except Job.DoesNotExist:
@@ -231,9 +281,12 @@ class JobRemove(LoginRequiredMixin, View):
 
 
 class JobModerateList(JobReview):
+    """Admin view for moderating all non-review jobs with search support."""
+
     redirect_url = "jobs:job_moderate"
 
     def get_queryset(self):
+        """Return moderable jobs, optionally filtered by search query."""
         queryset = Job.objects.moderate()
         q = self.request.GET.get("q")
         if q is not None:
@@ -241,13 +294,17 @@ class JobModerateList(JobReview):
         return queryset
 
     def get_context_data(self, **kwargs):
+        """Add moderate mode flag to context."""
         context = super().get_context_data(**kwargs)
         context["mode"] = "moderate"
         return context
 
 
 class JobDetail(JobMixin, DetailView):
+    """Detail view for a single job listing."""
+
     def get_queryset(self):
+        """Return jobs visible to the current user (public + own jobs for authenticated users)."""
         queryset = Job.objects.select_related()
         if self.has_jobs_board_admin_access():
             return queryset
@@ -258,6 +315,7 @@ class JobDetail(JobMixin, DetailView):
         return queryset.visible()
 
     def get_context_data(self, **kwargs):
+        """Add related category jobs and edit permission to context."""
         context = super().get_context_data(**kwargs)
         context["category_jobs"] = self.object.category.jobs.select_related("category")[:5]
         context["user_can_edit"] = (
@@ -268,26 +326,29 @@ class JobDetail(JobMixin, DetailView):
 
 
 class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
+    """Preview a job listing before submitting it for review."""
+
     template_name = "jobs/job_detail.html"
     form_class = JobForm
 
     def get_success_url(self):
+        """Return the URL for the job thanks page."""
         return reverse("jobs:job_thanks")
 
     def post(self, request, *args, **kwargs):
-        """
-        Handles POST requests, instantiating a form instance with the passed
-        POST variables and then checked for validity.
+        """Handle POST requests for job preview submission.
+
+        Instantiate a form instance with the passed POST variables and
+        then check for validity.
         """
         self.object = self.get_object()
         if self.request.POST.get("action") == "review":
             self.object.review()
             return HttpResponseRedirect(self.get_success_url())
-        else:
-            return self.get(request)
+        return self.get(request)
 
     def get_object(self, queryset=None):
-        """Show only approved jobs to the public, staff can see all jobs"""
+        """Show only approved jobs to the public, staff can see all jobs."""
         job = super().get_object(queryset=queryset)
         # Only allow creator to preview and only while in draft status
         if job.creator == self.request.user and job.editable:
@@ -301,6 +362,7 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
         return None
 
     def get_context_data(self, **kwargs):
+        """Add preview mode flags and edit permissions to context."""
         context = super().get_context_data(**kwargs)
         context["user_can_edit"] = (
             self.object.creator == self.request.user or self.has_jobs_board_admin_access()
@@ -312,13 +374,17 @@ class JobPreview(LoginRequiredMixin, JobDetail, UpdateView):
 
 
 class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
+    """Create a review comment on a job listing, optionally changing its status."""
+
     model = JobReviewComment
     form_class = JobReviewCommentForm
 
     def get_success_url(self):
+        """Return the URL for the job that was commented on."""
         return reverse("jobs:job_detail", kwargs={"pk": self.request.POST.get("job")})
 
     def form_valid(self, form):
+        """Save the comment and optionally approve or reject the job."""
         if self.request.user.username != form.instance.job.creator.username and not self.has_jobs_board_admin_access():
             return HttpResponse("Unauthorized", status=401)
         action = self.request.POST.get("action")
@@ -336,25 +402,31 @@ class JobReviewCommentCreate(LoginRequiredMixin, JobMixin, CreateView):
 
 
 class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
+    """Create a new job listing."""
+
     model = Job
     form_class = JobForm
 
     login_message = "Please login to create a job posting."
 
     def get_success_url(self):
+        """Return the URL for previewing the newly created job."""
         return reverse("jobs:job_preview", kwargs={"pk": self.object.id})
 
     def get_form_kwargs(self):
+        """Add the current request to form kwargs."""
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add preview requirement flag to context."""
         context = super().get_context_data(**kwargs)
         context["needs_preview"] = not self.has_jobs_board_admin_access()
         return context
 
     def form_valid(self, form):
+        """Set the creator, submitter, and draft status before saving."""
         form.instance.creator = self.request.user
         form.instance.submitted_by = self.request.user
         form.instance.status = "draft"
@@ -362,20 +434,24 @@ class JobCreate(LoginRequiredMixin, JobMixin, CreateView):
 
 
 class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
+    """Edit an existing job listing."""
+
     model = Job
     form_class = JobForm
 
     def get_queryset(self):
+        """Return all jobs for admins, or editable jobs for the current user."""
         if self.has_jobs_board_admin_access():
             return Job.objects.select_related()
         return self.request.user.jobs_job_creator.editable()
 
     def form_valid(self, form):
-        """set last_modified_by to the current user"""
+        """Set last_modified_by to the current user."""
         form.instance.last_modified_by = self.request.user
         return super().form_valid(form)
 
     def get_context_data(self, **kwargs):
+        """Add form action, next URL, and preview requirement to context."""
         context = super().get_context_data(**kwargs)
         context["form_action"] = "update"
         context["next"] = self.request.GET.get("next") or self.request.POST.get("next")
@@ -383,10 +459,10 @@ class JobEdit(LoginRequiredMixin, JobMixin, UpdateView):
         return context
 
     def get_success_url(self):
+        """Return the next URL or the job preview page."""
         next_url = self.request.POST.get("next")
         if next_url:
             return next_url
-        elif self.object.pk:
+        if self.object.pk:
             return reverse("jobs:job_preview", kwargs={"pk": self.object.id})
-        else:
-            return super().get_success_url()
+        return super().get_success_url()

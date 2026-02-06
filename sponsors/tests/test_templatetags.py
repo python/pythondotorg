@@ -3,11 +3,8 @@ from unittest.mock import patch
 from django.test import TestCase
 from model_bakery import baker
 
-from ..models import (
-    SponsorshipBenefit,
-    TieredBenefitConfiguration,
-)
-from ..templatetags.sponsors import (
+from sponsors.models import SponsorshipBenefit, TieredBenefitConfiguration
+from sponsors.templatetags.sponsors import (
     benefit_name_for_display,
     benefit_quantity_for_package,
     full_sponsorship,

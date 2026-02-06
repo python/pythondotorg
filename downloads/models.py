@@ -1,3 +1,5 @@
+"""Models for Python releases, release files, and operating systems."""
+
 import re
 
 from django.conf import settings
@@ -21,24 +23,28 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
 
 
 class OS(ContentManageable, NameSlugModel):
-    """OS for Python release"""
+    """OS for Python release."""
 
     class Meta:
+        """Meta configuration for OS."""
+
         verbose_name = "Operating System"
         verbose_name_plural = "Operating Systems"
         ordering = ("name",)
 
     def __str__(self):
+        """Return string representation."""
         return self.name
 
     def get_absolute_url(self):
+        """Return the URL for this OS's download list page."""
         return reverse("download:download_os_list", kwargs={"os_slug": self.slug})
 
 
 class Release(ContentManageable, NameSlugModel):
-    """
-    A particular version release.  Name field should be version number for
-    example: 3.3.4 or 2.7.6
+    """A particular version release.
+
+    Name field should be version number for example: 3.3.4 or 2.7.6.
     """
 
     PYTHON1 = 1
@@ -92,22 +98,25 @@ class Release(ContentManageable, NameSlugModel):
     objects = ReleaseManager()
 
     class Meta:
+        """Meta configuration for Release."""
+
         verbose_name = "Release"
         verbose_name_plural = "Releases"
         ordering = ("name",)
         get_latest_by = "release_date"
 
     def __str__(self):
+        """Return string representation."""
         return self.name
 
     def get_absolute_url(self):
+        """Return the URL for this release's detail page or its release page."""
         if not self.content.raw and self.release_page:
             return self.release_page.get_absolute_url()
-        else:
-            return reverse("download:download_release_detail", kwargs={"release_slug": self.slug})
+        return reverse("download:download_release_detail", kwargs={"release_slug": self.slug})
 
     def download_file_for_os(self, os_slug):
-        """Given an OS slug return the appropriate download file"""
+        """Given an OS slug return the appropriate download file."""
         try:
             file = self.files.get(os__slug=os_slug, download_button=True)
         except ReleaseFile.DoesNotExist:
@@ -116,17 +125,18 @@ class Release(ContentManageable, NameSlugModel):
         return file
 
     def files_for_os(self, os_slug):
-        """Return all files for this release for a given OS"""
-        files = self.files.filter(os__slug=os_slug).order_by("-name")
-        return files
+        """Return all files for this release for a given OS."""
+        return self.files.filter(os__slug=os_slug).order_by("-name")
 
     def get_version(self):
+        """Extract the version number string from the release name."""
         version = re.match(r"Python\s([\d.]+)", self.name)
         if version is not None:
             return version.group(1)
         return ""
 
     def is_version_at_least(self, min_version_tuple):
+        """Check whether this release's version meets the minimum version tuple."""
         v1 = []
         for b in self.get_version().split("."):
             try:
@@ -141,18 +151,22 @@ class Release(ContentManageable, NameSlugModel):
 
     @property
     def is_version_at_least_3_5(self):
+        """Return True if this release is Python 3.5 or later."""
         return self.is_version_at_least((3, 5))
 
     @property
     def is_version_at_least_3_9(self):
+        """Return True if this release is Python 3.9 or later."""
         return self.is_version_at_least((3, 9))
 
     @property
     def is_version_at_least_3_14(self):
+        """Return True if this release is Python 3.14 or later."""
         return self.is_version_at_least((3, 14))
 
 
 def update_supernav():
+    """Regenerate the supernav download box with the latest release links."""
     latest_python3 = Release.objects.latest_python3()
     if not latest_python3:
         return
@@ -201,6 +215,7 @@ def update_supernav():
 
 
 def update_download_landing_sources_box():
+    """Regenerate the download sources box with latest Python 2 and 3 source links."""
     latest_python2 = Release.objects.latest_python2()
     latest_python3 = Release.objects.latest_python3()
 
@@ -232,6 +247,7 @@ def update_download_landing_sources_box():
 
 
 def update_homepage_download_box():
+    """Regenerate the homepage download box with latest Python versions."""
     latest_python2 = Release.objects.latest_python2()
     latest_python3 = Release.objects.latest_python3()
 
@@ -261,7 +277,7 @@ def update_homepage_download_box():
 
 @receiver(post_save, sender=Release)
 def promote_latest_release(sender, instance, **kwargs):
-    """Promote this release to be the latest if this flag is set"""
+    """Promote this release to be the latest if this flag is set."""
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
@@ -273,9 +289,7 @@ def promote_latest_release(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Release)
 def purge_fastly_download_pages(sender, instance, **kwargs):
-    """
-    Purge Fastly caches so new Downloads show up more quickly
-    """
+    """Purge Fastly caches so new Downloads show up more quickly."""
     # Don't purge on fixture loads
     if kwargs.get("raw", False):
         return
@@ -311,6 +325,7 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Release)
 def update_download_supernav_and_boxes(sender, instance, **kwargs):
+    """Refresh supernav and download boxes when a release is saved."""
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
@@ -322,10 +337,10 @@ def update_download_supernav_and_boxes(sender, instance, **kwargs):
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):
-    """
-    Individual files in a release.  If a specific OS/release combo has multiple
-    versions for example Windows and MacOS 32 vs 64 bit each file needs to be
-    added separately
+    """Individual files in a release.
+
+    If a specific OS/release combo has multiple versions for example
+    Windows and MacOS 32 vs 64 bit each file needs to be added separately.
     """
 
     os = models.ForeignKey(
@@ -349,13 +364,17 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
 
     def validate_unique(self, exclude=None):
+        """Ensure only one release file per OS has the download button enabled."""
         if self.download_button:
             qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
             if qs.count() > 0:
-                raise ValidationError('Only one Release File per OS can have "Download button" enabled')
+                msg = 'Only one Release File per OS can have "Download button" enabled'
+                raise ValidationError(msg)
         super().validate_unique(exclude=exclude)
 
     class Meta:
+        """Meta configuration for ReleaseFile."""
+
         verbose_name = "Release File"
         verbose_name_plural = "Release Files"
         ordering = ("-release__is_published", "release__name", "os__name", "name")

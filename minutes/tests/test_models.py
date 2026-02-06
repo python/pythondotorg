@@ -2,7 +2,7 @@ import datetime
 
 from django.test import TestCase
 
-from ..models import Minutes
+from minutes.models import Minutes
 
 
 class MinutesModelTests(TestCase):

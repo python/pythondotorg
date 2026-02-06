@@ -1,3 +1,5 @@
+"""Views for the Python downloads section."""
+
 import re
 from datetime import datetime
 from typing import Any
@@ -14,11 +16,12 @@ from .models import OS, Release, ReleaseFile
 
 
 class DownloadLatestPython2(RedirectView):
-    """Redirect to latest Python 2 release"""
+    """Redirect to latest Python 2 release."""
 
     permanent = False
 
     def get_redirect_url(self, **kwargs):
+        """Return the URL for the latest Python 2 release."""
         try:
             latest_python2 = Release.objects.latest_python2()
         except Release.DoesNotExist:
@@ -26,16 +29,16 @@ class DownloadLatestPython2(RedirectView):
 
         if latest_python2:
             return latest_python2.get_absolute_url()
-        else:
-            return reverse("download")
+        return reverse("download")
 
 
 class DownloadLatestPython3(RedirectView):
-    """Redirect to latest Python 3 release, optionally for a specific minor"""
+    """Redirect to latest Python 3 release, optionally for a specific minor."""
 
     permanent = False
 
     def get_redirect_url(self, **kwargs):
+        """Return the URL for the latest Python 3 release."""
         minor_version = kwargs.get("minor")
         try:
             minor_version_int = int(minor_version) if minor_version else None
@@ -49,11 +52,12 @@ class DownloadLatestPython3(RedirectView):
 
 
 class DownloadLatestPrerelease(RedirectView):
-    """Redirect to latest Python 3 prerelease"""
+    """Redirect to latest Python 3 prerelease."""
 
     permanent = False
 
     def get_redirect_url(self, **kwargs):
+        """Return the URL for the latest Python 3 prerelease."""
         try:
             latest_prerelease = Release.objects.latest_prerelease()
         except Release.DoesNotExist:
@@ -61,16 +65,16 @@ class DownloadLatestPrerelease(RedirectView):
 
         if latest_prerelease:
             return latest_prerelease.get_absolute_url()
-        else:
-            return reverse("downloads:download")
+        return reverse("downloads:download")
 
 
 class DownloadLatestPyManager(RedirectView):
-    """Redirect to latest Python install manager release"""
+    """Redirect to latest Python install manager release."""
 
     permanent = False
 
     def get_redirect_url(self, **kwargs):
+        """Return the URL for the latest Python install manager release."""
         try:
             latest_pymanager = Release.objects.latest_pymanager()
         except Release.DoesNotExist:
@@ -78,14 +82,14 @@ class DownloadLatestPyManager(RedirectView):
 
         if latest_pymanager:
             return latest_pymanager.get_absolute_url()
-        else:
-            return reverse("downloads")
+        return reverse("downloads")
 
 
 class DownloadBase:
-    """Include latest releases in all views"""
+    """Include latest releases in all views."""
 
     def get_context_data(self, **kwargs):
+        """Add latest Python 2, 3, and pymanager releases to context."""
         context = super().get_context_data(**kwargs)
         context.update(
             {
@@ -98,9 +102,12 @@ class DownloadBase:
 
 
 class DownloadHome(DownloadBase, TemplateView):
+    """Main downloads landing page showing all available releases."""
+
     template_name = "downloads/index.html"
 
     def get_context_data(self, **kwargs):
+        """Add release listings and per-OS download files to context."""
         context = super().get_context_data(**kwargs)
         try:
             latest_python2 = Release.objects.latest_python2()
@@ -149,17 +156,22 @@ class DownloadHome(DownloadBase, TemplateView):
 
 
 class DownloadFullOSList(DownloadBase, ListView):
+    """List all available operating systems for downloads."""
+
     template_name = "downloads/full_os_list.html"
     context_object_name = "os_list"
     model = OS
 
 
 class DownloadOSList(DownloadBase, DetailView):
+    """List releases filtered by a specific operating system."""
+
     template_name = "downloads/os_list.html"
     context_object_name = "os"
     model = OS
 
     def get_context_data(self, **kwargs):
+        """Add releases and pre-releases for the selected OS to context."""
         context = super().get_context_data(**kwargs)
         release_files = ReleaseFile.objects.select_related(
             "os",
@@ -184,17 +196,21 @@ class DownloadOSList(DownloadBase, DetailView):
 
 
 class DownloadReleaseDetail(DownloadBase, DetailView):
+    """Detail view for a specific Python release with its files."""
+
     template_name = "downloads/release_detail.html"
     model = Release
     context_object_name = "release"
 
     def get_object(self):
+        """Retrieve the release by slug or raise 404."""
         try:
             return self.get_queryset().select_related().get(slug=self.kwargs["release_slug"])
         except self.model.DoesNotExist as e:
             raise Http404 from e
 
     def get_context_data(self, **kwargs):
+        """Add release files, featured files, and superseded-by info to context."""
         context = super().get_context_data(**kwargs)
 
         # Add featured files (files with download_button=True)
@@ -284,6 +300,7 @@ class ReleaseEditButton(TemplateView):
     template_name = "downloads/release_edit_button.html"
 
     def get_context_data(self, **kwargs):
+        """Add release primary key to context for the edit link."""
         context = super().get_context_data(**kwargs)
         context["release_pk"] = self.kwargs["pk"]
         return context

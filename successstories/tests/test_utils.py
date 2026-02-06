@@ -2,7 +2,7 @@ import datetime
 
 from django.test import SimpleTestCase
 
-from ..utils import convert_to_datetime, get_field_list
+from successstories.utils import convert_to_datetime, get_field_list
 
 
 class UtilsTestCase(SimpleTestCase):

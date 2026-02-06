@@ -1,3 +1,5 @@
+"""Views for browsing and submitting Python community events."""
+
 import contextlib
 import datetime
 
@@ -15,17 +17,23 @@ from .models import Calendar, Event, EventCategory, EventLocation
 
 
 class CalendarList(ListView):
+    """List all available event calendars."""
+
     model = Calendar
 
 
 class EventListBase(ListView):
+    """Base list view for events with featured event and sidebar data."""
+
     model = Event
     paginate_by = 6
 
     def get_object(self, queryset=None):
-        return None
+        """Return None as the default object for list views."""
+        return
 
     def get_context_data(self, **kwargs):
+        """Add featured event, categories, and locations to context."""
         context = super().get_context_data(**kwargs)
         featured_events = self.get_queryset().filter(featured=True)
         with contextlib.suppress(IndexError):
@@ -38,7 +46,7 @@ class EventListBase(ListView):
 
 
 class EventHomepage(ListView):
-    """Main Event Landing Page"""
+    """Main Event Landing Page."""
 
     template_name = "events/event_list.html"
 
@@ -68,12 +76,16 @@ class EventHomepage(ListView):
 
 
 class EventDetail(DetailView):
+    """Detail view for a single event with upcoming date windows."""
+
     model = Event
 
     def get_queryset(self):
+        """Return events with related data prefetched."""
         return super().get_queryset().select_related()
 
     def get_context_data(self, **kwargs):
+        """Add 7/30/90/365-day date windows for the next occurrence."""
         data = super().get_context_data(**kwargs)
         if data["object"].next_time:
             dt = data["object"].next_time.dt_start
@@ -89,7 +101,10 @@ class EventDetail(DetailView):
 
 
 class EventList(EventListBase):
+    """List upcoming events for a specific calendar."""
+
     def get_queryset(self):
+        """Return upcoming events for the calendar specified in the URL."""
         return (
             Event.objects.for_datetime(timezone.now())
             .filter(calendar__slug=self.kwargs["calendar_slug"])
@@ -97,6 +112,7 @@ class EventList(EventListBase):
         )
 
     def get_context_data(self, **kwargs):
+        """Add today's events and calendar object to context."""
         context = super().get_context_data(**kwargs)
 
         # today's events, most recent first
@@ -112,68 +128,93 @@ class EventList(EventListBase):
 
 
 class PastEventList(EventList):
+    """List past events for a specific calendar."""
+
     template_name = "events/event_list_past.html"
 
     def get_queryset(self):
+        """Return past events for the calendar specified in the URL."""
         return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventListByDate(EventList):
+    """List events for a specific calendar on a given date."""
+
     def get_object(self):
+        """Return the date object from URL parameters."""
         year = int(self.kwargs["year"])
         month = int(self.kwargs["month"])
         day = int(self.kwargs["day"])
         return datetime.date(year, month, day)
 
     def get_queryset(self):
+        """Return events on or after the specified date."""
         return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventListByCategory(EventList):
+    """List events filtered by category."""
+
     def get_object(self, queryset=None):
+        """Return the EventCategory for the given slug."""
         return get_object_or_404(EventCategory, calendar__slug=self.kwargs["calendar_slug"], slug=self.kwargs["slug"])
 
     def get_queryset(self):
+        """Return upcoming events matching the specified category."""
         qs = super().get_queryset()
         return qs.filter(categories__slug=self.kwargs["slug"])
 
 
 class EventListByLocation(EventList):
+    """List events filtered by location."""
+
     def get_object(self, queryset=None):
+        """Return the EventLocation for the given primary key."""
         return get_object_or_404(EventLocation, calendar__slug=self.kwargs["calendar_slug"], pk=self.kwargs["pk"])
 
     def get_queryset(self):
+        """Return upcoming events at the specified venue."""
         qs = super().get_queryset()
         return qs.filter(venue__pk=self.kwargs["pk"])
 
 
 class EventCategoryList(ListView):
+    """List event categories for a specific calendar."""
+
     model = EventCategory
     paginate_by = 30
 
     def get_queryset(self):
+        """Return categories belonging to the specified calendar."""
         return self.model.objects.filter(calendar__slug=self.kwargs["calendar_slug"])
 
     def get_context_data(self, **kwargs):
+        """Add event categories to context."""
         kwargs["event_categories"] = self.get_queryset()[:10]
 
         return super().get_context_data(**kwargs)
 
 
 class EventLocationList(ListView):
+    """List event locations for a specific calendar."""
+
     model = EventLocation
     paginate_by = 30
 
     def get_queryset(self):
+        """Return locations belonging to the specified calendar."""
         return self.model.objects.filter(calendar__slug=self.kwargs["calendar_slug"])
 
 
 class EventSubmit(LoginRequiredMixin, FormView):
+    """Form view for submitting new events for review."""
+
     template_name = "events/event_form.html"
     form_class = EventForm
     success_url = reverse_lazy("events:event_thanks")
 
     def form_valid(self, form):
+        """Send notification email and redirect on valid submission."""
         try:
             form.send_email(self.request.user)
         except BadHeaderError:

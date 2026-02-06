@@ -1,5 +1,5 @@
-import os
 import re
+from pathlib import Path
 from urllib.parse import urlparse
 
 import requests
@@ -7,7 +7,9 @@ from django.conf import settings
 from django.core.files import File
 from django.core.management.base import BaseCommand
 
-from ...models import Image, Page, page_image_path
+from pages.models import Image, Page, page_image_path
+
+HTTP_OK = 200
 
 
 class Command(BaseCommand):
@@ -27,30 +29,28 @@ class Command(BaseCommand):
     def fix_image(self, path, page):
         url = f"http://legacy.python.org{path}"
         # Retrieve the image
-        r = requests.get(url)
+        r = requests.get(url, timeout=30)
 
-        if r.status_code != 200:
-            print(f"ERROR Couldn't load {url}")
-            return
+        if r.status_code != HTTP_OK:
+            return None
 
         # Create new associated image and generate ultimate path
         img = Image()
         img.page = page
 
-        filename = os.path.basename(urlparse(url).path)
+        filename = Path(urlparse(url).path).name
         output_path = page_image_path(img, filename)
 
         # Make sure our directories exist
-        directory = os.path.dirname(output_path)
-        if not os.path.exists(directory):
-            os.makedirs(directory)
+        directory = Path(output_path).parent
+        directory.mkdir(parents=True, exist_ok=True)
 
         # Write image data to our location
-        with open(output_path, "wb") as f:
+        with Path(output_path).open("wb") as f:
             f.write(r.content)
 
         # Re-open the image as a Django File object
-        with open(output_path, "rb") as reopen:
+        with Path(output_path).open("rb") as reopen:
             new_file = File(reopen)
             img.image.save(filename, new_file, save=True)
 
@@ -60,7 +60,7 @@ class Command(BaseCommand):
         content = page.content.raw
         paths = set(re.findall(r"(/files/success.*)\b", content))
         if paths:
-            print(f"Found {len(paths)} matches in {page.path}")
+            pass
 
         return paths
 
@@ -70,7 +70,6 @@ class Command(BaseCommand):
 
         for path in image_paths:
             new_url = self.fix_image(path, page)
-            print(f"    Fixing {path} -> {new_url}")
             content = page.content.raw
             new_content = content.replace(path, new_url)
             page.content = new_content
@@ -78,8 +77,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         self.pages = self.get_success_pages()
-
-        print(f"Found {len(self.pages)} success pages")
 
         for p in self.pages:
             self.process_success_story(p)

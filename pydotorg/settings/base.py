@@ -1,4 +1,6 @@
-import os
+"""Base Django settings for the python.org project."""
+
+from pathlib import Path
 
 from decouple import config
 from dj_database_url import parse as dj_database_url_parser
@@ -6,10 +8,10 @@ from django.contrib.messages import constants
 
 ### Basic config
 
-BASE = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
+BASE = str(Path(__file__).resolve().parent.parent.parent)
 DEBUG = True
 SITE_ID = 1
-SECRET_KEY = "its-a-secret-to-everybody"
+SECRET_KEY = "its-a-secret-to-everybody"  # noqa: S105 - development-only default, overridden in production
 
 # Until Sentry works on Py3, do errors the old-fashioned way.
 ADMINS = []
@@ -37,16 +39,7 @@ _REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
 CELERY_BROKER_URL = _REDIS_URL
 CELERY_RESULT_BACKEND = _REDIS_URL
 
-CELERY_BEAT_SCHEDULE = {
-    # "example-management-command": {
-    #    "task": "pydotorg.celery.run_management_command",
-    #    "schedule": crontab(hour=12, minute=0),
-    #    "args": ("daily_volunteer_reminder", [], {}),
-    # },
-    # 'example-task': {
-    #     'task': 'users.tasks.example_task',
-    # },
-}
+CELERY_BEAT_SCHEDULE = {}
 
 ### Locale settings
 
@@ -57,21 +50,20 @@ USE_TZ = True
 
 DATE_FORMAT = "Y-m-d"
 
-### Files (media and static)
+# Media and static file configuration
 
-MEDIA_ROOT = os.path.join(BASE, "media")
+MEDIA_ROOT = str(Path(BASE) / "media")
 MEDIA_URL = "/media/"
 MEDIAFILES_LOCATION = "media"
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/var/www/example.com/static/"
-STATIC_ROOT = os.path.join(BASE, "static-root")
+STATIC_ROOT = str(Path(BASE) / "static-root")
 STATIC_URL = "/static/"
 
 STATICFILES_DIRS = [
-    os.path.join(BASE, "static"),
+    str(Path(BASE) / "static"),
 ]
 STORAGES = {
     "default": {
@@ -112,7 +104,7 @@ ACCOUNT_USERNAME_VALIDATORS = "users.validators.username_validators"
 
 ### Templates
 
-TEMPLATES_DIR = os.path.join(BASE, "templates")
+TEMPLATES_DIR = str(Path(BASE) / "templates")
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -230,7 +222,7 @@ INSTALLED_APPS = [
 
 # Fixtures
 
-FIXTURE_DIRS = (os.path.join(BASE, "fixtures"),)
+FIXTURE_DIRS = (str(Path(BASE) / "fixtures"),)
 
 ### Logging
 
@@ -279,7 +271,7 @@ EVENTS_TO_EMAIL = "events@python.org"
 # Sponsors
 SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config("SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org")
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = config("SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org")
-PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
+PYPI_SPONSORS_CSV = str(Path(BASE) / "data" / "pypi-sponsors.csv")
 
 # Mail
 DEFAULT_FROM_EMAIL = "noreply@python.org"

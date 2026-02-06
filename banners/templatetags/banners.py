@@ -1,3 +1,5 @@
+"""Template tags for rendering active banners on the site."""
+
 from django import template
 from django.template.loader import render_to_string
 
@@ -18,11 +20,13 @@ def _render_banner(banner=None):
 
 @register.simple_tag
 def render_active_banner():
+    """Render the active site-wide banner, excluding PSF-only banners."""
     banner = Banner.objects.filter(active=True, psf_pages_only=False).first()
     return _render_banner(banner=banner)
 
 
 @register.simple_tag
 def render_active_psf_banner():
+    """Render the active banner for PSF pages."""
     banner = Banner.objects.filter(active=True).first()
     return _render_banner(banner=banner)

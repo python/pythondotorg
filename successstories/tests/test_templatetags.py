@@ -1,7 +1,7 @@
 from django import template
 from django.test import TestCase
 
-from ..factories import StoryCategoryFactory, StoryFactory
+from successstories.factories import StoryCategoryFactory, StoryFactory
 
 
 class StoryTemplateTagTests(TestCase):

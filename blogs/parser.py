@@ -1,3 +1,5 @@
+"""RSS feed parsing and blog supernav rendering utilities."""
+
 import datetime
 
 import feedparser
@@ -11,12 +13,14 @@ from .models import BlogEntry, Feed
 
 
 def get_all_entries(feed_url):
-    """Retrieve all entries from a feed URL"""
+    """Retrieve all entries from a feed URL."""
     d = feedparser.parse(feed_url)
     entries = []
 
     for e in d["entries"]:
-        published = make_aware(datetime.datetime(*e["published_parsed"][:7]), timezone=datetime.UTC)
+        published = make_aware(
+            datetime.datetime(*e["published_parsed"][:7], tzinfo=datetime.UTC), timezone=datetime.UTC
+        )
 
         entry = {
             "title": e["title"],
@@ -31,12 +35,12 @@ def get_all_entries(feed_url):
 
 
 def _render_blog_supernav(entry):
-    """Utility to make testing update_blogs management command easier"""
+    """Render blog supernav for testing update_blogs management command."""
     return render_to_string("blogs/supernav.html", {"entry": entry})
 
 
 def update_blog_supernav():
-    """Retrieve latest entry and update blog supernav item"""
+    """Retrieve latest entry and update blog supernav item."""
     try:
         latest_entry = BlogEntry.objects.filter(
             feed=Feed.objects.get(

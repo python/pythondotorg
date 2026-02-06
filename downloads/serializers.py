@@ -1,16 +1,26 @@
+"""DRF serializers for the downloads API."""
+
 from rest_framework import serializers
 
 from downloads.models import OS, Release, ReleaseFile
 
 
 class OSSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializer for operating system data."""
+
     class Meta:
+        """Meta configuration for OSSerializer."""
+
         model = OS
         fields = ("name", "slug", "resource_uri")
 
 
 class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializer for Python release data."""
+
     class Meta:
+        """Meta configuration for ReleaseSerializer."""
+
         model = Release
         fields = (
             "name",
@@ -28,7 +38,11 @@ class ReleaseSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class ReleaseFileSerializer(serializers.HyperlinkedModelSerializer):
+    """Serializer for release file data."""
+
     class Meta:
+        """Meta configuration for ReleaseFileSerializer."""
+
         model = ReleaseFile
         fields = (
             "name",

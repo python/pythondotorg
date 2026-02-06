@@ -1,3 +1,5 @@
+"""URL configuration for the boxes app."""
+
 from django.urls import path
 
 from .views import box

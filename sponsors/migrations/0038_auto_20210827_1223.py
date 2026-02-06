@@ -4,8 +4,8 @@ from django.db import migrations
 
 
 def populate_sponsorship_package_fk(apps, schema_editor):
-    Sponsorship = apps.get_model("sponsors.Sponsorship")
-    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")
+    Sponsorship = apps.get_model("sponsors.Sponsorship")  # noqa: N806 - Django migration convention
+    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")  # noqa: N806 - Django migration convention
 
     for sponsorship in Sponsorship.objects.all().iterator():
         try:

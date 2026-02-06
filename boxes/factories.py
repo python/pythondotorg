@@ -1,3 +1,5 @@
+"""Factory functions for creating box test and seed data."""
+
 import json
 import pathlib
 
@@ -11,7 +13,11 @@ from .models import Box
 
 
 class BoxFactory(DjangoModelFactory):
+    """Factory for creating Box instances in tests."""
+
     class Meta:
+        """Meta configuration for BoxFactory."""
+
         model = Box
         django_get_or_create = ("label",)
 
@@ -20,6 +26,7 @@ class BoxFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Load initial box data from the boxes.json fixture file."""
     boxes = []
     fixtures_dir = pathlib.Path(settings.FIXTURE_DIRS[0])
     boxes_json = fixtures_dir / "boxes.json"

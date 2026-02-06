@@ -1,3 +1,5 @@
+"""Models for Python success stories and their categories."""
+
 from django.conf import settings
 from django.contrib.sites.models import Site
 from django.core.mail import EmailMessage
@@ -20,19 +22,27 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 
 
 class StoryCategory(NameSlugModel):
+    """A category used to classify success stories (e.g. Arts, Business)."""
+
     class Meta:
+        """Meta configuration for StoryCategory."""
+
         ordering = ("name",)
         verbose_name = "story category"
         verbose_name_plural = "story categories"
 
     def __str__(self):
+        """Return the category name."""
         return self.name
 
     def get_absolute_url(self):
+        """Return the URL for the category's story listing page."""
         return reverse("success_story_list_category", kwargs={"slug": self.slug})
 
 
 class Story(NameSlugModel, ContentManageable):
+    """A Python success story submitted by the community or PSF staff."""
+
     company_name = models.CharField(max_length=500)
     company_url = models.URLField(verbose_name="Company URL")
     company = models.ForeignKey(
@@ -60,36 +70,40 @@ class Story(NameSlugModel, ContentManageable):
     objects = StoryManager()
 
     class Meta:
+        """Meta configuration for Story."""
+
         ordering = ("-created",)
         verbose_name = "story"
         verbose_name_plural = "stories"
 
     def __str__(self):
+        """Return the story name."""
         return self.name
 
     def get_absolute_url(self):
+        """Return the URL for the story detail page."""
         return reverse("success_story_detail", kwargs={"slug": self.slug})
 
     def get_admin_url(self):
+        """Return the Django admin URL for this story."""
         return reverse("admin:successstories_story_change", args=(self.id,))
 
     def get_company_name(self):
-        """Return company name depending on ForeignKey"""
+        """Return company name depending on ForeignKey."""
         if self.company:
             return self.company.name
-        else:
-            return self.company_name
+        return self.company_name
 
     def get_company_url(self):
+        """Return the company URL, preferring the linked Company object."""
         if self.company:
             return self.company.url
-        else:
-            return self.company_url
+        return self.company_url
 
 
 @receiver(post_save, sender=Story)
 def update_successstories_supernav(sender, instance, created, **kwargs):
-    """Update download supernav"""
+    """Update download supernav."""
     # Skip in fixtures
     if kwargs.get("raw", False):
         return
@@ -122,6 +136,7 @@ def update_successstories_supernav(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Story)
 def send_email_to_psf(sender, instance, created, **kwargs):
+    """Send a notification email to PSF staff when a new unpublished story is submitted."""
     # Skip in fixtures
     if kwargs.get("raw", False) or not created:
         return

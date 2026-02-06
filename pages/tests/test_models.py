@@ -1,9 +1,10 @@
-import os
 import unittest
+from pathlib import Path
 
 import ddt
 
-from ..models import PAGE_PATH_RE, Page
+from pages.models import PAGE_PATH_RE, Page
+
 from .base import BasePageTests
 
 
@@ -35,7 +36,7 @@ class PageModelTests(BasePageTests):
 
         fourth line
         """
-        content_ht = os.path.join(os.path.dirname(__file__), "fake_svn_content_checkout", "content.ht")
+        content_ht = str(Path(__file__).parent / "fake_svn_content_checkout" / "content.ht")
         page = Page.objects.create(
             title="Testing",
             content=content.format(content_ht=content_ht),

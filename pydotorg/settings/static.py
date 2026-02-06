@@ -1,4 +1,6 @@
-from .base import *  # noqa: F403
+"""Django settings for static file collection builds."""
+
+from .base import *
 
 DEBUG = TEMPLATE_DEBUG = False
 
@@ -10,9 +12,7 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-MIDDLEWARE = [
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-] + MIDDLEWARE  # noqa: F405
+MIDDLEWARE = ["whitenoise.middleware.WhiteNoiseMiddleware", *MIDDLEWARE]
 
 MEDIAFILES_LOCATION = "media"
 STORAGES = {

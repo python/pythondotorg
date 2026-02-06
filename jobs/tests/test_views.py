@@ -3,9 +3,7 @@ from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
-from users.factories import UserFactory
-
-from ..factories import (
+from jobs.factories import (
     ApprovedJobFactory,
     DraftJobFactory,
     JobCategoryFactory,
@@ -13,7 +11,8 @@ from ..factories import (
     JobTypeFactory,
     ReviewJobFactory,
 )
-from ..models import Job
+from jobs.models import Job
+from users.factories import UserFactory
 
 
 class JobsViewTests(TestCase):

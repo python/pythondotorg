@@ -1,3 +1,5 @@
+"""Models for blog entries, RSS feeds, and feed aggregates."""
+
 import feedparser
 from bs4 import BeautifulSoup
 from bs4.element import Comment
@@ -7,6 +9,7 @@ from cms.models import ContentManageable
 
 
 def tag_visible(element):
+    """Return True if the HTML element contains visible text content."""
     if element.parent.name in [
         "style",
         "script",
@@ -20,6 +23,7 @@ def tag_visible(element):
 
 
 def text_from_html(body):
+    """Extract visible plain text from an HTML string."""
     soup = BeautifulSoup(body, "html.parser")
     texts = soup.findAll(text=True)
     visible_texts = filter(tag_visible, texts)
@@ -27,10 +31,10 @@ def text_from_html(body):
 
 
 class BlogEntry(models.Model):
-    """
-    Model to store Blog entries from Blogger
+    """Model to store Blog entries from Blogger.
+
     Specifically https://blog.python.org/
-    Feed URL is defined in settings.PYTHON_BLOG_FEED_URL
+    Feed URL is defined in settings.PYTHON_BLOG_FEED_URL.
     """
 
     title = models.CharField(max_length=200)
@@ -40,25 +44,28 @@ class BlogEntry(models.Model):
     feed = models.ForeignKey("Feed", on_delete=models.CASCADE)
 
     class Meta:
+        """Meta configuration for BlogEntry."""
+
         verbose_name = "Blog Entry"
         verbose_name_plural = "Blog Entries"
         get_latest_by = "pub_date"
 
     def __str__(self):
+        """Return the blog entry title."""
         return self.title
 
     def get_absolute_url(self):
+        """Return the external URL of this blog entry."""
         return self.url
 
     @property
     def excerpt(self):
+        """Return a plain-text excerpt extracted from the summary HTML."""
         return text_from_html(self.summary)
 
 
 class Feed(models.Model):
-    """
-    An RSS feed to import.
-    """
+    """An RSS feed to import."""
 
     name = models.CharField(max_length=200)
     website_url = models.URLField()
@@ -66,12 +73,12 @@ class Feed(models.Model):
     last_import = models.DateTimeField(blank=True, null=True)
 
     def __str__(self):
+        """Return the feed name."""
         return self.name
 
 
 class FeedAggregate(models.Model):
-    """
-    An aggregate of RSS feeds.
+    """An aggregate of RSS feeds.
 
     These allow people to edit what are in feed-backed content blocks
     without editing templates.
@@ -83,10 +90,13 @@ class FeedAggregate(models.Model):
     feeds = models.ManyToManyField(Feed)
 
     def __str__(self):
+        """Return the aggregate name."""
         return self.name
 
 
 class RelatedBlog(ContentManageable):
+    """An external blog related to Python, synced via its RSS feed."""
+
     name = models.CharField(max_length=100, help_text="Internal Name")
     feed_url = models.URLField("Feed URL")
     blog_url = models.URLField("Blog URL")
@@ -95,17 +105,21 @@ class RelatedBlog(ContentManageable):
     last_entry_title = models.CharField(max_length=500)
 
     class Meta:
+        """Meta configuration for RelatedBlog."""
+
         verbose_name = "Related Blog"
         verbose_name_plural = "Related Blogs"
 
     def __str__(self):
+        """Return the related blog name."""
         return self.name
 
     def get_absolute_url(self):
+        """Return the external URL of this related blog."""
         return self.blog_url
 
     def update_blog_data(self):
-        """Update our related blog data"""
+        """Update our related blog data."""
         d = feedparser.parse(self.feed_url)
         self.blog_name = d["feed"]["title"]
         self.blog_url = d["feed"]["link"]

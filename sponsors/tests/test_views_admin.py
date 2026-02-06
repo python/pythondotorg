@@ -1,6 +1,6 @@
 import io
 import zipfile
-from datetime import date, timedelta
+from datetime import timedelta
 from unittest.mock import Mock, PropertyMock, patch
 from uuid import uuid4
 
@@ -13,19 +13,17 @@ from django.core.handlers.wsgi import WSGIRequest
 from django.http import HttpResponse
 from django.test import RequestFactory, TestCase
 from django.urls import reverse
+from django.utils import timezone
 from model_bakery import baker
 
-from sponsors.use_cases import SendSponsorshipNotificationUseCase
-from sponsors.views_admin import export_assets_as_zipfile, send_sponsorship_notifications_action
-
-from ..forms import (
+from sponsors.forms import (
     CloneApplicationConfigForm,
     SendSponsorshipNotificationForm,
     SignedSponsorshipReviewAdminForm,
     SponsorshipReviewAdminForm,
     SponsorshipsListForm,
 )
-from ..models import (
+from sponsors.models import (
     Contract,
     GenericAsset,
     ImgAsset,
@@ -37,7 +35,10 @@ from ..models import (
     SponsorshipPackage,
     TextAsset,
 )
-from .utils import assertMessage, get_static_image_file_as_upload
+from sponsors.use_cases import SendSponsorshipNotificationUseCase
+from sponsors.views_admin import export_assets_as_zipfile, send_sponsorship_notifications_action
+
+from .utils import assert_message, get_static_image_file_as_upload
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):
@@ -69,8 +70,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Sponsorship is now editable!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Sponsorship is now editable!", messages.SUCCESS)
 
     def test_do_not_rollback_if_invalid_post(self):
         response = self.client.post(self.url, data={})
@@ -118,8 +119,8 @@ class RollbackSponsorshipToEditingAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't rollback to edit a Finalized sponsorship.", messages.ERROR)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Can't rollback to edit a Finalized sponsorship.", messages.ERROR)
 
 
 class RejectedSponsorshipAdminViewTests(TestCase):
@@ -152,8 +153,8 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertTrue(mail.outbox)
         self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Sponsorship was rejected!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Sponsorship was rejected!", messages.SUCCESS)
 
     def test_do_not_reject_if_invalid_post(self):
         response = self.client.post(self.url, data={})
@@ -201,8 +202,8 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
 
 
 class ApproveSponsorshipAdminViewTests(TestCase):
@@ -211,7 +212,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.client.force_login(self.user)
         self.sponsorship = baker.make(Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True)
         self.url = reverse("admin:sponsors_sponsorship_approve", args=[self.sponsorship.pk])
-        today = date.today()
+        today = timezone.now().date()
         self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
@@ -244,8 +245,8 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.APPROVED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Sponsorship was approved!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Sponsorship was approved!", messages.SUCCESS)
 
     def test_do_not_approve_if_no_confirmation_in_the_post(self):
         self.data.pop("confirm")
@@ -302,8 +303,8 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
 
 
 class ApproveSignedSponsorshipAdminViewTests(TestCase):
@@ -312,7 +313,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.client.force_login(self.user)
         self.sponsorship = baker.make(Sponsorship, status=Sponsorship.APPLIED, _fill_optional=True)
         self.url = reverse("admin:sponsors_sponsorship_approve_existing_contract", args=[self.sponsorship.pk])
-        today = date.today()
+        today = timezone.now().date()
         self.package = baker.make("sponsors.SponsorshipPackage")
         self.data = {
             "confirm": "yes",
@@ -349,8 +350,8 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
         self.assertEqual(contract.status, Contract.EXECUTED)
         self.assertEqual(contract.signed_document.read(), b"Signed contract")
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Signed sponsorship was approved!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Signed sponsorship was approved!", messages.SUCCESS)
 
     def test_do_not_approve_if_no_confirmation_in_the_post(self):
         self.data.pop("confirm")
@@ -407,8 +408,8 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Can't approve a Finalized sponsorship.", messages.ERROR)
 
 
 class SendContractViewTests(TestCase):
@@ -437,8 +438,8 @@ class SendContractViewTests(TestCase):
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertTrue(self.contract.document.name)
         self.assertEqual(1, len(mail.outbox))
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "Contract was sent!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Contract was sent!", messages.SUCCESS)
 
     @patch.object(Sponsorship, "verified_emails", PropertyMock(return_value=["email@email.com"]))
     def test_display_error_message_to_user_if_invalid_status(self):
@@ -451,8 +452,8 @@ class SendContractViewTests(TestCase):
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(0, len(mail.outbox))
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(
             msg,
             "Contract with status Awaiting Signature can't be sent.",
             messages.ERROR,
@@ -527,11 +528,11 @@ class ExecuteContractViewTests(TestCase):
         response = self.client.post(self.url, data=self.data)
         expected_url = reverse("admin:sponsors_contract_change", args=[self.contract.pk])
         self.contract.refresh_from_db()
-        msg = list(get_messages(response.wsgi_request))[0]
+        msg = next(iter(get_messages(response.wsgi_request)))
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.contract.status, Contract.EXECUTED)
-        assertMessage(msg, "Contract was executed!", messages.SUCCESS)
+        assert_message(msg, "Contract was executed!", messages.SUCCESS)
 
     def test_display_error_message_to_user_if_invalid_status(self):
         self.contract.status = Contract.OUTDATED
@@ -540,11 +541,11 @@ class ExecuteContractViewTests(TestCase):
 
         response = self.client.post(self.url, data=self.data)
         self.contract.refresh_from_db()
-        msg = list(get_messages(response.wsgi_request))[0]
+        msg = next(iter(get_messages(response.wsgi_request)))
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.contract.status, Contract.OUTDATED)
-        assertMessage(
+        assert_message(
             msg,
             "Contract with status Outdated can't be executed.",
             messages.ERROR,
@@ -619,11 +620,11 @@ class NullifyContractViewTests(TestCase):
         response = self.client.post(self.url, data=self.data)
         expected_url = reverse("admin:sponsors_contract_change", args=[self.contract.pk])
         self.contract.refresh_from_db()
-        msg = list(get_messages(response.wsgi_request))[0]
+        msg = next(iter(get_messages(response.wsgi_request)))
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.contract.status, Contract.NULLIFIED)
-        assertMessage(msg, "Contract was nullified!", messages.SUCCESS)
+        assert_message(msg, "Contract was nullified!", messages.SUCCESS)
 
     def test_display_error_message_to_user_if_invalid_status(self):
         self.contract.status = Contract.DRAFT
@@ -632,11 +633,11 @@ class NullifyContractViewTests(TestCase):
 
         response = self.client.post(self.url, data=self.data)
         self.contract.refresh_from_db()
-        msg = list(get_messages(response.wsgi_request))[0]
+        msg = next(iter(get_messages(response.wsgi_request)))
 
         self.assertRedirects(response, expected_url, fetch_redirect_response=True)
         self.assertEqual(self.contract.status, Contract.DRAFT)
-        assertMessage(
+        assert_message(
             msg,
             "Contract with status Draft can't be nullified.",
             messages.ERROR,
@@ -731,8 +732,8 @@ class UpdateRelatedSponsorshipsTests(TestCase):
         response = self.client.post(self.url, data=self.data)
 
         self.assertRedirects(response, redirect_url)
-        msg = list(get_messages(response.wsgi_request))[0]
-        assertMessage(msg, "1 related sponsorships updated!", messages.SUCCESS)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "1 related sponsorships updated!", messages.SUCCESS)
 
     def test_update_selected_sponsorships_only(self):
         other_sponsor_benefit = baker.make(
@@ -788,7 +789,9 @@ class PreviewContractViewTests(TestCase):
     def setUp(self):
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True)
         self.client.force_login(self.user)
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__start_date=date.today())
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__start_date=timezone.now().date()
+        )
         self.url = reverse("admin:sponsors_contract_preview", args=[self.contract.pk])
 
     @patch("sponsors.views_admin.render_contract_to_pdf_response")

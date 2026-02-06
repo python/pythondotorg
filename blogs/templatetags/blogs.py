@@ -1,20 +1,21 @@
+"""Template tags for displaying blog entries in templates."""
+
 from django import template
 
-from ..models import BlogEntry
+from blogs.models import BlogEntry
 
 register = template.Library()
 
 
 @register.simple_tag
 def get_latest_blog_entries(limit=5):
-    """Return limit of latest blog entries"""
+    """Return limit of latest blog entries."""
     return BlogEntry.objects.order_by("-pub_date")[:limit]
 
 
 @register.simple_tag
 def feed_list(slug, limit=10):
-    """
-    Returns a list of blog entries for the given FeedAggregate slug.
+    """Return a list of blog entries for the given FeedAggregate slug.
 
     {% feed_list 'psf' as entries %}
     {% for entry in entries %}

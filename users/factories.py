@@ -1,3 +1,5 @@
+"""Factory Boy factories for generating test user and membership data."""
+
 import factory
 from factory.django import DjangoModelFactory
 
@@ -5,7 +7,11 @@ from .models import Membership, User
 
 
 class UserFactory(DjangoModelFactory):
+    """Factory for creating User instances with realistic test data."""
+
     class Meta:
+        """Meta configuration for UserFactory."""
+
         model = User
         django_get_or_create = ("username",)
 
@@ -29,6 +35,7 @@ class UserFactory(DjangoModelFactory):
 
     @factory.post_generation
     def groups(self, create, extracted, **kwargs):
+        """Add the user to the specified groups after creation."""
         if not create:
             return
         if extracted:
@@ -37,7 +44,11 @@ class UserFactory(DjangoModelFactory):
 
 
 class MembershipFactory(DjangoModelFactory):
+    """Factory for creating Membership instances linked to users."""
+
     class Meta:
+        """Meta configuration for MembershipFactory."""
+
         model = Membership
         django_get_or_create = ("creator",)
 
@@ -48,6 +59,7 @@ class MembershipFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Create a batch of test users with associated memberships."""
     return {
         "users": UserFactory.create_batch(size=10),
     }

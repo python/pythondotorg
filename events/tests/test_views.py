@@ -6,10 +6,9 @@ from django.test import TestCase
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
+from events.models import Calendar, Event, EventCategory, EventLocation, OccurringRule, RecurringRule
+from events.templatetags.events import get_events_upcoming
 from users.factories import UserFactory
-
-from ..models import Calendar, Event, EventCategory, EventLocation, OccurringRule, RecurringRule
-from ..templatetags.events import get_events_upcoming
 
 
 class EventsViewsTests(TestCase):

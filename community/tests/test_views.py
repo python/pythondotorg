@@ -1,6 +1,5 @@
+from community.models import Post
 from pydotorg.tests.test_classes import TemplateTestCase
-
-from ..models import Post
 
 
 class CommunityTagsTest(TemplateTestCase):

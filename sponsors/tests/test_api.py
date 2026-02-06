@@ -58,11 +58,11 @@ class LogoPlacementeAPIListTests(APITestCase):
         self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[1].name]))
         self.assertEqual(1, len([p for p in data if p["sponsor"] == self.sponsors[2].name]))
         self.assertEqual(
-            None, [p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value][0]["sponsor_url"]
+            None, next(p for p in data if p["publisher"] == PublisherChoices.FOUNDATION.value)["sponsor_url"]
         )
         self.assertEqual(
             f"http://testserver/psf/sponsors/#{slugify(self.sp3.sponsor.name)}",
-            [p for p in data if p["publisher"] == PublisherChoices.PYPI.value][0]["sponsor_url"],
+            next(p for p in data if p["publisher"] == PublisherChoices.PYPI.value)["sponsor_url"],
         )
         self.assertCountEqual(
             [self.sp1.sponsor.description, self.sp1.sponsor.description, self.sp2.sponsor.description],

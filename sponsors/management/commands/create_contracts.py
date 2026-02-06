@@ -26,11 +26,7 @@ class Command(BaseCommand):
     def handle(self, **options):
         qs = Sponsorship.objects.approved().filter(contract__isnull=True)
         if not qs.exists():
-            print("There's no approved Sponsorship without associated Contract. Terminating.")
             return
 
-        print(f"Creating contract for {qs.count()} approved sponsorships...")
         for sponsorship in qs:
             Contract.new(sponsorship)
-
-        print("Done!")

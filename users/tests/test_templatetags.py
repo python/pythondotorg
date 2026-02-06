@@ -1,6 +1,5 @@
 from pydotorg.tests.test_classes import TemplateTestCase
-
-from ..factories import UserFactory
+from users.factories import UserFactory
 
 
 class UsersTagsTest(TemplateTestCase):

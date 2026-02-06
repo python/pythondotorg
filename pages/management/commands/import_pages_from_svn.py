@@ -3,14 +3,15 @@ import os
 import re
 import shutil
 import traceback
+from pathlib import Path
 
 from bs4 import BeautifulSoup
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.core.management.base import BaseCommand
 
-from ...models import Image, Page
-from ...parser import parse_page
+from pages.models import Image, Page
+from pages.parser import parse_page
 
 
 def fix_image_path(src):
@@ -18,8 +19,7 @@ def fix_image_path(src):
         return src
     if not src.startswith("/"):
         src = "/" + src
-    url = f"{settings.MEDIA_URL}pages{src}"
-    return url
+    return f"{settings.MEDIA_URL}pages{src}"
 
 
 class Command(BaseCommand):
@@ -38,13 +38,13 @@ class Command(BaseCommand):
 
         if image.startswith("/"):
             image = image[1:]
-            src = os.path.join(os.path.dirname(self.SVN_REPO_PATH), image)
+            src = str(Path(self.SVN_REPO_PATH).parent / image)
         else:
-            src = os.path.join(self.SVN_REPO_PATH, content_path, image)
-        dst = os.path.join(settings.MEDIA_ROOT, "pages", image)
+            src = str(Path(self.SVN_REPO_PATH) / content_path / image)
+        dst = str(Path(settings.MEDIA_ROOT) / "pages" / image)
 
         with contextlib.suppress(OSError):
-            os.makedirs(os.path.dirname(dst))
+            Path(dst).parent.mkdir(parents=True, exist_ok=True)
         with contextlib.suppress(Exception):
             shutil.copyfile(src, dst)
 
@@ -67,13 +67,15 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         self.SVN_REPO_PATH = getattr(settings, "PYTHON_ORG_CONTENT_SVN_PATH", None)
         if self.SVN_REPO_PATH is None:
-            raise ImproperlyConfigured("PYTHON_ORG_CONTENT_SVN_PATH not defined in settings")
+            msg = "PYTHON_ORG_CONTENT_SVN_PATH not defined in settings"
+            raise ImproperlyConfigured(msg)
 
-        matches = []
-        for root, _dirnames, filenames in os.walk(self.SVN_REPO_PATH):
-            for filename in filenames:
-                if re.match(r"(content\.(ht|rst)|body\.html)$", filename):
-                    matches.append(os.path.join(root, filename))
+        matches = [
+            str(Path(root) / filename)
+            for root, _dirnames, filenames in os.walk(self.SVN_REPO_PATH)
+            for filename in filenames
+            if re.match(r"(content\.(ht|rst)|body\.html)$", filename)
+        ]
 
         for match in matches:
             path = self._build_path(match)
@@ -83,9 +85,8 @@ class Command(BaseCommand):
                 continue
 
             try:
-                data = parse_page(os.path.dirname(match))
-            except Exception:
-                print(f"Unable to parse {match}")
+                data = parse_page(str(Path(match).parent))
+            except Exception:  # noqa: BLE001 - import script must continue on any parse error
                 traceback.print_exc()
                 continue
 
@@ -100,7 +101,6 @@ class Command(BaseCommand):
 
                 page_obj, _ = Page.objects.get_or_create(path=path, defaults=defaults)
                 self.save_images(path, page_obj)
-            except Exception:
-                print(f"Unable to create Page object for {match}")
+            except Exception:  # noqa: BLE001 - import script must continue on any save error
                 traceback.print_exc()
                 continue

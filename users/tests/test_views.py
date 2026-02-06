@@ -32,7 +32,7 @@ class UsersViewsTestCase(TestCase):
             public_profile=False,
         )
 
-    def assertUserCreated(self, data=None, template_name="account/verification_sent.html"):
+    def assertUserCreated(self, data=None, template_name="account/verification_sent.html"):  # noqa: N802 - unittest assertion naming convention
         post_data = {
             "username": "guido",
             "email": "montyopython@python.org",

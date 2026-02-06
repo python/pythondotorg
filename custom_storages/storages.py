@@ -1,6 +1,9 @@
+"""Custom storage backends for S3 media and manifest-based static files."""
+
 import os
 import posixpath
 import re
+from pathlib import PurePath
 from urllib.parse import unquote, urldefrag
 
 from django.conf import settings
@@ -12,13 +15,16 @@ from storages.backends.s3boto3 import S3Boto3Storage
 
 
 class MediaStorage(S3Boto3Storage):
+    """S3 storage backend for user-uploaded media files."""
+
     location = settings.MEDIAFILES_LOCATION
 
 
 class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStorage):
-    """
-    Applys patches from https://github.com/django/django/pull/11241 to ignore
-    imports in comments. Ref: https://code.djangoproject.com/ticket/21080
+    """Apply patches to ignore imports in comments.
+
+    From https://github.com/django/django/pull/11241.
+    Ref: https://code.djangoproject.com/ticket/21080.
     """
 
     # Skip map files
@@ -37,31 +43,27 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
     )
 
     def get_comment_blocks(self, content):
-        """
-        Return a list of (start, end) tuples for each comment block.
-        """
+        """Return a list of (start, end) tuples for each comment block."""
         return [(match.start(), match.end()) for match in re.finditer(r"\/\*.*?\*\/", content, flags=re.DOTALL)]
 
     def is_in_comment(self, pos, comments):
+        """Return True if the character position falls inside a CSS comment block."""
         for start, end in comments:
-            if start < pos and pos < end:
+            if start < pos < end:
                 return True
             if pos < start:
                 return False
         return False
 
-    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):
-        """
-        Return the custom URL converter for the given file name.
-        """
+    def url_converter(self, name, hashed_files, template=None, comment_blocks=None):  # noqa: C901 - Django upstream complexity
+        """Return the custom URL converter for the given file name."""
         if comment_blocks is None:
             comment_blocks = []
         if template is None:
             template = self.default_template
 
         def converter(matchobj):
-            """
-            Convert the matched URL to a normalized and hashed URL.
+            """Convert the matched URL to a normalized and hashed URL.
 
             This requires figuring out which files the matched URL resolves
             to and calling the url() method of the storage.
@@ -92,7 +94,9 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
 
             if url_path.startswith("/"):
                 # Otherwise the condition above would have returned prematurely.
-                assert url_path.startswith(settings.STATIC_URL)
+                if not url_path.startswith(settings.STATIC_URL):
+                    msg = f"Expected URL path to start with STATIC_URL: {url_path}"
+                    raise ValueError(msg)
                 target_name = url_path[len(settings.STATIC_URL) :]
             else:
                 # We're using the posixpath module to mix paths and URLs conveniently.
@@ -119,10 +123,10 @@ class PipelineManifestStorage(PipelineMixin, ManifestFilesMixin, StaticFilesStor
 
         return converter
 
-    def _post_process(self, paths, adjustable_paths, hashed_files):
+    def _post_process(self, paths, adjustable_paths, hashed_files):  # noqa: C901, PLR0912 - ported from Django upstream, refactoring risks subtle breakage
         # Sort the files by directory level
         def path_level(name):
-            return len(name.split(os.sep))
+            return len(PurePath(name).parts)
 
         for name in sorted(paths, key=path_level, reverse=True):
             substitutions = True

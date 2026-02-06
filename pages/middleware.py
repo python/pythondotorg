@@ -1,4 +1,7 @@
+"""Middleware that serves CMS pages as a fallback for 404 responses."""
+
 import contextlib
+from http import HTTPStatus
 
 from django import http
 from django.conf import settings
@@ -8,19 +11,23 @@ from .views import PageView
 
 
 class PageFallbackMiddleware:
+    """Middleware that attempts to serve a CMS page when no other view matches."""
+
     def __init__(self, get_response):
+        """Initialize with the next middleware or view in the chain."""
         self.get_response = get_response
 
     def get_queryset(self, request):
+        """Return all pages for staff, published pages for everyone else."""
         if request.user.is_staff:
             return Page.objects.all()
-        else:
-            return Page.objects.published()
+        return Page.objects.published()
 
     def __call__(self, request):
+        """Serve a CMS page if the normal response is a 404."""
         response = self.get_response(request)
         # No need to check for a page for non-404 responses.
-        if response.status_code != 404:
+        if response.status_code != HTTPStatus.NOT_FOUND:
             return response
 
         full_path = request.path[1:]

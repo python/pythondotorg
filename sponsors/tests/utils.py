@@ -13,6 +13,6 @@ def get_static_image_file_as_upload(filename, upload_filename=None):
         return SimpleUploadedFile(upload_filename, fd.read())
 
 
-def assertMessage(msg, expected_content, expected_level):
+def assert_message(msg, expected_content, expected_level):
     assert msg.level == expected_level, f"Message {msg} level is not {expected_level}"
     assert str(msg) == expected_content, f"Message {msg} content is not {expected_content}"

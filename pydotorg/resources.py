@@ -1,3 +1,5 @@
+"""Tastypie API resource classes and authentication/authorization backends."""
+
 from django.contrib.auth import get_user_model
 from tastypie.authentication import ApiKeyAuthentication
 from tastypie.authorization import Authorization
@@ -8,16 +10,20 @@ from tastypie.throttle import CacheThrottle
 
 
 class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
+    """Authentication backend that falls back to guest access when no API key is provided."""
+
     def _unauthorized(self):
+        """Allow guests anyway."""
         # Allow guests anyway
         return True
 
     def is_authenticated(self, request, **kwargs):
+        """Authenticate via API key, handling custom user model.
+
+        Copypasted from tastypie, modified to avoid issues with
+        app-loading and custom user model.
         """
-        Copypasted from tastypie, modified to avoid issues with app-loading and
-        custom user model.
-        """
-        User = get_user_model()
+        User = get_user_model()  # noqa: N806 - Django convention for user model reference
         username_field = User.USERNAME_FIELD
 
         try:
@@ -44,80 +50,89 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         return key_auth_check
 
     def get_identifier(self, request):
+        """Return the username for authenticated users or IP/hostname for guests."""
         if request.user.is_authenticated:
             return super().get_identifier(request)
-        else:
-            # returns a combination of IP address and hostname.
-            return "{}_{}".format(request.META.get("REMOTE_ADDR", "noaddr"), request.META.get("REMOTE_HOST", "nohost"))
+        # returns a combination of IP address and hostname.
+        return "{}_{}".format(request.META.get("REMOTE_ADDR", "noaddr"), request.META.get("REMOTE_HOST", "nohost"))
 
     def check_active(self, user):
+        """Return True, allowing inactive users to authenticate."""
         return True
 
 
 class StaffAuthorization(Authorization):
-    """
-    Everybody can read everything. Staff users can write everything.
-    """
+    """Everybody can read everything. Staff users can write everything."""
 
     def read_list(self, object_list, bundle):
+        """Allow all users to read lists."""
         # Everybody can read
         return object_list
 
     def read_detail(self, object_list, bundle):
+        """Allow all users to read individual objects."""
         # Everybody can read
         return True
 
     def create_list(self, object_list, bundle):
+        """Allow only staff users to create objects in bulk."""
         if bundle.request.user.is_staff:
             return object_list
-        else:
-            raise Unauthorized("Operation restricted to staff users.")
+        msg = "Operation restricted to staff users."
+        raise Unauthorized(msg)
 
     def create_detail(self, object_list, bundle):
+        """Allow only staff users to create individual objects."""
         return bundle.request.user.is_staff
 
     def update_list(self, object_list, bundle):
+        """Allow only staff users to update objects in bulk."""
         if bundle.request.user.is_staff:
             return object_list
-        else:
-            raise Unauthorized("Operation restricted to staff users.")
+        msg = "Operation restricted to staff users."
+        raise Unauthorized(msg)
 
     def update_detail(self, object_list, bundle):
+        """Allow only staff users to update individual objects."""
         return bundle.request.user.is_staff
 
     def delete_list(self, object_list, bundle):
+        """Allow only staff users to delete objects in bulk."""
         if not bundle.request.user.is_staff:
-            raise Unauthorized("Operation restricted to staff users.")
-        else:
-            return object_list
+            msg = "Operation restricted to staff users."
+            raise Unauthorized(msg)
+        return object_list
 
     def delete_detail(self, object_list, bundle):
+        """Allow only staff users to delete individual objects."""
         if not bundle.request.user.is_staff:
-            raise Unauthorized("Operation restricted to staff users.")
-        else:
-            return True
+            msg = "Operation restricted to staff users."
+            raise Unauthorized(msg)
+        return True
 
 
 class OnlyPublishedAuthorization(StaffAuthorization):
-    """
-    Only staff users can see unpublished objects.
-    """
+    """Only staff users can see unpublished objects."""
 
     def read_list(self, object_list, bundle):
+        """Filter to published objects for non-staff users."""
         if not bundle.request.user.is_staff:
             return object_list.filter(is_published=True)
-        else:
-            return super().read_list(object_list, bundle)
+        return super().read_list(object_list, bundle)
 
     def read_detail(self, object_list, bundle):
+        """Return True only if the object is published for non-staff users."""
         if not bundle.request.user.is_staff:
             return bundle.obj.is_published
-        else:
-            return super().read_detail(object_list, bundle)
+        return super().read_detail(object_list, bundle)
 
 
 class GenericResource(ModelResource):
+    """Base Tastypie resource with API key auth, staff authorization, and throttling."""
+
     class Meta:
+        """Meta configuration for GenericResource."""
+
         authentication = ApiKeyOrGuestAuthentication()
         authorization = StaffAuthorization()
         throttle = CacheThrottle(throttle_at=600)  # default is 150 req/hr

@@ -1,5 +1,5 @@
 import random
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django import forms
 from django.conf import settings
@@ -10,14 +10,12 @@ from django.test import TestCase
 from django.utils import timezone
 from model_bakery import baker, seq
 
-from sponsors.models.enums import AssetsRelatedTo, LogoPlacementChoices, PublisherChoices
-
-from ..exceptions import (
-    InvalidStatusException,
-    SponsorshipInvalidDateRangeException,
-    SponsorWithExistingApplicationException,
+from sponsors.exceptions import (
+    InvalidStatusError,
+    SponsorshipInvalidDateRangeError,
+    SponsorWithExistingApplicationError,
 )
-from ..models import (
+from sponsors.models import (
     Contract,
     ImgAsset,
     LegalClause,
@@ -38,13 +36,14 @@ from ..models import (
     TieredBenefit,
     TieredBenefitConfiguration,
 )
-from ..models.benefits import (
+from sponsors.models.benefits import (
     BaseRequiredImgAsset,
     BaseRequiredTextAsset,
     BenefitFeature,
     EmailTargetableConfiguration,
     RequiredAssetMixin,
 )
+from sponsors.models.enums import AssetsRelatedTo, LogoPlacementChoices, PublisherChoices
 
 
 class SponsorshipBenefitModelTests(TestCase):
@@ -124,7 +123,7 @@ class SponsorshipModelTests(TestCase):
 
         self.assertEqual(sponsorship.submited_by, self.user)
         self.assertEqual(sponsorship.sponsor, self.sponsor)
-        self.assertEqual(sponsorship.applied_on, date.today())
+        self.assertEqual(sponsorship.applied_on, timezone.now().date())
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
         self.assertIsNone(sponsorship.rejected_on)
@@ -174,7 +173,7 @@ class SponsorshipModelTests(TestCase):
 
     def test_create_new_sponsorship_with_package_added_benefit(self):
         extra_benefit = baker.make(SponsorshipBenefit)
-        benefits = self.benefits + [extra_benefit]
+        benefits = [*self.benefits, extra_benefit]
         sponsorship = Sponsorship.new(self.sponsor, benefits, package=self.package)
         sponsorship.refresh_from_db()
 
@@ -200,7 +199,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)
 
     def test_approve_sponsorship(self):
-        start = date.today()
+        start = timezone.now().date()
         end = start + timedelta(days=10)
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
@@ -214,12 +213,12 @@ class SponsorshipModelTests(TestCase):
         self.assertTrue(sponsorship.end_date, end)
 
     def test_exception_if_invalid_date_range_when_approving(self):
-        start = date.today()
+        start = timezone.now().date()
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
 
-        with self.assertRaises(SponsorshipInvalidDateRangeException):
+        with self.assertRaises(SponsorshipInvalidDateRangeError):
             sponsorship.approve(start, start)
 
     def test_rollback_sponsorship_to_edit(self):
@@ -243,7 +242,7 @@ class SponsorshipModelTests(TestCase):
         sponsorship.status = Sponsorship.FINALIZED
         sponsorship.save()
         sponsorship.refresh_from_db()
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             sponsorship.rollback_to_editing()
 
     def test_rollback_approved_sponsorship_with_contract_should_delete_it(self):
@@ -265,7 +264,7 @@ class SponsorshipModelTests(TestCase):
         sponsorship.save()
         baker.make_recipe("sponsors.tests.awaiting_signature_contract", sponsorship=sponsorship)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             sponsorship.rollback_to_editing()
 
         self.assertEqual(1, Contract.objects.count())
@@ -287,7 +286,7 @@ class SponsorshipModelTests(TestCase):
             sponsorship.status = status
             sponsorship.save()
 
-            with self.assertRaises(SponsorWithExistingApplicationException):
+            with self.assertRaises(SponsorWithExistingApplicationError):
                 Sponsorship.new(self.sponsor, self.benefits)
 
     def test_display_agreed_fee_for_approved_and_finalized_status(self):
@@ -360,7 +359,7 @@ class SponsorshipPackageTests(TestCase):
 
     def test_has_user_customization_if_benefit_from_other_package(self):
         extra = baker.make(SponsorshipBenefit)
-        benefits = [extra] + self.package_benefits
+        benefits = [extra, *self.package_benefits]
         has_customization = self.package.has_user_customization(benefits)
         customization = {"added_by_user": {extra}, "removed_by_user": set()}
         self.assertTrue(has_customization)
@@ -408,7 +407,7 @@ class SponsorshipPackageTests(TestCase):
         benefits[2].conflicts.add(benefits[3])
         self.package.benefits.add(*benefits)
 
-        benefits = self.package_benefits + [benefits[0]]  # missing benefits with index 2 or 3
+        benefits = [*self.package_benefits, benefits[0]]  # missing benefits with index 2 or 3
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
 
@@ -432,13 +431,17 @@ class SponsorshipPackageTests(TestCase):
         self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
 
     def test_get_default_revenue_split(self):
-        benefits = baker.make(SponsorshipBenefit, internal_value=int(random.random() * 1000), _quantity=12)
-        program_names = set(b.program.name for b in benefits)
+        benefits = baker.make(
+            SponsorshipBenefit,
+            internal_value=int(random.random() * 1000),  # noqa: S311 - not used for security, just test data
+            _quantity=12,
+        )
+        program_names = {b.program.name for b in benefits}
         pkg1 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[:3])
         pkg2 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[3:7])
         pkg3 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[7:])
         splits = [pkg.get_default_revenue_split() for pkg in (pkg1, pkg2, pkg3)]
-        split_names = set((name for split in splits for name, _ in split))
+        split_names = {name for split in splits for name, _ in split}
         totals = [sum((pct for _, pct in split)) for split in splits]
         # since the split percentages are rounded, they may not always total exactly 100.000
         self.assertAlmostEqual(totals[0], 100, delta=0.1)
@@ -611,7 +614,7 @@ class ContractModelTests(TestCase):
     def test_raise_invalid_status_exception_if_not_draft(self):
         contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.set_final_version(b"content")
 
     def test_execute_contract(self):
@@ -622,12 +625,12 @@ class ContractModelTests(TestCase):
 
         self.assertEqual(contract.status, Contract.EXECUTED)
         self.assertEqual(contract.sponsorship.status, Sponsorship.FINALIZED)
-        self.assertEqual(contract.sponsorship.finalized_on, date.today())
+        self.assertEqual(contract.sponsorship.finalized_on, timezone.now().date())
 
     def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
         contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.OUTDATED)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.execute()
 
     def test_nullify_contract(self):
@@ -641,7 +644,7 @@ class ContractModelTests(TestCase):
     def test_raise_invalid_status_when_trying_to_nullify_contract_if_not_awaiting_signature(self):
         contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.nullify()
 
 

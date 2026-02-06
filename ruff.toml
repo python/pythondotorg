@@ -2,18 +2,36 @@ target-version = "py312"
 line-length = 120
 
 [lint]
-select = [
-    "E",      # pycodestyle errors
-    "F",      # pyflakes
-    "W",      # pycodestyle warnings
-    "I",      # isort
-    "UP",     # pyupgrade
-    "B",      # flake8-bugbear
-    "SIM",    # flake8-simplify
-    "DJ",     # flake8-django
-]
+select = ["ALL"]
 ignore = [
-    "E501",   # line too long (handled by formatter)
+    # Formatter conflicts (recommended by ruff)
+    "COM812",  # trailing comma (conflicts with formatter)
+    "ISC001",  # implicit string concatenation (conflicts with formatter)
+    # Conflicting docstring rules (pick one style)
+    "D203",    # one-blank-line-before-class (conflicts with D211)
+    "D213",    # multi-line-summary-second-line (conflicts with D212 - we want summary on first line)
+    # Line length handled by formatter
+    "E501",    # line too long
+    # Type annotations - separate project, not practical to add to entire legacy codebase at once
+    "ANN",     # flake8-annotations (all ANN rules)
+    # Django TestCase uses self.assertEqual, not bare pytest assert
+    "PT009",   # pytest-unittest-assertion
+    "PT027",   # pytest-unittest-raises-assertion
+    # Django views/signals/admin methods have required unused args by framework contract
+    "ARG001",  # unused-function-argument
+    "ARG002",  # unused-method-argument
+    # Django model fields are mutable class-level defaults by design
+    "RUF012",  # mutable-class-default
+    # Boolean args are idiomatic in Django models, forms, and views
+    "FBT001",  # boolean-positional-arg-in-function-definition
+    "FBT002",  # boolean-default-value-positional-argument
+    # mark_safe is required Django pattern for admin display
+    "S308",    # suspicious-mark-safe-usage
+    # Circular imports are resolved with local imports in Django
+    "PLC0415", # import-outside-top-level
+    # TODO comment formatting is not worth enforcing
+    "TD",      # flake8-todos
+    "FIX",     # flake8-fixme
 ]
 
 [lint.isort]
@@ -36,6 +54,20 @@ known-first-party = [
     "successstories",
     "users",
 ]
+
+[lint.per-file-ignores]
+# Settings files use star imports (Django convention)
+"pydotorg/settings/*.py" = ["F403", "F405"]
+# Migrations are auto-generated
+"*/migrations/*.py" = ["D", "RUF012", "N999"]
+# Tests don't need docstrings, can use magic values, hardcoded test passwords
+"*/tests/*.py" = ["D", "S101", "S106", "S105", "PLR2004", "N803", "N806"]
+"*/tests.py" = ["D", "S101", "S106", "S105", "PLR2004", "N803", "N806"]
+# Management commands don't need docstrings
+"*/management/commands/*.py" = ["D"]
+# conftest files
+"conftest.py" = ["D"]
+"*/conftest.py" = ["D"]
 
 [format]
 quote-style = "double"

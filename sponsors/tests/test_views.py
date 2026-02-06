@@ -14,8 +14,7 @@ from sponsors.forms import (
     SponsorshipApplicationForm,
     SponsorshipsBenefitsForm,
 )
-
-from ..models import (
+from sponsors.models import (
     Sponsor,
     SponsorContact,
     Sponsorship,
@@ -23,7 +22,8 @@ from ..models import (
     SponsorshipCurrentYear,
     SponsorshipPackage,
 )
-from .utils import assertMessage, get_static_image_file_as_upload
+
+from .utils import assert_message, get_static_image_file_as_upload
 
 
 class SelectSponsorshipApplicationBenefitsViewTests(TestCase):
@@ -259,7 +259,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
 
     def test_no_sponsorship_price_if_customized_benefits(self):
         extra_benefit = baker.make(SponsorshipBenefit)
-        benefits = self.program_1_benefits + [extra_benefit]
+        benefits = [*self.program_1_benefits, extra_benefit]
         self.client.cookies["sponsorship_selected_benefits"] = json.dumps(
             {
                 "package": self.package.id,
@@ -299,7 +299,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         self.client.cookies.pop("sponsorship_selected_benefits")
         r = self.client.get(self.url)
         r_messages = list(get_messages(r.wsgi_request))
-        assertMessage(r_messages[0], redirect_msg, redirect_lvl)
+        assert_message(r_messages[0], redirect_msg, redirect_lvl)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
         self.client.cookies["sponsorship_selected_benefits"] = ""
@@ -342,7 +342,7 @@ class NewSponsorshipApplicationViewTests(TestCase):
         r = self.client.post(self.url, data=self.data)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
         r_messages = list(get_messages(r.wsgi_request))
-        assertMessage(r_messages[0], redirect_msg, redirect_lvl)
+        assert_message(r_messages[0], redirect_msg, redirect_lvl)
         self.assertRedirects(r, reverse("select_sponsorship_application_benefits"))
 
         self.data["web_logo"] = get_static_image_file_as_upload("psf-logo.png", "logo.png")

@@ -3,15 +3,16 @@ import datetime
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
-from ..models import Minutes
+from minutes.models import Minutes
 
 User = get_user_model()
 
 
 class MinutesViewsTests(TestCase):
     def setUp(self):
-        start_date = datetime.datetime.now()
+        start_date = timezone.now()
         last_month = start_date - datetime.timedelta(weeks=4)
         two_months = last_month - datetime.timedelta(weeks=4)
 

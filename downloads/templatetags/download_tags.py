@@ -1,3 +1,5 @@
+"""Template tags and filters for download pages."""
+
 import logging
 import re
 
@@ -15,12 +17,12 @@ logger = logging.getLogger(__name__)
 RELEASE_CYCLE_URL = "https://peps.python.org/api/release-cycle.json"
 RELEASE_CYCLE_CACHE_KEY = "python_release_cycle"
 RELEASE_CYCLE_CACHE_TIMEOUT = 3600  # 1 hour
+PYTHON_2_MAJOR_VERSION = 2
 
 
 @register.simple_tag
 def get_eol_info(release) -> dict:
-    """
-    Check if a release's minor version is end-of-life.
+    """Check if a release's minor version is end-of-life.
 
     Returns a dict with 'is_eol' boolean and 'eol_date' if available.
     Python 2 releases not found in the release cycle data, assumes EOL.
@@ -47,7 +49,7 @@ def get_eol_info(release) -> dict:
     version_info = release_cycle.get(minor_version)
     if version_info is None:
         # Python 2 releases not in the list are EOL
-        if major <= 2:
+        if major <= PYTHON_2_MAJOR_VERSION:
             result["is_eol"] = True
         return result
 
@@ -60,38 +62,43 @@ def get_eol_info(release) -> dict:
 
 @register.filter
 def strip_minor_version(version):
+    """Strip patch version, keeping only major.minor (e.g. '3.9' from '3.9.7')."""
     return ".".join(version.split(".")[:2])
 
 
 @register.filter
 def has_gpg(files: list) -> bool:
+    """Return True if any file has a GPG signature."""
     return any(f.gpg_signature_file for f in files)
 
 
 @register.filter
 def has_sigstore_materials(files):
+    """Return True if any file has Sigstore signing materials."""
     return any(f.sigstore_bundle_file or f.sigstore_cert_file or f.sigstore_signature_file for f in files)
 
 
 @register.filter
 def has_sbom(files):
+    """Return True if any file has an SBOM document."""
     return any(f.sbom_spdx2_file for f in files)
 
 
 @register.filter
 def has_md5(files):
+    """Return True if any file has an MD5 checksum."""
     return any(f.md5_sum for f in files)
 
 
 @register.filter
 def has_sha256(files):
+    """Return True if any file has a SHA256 checksum."""
     return any(f.sha256_sum for f in files)
 
 
 @register.filter
 def wbr_wrap(value: str | None) -> str:
-    """
-    Insert <wbr> tags for optional line breaking, prioritising halfway break.
+    """Insert <wbr> tags for optional line breaking, prioritising halfway break.
 
     Uses inline-block spans for halves so the browser prefers breaking
     at the midpoint first, then within each half if still too wide.
@@ -114,6 +121,7 @@ def wbr_wrap(value: str | None) -> str:
 
 @register.filter
 def sort_windows(files):
+    """Sort Windows files into a preferred display order."""
     if not files:
         return files
 
@@ -157,10 +165,11 @@ def get_release_cycle_data() -> dict | None:
         response.raise_for_status()
         data = response.json()
         cache.set(RELEASE_CYCLE_CACHE_KEY, data, RELEASE_CYCLE_CACHE_TIMEOUT)
-        return data
     except (requests.RequestException, ValueError) as e:
         logger.warning("Failed to fetch release cycle data: %s", e)
         return None
+    else:
+        return data
 
 
 @register.inclusion_tag("downloads/active-releases.html")

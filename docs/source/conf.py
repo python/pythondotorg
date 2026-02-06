@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+"""Sphinx configuration for the Python.org website documentation."""
 
 import time
 
@@ -14,7 +15,7 @@ templates_path = ["_templates"]
 master_doc = "index"
 
 project = "Python.org Website"
-copyright = f"{time.strftime('%Y')}, Python Software Foundation"
+copyright = f"{time.strftime('%Y')}, Python Software Foundation"  # noqa: A001 - Sphinx expects this variable name
 
 # The short X.Y version.
 version = "1.0"
@@ -37,14 +38,7 @@ source_suffix = {
 
 # -- Options for LaTeX output ---------------------------------------------
 
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #'preamble': '',
-}
+latex_elements = {}
 
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title,

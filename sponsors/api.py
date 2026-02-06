@@ -1,3 +1,5 @@
+"""REST API views for sponsor logo placements and sponsorship assets."""
+
 from django.urls import reverse
 from django.utils.text import slugify
 from rest_framework import permissions
@@ -14,9 +16,12 @@ from sponsors.serializers import (
 
 
 class SponsorPublisherPermission(permissions.BasePermission):
+    """Permission class requiring sponsor publisher access or staff status."""
+
     message = "Must have publisher permission."
 
     def has_permission(self, request, view):
+        """Check if the user has publisher permission or is staff/superuser."""
         user = request.user
         if request.user.is_superuser or request.user.is_staff:
             return True
@@ -24,10 +29,13 @@ class SponsorPublisherPermission(permissions.BasePermission):
 
 
 class LogoPlacementeAPIList(APIView):
+    """API endpoint returning sponsor logo placements for enabled sponsorships."""
+
     permission_classes = [SponsorPublisherPermission]
     serializer_class = LogoPlacementSerializer
 
     def get(self, request, *args, **kwargs):
+        """Return filtered logo placement data for all enabled sponsorships."""
         placements = []
         logo_filters = FilterLogoPlacementsSerializer(data=request.GET)
         logo_filters.is_valid(raise_exception=True)
@@ -71,9 +79,12 @@ class LogoPlacementeAPIList(APIView):
 
 
 class SponsorshipAssetsAPIList(APIView):
+    """API endpoint returning generic assets filtered by internal name."""
+
     permission_classes = [SponsorPublisherPermission]
 
     def get(self, request, *args, **kwargs):
+        """Return filtered sponsorship assets by internal name."""
         assets_filter = FilterAssetsSerializer(data=request.GET)
         assets_filter.is_valid(raise_exception=True)
 

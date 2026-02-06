@@ -1,9 +1,12 @@
+"""Factory functions for creating blog test and seed data."""
+
 from django.conf import settings
 
 from .models import Feed
 
 
 def initial_data():
+    """Create and return the default Python Insider blog feed."""
     feed, _ = Feed.objects.get_or_create(
         id=1,
         defaults={

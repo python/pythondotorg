@@ -1,3 +1,5 @@
+"""Forms for creating and managing board election nominations."""
+
 from django import forms
 from django.utils.safestring import mark_safe
 from markupfield.widgets import MarkupTextarea
@@ -6,7 +8,11 @@ from .models import Nomination
 
 
 class NominationForm(forms.ModelForm):
+    """Base form for editing a board election nomination."""
+
     class Meta:
+        """Meta configuration for NominationForm."""
+
         model = Nomination
         fields = (
             "name",
@@ -28,7 +34,10 @@ class NominationForm(forms.ModelForm):
 
 
 class NominationCreateForm(NominationForm):
+    """Form for creating a new nomination with optional self-nomination."""
+
     def __init__(self, *args, **kwargs):
+        """Initialize form and extract the request from kwargs."""
         self.request = kwargs.pop("request", None)
         super().__init__(*args, **kwargs)
 
@@ -38,6 +47,7 @@ class NominationCreateForm(NominationForm):
     )
 
     def clean_self_nomination(self):
+        """Validate that self-nominating users have a first and last name set."""
         data = self.cleaned_data["self_nomination"]
         if data and (not self.request.user.first_name or not self.request.user.last_name):
             raise forms.ValidationError(
@@ -50,7 +60,11 @@ class NominationCreateForm(NominationForm):
 
 
 class NominationAcceptForm(forms.ModelForm):
+    """Form for a nominee to accept or decline a nomination."""
+
     class Meta:
+        """Meta configuration for NominationAcceptForm."""
+
         model = Nomination
         fields = ("accepted",)
         help_texts = {

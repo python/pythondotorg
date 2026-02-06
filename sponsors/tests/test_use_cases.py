@@ -1,5 +1,4 @@
-import os
-from datetime import date, timedelta
+from datetime import timedelta
 from pathlib import Path
 from unittest.mock import Mock, call, patch
 
@@ -103,7 +102,7 @@ class ApproveSponsorshipApplicationUseCaseTests(TestCase):
         self.sponsorship = baker.make(Sponsorship, _fill_optional="sponsor")
         self.package = baker.make("sponsors.SponsorshipPackage")
 
-        today = date.today()
+        today = timezone.now().date()
         self.data = {
             "sponsorship_fee": 100,
             "package": self.package,
@@ -229,7 +228,7 @@ class ExecuteExistingContractUseCaseTests(TestCase):
         try:
             signed_file = Path(self.contract.signed_document.path)
             if signed_file.exists():
-                os.remove(str(signed_file.resolve()))
+                signed_file.resolve().unlink()
         except ValueError:
             pass
 
@@ -349,7 +348,7 @@ class SendSponsorshipNotificationUseCaseTests(TestCase):
         self.assertEqual(mock_get_email_message.call_count, 3)
         self.assertEqual(self.notifications[0].notify.call_count, 3)
         for sponsorship in self.sponsorships:
-            kwargs = dict(to_accounting=False, to_administrative=True, to_manager=False, to_primary=False)
+            kwargs = {"to_accounting": False, "to_administrative": True, "to_manager": False, "to_primary": False}
             mock_get_email_message.assert_has_calls([call(sponsorship, **kwargs)])
             self.notifications[0].notify.assert_has_calls(
                 [

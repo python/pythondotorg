@@ -68,7 +68,7 @@ class ContentManageableAdminTests(unittest.TestCase):
 
 class TemplateTagsTest(unittest.TestCase):
     def test_iso_time_tag(self):
-        now = datetime.datetime(2014, 1, 1, 12, 0)
+        now = datetime.datetime(2014, 1, 1, 12, 0, tzinfo=datetime.UTC)
         template = Template("{% load cms %}{% iso_time_tag now %}")
         rendered = template.render(Context({"now": now}))
         self.assertIn(

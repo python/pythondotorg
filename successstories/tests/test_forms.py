@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from ..factories import StoryCategoryFactory
-from ..forms import StoryForm
+from successstories.factories import StoryCategoryFactory
+from successstories.forms import StoryForm
 
 
 class StoryFormTests(TestCase):

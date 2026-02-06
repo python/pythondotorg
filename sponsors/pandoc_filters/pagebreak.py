@@ -2,7 +2,7 @@
 
 # ------------------------------------------------------------------------------
 # Source: https://github.com/pandocker/pandoc-docx-pagebreak-py/
-# Revision: c8cddccebb78af75168da000a3d6ac09349bef73
+# Git revision c8cddccebb78af75168da000a3d6ac09349bef73
 # ------------------------------------------------------------------------------
 # MIT License
 #
@@ -27,9 +27,9 @@
 # SOFTWARE.
 # ------------------------------------------------------------------------------
 
-"""pandoc-docx-pagebreakpy
-Pandoc filter to insert pagebreak as openxml RawBlock
-Only for docx output
+"""pandoc-docx-pagebreakpy: Pandoc filter to insert pagebreak as openxml RawBlock.
+
+Only for docx output.
 
 Trying to port pandoc-doc-pagebreak
 - https://github.com/alexstoick/pandoc-docx-pagebreak
@@ -39,6 +39,8 @@ import panflute as pf
 
 
 class DocxPagebreak:
+    """Pandoc filter handler for DOCX page breaks and table of contents."""
+
     pagebreak = pf.RawBlock('<w:p><w:r><w:br w:type="page" /></w:r></w:p>', format="openxml")
     sectionbreak = pf.RawBlock(
         '<w:p><w:pPr><w:sectPr><w:type w:val="nextPage" /></w:sectPr></w:pPr></w:p>', format="openxml"
@@ -62,16 +64,11 @@ class DocxPagebreak:
     )
 
     def action(self, elem, doc):
+        """Convert raw LaTeX-style commands to OpenXML page breaks or TOC blocks."""
         if isinstance(elem, pf.RawBlock):
             if elem.text == r"\newpage":
                 if doc.format == "docx":
                     elem = self.pagebreak
-            # elif elem.text == r"\newsection":
-            #     if (doc.format == "docx"):
-            #         pf.debug("Section Break")
-            #         elem = self.sectionbreak
-            #     else:
-            #         elem = []
             elif elem.text == r"\toc":
                 if doc.format == "docx":
                     pf.debug("Table of Contents")
@@ -84,6 +81,7 @@ class DocxPagebreak:
 
 
 def main(doc=None):
+    """Run the DOCX pagebreak pandoc filter."""
     dp = DocxPagebreak()
     return pf.run_filter(dp.action, doc=doc)
 

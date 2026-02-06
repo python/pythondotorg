@@ -1,3 +1,5 @@
+"""REST API resources and viewsets for the pages app."""
+
 from rest_framework.authentication import TokenAuthentication
 
 from pydotorg.drf import (
@@ -12,7 +14,11 @@ from .serializers import PageSerializer
 
 
 class PageResource(GenericResource):
+    """Tastypie API resource for CMS pages."""
+
     class Meta(GenericResource.Meta):
+        """Meta configuration for PageResource."""
+
         authorization = OnlyPublishedAuthorization()
         queryset = Page.objects.all()
         resource_name = "pages/page"
@@ -37,7 +43,11 @@ class PageResource(GenericResource):
 
 
 class PageFilterSet(BaseFilterSet):
+    """Filter set for querying pages by title, path, keywords, and status."""
+
     class Meta:
+        """Meta configuration for PageFilterSet."""
+
         model = Page
         fields = {
             "title": ["exact"],
@@ -48,6 +58,8 @@ class PageFilterSet(BaseFilterSet):
 
 
 class PageViewSet(BaseReadOnlyAPIViewSet):
+    """Read-only DRF viewset for CMS pages."""
+
     model = Page
     serializer_class = PageSerializer
     authentication_classes = (TokenAuthentication,)

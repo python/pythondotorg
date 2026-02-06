@@ -1,9 +1,12 @@
+"""Admin actions for exporting user and membership data."""
+
 import csv
 
 from django.http import HttpResponse
 
 
 def export_csv(modeladmin, request, queryset):
+    """Export selected memberships as a CSV file."""
     membership_name = {0: "Basic", 1: "Supporting", 2: "Sponsor", 3: "Managing", 4: "Contributing", 5: "Fellow"}
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = "attachment; filename=membership.csv"

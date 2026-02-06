@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from ..models import Post
+from community.models import Post
 
 
 class ModelTestCase(TestCase):

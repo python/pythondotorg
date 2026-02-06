@@ -1,3 +1,5 @@
+"""Factory classes for creating test data in the events app."""
+
 import factory
 from factory.django import DjangoModelFactory
 
@@ -5,7 +7,11 @@ from .models import Calendar
 
 
 class CalendarFactory(DjangoModelFactory):
+    """Factory for creating Calendar instances."""
+
     class Meta:
+        """Meta configuration for CalendarFactory."""
+
         model = Calendar
         django_get_or_create = ("slug",)
 
@@ -13,6 +19,7 @@ class CalendarFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Create seed calendar data for development."""
     return {
         "calendars": [
             CalendarFactory(

@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from ..models import Calendar, Event, OccurringRule, RecurringRule
-from ..utils import convert_dt_to_aware, seconds_resolution
+from events.models import Calendar, Event, OccurringRule, RecurringRule
+from events.utils import convert_dt_to_aware, seconds_resolution
 
 
 class EventsModelsTests(TestCase):

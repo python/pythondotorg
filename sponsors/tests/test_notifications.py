@@ -1,4 +1,3 @@
-from datetime import date
 from unittest.mock import Mock
 
 from allauth.account.models import EmailAddress
@@ -8,6 +7,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core import mail
 from django.template.loader import render_to_string
 from django.test import RequestFactory, TestCase
+from django.utils import timezone
 from model_bakery import baker
 
 from sponsors import notifications
@@ -460,12 +460,12 @@ class AssetCloseToDueDateNotificationToSponsorsTestCase(TestCase):
         cfg = baker.make(RequiredTextAssetConfiguration, internal_name="input")
         benefit = baker.make(SponsorBenefit, sponsorship=self.sponsorship)
         asset = cfg.create_benefit_feature(benefit)
-        base_context = {"sponsorship": self.sponsorship, "due_date": date.today(), "days": 7}
+        base_context = {"sponsorship": self.sponsorship, "due_date": timezone.now().date(), "days": 7}
         context = self.notification.get_email_context(**base_context)
         self.assertEqual(4, len(context))
         self.assertEqual(self.sponsorship, context["sponsorship"])
         self.assertEqual(1, len(context["required_assets"]))
-        self.assertEqual(date.today(), context["due_date"])
+        self.assertEqual(timezone.now().date(), context["due_date"])
         self.assertIn(asset, context["required_assets"])
 
 

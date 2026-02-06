@@ -1,3 +1,5 @@
+"""Admin configuration for the codesamples app."""
+
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin

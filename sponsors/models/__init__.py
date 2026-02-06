@@ -1,7 +1,7 @@
-"""
-Python.org sponsors app is heavily db-oriented. This results in
-a huge models.py. To reduce file length the models are being
-structured as a python package.
+"""Sponsors app models, structured as a package for maintainability.
+
+Python.org sponsors app is heavily db-oriented. To reduce file length
+the models are being structured as a python package.
 """
 
 from .assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset  # noqa: F401

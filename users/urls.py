@@ -1,3 +1,5 @@
+"""URL configuration for user profiles, memberships, and sponsorship management."""
+
 from django.urls import path, re_path
 
 from . import views

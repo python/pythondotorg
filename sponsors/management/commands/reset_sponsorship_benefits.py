@@ -3,6 +3,8 @@ from django.db import transaction
 
 from sponsors.models import Sponsorship, SponsorshipBenefit
 
+DRY_RUN_PREVIEW_LIMIT = 5
+
 
 class Command(BaseCommand):
     help = "Reset benefits for specified sponsorships to match their current package/year templates"
@@ -25,7 +27,7 @@ class Command(BaseCommand):
             help="Update sponsorship year to match the package year",
         )
 
-    def handle(self, *args, **options):
+    def handle(self, *args, **options):  # noqa: C901, PLR0912, PLR0915 - management command with inherent complexity
         sponsorship_ids = options["sponsorship_ids"]
         dry_run = options["dry_run"]
         update_year = options["update_year"]
@@ -154,10 +156,10 @@ class Command(BaseCommand):
                             f"  [DRY RUN] Would add {expected_count} benefits from {target_year} package"
                         )
                     )
-                    for template in template_benefits[:5]:  # Show first 5
+                    for template in template_benefits[:DRY_RUN_PREVIEW_LIMIT]:
                         self.stdout.write(f"    - {template.name}")
-                    if expected_count > 5:
-                        self.stdout.write(f"    ... and {expected_count - 5} more")
+                    if expected_count > DRY_RUN_PREVIEW_LIMIT:
+                        self.stdout.write(f"    ... and {expected_count - DRY_RUN_PREVIEW_LIMIT} more")
 
                 if dry_run:
                     # Rollback transaction in dry run

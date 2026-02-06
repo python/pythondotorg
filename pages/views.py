@@ -1,3 +1,5 @@
+"""Views for rendering CMS pages."""
+
 import re
 
 from django.http import HttpResponsePermanentRedirect
@@ -10,6 +12,8 @@ from .models import Page
 
 
 class PageView(DetailView):
+    """Detail view for rendering a CMS page by its URL path."""
+
     template_name = "pages/default.html"
     template_name_field = "template_name"
     context_object_name = "page"
@@ -19,7 +23,7 @@ class PageView(DetailView):
     slug_field = "path"
 
     def get_template_names(self):
-        """Use the template defined in the model or a default"""
+        """Use the template defined in the model or a default."""
         names = [self.template_name]
 
         if self.object and self.template_name_field:
@@ -30,21 +34,24 @@ class PageView(DetailView):
         return names
 
     def get_queryset(self):
+        """Return all pages for staff, published pages for everyone else."""
         if self.request.user.is_staff:
             return Page.objects.all()
-        else:
-            return Page.objects.published()
+        return Page.objects.published()
 
     @property
     def content_type(self):
+        """Return the content type of the page for HTTP response headers."""
         return self.object.content_type
 
     def get_context_data(self, **kwargs):
+        """Add pages app flag to the template context."""
         context = super().get_context_data(**kwargs)
         context["in_pages_app"] = True
         return context
 
     def get(self, request, *args, **kwargs):
+        """Handle GET requests, redirecting legacy download URLs when appropriate."""
         # Redirect '/download/releases/X.Y.Z' to
         # '/downloads/release/python-XYZ/' if the latter URL doesn't have
         # 'release_page' (which points to the former URL) field set.

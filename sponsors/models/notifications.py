@@ -1,3 +1,5 @@
+"""Email notification template models for sponsor communications."""
+
 from django.conf import settings
 
 from mailing.models import BaseEmailTemplate
@@ -16,11 +18,16 @@ SPONSOR_TEMPLATE_HELP_TEXT = (
 #################################
 # Sponsor Email Notifications
 class SponsorEmailNotificationTemplate(BaseEmailTemplate):
+    """Configurable email template for sending notifications to sponsors."""
+
     class Meta:
+        """Meta configuration for SponsorEmailNotificationTemplate."""
+
         verbose_name = "Sponsor Email Notification Template"
         verbose_name_plural = "Sponsor Email Notification Templates"
 
     def get_email_context_data(self, **kwargs):
+        """Build template context from the sponsorship data."""
         sponsorship = kwargs.pop("sponsorship")
         context = {
             "sponsor_name": sponsorship.sponsor.name,
@@ -33,6 +40,7 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
         return context
 
     def get_email_message(self, sponsorship, **kwargs):
+        """Build the email message for the given sponsorship and contact types."""
         contact_types = {
             "primary": kwargs.get("to_primary"),
             "administrative": kwargs.get("to_administrative"),
@@ -41,7 +49,7 @@ class SponsorEmailNotificationTemplate(BaseEmailTemplate):
         }
         contacts = sponsorship.sponsor.contacts.filter_by_contact_types(**contact_types)
         if not contacts.exists():
-            return
+            return None
 
         recipients = contacts.values_list("email", flat=True)
         return self.get_email(

@@ -1,3 +1,5 @@
+"""Factory classes for creating test data in the downloads app."""
+
 from urllib.parse import urljoin
 
 import factory
@@ -10,7 +12,11 @@ from .models import OS, Release, ReleaseFile
 
 
 class OSFactory(DjangoModelFactory):
+    """Factory for creating OS instances."""
+
     class Meta:
+        """Meta configuration for OSFactory."""
+
         model = OS
         django_get_or_create = ("slug",)
 
@@ -18,7 +24,11 @@ class OSFactory(DjangoModelFactory):
 
 
 class ReleaseFactory(DjangoModelFactory):
+    """Factory for creating Release instances."""
+
     class Meta:
+        """Meta configuration for ReleaseFactory."""
+
         model = Release
         django_get_or_create = ("slug",)
 
@@ -27,7 +37,11 @@ class ReleaseFactory(DjangoModelFactory):
 
 
 class ReleaseFileFactory(DjangoModelFactory):
+    """Factory for creating ReleaseFile instances."""
+
     class Meta:
+        """Meta configuration for ReleaseFileFactory."""
+
         model = ReleaseFile
         django_get_or_create = ("slug",)
 
@@ -37,9 +51,12 @@ class ReleaseFileFactory(DjangoModelFactory):
 
 
 class APISession(requests.Session):
+    """HTTP session preconfigured for the python.org API."""
+
     base_url = "https://www.python.org/api/v2/"
 
     def __init__(self, *args, **kwargs):
+        """Initialize session with JSON accept headers."""
         super().__init__(*args, **kwargs)
         self.headers.update(
             {
@@ -49,6 +66,7 @@ class APISession(requests.Session):
         )
 
     def request(self, method, url, **kwargs):
+        """Send a request with the base URL prepended and raise on errors."""
         url = urljoin(self.base_url, url)
         response = super().request(method, url, **kwargs)
         response.raise_for_status()
@@ -56,19 +74,18 @@ class APISession(requests.Session):
 
 
 def _get_id(obj, key):
-    """
-    Get the ID of an object by extracting it from the resource_uri field.
-    """
+    """Get the ID of an object by extracting it from the resource_uri field."""
     resource_uri = obj.pop(key, "")
     if resource_uri:
         # i.e. /foo/1/ -> /foo/1 -> ('/foo', '/', '1') -> '1'
         return resource_uri.rstrip("/").rpartition("/")[-1]
+    return None
 
 
 def initial_data():
-    """
-    Create the data for the downloads section by importing
-    it from the python.org API.
+    """Create the data for the downloads section by importing from the python.org API.
+
+    Fetch OS, release, and release file data from the API.
     """
     objects = {
         "oses": {},

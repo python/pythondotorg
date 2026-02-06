@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def populate_logo_dimensions(apps, schema_editor):
-    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")
+    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")  # noqa: N806 - Django migration convention
     logo_dimensions = {
         "Visionary": 350,
         "Sustainability": 300,
@@ -21,7 +21,7 @@ def populate_logo_dimensions(apps, schema_editor):
 
 
 def reset_logo_dimensions(apps, schema_editor):
-    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")
+    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")  # noqa: N806 - Django migration convention
     SponsorshipPackage.objects.all().update(logo_dimension=175)
 
 

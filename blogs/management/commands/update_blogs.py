@@ -1,8 +1,8 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
-from ...models import BlogEntry, Feed, RelatedBlog
-from ...parser import get_all_entries, update_blog_supernav
+from blogs.models import BlogEntry, Feed, RelatedBlog
+from blogs.parser import get_all_entries, update_blog_supernav
 
 
 class Command(BaseCommand):

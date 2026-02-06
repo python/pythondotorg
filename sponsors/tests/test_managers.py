@@ -1,12 +1,11 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
 from django.conf import settings
 from django.test import TestCase
+from django.utils import timezone
 from model_bakery import baker
 
-from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
-
-from ..models import (
+from sponsors.models import (
     BenefitFeature,
     LogoPlacement,
     RequiredImgAsset,
@@ -18,6 +17,7 @@ from ..models import (
     SponsorshipPackage,
     TieredBenefit,
 )
+from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 
 class SponsorshipQuerySetTests(TestCase):
@@ -46,7 +46,7 @@ class SponsorshipQuerySetTests(TestCase):
         # - finalized status
         # - start date less than today
         # - end date greater than today
-        today = date.today()
+        today = timezone.now().date()
         two_days = timedelta(days=2)
         enabled = baker.make(
             Sponsorship,

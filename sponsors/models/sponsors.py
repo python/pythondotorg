@@ -1,6 +1,4 @@
-"""
-This module holds models related to the Sponsor entity.
-"""
+"""Sponsor and SponsorContact models for the sponsors app."""
 
 from allauth.account.models import EmailAddress
 from django.conf import settings
@@ -18,9 +16,7 @@ from sponsors.models.managers import SponsorContactQuerySet
 
 
 class Sponsor(ContentManageable):
-    """
-    Group all of the sponsor information, logo and contacts
-    """
+    """Group all of the sponsor information, logo and contacts."""
 
     name = models.CharField(
         max_length=100,
@@ -81,10 +77,13 @@ class Sponsor(ContentManageable):
     )
 
     class Meta:
+        """Meta configuration for Sponsor."""
+
         verbose_name = "sponsor"
         verbose_name_plural = "sponsors"
 
     def verified_emails(self, initial_emails=None):
+        """Return a deduplicated list of verified email addresses for sponsor contacts."""
         emails = initial_emails if initial_emails is not None else []
         for contact in self.contacts.all():
             if EmailAddress.objects.filter(email__iexact=contact.email, verified=True).exists():
@@ -92,10 +91,12 @@ class Sponsor(ContentManageable):
         return list(set({e.casefold(): e for e in emails}.values()))
 
     def __str__(self):
+        """Return string representation."""
         return f"{self.name}"
 
     @property
     def full_address(self):
+        """Return the full mailing address as a formatted string."""
         addr = self.mailing_address_line_1
         if self.mailing_address_line_2:
             addr += f" {self.mailing_address_line_2}"
@@ -103,6 +104,7 @@ class Sponsor(ContentManageable):
 
     @property
     def primary_contact(self):
+        """Return the primary SponsorContact, or None if not set."""
         try:
             return SponsorContact.objects.get_primary_contact(self)
         except SponsorContact.DoesNotExist:
@@ -110,17 +112,17 @@ class Sponsor(ContentManageable):
 
     @property
     def slug(self):
+        """Return the URL slug derived from the sponsor name."""
         return slugify(self.name)
 
     @property
     def admin_url(self):
+        """Return the Django admin change URL for this sponsor."""
         return reverse("admin:sponsors_sponsor_change", args=[self.pk])
 
 
 class SponsorContact(models.Model):
-    """
-    Sponsor contact information
-    """
+    """Sponsor contact information."""
 
     PRIMARY_CONTACT = "primary"
     ADMINISTRATIVE_CONTACT = "administrative"
@@ -159,17 +161,21 @@ class SponsorContact(models.Model):
     objects = SponsorContactQuerySet.as_manager()
 
     def __str__(self):
+        """Return string representation."""
         return f"Contact {self.name} from {self.sponsor}"
 
     # Sketch of something we'll need to determine if a user is able to make _changes_ to sponsorship
     # benefits/logos/descriptons/etc.
     @property
     def can_manage(self):
+        """Return True if this contact has a user and can manage the sponsorship."""
         if self.user is not None and (self.primary or self.manager):
             return True
+        return None
 
     @property
     def type(self):
+        """Return a comma-separated string of this contact's role types."""
         types = []
         if self.primary:
             types.append("Primary")
@@ -183,9 +189,9 @@ class SponsorContact(models.Model):
 
 
 class SponsorBenefit(OrderedModel):
-    """
-    Link a benefit to a sponsorship application.
-    Created after a new sponsorship
+    """Link a benefit to a sponsorship application.
+
+    Created after a new sponsorship.
     """
 
     sponsorship = models.ForeignKey("sponsors.Sponsorship", on_delete=models.CASCADE, related_name="benefits")
@@ -227,16 +233,19 @@ class SponsorBenefit(OrderedModel):
     standalone = models.BooleanField(blank=True, default=False, verbose_name="Added as standalone benefit?")
 
     def __str__(self):
+        """Return string representation."""
         if self.program is not None:
             return f"{self.program} > {self.name}"
         return f"{self.program_name} > {self.name}"
 
     @property
     def features(self):
+        """Return the queryset of BenefitFeature instances for this benefit."""
         return self.benefitfeature_set
 
     @classmethod
     def new_copy(cls, benefit, **kwargs):
+        """Create a SponsorBenefit copy from a SponsorshipBenefit template."""
         kwargs["added_by_user"] = kwargs.get("added_by_user") or benefit.standalone
         kwargs["standalone"] = benefit.standalone
         sponsor_benefit = cls.objects.create(
@@ -257,21 +266,24 @@ class SponsorBenefit(OrderedModel):
 
     @property
     def legal_clauses(self):
+        """Return legal clauses from the parent SponsorshipBenefit, if any."""
         if self.sponsorship_benefit is not None:
             return self.sponsorship_benefit.legal_clauses.all()
         return []
 
     @property
     def name_for_display(self):
+        """Return the benefit name modified by any attached feature display modifiers."""
         name = self.name
         for feature in self.features.all():
             name = feature.display_modifier(name)
         return name
 
     def reset_attributes(self, benefit):
-        """
-        This method resets all the sponsor benefit information
-        fetching new data from the sponsorship benefit.
+        """Reset all sponsor benefit information from the sponsorship benefit.
+
+        Fetch new data from the sponsorship benefit and regenerate
+        benefit features from configurations.
         """
         self.program_name = benefit.program.name
         self.name = benefit.name
@@ -289,8 +301,9 @@ class SponsorBenefit(OrderedModel):
         self.save()
 
     def delete(self):
+        """Delete this sponsor benefit and all associated features."""
         self.features.all().delete()
         super().delete()
 
     class Meta(OrderedModel.Meta):
-        pass
+        """Meta configuration for SponsorBenefit."""

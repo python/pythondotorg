@@ -2,9 +2,8 @@ import datetime as dt
 
 from django.test import TestCase
 
+from downloads.models import OS, Release, ReleaseFile
 from pages.models import Page
-
-from ..models import OS, Release, ReleaseFile
 
 
 class DownloadMixin:

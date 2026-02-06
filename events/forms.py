@@ -1,3 +1,5 @@
+"""Forms for event submission."""
+
 from django import forms
 from django.conf import settings
 from django.contrib.sites.models import Site
@@ -6,10 +8,13 @@ from django.template import loader
 
 
 def set_placeholder(value):
+    """Return a TextInput widget with the given placeholder text."""
     return forms.TextInput(attrs={"placeholder": value, "required": "required"})
 
 
 class EventForm(forms.Form):
+    """Form for submitting a new event for review."""
+
     event_name = forms.CharField(
         widget=set_placeholder("Name of the event (including the user group name for user group events)")
     )
@@ -26,6 +31,7 @@ class EventForm(forms.Form):
     description = forms.CharField(widget=forms.Textarea)
 
     def send_email(self, creator):
+        """Send the event submission notification email to the events team."""
         context = {
             "event": self.cleaned_data,
             "creator": creator,

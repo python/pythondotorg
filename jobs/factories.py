@@ -1,3 +1,5 @@
+"""Factory classes for creating test data in the jobs app."""
+
 import datetime
 
 import factory
@@ -12,6 +14,8 @@ from .models import Job, JobCategory, JobType
 
 
 class JobProvider(BaseProvider):
+    """Faker provider supplying realistic job board test data."""
+
     job_types = [
         "Big Data",
         "Cloud",
@@ -44,12 +48,15 @@ class JobProvider(BaseProvider):
     ]
 
     def job_type(self):
+        """Return a random job type string."""
         return self.random_element(self.job_types)
 
     def job_category(self):
+        """Return a random job category string."""
         return self.random_element(self.job_categories)
 
     def job_title(self):
+        """Return a random job title string."""
         return self.random_element(self.job_titles)
 
 
@@ -57,7 +64,11 @@ factory.Faker.add_provider(JobProvider)
 
 
 class JobCategoryFactory(DjangoModelFactory):
+    """Factory for creating JobCategory instances."""
+
     class Meta:
+        """Meta configuration for JobCategoryFactory."""
+
         model = JobCategory
         django_get_or_create = ("name",)
 
@@ -65,7 +76,11 @@ class JobCategoryFactory(DjangoModelFactory):
 
 
 class JobTypeFactory(DjangoModelFactory):
+    """Factory for creating JobType instances."""
+
     class Meta:
+        """Meta configuration for JobTypeFactory."""
+
         model = JobType
         django_get_or_create = ("name",)
 
@@ -73,7 +88,11 @@ class JobTypeFactory(DjangoModelFactory):
 
 
 class JobFactory(DjangoModelFactory):
+    """Factory for creating Job instances with default test data."""
+
     class Meta:
+        """Meta configuration for JobFactory."""
+
         model = Job
 
     creator = factory.SubFactory(UserFactory)
@@ -93,10 +112,12 @@ class JobFactory(DjangoModelFactory):
 
     @factory.lazy_attribute
     def expires(self):
+        """Set expiration to 30 days from now."""
         return timezone.now() + datetime.timedelta(days=30)
 
     @factory.post_generation
     def job_types(self, create, extracted, **kwargs):
+        """Add job types to the job after creation."""
         if not create:
             # Simple build, do nothing.
             return
@@ -108,35 +129,53 @@ class JobFactory(DjangoModelFactory):
 
 
 class ApprovedJobFactory(JobFactory):
+    """Factory for creating approved job listings."""
+
     status = Job.STATUS_APPROVED
 
 
 class ArchivedJobFactory(JobFactory):
+    """Factory for creating archived job listings."""
+
     status = Job.STATUS_ARCHIVED
 
 
 class DraftJobFactory(JobFactory):
+    """Factory for creating draft job listings."""
+
     status = Job.STATUS_DRAFT
 
 
 class ExpiredJobFactory(JobFactory):
+    """Factory for creating expired job listings."""
+
     status = Job.STATUS_EXPIRED
 
 
 class RejectedJobFactory(JobFactory):
+    """Factory for creating rejected job listings."""
+
     status = Job.STATUS_REJECTED
 
 
 class RemovedJobFactory(JobFactory):
+    """Factory for creating removed job listings."""
+
     status = Job.STATUS_REMOVED
 
 
 class ReviewJobFactory(JobFactory):
+    """Factory for creating job listings in review status."""
+
     status = Job.STATUS_REVIEW
 
 
 class JobsBoardAdminGroupFactory(DjangoModelFactory):
+    """Factory for creating the Job Board Admin group."""
+
     class Meta:
+        """Meta configuration for JobsBoardAdminGroupFactory."""
+
         model = Group
         django_get_or_create = ("name",)
 
@@ -144,6 +183,7 @@ class JobsBoardAdminGroupFactory(DjangoModelFactory):
 
 
 def initial_data():
+    """Create seed job listings and admin group for development."""
     return {
         "jobs": [
             ArchivedJobFactory(),
@@ -151,9 +191,9 @@ def initial_data():
             ExpiredJobFactory(),
             RejectedJobFactory(),
             RemovedJobFactory(),
-        ]
-        + ApprovedJobFactory.create_batch(size=5)
-        + ReviewJobFactory.create_batch(size=3),
+            *ApprovedJobFactory.create_batch(size=5),
+            *ReviewJobFactory.create_batch(size=3),
+        ],
         "groups": [
             JobsBoardAdminGroupFactory(),
         ],

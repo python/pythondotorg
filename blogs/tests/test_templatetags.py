@@ -3,8 +3,9 @@ from django.template import Context, Template
 from django.test import TestCase
 from django.utils.timezone import now
 
-from ..models import BlogEntry, Feed, FeedAggregate
-from ..templatetags.blogs import get_latest_blog_entries
+from blogs.models import BlogEntry, Feed, FeedAggregate
+from blogs.templatetags.blogs import get_latest_blog_entries
+
 from .utils import get_test_rss_path
 
 

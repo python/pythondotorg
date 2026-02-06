@@ -17,8 +17,8 @@ class Command(BaseCommand):
     help = "Send notifications to sponsorship with pending required assets"
 
     def add_arguments(self, parser):
-        help = "Num of days to be used as interval up to target date"
-        parser.add_argument("num_days", nargs="?", default="7", help=help)
+        num_days_help = "Num of days to be used as interval up to target date"
+        parser.add_argument("num_days", nargs="?", default="7", help=num_days_help)
         parser.add_argument(
             "--no-input", action="store_true", help="Tells Django to NOT prompt the user for input of any kind."
         )
@@ -36,13 +36,12 @@ class Command(BaseCommand):
         sponsorships_to_notify = []
         for sponsorship in sponsorships:
             to_notify = any(
-                [asset.due_date == target_date for asset in req_assets.from_sponsorship(sponsorship) if asset.due_date]
+                asset.due_date == target_date for asset in req_assets.from_sponsorship(sponsorship) if asset.due_date
             )
             if to_notify:
                 sponsorships_to_notify.append(sponsorship)
 
         if not sponsorships_to_notify:
-            print("No sponsorship with required assets with due date close to expiration.")
             return
 
         user_input = ""
@@ -54,14 +53,11 @@ class Command(BaseCommand):
             msg += "Do you want to proceed? [Y/n]: "
             user_input = input(msg).strip().upper()
             if user_input == "N":
-                print("Finishing execution.")
                 return
-            elif user_input != "Y":
-                print("Invalid option...")
+            if user_input != "Y":
+                pass
 
         notification = AssetCloseToDueDateNotificationToSponsors()
         for sponsorship in sponsorships_to_notify:
             kwargs = {"sponsorship": sponsorship, "days": num_days, "due_date": target_date}
             notification.notify(**kwargs)
-
-        print("Notifications sent!")

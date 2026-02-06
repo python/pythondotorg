@@ -6,10 +6,9 @@ from django.core import mail
 from django.test import TestCase
 from django.urls import reverse
 
+from successstories.factories import StoryCategoryFactory, StoryFactory
+from successstories.models import Story
 from users.factories import UserFactory
-
-from ..factories import StoryCategoryFactory, StoryFactory
-from ..models import Story
 
 User = get_user_model()
 

@@ -1,3 +1,5 @@
+"""Models for user accounts, PSF memberships, and user groups."""
+
 import datetime
 
 from django.conf import settings
@@ -15,12 +17,17 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
 
 
 class CustomUserManager(UserManager):
+    """User manager with case-insensitive username lookups."""
+
     def get_by_natural_key(self, username):
+        """Look up a user by username, ignoring case."""
         case_insensitive_username_field = f"{self.model.USERNAME_FIELD}__iexact"
         return self.get(**{case_insensitive_username_field: username})
 
 
 class User(AbstractUser):
+    """Custom user model with bio, privacy settings, and public profile support."""
+
     bio = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE, escape_html=True)
 
     SEARCH_PRIVATE = 0
@@ -46,24 +53,29 @@ class User(AbstractUser):
     objects = CustomUserManager()
 
     def get_absolute_url(self):
+        """Return the URL for the user's profile page."""
         return reverse("users:user_detail", kwargs={"slug": self.username})
 
     @property
     def has_membership(self):
+        """Return True if the user has an associated PSF membership."""
         try:
             self.membership  # noqa: B018
-            return True
         except Membership.DoesNotExist:
             return False
+        else:
+            return True
 
     @property
     def sponsorships(self):
+        """Return sponsorships visible to this user."""
         from sponsors.models import Sponsorship
 
         return Sponsorship.objects.visible_to(self)
 
     @property
     def api_v2_token(self):
+        """Return the user's DRF API token key, or empty string if none exists."""
         try:
             return Token.objects.get(user=self).key
         except Token.DoesNotExist:
@@ -74,6 +86,8 @@ models.signals.post_save.connect(create_api_key, sender=User)
 
 
 class Membership(models.Model):
+    """PSF membership record with type, personal info, and voting status."""
+
     BASIC = 0
     SUPPORTING = 1
     SPONSOR = 2
@@ -121,12 +135,13 @@ class Membership(models.Model):
     )
 
     def __str__(self):
+        """Return a description with the associated username or legal name."""
         if self.creator:
             return f"Membership for user: {self.creator.username}"
-        else:
-            return f"Membership '{self.legal_name}'"
+        return f"Membership '{self.legal_name}'"
 
     def save(self, **kwargs):
+        """Update timestamps and record initial vote affirmation on save."""
         self.updated = timezone.now()
 
         # Record initial vote affirmation
@@ -137,10 +152,12 @@ class Membership(models.Model):
 
     @property
     def higher_level_member(self):
+        """Return True if the membership type is above Basic."""
         return self.membership_type != Membership.BASIC
 
     @property
     def needs_vote_affirmation(self):
+        """Return True if the voting member needs to re-affirm their vote."""
         if not self.votes:
             return False
 
@@ -153,6 +170,8 @@ class Membership(models.Model):
 
 
 class UserGroup(models.Model):
+    """A Python user group or community meetup with location and URL."""
+
     name = models.CharField(max_length=255)
     location = models.CharField(max_length=255)
     url = models.URLField("URL")
@@ -176,4 +195,5 @@ class UserGroup(models.Model):
     trusted = models.BooleanField(default=False)
 
     def __str__(self):
+        """Return the user group name."""
         return self.name

@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from ..factories import StoryCategoryFactory, StoryFactory
-from ..models import Story
+from successstories.factories import StoryCategoryFactory, StoryFactory
+from successstories.models import Story
 
 
 class StoryModelTests(TestCase):

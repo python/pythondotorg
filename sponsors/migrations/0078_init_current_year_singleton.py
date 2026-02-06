@@ -4,7 +4,7 @@ from django.db import migrations
 
 
 def populate_singleton(apps, schema_editor):
-    SponsorshipCurrentYear = apps.get_model("sponsors.SponsorshipCurrentYear")
+    SponsorshipCurrentYear = apps.get_model("sponsors.SponsorshipCurrentYear")  # noqa: N806 - Django migration convention
     SponsorshipCurrentYear.objects.get_or_create(id=1, defaults={"year": 2022})
 
 

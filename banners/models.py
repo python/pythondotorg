@@ -1,7 +1,11 @@
+"""Models for site-wide announcement banners."""
+
 from django.db import models
 
 
 class Banner(models.Model):
+    """A dismissible announcement banner displayed across the site."""
+
     title = models.CharField(max_length=1024, help_text="Text to display in the banner's button")
     message = models.CharField(max_length=2048, help_text="Message to display in the banner")
     link = models.CharField(max_length=1024, help_text="Link the button will go to")
@@ -9,4 +13,5 @@ class Banner(models.Model):
     psf_pages_only = models.BooleanField(null=False, default=True, help_text="Display the banner on /psf pages only")
 
     def __str__(self):
+        """Return the banner title."""
         return self.title

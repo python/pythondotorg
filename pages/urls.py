@@ -1,3 +1,5 @@
+"""URL configuration for the pages app."""
+
 from django.urls import path
 
 from .views import PageView

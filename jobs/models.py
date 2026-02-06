@@ -1,3 +1,5 @@
+"""Models for the Python job board including jobs, types, and categories."""
+
 import datetime
 
 from django.conf import settings
@@ -20,28 +22,38 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 
 
 class JobType(NameSlugModel):
+    """A type of job (e.g. Web, Cloud, Database)."""
+
     active = models.BooleanField(default=True)
 
     objects = JobTypeQuerySet.as_manager()
 
     class Meta:
+        """Meta configuration for JobType."""
+
         verbose_name = "job types"
         verbose_name_plural = "job types"
         ordering = ("name",)
 
 
 class JobCategory(NameSlugModel):
+    """A category of job (e.g. Software Developer, Data Analyst)."""
+
     active = models.BooleanField(default=True)
 
     objects = JobCategoryQuerySet.as_manager()
 
     class Meta:
+        """Meta configuration for JobCategory."""
+
         verbose_name = "job category"
         verbose_name_plural = "job categories"
         ordering = ("name",)
 
 
 class Job(ContentManageable):
+    """A job listing on the Python job board."""
+
     NEW_THRESHOLD = datetime.timedelta(days=30)
 
     category = models.ForeignKey(
@@ -113,6 +125,8 @@ class Job(ContentManageable):
     objects = JobQuerySet.as_manager()
 
     class Meta:
+        """Meta configuration for Job."""
+
         ordering = ("-created",)
         get_latest_by = "created"
         verbose_name = "job"
@@ -120,14 +134,16 @@ class Job(ContentManageable):
         permissions = [("can_moderate_jobs", "Can moderate Job listings")]
 
     def __str__(self):
+        """Return string representation."""
         return f"Job Listing #{self.pk}"
 
     def save(self, **kwargs):
+        """Set location slugs and expiration date before saving."""
         location_parts = (self.city, self.region, self.country)
         location_str = ""
         for location_part in location_parts:
             if location_part is not None:
-                location_str = " ".join([location_str, location_part])
+                location_str = f"{location_str} {location_part}"
         self.location_slug = slugify(location_str)
         self.country_slug = slugify(self.country)
 
@@ -138,8 +154,9 @@ class Job(ContentManageable):
         return super().save(**kwargs)
 
     def review(self):
-        """Updates job status to Job.STATUS_REVIEW after preview was done by
-        user.
+        """Update job status to Job.STATUS_REVIEW after preview was done by user.
+
+        Send a signal if the status changed.
         """
         old_status = self.status
         self.status = Job.STATUS_REVIEW
@@ -148,73 +165,88 @@ class Job(ContentManageable):
             job_was_submitted.send(sender=self.__class__, job=self)
 
     def approve(self, approving_user):
-        """Updates job status to Job.STATUS_APPROVED after approval was issued
-        by approving_user.
+        """Update job status to Job.STATUS_APPROVED after approval by approving_user.
+
+        Send a signal once the status is saved.
         """
         self.status = Job.STATUS_APPROVED
         self.save()
         job_was_approved.send(sender=self.__class__, job=self, approving_user=approving_user)
 
     def reject(self, rejecting_user):
-        """Updates job status to Job.STATUS_REJECTED after rejection was issued
-        by rejecing_user.
+        """Update job status to Job.STATUS_REJECTED after rejection by rejecting_user.
+
+        Send a signal once the status is saved.
         """
         self.status = Job.STATUS_REJECTED
         self.save()
         job_was_rejected.send(sender=self.__class__, job=self, rejecting_user=rejecting_user)
 
     def get_absolute_url(self):
+        """Return the URL for this job's detail page."""
         return reverse("jobs:job_detail", kwargs={"pk": self.pk})
 
     @property
     def display_name(self):
+        """Return the job title and company name for display."""
         return f"{self.job_title}, {self.company_name}"
 
     @property
     def display_description(self):
+        """Return the company description for display."""
         return self.company_description
 
     @property
     def display_location(self):
+        """Return a comma-separated location string (city, region, country)."""
         location_parts = [part for part in (self.city, self.region, self.country) if part]
-        location_str = ", ".join(location_parts)
-        return location_str
+        return ", ".join(location_parts)
 
     @property
     def is_new(self):
+        """Return True if the job was created within the last 30 days."""
         return self.created > (timezone.now() - self.NEW_THRESHOLD)
 
     @property
     def editable(self):
+        """Return True if the job status allows editing."""
         return self.status in (self.STATUS_DRAFT, self.STATUS_REVIEW, self.STATUS_REJECTED)
 
     def get_previous_listing(self):
+        """Return the previous approved job listing by creation date."""
         return self.get_previous_by_created(status=self.STATUS_APPROVED)
 
     def get_next_listing(self):
+        """Return the next approved job listing by creation date."""
         return self.get_next_by_created(status=self.STATUS_APPROVED)
 
 
 class JobReviewComment(ContentManageable):
+    """A review comment attached to a job listing during moderation."""
+
     job = models.ForeignKey(Job, related_name="review_comments", on_delete=models.CASCADE)
     comment = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
 
     class Meta:
+        """Meta configuration for JobReviewComment."""
+
         ordering = ("created",)
 
     def save(self, **kwargs):
+        """Send comment notification signal and save."""
         comment_was_posted.send(sender=self.__class__, comment=self)
         return super().save(**kwargs)
 
     def __str__(self):
+        """Return string representation."""
         return f"<Job #{self.job.pk}: {self.comment.raw[:50]}>"
 
 
 @receiver(post_save, sender=Job)
 def purge_fastly_cache(sender, instance, **kwargs):
-    """
-    Purge fastly.com cache on new jobs
-    Requires settings.FASTLY_API_KEY being set
+    """Purge fastly.com cache on new jobs.
+
+    Requires settings.FASTLY_API_KEY being set.
     """
     # Skip in fixtures
     if kwargs.get("raw", False):

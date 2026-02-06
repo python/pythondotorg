@@ -1,20 +1,21 @@
-"""
+"""Utility functions for success stories migration data conversion.
+
 The following functions are created for
 successstories/migrations/0006_auto_20170726_0824.py:
 
 * convert_to_datetime()
 * get_field_list()
-
 """
 
 import datetime
 from xml.etree.ElementTree import fromstring
 
-from django.utils.timezone import get_current_timezone, make_aware
+from django.utils.timezone import get_current_timezone
 from docutils.core import publish_doctree
 
 
 def convert_to_datetime(string):
+    """Parse a date string into a timezone-aware datetime, trying multiple formats."""
     formats = [
         "%Y/%m/%d %H:%M:%S",
         "%Y-%m-%d %H:%M:%S",
@@ -22,14 +23,16 @@ def convert_to_datetime(string):
     ]
     for fmt in formats:
         try:
-            return make_aware(datetime.datetime.strptime(string, fmt), get_current_timezone())
+            return datetime.datetime.strptime(string, fmt).replace(tzinfo=get_current_timezone())
         except ValueError:
             continue
+    return None
 
 
 def get_field_list(source):
+    """Extract field name-value pairs from a reStructuredText document source."""
     dom = publish_doctree(source).asdom()
-    tree = fromstring(dom.toxml())
+    tree = fromstring(dom.toxml())  # noqa: S314 - parsing our own docutils output, not untrusted XML
     for field in tree.iter():
         if field.tag == "field":
             name = next(field.iter(tag="field_name"))

@@ -3,8 +3,8 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 
-from .. import factories
-from ..models import Job, JobCategory, JobType
+from jobs import factories
+from jobs.models import Job, JobCategory, JobType
 
 
 class JobsModelsTests(TestCase):
@@ -15,9 +15,7 @@ class JobsModelsTests(TestCase):
             "country": "USA",
         }
         job_kwargs.update(**kwargs)
-        job = factories.JobFactory(**job_kwargs)
-
-        return job
+        return factories.JobFactory(**job_kwargs)
 
     def test_is_new(self):
         job = self.create_job()

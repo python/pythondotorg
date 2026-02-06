@@ -1,3 +1,5 @@
+"""Admin configuration for the work_groups app."""
+
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
@@ -7,6 +9,8 @@ from .models import WorkGroup
 
 @admin.register(WorkGroup)
 class WorkGroupAdmin(ContentManageableModelAdmin):
+    """Admin interface for managing PSF working groups."""
+
     search_fields = ["name", "slug", "url", "short_description", "purpose"]
     list_display = ("name", "active", "approved")
     list_filter = ("active", "approved")

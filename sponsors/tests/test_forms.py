@@ -30,8 +30,8 @@ from sponsors.models import (
     SponsorshipCurrentYear,
     SponsorshipPackage,
 )
+from sponsors.models.enums import AssetsRelatedTo
 
-from ..models.enums import AssetsRelatedTo
 from .utils import get_static_image_file_as_upload
 
 
@@ -189,16 +189,16 @@ class SponsorshipsBenefitsFormTests(TestCase):
         benefit_2.conflicts.add(*self.program_2_benefits)
 
         form = SponsorshipsBenefitsForm()
-        map = form.benefits_conflicts
+        conflicts_map = form.benefits_conflicts
 
         # conflicts are symmetrical relationships
-        self.assertEqual(2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(map))
-        self.assertEqual(sorted(map[benefit_1.id]), sorted(b.id for b in self.program_1_benefits))
-        self.assertEqual(sorted(map[benefit_2.id]), sorted(b.id for b in self.program_2_benefits))
+        self.assertEqual(2 + len(self.program_1_benefits) + len(self.program_2_benefits), len(conflicts_map))
+        self.assertEqual(sorted(conflicts_map[benefit_1.id]), sorted(b.id for b in self.program_1_benefits))
+        self.assertEqual(sorted(conflicts_map[benefit_2.id]), sorted(b.id for b in self.program_2_benefits))
         for b in self.program_1_benefits:
-            self.assertEqual(map[b.id], [benefit_1.id])
+            self.assertEqual(conflicts_map[b.id], [benefit_1.id])
         for b in self.program_2_benefits:
-            self.assertEqual(map[b.id], [benefit_2.id])
+            self.assertEqual(conflicts_map[b.id], [benefit_2.id])
 
     def test_invalid_form_if_any_conflict(self):
         benefit_1 = baker.make("sponsors.SponsorshipBenefit", program=self.wk, year=self.current_year)
@@ -698,7 +698,7 @@ class SponsorshipsFormTestCase(TestCase):
 class SponsorContactFormTests(TestCase):
     def test_ensure_model_form_configuration(self):
         expected_fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
-        meta = SponsorContactForm._meta
+        meta = SponsorContactForm._meta  # noqa: SLF001 - testing Django form Meta configuration
         self.assertEqual(set(expected_fields), set(meta.fields))
         self.assertEqual(SponsorContact, meta.model)
 
@@ -712,7 +712,7 @@ class SendSponsorshipNotificationFormTests(TestCase):
         }
 
     def test_required_fields(self):
-        required_fields = set(["__all__", "contact_types"])
+        required_fields = {"__all__", "contact_types"}
         form = SendSponsorshipNotificationForm({})
         self.assertFalse(form.is_valid())
         self.assertEqual(required_fields, set(form.errors))
@@ -812,7 +812,7 @@ class SponsorRequiredAssetsFormTest(TestCase):
 
         self.assertEqual(expected_url, img_asset.value.url)
 
-    def test_load_initial_from_assets_and_force_field_if_previous_Data(self):
+    def test_load_initial_from_assets_and_force_field_if_previous_data(self):
         self.required_img_cfg.create_benefit_feature(self.benefits[0])
         self.required_text_cfg.create_benefit_feature(self.benefits[0])
         files = {"image_input": get_static_image_file_as_upload("psf-logo.png", "logo.png")}

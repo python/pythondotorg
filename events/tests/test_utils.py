@@ -3,12 +3,7 @@ import datetime
 from django.test import TestCase
 from django.utils import timezone
 
-from ..utils import (
-    minutes_resolution,
-    seconds_resolution,
-    timedelta_nice_repr,
-    timedelta_parse,
-)
+from events.utils import minutes_resolution, seconds_resolution, timedelta_nice_repr, timedelta_parse
 
 
 class EventsUtilsTests(TestCase):
@@ -28,25 +23,25 @@ class EventsUtilsTests(TestCase):
 
     def test_timedelta_nice_repr(self):
         tests = [
-            (dict(days=1, hours=2, minutes=3, seconds=4), (), "1 day, 2 hours, 3 minutes, 4 seconds"),
-            (dict(days=1, seconds=1), ("minimal",), "1d, 1s"),
-            (dict(days=1), (), "1 day"),
-            (dict(days=0), (), "0 seconds"),
-            (dict(seconds=1), (), "1 second"),
-            (dict(seconds=10), (), "10 seconds"),
-            (dict(seconds=30), (), "30 seconds"),
-            (dict(seconds=60), (), "1 minute"),
-            (dict(seconds=150), (), "2 minutes, 30 seconds"),
-            (dict(seconds=1800), (), "30 minutes"),
-            (dict(seconds=3600), (), "1 hour"),
-            (dict(seconds=3601), (), "1 hour, 1 second"),
-            (dict(seconds=3601), (), "1 hour, 1 second"),
-            (dict(seconds=19800), (), "5 hours, 30 minutes"),
-            (dict(seconds=91800), (), "1 day, 1 hour, 30 minutes"),
-            (dict(seconds=302400), (), "3 days, 12 hours"),
-            (dict(seconds=0), ("minimal",), "0s"),
-            (dict(seconds=0), ("short",), "0 sec"),
-            (dict(seconds=0), ("long",), "0 seconds"),
+            ({"days": 1, "hours": 2, "minutes": 3, "seconds": 4}, (), "1 day, 2 hours, 3 minutes, 4 seconds"),
+            ({"days": 1, "seconds": 1}, ("minimal",), "1d, 1s"),
+            ({"days": 1}, (), "1 day"),
+            ({"days": 0}, (), "0 seconds"),
+            ({"seconds": 1}, (), "1 second"),
+            ({"seconds": 10}, (), "10 seconds"),
+            ({"seconds": 30}, (), "30 seconds"),
+            ({"seconds": 60}, (), "1 minute"),
+            ({"seconds": 150}, (), "2 minutes, 30 seconds"),
+            ({"seconds": 1800}, (), "30 minutes"),
+            ({"seconds": 3600}, (), "1 hour"),
+            ({"seconds": 3601}, (), "1 hour, 1 second"),
+            ({"seconds": 3601}, (), "1 hour, 1 second"),
+            ({"seconds": 19800}, (), "5 hours, 30 minutes"),
+            ({"seconds": 91800}, (), "1 day, 1 hour, 30 minutes"),
+            ({"seconds": 302400}, (), "3 days, 12 hours"),
+            ({"seconds": 0}, ("minimal",), "0s"),
+            ({"seconds": 0}, ("short",), "0 sec"),
+            ({"seconds": 0}, ("long",), "0 seconds"),
         ]
         for timedelta, arguments, expected in tests:
             with self.subTest(timedelta=timedelta, arguments=arguments):

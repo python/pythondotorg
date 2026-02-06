@@ -1,3 +1,5 @@
+"""URL configuration for the jobs app."""
+
 from django.urls import path
 from django.views.generic import TemplateView
 

@@ -1,15 +1,12 @@
-import unittest.mock as mock
+from unittest import mock
 
 import requests
 from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
-from ..templatetags.download_tags import (
-    get_eol_info,
-    get_release_cycle_data,
-    render_active_releases,
-)
+from downloads.templatetags.download_tags import get_eol_info, get_release_cycle_data, render_active_releases
+
 from .base import BaseDownloadTests
 
 MOCK_RELEASE_CYCLE = {
