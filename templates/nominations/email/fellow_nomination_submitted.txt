@@ -1,0 +1,20 @@
+Hello {{ nomination.nominator.get_full_name|default:nomination.nominator.username }},
+
+Thank you for submitting a PSF Fellow nomination for {{ nomination.nominee_name }}.
+
+Your nomination has been received and will be reviewed by the PSF Fellow Work Group during the {{ nomination.nomination_round }} review period.
+
+Nomination Details:
+- Nominee: {{ nomination.nominee_name }}
+- Round: {{ nomination.nomination_round }}
+- Submitted: {{ nomination.created|date:"N j, Y" }}
+
+You can view your nomination at:
+{{ site_url }}{{ nomination.get_absolute_url }}
+
+Track all your nominations at:
+{{ site_url }}{% url 'nominations:fellow_my_nominations' %}
+
+Thank you for contributing to the Python community!
+
+- The Python Software Foundation

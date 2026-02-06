@@ -1,0 +1,78 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Review Fellow Nominations | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_review"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Review Fellow Nominations</h1>
+    </header>
+
+    <div>
+        <form method="get" action="">
+            <label for="view">View:</label>
+            <select name="view" id="view" onchange="this.form.submit()">
+                <option value="active"{% if current_view == "active" %} selected{% endif %}>Active</option>
+                <option value="all"{% if current_view == "all" %} selected{% endif %}>All</option>
+            </select>
+
+            <label for="round">Round:</label>
+            <select name="round" id="round" onchange="this.form.submit()">
+                <option value="">All Rounds</option>
+                {% for round in rounds %}
+                <option value="{{ round.slug }}"{% if selected_round == round.slug %} selected{% endif %}>{{ round }}</option>
+                {% endfor %}
+            </select>
+        </form>
+    </div>
+
+    {% if nominations %}
+    <table class="listing">
+        <thead>
+            <tr>
+                <th>Nominee</th>
+                <th>Nominator</th>
+                <th>Round</th>
+                <th>Status</th>
+                <th>Yes</th>
+                <th>No</th>
+                <th>Abstain</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for nom in nominations %}
+            <tr>
+                <td>{{ nom.nominee_name }}</td>
+                <td>{{ nom.nominator.get_full_name }}</td>
+                <td>{{ nom.nomination_round }}</td>
+                <td>
+                    <span class="badge badge-{{ nom.status }}">
+                        {{ nom.get_status_display }}
+                    </span>
+                </td>
+                <td>{{ nom.yes_count|default:"0" }}</td>
+                <td>{{ nom.no_count|default:"0" }}</td>
+                <td>{{ nom.abstain_count|default:"0" }}</td>
+                <td>
+                    <a href="{{ nom.get_absolute_url }}">Detail</a>
+                    | <a href="{% url 'nominations:fellow_nomination_status_update' pk=nom.pk %}">Status</a>
+                    | <a href="{% url 'nominations:fellow_nomination_vote' pk=nom.pk %}">Vote</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No nominations found matching the selected filters.</p>
+    {% endif %}
+
+    <p><a href="{% url 'nominations:fellow_nomination_dashboard' %}">&larr; Back to Dashboard</a></p>
+</article>
+{% endblock content %}

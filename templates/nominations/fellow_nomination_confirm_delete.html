@@ -1,0 +1,38 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Delete Fellow Nomination | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_confirm_delete"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Delete Fellow Nomination</h1>
+    </header>
+
+    <div class="user-feedback level-warning">
+        <p role="warning">Are you sure you want to delete this nomination? This action cannot be undone.</p>
+    </div>
+
+    <div>
+        <ul>
+            <li><b>Nominee</b>: {{ object.nominee_name }}</li>
+            <li><b>Nominator</b>: {{ object.nominator.get_full_name }}</li>
+            <li><b>Round</b>: {{ object.nomination_round }}</li>
+        </ul>
+    </div>
+
+    <form method="post" action="">
+        {% csrf_token %}
+        <center>
+            <button type="submit">Confirm Delete</button>
+        </center>
+    </form>
+
+    <p><a href="{% url 'nominations:fellow_nomination_review' %}">&larr; Cancel</a></p>
+</article>
+{% endblock content %}

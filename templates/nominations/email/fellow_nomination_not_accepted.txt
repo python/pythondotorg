@@ -1,0 +1,19 @@
+Hello {{ nomination.nominator.get_full_name|default:nomination.nominator.username }},
+
+Thank you for your PSF Fellow nomination for {{ nomination.nominee_name }}. After careful review, the Fellow Work Group has determined that this nomination was not accepted in the {{ nomination.nomination_round }} round.
+
+Nomination Details:
+- Nominee: {{ nomination.nominee_name }}
+- Round: {{ nomination.nomination_round }}
+- Submitted: {{ nomination.created|date:"N j, Y" }}
+
+Please note that per the Fellow Work Group Charter, nominations remain active for one year (four quarters) from the date of submission. Your nomination will continue to be considered in subsequent review rounds during that period.
+
+View the nomination:
+{{ site_url }}{{ nomination.get_absolute_url }}
+
+We encourage your continued participation in the Fellow nomination process. The contributions of community members like you help us identify and recognize those who have made outstanding contributions to the Python ecosystem.
+
+If you have any questions, please reach out to the Fellow Work Group.
+
+- The Python Software Foundation

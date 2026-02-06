@@ -1,15 +1,20 @@
 import datetime
 
+from django.conf import settings
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 
 from fastly.utils import purge_url
 from markupfield.fields import MarkupField
 
-from users.models import User
+from cms.models import ContentManageable
+from users.models import Membership, User
+
+from .managers import FellowNominationQuerySet
 
 
 class Election(models.Model):
@@ -271,3 +276,195 @@ def purge_nomination_pages(sender, instance, created, **kwargs):
                 "nominations:nominees_list", kwargs={"election": instance.election.slug}
             )
         )
+
+
+class FellowNominationRound(models.Model):
+    """Quarterly round for PSF Fellow Work Group consideration."""
+
+    Q1 = 1
+    Q2 = 2
+    Q3 = 3
+    Q4 = 4
+    QUARTER_CHOICES = (
+        (Q1, "Q1 (Jan-Mar)"),
+        (Q2, "Q2 (Apr-Jun)"),
+        (Q3, "Q3 (Jul-Sep)"),
+        (Q4, "Q4 (Oct-Dec)"),
+    )
+
+    year = models.PositiveIntegerField()
+    quarter = models.PositiveSmallIntegerField(choices=QUARTER_CHOICES)
+    quarter_start = models.DateField(help_text="First day of the quarter.")
+    quarter_end = models.DateField(help_text="Last day of the quarter.")
+    nominations_cutoff = models.DateField(
+        help_text="20th of month 2 per WG Charter (Feb 20, May 20, Aug 20, Nov 20)."
+    )
+    review_start = models.DateField(help_text="Same as nominations cutoff.")
+    review_end = models.DateField(
+        help_text="20th of month 3 (Mar 20, Jun 20, Sep 20, Dec 20)."
+    )
+    is_open = models.BooleanField(default=True, help_text="Whether accepting nominations.")
+    slug = models.SlugField(unique=True, blank=True)
+
+    class Meta:
+        unique_together = ("year", "quarter")
+        ordering = ["-year", "-quarter"]
+
+    def __str__(self):
+        return f"{self.year} Q{self.quarter}"
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = f"{self.year}-q{self.quarter}"
+        super().save(*args, **kwargs)
+
+    @property
+    def is_current(self):
+        today = timezone.now().date()
+        return self.quarter_start <= today <= self.quarter_end
+
+    @property
+    def is_accepting_nominations(self):
+        today = timezone.now().date()
+        return self.is_open and today < self.nominations_cutoff
+
+    @property
+    def is_in_review(self):
+        today = timezone.now().date()
+        return self.review_start <= today <= self.review_end
+
+
+class FellowNomination(ContentManageable):
+    """A nomination for the PSF Fellow membership."""
+
+    PENDING = "pending"
+    UNDER_REVIEW = "under_review"
+    ACCEPTED = "accepted"
+    NOT_ACCEPTED = "not_accepted"
+    STATUS_CHOICES = (
+        (PENDING, "Pending"),
+        (UNDER_REVIEW, "Under Review"),
+        (ACCEPTED, "Accepted"),
+        (NOT_ACCEPTED, "Not Accepted"),
+    )
+
+    nominee_name = models.CharField(max_length=255)
+    nominee_email = models.EmailField(max_length=255)
+    nomination_statement = MarkupField(
+        escape_html=True, markup_type="markdown"
+    )
+    nominator = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="fellow_nominations_made",
+        on_delete=models.CASCADE,
+    )
+    nomination_round = models.ForeignKey(
+        FellowNominationRound,
+        related_name="nominations",
+        on_delete=models.PROTECT,
+    )
+    status = models.CharField(
+        max_length=20,
+        choices=STATUS_CHOICES,
+        default=PENDING,
+        db_index=True,
+    )
+    expiry_round = models.ForeignKey(
+        FellowNominationRound,
+        related_name="expiring_nominations",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Round 4 quarters after submission; nomination expires after this round.",
+    )
+    nominee_user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="fellow_nominations_received",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        help_text="Linked if nominee has a python.org account.",
+    )
+    nominee_is_fellow_at_submission = models.BooleanField(
+        default=False,
+        help_text="Snapshot: was the nominee already a Fellow at submission time?",
+    )
+
+    objects = FellowNominationQuerySet.as_manager()
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return f"Fellow Nomination: {self.nominee_name} (by {self.nominator})"
+
+    def get_absolute_url(self):
+        return reverse("nominations:fellow_nomination_detail", kwargs={"pk": self.pk})
+
+    @property
+    def is_active(self):
+        if self.status in (self.ACCEPTED, self.NOT_ACCEPTED):
+            return False
+        if self.expiry_round and self.expiry_round.quarter_end < timezone.now().date():
+            return False
+        return True
+
+    @property
+    def nominee_is_already_fellow(self):
+        if self.nominee_user:
+            try:
+                return self.nominee_user.membership.membership_type == Membership.FELLOW
+            except Membership.DoesNotExist:
+                return False
+        return False
+
+    @property
+    def vote_result(self):
+        """Per WG Charter: 50%+1 of votes cast (excluding abstentions)."""
+        votes = self.votes.exclude(vote="abstain")
+        total = votes.count()
+        if total == 0:
+            return None
+        yes_count = votes.filter(vote="yes").count()
+        return yes_count > total / 2
+
+
+class FellowNominationVote(models.Model):
+    """WG member vote on a Fellow nomination."""
+
+    YES = "yes"
+    NO = "no"
+    ABSTAIN = "abstain"
+    VOTE_CHOICES = (
+        (YES, "Yes"),
+        (NO, "No"),
+        (ABSTAIN, "Abstain"),
+    )
+
+    nomination = models.ForeignKey(
+        FellowNomination,
+        related_name="votes",
+        on_delete=models.CASCADE,
+    )
+    voter = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        related_name="fellow_nomination_votes",
+        on_delete=models.CASCADE,
+    )
+    vote = models.CharField(max_length=10, choices=VOTE_CHOICES)
+    comment = models.TextField(blank=True)
+    voted_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("nomination", "voter")
+
+    def __str__(self):
+        return f"{self.voter} voted {self.vote} on {self.nomination}"
+
+
+@receiver(post_save, sender=FellowNomination)
+def purge_fellow_nomination_pages(sender, instance, created, **kwargs):
+    """Purge Fastly CDN cache for Fellow nomination pages."""
+    if kwargs.get("raw", False):
+        return
+    purge_url(instance.get_absolute_url())

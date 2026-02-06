@@ -1,0 +1,35 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+{% if object %}Edit Nomination Round: {{ object }}{% else %}Create Nomination Round{% endif %} | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_round_form"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">
+            {% if object %}Edit Nomination Round: {{ object }}{% else %}Create Nomination Round{% endif %}
+        </h1>
+    </header>
+
+    <form class="wide-form" action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <p><em>Leave date fields blank to auto-populate from year and quarter selection.</em></p>
+        <br>
+        <center>
+            <button type="submit" name="Submit">
+                {% if object %}Update Round{% else %}Create Round{% endif %}
+            </button>
+        </center>
+    </form>
+
+    <p><a href="{% url 'nominations:fellow_round_list' %}">&larr; Cancel</a></p>
+</article>
+{% endblock content %}

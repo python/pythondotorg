@@ -12,6 +12,7 @@ from downloads.views import ReleaseEditButton
 from users.views import HoneypotSignupView, CustomPasswordChangeView
 
 from . import views, urls_api
+from nominations.views import FellowsRoster
 
 handler404 = custom_404
 
@@ -41,6 +42,8 @@ urlpatterns = [
     # other section landing pages
     path('psf-landing/', TemplateView.as_view(template_name="psf/index.html"), name='psf-landing'),
     path('psf/sponsors/', TemplateView.as_view(template_name="psf/sponsors-list.html"), name='psf-sponsors'),
+    path('psf/fellows/', FellowsRoster.as_view(), name='fellows-roster'),
+    path('psf/fellows-roster/', FellowsRoster.as_view(), name='fellows-roster-alt'),
     path('docs-landing/', TemplateView.as_view(template_name="docs/index.html"), name='docs-landing'),
     path('pypl-landing/', TemplateView.as_view(template_name="pypl/index.html"), name='pypl-landing'),
     path('shop-landing/', TemplateView.as_view(template_name="shop/index.html"), name='shop-landing'),

@@ -1,0 +1,46 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+PSF Fellows | Python Software Foundation
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellows_roster"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">PSF Fellows</h1>
+    </header>
+
+    <p>There are currently {{ total_count }} PSF Fellows.</p>
+
+    {% if fellows %}
+    <ul>
+        {% for fellow in fellows %}
+        <li>
+            <strong>
+                {% if fellow.creator %}
+                    {{ fellow.creator.get_full_name|default:fellow.creator.username }}
+                {% elif fellow.preferred_name %}
+                    {{ fellow.preferred_name }}
+                {% else %}
+                    {{ fellow.legal_name }}
+                {% endif %}
+            </strong>
+            {% if fellow.city and fellow.country %}
+                &mdash; {{ fellow.city }}, {{ fellow.country }}
+            {% elif fellow.city %}
+                &mdash; {{ fellow.city }}
+            {% elif fellow.country %}
+                &mdash; {{ fellow.country }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No PSF Fellows found.</p>
+    {% endif %}
+</article>
+{% endblock content %}
