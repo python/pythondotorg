@@ -57,6 +57,7 @@ known-first-party = [
 
 [lint.per-file-ignores]
 # Settings files use star imports (Django convention)
+# TODO: will fix later
 "pydotorg/settings/*.py" = ["F403", "F405"]
 # Migrations are auto-generated
 "*/migrations/*.py" = ["D", "RUF012", "N999"]
