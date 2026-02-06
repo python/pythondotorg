@@ -4,7 +4,7 @@ from django import forms
 from django.utils.safestring import mark_safe
 from markupfield.widgets import MarkupTextarea
 
-from .models import Nomination
+from nominations.models import Nomination
 
 
 class NominationForm(forms.ModelForm):

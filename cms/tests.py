@@ -5,8 +5,8 @@ from unittest import mock
 from django.template import Context, Template
 from django.test import TestCase
 
-from .admin import ContentManageableModelAdmin
-from .views import legacy_path
+from cms.admin import ContentManageableModelAdmin
+from cms.views import legacy_path
 
 
 class ContentManageableAdminTests(unittest.TestCase):

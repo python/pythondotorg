@@ -3,8 +3,7 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
-
-from .models import Job, JobCategory, JobReviewComment, JobType
+from jobs.models import Job, JobCategory, JobReviewComment, JobType
 
 
 @admin.register(Job)

@@ -7,12 +7,7 @@ from django.dispatch import receiver
 from django.template import loader
 from django.utils.translation import gettext_lazy as _
 
-from .signals import (
-    comment_was_posted,
-    job_was_approved,
-    job_was_rejected,
-    job_was_submitted,
-)
+from jobs.signals import comment_was_posted, job_was_approved, job_was_rejected, job_was_submitted
 
 # Python job board team email address
 EMAIL_JOBS_BOARD = "jobs@python.org"

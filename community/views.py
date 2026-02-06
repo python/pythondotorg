@@ -2,7 +2,7 @@
 
 from django.views.generic import DetailView, ListView
 
-from .models import Post
+from community.models import Post
 
 
 class PostList(ListView):

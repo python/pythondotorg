@@ -4,8 +4,7 @@ from django.contrib import admin
 from django.utils.html import format_html
 
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
-
-from .models import Story, StoryCategory
+from successstories.models import Story, StoryCategory
 
 
 @admin.register(StoryCategory)

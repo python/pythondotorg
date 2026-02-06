@@ -1,8 +1,7 @@
 import datetime as dt
 
 from downloads.models import Release, ReleaseFile
-
-from .base import BaseDownloadTests
+from downloads.tests.base import BaseDownloadTests
 
 
 class DownloadModelTests(BaseDownloadTests):

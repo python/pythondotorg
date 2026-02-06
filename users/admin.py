@@ -6,8 +6,8 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework.authtoken.admin import TokenAdmin
 from tastypie.admin import ApiKeyInline as TastypieApiKeyInline
 
-from .actions import export_csv
-from .models import Membership, User
+from users.actions import export_csv
+from users.models import Membership, User
 
 TokenAdmin.search_fields = ("user__username",)
 TokenAdmin.raw_id_fields = ("user",)

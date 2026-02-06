@@ -3,7 +3,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from .models import Calendar
+from events.models import Calendar
 
 
 class CalendarFactory(DjangoModelFactory):

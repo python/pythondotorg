@@ -4,7 +4,7 @@ import sentry_sdk
 from decouple import Csv
 from sentry_sdk.integrations.django import DjangoIntegration
 
-from .base import *
+from pydotorg.settings.base import *
 
 DEBUG = TEMPLATE_DEBUG = False
 

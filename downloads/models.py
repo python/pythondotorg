@@ -14,10 +14,9 @@ from markupfield.fields import MarkupField
 
 from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
+from downloads.managers import ReleaseManager
 from fastly.utils import purge_url
 from pages.models import Page
-
-from .managers import ReleaseManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
 

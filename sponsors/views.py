@@ -14,13 +14,7 @@ from django.views.generic import FormView
 
 from sponsors import cookies, use_cases
 from sponsors.forms import SponsorshipApplicationForm, SponsorshipsBenefitsForm
-
-from .models import (
-    SponsorshipBenefit,
-    SponsorshipCurrentYear,
-    SponsorshipPackage,
-    SponsorshipProgram,
-)
+from sponsors.models import SponsorshipBenefit, SponsorshipCurrentYear, SponsorshipPackage, SponsorshipProgram
 
 
 class SelectSponsorshipApplicationBenefitsView(FormView):

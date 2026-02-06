@@ -3,7 +3,7 @@ import logging
 from django import template
 from django.test import TestCase, override_settings
 
-from .models import Box
+from boxes.models import Box
 
 logging.disable(logging.CRITICAL)
 

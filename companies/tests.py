@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .templatetags.companies import render_email
+from companies.templatetags.companies import render_email
 
 
 class CompaniesTagsTests(TestCase):

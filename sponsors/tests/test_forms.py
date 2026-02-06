@@ -31,8 +31,7 @@ from sponsors.models import (
     SponsorshipPackage,
 )
 from sponsors.models.enums import AssetsRelatedTo
-
-from .utils import get_static_image_file_as_upload
+from sponsors.tests.utils import get_static_image_file_as_upload
 
 
 class SponsorshipsBenefitsFormTests(TestCase):

@@ -9,9 +9,8 @@ from django.views.generic.base import TemplateView
 
 from cms.views import custom_404
 from downloads.views import ReleaseEditButton
+from pydotorg import urls_api, views
 from users.views import CustomPasswordChangeView, HoneypotSignupView
-
-from . import urls_api, views
 
 handler404 = custom_404
 

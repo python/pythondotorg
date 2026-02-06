@@ -7,8 +7,7 @@ from django.urls import reverse
 from django.views.generic import DetailView
 
 from downloads.models import Release
-
-from .models import Page
+from pages.models import Page
 
 
 class PageView(DetailView):

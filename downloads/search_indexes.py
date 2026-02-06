@@ -6,7 +6,7 @@ from django.template.defaultfilters import striptags, truncatewords_html
 from django.utils import timezone
 from haystack import indexes
 
-from .models import Release
+from downloads.models import Release
 
 
 class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):

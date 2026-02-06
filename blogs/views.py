@@ -2,7 +2,7 @@
 
 from django.views.generic import TemplateView
 
-from .models import BlogEntry
+from blogs.models import BlogEntry
 
 
 class BlogHome(TemplateView):

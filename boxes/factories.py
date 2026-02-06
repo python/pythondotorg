@@ -7,9 +7,8 @@ import factory
 from django.conf import settings
 from factory.django import DjangoModelFactory
 
+from boxes.models import Box
 from users.factories import UserFactory
-
-from .models import Box
 
 
 class BoxFactory(DjangoModelFactory):

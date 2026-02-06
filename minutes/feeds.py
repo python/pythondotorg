@@ -5,7 +5,7 @@ from datetime import datetime
 from django.contrib.syndication.views import Feed
 from django.urls import reverse_lazy
 
-from .models import Minutes
+from minutes.models import Minutes
 
 
 class MinutesFeed(Feed):

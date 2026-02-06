@@ -11,7 +11,7 @@ from markupfield.fields import MarkupField
 from rest_framework.authtoken.models import Token
 from tastypie.models import create_api_key
 
-from .managers import UserManager
+from users.managers import UserManager
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
 

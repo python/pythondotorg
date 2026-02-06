@@ -21,13 +21,8 @@ from honeypot.decorators import check_honeypot
 from pydotorg.mixins import LoginRequiredMixin
 from sponsors.forms import SponsorRequiredAssetsForm, SponsorUpdateForm
 from sponsors.models import BenefitFeature, Sponsor, Sponsorship
-
-from .forms import (
-    MembershipForm,
-    MembershipUpdateForm,
-    UserProfileForm,
-)
-from .models import Membership
+from users.forms import MembershipForm, MembershipUpdateForm, UserProfileForm
+from users.models import Membership
 
 User = get_user_model()
 

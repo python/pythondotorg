@@ -14,8 +14,7 @@ from boxes.models import Box
 from cms.models import ContentManageable, NameSlugModel
 from companies.models import Company
 from fastly.utils import purge_url
-
-from .managers import StoryManager
+from successstories.managers import StoryManager
 
 PSF_TO_EMAILS = ["psf-staff@python.org"]
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")

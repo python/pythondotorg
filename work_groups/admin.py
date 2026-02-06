@@ -3,8 +3,7 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin
-
-from .models import WorkGroup
+from work_groups.models import WorkGroup
 
 
 @admin.register(WorkGroup)

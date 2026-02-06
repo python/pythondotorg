@@ -3,7 +3,7 @@
 from django.template.defaultfilters import striptags, truncatewords_html
 from haystack import indexes
 
-from .models import Calendar, Event
+from events.models import Calendar, Event
 
 
 class CalendarIndex(indexes.SearchIndex, indexes.Indexable):

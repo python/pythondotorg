@@ -8,9 +8,8 @@ from django.utils import timezone
 from factory.django import DjangoModelFactory
 from faker.providers import BaseProvider
 
+from jobs.models import Job, JobCategory, JobType
 from users.factories import UserFactory
-
-from .models import Job, JobCategory, JobType
 
 
 class JobProvider(BaseProvider):

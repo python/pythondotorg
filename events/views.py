@@ -10,10 +10,9 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import DetailView, FormView, ListView
 
+from events.forms import EventForm
+from events.models import Calendar, Event, EventCategory, EventLocation
 from pydotorg.mixins import LoginRequiredMixin
-
-from .forms import EventForm
-from .models import Calendar, Event, EventCategory, EventLocation
 
 
 class CalendarList(ListView):

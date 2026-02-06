@@ -3,8 +3,7 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin, NameSlugAdmin
-
-from .models import Alarm, Calendar, Event, EventCategory, EventLocation, OccurringRule, RecurringRule
+from events.models import Alarm, Calendar, Event, EventCategory, EventLocation, OccurringRule, RecurringRule
 
 
 class EventInline(admin.StackedInline):

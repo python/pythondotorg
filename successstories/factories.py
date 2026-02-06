@@ -4,7 +4,7 @@ import factory
 from factory.django import DjangoModelFactory
 from faker.providers import BaseProvider
 
-from .models import Story, StoryCategory
+from successstories.models import Story, StoryCategory
 
 
 class StoryProvider(BaseProvider):

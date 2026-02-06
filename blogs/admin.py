@@ -3,7 +3,7 @@
 from django.contrib import admin
 from django.core.management import call_command
 
-from .models import BlogEntry, Feed, FeedAggregate
+from blogs.models import BlogEntry, Feed, FeedAggregate
 
 
 @admin.register(BlogEntry)

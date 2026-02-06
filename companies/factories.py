@@ -3,7 +3,7 @@
 import factory
 from factory.django import DjangoModelFactory
 
-from .models import Company
+from companies.models import Company
 
 
 class CompanyFactory(DjangoModelFactory):

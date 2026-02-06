@@ -16,13 +16,7 @@ from django.utils.translation import gettext_lazy as _
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
-
-from .utils import (
-    convert_dt_to_aware,
-    minutes_resolution,
-    timedelta_nice_repr,
-    timedelta_parse,
-)
+from events.utils import convert_dt_to_aware, minutes_resolution, timedelta_nice_repr, timedelta_parse
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 
@@ -51,7 +45,7 @@ class Calendar(ContentManageable):
         if not self.url:
             msg = "calendar must have a url field set"
             raise ValueError(msg)
-        from .importer import ICSImporter
+        from events.importer import ICSImporter
 
         importer = ICSImporter(calendar=self)
         importer.import_events()

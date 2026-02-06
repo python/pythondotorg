@@ -7,8 +7,8 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, DetailView, ListView
 from honeypot.decorators import check_honeypot
 
-from .forms import StoryForm
-from .models import Story, StoryCategory
+from successstories.forms import StoryForm
+from successstories.models import Story, StoryCategory
 
 
 class ContextMixin:

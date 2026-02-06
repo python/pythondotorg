@@ -12,7 +12,7 @@ from django.utils import timezone
 from django.utils.feedgenerator import Rss201rev2Feed
 from django.views.generic import DetailView, ListView, RedirectView, TemplateView
 
-from .models import OS, Release, ReleaseFile
+from downloads.models import OS, Release, ReleaseFile
 
 
 class DownloadLatestPython2(RedirectView):

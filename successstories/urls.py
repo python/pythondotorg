@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from . import views
+from successstories import views
 
 urlpatterns = [
     path("", views.StoryList.as_view(), name="success_story_list"),

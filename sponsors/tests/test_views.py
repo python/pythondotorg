@@ -22,8 +22,7 @@ from sponsors.models import (
     SponsorshipCurrentYear,
     SponsorshipPackage,
 )
-
-from .utils import assert_message, get_static_image_file_as_upload
+from sponsors.tests.utils import assert_message, get_static_image_file_as_upload
 
 
 class SelectSponsorshipApplicationBenefitsViewTests(TestCase):

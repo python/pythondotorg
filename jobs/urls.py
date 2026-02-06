@@ -3,7 +3,7 @@
 from django.urls import path
 from django.views.generic import TemplateView
 
-from . import feeds, views
+from jobs import feeds, views
 
 app_name = "jobs"
 urlpatterns = [

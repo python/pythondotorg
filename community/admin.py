@@ -3,8 +3,7 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
-
-from .models import Link, Photo, Post, Video
+from community.models import Link, Photo, Post, Video
 
 
 class LinkInline(ContentManageableStackedInline):

@@ -2,7 +2,7 @@
 
 from rest_framework import serializers
 
-from .models import Page
+from pages.models import Page
 
 
 class PageSerializer(serializers.HyperlinkedModelSerializer):

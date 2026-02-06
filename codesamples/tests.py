@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from .models import CodeSample
+from codesamples.models import CodeSample
 
 
 class CodeSampleModelTests(TestCase):

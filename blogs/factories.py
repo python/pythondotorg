@@ -2,7 +2,7 @@
 
 from django.conf import settings
 
-from .models import Feed
+from blogs.models import Feed
 
 
 def initial_data():

@@ -4,8 +4,8 @@ Python.org sponsors app is heavily db-oriented. To reduce file length
 the models are being structured as a python package.
 """
 
-from .assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset  # noqa: F401
-from .benefits import (  # noqa: F401
+from sponsors.models.assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset  # noqa: F401
+from sponsors.models.benefits import (  # noqa: F401
     BaseEmailTargetable,
     BaseLogoPlacement,
     BaseTieredBenefit,
@@ -28,10 +28,10 @@ from .benefits import (  # noqa: F401
     TieredBenefit,
     TieredBenefitConfiguration,
 )
-from .contract import Contract, LegalClause, signed_contract_random_path  # noqa: F401
-from .notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate  # noqa: F401
-from .sponsors import Sponsor, SponsorBenefit, SponsorContact  # noqa: F401
-from .sponsorship import (  # noqa: F401
+from sponsors.models.contract import Contract, LegalClause, signed_contract_random_path  # noqa: F401
+from sponsors.models.notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate  # noqa: F401
+from sponsors.models.sponsors import Sponsor, SponsorBenefit, SponsorContact  # noqa: F401
+from sponsors.models.sponsorship import (
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,

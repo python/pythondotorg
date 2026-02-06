@@ -3,8 +3,7 @@
 from django.contrib import admin
 
 from cms.admin import ContentManageableModelAdmin, ContentManageableStackedInline
-
-from .models import OS, Release, ReleaseFile
+from downloads.models import OS, Release, ReleaseFile
 
 
 @admin.register(OS)

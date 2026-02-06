@@ -3,7 +3,7 @@
 from django.contrib.syndication.views import Feed
 from django.urls import reverse_lazy
 
-from .models import Job
+from jobs.models import Job
 
 
 class JobFeed(Feed):

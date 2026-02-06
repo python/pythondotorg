@@ -13,10 +13,9 @@ from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable, NameSlugModel
 from fastly.utils import purge_url
+from jobs.managers import JobCategoryQuerySet, JobQuerySet, JobTypeQuerySet
+from jobs.signals import comment_was_posted, job_was_approved, job_was_rejected, job_was_submitted
 from users.models import User
-
-from .managers import JobCategoryQuerySet, JobQuerySet, JobTypeQuerySet
-from .signals import comment_was_posted, job_was_approved, job_was_rejected, job_was_submitted
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 

@@ -6,9 +6,8 @@ import factory
 import requests
 from factory.django import DjangoModelFactory
 
+from downloads.models import OS, Release, ReleaseFile
 from users.factories import UserFactory
-
-from .models import OS, Release, ReleaseFile
 
 
 class OSFactory(DjangoModelFactory):

@@ -2,9 +2,8 @@
 
 from django.contrib import admin
 
+from boxes.models import Box
 from cms.admin import ContentManageableModelAdmin
-
-from .models import Box
 
 
 @admin.register(Box)

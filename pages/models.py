@@ -20,8 +20,7 @@ from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 from cms.models import ContentManageable
 from fastly.utils import purge_url
-
-from .managers import PageQuerySet
+from pages.managers import PageQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext")
 

@@ -3,7 +3,7 @@
 from django import forms
 from django.forms import ModelForm
 
-from .models import Membership, User
+from users.models import Membership, User
 
 
 class UserProfileForm(ModelForm):

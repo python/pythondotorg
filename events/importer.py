@@ -6,8 +6,8 @@ from datetime import timedelta
 import requests
 from icalendar import Calendar as ICalendar
 
-from .models import Event, EventLocation, OccurringRule
-from .utils import extract_date_or_datetime
+from events.models import Event, EventLocation, OccurringRule
+from events.utils import extract_date_or_datetime
 
 logger = logging.getLogger(__name__)
 

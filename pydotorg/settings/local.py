@@ -1,6 +1,6 @@
 """Django settings for local development."""
 
-from .base import *
+from pydotorg.settings.base import *
 
 DEBUG = True
 

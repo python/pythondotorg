@@ -6,8 +6,8 @@ from http import HTTPStatus
 from django import http
 from django.conf import settings
 
-from .models import Page
-from .views import PageView
+from pages.models import Page
+from pages.views import PageView
 
 
 class PageFallbackMiddleware:

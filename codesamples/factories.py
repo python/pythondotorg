@@ -5,9 +5,8 @@ import textwrap
 import factory
 from factory.django import DjangoModelFactory
 
+from codesamples.models import CodeSample
 from users.factories import UserFactory
-
-from .models import CodeSample
 
 
 class CodeSampleFactory(DjangoModelFactory):

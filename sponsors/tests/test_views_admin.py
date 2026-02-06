@@ -35,10 +35,9 @@ from sponsors.models import (
     SponsorshipPackage,
     TextAsset,
 )
+from sponsors.tests.utils import assert_message, get_static_image_file_as_upload
 from sponsors.use_cases import SendSponsorshipNotificationUseCase
 from sponsors.views_admin import export_assets_as_zipfile, send_sponsorship_notifications_action
-
-from .utils import assert_message, get_static_image_file_as_upload
 
 
 class RollbackSponsorshipToEditingAdminViewTests(TestCase):

@@ -6,8 +6,7 @@ from django.template.defaultfilters import striptags, truncatechars
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-
-from .managers import CodeSampleQuerySet
+from codesamples.managers import CodeSampleQuerySet
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "html")
 

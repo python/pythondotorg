@@ -2,8 +2,7 @@ import datetime
 import unittest
 
 from blogs.parser import get_all_entries
-
-from .utils import get_test_rss_path
+from blogs.tests.utils import get_test_rss_path
 
 
 class BlogParserTest(unittest.TestCase):

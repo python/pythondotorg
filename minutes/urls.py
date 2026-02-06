@@ -2,8 +2,8 @@
 
 from django.urls import path, re_path
 
-from . import views
-from .feeds import MinutesFeed
+from minutes import views
+from minutes.feeds import MinutesFeed
 
 urlpatterns = [
     path("", views.MinutesList.as_view(), name="minutes_list"),

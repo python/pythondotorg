@@ -7,9 +7,8 @@ from django.conf import settings
 from django.template.loader import render_to_string
 from django.utils.timezone import make_aware
 
+from blogs.models import BlogEntry, Feed
 from boxes.models import Box
-
-from .models import BlogEntry, Feed
 
 
 def get_all_entries(feed_url):

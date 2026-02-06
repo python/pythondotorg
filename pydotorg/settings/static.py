@@ -1,6 +1,6 @@
 """Django settings for static file collection builds."""
 
-from .base import *
+from pydotorg.settings.base import *
 
 DEBUG = TEMPLATE_DEBUG = False
 

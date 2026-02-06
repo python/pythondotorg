@@ -7,12 +7,11 @@ from rest_framework.response import Response
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 
+from downloads.models import OS, Release, ReleaseFile
+from downloads.serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 from pages.api import PageResource
 from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
 from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
-
-from .models import OS, Release, ReleaseFile
-from .serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 
 
 class OSResource(GenericResource):

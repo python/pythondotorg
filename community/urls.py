@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from . import views
+from community import views
 
 app_name = "community"
 urlpatterns = [

@@ -4,8 +4,7 @@ from pathlib import Path
 import ddt
 
 from pages.models import PAGE_PATH_RE, Page
-
-from .base import BasePageTests
+from pages.tests.base import BasePageTests
 
 
 class PageModelTests(BasePageTests):

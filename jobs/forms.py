@@ -5,8 +5,7 @@ from django.forms.widgets import CheckboxSelectMultiple, HiddenInput
 from markupfield.widgets import MarkupTextarea
 
 from cms.forms import ContentManageableModelForm
-
-from .models import Job, JobReviewComment
+from jobs.models import Job, JobReviewComment
 
 
 class JobForm(ContentManageableModelForm):

@@ -6,10 +6,9 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.views.generic import CreateView, DetailView, ListView, TemplateView, UpdateView, View
 
+from jobs.forms import JobForm, JobReviewCommentForm
+from jobs.models import Job, JobCategory, JobReviewComment, JobType
 from pydotorg.mixins import GroupRequiredMixin, LoginRequiredMixin
-
-from .forms import JobForm, JobReviewCommentForm
-from .models import Job, JobCategory, JobReviewComment, JobType
 
 
 class JobListMenu:

@@ -7,11 +7,10 @@ from django.urls import reverse
 from rest_framework.test import APITestCase
 
 from downloads.models import Release
+from downloads.tests.base import BaseDownloadTests, DownloadMixin
 from pages.factories import PageFactory
 from pydotorg.drf import BaseAPITestCase
 from users.factories import UserFactory
-
-from .base import BaseDownloadTests, DownloadMixin
 
 User = get_user_model()
 

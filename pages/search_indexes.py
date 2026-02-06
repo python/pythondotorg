@@ -3,7 +3,7 @@
 from django.template.defaultfilters import striptags, truncatewords_html
 from haystack import indexes
 
-from .models import Page
+from pages.models import Page
 
 
 class PageIndex(indexes.SearchIndex, indexes.Indexable):

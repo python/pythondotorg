@@ -7,8 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from markupfield.fields import MarkupField
 
 from cms.models import ContentManageable
-
-from .managers import PostQuerySet
+from community.managers import PostQuerySet
 
 DEFAULT_MARKUP_TYPE = "html"
 

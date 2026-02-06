@@ -5,8 +5,7 @@ from django.utils.timezone import now
 
 from blogs.models import BlogEntry, Feed, FeedAggregate
 from blogs.templatetags.blogs import get_latest_blog_entries
-
-from .utils import get_test_rss_path
+from blogs.tests.utils import get_test_rss_path
 
 
 class BlogTemplateTagTest(TestCase):

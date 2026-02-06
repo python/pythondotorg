@@ -4,9 +4,8 @@ import factory
 from django.template.defaultfilters import slugify
 from factory.django import DjangoModelFactory
 
+from pages.models import Page
 from users.factories import UserFactory
-
-from .models import Page
 
 
 class PageFactory(DjangoModelFactory):
