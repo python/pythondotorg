@@ -36,9 +36,9 @@ Vote on Nomination: {{ nomination.nominee_name }} | {{ SITE_INFO.site_name }}
             {{ form.as_table }}
         </table>
         <br>
-        <center>
+        <div style="text-align: center;">
             <button type="submit" name="Submit">Submit Vote</button>
-        </center>
+        </div>
     </form>
 
     <p><a href="{{ nomination.get_absolute_url }}">&larr; Cancel</a></p>

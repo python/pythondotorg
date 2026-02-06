@@ -28,9 +28,9 @@ Delete Fellow Nomination | {{ SITE_INFO.site_name }}
 
     <form method="post" action="">
         {% csrf_token %}
-        <center>
+        <div style="text-align: center;">
             <button type="submit">Confirm Delete</button>
-        </center>
+        </div>
     </form>
 
     <p><a href="{% url 'nominations:fellow_nomination_review' %}">&larr; Cancel</a></p>

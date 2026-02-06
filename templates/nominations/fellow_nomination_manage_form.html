@@ -31,9 +31,9 @@ Edit Nomination: {{ object.nominee_name }} | {{ SITE_INFO.site_name }}
             {{ form.as_table }}
         </table>
         <br>
-        <center>
+        <div style="text-align: center;">
             <button type="submit" name="Submit">Save Changes</button>
-        </center>
+        </div>
     </form>
 
     <p><a href="{{ object.get_absolute_url }}">&larr; Cancel</a></p>

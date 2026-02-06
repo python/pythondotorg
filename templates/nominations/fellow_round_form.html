@@ -23,11 +23,11 @@
         </table>
         <p><em>Leave date fields blank to auto-populate from year and quarter selection.</em></p>
         <br>
-        <center>
+        <div style="text-align: center;">
             <button type="submit" name="Submit">
                 {% if object %}Update Round{% else %}Create Round{% endif %}
             </button>
-        </center>
+        </div>
     </form>
 
     <p><a href="{% url 'nominations:fellow_round_list' %}">&larr; Cancel</a></p>
