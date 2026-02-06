@@ -8,46 +8,229 @@ Fellows of the Python Software Foundation
 {% block left_sidebar %}{% endblock %}
 {% block content_attributes %}{% endblock %}
 
+{% block head %}
+<style>
+.fellows-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 20px;
+    padding: 12px 16px;
+    background: #f0f0f0;
+    border-radius: 4px;
+}
+.fellows-controls input[type="text"],
+.fellows-controls select {
+    padding: 6px 10px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    font-size: 14px;
+}
+.fellows-controls input[type="text"] {
+    width: 200px;
+}
+.fellows-status-tabs {
+    display: flex;
+    gap: 4px;
+}
+.fellows-status-tabs .tab-btn {
+    padding: 5px 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+}
+.fellows-status-tabs .tab-btn:hover {
+    background: #e8e8e8;
+}
+.fellows-status-tabs .tab-btn.active {
+    background: #306998;
+    color: #fff;
+    border-color: #306998;
+}
+.fellows-sort-toggle {
+    padding: 5px 12px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    background: #fff;
+    cursor: pointer;
+    font-size: 13px;
+    color: #333;
+}
+.fellows-sort-toggle:hover {
+    background: #e8e8e8;
+}
+.fellows-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: #666;
+}
+.fellow-badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 1px 7px;
+    border-radius: 3px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.fellow-badge.emeritus {
+    background: #fff3cd;
+    color: #856404;
+}
+.fellow-badge.deceased {
+    background: #e2e3e5;
+    color: #383d41;
+}
+.fellows-no-results {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    display: none;
+}
+</style>
+{% endblock %}
+
 {% block content %}
 <article class="text">
     <header class="article-header">
         <h1 class="page-title">PSF Fellows</h1>
     </header>
 
-    <p>There are currently {{ total_count }} PSF Fellows.</p>
+    {% if not active_fellows and not emeritus_fellows and not deceased_fellows %}
+    <p>No PSF Fellows found.</p>
+    {% else %}
+    <div class="fellows-controls">
+        <input type="text" id="fellow-search" placeholder="Search by name..." autocomplete="off">
+        <select id="fellow-year-filter">
+            <option value="">All years</option>
+            {% for y in years %}
+            <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <div class="fellows-status-tabs">
+            <button type="button" class="tab-btn active" data-status="all">All ({{ total_count }})</button>
+            <button type="button" class="tab-btn" data-status="active">Active ({{ active_count }})</button>
+            <button type="button" class="tab-btn" data-status="emeritus">Emeritus ({{ emeritus_count }})</button>
+            <button type="button" class="tab-btn" data-status="deceased">In Memoriam ({{ deceased_count }})</button>
+        </div>
+        <button type="button" class="fellows-sort-toggle" id="fellow-sort-toggle" data-sort="name">Sort: Name A-Z</button>
+        <span class="fellows-count" id="fellows-count">Showing {{ total_count }} of {{ total_count }} fellows</span>
+    </div>
 
-    {% if active_fellows %}
-    <h2>Fellows ({{ active_count }})</h2>
-    <ul>
+    <ol class="list-row-container menu" id="fellows-list">
         {% for fellow in active_fellows %}
-        <li>{{ fellow.name }} ({{ fellow.year_elected }})</li>
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="active">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }})</span>
+        </li>
         {% endfor %}
-    </ul>
-    {% endif %}
 
-    {% if emeritus_fellows %}
-    <h2>Emeritus Fellows ({{ emeritus_count }})</h2>
-    <ul>
         {% for fellow in emeritus_fellows %}
-        <li>{{ fellow.name }} ({{ fellow.year_elected }}{% if fellow.emeritus_year %}/{{ fellow.emeritus_year }}{% endif %})</li>
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="emeritus">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }}{% if fellow.emeritus_year %}&ndash;{{ fellow.emeritus_year }}{% endif %})</span>
+            <span class="fellow-badge emeritus">Emeritus</span>
+        </li>
         {% endfor %}
-    </ul>
-    {% endif %}
 
-    {% if deceased_fellows %}
-    <h2>In Memoriam ({{ deceased_count }})</h2>
-    <ul>
         {% for fellow in deceased_fellows %}
-        <li>
-            {{ fellow.name }} ({{ fellow.year_elected }})
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="deceased">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }})</span>
+            <span class="fellow-badge deceased">In Memoriam</span>
             {% if fellow.notes %}<br><em>{{ fellow.notes }}</em>{% endif %}
         </li>
         {% endfor %}
-    </ul>
-    {% endif %}
+    </ol>
 
-    {% if not active_fellows and not emeritus_fellows and not deceased_fellows %}
-    <p>No PSF Fellows found.</p>
+    <p class="fellows-no-results" id="fellows-no-results">No fellows match your filters.</p>
     {% endif %}
 </article>
 {% endblock content %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    var $list = $('#fellows-list');
+    var $items = $list.children('li');
+    var total = $items.length;
+    var $count = $('#fellows-count');
+    var $noResults = $('#fellows-no-results');
+    var $search = $('#fellow-search');
+    var $yearFilter = $('#fellow-year-filter');
+    var $tabs = $('.fellows-status-tabs .tab-btn');
+    var $sortBtn = $('#fellow-sort-toggle');
+
+    var currentStatus = 'all';
+    var currentSort = 'name';
+
+    function applyFilters() {
+        var query = $search.val().toLowerCase();
+        var year = $yearFilter.val();
+        var visible = 0;
+
+        $items.each(function () {
+            var $el = $(this);
+            var matchName = !query || $el.attr('data-name').indexOf(query) !== -1;
+            var matchYear = !year || $el.attr('data-year') === year;
+            var matchStatus = currentStatus === 'all' || $el.attr('data-status') === currentStatus;
+
+            if (matchName && matchYear && matchStatus) {
+                $el.show();
+                visible++;
+            } else {
+                $el.hide();
+            }
+        });
+
+        $count.text('Showing ' + visible + ' of ' + total + ' fellows');
+        if (visible === 0 && total > 0) {
+            $noResults.show();
+        } else {
+            $noResults.hide();
+        }
+    }
+
+    function sortItems() {
+        var sorted = $items.toArray().sort(function (a, b) {
+            if (currentSort === 'name') {
+                return $(a).attr('data-name').localeCompare($(b).attr('data-name'));
+            } else {
+                var yA = parseInt($(a).attr('data-year'), 10);
+                var yB = parseInt($(b).attr('data-year'), 10);
+                if (yB !== yA) return yB - yA;
+                return $(a).attr('data-name').localeCompare($(b).attr('data-name'));
+            }
+        });
+        $list.append(sorted);
+        $items = $list.children('li');
+        applyFilters();
+    }
+
+    $search.on('keyup', applyFilters);
+    $yearFilter.on('change', applyFilters);
+
+    $tabs.on('click', function () {
+        $tabs.removeClass('active');
+        $(this).addClass('active');
+        currentStatus = $(this).attr('data-status');
+        applyFilters();
+    });
+
+    $sortBtn.on('click', function () {
+        if (currentSort === 'name') {
+            currentSort = 'year';
+            $sortBtn.text('Sort: Year (newest)');
+        } else {
+            currentSort = 'name';
+            $sortBtn.text('Sort: Name A-Z');
+        }
+        $sortBtn.attr('data-sort', currentSort);
+        sortItems();
+    });
+});
+</script>
+{% endblock extra_js %}
