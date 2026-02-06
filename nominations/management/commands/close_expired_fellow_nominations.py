@@ -13,8 +13,11 @@ class Command(BaseCommand):
             status__in=[FellowNomination.PENDING, FellowNomination.UNDER_REVIEW],
             expiry_round__quarter_end__lt=today,
         )
-        count = expired.count()
-        expired.update(status=FellowNomination.NOT_ACCEPTED)
+        count = 0
+        for nomination in expired:
+            nomination.status = FellowNomination.NOT_ACCEPTED
+            nomination.save()
+            count += 1
         self.stdout.write(
             self.style.SUCCESS(f"Closed {count} expired Fellow nomination(s).")
         )
