@@ -510,6 +510,14 @@ class FellowNominationVoteView(LoginRequiredMixin, FellowWGRequiredMixin, Create
 
     def form_valid(self, form):
         nomination = self.get_nomination()
+        if nomination.status != FellowNomination.UNDER_REVIEW:
+            messages.error(
+                self.request,
+                "Votes can only be cast on nominations that are under review.",
+            )
+            return redirect(
+                "nominations:fellow_nomination_detail", pk=nomination.pk
+            )
         form.instance.voter = self.request.user
         form.instance.nomination = nomination
         try:
