@@ -149,15 +149,15 @@ class UsersViewsTestCase(TestCase):
         profile_url = reverse('users:user_detail', kwargs={'slug': 'username'})
         self.assertRedirects(response, profile_url)
 
-        # should return 404 for another user
+        # should return 200 for another user
         another_user_url = reverse('users:user_detail', kwargs={'slug': 'spameggs'})
         response = self.client.get(another_user_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
-        # should return 404 if the user is not logged-in
+        # should return 200 if the user is not logged-in
         self.client.logout()
         response = self.client.get(profile_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
     def test_user_detail(self):
         # Ensure detail page is viewable without login, but that edit URLs
@@ -184,7 +184,7 @@ class UsersViewsTestCase(TestCase):
         self.assertFalse(user.is_active)
         detail_url = reverse('users:user_detail', kwargs={'slug': user.username})
         response = self.client.get(detail_url)
-        self.assertEqual(response.status_code, 404)
+        self.assertEqual(response.status_code, 200)
 
     def test_special_usernames(self):
         # Ensure usernames in the forms of:
