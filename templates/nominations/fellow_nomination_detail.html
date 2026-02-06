@@ -23,7 +23,7 @@ Fellow Nomination: {{ nomination.nominee_name }} | {{ SITE_INFO.site_name }}
     <div>
         <ul>
             <li><b>Nominee</b>: {{ nomination.nominee_name }}</li>
-            <li><b>Nominated by</b>: {{ nomination.nominator.get_full_name }}</li>
+            <li><b>Nominated by</b>: {{ nomination.nominator.get_full_name|default:nomination.nominator.username }}</li>
             <li><b>Round</b>: {{ nomination.nomination_round }}</li>
             <li><b>Status</b>:
                 <span class="badge badge-{{ nomination.status }}">
