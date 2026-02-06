@@ -48,7 +48,7 @@ from sponsors.models.enums import AssetsRelatedTo, LogoPlacementChoices, Publish
 
 class SponsorshipBenefitModelTests(TestCase):
     def test_with_conflicts(self):
-        benefit_1, benefit_2, benefit_3 = baker.make(SponsorshipBenefit, _quantity=3)
+        benefit_1, benefit_2, _benefit_3 = baker.make(SponsorshipBenefit, _quantity=3)
         benefit_1.conflicts.add(benefit_2)
 
         qs = SponsorshipBenefit.objects.with_conflicts()

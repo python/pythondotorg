@@ -933,7 +933,7 @@ class SendSponsorshipNotificationTests(TestCase):
 
         self.assertEqual("HTTP Response", resp)
         self.assertEqual(1, mocked_render.call_count)
-        ret_request, template = mocked_render.call_args[0]
+        _ret_request, template = mocked_render.call_args[0]
         context = mocked_render.call_args[1]["context"]
         self.assertEqual(request, request)
         self.assertEqual("sponsors/admin/send_sponsors_notification.html", template)
