@@ -649,4 +649,9 @@ class FellowsRoster(ListView):
         context["emeritus_count"] = context["emeritus_fellows"].count()
         context["deceased_count"] = context["deceased_fellows"].count()
         context["total_count"] = qs.count()
+        context["years"] = (
+            Fellow.objects.values_list("year_elected", flat=True)
+            .distinct()
+            .order_by("-year_elected")
+        )
         return context
