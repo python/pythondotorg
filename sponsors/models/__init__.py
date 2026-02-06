@@ -4,8 +4,8 @@ Python.org sponsors app is heavily db-oriented. To reduce file length
 the models are being structured as a python package.
 """
 
-from sponsors.models.assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset  # noqa: F401
-from sponsors.models.benefits import (  # noqa: F401
+from sponsors.models.assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset
+from sponsors.models.benefits import (
     BaseEmailTargetable,
     BaseLogoPlacement,
     BaseTieredBenefit,
@@ -28,9 +28,9 @@ from sponsors.models.benefits import (  # noqa: F401
     TieredBenefit,
     TieredBenefitConfiguration,
 )
-from sponsors.models.contract import Contract, LegalClause, signed_contract_random_path  # noqa: F401
-from sponsors.models.notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate  # noqa: F401
-from sponsors.models.sponsors import Sponsor, SponsorBenefit, SponsorContact  # noqa: F401
+from sponsors.models.contract import Contract, LegalClause, signed_contract_random_path
+from sponsors.models.notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate
+from sponsors.models.sponsors import Sponsor, SponsorBenefit, SponsorContact
 from sponsors.models.sponsorship import (
     Sponsorship,
     SponsorshipBenefit,
@@ -38,3 +38,51 @@ from sponsors.models.sponsorship import (
     SponsorshipPackage,
     SponsorshipProgram,
 )
+
+__all__ = [
+    # notifications
+    "SPONSOR_TEMPLATE_HELP_TEXT",
+    # benefits
+    "BaseEmailTargetable",
+    "BaseLogoPlacement",
+    "BaseTieredBenefit",
+    "BenefitFeature",
+    "BenefitFeatureConfiguration",
+    # contract
+    "Contract",
+    "EmailTargetable",
+    "EmailTargetableConfiguration",
+    # assets
+    "FileAsset",
+    "GenericAsset",
+    "ImgAsset",
+    "LegalClause",
+    "LogoPlacement",
+    "LogoPlacementConfiguration",
+    "ProvidedFileAsset",
+    "ProvidedFileAssetConfiguration",
+    "ProvidedTextAsset",
+    "ProvidedTextAssetConfiguration",
+    "RequiredImgAsset",
+    "RequiredImgAssetConfiguration",
+    "RequiredResponseAsset",
+    "RequiredResponseAssetConfiguration",
+    "RequiredTextAsset",
+    "RequiredTextAssetConfiguration",
+    "ResponseAsset",
+    # sponsors
+    "Sponsor",
+    "SponsorBenefit",
+    "SponsorContact",
+    "SponsorEmailNotificationTemplate",
+    # sponsorship
+    "Sponsorship",
+    "SponsorshipBenefit",
+    "SponsorshipCurrentYear",
+    "SponsorshipPackage",
+    "SponsorshipProgram",
+    "TextAsset",
+    "TieredBenefit",
+    "TieredBenefitConfiguration",
+    "signed_contract_random_path",
+]
