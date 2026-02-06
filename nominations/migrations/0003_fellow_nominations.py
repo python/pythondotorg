@@ -49,7 +49,7 @@ class Migration(migrations.Migration):
                 ("updated", models.DateTimeField(blank=True, default=django.utils.timezone.now)),
                 ("nominee_name", models.CharField(max_length=255)),
                 ("nominee_email", models.EmailField(max_length=255)),
-                ("nomination_statement", markupfield.fields.MarkupField(rendered_field=True)),
+                ("nomination_statement", markupfield.fields.MarkupField(rendered_field=True, escape_html=True)),
                 (
                     "nomination_statement_markup_type",
                     models.CharField(
