@@ -242,7 +242,7 @@ class FellowWGRequiredMixin(GroupRequiredMixin):
     raise_exception = True
 
     def check_membership(self, group):
-        if self.request.user.is_staff:
+        if self.request.user.is_staff or self.request.user.is_superuser:
             return True
         return super().check_membership(group)
 
