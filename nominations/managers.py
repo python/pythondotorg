@@ -1,14 +1,17 @@
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 
 class FellowNominationQuerySet(models.QuerySet):
     def active(self):
-        """Exclude accepted/not_accepted, filter by expiry_round still in future."""
+        """Exclude accepted/not_accepted, keep nominations whose expiry round
+        is still in the future OR whose expiry_round has not been set yet."""
         return self.exclude(
             status__in=["accepted", "not_accepted"]
         ).filter(
-            expiry_round__quarter_end__gte=timezone.now().date()
+            Q(expiry_round__quarter_end__gte=timezone.now().date())
+            | Q(expiry_round__isnull=True)
         )
 
     def for_round(self, round_obj):
