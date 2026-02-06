@@ -1,44 +1,54 @@
-from datetime import date, timedelta
 import random
-
-from django.core.cache import cache
-from django.db import IntegrityError
-from model_bakery import baker, seq
+from datetime import timedelta
 
 from django import forms
 from django.conf import settings
+from django.core.cache import cache
 from django.core.mail import EmailMessage
+from django.db import IntegrityError
 from django.test import TestCase
 from django.utils import timezone
+from model_bakery import baker, seq
 
-from ..models import (
+from sponsors.exceptions import (
+    InvalidStatusError,
+    SponsorshipInvalidDateRangeError,
+    SponsorWithExistingApplicationError,
+)
+from sponsors.models import (
     Contract,
+    ImgAsset,
     LegalClause,
     LogoPlacement,
     LogoPlacementConfiguration,
+    RequiredImgAsset,
+    RequiredImgAssetConfiguration,
+    RequiredTextAsset,
+    RequiredTextAssetConfiguration,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
+    TextAsset,
     TieredBenefit,
-    TieredBenefitConfiguration, RequiredImgAssetConfiguration, RequiredImgAsset, ImgAsset,
-    RequiredTextAssetConfiguration, RequiredTextAsset, TextAsset, SponsorshipCurrentYear
+    TieredBenefitConfiguration,
 )
-from ..exceptions import (
-    SponsorWithExistingApplicationException,
-    SponsorshipInvalidDateRangeException,
-    InvalidStatusException,
+from sponsors.models.benefits import (
+    BaseRequiredImgAsset,
+    BaseRequiredTextAsset,
+    BenefitFeature,
+    EmailTargetableConfiguration,
+    RequiredAssetMixin,
 )
-from sponsors.models.enums import PublisherChoices, LogoPlacementChoices, AssetsRelatedTo
-from ..models.benefits import RequiredAssetMixin, BaseRequiredImgAsset, BenefitFeature, BaseRequiredTextAsset, \
-    EmailTargetableConfiguration
+from sponsors.models.enums import AssetsRelatedTo, LogoPlacementChoices, PublisherChoices
 
 
 class SponsorshipBenefitModelTests(TestCase):
     def test_with_conflicts(self):
-        benefit_1, benefit_2, benefit_3 = baker.make(SponsorshipBenefit, _quantity=3)
+        benefit_1, benefit_2, _benefit_3 = baker.make(SponsorshipBenefit, _quantity=3)
         benefit_1.conflicts.add(benefit_2)
 
         qs = SponsorshipBenefit.objects.with_conflicts()
@@ -73,15 +83,10 @@ class SponsorshipBenefitModelTests(TestCase):
         self.assertIn(sponsor_benefit.sponsorship, sponsorships)
 
     def test_name_for_display_without_specifying_package(self):
-        benefit = baker.make(SponsorshipBenefit, name='Benefit')
-        benefit_config = baker.make(
-            TieredBenefitConfiguration,
-            package__name='Package',
-            benefit=benefit,
-            quantity=10
-        )
+        benefit = baker.make(SponsorshipBenefit, name="Benefit")
+        benefit_config = baker.make(TieredBenefitConfiguration, package__name="Package", benefit=benefit, quantity=10)
 
-        expected_name = f"Benefit (10)"
+        expected_name = "Benefit (10)"
         name = benefit.name_for_display(package=benefit_config.package)
         self.assertEqual(name, expected_name)
         self.assertTrue(benefit.has_tiers)
@@ -111,16 +116,14 @@ class SponsorshipModelTests(TestCase):
             self.assertEqual(sponsorship.next_status, exepcted)
 
     def test_create_new_sponsorship(self):
-        sponsorship = Sponsorship.new(
-            self.sponsor, self.benefits, submited_by=self.user
-        )
+        sponsorship = Sponsorship.new(self.sponsor, self.benefits, submited_by=self.user)
         self.assertTrue(sponsorship.pk)
         sponsorship.refresh_from_db()
         current_year = SponsorshipCurrentYear.get_year()
 
         self.assertEqual(sponsorship.submited_by, self.user)
         self.assertEqual(sponsorship.sponsor, self.sponsor)
-        self.assertEqual(sponsorship.applied_on, date.today())
+        self.assertEqual(sponsorship.applied_on, timezone.now().date())
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
         self.assertIsNone(sponsorship.rejected_on)
@@ -141,9 +144,7 @@ class SponsorshipModelTests(TestCase):
             self.assertEqual(sponsor_benefit.name, benefit.name)
             self.assertEqual(sponsor_benefit.description, benefit.description)
             self.assertEqual(sponsor_benefit.program, benefit.program)
-            self.assertEqual(
-                sponsor_benefit.benefit_internal_value, benefit.internal_value
-            )
+            self.assertEqual(sponsor_benefit.benefit_internal_value, benefit.internal_value)
 
     def test_create_new_sponsorship_with_package(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits, package=self.package)
@@ -172,7 +173,7 @@ class SponsorshipModelTests(TestCase):
 
     def test_create_new_sponsorship_with_package_added_benefit(self):
         extra_benefit = baker.make(SponsorshipBenefit)
-        benefits = self.benefits + [extra_benefit]
+        benefits = [*self.benefits, extra_benefit]
         sponsorship = Sponsorship.new(self.sponsor, benefits, package=self.package)
         sponsorship.refresh_from_db()
 
@@ -198,7 +199,7 @@ class SponsorshipModelTests(TestCase):
         self.assertEqual(estimated_cost, sponsorship.estimated_cost)
 
     def test_approve_sponsorship(self):
-        start = date.today()
+        start = timezone.now().date()
         end = start + timedelta(days=10)
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
@@ -212,12 +213,12 @@ class SponsorshipModelTests(TestCase):
         self.assertTrue(sponsorship.end_date, end)
 
     def test_exception_if_invalid_date_range_when_approving(self):
-        start = date.today()
+        start = timezone.now().date()
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         self.assertEqual(sponsorship.status, Sponsorship.APPLIED)
         self.assertIsNone(sponsorship.approved_on)
 
-        with self.assertRaises(SponsorshipInvalidDateRangeException):
+        with self.assertRaises(SponsorshipInvalidDateRangeError):
             sponsorship.approve(start, start)
 
     def test_rollback_sponsorship_to_edit(self):
@@ -241,14 +242,14 @@ class SponsorshipModelTests(TestCase):
         sponsorship.status = Sponsorship.FINALIZED
         sponsorship.save()
         sponsorship.refresh_from_db()
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             sponsorship.rollback_to_editing()
 
     def test_rollback_approved_sponsorship_with_contract_should_delete_it(self):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.empty_contract', sponsorship=sponsorship)
+        baker.make_recipe("sponsors.tests.empty_contract", sponsorship=sponsorship)
 
         sponsorship.rollback_to_editing()
         sponsorship.save()
@@ -261,9 +262,9 @@ class SponsorshipModelTests(TestCase):
         sponsorship = Sponsorship.new(self.sponsor, self.benefits)
         sponsorship.status = Sponsorship.APPROVED
         sponsorship.save()
-        baker.make_recipe('sponsors.tests.awaiting_signature_contract', sponsorship=sponsorship)
+        baker.make_recipe("sponsors.tests.awaiting_signature_contract", sponsorship=sponsorship)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             sponsorship.rollback_to_editing()
 
         self.assertEqual(1, Contract.objects.count())
@@ -285,7 +286,7 @@ class SponsorshipModelTests(TestCase):
             sponsorship.status = status
             sponsorship.save()
 
-            with self.assertRaises(SponsorWithExistingApplicationException):
+            with self.assertRaises(SponsorWithExistingApplicationError):
                 Sponsorship.new(self.sponsor, self.benefits)
 
     def test_display_agreed_fee_for_approved_and_finalized_status(self):
@@ -302,7 +303,6 @@ class SponsorshipModelTests(TestCase):
 
 
 class SponsorshipCurrentYearTests(TestCase):
-
     def test_singleton_object_is_loaded_by_default(self):
         curr_year = SponsorshipCurrentYear.objects.get()
         self.assertEqual(1, curr_year.pk)
@@ -359,7 +359,7 @@ class SponsorshipPackageTests(TestCase):
 
     def test_has_user_customization_if_benefit_from_other_package(self):
         extra = baker.make(SponsorshipBenefit)
-        benefits = [extra] + self.package_benefits
+        benefits = [extra, *self.package_benefits]
         has_customization = self.package.has_user_customization(benefits)
         customization = {"added_by_user": {extra}, "removed_by_user": set()}
         self.assertTrue(has_customization)
@@ -385,9 +385,7 @@ class SponsorshipPackageTests(TestCase):
         benefits[1].conflicts.add(benefits[2])
         self.package.benefits.add(*benefits)
 
-        customization = self.package.has_user_customization(
-            self.package_benefits + benefits[:1]
-        )
+        customization = self.package.has_user_customization(self.package_benefits + benefits[:1])
         self.assertFalse(customization)
 
     def test_user_customization_if_missing_benefit_with_conflict(self):
@@ -409,9 +407,7 @@ class SponsorshipPackageTests(TestCase):
         benefits[2].conflicts.add(benefits[3])
         self.package.benefits.add(*benefits)
 
-        benefits = self.package_benefits + [
-            benefits[0]
-        ]  # missing benefits with index 2 or 3
+        benefits = [*self.package_benefits, benefits[0]]  # missing benefits with index 2 or 3
         customization = self.package.has_user_customization(benefits)
         self.assertTrue(customization)
 
@@ -435,13 +431,17 @@ class SponsorshipPackageTests(TestCase):
         self.assertEqual(pkg_2023.pk, repeated_pkg_2023.pk)
 
     def test_get_default_revenue_split(self):
-        benefits = baker.make(SponsorshipBenefit, internal_value=int(random.random() * 1000), _quantity=12)
-        program_names = set((b.program.name for b in benefits))
+        benefits = baker.make(
+            SponsorshipBenefit,
+            internal_value=int(random.random() * 1000),  # noqa: S311 - not used for security, just test data
+            _quantity=12,
+        )
+        program_names = {b.program.name for b in benefits}
         pkg1 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[:3])
         pkg2 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[3:7])
         pkg3 = baker.make(SponsorshipPackage, year=2024, advertise=True, logo_dimension=300, benefits=benefits[7:])
         splits = [pkg.get_default_revenue_split() for pkg in (pkg1, pkg2, pkg3)]
-        split_names = set((name for split in splits for name, _ in split))
+        split_names = {name for split in splits for name, _ in split}
         totals = [sum((pct for _, pct in split)) for split in splits]
         # since the split percentages are rounded, they may not always total exactly 100.000
         self.assertAlmostEqual(totals[0], 100, delta=0.1)
@@ -462,9 +462,7 @@ class SponsorContactModelTests(TestCase):
         self.assertIsNone(sponsor.primary_contact)
 
         primary_contact = baker.make(SponsorContact, primary=True, sponsor=sponsor)
-        self.assertEqual(
-            SponsorContact.objects.get_primary_contact(sponsor), primary_contact
-        )
+        self.assertEqual(SponsorContact.objects.get_primary_contact(sponsor), primary_contact)
         self.assertEqual(sponsor.primary_contact, primary_contact)
 
 
@@ -486,7 +484,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(contract.revision, 0)
 
         num_updates = 5
-        for i in range(num_updates):
+        for _i in range(num_updates):
             contract.save()
             contract.refresh_from_db()
 
@@ -523,10 +521,7 @@ class ContractModelTests(TestCase):
     def test_create_new_contract_from_sponsorship_sets_sponsor_contact_and_primary(
         self,
     ):
-        sponsor = self.sponsorship.sponsor
-        contact = baker.make(
-            SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
-        )
+        contact = baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, primary=True)
 
         contract = Contract.new(self.sponsorship)
         expected_contact = f"{contact.name} - {contact.phone} | {contact.email}"
@@ -558,9 +553,7 @@ class ContractModelTests(TestCase):
             clause = legal_clauses[i]
             benefit.legal_clauses.add(clause)
             SponsorBenefit.new_copy(benefit, sponsorship=self.sponsorship)
-        self.sponsorship_benefits.first().legal_clauses.add(
-            clause
-        )  # first benefit with 2 legal clauses
+        self.sponsorship_benefits.first().legal_clauses.add(clause)  # first benefit with 2 legal clauses
 
         contract = Contract.new(self.sponsorship)
 
@@ -597,9 +590,7 @@ class ContractModelTests(TestCase):
             self.assertEqual(contract.next_status, exepcted)
 
     def test_set_final_document_version(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
         content = b"pdf binary content"
         self.assertFalse(contract.document.name)
 
@@ -610,9 +601,7 @@ class ContractModelTests(TestCase):
         self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
     def test_set_final_document_version_saves_docx_document_too(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", sponsorship__sponsor__name="foo"
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
         content = b"pdf binary content"
         docx_content = b"pdf binary content"
 
@@ -623,37 +612,29 @@ class ContractModelTests(TestCase):
         self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
     def test_raise_invalid_status_exception_if_not_draft(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.set_final_version(b"content")
 
     def test_execute_contract(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
         contract.execute()
         contract.refresh_from_db()
 
         self.assertEqual(contract.status, Contract.EXECUTED)
         self.assertEqual(contract.sponsorship.status, Sponsorship.FINALIZED)
-        self.assertEqual(contract.sponsorship.finalized_on, date.today())
+        self.assertEqual(contract.sponsorship.finalized_on, timezone.now().date())
 
     def test_raise_invalid_status_when_trying_to_execute_contract_if_not_awaiting_signature(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.OUTDATED
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.OUTDATED)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.execute()
 
     def test_nullify_contract(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
         contract.nullify()
         contract.refresh_from_db()
@@ -661,27 +642,22 @@ class ContractModelTests(TestCase):
         self.assertEqual(contract.status, Contract.NULLIFIED)
 
     def test_raise_invalid_status_when_trying_to_nullify_contract_if_not_awaiting_signature(self):
-        contract = baker.make_recipe(
-            "sponsors.tests.empty_contract", status=Contract.DRAFT
-        )
+        contract = baker.make_recipe("sponsors.tests.empty_contract", status=Contract.DRAFT)
 
-        with self.assertRaises(InvalidStatusException):
+        with self.assertRaises(InvalidStatusError):
             contract.nullify()
 
 
 class SponsorBenefitModelTests(TestCase):
-
     def setUp(self):
         self.sponsorship = baker.make(Sponsorship)
-        self.sponsorship_benefit = baker.make(SponsorshipBenefit, name='Benefit')
+        self.sponsorship_benefit = baker.make(SponsorshipBenefit, name="Benefit")
 
     def test_new_copy_also_add_benefit_feature_when_creating_sponsor_benefit(self):
         benefit_config = baker.make(LogoPlacementConfiguration, benefit=self.sponsorship_benefit)
         self.assertEqual(0, LogoPlacement.objects.count())
 
-        sponsor_benefit = SponsorBenefit.new_copy(
-            self.sponsorship_benefit, sponsorship=self.sponsorship
-        )
+        sponsor_benefit = SponsorBenefit.new_copy(self.sponsorship_benefit, sponsorship=self.sponsorship)
 
         self.assertEqual(1, LogoPlacement.objects.count())
         benefit_feature = sponsor_benefit.features.get()
@@ -690,16 +666,14 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(benefit_feature.logo_place, benefit_config.logo_place)
 
     def test_new_copy_do_not_save_unexisting_features(self):
-        benefit_config = baker.make(
+        baker.make(
             TieredBenefitConfiguration,
-            package__name='Another package',
+            package__name="Another package",
             benefit=self.sponsorship_benefit,
         )
         self.assertEqual(0, TieredBenefit.objects.count())
 
-        sponsor_benefit = SponsorBenefit.new_copy(
-            self.sponsorship_benefit, sponsorship=self.sponsorship
-        )
+        sponsor_benefit = SponsorBenefit.new_copy(self.sponsorship_benefit, sponsorship=self.sponsorship)
 
         self.assertEqual(0, TieredBenefit.objects.count())
         self.assertFalse(sponsor_benefit.features.exists())
@@ -710,27 +684,19 @@ class SponsorBenefitModelTests(TestCase):
         # benefit name if no features
         self.assertEqual(sponsor_benefit.name_for_display, name)
         # apply display modifier from features
-        benefit_config = baker.make(
-            TieredBenefit,
-            sponsor_benefit=sponsor_benefit,
-            quantity=10
-        )
+        baker.make(TieredBenefit, sponsor_benefit=sponsor_benefit, quantity=10)
         self.assertEqual(sponsor_benefit.name_for_display, f"{name} (10)")
 
     def test_sponsor_benefit_from_standalone_one(self):
         self.sponsorship_benefit.standalone = True
         self.sponsorship_benefit.save()
-        sponsor_benefit = SponsorBenefit.new_copy(
-            self.sponsorship_benefit, sponsorship=self.sponsorship
-        )
+        sponsor_benefit = SponsorBenefit.new_copy(self.sponsorship_benefit, sponsorship=self.sponsorship)
 
         self.assertTrue(sponsor_benefit.added_by_user)
         self.assertTrue(sponsor_benefit.standalone)
 
     def test_reset_attributes_updates_all_basic_information(self):
-        benefit = baker.make(
-            SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit
-        )
+        benefit = baker.make(SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit)
         # both have different random values
         self.assertNotEqual(benefit.name, self.sponsorship_benefit.name)
 
@@ -751,9 +717,7 @@ class SponsorBenefitModelTests(TestCase):
             internal_name="foo",
             label="Text",
         )
-        benefit = baker.make(
-            SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit
-        )
+        benefit = baker.make(SponsorBenefit, sponsorship_benefit=self.sponsorship_benefit)
         # no previous feature
         self.assertFalse(benefit.features.count())
 
@@ -769,9 +733,7 @@ class SponsorBenefitModelTests(TestCase):
             internal_name="foo",
             label="Text",
         )
-        benefit = SponsorBenefit.new_copy(
-            self.sponsorship_benefit, sponsorship=self.sponsorship
-        )
+        benefit = SponsorBenefit.new_copy(self.sponsorship_benefit, sponsorship=self.sponsorship)
         self.assertEqual(1, benefit.features.count())
         cfg.delete()
 
@@ -788,9 +750,7 @@ class SponsorBenefitModelTests(TestCase):
             internal_name="foo",
             label="Text",
         )
-        benefit = SponsorBenefit.new_copy(
-            self.sponsorship_benefit, sponsorship=self.sponsorship
-        )
+        benefit = SponsorBenefit.new_copy(self.sponsorship_benefit, sponsorship=self.sponsorship)
 
         feature = RequiredTextAsset.objects.get()
         feature.value = "foo"
@@ -810,7 +770,7 @@ class SponsorBenefitModelTests(TestCase):
     def test_clone_benefit_regular_attributes_to_a_new_year(self):
         benefit = baker.make(
             SponsorshipBenefit,
-            name='Benefit',
+            name="Benefit",
             description="desc",
             program__name="prog",
             package_only=False,
@@ -821,7 +781,7 @@ class SponsorBenefitModelTests(TestCase):
             internal_value=300,
             capacity=100,
             soft_capacity=True,
-            year=2022
+            year=2022,
         )
         benefit_2023, created = benefit.clone(year=2023)
         self.assertTrue(created)
@@ -860,17 +820,17 @@ class SponsorBenefitModelTests(TestCase):
         self.assertEqual(2, benefit_2023.legal_clauses.count())
 
     def test_clone_benefit_feature_configurations(self):
-        cfg_1 = baker.make(
+        baker.make(
             LogoPlacementConfiguration,
-            publisher = PublisherChoices.FOUNDATION,
-            logo_place = LogoPlacementChoices.FOOTER,
-            benefit=self.sponsorship_benefit
+            publisher=PublisherChoices.FOUNDATION,
+            logo_place=LogoPlacementChoices.FOOTER,
+            benefit=self.sponsorship_benefit,
         )
-        cfg_2 = baker.make(
+        baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSOR.value,
             internal_name="config_name",
-            benefit=self.sponsorship_benefit
+            benefit=self.sponsorship_benefit,
         )
 
         benefit_2023, _ = self.sponsorship_benefit.clone(2023)
@@ -882,7 +842,6 @@ class SponsorBenefitModelTests(TestCase):
 
 
 class LegalClauseTests(TestCase):
-
     def test_clone_legal_clause(self):
         clause = baker.make(LegalClause)
         new_clause = clause.clone()
@@ -895,17 +854,14 @@ class LegalClauseTests(TestCase):
 ###########
 # Email notification tests
 class SponsorEmailNotificationTemplateTests(TestCase):
-
     def setUp(self):
         self.notification = baker.make(
-            'sponsors.SponsorEmailNotificationTemplate',
+            "sponsors.SponsorEmailNotificationTemplate",
             subject="Subject - {{ sponsor_name }}",
             content="Hi {{ sponsor_name }}, how are you?",
         )
         self.sponsorship = baker.make(Sponsorship, sponsor__name="Foo")
-        self.contact = baker.make(
-            SponsorContact, sponsor=self.sponsorship.sponsor, primary=True
-        )
+        self.contact = baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, primary=True)
 
     def test_map_sponsorship_info_to_simplified_context_data(self):
         expected_context = {
@@ -914,20 +870,16 @@ class SponsorEmailNotificationTemplateTests(TestCase):
             "sponsorship_end_date": self.sponsorship.end_date,
             "sponsorship_status": self.sponsorship.status,
             "sponsorship_level": self.sponsorship.level_name,
-            "extra": "foo"
+            "extra": "foo",
         }
         context = self.notification.get_email_context_data(sponsorship=self.sponsorship, extra="foo")
         self.assertEqual(expected_context, context)
 
     def test_get_email_message(self):
-        manager = baker.make(
-            SponsorContact, sponsor=self.sponsorship.sponsor, manager=True
-        )
+        manager = baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, manager=True)
         baker.make(SponsorContact, sponsor=self.sponsorship.sponsor, accounting=True)
 
-        email = self.notification.get_email_message(
-            self.sponsorship, to_primary=True, to_manager=True
-        )
+        email = self.notification.get_email_message(self.sponsorship, to_primary=True, to_manager=True)
 
         self.assertIsInstance(email, EmailMessage)
         self.assertEqual("Subject - Foo", email.subject)
@@ -951,7 +903,6 @@ class SponsorEmailNotificationTemplateTests(TestCase):
 ####### Benefit features/configuration tests
 ###########
 class LogoPlacementConfigurationModelTests(TestCase):
-
     def setUp(self):
         self.config = baker.make(
             LogoPlacementConfiguration,
@@ -970,7 +921,7 @@ class LogoPlacementConfigurationModelTests(TestCase):
         self.assertIsNone(benefit_feature.sponsor_benefit_id)
 
     def test_display_modifier_returns_same_name(self):
-        name = 'Benefit'
+        name = "Benefit"
         self.assertEqual(name, self.config.display_modifier(name))
 
     def test_clone_configuration_for_new_sponsorship_benefit(self):
@@ -990,7 +941,6 @@ class LogoPlacementConfigurationModelTests(TestCase):
 
 
 class TieredBenefitConfigurationModelTests(TestCase):
-
     def setUp(self):
         self.package = baker.make(SponsorshipPackage, year=2022)
         self.config = baker.make(
@@ -1011,7 +961,7 @@ class TieredBenefitConfigurationModelTests(TestCase):
         self.assertEqual(benefit_feature.display_label, "Foo")
 
     def test_do_not_return_feature_if_benefit_from_other_package(self):
-        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name='Other')
+        sponsor_benefit = baker.make(SponsorBenefit, sponsorship__package__name="Other")
 
         benefit_feature = self.config.get_benefit_feature(sponsor_benefit=sponsor_benefit)
 
@@ -1056,30 +1006,27 @@ class TieredBenefitConfigurationModelTests(TestCase):
 
 
 class LogoPlacementTests(TestCase):
-
     def test_display_modifier_does_not_change_the_name(self):
         placement = baker.make(LogoPlacement)
-        name = 'Benefit'
+        name = "Benefit"
         self.assertEqual(placement.display_modifier(name), name)
 
 
 class TieredBenefitTests(TestCase):
-
     def test_display_modifier_adds_quantity_to_the_name(self):
         placement = baker.make(TieredBenefit, quantity=10)
-        name = 'Benefit'
-        self.assertEqual(placement.display_modifier(name), 'Benefit (10)')
+        name = "Benefit"
+        self.assertEqual(placement.display_modifier(name), "Benefit (10)")
 
     def test_display_modifier_adds_display_label_to_the_name(self):
         placement = baker.make(TieredBenefit, quantity=10, display_label="Foo")
-        name = 'Benefit'
-        self.assertEqual(placement.display_modifier(name), 'Benefit (Foo)')
+        name = "Benefit"
+        self.assertEqual(placement.display_modifier(name), "Benefit (Foo)")
 
 
 class RequiredImgAssetConfigurationTests(TestCase):
-
     def setUp(self):
-        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name="Foo")
         self.config = baker.make(
             RequiredImgAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSOR.value,
@@ -1128,9 +1075,8 @@ class RequiredImgAssetConfigurationTests(TestCase):
 
 
 class RequiredTextAssetConfigurationTests(TestCase):
-
     def setUp(self):
-        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name="Foo")
         self.config = baker.make(
             RequiredTextAssetConfiguration,
             related_to=AssetsRelatedTo.SPONSOR.value,
@@ -1197,9 +1143,8 @@ class RequiredTextAssetConfigurationTests(TestCase):
 
 
 class RequiredTextAssetTests(TestCase):
-
     def setUp(self):
-        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name='Foo')
+        self.sponsor_benefit = baker.make(SponsorBenefit, sponsorship__sponsor__name="Foo")
 
     def test_get_value_from_sponsor_asset(self):
         config = baker.make(
@@ -1270,7 +1215,6 @@ class RequiredImgAssetTests(TestCase):
 
 
 class EmailTargetableConfigurationTest(TestCase):
-
     def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
         config = baker.make(EmailTargetableConfiguration)
         benefit = baker.make(SponsorshipBenefit, year=2023)

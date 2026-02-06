@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0066_auto_20211223_1318'),
+        ("sponsors", "0066_auto_20211223_1318"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorbenefit',
-            name='a_la_carte',
-            field=models.BooleanField(blank=True, default=False, verbose_name='Added as a la carte benefit?'),
+            model_name="sponsorbenefit",
+            name="a_la_carte",
+            field=models.BooleanField(blank=True, default=False, verbose_name="Added as a la carte benefit?"),
         ),
     ]

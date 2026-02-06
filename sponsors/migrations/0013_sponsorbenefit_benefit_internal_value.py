@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("sponsors", "0012_sponsorship_for_modified_package"),
     ]

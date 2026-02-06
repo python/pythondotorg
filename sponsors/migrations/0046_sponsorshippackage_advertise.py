@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0045_add_added_by_user_sponsorbenefit'),
+        ("sponsors", "0045_add_added_by_user_sponsorbenefit"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='sponsorshippackage',
-            name='advertise',
-            field=models.BooleanField(default=False, help_text='If checked, this package will be advertised in the sponsosrhip application'),
+            model_name="sponsorshippackage",
+            name="advertise",
+            field=models.BooleanField(
+                default=False, help_text="If checked, this package will be advertised in the sponsosrhip application"
+            ),
         ),
     ]

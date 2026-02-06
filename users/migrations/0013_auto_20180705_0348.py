@@ -4,20 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('users', '0012_usergroup'),
+        ("users", "0012_usergroup"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='last_name',
-            field=models.CharField(blank=True, max_length=150, verbose_name='last name'),
+            model_name="user",
+            name="last_name",
+            field=models.CharField(blank=True, max_length=150, verbose_name="last name"),
         ),
         migrations.AlterField(
-            model_name='usergroup',
-            name='url_type',
-            field=models.CharField(choices=[('meetup', 'Meetup'), ('distribution list', 'Distribution List'), ('other', 'Other')], max_length=20),
+            model_name="usergroup",
+            name="url_type",
+            field=models.CharField(
+                choices=[("meetup", "Meetup"), ("distribution list", "Distribution List"), ("other", "Other")],
+                max_length=20,
+            ),
         ),
     ]

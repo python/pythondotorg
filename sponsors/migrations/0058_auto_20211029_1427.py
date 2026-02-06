@@ -4,38 +4,57 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0057_auto_20211026_1529'),
+        ("sponsors", "0057_auto_20211026_1529"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='requiredimgasset',
-            name='internal_name',
-            field=models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, verbose_name='Internal Name'),
+            model_name="requiredimgasset",
+            name="internal_name",
+            field=models.CharField(
+                db_index=True,
+                help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                max_length=128,
+                verbose_name="Internal Name",
+            ),
         ),
         migrations.AlterField(
-            model_name='requiredimgassetconfiguration',
-            name='internal_name',
-            field=models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, verbose_name='Internal Name'),
+            model_name="requiredimgassetconfiguration",
+            name="internal_name",
+            field=models.CharField(
+                db_index=True,
+                help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                max_length=128,
+                verbose_name="Internal Name",
+            ),
         ),
         migrations.AlterField(
-            model_name='requiredtextasset',
-            name='internal_name',
-            field=models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, verbose_name='Internal Name'),
+            model_name="requiredtextasset",
+            name="internal_name",
+            field=models.CharField(
+                db_index=True,
+                help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                max_length=128,
+                verbose_name="Internal Name",
+            ),
         ),
         migrations.AlterField(
-            model_name='requiredtextassetconfiguration',
-            name='internal_name',
-            field=models.CharField(db_index=True, help_text='Unique name used internally to control if the sponsor/sponsorship already has the asset', max_length=128, verbose_name='Internal Name'),
+            model_name="requiredtextassetconfiguration",
+            name="internal_name",
+            field=models.CharField(
+                db_index=True,
+                help_text="Unique name used internally to control if the sponsor/sponsorship already has the asset",
+                max_length=128,
+                verbose_name="Internal Name",
+            ),
         ),
         migrations.AddConstraint(
-            model_name='requiredimgassetconfiguration',
-            constraint=models.UniqueConstraint(fields=('internal_name',), name='uniq_img_asset_cfg'),
+            model_name="requiredimgassetconfiguration",
+            constraint=models.UniqueConstraint(fields=("internal_name",), name="uniq_img_asset_cfg"),
         ),
         migrations.AddConstraint(
-            model_name='requiredtextassetconfiguration',
-            constraint=models.UniqueConstraint(fields=('internal_name',), name='uniq_text_asset_cfg'),
+            model_name="requiredtextassetconfiguration",
+            constraint=models.UniqueConstraint(fields=("internal_name",), name="uniq_text_asset_cfg"),
         ),
     ]

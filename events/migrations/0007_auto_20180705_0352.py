@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('events', '0006_change_end_date_for_occurring_rules'),
+        ("events", "0006_change_end_date_for_occurring_rules"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='eventcategory',
-            name='slug',
+            model_name="eventcategory",
+            name="slug",
             field=models.SlugField(max_length=200, unique=True),
         ),
     ]

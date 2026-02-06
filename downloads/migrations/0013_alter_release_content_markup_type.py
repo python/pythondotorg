@@ -4,15 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('downloads', '0012_alter_release_version'),
+        ("downloads", "0012_alter_release_version"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='release',
-            name='content_markup_type',
-            field=models.CharField(choices=[('', '--'), ('html', 'HTML'), ('plain', 'Plain'), ('markdown', 'Markdown'), ('restructuredtext', 'Restructured Text')], default='markdown', max_length=30),
+            model_name="release",
+            name="content_markup_type",
+            field=models.CharField(
+                choices=[
+                    ("", "--"),
+                    ("html", "HTML"),
+                    ("plain", "Plain"),
+                    ("markdown", "Markdown"),
+                    ("restructuredtext", "Restructured Text"),
+                ],
+                default="markdown",
+                max_length=30,
+            ),
         ),
     ]

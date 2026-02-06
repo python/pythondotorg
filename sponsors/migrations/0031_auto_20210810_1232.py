@@ -4,20 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0030_auto_20210715_2023'),
+        ("sponsors", "0030_auto_20210715_2023"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sponsorcontact',
-            name='administrative',
-            field=models.BooleanField(default=False, help_text='Administrative contacts will only be notified regarding contracts.'),
+            model_name="sponsorcontact",
+            name="administrative",
+            field=models.BooleanField(
+                default=False, help_text="Administrative contacts will only be notified regarding contracts."
+            ),
         ),
         migrations.AlterField(
-            model_name='sponsorcontact',
-            name='primary',
-            field=models.BooleanField(default=False, help_text='The primary contact for a sponsorship will be responsible for managing deliverables we need to fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship.'),
+            model_name="sponsorcontact",
+            name="primary",
+            field=models.BooleanField(
+                default=False,
+                help_text="The primary contact for a sponsorship will be responsible for managing deliverables we need to fulfill benefits. Primary contacts will receive all email notifications regarding sponsorship.",
+            ),
         ),
     ]

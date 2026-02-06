@@ -1,45 +1,64 @@
+"""Use case classes orchestrating sponsorship business logic with notifications."""
+
 from django.db import transaction
 
 from sponsors import notifications
-from sponsors.models import Sponsorship, Contract, SponsorContact, SponsorEmailNotificationTemplate, SponsorshipBenefit, \
-    SponsorshipPackage
-from sponsors.contracts import render_contract_to_pdf_file, render_contract_to_docx_file
+from sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+from sponsors.models import (
+    Contract,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipPackage,
+)
 
 
 class BaseUseCaseWithNotifications:
+    """Base class providing notification dispatch for use case implementations."""
+
     notifications = []
 
     def __init__(self, notifications):
+        """Initialize with a list of notification handlers."""
         self.notifications = notifications
 
     def notify(self, **kwargs):
+        """Send all registered notifications with the given keyword arguments."""
         for notification in self.notifications:
             notification.notify(**kwargs)
 
     @classmethod
     def build(cls):
+        """Construct the use case with its default notification list."""
         return cls(cls.notifications)
 
 
 class CreateSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
+    """Create a new sponsorship application and notify stakeholders."""
+
     notifications = [
         notifications.AppliedSponsorshipNotificationToPSF(),
         notifications.AppliedSponsorshipNotificationToSponsors(),
     ]
 
     def execute(self, user, sponsor, benefits, package=None, request=None):
+        """Create the sponsorship and send application notifications."""
         sponsorship = Sponsorship.new(sponsor, benefits, package, submited_by=user)
         self.notify(sponsorship=sponsorship, request=request)
         return sponsorship
 
 
 class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
+    """Reject a sponsorship application and notify stakeholders."""
+
     notifications = [
         notifications.RejectedSponsorshipNotificationToPSF(),
         notifications.RejectedSponsorshipNotificationToSponsors(),
     ]
 
     def execute(self, sponsorship, request=None):
+        """Reject the sponsorship and send rejection notifications."""
         sponsorship.reject()
         sponsorship.save()
         self.notify(request=request, sponsorship=sponsorship)
@@ -47,11 +66,14 @@ class RejectSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
 
 class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
+    """Approve a sponsorship application, create a contract, and log the approval."""
+
     notifications = [
         notifications.SponsorshipApprovalLogger(),
     ]
 
     def execute(self, sponsorship, start_date, end_date, **kwargs):
+        """Approve the sponsorship, set dates and fees, and create a contract."""
         sponsorship.approve(start_date, end_date)
         package = kwargs.get("package")
         fee = kwargs.get("sponsorship_fee")
@@ -77,17 +99,15 @@ class ApproveSponsorshipApplicationUseCase(BaseUseCaseWithNotifications):
 
 
 class SendContractUseCase(BaseUseCaseWithNotifications):
+    """Generate and send a finalized contract to the sponsor."""
+
     notifications = [
         notifications.ContractNotificationToPSF(),
-        # TODO: sponsor's notification will be enabled again once
-        # the generate contract file gets approved by PSF Board.
-        # After that, the line bellow can be uncommented to enable
-        # the desired behavior.
-        #notifications.ContractNotificationToSponsors(),
         notifications.SentContractLogger(),
     ]
 
     def execute(self, contract, **kwargs):
+        """Render the contract as PDF/DOCX, finalize it, and notify PSF."""
         pdf_file = render_contract_to_pdf_file(contract)
         docx_file = render_contract_to_docx_file(contract)
         contract.set_final_version(pdf_file, docx_file)
@@ -98,6 +118,8 @@ class SendContractUseCase(BaseUseCaseWithNotifications):
 
 
 class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
+    """Execute a contract with an already-signed document file."""
+
     notifications = [
         notifications.ExecutedExistingContractLogger(),
         notifications.RefreshSponsorshipsCache(),
@@ -105,13 +127,17 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
     force_execute = True
 
     def execute(self, contract, contract_file, **kwargs):
+        """Attach the signed document, execute the contract, and handle overlaps."""
         contract.signed_document = contract_file
         contract.execute(force=self.force_execute)
-        overlapping_sponsorship = Sponsorship.objects.filter(
-            sponsor=contract.sponsorship.sponsor,
-        ).exclude(
-            id=contract.sponsorship.id
-        ).enabled().active_on_date(contract.sponsorship.start_date)
+        overlapping_sponsorship = (
+            Sponsorship.objects.filter(
+                sponsor=contract.sponsorship.sponsor,
+            )
+            .exclude(id=contract.sponsorship.id)
+            .enabled()
+            .active_on_date(contract.sponsorship.start_date)
+        )
         overlapping_sponsorship.update(overlapped_by=contract.sponsorship)
         self.notify(
             request=kwargs.get("request"),
@@ -120,6 +146,8 @@ class ExecuteExistingContractUseCase(BaseUseCaseWithNotifications):
 
 
 class ExecuteContractUseCase(ExecuteExistingContractUseCase):
+    """Execute a contract that was previously sent for signature."""
+
     notifications = [
         notifications.ExecutedContractLogger(),
         notifications.RefreshSponsorshipsCache(),
@@ -128,12 +156,15 @@ class ExecuteContractUseCase(ExecuteExistingContractUseCase):
 
 
 class NullifyContractUseCase(BaseUseCaseWithNotifications):
+    """Nullify a contract and refresh the sponsorships cache."""
+
     notifications = [
         notifications.NullifiedContractLogger(),
         notifications.RefreshSponsorshipsCache(),
     ]
 
     def execute(self, contract, **kwargs):
+        """Nullify the contract and send notifications."""
         contract.nullify()
         self.notify(
             request=kwargs.get("request"),
@@ -142,11 +173,14 @@ class NullifyContractUseCase(BaseUseCaseWithNotifications):
 
 
 class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
+    """Send custom email notifications to selected sponsorships."""
+
     notifications = [
         notifications.SendSponsorNotificationLogger(),
     ]
 
     def execute(self, notification: SponsorEmailNotificationTemplate, sponsorships, contact_types, **kwargs):
+        """Send the notification email to each sponsorship's matching contacts."""
         msg_kwargs = {
             "to_primary": SponsorContact.PRIMARY_CONTACT in contact_types,
             "to_administrative": SponsorContact.ADMINISTRATIVE_CONTACT in contact_types,
@@ -169,12 +203,15 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
 
 
 class CloneSponsorshipYearUseCase(BaseUseCaseWithNotifications):
+    """Clone sponsorship packages and benefits from one year to another."""
+
     notifications = [
         notifications.ClonedResourcesLogger(),
     ]
 
     @transaction.atomic
     def execute(self, clone_from_year, target_year, **kwargs):
+        """Clone all packages and benefits from the source year to the target year."""
         created_resources = []
         with transaction.atomic():
             source_packages = SponsorshipPackage.objects.from_year(clone_from_year)

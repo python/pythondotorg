@@ -1,1 +1,1 @@
-# Intentionally left blank
+"""Models for the fastly app (intentionally empty)."""

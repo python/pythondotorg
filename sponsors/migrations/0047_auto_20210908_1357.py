@@ -4,17 +4,14 @@ from django.db import migrations
 
 
 def update_package_as_advertisable(apps, schema_editor):
-    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")
+    SponsorshipPackage = apps.get_model("sponsors.SponsorshipPackage")  # noqa: N806 - Django migration convention
     # initial sponsorship packages should remaing visible in the form
     SponsorshipPackage.objects.all().update(advertise=True)
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0046_sponsorshippackage_advertise'),
+        ("sponsors", "0046_sponsorshippackage_advertise"),
     ]
 
-    operations = [
-        migrations.RunPython(update_package_as_advertisable, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(update_package_as_advertisable, migrations.RunPython.noop)]

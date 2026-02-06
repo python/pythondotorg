@@ -1,21 +1,23 @@
 from django.core.management.base import BaseCommand
 from django.utils.timezone import now
 
-from ...models import BlogEntry, RelatedBlog, Feed
-from ...parser import get_all_entries, update_blog_supernav
+from blogs.models import BlogEntry, Feed, RelatedBlog
+from blogs.parser import get_all_entries, update_blog_supernav
 
 
 class Command(BaseCommand):
-    """ Update blog entries and related blog feed data """
+    """Update blog entries and related blog feed data"""
 
     def handle(self, **options):
         for feed in Feed.objects.all():
             entries = get_all_entries(feed.feed_url)
 
             for entry in entries:
-                url = entry.pop('url')
+                url = entry.pop("url")
                 BlogEntry.objects.update_or_create(
-                    feed=feed, url=url, defaults=entry,
+                    feed=feed,
+                    url=url,
+                    defaults=entry,
                 )
 
             feed.last_import = now()

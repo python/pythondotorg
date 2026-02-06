@@ -2,21 +2,20 @@ import datetime
 from types import SimpleNamespace
 from unittest.mock import patch
 
+from dateutil.rrule import WEEKLY, rrule
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 
-from dateutil.rrule import rrule, WEEKLY
-
-from ..models import Calendar, Event, OccurringRule, RecurringRule
-from ..utils import seconds_resolution, convert_dt_to_aware
+from events.models import Calendar, Event, OccurringRule, RecurringRule
+from events.utils import convert_dt_to_aware, seconds_resolution
 
 
 class EventsModelsTests(TestCase):
     def setUp(self):
-        self.user = get_user_model().objects.create_user(username='username', password='password')
-        self.calendar = Calendar.objects.create(creator=self.user, slug='test-calendar')
-        self.event = Event.objects.create(title='event', creator=self.user, calendar=self.calendar)
+        self.user = get_user_model().objects.create_user(username="username", password="password")
+        self.calendar = Calendar.objects.create(creator=self.user, slug="test-calendar")
+        self.event = Event.objects.create(title="event", creator=self.user, calendar=self.calendar)
 
     def test_occurring_event(self):
         now = seconds_resolution(timezone.now())
@@ -85,12 +84,7 @@ class EventsModelsTests(TestCase):
         )
 
         self.assertEqual(rt.freq_interval_as_timedelta, datetime.timedelta(days=7))
-        dateutil_rrule = rrule(
-            WEEKLY,
-            interval=1,
-            dtstart=recurring_time_dtstart,
-            until=recurring_time_dtend
-        )
+        dateutil_rrule = rrule(WEEKLY, interval=1, dtstart=recurring_time_dtstart, until=recurring_time_dtend)
         self.assertEqual(rt.to_rrule().after(now), dateutil_rrule.after(now))
         self.assertEqual(rt.dt_start, rt.to_rrule().after(now))
 
@@ -190,58 +184,54 @@ class EventsModelsTests(TestCase):
 
     def test_scheduled_to_start_this_year_method(self):
         test_datetime = SimpleNamespace(
-            now=lambda: timezone.datetime(timezone.now().year,
-                                          6, 1, tzinfo=timezone.now().tzinfo)
+            now=lambda: timezone.datetime(timezone.now().year, 6, 1, tzinfo=timezone.now().tzinfo)
         )
 
-        with patch("django.utils.timezone", new=test_datetime) as mock_timezone:
-            with patch("events.models.timezone", new=test_datetime):
-                now = seconds_resolution(mock_timezone.now())
+        with (
+            patch("django.utils.timezone", new=test_datetime) as mock_timezone,
+            patch("events.models.timezone", new=test_datetime),
+        ):
+            now = seconds_resolution(mock_timezone.now())
 
-                occurring_time_dtstart = now + datetime.timedelta(days=1)
-                OccurringRule.objects.create(
-                    event=self.event,
-                    dt_start=occurring_time_dtstart,
-                    dt_end=occurring_time_dtstart + datetime.timedelta(days=3)
-                )
-                self.assertTrue(self.event.is_scheduled_to_start_this_year())
+            occurring_time_dtstart = now + datetime.timedelta(days=1)
+            OccurringRule.objects.create(
+                event=self.event,
+                dt_start=occurring_time_dtstart,
+                dt_end=occurring_time_dtstart + datetime.timedelta(days=3),
+            )
+            self.assertTrue(self.event.is_scheduled_to_start_this_year())
 
-                OccurringRule.objects.get(event=self.event).delete()
+            OccurringRule.objects.get(event=self.event).delete()
 
-                event_not_scheduled_to_start_this_year_occurring_time_dtstart = now + datetime.timedelta(days=365)
-                OccurringRule.objects.create(
-                    event=self.event,
-                    dt_start=event_not_scheduled_to_start_this_year_occurring_time_dtstart,
-                    dt_end=event_not_scheduled_to_start_this_year_occurring_time_dtstart + datetime.timedelta(days=3)
-                )
+            event_not_scheduled_to_start_this_year_occurring_time_dtstart = now + datetime.timedelta(days=365)
+            OccurringRule.objects.create(
+                event=self.event,
+                dt_start=event_not_scheduled_to_start_this_year_occurring_time_dtstart,
+                dt_end=event_not_scheduled_to_start_this_year_occurring_time_dtstart + datetime.timedelta(days=3),
+            )
 
-                self.assertFalse(self.event.is_scheduled_to_start_this_year())
+            self.assertFalse(self.event.is_scheduled_to_start_this_year())
 
     def test_scheduled_to_end_this_year_method(self):
         test_datetime = SimpleNamespace(
-            now=lambda: timezone.datetime(timezone.now().year,
-                                          6, 1, tzinfo=timezone.now().tzinfo)
+            now=lambda: timezone.datetime(timezone.now().year, 6, 1, tzinfo=timezone.now().tzinfo)
         )
 
-        with patch("django.utils.timezone", new=test_datetime) as mock_timezone:
-            with patch("events.models.timezone", new=test_datetime):
-                now = seconds_resolution(mock_timezone.now())
-                occurring_time_dtstart = now + datetime.timedelta(days=1)
+        with (
+            patch("django.utils.timezone", new=test_datetime) as mock_timezone,
+            patch("events.models.timezone", new=test_datetime),
+        ):
+            now = seconds_resolution(mock_timezone.now())
+            occurring_time_dtstart = now + datetime.timedelta(days=1)
 
-                OccurringRule.objects.create(
-                    event=self.event,
-                    dt_start=occurring_time_dtstart,
-                    dt_end=occurring_time_dtstart
-                )
+            OccurringRule.objects.create(
+                event=self.event, dt_start=occurring_time_dtstart, dt_end=occurring_time_dtstart
+            )
 
-                self.assertTrue(self.event.is_scheduled_to_end_this_year())
+            self.assertTrue(self.event.is_scheduled_to_end_this_year())
 
-                OccurringRule.objects.get(event=self.event).delete()
+            OccurringRule.objects.get(event=self.event).delete()
 
-                OccurringRule.objects.create(
-                    event=self.event,
-                    dt_start=now,
-                    dt_end=now + datetime.timedelta(days=365)
-                )
+            OccurringRule.objects.create(event=self.event, dt_start=now, dt_end=now + datetime.timedelta(days=365))
 
-                self.assertFalse(self.event.is_scheduled_to_end_this_year())
+            self.assertFalse(self.event.is_scheduled_to_end_this_year())

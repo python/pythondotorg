@@ -1,54 +1,54 @@
+"""Views for user profiles, PSF membership, and sponsorship management."""
+
 from collections import defaultdict
 
+from allauth.account.views import PasswordChangeView, SignupView
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.conf import settings
 from django.core.mail import send_mail
 from django.db.models import Subquery
-from django.urls import reverse, reverse_lazy
 from django.http import Http404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
+from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.contrib.auth.decorators import login_required
-from django.views.generic import (
-    CreateView, DetailView, TemplateView, UpdateView, DeleteView, ListView, FormView
-)
-
-from allauth.account.views import SignupView, PasswordChangeView
+from django.views.generic import CreateView, DeleteView, DetailView, ListView, TemplateView, UpdateView
 from honeypot.decorators import check_honeypot
 
 from pydotorg.mixins import LoginRequiredMixin
-from sponsors.forms import SponsorUpdateForm, SponsorRequiredAssetsForm
-from sponsors.models import Sponsor, BenefitFeature
-
-from .forms import (
-    UserProfileForm, MembershipForm, MembershipUpdateForm,
-)
-from .models import Membership
-from sponsors.models import Sponsorship
+from sponsors.forms import SponsorRequiredAssetsForm, SponsorUpdateForm
+from sponsors.models import BenefitFeature, Sponsor, Sponsorship
+from users.forms import MembershipForm, MembershipUpdateForm, UserProfileForm
+from users.models import Membership
 
 User = get_user_model()
 
 
 class MembershipCreate(LoginRequiredMixin, CreateView):
+    """Create a new PSF Basic membership for the logged-in user."""
+
     model = Membership
     form_class = MembershipForm
-    template_name = 'users/membership_form.html'
+    template_name = "users/membership_form.html"
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        """Redirect to edit if user already has a membership."""
         if self.request.user.is_authenticated and self.request.user.has_membership:
-            return redirect('users:user_membership_edit')
+            return redirect("users:user_membership_edit")
         return super().dispatch(*args, **kwargs)
 
     def get_form_kwargs(self):
+        """Pre-fill the email address from the user's account."""
         kwargs = super().get_form_kwargs()
-        kwargs['initial'] = {'email_address': self.request.user.email}
+        kwargs["initial"] = {"email_address": self.request.user.email}
         return kwargs
 
     def form_valid(self, form):
+        """Save membership linked to the current user and subscribe to mailing list."""
         self.object = form.save(commit=False)
         self.object.creator = self.request.user
         self.object.save()
@@ -56,8 +56,8 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
         # Send subscription email to mailing lists
         if settings.MAILING_LIST_PSF_MEMBERS and self.object.psf_announcements:
             send_mail(
-                subject='PSF Members Announce Signup from python.org',
-                message='subscribe',
+                subject="PSF Members Announce Signup from python.org",
+                message="subscribe",
                 from_email=self.object.creator.email,
                 recipient_list=[settings.MAILING_LIST_PSF_MEMBERS],
             )
@@ -65,149 +65,189 @@ class MembershipCreate(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('users:user_membership_thanks')
+        """Redirect to the membership thanks page."""
+        return reverse("users:user_membership_thanks")
 
 
 class MembershipUpdate(LoginRequiredMixin, UpdateView):
+    """Update an existing PSF membership."""
+
     form_class = MembershipUpdateForm
-    template_name = 'users/membership_form.html'
+    template_name = "users/membership_form.html"
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        """Apply honeypot check before dispatching."""
         return super().dispatch(*args, **kwargs)
 
     def get_object(self):
+        """Return the current user's membership or raise 404."""
         if self.request.user.has_membership:
             return self.request.user.membership
-        else:
-            raise Http404()
+        raise Http404
 
     def form_valid(self, form):
+        """Save the membership with the current user as creator."""
         self.object = form.save(commit=False)
         self.object.creator = self.request.user
         self.object.save()
         return super().form_valid(form)
 
     def get_success_url(self):
-        return reverse('users:user_membership_thanks')
+        """Redirect to the membership thanks page."""
+        return reverse("users:user_membership_thanks")
 
 
 class MembershipThanks(TemplateView):
-    template_name = 'users/membership_thanks.html'
+    """Display a thank-you page after membership creation or update."""
+
+    template_name = "users/membership_thanks.html"
 
 
 class MembershipVoteAffirm(TemplateView):
-    template_name = 'users/membership_vote_affirm.html'
+    """Display and process the annual vote affirmation form."""
+
+    template_name = "users/membership_vote_affirm.html"
 
     def post(self, request, *args, **kwargs):
-        """ Store the vote affirmation """
+        """Store the vote affirmation."""
         self.request.user.membership.votes = True
         self.request.user.membership.last_vote_affirmation = timezone.now()
         self.request.user.membership.save()
-        return redirect('users:membership_affirm_vote_done')
+        return redirect("users:membership_affirm_vote_done")
 
 
 class MembershipVoteAffirmDone(TemplateView):
-    template_name = 'users/membership_vote_affirm_done.html'
+    """Display confirmation after vote affirmation is complete."""
+
+    template_name = "users/membership_vote_affirm_done.html"
 
 
 class UserUpdate(LoginRequiredMixin, UpdateView):
+    """Edit the current user's profile information."""
+
     form_class = UserProfileForm
-    slug_field = 'username'
-    template_name = 'users/user_form.html'
+    slug_field = "username"
+    template_name = "users/user_form.html"
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        """Apply honeypot check before dispatching."""
         return super().dispatch(*args, **kwargs)
 
     def get_object(self, queryset=None):
+        """Return the current logged-in user."""
         return User.objects.get(username=self.request.user)
 
 
 class UserDetail(DetailView):
-    slug_field = 'username'
+    """Display a user's public profile page."""
+
+    slug_field = "username"
 
     def get_queryset(self):
+        """Return all users if viewing own profile, searchable users otherwise."""
         queryset = User.objects.select_related()
-        if self.request.user.username == self.kwargs['slug']:
+        if self.request.user.username == self.kwargs["slug"]:
             return queryset
         return queryset.searchable()
 
 
 class HoneypotSignupView(SignupView):
+    """Signup view with honeypot spam protection."""
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        """Apply honeypot check before dispatching."""
         return super().dispatch(*args, **kwargs)
 
 
 class CustomPasswordChangeView(LoginRequiredMixin, PasswordChangeView):
+    """Password change view with honeypot protection and custom redirect."""
+
     # Add honeypot support to 'password change' form and
     # redirect it to the user editing form.
 
     @method_decorator(check_honeypot)
     def dispatch(self, *args, **kwargs):
+        """Apply honeypot check before dispatching."""
         return super().dispatch(*args, **kwargs)
 
     def get_success_url(self):
-        return reverse('users:user_profile_edit')
+        """Redirect to the user profile edit page after password change."""
+        return reverse("users:user_profile_edit")
 
 
 class UserDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Allow users to delete their own account."""
+
     model = User
-    success_url = reverse_lazy('home')
-    slug_field = 'username'
+    success_url = reverse_lazy("home")
+    slug_field = "username"
     raise_exception = True
-    http_method_names = ['post', 'delete']
+    http_method_names = ["post", "delete"]
 
     def test_func(self):
+        """Only allow users to delete their own account."""
         return self.get_object() == self.request.user
 
 
 class MembershipDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
+    """Allow users to delete their own PSF membership."""
+
     model = Membership
-    slug_field = 'creator__username'
+    slug_field = "creator__username"
     raise_exception = True
-    http_method_names = ['post', 'delete']
+    http_method_names = ["post", "delete"]
 
     def get_success_url(self):
-        return reverse('users:user_detail', kwargs={'slug': self.request.user.username})
+        """Redirect to the user's profile page after deletion."""
+        return reverse("users:user_detail", kwargs={"slug": self.request.user.username})
 
     def test_func(self):
+        """Only allow the membership creator to delete it."""
         return self.get_object().creator == self.request.user
 
 
 class UserNominationsView(LoginRequiredMixin, TemplateView):
+    """Display all nominations received and made by the current user."""
+
     model = User
-    template_name = 'users/nominations_view.html'
+    template_name = "users/nominations_view.html"
 
     def get_queryset(self):
+        """Return users with related objects."""
         return User.objects.select_related()
 
     def get_context_data(self, **kwargs):
+        """Build grouped nominations by election for the current user."""
         context = super().get_context_data(**kwargs)
-        elections = defaultdict(lambda: {'nominations_recieved': [], 'nominations_made': []})
+        elections = defaultdict(lambda: {"nominations_recieved": [], "nominations_made": []})
         for nomination in self.request.user.nominations_recieved.all():
             nominations = nomination.nominations.all()
             for nomin in nominations:
                 nomin.is_editable = nomin.editable(user=self.request.user)
-                elections[nomination.election]['nominations_recieved'].append(nomin)
+                elections[nomination.election]["nominations_recieved"].append(nomin)
         for nomination in self.request.user.nominations_made.all():
             nomination.is_editable = nomination.editable(user=self.request.user)
-            elections[nomination.election]['nominations_made'].append(nomination)
-        context['elections'] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
+            elections[nomination.election]["nominations_made"].append(nomination)
+        context["elections"] = dict(sorted(dict(elections).items(), key=lambda item: item[0].date, reverse=True))
         return context
 
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UserSponsorshipsDashboard(ListView):
-    context_object_name = 'sponsorships'
-    template_name = 'users/list_user_sponsorships.html'
+    """Dashboard listing all sponsorships associated with the current user."""
+
+    context_object_name = "sponsorships"
+    template_name = "users/list_user_sponsorships.html"
 
     def get_queryset(self):
+        """Return sponsorships visible to the current user."""
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_context_data(self, *args, **kwargs):
+        """Split sponsorships into active and grouped-by-status inactive lists."""
         context = super().get_context_data(*args, **kwargs)
         sponsorships = context["sponsorships"]
         context["active"] = [sp for sp in sponsorships if sp.is_active]
@@ -215,12 +255,7 @@ class UserSponsorshipsDashboard(ListView):
         by_status = []
         inactive = [sp for sp in sponsorships if not sp.is_active]
         for value, label in Sponsorship.STATUS_CHOICES[::-1]:
-            by_status.append((
-                label, [
-                    sp for sp in inactive
-                    if sp.status == value
-                ]
-            ))
+            by_status.append((label, [sp for sp in inactive if sp.status == value]))
 
         context["by_status"] = by_status
         return context
@@ -228,15 +263,19 @@ class UserSponsorshipsDashboard(ListView):
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class SponsorshipDetailView(DetailView):
-    context_object_name = 'sponsorship'
-    template_name = 'users/sponsorship_detail.html'
+    """Display detailed information about a specific sponsorship."""
+
+    context_object_name = "sponsorship"
+    template_name = "users/sponsorship_detail.html"
 
     def get_queryset(self):
+        """Return all sponsorships for superusers, user-visible ones otherwise."""
         if self.request.user.is_superuser:
             return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_context_data(self, *args, **kwargs):
+        """Add required, fulfilled, and provided asset lists to the context."""
         context = super().get_context_data(*args, **kwargs)
 
         sponsorship = context["sponsorship"]
@@ -249,10 +288,7 @@ class SponsorshipDetailView(DetailView):
                 pending.append(asset)
 
         provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(sponsorship)
-        provided = []
-        for asset in provided_assets:
-            if bool(asset.value):
-                provided.append(asset)
+        provided = [asset for asset in provided_assets if bool(asset.value)]
 
         context["required_assets"] = pending
         context["fulfilled_assets"] = fulfilled
@@ -263,45 +299,54 @@ class SponsorshipDetailView(DetailView):
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorInfoView(UpdateView):
+    """Edit sponsor organization information."""
+
     object_name = "sponsor"
-    template_name = 'sponsors/new_sponsorship_application_form.html'
+    template_name = "sponsors/new_sponsorship_application_form.html"
     form_class = SponsorUpdateForm
 
     def get_queryset(self):
+        """Return all sponsors for superusers, user-associated sponsors otherwise."""
         if self.request.user.is_superuser:
             return Sponsor.objects.all()
         sponsor_ids = self.request.user.sponsorships.values_list("sponsor_id", flat=True)
         return Sponsor.objects.filter(id__in=Subquery(sponsor_ids))
 
     def get_success_url(self):
+        """Display success message and redirect back to the edit form."""
         messages.add_message(self.request, messages.SUCCESS, "Sponsor info updated with success.")
         return self.request.path
 
+
 @login_required(login_url=settings.LOGIN_URL)
 def edit_sponsor_info_implicit(request):
+    """Redirect to the sponsor edit page, handling zero or multiple sponsors."""
     sponsors = Sponsor.objects.filter(contacts__user=request.user).all()
     if len(sponsors) == 0:
         messages.add_message(request, messages.INFO, "No Sponsors associated with your user.")
-        return redirect('users:user_profile_edit')
-    elif len(sponsors) == 1:
-        return redirect('users:edit_sponsor_info', pk=sponsors[0].id)
-    else:
-        messages.add_message(request, messages.INFO, "Multiple Sponsors associated with your user.")
-        return render(request, 'users/sponsor_select.html', context={"sponsors": sponsors})
+        return redirect("users:user_profile_edit")
+    if len(sponsors) == 1:
+        return redirect("users:edit_sponsor_info", pk=sponsors[0].id)
+    messages.add_message(request, messages.INFO, "Multiple Sponsors associated with your user.")
+    return render(request, "users/sponsor_select.html", context={"sponsors": sponsors})
 
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class UpdateSponsorshipAssetsView(UpdateView):
+    """Upload or update required sponsorship assets."""
+
     object_name = "sponsorship"
-    template_name = 'users/sponsorship_assets_update.html'
+    template_name = "users/sponsorship_assets_update.html"
     form_class = SponsorRequiredAssetsForm
 
     def get_queryset(self):
+        """Return all sponsorships for superusers, user-visible ones otherwise."""
         if self.request.user.is_superuser:
             return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_form_kwargs(self):
+        """Add optional required_assets_ids filter from query parameters."""
         kwargs = super().get_form_kwargs()
         specific_asset = self.request.GET.get("required_asset", None)
         if specific_asset:
@@ -309,37 +354,40 @@ class UpdateSponsorshipAssetsView(UpdateView):
         return kwargs
 
     def get_context_data(self, **kwargs):
+        """Add the required_asset_id from the query string to the context."""
         context = super().get_context_data(**kwargs)
         context["required_asset_id"] = self.request.GET.get("required_asset", None)
         return context
 
     def get_success_url(self):
+        """Display success message and redirect to sponsorship detail."""
         messages.add_message(self.request, messages.SUCCESS, "Assets were updated with success.")
         return reverse("users:sponsorship_application_detail", args=[self.object.pk])
 
     def form_valid(self, form):
+        """Update assets and redirect to the success URL."""
         form.update_assets()
         return redirect(self.get_success_url())
 
 
 @method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
 class ProvidedSponsorshipAssetsView(DetailView):
-    """TODO: Deprecate this view now that everything lives in the SponsorshipDetailView"""
+    """TODO: Deprecate this view now that everything lives in the SponsorshipDetailView."""
+
     object_name = "sponsorship"
-    template_name = 'users/sponsorship_assets_view.html'
+    template_name = "users/sponsorship_assets_view.html"
 
     def get_queryset(self):
+        """Return all sponsorships for superusers, user-visible ones otherwise."""
         if self.request.user.is_superuser:
             return Sponsorship.objects.select_related("sponsor").all()
         return self.request.user.sponsorships.select_related("sponsor")
 
     def get_context_data(self, **kwargs):
+        """Add provided assets with values to the context."""
         context = super().get_context_data(**kwargs)
         provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
-        provided = []
-        for asset in provided_assets:
-            if bool(asset.value):
-                provided.append(asset)
+        provided = [asset for asset in provided_assets if bool(asset.value)]
         context["provided_assets"] = provided
         context["provided_asset_id"] = self.request.GET.get("provided_asset", None)
         return context

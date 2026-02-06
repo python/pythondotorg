@@ -8,5 +8,6 @@ class MockEmailTemplate(BaseEmailTemplate):
 
     class Meta:
         """Metaclass for MockEmailTemplate to avoid creating a table in the database."""
-        app_label = 'mailing'
+
+        app_label = "mailing"
         managed = False

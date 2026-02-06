@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('downloads', '0013_alter_release_content_markup_type'),
+        ("downloads", "0013_alter_release_content_markup_type"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='releasefile',
-            name='sha256_sum',
-            field=models.CharField(blank=True, max_length=200, verbose_name='SHA256 Sum'),
+            model_name="releasefile",
+            name="sha256_sum",
+            field=models.CharField(blank=True, max_length=200, verbose_name="SHA256 Sum"),
         ),
     ]

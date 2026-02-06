@@ -4,20 +4,29 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0087_auto_20220810_1647'),
+        ("sponsors", "0087_auto_20220810_1647"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='tieredbenefit',
-            name='display_label',
-            field=models.CharField(blank=True, default='', help_text='If populated, this will be displayed instead of the quantity value.', max_length=32),
+            model_name="tieredbenefit",
+            name="display_label",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="If populated, this will be displayed instead of the quantity value.",
+                max_length=32,
+            ),
         ),
         migrations.AddField(
-            model_name='tieredbenefitconfiguration',
-            name='display_label',
-            field=models.CharField(blank=True, default='', help_text='If populated, this will be displayed instead of the quantity value.', max_length=32),
+            model_name="tieredbenefitconfiguration",
+            name="display_label",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="If populated, this will be displayed instead of the quantity value.",
+                max_length=32,
+            ),
         ),
     ]

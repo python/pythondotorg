@@ -9,5 +9,6 @@ class TestBaseEmailTemplateForm(BaseEmailTemplateForm):
 
     class Meta:
         """Metaclass for the form."""
+
         model = MockEmailTemplate
         fields = "__all__"

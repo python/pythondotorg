@@ -4,20 +4,21 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('downloads', '0006_auto_20180705_0352'),
+        ("downloads", "0006_auto_20180705_0352"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='releasefile',
-            name='sigstore_cert_file',
-            field=models.URLField(blank=True, help_text='Sigstore Cert URL', verbose_name='Sigstore Cert URL'),
+            model_name="releasefile",
+            name="sigstore_cert_file",
+            field=models.URLField(blank=True, help_text="Sigstore Cert URL", verbose_name="Sigstore Cert URL"),
         ),
         migrations.AddField(
-            model_name='releasefile',
-            name='sigstore_signature_file',
-            field=models.URLField(blank=True, help_text='Sigstore Signature URL', verbose_name='Sigstore Signature URL'),
+            model_name="releasefile",
+            name="sigstore_signature_file",
+            field=models.URLField(
+                blank=True, help_text="Sigstore Signature URL", verbose_name="Sigstore Signature URL"
+            ),
         ),
     ]

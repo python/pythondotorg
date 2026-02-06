@@ -1,17 +1,18 @@
-from datetime import date
-from model_bakery import baker
-from unittest.mock import patch, Mock
+from unittest.mock import Mock
 
 from django.http import HttpRequest
 from django.test import TestCase
-from django.utils.dateformat import format
+from django.utils import timezone
+from model_bakery import baker
 
 from sponsors.contracts import render_contract_to_docx_response
 
 
 class TestRenderContract(TestCase):
     def setUp(self):
-        self.contract = baker.make_recipe("sponsors.tests.empty_contract", sponsorship__start_date=date.today())
+        self.contract = baker.make_recipe(
+            "sponsors.tests.empty_contract", sponsorship__start_date=timezone.now().date()
+        )
 
     # DOCX unit test
     def test_render_response_with_docx_attachment(self):
@@ -21,10 +22,8 @@ class TestRenderContract(TestCase):
 
         self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-contract-Sponsor.docx")
         self.assertEqual(
-            response.get("Content-Type"),
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )
-
 
     # DOCX unit test
     def test_render_renewal_response_with_docx_attachment(self):
@@ -34,6 +33,5 @@ class TestRenderContract(TestCase):
 
         self.assertEqual(response.get("Content-Disposition"), "attachment; filename=sponsorship-renewal-Sponsor.docx")
         self.assertEqual(
-            response.get("Content-Type"),
-            "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            response.get("Content-Type"), "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
         )

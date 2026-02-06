@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0041_auto_20210827_1313'),
+        ("sponsors", "0041_auto_20210827_1313"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sponsorshippackage',
-            name='logo_dimension',
-            field=models.PositiveIntegerField(blank=True, default=175, help_text='Internal value used to control logos dimensions at sponsors page'),
+            model_name="sponsorshippackage",
+            name="logo_dimension",
+            field=models.PositiveIntegerField(
+                blank=True, default=175, help_text="Internal value used to control logos dimensions at sponsors page"
+            ),
         ),
     ]

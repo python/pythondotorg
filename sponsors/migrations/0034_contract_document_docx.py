@@ -4,15 +4,16 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0033_tieredquantity_tieredquantityconfiguration'),
+        ("sponsors", "0033_tieredquantity_tieredquantityconfiguration"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='contract',
-            name='document_docx',
-            field=models.FileField(blank=True, upload_to='sponsors/statmentes_of_work/docx/', verbose_name='Unsigned Docx'),
+            model_name="contract",
+            name="document_docx",
+            field=models.FileField(
+                blank=True, upload_to="sponsors/statmentes_of_work/docx/", verbose_name="Unsigned Docx"
+            ),
         ),
     ]

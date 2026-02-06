@@ -1,5 +1,5 @@
-from polymorphic.models import PolymorphicModel
 from model_bakery import baker
+from polymorphic.models import PolymorphicModel
 
 
 class PolymorphicAwareBaker(baker.Baker):
