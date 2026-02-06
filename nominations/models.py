@@ -23,7 +23,7 @@ class Election(models.Model):
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(escape_html=False, markup_type="markdown", blank=False, null=True)
 
-    slug = models.SlugField(max_length=255, blank=True)
+    slug = models.SlugField(max_length=255, blank=True, null=True)  # noqa: DJ001
 
     class Meta:
         """Meta configuration for Election."""
@@ -86,7 +86,7 @@ class Nominee(models.Model):
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
 
-    slug = models.SlugField(max_length=255, blank=True)
+    slug = models.SlugField(max_length=255, blank=True, null=True)  # noqa: DJ001
 
     class Meta:
         """Meta configuration for Nominee."""
@@ -174,11 +174,11 @@ class Nomination(models.Model):
 
     election = models.ForeignKey(Election, on_delete=models.CASCADE)
 
-    name = models.CharField(max_length=1024, blank=False)
-    email = models.CharField(max_length=1024, blank=False)
-    previous_board_service = models.CharField(max_length=1024, blank=False)
-    employer = models.CharField(max_length=1024, blank=False)
-    other_affiliations = models.CharField(max_length=2048, blank=True)
+    name = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
+    email = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
+    previous_board_service = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
+    employer = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
+    other_affiliations = models.CharField(max_length=2048, blank=True, null=True)  # noqa: DJ001
     nomination_statement = MarkupField(escape_html=True, markup_type="markdown", blank=False, null=True)
 
     nominator = models.ForeignKey(User, related_name="nominations_made", on_delete=models.CASCADE)

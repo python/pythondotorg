@@ -185,7 +185,7 @@ class Response(Enum):
 class ResponseAsset(GenericAsset):
     """Asset storing a yes/no response value."""
 
-    response = models.CharField(max_length=32, choices=Response.choices(), blank=False)
+    response = models.CharField(max_length=32, choices=Response.choices(), blank=False, null=True)  # noqa: DJ001
 
     def __str__(self):
         """Return string representation."""

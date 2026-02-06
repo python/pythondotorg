@@ -27,19 +27,21 @@ class Sponsor(ContentManageable):
         verbose_name="Description",
         help_text="Brief description of the sponsor for public display.",
     )
-    landing_page_url = models.URLField(
+    landing_page_url = models.URLField(  # noqa: DJ001
         blank=True,
+        null=True,
         verbose_name="Landing page URL",
         help_text="Landing page URL. This may be provided by the sponsor, however the linked page may not contain any "
         "sales or marketing information.",
     )
-    twitter_handle = models.CharField(
+    twitter_handle = models.CharField(  # noqa: DJ001
         max_length=32,  # Actual limit set by twitter is 15 characters, but that may change?
         blank=True,
+        null=True,
         verbose_name="Twitter handle",
     )
-    linked_in_page_url = models.URLField(
-        blank=True, verbose_name="LinkedIn page URL", help_text="URL for your LinkedIn page."
+    linked_in_page_url = models.URLField(  # noqa: DJ001
+        blank=True, null=True, verbose_name="LinkedIn page URL", help_text="URL for your LinkedIn page."
     )
     web_logo = models.ImageField(
         upload_to="sponsor_web_logos",
@@ -72,8 +74,8 @@ class Sponsor(ContentManageable):
         blank=True,
         null=True,
     )
-    state_of_incorporation = models.CharField(
-        verbose_name="US only: State of incorporation (If different)", max_length=64, blank=True, default=""
+    state_of_incorporation = models.CharField(  # noqa: DJ001
+        verbose_name="US only: State of incorporation (If different)", max_length=64, blank=True, null=True, default=""
     )
 
     class Meta:
@@ -210,7 +212,8 @@ class SponsorBenefit(OrderedModel):
         verbose_name="Benefit Name",
         help_text="For display in the contract and sponsor dashboard.",
     )
-    description = models.TextField(
+    description = models.TextField(  # noqa: DJ001
+        null=True,
         blank=True,
         verbose_name="Benefit Description",
         help_text="For display in the contract and sponsor dashboard.",

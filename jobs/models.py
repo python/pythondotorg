@@ -73,7 +73,7 @@ class Job(ContentManageable):
         max_length=100,
         blank=True,
     )
-    company_name = models.CharField(max_length=100)
+    company_name = models.CharField(max_length=100, null=True)  # noqa: DJ001
     company_description = MarkupField(blank=True, default_markup_type=DEFAULT_MARKUP_TYPE)
     job_title = models.CharField(max_length=100)
 
@@ -86,9 +86,9 @@ class Job(ContentManageable):
     description = MarkupField(verbose_name="Job description", default_markup_type=DEFAULT_MARKUP_TYPE)
     requirements = MarkupField(verbose_name="Job requirements", default_markup_type=DEFAULT_MARKUP_TYPE)
 
-    contact = models.CharField(verbose_name="Contact name", blank=True, max_length=100)
+    contact = models.CharField(verbose_name="Contact name", null=True, blank=True, max_length=100)  # noqa: DJ001
     email = models.EmailField(verbose_name="Contact email")
-    url = models.URLField(verbose_name="URL", blank=False)
+    url = models.URLField(verbose_name="URL", null=True, blank=False)  # noqa: DJ001
 
     submitted_by = models.ForeignKey(
         User,

@@ -57,7 +57,7 @@ class Story(NameSlugModel, ContentManageable):
         on_delete=models.CASCADE,
     )
     author = models.CharField(max_length=500, help_text="Author of the content")
-    author_email = models.EmailField(max_length=100, blank=True)
+    author_email = models.EmailField(max_length=100, blank=True, null=True)  # noqa: DJ001
     pull_quote = models.TextField()
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
     is_published = models.BooleanField(default=False, db_index=True)

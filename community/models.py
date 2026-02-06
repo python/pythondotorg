@@ -15,9 +15,9 @@ DEFAULT_MARKUP_TYPE = "html"
 class Post(ContentManageable):
     """A community post that can contain text, photos, videos, or links."""
 
-    title = models.CharField(max_length=200, blank=True)
+    title = models.CharField(max_length=200, blank=True, null=True)  # noqa: DJ001
     content = MarkupField(default_markup_type=DEFAULT_MARKUP_TYPE)
-    abstract = models.TextField(blank=True)
+    abstract = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     MEDIA_TEXT = 1
     MEDIA_PHOTO = 2

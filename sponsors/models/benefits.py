@@ -243,7 +243,7 @@ class BaseProvidedTextAsset(BaseProvidedAsset):
     help_text = models.CharField(
         max_length=256, help_text="Any helper comment on how the input should be populated", default="", blank=True
     )
-    shared_text = models.TextField(blank=True)
+    shared_text = models.TextField(blank=True, null=True)  # noqa: DJ001
 
     class Meta(BaseProvidedAsset.Meta):
         """Meta configuration for BaseProvidedTextAsset."""

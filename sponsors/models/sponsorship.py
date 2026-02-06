@@ -133,7 +133,7 @@ class SponsorshipProgram(OrderedModel):
     """Possible programs that a benefit belongs to (Foundation, Pypi, etc)."""
 
     name = models.CharField(max_length=64)
-    description = models.TextField(blank=True)
+    description = models.TextField(null=True, blank=True)  # noqa: DJ001
 
     class Meta(OrderedModel.Meta):
         """Meta configuration for SponsorshipProgram."""

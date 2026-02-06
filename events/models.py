@@ -24,13 +24,13 @@ DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "restructuredtext
 class Calendar(ContentManageable):
     """A calendar that groups related events (e.g. conferences, user groups)."""
 
-    url = models.URLField("URL iCal", blank=True)
-    rss = models.URLField("RSS Feed", blank=True)
-    embed = models.URLField("URL embed", blank=True)
-    twitter = models.URLField("Twitter feed", blank=True)
+    url = models.URLField("URL iCal", blank=True, null=True)  # noqa: DJ001
+    rss = models.URLField("RSS Feed", blank=True, null=True)  # noqa: DJ001
+    embed = models.URLField("URL embed", blank=True, null=True)  # noqa: DJ001
+    twitter = models.URLField("Twitter feed", blank=True, null=True)  # noqa: DJ001
     name = models.CharField(max_length=100)
     slug = models.SlugField(unique=True)
-    description = models.CharField(max_length=255, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)  # noqa: DJ001
 
     def __str__(self):
         """Return string representation."""
@@ -85,8 +85,8 @@ class EventLocation(models.Model):
     )
 
     name = models.CharField(max_length=255)
-    address = models.CharField(blank=True, max_length=255)
-    url = models.URLField("URL", blank=True)
+    address = models.CharField(blank=True, null=True, max_length=255)  # noqa: DJ001
+    url = models.URLField("URL", blank=True, null=True)  # noqa: DJ001
 
     class Meta:
         """Meta configuration for EventLocation."""
@@ -119,7 +119,7 @@ class EventManager(models.Manager):
 class Event(ContentManageable):
     """A Python community event such as a conference, sprint, or meetup."""
 
-    uid = models.CharField(max_length=200, blank=True)
+    uid = models.CharField(max_length=200, null=True, blank=True)  # noqa: DJ001
     title = models.CharField(max_length=200)
     calendar = models.ForeignKey(Calendar, related_name="events", on_delete=models.CASCADE)
 
