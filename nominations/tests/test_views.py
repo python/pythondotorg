@@ -86,7 +86,7 @@ class FellowNominationCreateViewTests(TestCase):
         self.assertEqual(FellowNomination.objects.count(), 1)
         nom = FellowNomination.objects.first()
         self.assertTrue(nom.nominee_is_fellow_at_submission)
-        self.assertTrue(nom.nominee_user == fellow_user)
+        self.assertEqual(nom.nominee_user, fellow_user)
 
 
 class FellowNominationDetailViewTests(TestCase):
