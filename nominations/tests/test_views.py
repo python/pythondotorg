@@ -6,10 +6,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.contrib.auth.models import Group
 
-from users.models import Membership
-
-from nominations.models import FellowNomination, FellowNominationRound
-from .factories import (
+from nominations.models import Fellow, FellowNomination, FellowNominationRound
+from nominations.tests.factories import (
     UserFactory,
     FellowNominationRoundFactory,
     FellowNominationFactory,
@@ -58,7 +56,7 @@ class FellowNominationCreateViewTests(TestCase):
         data = {
             "nominee_name": "Jane Doe",
             "nominee_email": "jane@example.com",
-            "nomination_statement": "Great contributions.",
+            "nomination_statement": "Jane has made outstanding contributions to the Python community through years of dedicated work on documentation, mentoring, and conference organization.",
             "nomination_statement_markup_type": "markdown",
         }
         response = self.client.post(self.url, data)
@@ -76,17 +74,15 @@ class FellowNominationCreateViewTests(TestCase):
             datetime.datetime(2026, 1, 15, 12, 0)
         )
         fellow_user = UserFactory(email="fellow@example.com")
-        Membership.objects.create(
-            creator=fellow_user,
-            membership_type=Membership.FELLOW,
-            legal_name="Fellow User",
-            preferred_name="Fellow",
-            email_address="fellow@example.com",
+        Fellow.objects.create(
+            name="Fellow User",
+            year_elected=2020,
+            user=fellow_user,
         )
         data = {
             "nominee_name": "Fellow User",
             "nominee_email": "fellow@example.com",
-            "nomination_statement": "Already a fellow.",
+            "nomination_statement": "This person has been an incredible contributor to the Python community through years of sustained effort across multiple projects and initiatives.",
             "nomination_statement_markup_type": "markdown",
         }
         response = self.client.post(self.url, data, follow=True)

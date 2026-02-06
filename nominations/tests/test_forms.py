@@ -4,7 +4,7 @@ from users.models import User
 
 from nominations.forms import FellowNominationForm
 from nominations.models import FellowNominationRound
-from .factories import UserFactory, FellowNominationRoundFactory
+from nominations.tests.factories import UserFactory, FellowNominationRoundFactory
 
 
 class FellowNominationFormTests(TestCase):
@@ -19,7 +19,7 @@ class FellowNominationFormTests(TestCase):
         data = {
             "nominee_name": "Jane Doe",
             "nominee_email": "jane@example.com",
-            "nomination_statement": "Great contributor to Python.",
+            "nomination_statement": "Jane has made outstanding contributions to the Python community through years of dedicated work on documentation, mentoring, and conference organization.",
             "nomination_statement_markup_type": "markdown",
         }
         form = FellowNominationForm(data=data, request=self.request)

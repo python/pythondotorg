@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.contrib.auth.models import Group
 
 from nominations.models import FellowNomination, FellowNominationVote
-from .factories import (
+from nominations.tests.factories import (
     UserFactory,
     FellowNominationRoundFactory,
     FellowNominationFactory,

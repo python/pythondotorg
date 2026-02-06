@@ -4,14 +4,13 @@ from unittest.mock import patch
 from django.test import TestCase
 from django.utils import timezone
 
-from users.models import Membership
-
 from nominations.models import (
+    Fellow,
     FellowNominationRound,
     FellowNomination,
     FellowNominationVote,
 )
-from .factories import (
+from nominations.tests.factories import (
     UserFactory,
     FellowNominationRoundFactory,
     FellowNominationFactory,
@@ -153,34 +152,20 @@ class FellowNominationTests(TestCase):
         self.nomination.nominee_user = None
         self.assertFalse(self.nomination.nominee_is_already_fellow)
 
-    def test_nominee_is_already_fellow_false_no_membership(self):
+    def test_nominee_is_already_fellow_false_no_fellow_record(self):
         nominee_user = UserFactory()
         self.nomination.nominee_user = nominee_user
         self.assertFalse(self.nomination.nominee_is_already_fellow)
 
     def test_nominee_is_already_fellow_true(self):
         nominee_user = UserFactory()
-        Membership.objects.create(
-            creator=nominee_user,
-            membership_type=Membership.FELLOW,
-            legal_name="Test Fellow",
-            preferred_name="Test",
-            email_address=nominee_user.email,
+        Fellow.objects.create(
+            name="Test Fellow",
+            year_elected=2020,
+            user=nominee_user,
         )
         self.nomination.nominee_user = nominee_user
         self.assertTrue(self.nomination.nominee_is_already_fellow)
-
-    def test_nominee_is_already_fellow_false_basic_member(self):
-        nominee_user = UserFactory()
-        Membership.objects.create(
-            creator=nominee_user,
-            membership_type=Membership.BASIC,
-            legal_name="Test Basic",
-            preferred_name="Test",
-            email_address=nominee_user.email,
-        )
-        self.nomination.nominee_user = nominee_user
-        self.assertFalse(self.nomination.nominee_is_already_fellow)
 
 
 class FellowNominationVoteResultTests(TestCase):
