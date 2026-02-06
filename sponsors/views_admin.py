@@ -84,7 +84,7 @@ def approve_sponsorship_view(model_admin, request, pk):
     context = {
         "sponsorship": sponsorship,
         "form": form,
-        "previous_effective": sponsorship.previous_effective_date if sponsorship.previous_effective_date else "UNKNOWN",
+        "previous_effective": sponsorship.previous_effective_date or "UNKNOWN",
     }
     return render(request, "sponsors/admin/approve_application.html", context=context)
 

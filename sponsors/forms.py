@@ -740,7 +740,7 @@ class SponsorRequiredAssetsForm(forms.Form):
         fields = {}
         ordered_assets = sorted(
             self.required_assets,
-            key=lambda x: (-int(bool(x.value)), x.due_date if x.due_date else datetime.date.min),
+            key=lambda x: (-int(bool(x.value)), x.due_date or datetime.date.min),
             reverse=True,
         )
 

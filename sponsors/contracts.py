@@ -35,7 +35,7 @@ def _contract_context(contract, **context):
         }
     )
     previous_effective = contract.sponsorship.previous_effective_date
-    context["previous_effective"] = previous_effective if previous_effective else "UNKNOWN"
+    context["previous_effective"] = previous_effective or "UNKNOWN"
     context["previous_effective_english_suffix"] = (
         date_format(previous_effective, "S") if previous_effective else "UNKNOWN"
     )
