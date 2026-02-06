@@ -65,3 +65,5 @@ CACHES = {
 REST_FRAMEWORK['DEFAULT_RENDERER_CLASSES'] += (
     'rest_framework.renderers.BrowsableAPIRenderer',
 )
+
+BAKER_CUSTOM_CLASS = "pydotorg.tests.baker.PolymorphicAwareBaker"
