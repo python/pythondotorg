@@ -1,0 +1,41 @@
+target-version = "py312"
+line-length = 120
+
+[lint]
+select = [
+    "E",      # pycodestyle errors
+    "F",      # pyflakes
+    "W",      # pycodestyle warnings
+    "I",      # isort
+    "UP",     # pyupgrade
+    "B",      # flake8-bugbear
+    "SIM",    # flake8-simplify
+    "DJ",     # flake8-django
+]
+ignore = [
+    "E501",   # line too long (handled by formatter)
+]
+
+[lint.isort]
+known-first-party = [
+    "pydotorg",
+    "blogs",
+    "boxes",
+    "cms",
+    "codesamples",
+    "community",
+    "companies",
+    "downloads",
+    "events",
+    "jobs",
+    "mailing",
+    "minutes",
+    "nominations",
+    "pages",
+    "sponsors",
+    "successstories",
+    "users",
+]
+
+[format]
+quote-style = "double"
