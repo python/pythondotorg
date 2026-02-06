@@ -3,7 +3,7 @@ repos:
     rev: 1.29.1
     hooks:
       - id: django-upgrade
-        args: [--target-version=4.2]
+        args: [--target-version=5.2]
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
@@ -15,13 +15,13 @@ repos:
       - id: debug-statements
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
-    rev: 0.34.0
+    rev: 0.36.1
     hooks:
       - id: check-dependabot
       - id: check-github-workflows
 
   - repo: https://github.com/rhysd/actionlint
-    rev: v1.7.7
+    rev: v1.7.10
     hooks:
       - id: actionlint
 
