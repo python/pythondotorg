@@ -326,7 +326,7 @@ class FellowNominationRound(models.Model):
     @property
     def is_accepting_nominations(self):
         today = timezone.now().date()
-        return self.is_open and today < self.nominations_cutoff
+        return self.is_open and today <= self.nominations_cutoff
 
     @property
     def is_in_review(self):
