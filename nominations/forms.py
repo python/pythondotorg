@@ -101,6 +101,18 @@ class FellowNominationForm(forms.ModelForm):
                 raise forms.ValidationError(
                     "You cannot nominate yourself for PSF Fellow membership."
                 )
+        # Prevent duplicate nominations for the same person in the current
+        # open round.  The round FK is set in form_valid, but we can look up
+        # the current open round here to give early feedback.
+        current_round = FellowNominationRound.objects.filter(is_open=True).first()
+        if current_round:
+            if FellowNomination.objects.filter(
+                nominee_email__iexact=email,
+                nomination_round=current_round,
+            ).exists():
+                raise forms.ValidationError(
+                    "This person has already been nominated for the current round."
+                )
         return email
 
 
