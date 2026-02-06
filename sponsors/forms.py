@@ -809,7 +809,6 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
             "soft_capacity",
             "conflicts",
             "year",
-            "order",
         ]
 
     def clean(self):

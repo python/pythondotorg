@@ -6,6 +6,8 @@ from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
+from pydotorg.settings.pipeline import PIPELINE  # noqa: F401 - accessed by django-pipeline via settings
+
 ### Basic config
 
 BASE = str(Path(__file__).resolve().parent.parent.parent)
