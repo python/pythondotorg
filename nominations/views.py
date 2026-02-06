@@ -646,5 +646,5 @@ class FellowsRoster(ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["total_count"] = self.get_queryset().count()
+        context["total_count"] = context["fellows"].count()
         return context
