@@ -87,7 +87,7 @@ Fellow Nomination: {{ nomination.nominee_name }} | {{ SITE_INFO.site_name }}
         {% endif %}
 
         <p>
-            <a href="{% url 'nominations:fellow_nomination_vote' pk=nomination.pk %}">Cast / Update Vote</a>
+            <a href="{% url 'nominations:fellow_nomination_vote' pk=nomination.pk %}">Cast Vote</a>
             | <a href="{% url 'nominations:fellow_nomination_status_update' pk=nomination.pk %}">Update Status</a>
             | <a href="{% url 'nominations:fellow_nomination_edit' pk=nomination.pk %}">Edit Nomination</a>
         </p>
