@@ -96,7 +96,7 @@ class FellowNominationForm(forms.ModelForm):
 
     def clean_nomination_statement(self):
         statement = self.cleaned_data["nomination_statement"]
-        if len(statement.raw.strip()) < 120:
+        if len(statement.strip()) < 120:
             raise forms.ValidationError(
                 "Please provide a more detailed nomination statement (at least 120 characters)."
             )
