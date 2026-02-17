@@ -343,6 +343,7 @@ REST_FRAMEWORK = {
         'anon': '100/day',
         'user': '3000/day',
     },
+    'NUM_PROXIES': 3,
 }
 
 ### pydotorg.middleware.GlobalSurrogateKey
