@@ -1,0 +1,65 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: psf-pythondotorg-pythondotorg-web
+  namespace: psf
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+    kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/backend-protocol: HTTPS
+    nginx.ingress.kubernetes.io/client-body-buffer-size: 1M
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"
+    nginx.ingress.kubernetes.io/proxy-body-size: 200M
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: 10s
+    nginx.ingress.kubernetes.io/proxy-next-upstream: error
+    nginx.ingress.kubernetes.io/proxy-read-timeout: 10s
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "on"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: 10s
+    nginx.ingress.kubernetes.io/service-upstream: "true"
+spec:
+  rules:
+    - host: pythondotorg.ingress.us-east-2.psfhosted.computer
+      http:
+        paths:
+          - backend:
+              service:
+                name: psf-pythondotorg-pythondotorg-web
+                port:
+                  number: 8000
+            path: /
+            pathType: Prefix
+    - host: pythondotorg.us-east-2.psfhosted.computer
+      http:
+        paths:
+          - backend:
+              service:
+                name: psf-pythondotorg-pythondotorg-web
+                port:
+                  number: 8000
+            path: /
+            pathType: Prefix
+    - host: www.python.org
+      http:
+        paths:
+          - backend:
+              service:
+                name: psf-pythondotorg-pythondotorg-web
+                port:
+                  number: 8000
+            path: /
+            pathType: Prefix
+    - host: python.org
+      http:
+        paths:
+          - backend:
+              service:
+                name: psf-pythondotorg-pythondotorg-web
+                port:
+                  number: 8000
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - pythondotorg.ingress.us-east-2.psfhosted.computer
+        - pythondotorg.us-east-2.psfhosted.computer
+      secretName: ingress-pythondotorg-tls
