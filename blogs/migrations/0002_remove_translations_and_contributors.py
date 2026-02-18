@@ -4,36 +4,35 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('blogs', '0001_initial'),
+        ("blogs", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='contributor',
-            name='creator',
+            model_name="contributor",
+            name="creator",
         ),
         migrations.RemoveField(
-            model_name='contributor',
-            name='last_modified_by',
+            model_name="contributor",
+            name="last_modified_by",
         ),
         migrations.RemoveField(
-            model_name='contributor',
-            name='user',
+            model_name="contributor",
+            name="user",
         ),
         migrations.RemoveField(
-            model_name='translation',
-            name='creator',
+            model_name="translation",
+            name="creator",
         ),
         migrations.RemoveField(
-            model_name='translation',
-            name='last_modified_by',
+            model_name="translation",
+            name="last_modified_by",
         ),
         migrations.DeleteModel(
-            name='Contributor',
+            name="Contributor",
         ),
         migrations.DeleteModel(
-            name='Translation',
+            name="Translation",
         ),
     ]

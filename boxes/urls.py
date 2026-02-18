@@ -1,6 +1,9 @@
-from .views import box
+"""URL configuration for the boxes app."""
+
 from django.urls import path
 
+from boxes.views import box
+
 urlpatterns = [
-    path('<slug:label>/', box, name='box'),
+    path("<slug:label>/", box, name="box"),
 ]

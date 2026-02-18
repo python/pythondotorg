@@ -1,3 +1,5 @@
+"""Django signals for job board events (submission, approval, rejection, comments)."""
+
 from django.dispatch import Signal
 
 # Sent after job offer was submitted for review

@@ -1,11 +1,12 @@
-from datetime import date, timedelta
+from datetime import timedelta
 
+from django.utils import timezone
 from model_bakery.recipe import Recipe, foreign_key
 
 from sponsors.models import Contract, LogoPlacement, Sponsorship, SponsorshipPackage
 from sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
-today = date.today()
+today = timezone.now().date()
 two_days = timedelta(days=2)
 thirty_days = timedelta(days=30)
 
@@ -28,9 +29,7 @@ awaiting_signature_contract = Recipe(
     status=Contract.AWAITING_SIGNATURE,
 )
 
-package = Recipe(
-    SponsorshipPackage
-)
+package = Recipe(SponsorshipPackage)
 
 finalized_sponsorship = Recipe(
     Sponsorship,

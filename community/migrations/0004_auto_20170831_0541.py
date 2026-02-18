@@ -5,15 +5,14 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('community', '0003_auto_20170831_0358'),
+        ("community", "0003_auto_20170831_0358"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='post',
-            name='meta',
+            model_name="post",
+            name="meta",
             field=django.contrib.postgres.fields.jsonb.JSONField(blank=True, default=dict),
         ),
     ]

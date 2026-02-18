@@ -1,5 +1,8 @@
+"""Forms for the sponsors app sponsorship application and admin workflows."""
+
 import datetime
 from itertools import chain
+
 from django import forms
 from django.conf import settings
 from django.contrib.admin.widgets import AdminDateWidget
@@ -13,33 +16,41 @@ from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
 
 from sponsors.models import (
+    SPONSOR_TEMPLATE_HELP_TEXT,
+    BenefitFeature,
+    RequiredImgAssetConfiguration,
+    Sponsor,
+    SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
+    Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
-    Sponsor,
-    SponsorContact,
-    Sponsorship,
-    SponsorBenefit,
-    SponsorEmailNotificationTemplate,
-    RequiredImgAssetConfiguration,
-    BenefitFeature,
-    SPONSOR_TEMPLATE_HELP_TEXT, SponsorshipCurrentYear,
 )
 
 SPONSORSHIP_YEAR_SELECT = forms.Select(
-    choices=(((None, '---'),) + tuple(((y, str(y)) for y in range(2021, datetime.date.today().year + 2))))
+    choices=(((None, "---"), *tuple((y, str(y)) for y in range(2021, timezone.now().date().year + 2))))
 )
 
 
 class PickSponsorshipBenefitsField(forms.ModelMultipleChoiceField):
+    """Multi-select field for choosing sponsorship benefits with checkbox widget."""
+
     widget = forms.CheckboxSelectMultiple
 
     def label_from_instance(self, obj):
+        """Return the benefit name as the display label."""
         return obj.name
 
 
 class SponsorContactForm(forms.ModelForm):
+    """Form for entering sponsor contact information."""
+
     class Meta:
+        """Meta configuration for SponsorContactForm."""
+
         model = SponsorContact
         fields = ["name", "email", "phone", "primary", "administrative", "accounting"]
 
@@ -56,12 +67,14 @@ SponsorContactFormSet = forms.formset_factory(
 
 
 class SponsorshipsBenefitsForm(forms.Form):
-    """
-    Form to enable user to select packages, benefits and a la carte during
+    """Form to select packages, benefits, and a la carte during sponsorship application.
+
+    Enable user to select packages, benefits and a la carte during
     the sponsorship application submission.
     """
 
     def __init__(self, *args, **kwargs):
+        """Initialize form with dynamic benefit and package fields for the given year."""
         year = kwargs.pop("year", SponsorshipCurrentYear.get_year())
         super().__init__(*args, **kwargs)
         self.fields["package"] = forms.ModelChoiceField(
@@ -79,9 +92,7 @@ class SponsorshipsBenefitsForm(forms.Form):
             queryset=SponsorshipBenefit.objects.from_year(year).standalone().select_related("program"),
         )
 
-        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related(
-            "program"
-        )
+        benefits_qs = SponsorshipBenefit.objects.from_year(year).with_packages().select_related("program")
 
         for program in SponsorshipProgram.objects.all():
             slug = slugify(program.name).replace("-", "_")
@@ -93,13 +104,12 @@ class SponsorshipsBenefitsForm(forms.Form):
 
     @property
     def benefits_programs(self):
+        """Return form fields that correspond to program-specific benefits."""
         return [f for f in self if f.name.startswith("benefits_")]
 
     @property
     def benefits_conflicts(self):
-        """
-        Returns a dict with benefits ids as keys and their list of conlicts ids as values
-        """
+        """Returns a dict with benefits ids as keys and their list of conlicts ids as values."""
         conflicts = {}
         for benefit in SponsorshipBenefit.objects.with_conflicts():
             benefits_conflicts = benefit.conflicts.values_list("id", flat=True)
@@ -108,19 +118,19 @@ class SponsorshipsBenefitsForm(forms.Form):
         return conflicts
 
     def get_benefits(self, cleaned_data=None, include_a_la_carte=False, include_standalone=False):
+        """Collect and return the selected benefits from all program fields."""
         cleaned_data = cleaned_data or self.cleaned_data
-        benefits = list(
-            chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs))
-        )
+        benefits = list(chain(*(cleaned_data.get(bp.name) for bp in self.benefits_programs)))
         a_la_carte = cleaned_data.get("a_la_carte_benefits", [])
         if include_a_la_carte:
-            benefits.extend([b for b in a_la_carte])
+            benefits.extend(list(a_la_carte))
         standalone = cleaned_data.get("standalone_benefits", [])
         if include_standalone:
-            benefits.extend([b for b in standalone])
+            benefits.extend(list(standalone))
         return benefits
 
     def get_package(self):
+        """Return the selected package or create a standalone-only package if needed."""
         pkg = self.cleaned_data.get("package")
 
         pkg_benefits = self.get_benefits(include_a_la_carte=True)
@@ -134,12 +144,13 @@ class SponsorshipsBenefitsForm(forms.Form):
 
         return pkg
 
-    def _clean_benefits(self, cleaned_data):
-        """
-        Validate chosen benefits. Invalid scenarios are:
+    def _clean_benefits(self, cleaned_data):  # noqa: C901 - benefit validation has inherent complexity
+        """Validate chosen benefits.
+
+        Invalid scenarios are:
         - benefits with conflits
         - package only benefits and form without SponsorshipProgram
-        - benefit with no capacity, except if soft
+        - benefit with no capacity, except if soft.
         """
         package = cleaned_data.get("package")
         benefits = self.get_benefits(cleaned_data, include_a_la_carte=True)
@@ -147,57 +158,44 @@ class SponsorshipsBenefitsForm(forms.Form):
         standalone = cleaned_data.get("standalone_benefits")
 
         if not benefits and not standalone:
-            raise forms.ValidationError(
-                _("You have to pick a minimum number of benefits.")
-            )
-        elif benefits and not package:
-            raise forms.ValidationError(
-                _("You must pick a package to include the selected benefits.")
-            )
-        elif standalone and package:
-            raise forms.ValidationError(
-                _("Application with package cannot have standalone benefits.")
-            )
-        elif package and a_la_carte and not package.allow_a_la_carte:
-            raise forms.ValidationError(
-                _("Package does not accept a la carte benefits.")
-            )
+            raise forms.ValidationError(_("You have to pick a minimum number of benefits."))
+        if benefits and not package:
+            raise forms.ValidationError(_("You must pick a package to include the selected benefits."))
+        if standalone and package:
+            raise forms.ValidationError(_("Application with package cannot have standalone benefits."))
+        if package and a_la_carte and not package.allow_a_la_carte:
+            raise forms.ValidationError(_("Package does not accept a la carte benefits."))
 
         benefits_ids = [b.id for b in benefits]
         for benefit in benefits:
             conflicts = set(self.benefits_conflicts.get(benefit.id, []))
             if conflicts and set(benefits_ids).intersection(conflicts):
-                raise forms.ValidationError(
-                    _("The application has 1 or more benefits that conflicts.")
-                )
+                raise forms.ValidationError(_("The application has 1 or more benefits that conflicts."))
 
             if benefit.package_only:
                 if not package:
                     raise forms.ValidationError(
-                        _(
-                            "The application has 1 or more package only benefits and no sponsor package."
-                        )
+                        _("The application has 1 or more package only benefits and no sponsor package.")
                     )
-                elif not benefit.packages.filter(id=package.id).exists():
+                if not benefit.packages.filter(id=package.id).exists():
                     raise forms.ValidationError(
-                        _(
-                            "The application has 1 or more package only benefits but wrong sponsor package."
-                        )
+                        _("The application has 1 or more package only benefits but wrong sponsor package.")
                     )
 
             if not benefit.has_capacity:
-                raise forms.ValidationError(
-                    _("The application has 1 or more benefits with no capacity.")
-                )
+                raise forms.ValidationError(_("The application has 1 or more benefits with no capacity."))
 
         return cleaned_data
 
     def clean(self):
+        """Validate the form by checking benefit selections and conflicts."""
         cleaned_data = super().clean()
         return self._clean_benefits(cleaned_data)
 
 
 class SponsorshipApplicationForm(forms.Form):
+    """Form for submitting a new sponsorship application with sponsor details."""
+
     name = forms.CharField(
         max_length=100,
         label="Sponsor name",
@@ -235,7 +233,7 @@ class SponsorshipApplicationForm(forms.Form):
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
+        validators=[FileExtensionValidator(["eps", "epsfepsi", "svg", "png"])],
     )
 
     primary_phone = forms.CharField(
@@ -255,15 +253,14 @@ class SponsorshipApplicationForm(forms.Form):
     )
 
     city = forms.CharField(max_length=64, required=False)
-    state = forms.CharField(
-        label="State/Province/Region", max_length=64, required=False
-    )
+    state = forms.CharField(label="State/Province/Region", max_length=64, required=False)
     state_of_incorporation = forms.CharField(
-        label="State of incorporation", help_text="US only, If different than mailing address", max_length=64, required=False
+        label="State of incorporation",
+        help_text="US only, If different than mailing address",
+        max_length=64,
+        required=False,
     )
-    postal_code = forms.CharField(
-        label="Zip/Postal Code", max_length=64, required=False
-    )
+    postal_code = forms.CharField(label="Zip/Postal Code", max_length=64, required=False)
     country = CountryField().formfield(required=False, help_text="For mailing/contact purposes")
 
     country_of_incorporation = CountryField().formfield(
@@ -271,13 +268,12 @@ class SponsorshipApplicationForm(forms.Form):
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialize form with user context and contact formset."""
         self.user = kwargs.pop("user", None)
         super().__init__(*args, **kwargs)
         qs = Sponsor.objects.none()
         if self.user:
-            sponsor_ids = SponsorContact.objects.filter(user=self.user).values_list(
-                "sponsor", flat=True
-            )
+            sponsor_ids = SponsorContact.objects.filter(user=self.user).values_list("sponsor", flat=True)
             qs = Sponsor.objects.filter(id__in=sponsor_ids)
         self.fields["sponsor"] = forms.ModelChoiceField(queryset=qs, required=False)
 
@@ -285,31 +281,28 @@ class SponsorshipApplicationForm(forms.Form):
         if self.data:
             self.contacts_formset = SponsorContactFormSet(self.data, **formset_kwargs)
         else:
-            self.contacts_formset = SponsorContactFormSet(
-                initial=[{"primary": True}],
-                **formset_kwargs
-            )
+            self.contacts_formset = SponsorContactFormSet(initial=[{"primary": True}], **formset_kwargs)
 
     def clean(self):
-        cleaned_data = super().clean()
+        """Validate contacts formset and ensure a primary contact exists."""
+        super().clean()
         sponsor = self.data.get("sponsor")
         if not sponsor and not self.contacts_formset.is_valid():
             msg = "Errors with contact(s) information"
             if not self.contacts_formset.errors:
                 msg = "You have to enter at least one contact"
             raise forms.ValidationError(msg)
-        elif not sponsor:
-            has_primary_contact = any(
-                f.cleaned_data.get("primary") for f in self.contacts_formset.forms
-            )
+        if not sponsor:
+            has_primary_contact = any(f.cleaned_data.get("primary") for f in self.contacts_formset.forms)
             if not has_primary_contact:
                 msg = "You have to mark at least one contact as the primary one."
                 raise forms.ValidationError(msg)
 
     def clean_sponsor(self):
+        """Validate that the selected sponsor has no open sponsorship applications."""
         sponsor = self.cleaned_data.get("sponsor")
         if not sponsor:
-            return
+            return None
 
         if Sponsorship.objects.in_progress().filter(sponsor=sponsor).exists():
             msg = f"The sponsor {sponsor.name} already have open Sponsorship applications. "
@@ -321,55 +314,70 @@ class SponsorshipApplicationForm(forms.Form):
     # Required fields are being manually validated because if the form
     # data has a Sponsor they shouldn't be required
     def clean_name(self):
+        """Validate and clean the sponsor name field when no existing sponsor is selected."""
         name = self.cleaned_data.get("name", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not name:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return name.strip()
 
     def clean_web_logo(self):
+        """Validate that a web logo is provided when no existing sponsor is selected."""
         web_logo = self.cleaned_data.get("web_logo", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not web_logo:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return web_logo
 
     def clean_primary_phone(self):
+        """Validate that a phone number is provided when no existing sponsor is selected."""
         primary_phone = self.cleaned_data.get("primary_phone", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not primary_phone:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return primary_phone.strip()
 
     def clean_mailing_address_line_1(self):
+        """Validate that a mailing address is provided when no existing sponsor is selected."""
         mailing_address_line_1 = self.cleaned_data.get("mailing_address_line_1", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not mailing_address_line_1:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return mailing_address_line_1.strip()
 
     def clean_city(self):
+        """Validate that a city is provided when no existing sponsor is selected."""
         city = self.cleaned_data.get("city", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not city:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return city.strip()
 
     def clean_postal_code(self):
+        """Validate that a postal code is provided when no existing sponsor is selected."""
         postal_code = self.cleaned_data.get("postal_code", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not postal_code:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return postal_code.strip()
 
     def clean_country(self):
+        """Validate that a country is provided when no existing sponsor is selected."""
         country = self.cleaned_data.get("country", "")
         sponsor = self.data.get("sponsor")
         if not sponsor and not country:
-            raise forms.ValidationError("This field is required.")
+            msg = "This field is required."
+            raise forms.ValidationError(msg)
         return country.strip()
 
     def save(self):
+        """Create a new Sponsor with contacts or return the selected existing sponsor."""
         selected_sponsor = self.cleaned_data.get("sponsor")
         if selected_sponsor:
             return selected_sponsor
@@ -403,21 +411,27 @@ class SponsorshipApplicationForm(forms.Form):
 
     @cached_property
     def user_with_previous_sponsors(self):
+        """Return True if the user has previously associated sponsors."""
         if not self.user:
             return False
         return self.fields["sponsor"].queryset.exists()
 
 
 class SponsorshipReviewAdminForm(forms.ModelForm):
+    """Admin form for reviewing and approving sponsorship applications."""
+
     start_date = forms.DateField(widget=AdminDateWidget(), required=False)
     end_date = forms.DateField(widget=AdminDateWidget(), required=False)
-    overlapped_by = forms.ModelChoiceField(queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False)
+    overlapped_by = forms.ModelChoiceField(
+        queryset=Sponsorship.objects.select_related("sponsor", "package"), required=False
+    )
     renewal = forms.BooleanField(
         help_text="If true, it means the sponsorship is a renewal of a previous sponsorship and will use the renewal template for contracting.",
         required=False,
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialize form with optional forced required fields and overlapped filtering."""
         force_required = kwargs.pop("force_required", False)
         super().__init__(*args, **kwargs)
         if self.instance:
@@ -429,47 +443,54 @@ class SponsorshipReviewAdminForm(forms.ModelForm):
                 self.fields[field_name].required = True
         self.fields["renewal"].required = False
 
-
     class Meta:
+        """Meta configuration for SponsorshipReviewAdminForm."""
+
         model = Sponsorship
         fields = ["start_date", "end_date", "package", "sponsorship_fee", "renewal"]
         widgets = {
-            'year': SPONSORSHIP_YEAR_SELECT,
+            "year": SPONSORSHIP_YEAR_SELECT,
         }
 
     def clean(self):
+        """Validate that the end date is after the start date."""
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
         end_date = cleaned_data.get("end_date")
-        renewal = cleaned_data.get("renewal")
 
         if start_date and end_date and end_date <= start_date:
-            raise forms.ValidationError("End date must be greater than start date")
+            msg = "End date must be greater than start date"
+            raise forms.ValidationError(msg)
 
         return cleaned_data
 
 
 class SignedSponsorshipReviewAdminForm(SponsorshipReviewAdminForm):
-    """
-    Form to approve sponsorships that already have a signed contract
-    """
+    """Form to approve sponsorships that already have a signed contract."""
+
     signed_contract = forms.FileField(help_text="Please upload the final version of the signed contract.")
 
 
 class SponsorBenefitAdminInlineForm(forms.ModelForm):
+    """Inline form for managing individual sponsor benefits within a sponsorship."""
+
     sponsorship_benefit = forms.ModelChoiceField(
-        queryset=SponsorshipBenefit.objects.order_by('program', 'order').select_related("program"),
+        queryset=SponsorshipBenefit.objects.order_by("program", "order").select_related("program"),
         required=False,
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialize the inline form."""
         super().__init__(*args, **kwargs)
 
     class Meta:
+        """Meta configuration for SponsorBenefitAdminInlineForm."""
+
         model = SponsorBenefit
         fields = ["sponsorship_benefit", "sponsorship", "benefit_internal_value"]
 
     def save(self, commit=True):
+        """Save the sponsor benefit, updating features when the benefit type changes."""
         sponsorship = self.cleaned_data["sponsorship"]
         benefit = self.cleaned_data["sponsorship_benefit"]
         value = self.cleaned_data["benefit_internal_value"]
@@ -504,6 +525,8 @@ class SponsorBenefitAdminInlineForm(forms.ModelForm):
 
 
 class SponsorshipsListForm(forms.Form):
+    """Form for selecting multiple sponsorships via checkboxes."""
+
     sponsorships = forms.ModelMultipleChoiceField(
         required=True,
         queryset=Sponsorship.objects.select_related("sponsor"),
@@ -512,9 +535,7 @@ class SponsorshipsListForm(forms.Form):
 
     @classmethod
     def with_benefit(cls, sponsorship_benefit, *args, **kwargs):
-        """
-        Queryset considering only valid sponsorships which have the benefit
-        """
+        """Queryset considering only valid sponsorships which have the benefit."""
         today = timezone.now().date()
         queryset = sponsorship_benefit.related_sponsorships.exclude(
             Q(end_date__lt=today) | Q(status=Sponsorship.REJECTED)
@@ -528,6 +549,8 @@ class SponsorshipsListForm(forms.Form):
 
 
 class SendSponsorshipNotificationForm(forms.Form):
+    """Form for sending email notifications to sponsorship contacts."""
+
     contact_types = forms.MultipleChoiceField(
         choices=SponsorContact.CONTACT_TYPES,
         required=True,
@@ -546,6 +569,7 @@ class SendSponsorshipNotificationForm(forms.Form):
     )
 
     def clean(self):
+        """Validate that either a notification template or custom content is provided, not both."""
         cleaned_data = super().clean()
         notification = cleaned_data.get("notification")
         subject = cleaned_data.get("subject", "").strip()
@@ -553,13 +577,16 @@ class SendSponsorshipNotificationForm(forms.Form):
         custom_notification = subject or content
 
         if not (notification or custom_notification):
-            raise forms.ValidationError("Can not send email without notification or custom content")
+            msg = "Can not send email without notification or custom content"
+            raise forms.ValidationError(msg)
         if notification and custom_notification:
-            raise forms.ValidationError("You must select a notification or use custom content, not both")
+            msg = "You must select a notification or use custom content, not both"
+            raise forms.ValidationError(msg)
 
         return cleaned_data
 
     def get_notification(self):
+        """Return the selected template or a new template built from custom content."""
         default_notification = SponsorEmailNotificationTemplate(
             content=self.cleaned_data["content"],
             subject=self.cleaned_data["subject"],
@@ -568,6 +595,8 @@ class SendSponsorshipNotificationForm(forms.Form):
 
 
 class SponsorUpdateForm(forms.ModelForm):
+    """Form for sponsors to update their own profile information."""
+
     READONLY_FIELDS = [
         "name",
     ]
@@ -581,10 +610,11 @@ class SponsorUpdateForm(forms.ModelForm):
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
         required=False,
-        validators=[FileExtensionValidator(['eps', 'epsf' 'epsi', 'svg', 'png'])],
+        validators=[FileExtensionValidator(["eps", "epsfepsi", "svg", "png"])],
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialize form with inline contact formset and readonly field configuration."""
         super().__init__(*args, **kwargs)
         formset_kwargs = {"prefix": "contact", "instance": self.instance}
         factory = forms.inlineformset_factory(
@@ -604,14 +634,34 @@ class SponsorUpdateForm(forms.ModelForm):
             self.contacts_formset = factory(**formset_kwargs)
         # display fields as read-only
         for disabled in self.READONLY_FIELDS:
-            self.fields[disabled].widget.attrs['readonly'] = True
+            self.fields[disabled].widget.attrs["readonly"] = True
 
     class Meta:
-        exclude = ["created", "updated", "creator", "last_modified_by"]
+        """Meta configuration for SponsorUpdateForm."""
+
         model = Sponsor
+        fields = [
+            "name",
+            "description",
+            "landing_page_url",
+            "twitter_handle",
+            "linked_in_page_url",
+            "web_logo",
+            "print_logo",
+            "primary_phone",
+            "mailing_address_line_1",
+            "mailing_address_line_2",
+            "city",
+            "state",
+            "postal_code",
+            "country",
+            "country_of_incorporation",
+            "state_of_incorporation",
+        ]
 
     def clean(self):
-        cleaned_data = super().clean()
+        """Validate the contacts formset and ensure a primary contact is designated."""
+        super().clean()
 
         if not self.contacts_formset.is_valid():
             msg = "Errors with contact(s) information"
@@ -619,48 +669,63 @@ class SponsorUpdateForm(forms.ModelForm):
                 msg = "You have to enter at least one contact"
             raise forms.ValidationError(msg)
 
-        has_primary_contact = any(
-            f.cleaned_data.get("primary") for f in self.contacts_formset.forms
-        )
+        has_primary_contact = any(f.cleaned_data.get("primary") for f in self.contacts_formset.forms)
         if not has_primary_contact:
             msg = "You have to mark at least one contact as the primary one."
             raise forms.ValidationError(msg)
 
     def save(self, *args, **kwargs):
+        """Save the sponsor model and associated contact formset."""
         super().save(*args, **kwargs)
         self.contacts_formset.save()
 
 
 class RequiredImgAssetConfigurationForm(forms.ModelForm):
+    """Form for configuring required image asset constraints."""
 
     def clean(self):
+        """Validate that max dimensions are greater than min dimensions."""
         data = super().clean()
 
         min_width, max_width = data.get("min_width"), data.get("max_width")
         if min_width and max_width and max_width < min_width:
-            raise forms.ValidationError("Max width must be greater than min width")
+            msg = "Max width must be greater than min width"
+            raise forms.ValidationError(msg)
         min_height, max_height = data.get("min_height"), data.get("max_height")
         if min_height and max_height and max_height < min_height:
-            raise forms.ValidationError("Max height must be greater than min height")
+            msg = "Max height must be greater than min height"
+            raise forms.ValidationError(msg)
 
         return data
 
     class Meta:
+        """Meta configuration for RequiredImgAssetConfigurationForm."""
+
         model = RequiredImgAssetConfiguration
-        fields = "__all__"
+        fields = [
+            "benefit",
+            "related_to",
+            "internal_name",
+            "label",
+            "help_text",
+            "due_date",
+            "min_width",
+            "max_width",
+            "min_height",
+            "max_height",
+        ]
 
 
 class SponsorRequiredAssetsForm(forms.Form):
-    """
-    This form is used by the sponsor to fullfill their information related
-    to the required assets. The form is built dynamically by fetching the
-    required assets from the sponsorship.
+    """Form for sponsors to fulfill required asset information.
+
+    Built dynamically by fetching the required assets from the sponsorship.
     """
 
     def __init__(self, *args, **kwargs):
-        """
-        Init method introspect the sponsorship object and
-        build the form object
+        """Introspect the sponsorship object and build the form fields.
+
+        Dynamically generate form fields from the sponsorship's required assets.
         """
         self.sponsorship = kwargs.pop("instance", None)
         required_assets_ids = kwargs.pop("required_assets_ids", [])
@@ -675,7 +740,7 @@ class SponsorRequiredAssetsForm(forms.Form):
         fields = {}
         ordered_assets = sorted(
             self.required_assets,
-            key=lambda x: (-int(bool(x.value)), x.due_date if x.due_date else datetime.date.min),
+            key=lambda x: (-int(bool(x.value)), x.due_date or datetime.date.min),
             reverse=True,
         )
 
@@ -686,7 +751,9 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>")
+                field.label = mark_safe(
+                    f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>"
+                )
             if bool(value):
                 field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
 
@@ -698,9 +765,10 @@ class SponsorRequiredAssetsForm(forms.Form):
         return slugify(asset.internal_name).replace("-", "_")
 
     def update_assets(self):
-        """
+        """Update every required asset with its value from the form data.
+
         Iterate over every required asset, get the value from form data and
-        update it
+        update it.
         """
         for req_asset in self.required_assets:
             f_name = self._get_field_name(req_asset)
@@ -711,19 +779,40 @@ class SponsorRequiredAssetsForm(forms.Form):
 
     @property
     def has_input(self):
+        """Return True if the form has any dynamically generated fields."""
         return bool(self.fields)
 
 
 class SponsorshipBenefitAdminForm(forms.ModelForm):
+    """Admin form for editing sponsorship benefit configurations."""
 
     class Meta:
+        """Meta configuration for SponsorshipBenefitAdminForm."""
+
         model = SponsorshipBenefit
         widgets = {
-            'year': SPONSORSHIP_YEAR_SELECT,
+            "year": SPONSORSHIP_YEAR_SELECT,
         }
-        fields = "__all__"
+        fields = [
+            "name",
+            "description",
+            "program",
+            "packages",
+            "package_only",
+            "new",
+            "unavailable",
+            "standalone",
+            "legal_clauses",
+            "internal_description",
+            "internal_value",
+            "capacity",
+            "soft_capacity",
+            "conflicts",
+            "year",
+        ]
 
     def clean(self):
+        """Validate that standalone benefits are not assigned to any package."""
         cleaned_data = super().clean()
         standalone = cleaned_data.get("standalone")
         packages = cleaned_data.get("packages")
@@ -737,17 +826,17 @@ class SponsorshipBenefitAdminForm(forms.ModelForm):
 
 
 class CloneApplicationConfigForm(forms.Form):
+    """Form for cloning sponsorship application configuration from one year to another."""
+
     from_year = forms.ChoiceField(
-        required=True,
-        help_text="From which year you want to clone the benefits and packages.",
-        choices=[]
+        required=True, help_text="From which year you want to clone the benefits and packages.", choices=[]
     )
     target_year = forms.IntegerField(
-        required=True,
-        help_text="The year of the resulting new sponsorship application configuration."
+        required=True, help_text="The year of the resulting new sponsorship application configuration."
     )
 
     def __init__(self, *args, **kwargs):
+        """Initialize form with year choices derived from existing benefit and package years."""
         super().__init__(*args, **kwargs)
         benefits_years = list(SponsorshipBenefit.objects.values_list("year", flat=True).distinct())
         packages_years = list(SponsorshipPackage.objects.values_list("year", flat=True).distinct())
@@ -756,25 +845,34 @@ class CloneApplicationConfigForm(forms.Form):
 
     @property
     def configured_years(self):
+        """Return the list of years that have existing configurations."""
         return [c[0] for c in self.fields["from_year"].choices]
 
+    MAX_TARGET_YEAR = 2050
+
     def clean_target_year(self):
+        """Validate that the target year does not exceed the maximum allowed year."""
         data = self.cleaned_data["target_year"]
-        if data > 2050:
-            raise forms.ValidationError("The target year can't be bigger than 2050.")
+        if data > self.MAX_TARGET_YEAR:
+            msg = f"The target year can't be bigger than {self.MAX_TARGET_YEAR}."
+            raise forms.ValidationError(msg)
         return data
 
     def clean_from_year(self):
+        """Convert the from_year field value to an integer."""
         return int(self.cleaned_data["from_year"])
 
     def clean(self):
+        """Validate that the target year is greater than the source and has no existing config."""
         from_year = self.cleaned_data.get("from_year")
         target_year = self.cleaned_data.get("target_year")
 
         if from_year and target_year:
             if target_year < from_year:
-                raise forms.ValidationError("The target year must be greater the one used as source.")
-            elif target_year in self.configured_years:
-                raise forms.ValidationError(f"The year {target_year} already have a valid confguration.")
+                msg = "The target year must be greater the one used as source."
+                raise forms.ValidationError(msg)
+            if target_year in self.configured_years:
+                msg = f"The year {target_year} already have a valid confguration."
+                raise forms.ValidationError(msg)
 
         return self.cleaned_data

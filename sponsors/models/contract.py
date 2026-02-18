@@ -1,6 +1,5 @@
-"""
-This module holds models related to the process to generate contracts
-"""
+"""Contract generation models for the sponsors app."""
+
 import uuid
 from itertools import chain
 from pathlib import Path
@@ -11,15 +10,13 @@ from django.utils import timezone
 from markupfield.fields import MarkupField
 from ordered_model.models import OrderedModel
 
-from sponsors.exceptions import InvalidStatusException
-from sponsors.utils import file_from_storage
+from sponsors.exceptions import InvalidStatusError
 from sponsors.models.sponsorship import Sponsorship
+from sponsors.utils import file_from_storage
 
 
 class LegalClause(OrderedModel):
-    """
-    Legal clauses applied to benefits
-    """
+    """Legal clauses applied to benefits."""
 
     internal_name = models.CharField(
         max_length=1024,
@@ -32,14 +29,14 @@ class LegalClause(OrderedModel):
         help_text="Legal clause text to be added to contract",
         blank=False,
     )
-    notes = models.TextField(
-        verbose_name="Notes", help_text="PSF staff notes", blank=True, default=""
-    )
+    notes = models.TextField(verbose_name="Notes", help_text="PSF staff notes", blank=True, default="")
 
     def __str__(self):
+        """Return string representation."""
         return f"Clause: {self.internal_name}"
 
     def clone(self):
+        """Create and return a duplicate of this legal clause."""
         return LegalClause.objects.create(
             internal_name=self.internal_name,
             clause=self.clause,
@@ -48,13 +45,11 @@ class LegalClause(OrderedModel):
         )
 
     class Meta(OrderedModel.Meta):
-        pass
+        """Meta configuration for LegalClause."""
 
 
 def signed_contract_random_path(instance, filename):
-    """
-    Use random UUID to name signed contracts
-    """
+    """Use random UUID to name signed contracts."""
     directory = instance.SIGNED_PDF_DIR
     ext = "".join(Path(filename).suffixes)
     name = uuid.uuid4()
@@ -62,9 +57,7 @@ def signed_contract_random_path(instance, filename):
 
 
 class Contract(models.Model):
-    """
-    Contract model to oficialize a Sponsorship
-    """
+    """Contract model to oficialize a Sponsorship."""
 
     DRAFT = "draft"
     OUTDATED = "outdated"
@@ -84,9 +77,7 @@ class Contract(models.Model):
     FINAL_VERSION_DOCX_DIR = FINAL_VERSION_PDF_DIR + "docx/"
     SIGNED_PDF_DIR = FINAL_VERSION_PDF_DIR + "signed/"
 
-    status = models.CharField(
-        max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True
-    )
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=DRAFT, db_index=True)
     revision = models.PositiveIntegerField(default=0, verbose_name="Revision nº")
     document = models.FileField(
         upload_to=FINAL_VERSION_PDF_DIR,
@@ -140,17 +131,24 @@ class Contract(models.Model):
     sent_on = models.DateField(null=True)
 
     class Meta:
+        """Meta configuration for Contract."""
+
         verbose_name = "Contract"
         verbose_name_plural = "Contracts"
 
     def __str__(self):
+        """Return string representation."""
         return f"Contract: {self.sponsorship}"
+
+    def save(self, **kwargs):
+        """Save the contract, incrementing revision for draft updates."""
+        if all([self.pk, self.is_draft]):
+            self.revision += 1
+        return super().save(**kwargs)
 
     @classmethod
     def new(cls, sponsorship):
-        """
-        Factory method to create a new Contract from a Sponsorship
-        """
+        """Create a new Contract from a Sponsorship."""
         sponsor = sponsorship.sponsor
         primary_contact = sponsor.primary_contact
 
@@ -175,31 +173,33 @@ class Contract(models.Model):
                 item += f" {index_str}"
             benefits_list.append(item)
 
-        legal_clauses_text = "\n".join(
-            [f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)]
-        )
+        legal_clauses_text = "\n".join([f"[^{i}]: {c.clause}" for i, c in enumerate(legal_clauses, start=1)])
         return cls.objects.create(
             sponsorship=sponsorship,
             sponsor_info=sponsor_info,
             sponsor_contact=sponsor_contact,
-            benefits_list="\n".join([b for b in benefits_list]),
+            benefits_list="\n".join(list(benefits_list)),
             legal_clauses=legal_clauses_text,
         )
 
     @property
     def is_draft(self):
+        """Return True if the contract is in draft status."""
         return self.status == self.DRAFT
 
     @property
     def preview_url(self):
+        """Return the admin URL for previewing this contract."""
         return reverse("admin:sponsors_contract_preview", args=[self.pk])
 
     @property
     def awaiting_signature(self):
+        """Return True if the contract is awaiting signature."""
         return self.status == self.AWAITING_SIGNATURE
 
     @property
     def next_status(self):
+        """Return the list of valid next statuses from the current status."""
         states_map = {
             self.DRAFT: [self.AWAITING_SIGNATURE, self.EXECUTED],
             self.OUTDATED: [],
@@ -209,15 +209,11 @@ class Contract(models.Model):
         }
         return states_map[self.status]
 
-    def save(self, **kwargs):
-        if all([self.pk, self.is_draft]):
-            self.revision += 1
-        return super().save(**kwargs)
-
     def set_final_version(self, pdf_file, docx_file=None):
+        """Store the final PDF/DOCX files and transition to awaiting signature."""
         if self.AWAITING_SIGNATURE not in self.next_status:
             msg = f"Can't send a {self.get_status_display()} contract."
-            raise InvalidStatusException(msg)
+            raise InvalidStatusError(msg)
 
         sponsor = self.sponsorship.sponsor.name.upper()
 
@@ -242,9 +238,10 @@ class Contract(models.Model):
         self.save()
 
     def execute(self, commit=True, force=False):
+        """Mark the contract as executed and finalize the sponsorship."""
         if not force and self.EXECUTED not in self.next_status:
             msg = f"Can't execute a {self.get_status_display()} contract."
-            raise InvalidStatusException(msg)
+            raise InvalidStatusError(msg)
 
         self.status = self.EXECUTED
         self.sponsorship.status = Sponsorship.FINALIZED
@@ -255,9 +252,10 @@ class Contract(models.Model):
             self.save()
 
     def nullify(self, commit=True):
+        """Nullify the contract, preventing further use."""
         if self.NULLIFIED not in self.next_status:
             msg = f"Can't nullify a {self.get_status_display()} contract."
-            raise InvalidStatusException(msg)
+            raise InvalidStatusError(msg)
 
         self.status = self.NULLIFIED
         if commit:

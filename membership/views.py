@@ -1,3 +1,5 @@
+"""Views for the membership app."""
+
 from django.views.generic import TemplateView
 
 from pydotorg.mixins import FlagMixin
@@ -7,6 +9,7 @@ from pydotorg.mixins import FlagMixin
 
 
 class Membership(FlagMixin, TemplateView):
-    """ Main membership landing page """
-    flag = 'psf_membership'
-    template_name = 'users/membership.html'
+    """Main membership landing page."""
+
+    flag = "psf_membership"
+    template_name = "users/membership.html"

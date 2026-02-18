@@ -4,16 +4,13 @@ from django.db import migrations
 
 
 def populate_singleton(apps, schema_editor):
-    SponsorshipCurrentYear = apps.get_model("sponsors.SponsorshipCurrentYear")
+    SponsorshipCurrentYear = apps.get_model("sponsors.SponsorshipCurrentYear")  # noqa: N806 - Django migration convention
     SponsorshipCurrentYear.objects.get_or_create(id=1, defaults={"year": 2022})
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0077_sponsorshipcurrentyear'),
+        ("sponsors", "0077_sponsorshipcurrentyear"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_singleton, migrations.RunPython.noop)
-    ]
+    operations = [migrations.RunPython(populate_singleton, migrations.RunPython.noop)]

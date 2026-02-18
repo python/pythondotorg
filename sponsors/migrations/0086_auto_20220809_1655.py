@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0085_auto_20220730_0945'),
+        ("sponsors", "0085_auto_20220730_0945"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='sponsorshippackage',
-            options={'ordering': ('-year', 'order')},
+            name="sponsorshippackage",
+            options={"ordering": ("-year", "order")},
         ),
     ]

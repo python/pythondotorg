@@ -1,15 +1,13 @@
+"""Admin configuration for content-manageable models."""
+
 from django.contrib import admin
 
 
 class ContentManageableAdmin:
-    """
-    Base ModelAdmin class for any model that uses ContentManageable.
-    """
+    """Base ModelAdmin class for any model that uses ContentManageable."""
 
     def save_model(self, request, obj, form, change):
-        """
-        Automatically set obj.creator = request.user when the model's created.
-        """
+        """Automatically set obj.creator = request.user when the model's created."""
         if not change:
             obj.creator = request.user
         else:
@@ -25,49 +23,57 @@ class ContentManageableAdmin:
     #
 
     def get_readonly_fields(self, request, obj=None):
+        """Append CMS tracking fields to the readonly fields list."""
         fields = list(super().get_readonly_fields(request, obj))
-        return fields + ['created', 'updated', 'creator', 'last_modified_by']
+        return [*fields, "created", "updated", "creator", "last_modified_by"]
 
     def get_list_filter(self, request):
+        """Append created/updated timestamps to the list filter."""
         fields = list(super().get_list_filter(request))
-        return fields + ['created', 'updated']
+        return [*fields, "created", "updated"]
 
     def get_list_display(self, request):
+        """Append created/updated timestamps to the list display columns."""
         fields = list(super().get_list_display(request))
-        return fields + ['created', 'updated']
+        return [*fields, "created", "updated"]
 
     def get_fieldsets(self, request, obj=None):
-        """
-        Move the created/updated/creator fields to a fieldset of its own,
-        at the end, and collapsed.
+        """Move the created/updated/creator fields to a fieldset of its own.
+
+        Place at the end, and collapsed.
         """
         # Remove created/updated/creator from any existing fieldsets. They'll
         # be there if the child class didn't manually declare fieldsets.
         fieldsets = super().get_fieldsets(request, obj)
-        for name, fieldset in fieldsets:
-            for f in ('created', 'updated', 'creator', 'last_modified_by'):
-                if f in fieldset['fields']:
-                    fieldset['fields'].remove(f)
+        for _name, fieldset in fieldsets:
+            for f in ("created", "updated", "creator", "last_modified_by"):
+                if f in fieldset["fields"]:
+                    fieldset["fields"].remove(f)
 
         # Now add these fields to a collapsed fieldset at the end.
         # FIXME: better name than "CMS metadata", that sucks.
-        return fieldsets + [("CMS metadata", {
-            'fields': [('creator', 'created'), ('last_modified_by', 'updated')],
-            'classes': ('collapse',),
-        })]
+        return [
+            *fieldsets,
+            (
+                "CMS metadata",
+                {"fields": [("creator", "created"), ("last_modified_by", "updated")], "classes": ("collapse",)},
+            ),
+        ]
 
 
 class ContentManageableModelAdmin(ContentManageableAdmin, admin.ModelAdmin):
-    pass
+    """ModelAdmin with ContentManageable tracking fields."""
 
 
 class ContentManageableStackedInline(ContentManageableAdmin, admin.StackedInline):
-    pass
+    """StackedInline with ContentManageable tracking fields."""
 
 
 class ContentManageableTabularInline(ContentManageableAdmin, admin.TabularInline):
-    pass
+    """TabularInline with ContentManageable tracking fields."""
 
 
 class NameSlugAdmin(admin.ModelAdmin):
+    """ModelAdmin with auto-populated slug from the name field."""
+
     prepopulated_fields = {"slug": ("name",)}

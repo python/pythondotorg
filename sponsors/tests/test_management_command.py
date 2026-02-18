@@ -1,31 +1,29 @@
-from django.test import TestCase
-from django.core.management import call_command
+from io import StringIO
+from unittest import mock
 
+from django.contrib.contenttypes.models import ContentType
+from django.core.management import call_command
+from django.test import TestCase
 from model_bakery import baker
 
-from unittest import mock
-from io import StringIO
-
+from sponsors.management.commands.create_pycon_vouchers_for_sponsors import (
+    BENEFITS,
+    generate_voucher_codes,
+)
 from sponsors.models import (
-    ProvidedTextAssetConfiguration,
+    GenericAsset,
     ProvidedTextAsset,
+    ProvidedTextAssetConfiguration,
     Sponsor,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
-    SponsorshipCurrentYear,
-    GenericAsset,
     TieredBenefitConfiguration,
 )
-from sponsors.models.enums import AssetsRelatedTo
 from sponsors.models.assets import TextAsset
-from django.contrib.contenttypes.models import ContentType
-
-from sponsors.management.commands.create_pycon_vouchers_for_sponsors import (
-    generate_voucher_codes,
-    BENEFITS,
-)
+from sponsors.models.enums import AssetsRelatedTo
 
 
 class CreatePyConVouchersForSponsorsTestCase(TestCase):
@@ -36,19 +34,15 @@ class CreatePyConVouchersForSponsorsTestCase(TestCase):
     def test_generate_voucher_codes(self, mock_api_call):
         for benefit_id, code in BENEFITS.items():
             sponsor = baker.make("sponsors.Sponsor", name="Foo")
-            sponsorship = baker.make(
-                "sponsors.Sponsorship", status="finalized", sponsor=sponsor
-            )
-            sponsorship_benefit = baker.make(
-                "sponsors.SponsorshipBenefit", id=benefit_id
-            )
+            sponsorship = baker.make("sponsors.Sponsorship", status="finalized", sponsor=sponsor)
+            sponsorship_benefit = baker.make("sponsors.SponsorshipBenefit", id=benefit_id)
             sponsor_benefit = baker.make(
                 "sponsors.SponsorBenefit",
                 id=benefit_id,
                 sponsorship=sponsorship,
                 sponsorship_benefit=sponsorship_benefit,
             )
-            quantity = baker.make(
+            baker.make(
                 "sponsors.TieredBenefit",
                 sponsor_benefit=sponsor_benefit,
             )
@@ -63,9 +57,7 @@ class CreatePyConVouchersForSponsorsTestCase(TestCase):
         generate_voucher_codes(2020)
 
         for benefit_id, code in BENEFITS.items():
-            asset = ProvidedTextAsset.objects.get(
-                sponsor_benefit__id=benefit_id, internal_name=code["internal_name"]
-            )
+            asset = ProvidedTextAsset.objects.get(sponsor_benefit__id=benefit_id, internal_name=code["internal_name"])
             self.assertEqual(asset.value, "test-promo-code")
 
 
@@ -209,8 +201,6 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
 
         # Create some GenericAssets with 2025 references
         sponsorship_ct = ContentType.objects.get_for_model(sponsorship)
-        # Use TextAsset.objects.create() instead of baker.make() because
-        # model_bakery doesn't support GenericForeignKey fields
         TextAsset.objects.create(
             content_type=sponsorship_ct,
             object_id=sponsorship.id,
@@ -290,23 +280,18 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
         self.assertEqual(assets_2025_after.count(), 0)
 
         # Verify benefits are visible in admin (template year matches sponsorship year)
-        visible_benefits = sponsorship.benefits.filter(
-            sponsorship_benefit__year=sponsorship.year
-        )
+        visible_benefits = sponsorship.benefits.filter(sponsorship_benefit__year=sponsorship.year)
         self.assertEqual(visible_benefits.count(), sponsorship.benefits.count())
 
         # Verify benefit features were recreated with 2026 configurations
         conference_passes_benefit = sponsorship.benefits.get(name="Conference Passes")
-        tiered_features = conference_passes_benefit.features.filter(
-            polymorphic_ctype__model="tieredbenefit"
-        )
+        tiered_features = conference_passes_benefit.features.filter(polymorphic_ctype__model="tieredbenefit")
         self.assertEqual(tiered_features.count(), 1)
 
         # Verify the quantity was updated from 2025 config (5) to 2026 config (10)
         from sponsors.models import TieredBenefit
-        tiered_benefit = TieredBenefit.objects.get(
-            sponsor_benefit=conference_passes_benefit
-        )
+
+        tiered_benefit = TieredBenefit.objects.get(sponsor_benefit=conference_passes_benefit)
         self.assertEqual(tiered_benefit.quantity, 10)
 
     def test_reset_with_duplicate_benefits(self):
@@ -320,7 +305,8 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
 
         # Manually create a duplicate benefit
         from sponsors.models import SponsorBenefit
-        duplicate = SponsorBenefit.new_copy(
+
+        SponsorBenefit.new_copy(
             self.benefit_2025_a,
             sponsorship=sponsorship,
             added_by_user=False,
@@ -328,9 +314,7 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
 
         # Verify we have a duplicate
         self.assertEqual(sponsorship.benefits.count(), 2)
-        self.assertEqual(
-            sponsorship.benefits.filter(name="Logo on Website").count(), 2
-        )
+        self.assertEqual(sponsorship.benefits.filter(name="Logo on Website").count(), 2)
 
         # Update to 2026 package
         sponsorship.package = self.package_2026
@@ -348,9 +332,7 @@ class ResetSponsorshipBenefitsTestCase(TestCase):
         # Verify duplicates were handled
         sponsorship.refresh_from_db()
         self.assertEqual(sponsorship.benefits.count(), 3)  # All 2026 benefits
-        self.assertEqual(
-            sponsorship.benefits.filter(name="Logo on Website").count(), 1
-        )
+        self.assertEqual(sponsorship.benefits.filter(name="Logo on Website").count(), 1)
 
     def test_dry_run_mode(self):
         """Test that dry run doesn't make any changes"""

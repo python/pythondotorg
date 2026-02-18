@@ -1,23 +1,19 @@
 from unittest.mock import Mock
 
 from django.contrib.admin.views.main import ChangeList
+from django.test import RequestFactory, TestCase
 from model_bakery import baker
 
-from django.test import TestCase, RequestFactory
-
-from sponsors.admin import SponsorshipStatusListFilter, SponsorshipAdmin
+from sponsors.admin import SponsorshipAdmin, SponsorshipStatusListFilter
 from sponsors.models import Sponsorship
 
-class TestCustomSponsorshipStatusListFilter(TestCase):
 
+class TestCustomSponsorshipStatusListFilter(TestCase):
     def setUp(self):
         self.request = RequestFactory().get("/")
         self.model_admin = SponsorshipAdmin
         self.filter = SponsorshipStatusListFilter(
-            request=self.request,
-            params={},
-            model=Sponsorship,
-            model_admin=self.model_admin
+            request=self.request, params={}, model=Sponsorship, model_admin=self.model_admin
         )
 
     def test_basic_configuration(self):

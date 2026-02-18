@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0047_auto_20210908_1357'),
+        ("sponsors", "0047_auto_20210908_1357"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='sponsorshippackage',
-            name='advertise',
-            field=models.BooleanField(blank=True, default=False, help_text='If checked, this package will be advertised in the sponsosrhip application'),
+            model_name="sponsorshippackage",
+            name="advertise",
+            field=models.BooleanField(
+                blank=True,
+                default=False,
+                help_text="If checked, this package will be advertised in the sponsosrhip application",
+            ),
         ),
     ]

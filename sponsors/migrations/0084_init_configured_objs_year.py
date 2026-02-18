@@ -2,6 +2,7 @@
 
 from django.db import migrations
 
+
 def populate_with_current_year(apps, schema_editor):
     SponsorshipPackage = apps.get_model("sponsors", "SponsorshipPackage")
     SponsorshipBenefit = apps.get_model("sponsors", "SponsorshipBenefit")
@@ -21,13 +22,9 @@ def reset_current_year(apps, schema_editor):
     SponsorshipBenefit.objects.all().update(year=None)
 
 
-
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('sponsors', '0083_auto_20220729_1624'),
+        ("sponsors", "0083_auto_20220729_1624"),
     ]
 
-    operations = [
-        migrations.RunPython(populate_with_current_year, reset_current_year)
-    ]
+    operations = [migrations.RunPython(populate_with_current_year, reset_current_year)]

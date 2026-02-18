@@ -1,29 +1,28 @@
-import datetime
-import feedparser
+"""RSS feed parsing and blog supernav rendering utilities."""
 
+import datetime
+
+import feedparser
 from django.conf import settings
 from django.template.loader import render_to_string
-from django.utils.timezone import make_aware
 
+from blogs.models import BlogEntry, Feed
 from boxes.models import Box
-from .models import BlogEntry, Feed
 
 
 def get_all_entries(feed_url):
-    """ Retrieve all entries from a feed URL """
+    """Retrieve all entries from a feed URL."""
     d = feedparser.parse(feed_url)
     entries = []
 
-    for e in d['entries']:
-        published = make_aware(
-            datetime.datetime(*e['published_parsed'][:7]), timezone=datetime.timezone.utc
-        )
+    for e in d["entries"]:
+        published = datetime.datetime(*e["published_parsed"][:7], tzinfo=datetime.UTC)
 
         entry = {
-            'title': e['title'],
-            'summary': e.get('summary', ''),
-            'pub_date': published,
-            'url': e['link'],
+            "title": e["title"],
+            "summary": e.get("summary", ""),
+            "pub_date": published,
+            "url": e["link"],
         }
 
         entries.append(entry)
@@ -32,12 +31,12 @@ def get_all_entries(feed_url):
 
 
 def _render_blog_supernav(entry):
-    """ Utility to make testing update_blogs management command easier """
-    return render_to_string('blogs/supernav.html', {'entry': entry})
+    """Render blog supernav for testing update_blogs management command."""
+    return render_to_string("blogs/supernav.html", {"entry": entry})
 
 
 def update_blog_supernav():
-    """Retrieve latest entry and update blog supernav item """
+    """Retrieve latest entry and update blog supernav item."""
     try:
         latest_entry = BlogEntry.objects.filter(
             feed=Feed.objects.get(
@@ -49,11 +48,11 @@ def update_blog_supernav():
     else:
         rendered_box = _render_blog_supernav(latest_entry)
         box, created = Box.objects.update_or_create(
-            label='supernav-python-blog',
+            label="supernav-python-blog",
             defaults={
-                'content': rendered_box,
-                'content_markup_type': 'html',
-            }
+                "content": rendered_box,
+                "content_markup_type": "html",
+            },
         )
         if not created:
             box.save()

@@ -1,17 +1,88 @@
-"""
-Python.org sponsors app is heavily db-oriented. This results in
-a huge models.py. To reduce file length the models are being
-structured as a python package.
+"""Sponsors app models, structured as a package for maintainability.
+
+Python.org sponsors app is heavily db-oriented. To reduce file length
+the models are being structured as a python package.
 """
 
-from .assets import GenericAsset, ImgAsset, TextAsset, FileAsset, ResponseAsset
-from .notifications import SponsorEmailNotificationTemplate, SPONSOR_TEMPLATE_HELP_TEXT
-from .sponsors import Sponsor, SponsorContact, SponsorBenefit
-from .benefits import BaseLogoPlacement, BaseTieredBenefit, BaseEmailTargetable, BenefitFeatureConfiguration, \
-    LogoPlacementConfiguration, TieredBenefitConfiguration, EmailTargetableConfiguration, BenefitFeature, \
-    LogoPlacement, EmailTargetable, TieredBenefit, RequiredImgAsset, RequiredImgAssetConfiguration, \
-    RequiredTextAssetConfiguration, RequiredTextAsset, RequiredResponseAssetConfiguration, RequiredResponseAsset, \
-    ProvidedTextAssetConfiguration, ProvidedTextAsset, ProvidedFileAssetConfiguration, ProvidedFileAsset
-from .sponsorship import Sponsorship, SponsorshipProgram, SponsorshipBenefit, Sponsorship, SponsorshipPackage, \
-    SponsorshipCurrentYear
-from .contract import LegalClause, Contract, signed_contract_random_path
+from sponsors.models.assets import FileAsset, GenericAsset, ImgAsset, ResponseAsset, TextAsset
+from sponsors.models.benefits import (
+    BaseEmailTargetable,
+    BaseLogoPlacement,
+    BaseTieredBenefit,
+    BenefitFeature,
+    BenefitFeatureConfiguration,
+    EmailTargetable,
+    EmailTargetableConfiguration,
+    LogoPlacement,
+    LogoPlacementConfiguration,
+    ProvidedFileAsset,
+    ProvidedFileAssetConfiguration,
+    ProvidedTextAsset,
+    ProvidedTextAssetConfiguration,
+    RequiredImgAsset,
+    RequiredImgAssetConfiguration,
+    RequiredResponseAsset,
+    RequiredResponseAssetConfiguration,
+    RequiredTextAsset,
+    RequiredTextAssetConfiguration,
+    TieredBenefit,
+    TieredBenefitConfiguration,
+)
+from sponsors.models.contract import Contract, LegalClause, signed_contract_random_path
+from sponsors.models.notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate
+from sponsors.models.sponsors import Sponsor, SponsorBenefit, SponsorContact
+from sponsors.models.sponsorship import (
+    Sponsorship,
+    SponsorshipBenefit,
+    SponsorshipCurrentYear,
+    SponsorshipPackage,
+    SponsorshipProgram,
+)
+
+__all__ = [
+    # notifications
+    "SPONSOR_TEMPLATE_HELP_TEXT",
+    # benefits
+    "BaseEmailTargetable",
+    "BaseLogoPlacement",
+    "BaseTieredBenefit",
+    "BenefitFeature",
+    "BenefitFeatureConfiguration",
+    # contract
+    "Contract",
+    "EmailTargetable",
+    "EmailTargetableConfiguration",
+    # assets
+    "FileAsset",
+    "GenericAsset",
+    "ImgAsset",
+    "LegalClause",
+    "LogoPlacement",
+    "LogoPlacementConfiguration",
+    "ProvidedFileAsset",
+    "ProvidedFileAssetConfiguration",
+    "ProvidedTextAsset",
+    "ProvidedTextAssetConfiguration",
+    "RequiredImgAsset",
+    "RequiredImgAssetConfiguration",
+    "RequiredResponseAsset",
+    "RequiredResponseAssetConfiguration",
+    "RequiredTextAsset",
+    "RequiredTextAssetConfiguration",
+    "ResponseAsset",
+    # sponsors
+    "Sponsor",
+    "SponsorBenefit",
+    "SponsorContact",
+    "SponsorEmailNotificationTemplate",
+    # sponsorship
+    "Sponsorship",
+    "SponsorshipBenefit",
+    "SponsorshipCurrentYear",
+    "SponsorshipPackage",
+    "SponsorshipProgram",
+    "TextAsset",
+    "TieredBenefit",
+    "TieredBenefitConfiguration",
+    "signed_contract_random_path",
+]

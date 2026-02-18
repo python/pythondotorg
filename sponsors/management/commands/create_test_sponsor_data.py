@@ -1,120 +1,110 @@
-"""
-Management command to create test sponsor and contract data for testing (development only)
-"""
-from datetime import date, timedelta
+"""Management command to create test sponsor and contract data for testing (development only)."""
+
 import uuid
+from datetime import timedelta
+
 from django.conf import settings
-from django.core.management.base import BaseCommand, CommandError
 from django.contrib.auth import get_user_model
+from django.core.files.base import ContentFile
+from django.core.management.base import BaseCommand, CommandError
+from django.utils import timezone
+
+from sponsors.models import Contract, Sponsor, SponsorContact, Sponsorship, SponsorshipPackage
 
 User = get_user_model()
-from sponsors.models import (
-    Sponsor, Sponsorship, SponsorshipPackage, SponsorshipBenefit,
-    Contract, SponsorContact, SponsorBenefit
-)
 
 
 class Command(BaseCommand):
-    help = 'Create test sponsor and contract data for testing contract display (development only)'
+    help = "Create test sponsor and contract data for testing contract display (development only)"
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '--clean',
-            action='store_true',
-            help='Delete existing test data before creating new data',
+            "--clean",
+            action="store_true",
+            help="Delete existing test data before creating new data",
         )
         parser.add_argument(
-            '--force',
-            action='store_true',
-            help='Force execution even in non-DEBUG mode (use with extreme caution)',
+            "--force",
+            action="store_true",
+            help="Force execution even in non-DEBUG mode (use with extreme caution)",
         )
 
     def handle(self, *args, **options):
         # Production safety check
-        if not settings.DEBUG and not options['force']:
-            raise CommandError(
-                "This command cannot be run in production (DEBUG=False). "
-                "This command creates test data and should only be used in development environments."
-            )
-        if options['clean']:
-            self.stdout.write('Cleaning existing test data...')
-            # Clean up test data
-            Contract.objects.filter(sponsorship__sponsor__name__startswith='Test Sponsor').delete()
-            Sponsorship.objects.filter(sponsor__name__startswith='Test Sponsor').delete()
-            Sponsor.objects.filter(name__startswith='Test Sponsor').delete()
-            SponsorshipPackage.objects.filter(name__startswith='Test Package').delete()
+        if not settings.DEBUG and not options["force"]:
+            msg = "This command cannot be run in production (DEBUG=False). This command creates test data and should only be used in development environments."
+            raise CommandError(msg)
+        if options["clean"]:
+            self._clean_test_data()
 
-        # Generate unique identifiers for this run
         run_id = str(uuid.uuid4())[:8]
-        self.stdout.write(f'Creating test sponsor and contract data (Run ID: {run_id})...')
+        self.stdout.write(f"Creating test sponsor and contract data (Run ID: {run_id})...")
 
-        # Create a test user for relationships
-        user, created = User.objects.get_or_create(
-            username='test_sponsor_user',
-            defaults={
-                'email': 'test@sponsor.com',
-                'first_name': 'Test',
-                'last_name': 'User'
-            }
+        User.objects.get_or_create(
+            username="test_sponsor_user",
+            defaults={"email": "test@sponsor.com", "first_name": "Test", "last_name": "User"},
         )
 
-        # Create a test sponsorship package (reuse existing if available)
-        current_year = date.today().year - 5
-        package, created = SponsorshipPackage.objects.get_or_create(
-            name='Test Package - Gold',
+        current_year = timezone.now().date().year - 5
+        package, _created = SponsorshipPackage.objects.get_or_create(
+            name="Test Package - Gold",
             year=current_year,
-            defaults={
-                'sponsorship_amount': 10000,
-                'advertise': True,
-                'logo_dimension': 200,
-                'slug': 'test-gold'
-            }
+            defaults={"sponsorship_amount": 10000, "advertise": True, "logo_dimension": 200, "slug": "test-gold"},
         )
 
-        # Create a unique test sponsor for each run
-        sponsor_name = f'Test Sponsor Corp {run_id}'
+        sponsor_name = f"Test Sponsor Corp {run_id}"
         sponsor = Sponsor.objects.create(
             name=sponsor_name,
-            description=f'A test sponsor company for development and testing ({run_id})',
-            landing_page_url=f'https://test-sponsor-{run_id}.com',
-            twitter_handle=f'@testsponsor{run_id}',
-            primary_phone='+1-555-0123',
-            mailing_address_line_1=f'123 Test Street {run_id}',
-            city='Test City',
-            state='Test State',
-            postal_code='12345',
-            country='US'
+            description=f"A test sponsor company for development and testing ({run_id})",
+            landing_page_url=f"https://test-sponsor-{run_id}.com",
+            twitter_handle=f"@testsponsor{run_id}",
+            primary_phone="+1-555-0123",
+            mailing_address_line_1=f"123 Test Street {run_id}",
+            city="Test City",
+            state="Test State",
+            postal_code="12345",
+            country="US",
         )
 
-        # Create a sponsor contact
-        contact = SponsorContact.objects.create(
+        SponsorContact.objects.create(
             sponsor=sponsor,
-            name=f'John Test Contact {run_id}',
-            email=f'john@testsponsor{run_id}.com',
-            phone='+1-555-0123',
-            primary=True
+            name=f"John Test Contact {run_id}",
+            email=f"john@testsponsor{run_id}.com",
+            phone="+1-555-0123",
+            primary=True,
         )
 
-        # Create multiple sponsorships with different statuses for testing
-        start_date = date.today()
+        start_date = timezone.now().date()
         end_date = start_date + timedelta(days=365)
         current_test_year = start_date.year + 1
-        
+
+        sponsorships = self._create_sponsorships(sponsor, package, start_date, end_date, current_test_year)
+
+        contract = self._create_contract(sponsorships[2][1], sponsor_name, run_id)
+
+        self._print_summary(sponsor, package, contract, sponsorships)
+
+    def _clean_test_data(self):
+        self.stdout.write("Cleaning existing test data...")
+        Contract.objects.filter(sponsorship__sponsor__name__startswith="Test Sponsor").delete()
+        Sponsorship.objects.filter(sponsor__name__startswith="Test Sponsor").delete()
+        Sponsor.objects.filter(name__startswith="Test Sponsor").delete()
+        SponsorshipPackage.objects.filter(name__startswith="Test Package").delete()
+
+    def _create_sponsorships(self, sponsor, package, start_date, end_date, year):
         sponsorships = []
-        
-        # 1. Applied sponsorship (can be withdrawn)
+
         sponsorship_applied = Sponsorship.objects.create(
             sponsor=sponsor,
             package=package,
             status=Sponsorship.APPLIED,
             applied_on=start_date,
             for_modified_package=False,
-            year=current_test_year,
-            sponsorship_fee=package.sponsorship_amount
+            year=year,
+            sponsorship_fee=package.sponsorship_amount,
         )
-        sponsorships.append(('Applied', sponsorship_applied))
-        
-        # 2. Approved sponsorship (can be cancelled)
+        sponsorships.append(("Applied", sponsorship_applied))
+
         sponsorship_approved = Sponsorship.objects.create(
             sponsor=sponsor,
             package=package,
@@ -124,12 +114,11 @@ class Command(BaseCommand):
             applied_on=start_date - timedelta(days=5),
             approved_on=start_date,
             for_modified_package=False,
-            year=current_test_year,
-            sponsorship_fee=package.sponsorship_amount
+            year=year,
+            sponsorship_fee=package.sponsorship_amount,
         )
-        sponsorships.append(('Approved', sponsorship_approved))
-        
-        # 3. Finalized sponsorship (complete workflow)
+        sponsorships.append(("Approved", sponsorship_approved))
+
         sponsorship_finalized = Sponsorship.objects.create(
             sponsor=sponsor,
             package=package,
@@ -140,30 +129,11 @@ class Command(BaseCommand):
             approved_on=start_date - timedelta(days=5),
             finalized_on=start_date,
             for_modified_package=False,
-            year=current_test_year,
-            sponsorship_fee=package.sponsorship_amount
+            year=year,
+            sponsorship_fee=package.sponsorship_amount,
         )
-        sponsorships.append(('Finalized', sponsorship_finalized))
+        sponsorships.append(("Finalized", sponsorship_finalized))
 
-        
-        # 5. Cancelled sponsorship (NEW STATUS) 
-        # sponsorship_cancelled = Sponsorship.objects.create(
-        #     sponsor=sponsor,
-        #     package=package,
-        #     status=Sponsorship.CANCELLED,
-        #     start_date=start_date,
-        #     end_date=end_date,
-        #     applied_on=start_date - timedelta(days=20),
-        #     approved_on=start_date - timedelta(days=15),
-        #     cancelled_on=start_date - timedelta(days=5),
-        #     for_modified_package=False,
-        #     year=current_test_year,
-        #     sponsorship_fee=package.sponsorship_amount,
-        #     locked=True
-        # )
-        # sponsorships.append(('Cancelled', sponsorship_cancelled))
-        
-        # 6. Rejected sponsorship (for completeness)
         sponsorship_rejected = Sponsorship.objects.create(
             sponsor=sponsor,
             package=package,
@@ -171,60 +141,50 @@ class Command(BaseCommand):
             applied_on=start_date - timedelta(days=25),
             rejected_on=start_date - timedelta(days=20),
             for_modified_package=False,
-            year=current_test_year,
+            year=year,
             sponsorship_fee=package.sponsorship_amount,
-            locked=True
+            locked=True,
         )
-        sponsorships.append(('Rejected', sponsorship_rejected))
-        
-        # Use the finalized sponsorship for contract creation
-        sponsorship = sponsorship_finalized
+        sponsorships.append(("Rejected", sponsorship_rejected))
 
-        # Create a contract for the sponsorship with a document
-        from django.core.files.base import ContentFile
-        
-        # Create a simple PDF-like content for testing
+        return sponsorships
+
+    def _create_contract(self, sponsorship, sponsor_name, run_id):
         dummy_pdf_content = b"%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n"
-        
         contract = Contract.objects.create(
             sponsorship=sponsorship,
-            status=Contract.AWAITING_SIGNATURE,  # Status that shows download links
+            status=Contract.AWAITING_SIGNATURE,
             revision=1,
-            sponsor_info=f'{sponsor_name}\n123 Test Street {run_id}\nTest City, Test State 12345\nUS',
-            sponsor_contact=f'John Test Contact {run_id}\njohn@testsponsor{run_id}.com\n+1-555-0123'
+            sponsor_info=f"{sponsor_name}\n123 Test Street {run_id}\nTest City, Test State 12345\nUS",
+            sponsor_contact=f"John Test Contact {run_id}\njohn@testsponsor{run_id}.com\n+1-555-0123",
         )
-        
-        # Add a document to the contract
-        contract.document.save(
-            f'test_contract_{run_id}.pdf',
-            ContentFile(dummy_pdf_content),
-            save=True
-        )
+        contract.document.save(f"test_contract_{run_id}.pdf", ContentFile(dummy_pdf_content), save=True)
+        return contract
 
-        self.stdout.write(
-            self.style.SUCCESS('Successfully created test data:')
-        )
-        self.stdout.write(f'- Sponsor: {sponsor.name} (ID: {sponsor.id})')
-        self.stdout.write(f'- Package: {package.name}')
-        self.stdout.write(f'- Contract: {contract} (ID: {contract.id})')
-        
-        self.stdout.write('\n📋 Created Sponsorships with ALL status types:')
+    def _print_summary(self, sponsor, package, contract, sponsorships):
+        self.stdout.write(self.style.SUCCESS("Successfully created test data:"))
+        self.stdout.write(f"- Sponsor: {sponsor.name} (ID: {sponsor.id})")
+        self.stdout.write(f"- Package: {package.name}")
+        self.stdout.write(f"- Contract: {contract} (ID: {contract.id})")
+
+        self.stdout.write("\nCreated Sponsorships with ALL status types:")
         for status_name, sponsorship_obj in sponsorships:
-            self.stdout.write(f'  • {status_name}: ID {sponsorship_obj.id} - {sponsorship_obj}')
-        
-        self.stdout.write('\n🧪 Testing URLs:')
-        self.stdout.write('Admin Sponsorships List:')
-        self.stdout.write('  http://localhost:8000/admin/sponsors/sponsorship/')
-        
-        self.stdout.write('\nTest NEW Status Transitions:')
-        applied_id = sponsorships[0][1].id
+            self.stdout.write(f"  {status_name}: ID {sponsorship_obj.id} - {sponsorship_obj}")
+
+        self.stdout.write("\nTesting URLs:")
+        self.stdout.write("Admin Sponsorships List:")
+        self.stdout.write("  http://localhost:8000/admin/sponsors/sponsorship/")
+
+        self.stdout.write("\nTest Status Transitions:")
         approved_id = sponsorships[1][1].id
-        self.stdout.write(f'  • Cancel Approved: http://localhost:8000/admin/sponsors/sponsorship/{approved_id}/cancel')
-        
-        self.stdout.write('\nView Sponsorship Details:')
+        self.stdout.write(f"  Cancel Approved: http://localhost:8000/admin/sponsors/sponsorship/{approved_id}/cancel")
+
+        self.stdout.write("\nView Sponsorship Details:")
         for status_name, sponsorship_obj in sponsorships:
-            self.stdout.write(f'  • {status_name}: http://localhost:8000/admin/sponsors/sponsorship/{sponsorship_obj.id}/change/')
-        
-        self.stdout.write('\nContract Display:')
-        self.stdout.write(f'  http://localhost:8000/admin/sponsors/contract/{contract.id}/preview')
-        self.stdout.write(f'  http://localhost:8000/admin/sponsors/contract/{contract.id}/change/')
+            self.stdout.write(
+                f"  {status_name}: http://localhost:8000/admin/sponsors/sponsorship/{sponsorship_obj.id}/change/"
+            )
+
+        self.stdout.write("\nContract Display:")
+        self.stdout.write(f"  http://localhost:8000/admin/sponsors/contract/{contract.id}/preview")
+        self.stdout.write(f"  http://localhost:8000/admin/sponsors/contract/{contract.id}/change/")

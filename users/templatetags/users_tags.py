@@ -1,38 +1,37 @@
+"""Template tags and filters for user profile display."""
+
 from django import template
 
-from ..models import Membership
+from users.models import Membership
 
 register = template.Library()
 
 
-@register.filter(name='user_location')
+@register.filter(name="user_location")
 def parse_location(user):
-    """
-    Returns a formatted string of user location data.
-    Adds a comma if the city is present, adds a space is the region is present
+    """Return a formatted string of user location data.
 
-    Returns empty if no location data is present
+    Add a comma if the city is present, add a space if the region is present.
+    Return empty if no location data is present.
     """
-
-    path = ''
+    path = ""
 
     try:
         membership = user.membership
     except Membership.DoesNotExist:
-        return ''
+        return ""
 
     if membership.city:
-        path += "%s" % (membership.city)
+        path += f"{membership.city}"
     if membership.region:
         if membership.city:
             path += ", "
-        path += "%s" % (membership.region)
+        path += f"{membership.region}"
     if membership.country:
         if membership.region:
             path += " "
-        else:
-            if membership.city:
-                path += ", "
-        path += "%s" % (membership.country)
+        elif membership.city:
+            path += ", "
+        path += f"{membership.country}"
 
     return path

@@ -1,22 +1,25 @@
 import datetime
 
+from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management import BaseCommand
 from django.db.models import Count
-from django.conf import settings
 from django.template import loader
-
+from django.utils import timezone
 
 from jobs.models import Job
+
+REPORT_DAY_OF_MONTH = 27
 
 
 class Command(BaseCommand):
     def handle(self, **options):
-        if datetime.date.today().day != 27:
+        today = timezone.now().date()
+        if today.day != REPORT_DAY_OF_MONTH:
             # Send only on 27th of each month
             return
 
-        current_month = datetime.date.today().month
+        current_month = today.month
         current_month_jobs = (
             Job.objects.filter(created__month=current_month)
             .values("status")
@@ -26,9 +29,7 @@ class Command(BaseCommand):
         current_month_jobs = {x["status"]: x["dcount"] for x in current_month_jobs}
         submissions_current_month = sum(current_month_jobs.values())
 
-        previous_month = (
-            datetime.date.today().replace(day=1) - datetime.timedelta(days=1)
-        ).month
+        previous_month = (today.replace(day=1) - datetime.timedelta(days=1)).month
         previous_month_jobs = (
             Job.objects.filter(created__month=previous_month)
             .values("status")
@@ -38,9 +39,7 @@ class Command(BaseCommand):
         previous_month_jobs = {x["status"]: x["dcount"] for x in previous_month_jobs}
         submissions_previous_month = sum(previous_month_jobs.values())
 
-        subject_template = loader.get_template(
-            "jobs/email/monthly_jobs_report_subject.txt"
-        )
+        subject_template = loader.get_template("jobs/email/monthly_jobs_report_subject.txt")
         message_template = loader.get_template("jobs/email/monthly_jobs_report.txt")
 
         context = {
