@@ -8,8 +8,6 @@ General information
 
 :Source code: https://github.com/python/pythondotorg
 :Issue tracker: https://github.com/python/pythondotorg/issues
-:Mailing list: pydotorg-www_
-:IRC: ``#pydotorg`` on Freenode
 :Production configuration: https://github.com/python/psf-salt
 :GitHub Actions:
   .. image:: https://github.com/python/pythondotorg/actions/workflows/ci.yml/badge.svg
@@ -33,4 +31,3 @@ Indices and tables
 * :ref:`genindex`
 
 .. _python.org: https://www.python.org
-.. _pydotorg-www: https://mail.python.org/mailman/listinfo/pydotorg-www
