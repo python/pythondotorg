@@ -1529,10 +1529,13 @@ input#s,
   .slide-code code {
     display: inline-block;
     color: #0d870d; }
-    .slide-code code .comment {
-      color: #666666; }
-    .slide-code code .output {
+    .slide-code code .c1 {
+      color: #666666;
+      font-style: normal; }
+    .slide-code code .go {
       color: #dddddd; }
+    .slide-code code .gp {
+      color: #c65d09; }
 
 .js .launch-shell, .no-js .launch-shell {
   display: none; }
