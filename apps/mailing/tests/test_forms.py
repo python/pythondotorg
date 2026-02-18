@@ -1,0 +1,35 @@
+"""Tests for mailing app forms."""
+
+from django.contrib.contenttypes.models import ContentType
+from django.test import TestCase
+
+from apps.mailing.tests.forms import TestBaseEmailTemplateForm
+
+
+class BaseEmailTemplateFormTests(TestCase):
+    def setUp(self):
+        self.data = {
+            "content": "Hi, {{ name }}\n\nThis is a message to you.",
+            "subject": "Hello",
+            "internal_name": "notification 01",
+        }
+
+    def tearDown(self):
+        super().tearDown()
+        ContentType.objects.clear_cache()
+
+    def test_validate_required_fields(self):
+        required = set(self.data)
+        form = TestBaseEmailTemplateForm(data={})
+        self.assertFalse(form.is_valid())
+        self.assertEqual(required, set(form.errors))
+
+    def test_validate_with_correct_data(self):
+        form = TestBaseEmailTemplateForm(data=self.data)
+        self.assertTrue(form.is_valid())
+
+    def test_invalid_form_if_broken_template_syntax(self):
+        self.data["content"] = "Invalid syntax {% invalid %}"
+        form = TestBaseEmailTemplateForm(data=self.data)
+        self.assertFalse(form.is_valid())
+        self.assertIn("content", form.errors, form.errors)
