@@ -4,10 +4,6 @@
             {{ next_time.dt_start|date:"Y" }}
         </span>
 
-        <span id="start-{{ object.id }}"{% if scheduled_end_this_year %} class="say-no-more"{% endif %}>
-            {{ next_time.dt_start|date:"Y" }}
-        </span>
-
         {% if not next_time.all_day %}
             {{ next_time.dt_start|date:"fA"|lower }} {{ next_time.dt_start|date:"e" }}
                 {% if next_time.valid_dt_end %} – {{ next_time.dt_end|date:"fA"|lower }}
@@ -23,10 +19,10 @@
 
         {% if next_time.valid_dt_end %} &ndash;
             {{ next_time.dt_end|date:"d N" }}
+            <span id="end-{{ object.id }}"{% if scheduled_end_this_year %} class="say-no-more"{% endif %}>
+            {{ next_time.dt_end|date:"Y" }}
+            </span>
         {% endif %}
 
-        <span id="end-{{ object.id }}"{% if scheduled_end_this_year %} class="say-no-more"{% endif %}>
-            {{ next_time.dt_end|date:"Y" }}
-        </span>
     </time>
 {% endif %}
