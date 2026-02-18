@@ -19,7 +19,7 @@ jobs:
           cache-name: pythondotorg-cache-pip
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          key: ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-${{ hashFiles('pyproject.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ github.job }}-${{ env.cache-name }}-
             ${{ runner.os }}-${{ github.job }}-
@@ -27,7 +27,7 @@ jobs:
       - name: Install Python dependencies
         run: |
           pip install -U pip setuptools wheel
-          pip install -r requirements.txt -r prod-requirements.txt
+          pip install '.[prod]'
       - name: Run Tests
         run: |
           DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput

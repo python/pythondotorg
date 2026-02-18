@@ -32,17 +32,16 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-COPY dev-requirements.txt /code/
-COPY base-requirements.txt /code/
-COPY prod-requirements.txt /code/
-COPY requirements.txt /code/
-
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
+
+COPY pyproject.toml /code/
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -x \
     && pip --disable-pip-version-check \
         install \
-        -r dev-requirements.txt
+        '.[dev]'
 
 COPY . /code/
+
+RUN pip --disable-pip-version-check install --no-deps -e '.'
