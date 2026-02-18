@@ -28,11 +28,11 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('*-requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: pip install -r dev-requirements.txt
+        run: pip install -e '.[dev]'
 
       - name: Check for ungenerated migrations
         run: python manage.py makemigrations --check --dry-run
@@ -78,13 +78,13 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt', '*-requirements.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('pyproject.toml') }}
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
         run: |
           pip install -U pip setuptools wheel
-          pip install -r dev-requirements.txt
+          pip install -e '.[dev]'
 
       - name: Run tests
         run: python -Wd -m coverage run manage.py test -v2

@@ -33,17 +33,12 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-COPY dev-requirements.txt /code/
-COPY base-requirements.txt /code/
-COPY prod-requirements.txt /code/
-COPY requirements.txt /code/
-
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
 
+COPY . /code/
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -x \
     && pip --disable-pip-version-check \
         install \
-        -r requirements.txt -r prod-requirements.txt
-COPY . /code/
+        '.[prod]'
 RUN DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput

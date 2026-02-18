@@ -7,7 +7,7 @@ help:
 
 default: help
 
-.state/docker-build-web: Dockerfile dev-requirements.txt base-requirements.txt
+.state/docker-build-web: Dockerfile pyproject.toml
 	# Build web container for this project
 	docker compose build --force-rm web
 
