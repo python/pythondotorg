@@ -19,6 +19,4 @@ This is the repository and issue tracker for [python.org](https://www.python.org
 * Source code: https://github.com/python/pythondotorg
 * Issue tracker: https://github.com/python/pythondotorg/issues
 * Documentation: https://pythondotorg.readthedocs.io/
-* Mailing list: [pydotorg-www](https://mail.python.org/mailman/listinfo/pydotorg-www)
-* IRC: `#pydotorg` on Freenode
 * License: Apache License
