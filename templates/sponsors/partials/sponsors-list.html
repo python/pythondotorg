@@ -41,7 +41,7 @@
 
     <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ placement_info.label }} Sponsors</h1>
 
-    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(1, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
+    <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax({{ dimension }}px, 0fr)); grid-template-rows: repeat(auto, minmax({{ dimension }}px, 0fr)); align-items: center; justify-content: center;">
       {% for sponsorship in placement_info.sponsorships %}
         <div id="{{ sponsorship.sponsor.slug }}" data-internal-year={{ sponsorship.year }}>
             <div
