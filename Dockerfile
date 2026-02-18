@@ -34,10 +34,14 @@ WORKDIR /code
 
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
 
-COPY . /code/
+COPY pyproject.toml /code/
 
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -x \
     && pip --disable-pip-version-check \
         install \
-        -e '.[dev]'
+        '.[dev]'
+
+COPY . /code/
+
+RUN pip --disable-pip-version-check install --no-deps -e '.'
