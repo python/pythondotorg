@@ -4,28 +4,63 @@ Contributing
 Bugs
 ----
 
-All source and content bugs for python.org should be filed as issues on the
-GitHub_.  Please be sure to look at the existing issues to see if someone has
-already submitted it.
+File bugs as issues on GitHub_. Check existing issues first to avoid
+duplicates.
 
 Code
 ----
 
-The source for python.org is open and licensed under the `Apache 2 license <license_>`_.
-To contribute to either the code or documentation please fork the pythondotorg_
-repository and submit a pull request.
+The source is licensed under the `Apache 2 license <license_>`_. Fork the
+pythondotorg_ repository, create a branch, and open a pull request.
 
-See :doc:`install` for setup your development environment.
+See :doc:`install` to set up your development environment.
 
-While all contributions are welcome and valuable it will be easier for the
-maintainers if you follow good coding practices such as:
+Before submitting a PR
+~~~~~~~~~~~~~~~~~~~~~~
 
-- Write readable code following :pep:`8` guidelines
-- Write tests for the code you are adding or changing
-- Submit focused pull requests that address a single smaller issue whenever
-  possible vs a large pull request that touches many parts of the system
-- Submit descriptive information with your pull request as to the reason and
-  methods behind your change
+1. Run the test suite and make sure it passes:
+
+   .. code-block:: bash
+
+      make test
+
+2. Run the linter and formatter:
+
+   .. code-block:: bash
+
+      make lint
+      make fmt
+
+3. If you changed models, check for missing migrations:
+
+   .. code-block:: bash
+
+      make migrations
+
+4. Write tests for any new or changed code.
+
+5. Keep pull requests focused — one issue or feature per PR is easier to
+   review than a large PR that touches many parts of the system.
+
+6. Include a clear description of what your PR does and why.
+
+CI checks
+~~~~~~~~~
+
+GitHub Actions runs on every push and pull request. It will:
+
+- Check for ungenerated migrations (``makemigrations --check --dry-run``)
+- Run the full test suite
+- Enforce a **75% minimum test coverage** threshold
+
+PRs that fail CI won't be merged.
+
+Code style
+~~~~~~~~~~
+
+- Follow :pep:`8`
+- Use ``make lint`` (ruff) to catch issues and ``make fmt`` (ruff) to
+  auto-format
 
 .. _GitHub: https://github.com/python/pythondotorg/issues
 .. _license: https://github.com/python/pythondotorg/blob/main/LICENSE
