@@ -15,7 +15,7 @@ Quick start
 
    make serve
 
-Then visit http://localhost:8000. See :doc:`install.md` for prerequisites and
+Then visit http://localhost:8000. See :doc:`install` for prerequisites and
 full setup instructions.
 
 Make targets
