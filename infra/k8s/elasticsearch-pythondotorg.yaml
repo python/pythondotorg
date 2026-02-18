@@ -1,0 +1,32 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: psf-pythondotorg-pythondotorg
+  namespace: elasticsearch
+spec:
+  version: 8.15.1
+
+  http:
+    tls:
+      certificate:
+        secretName: psf-pythondotorg-pythondotorg-tls
+
+  transport:
+    tls:
+      certificateAuthorities:
+        configMapName: operators-ca-crt
+
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.store.allow_mmap: false
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 2Gi

@@ -1,0 +1,93 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: psf-pythondotorg-pythondotorg
+  namespace: postgres
+spec:
+  instances: 2
+  imageName: ghcr.io/cloudnative-pg/postgresql:15.8-bookworm
+
+  bootstrap:
+    initdb:
+      database: app
+      encoding: UTF8
+      localeCType: C
+      localeCollate: C
+      owner: app
+
+  certificates:
+    serverCASecret: operators-ca-crt
+    serverTLSSecret: psf-pythondotorg-pythondotorg-tls
+
+  storage:
+    resizeInUseVolumes: true
+    size: 32Gi
+
+  postgresql:
+    parameters:
+      archive_mode: "on"
+      archive_timeout: 5min
+      dynamic_shared_memory_type: posix
+      full_page_writes: "on"
+      log_destination: csvlog
+      log_directory: /controller/log
+      log_filename: postgres
+      log_rotation_age: "0"
+      log_rotation_size: "0"
+      log_truncate_on_rotation: "false"
+      logging_collector: "on"
+      max_connections: "500"
+      max_parallel_workers: "32"
+      max_replication_slots: "32"
+      max_worker_processes: "32"
+      shared_buffers: 512MB
+      shared_memory_type: mmap
+      shared_preload_libraries: ""
+      ssl_max_protocol_version: TLSv1.3
+      ssl_min_protocol_version: TLSv1.3
+      wal_keep_size: 512MB
+      wal_level: logical
+      wal_log_hints: "on"
+      wal_receiver_timeout: 5s
+      wal_sender_timeout: 5s
+    syncReplicaElectionConstraint:
+      enabled: false
+
+  backup:
+    target: primary
+    retentionPolicy: 31d
+    barmanObjectStore:
+      destinationPath: s3://cnpg-backup/postgres/psf-pythondotorg-pythondotorg
+      endpointURL: https://minio-api.us-east-2.psfhosted.computer
+      s3Credentials:
+        accessKeyId:
+          key: ACCESS_KEY_ID
+          name: minio-creds
+        secretAccessKey:
+          key: ACCESS_SECRET_KEY
+          name: minio-creds
+      wal:
+        compression: gzip
+
+  replicationSlots:
+    highAvailability:
+      enabled: true
+      slotPrefix: _cnpg_
+    synchronizeReplicas:
+      enabled: true
+    updateInterval: 30
+
+  primaryUpdateMethod: switchover
+  primaryUpdateStrategy: unsupervised
+  enablePDB: true
+  enableSuperuserAccess: true
+
+  affinity:
+    podAntiAffinityType: preferred
+
+  monitoring:
+    customQueriesConfigMap:
+      - key: queries
+        name: cnpg-default-monitoring
+    disableDefaultQueries: false
+    enablePodMonitor: false
