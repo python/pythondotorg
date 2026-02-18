@@ -39,23 +39,10 @@ ban-relative-imports = "all"
 
 [lint.isort]
 known-first-party = [
+    "apps",
+    "custom_storages",
+    "fastly",
     "pydotorg",
-    "blogs",
-    "boxes",
-    "cms",
-    "codesamples",
-    "community",
-    "companies",
-    "downloads",
-    "events",
-    "jobs",
-    "mailing",
-    "minutes",
-    "nominations",
-    "pages",
-    "sponsors",
-    "successstories",
-    "users",
 ]
 
 [lint.per-file-ignores]

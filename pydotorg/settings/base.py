@@ -102,7 +102,7 @@ ACCOUNT_PREVENT_ENUMERATION = False
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
-ACCOUNT_USERNAME_VALIDATORS = "users.validators.username_validators"
+ACCOUNT_USERNAME_VALIDATORS = "apps.users.validators.username_validators"
 
 ### Templates
 
@@ -156,7 +156,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "waffle.middleware.WaffleMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "pages.middleware.PageFallbackMiddleware",
+    "apps.pages.middleware.PageFallbackMiddleware",
     "django.contrib.redirects.middleware.RedirectFallbackMiddleware",
     "allauth.account.middleware.AccountMiddleware",
 ]
@@ -192,24 +192,24 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_countries",
     "sorl.thumbnail",
-    "banners",
-    "blogs",
-    "boxes",
-    "cms",
-    "codesamples",
-    "community",
-    "companies",
-    "downloads",
-    "events",
-    "jobs",
-    "mailing",
-    "minutes",
-    "nominations",
-    "pages",
-    "sponsors",
-    "successstories",
-    "users",
-    "work_groups",
+    "apps.banners",
+    "apps.blogs",
+    "apps.boxes",
+    "apps.cms",
+    "apps.codesamples",
+    "apps.community",
+    "apps.companies",
+    "apps.downloads",
+    "apps.events",
+    "apps.jobs",
+    "apps.mailing",
+    "apps.minutes",
+    "apps.nominations",
+    "apps.pages",
+    "apps.sponsors",
+    "apps.successstories",
+    "apps.users",
+    "apps.work_groups",
     "allauth",
     "allauth.account",
     # Tastypie needs the `users` app to be already loaded.
@@ -307,7 +307,7 @@ REST_FRAMEWORK = {
         "anon": "100/day",
         "user": "3000/day",
     },
-    'NUM_PROXIES': 3,
+    "NUM_PROXIES": 3,
 }
 
 ### pydotorg.middleware.GlobalSurrogateKey
