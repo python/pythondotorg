@@ -1,26 +1,34 @@
-from . import views
 from django.urls import path
+
+from nominations import views
 
 app_name = "nominations"
 urlpatterns = [
-    path('elections/', views.ElectionsList.as_view(), name="elections_list"),
-    path('election/<slug:election>/', views.ElectionDetail.as_view(), name="election_detail"),
-    path('elections/<slug:election>/nominees/', views.NomineeList.as_view(),
-        name="nominees_list",
+    path("elections/", views.ElectionsList.as_view(), name="elections_list"),
+    path("election/<slug:election>/", views.ElectionDetail.as_view(), name="election_detail"),
+    path("elections/<slug:election>/nominees/", views.NomineeList.as_view(), name="nominees_list"),
+    path("elections/<slug:election>/nominees/<slug:slug>/", views.NomineeDetail.as_view(), name="nominee_detail"),
+    path("<slug:election>/create/", views.NominationCreate.as_view(), name="nomination_create"),
+    path("<slug:election>/<int:pk>/", views.NominationView.as_view(), name="nomination_detail"),
+    path("<slug:election>/<int:pk>/edit/", views.NominationEdit.as_view(), name="nomination_edit"),
+    path("<slug:election>/<int:pk>/accept/", views.NominationAccept.as_view(), name="nomination_accept"),
+    # Fellow Nominations
+    path("fellows/nominate/", views.FellowNominationCreate.as_view(), name="fellow_nomination_create"),
+    path("fellows/my-nominations/", views.MyFellowNominations.as_view(), name="fellow_my_nominations"),
+    path("fellows/nomination/<int:pk>/", views.FellowNominationDetail.as_view(), name="fellow_nomination_detail"),
+    # Fellow WG Management
+    path("fellows/review/", views.FellowNominationReview.as_view(), name="fellow_nomination_review"),
+    path(
+        "fellows/nomination/<int:pk>/status/",
+        views.FellowNominationStatusUpdate.as_view(),
+        name="fellow_nomination_status_update",
     ),
-    path('elections/<slug:election>/nominees/<slug:slug>/', views.NomineeDetail.as_view(),
-        name="nominee_detail",
-    ),
-    path('<slug:election>/create/', views.NominationCreate.as_view(),
-        name="nomination_create",
-    ),
-    path('<slug:election>/<int:pk>/', views.NominationView.as_view(),
-        name="nomination_detail",
-    ),
-    path('<slug:election>/<int:pk>/edit/', views.NominationEdit.as_view(),
-        name="nomination_edit",
-    ),
-    path('<slug:election>/<int:pk>/accept/', views.NominationAccept.as_view(),
-        name="nomination_accept",
-    ),
+    path("fellows/nomination/<int:pk>/vote/", views.FellowNominationVoteView.as_view(), name="fellow_nomination_vote"),
+    path("fellows/manage/", views.FellowNominationDashboard.as_view(), name="fellow_nomination_dashboard"),
+    path("fellows/manage/rounds/", views.FellowNominationRoundList.as_view(), name="fellow_round_list"),
+    path("fellows/manage/rounds/create/", views.FellowNominationRoundCreate.as_view(), name="fellow_round_create"),
+    path("fellows/manage/rounds/<slug:slug>/edit/", views.FellowNominationRoundUpdate.as_view(), name="fellow_round_update"),
+    path("fellows/manage/rounds/<slug:slug>/toggle/", views.FellowNominationRoundToggle.as_view(), name="fellow_round_toggle"),
+    path("fellows/manage/nomination/<int:pk>/edit/", views.FellowNominationEdit.as_view(), name="fellow_nomination_edit"),
+    path("fellows/manage/nomination/<int:pk>/delete/", views.FellowNominationDelete.as_view(), name="fellow_nomination_delete"),
 ]

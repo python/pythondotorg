@@ -1,0 +1,17 @@
+Hello {{ nomination.nominator.get_full_name|default:nomination.nominator.username }},
+
+Congratulations! We are pleased to inform you that your PSF Fellow nomination for {{ nomination.nominee_name }} has been accepted by the Fellow Work Group.
+
+Nomination Details:
+- Nominee: {{ nomination.nominee_name }}
+- Round: {{ nomination.nomination_round }}
+- Submitted: {{ nomination.created|date:"N j, Y" }}
+
+{{ nomination.nominee_name }} will be recognized as a PSF Fellow for their outstanding contributions to the Python community.
+
+View the nomination:
+{{ site_url }}{{ nomination.get_absolute_url }}
+
+Thank you for taking the time to nominate a deserving member of our community. Nominations like yours help us recognize the people who make Python great.
+
+- The Python Software Foundation

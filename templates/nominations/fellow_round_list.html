@@ -1,0 +1,67 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Manage Nomination Rounds | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_round_list"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Manage Nomination Rounds</h1>
+    </header>
+
+    <p><a href="{% url 'nominations:fellow_round_create' %}">Create New Round</a></p>
+
+    {% if rounds %}
+    <table class="listing">
+        <thead>
+            <tr>
+                <th>Round</th>
+                <th>Quarter Dates</th>
+                <th>Cutoff Date</th>
+                <th>Status</th>
+                <th>Nominations</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for round in rounds %}
+            <tr>
+                <td>{{ round }}</td>
+                <td>{{ round.quarter_start|date:"N j, Y" }} &ndash; {{ round.quarter_end|date:"N j, Y" }}</td>
+                <td>{{ round.nominations_cutoff|date:"N j, Y" }}</td>
+                <td>
+                    {% if round.is_open %}
+                    <span class="badge badge-accepted">Open</span>
+                    {% else %}
+                    <span class="badge badge-not_accepted">Closed</span>
+                    {% endif %}
+                </td>
+                <td>{{ round.nomination_count }}</td>
+                <td>
+                    <a href="{% url 'nominations:fellow_round_update' slug=round.slug %}">Edit</a>
+                    |
+                    <form method="post" action="{% url 'nominations:fellow_round_toggle' slug=round.slug %}" style="display: inline;">
+                        {% csrf_token %}
+                        {% if round.is_open %}
+                        <button type="submit">Close</button>
+                        {% else %}
+                        <button type="submit">Open</button>
+                        {% endif %}
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p>No nomination rounds have been created yet.</p>
+    {% endif %}
+
+    <p><a href="{% url 'nominations:fellow_nomination_dashboard' %}">&larr; Back to Dashboard</a></p>
+</article>
+{% endblock content %}

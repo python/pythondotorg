@@ -1,0 +1,43 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Nominate a PSF Fellow | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_form"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+    <article class="text">
+
+        <header class="article-header">
+            <h1 class="page-title">Nominate a PSF Fellow</h1>
+        </header>
+
+        {% if nomination_round %}
+        <p>
+            You are submitting a nomination for the <strong>{{ nomination_round }}</strong> round.
+            Nominations are open until <strong>{{ nomination_round.nominations_cutoff|date:"N j, Y" }}</strong>.
+        </p>
+        <p>
+            The PSF Fellow Work Group reviews nominations quarterly.
+            Nominees who are not accepted in one round remain active for consideration
+            for up to one year (4 quarters).
+        </p>
+
+        <form class="wide-form" action="" method="post">
+            {% csrf_token %}
+            <table>
+                {{ form.as_table }}
+            </table>
+            <br>
+            <div style="text-align: center;">
+                <button type="submit" name="Submit">Submit Nomination</button>
+            </div>
+        </form>
+        {% else %}
+        <p>There is no open Fellow nomination round at this time. Please check back later.</p>
+        {% endif %}
+    </article>
+{% endblock content %}

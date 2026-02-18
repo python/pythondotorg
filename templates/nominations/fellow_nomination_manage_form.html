@@ -1,0 +1,41 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Edit Nomination: {{ object.nominee_name }} | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_manage_form"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Edit Nomination: {{ object.nominee_name }}</h1>
+    </header>
+
+    <div>
+        <ul>
+            <li><b>Nominator</b>: {{ object.nominator.get_full_name }}</li>
+            <li><b>Round</b>: {{ object.nomination_round }}</li>
+            <li><b>Created</b>: {{ object.created|date:"N j, Y" }}</li>
+            {% if object.expiry_round %}
+            <li><b>Expiry round</b>: {{ object.expiry_round }}</li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <form class="wide-form" action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" name="Submit">Save Changes</button>
+        </div>
+    </form>
+
+    <p><a href="{{ object.get_absolute_url }}">&larr; Cancel</a></p>
+</article>
+{% endblock content %}

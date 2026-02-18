@@ -1,0 +1,390 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Fellows of the Python Software Foundation
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellows_roster"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block head %}
+<style>
+/* ---- Controls bar ---- */
+.fellows-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 24px;
+    padding: 14px 18px;
+    background: #f2f4f6;
+    border: 1px solid #caccce;
+    border-radius: 3px;
+}
+.fellows-controls input[type="text"],
+.fellows-controls select {
+    padding: 7px 11px;
+    border: 1px solid #caccce;
+    border-radius: 3px;
+    font-size: 14px;
+    background: #fff;
+    color: #444;
+    transition: border-color .15s;
+}
+.fellows-controls input[type="text"]:focus,
+.fellows-controls select:focus {
+    border-color: #3776ab;
+    outline: none;
+}
+.fellows-controls input[type="text"] {
+    width: 220px;
+}
+
+/* ---- Status tabs ---- */
+.fellows-status-tabs {
+    display: flex;
+    gap: 3px;
+}
+.fellows-status-tabs .tab-btn {
+    display: inline-block !important;
+    padding: 6px 13px !important;
+    margin: 0 !important;
+    border: 1px solid #caccce !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    cursor: pointer;
+    font-size: 13px;
+    color: #444 !important;
+    transition: background .15s, border-color .15s;
+    line-height: 1.4;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+}
+.fellows-status-tabs .tab-btn:hover,
+.fellows-status-tabs .tab-btn:focus,
+.fellows-status-tabs .tab-btn:active {
+    background: #e6e8ea !important;
+    border-color: #999 !important;
+    color: #444 !important;
+}
+.fellows-status-tabs .tab-btn.active,
+.fellows-status-tabs .tab-btn.active:hover,
+.fellows-status-tabs .tab-btn.active:focus {
+    background: #3776ab !important;
+    color: #fff !important;
+    border-color: #3776ab !important;
+}
+
+/* ---- Sort toggle ---- */
+.fellows-sort-toggle {
+    display: inline-block !important;
+    padding: 6px 13px !important;
+    margin: 0 !important;
+    border: 1px solid #caccce !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+    cursor: pointer;
+    font-size: 13px;
+    color: #444 !important;
+    transition: background .15s;
+    line-height: 1.4;
+    box-shadow: none !important;
+    text-shadow: none !important;
+    background-image: none !important;
+}
+.fellows-sort-toggle:hover,
+.fellows-sort-toggle:focus,
+.fellows-sort-toggle:active {
+    background: #e6e8ea !important;
+    border-color: #999 !important;
+    color: #444 !important;
+}
+
+/* ---- Counter ---- */
+.fellows-count {
+    margin-left: auto;
+    font-size: 13px;
+    color: #666;
+    white-space: nowrap;
+}
+
+/* ---- Grid layout ---- */
+#fellows-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0;
+    border: 1px solid #caccce;
+    border-radius: 3px;
+    overflow: hidden;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+#fellows-list li {
+    padding: 9px 14px;
+    margin: 0;
+    border-bottom: 1px solid #e6e8ea;
+    border-right: 1px solid #e6e8ea;
+    font-size: 14px;
+    line-height: 1.5;
+    background: #fff;
+    transition: background .1s;
+}
+#fellows-list li:nth-child(6n+1),
+#fellows-list li:nth-child(6n+2),
+#fellows-list li:nth-child(6n+3) {
+    background: #f2f4f6;
+}
+#fellows-list li:hover {
+    background: #e8eef4;
+}
+/* Remove right border on every 3rd column */
+#fellows-list li:nth-child(3n) {
+    border-right: none;
+}
+
+/* ---- Fellow item content ---- */
+.fellow-name {
+    font-weight: 600;
+    color: #333;
+}
+.fellow-year {
+    color: #666;
+    font-size: 13px;
+    margin-left: 2px;
+}
+.fellow-notes {
+    display: block;
+    font-style: italic;
+    color: #666;
+    font-size: 12px;
+    margin-top: 2px;
+    line-height: 1.3;
+}
+
+/* ---- Status badges ---- */
+.fellow-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 1px 6px;
+    border-radius: 2px;
+    margin-left: 5px;
+    vertical-align: middle;
+    line-height: 1.6;
+}
+.fellow-badge.emeritus {
+    background: #fff3cd;
+    color: #856404;
+    border: 1px solid #f0e0a0;
+}
+.fellow-badge.deceased {
+    background: #e6e8ea;
+    color: #555;
+    border: 1px solid #caccce;
+}
+
+/* ---- No results ---- */
+.fellows-no-results {
+    padding: 32px 20px;
+    text-align: center;
+    color: #666;
+    display: none;
+    font-size: 15px;
+}
+
+/* ---- Responsive: 2 columns ---- */
+@media screen and (max-width: 860px) {
+    #fellows-list {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    #fellows-list li:nth-child(6n+1),
+    #fellows-list li:nth-child(6n+2),
+    #fellows-list li:nth-child(6n+3) {
+        background: #fff;
+    }
+    #fellows-list li:nth-child(4n+1),
+    #fellows-list li:nth-child(4n+2) {
+        background: #f2f4f6;
+    }
+    #fellows-list li:nth-child(2n) {
+        border-right: none;
+    }
+    #fellows-list li:nth-child(3n) {
+        border-right: 1px solid #e6e8ea;
+    }
+    .fellows-controls input[type="text"] {
+        width: 100%;
+    }
+}
+
+/* ---- Responsive: 1 column ---- */
+@media screen and (max-width: 520px) {
+    #fellows-list {
+        grid-template-columns: 1fr;
+    }
+    #fellows-list li {
+        border-right: none !important;
+    }
+    #fellows-list li:nth-child(4n+1),
+    #fellows-list li:nth-child(4n+2) {
+        background: #fff;
+    }
+    #fellows-list li:nth-child(odd) {
+        background: #f2f4f6;
+    }
+    .fellows-status-tabs {
+        flex-wrap: wrap;
+    }
+    .fellows-controls {
+        gap: 8px;
+    }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">PSF Fellows</h1>
+    </header>
+
+    {% if not active_fellows and not emeritus_fellows and not deceased_fellows %}
+    <p>No PSF Fellows found.</p>
+    {% else %}
+    <div class="fellows-controls">
+        <input type="text" id="fellow-search" placeholder="Search by name..." autocomplete="off">
+        <select id="fellow-year-filter">
+            <option value="">All years</option>
+            {% for y in years %}
+            <option value="{{ y }}">{{ y }}</option>
+            {% endfor %}
+        </select>
+        <div class="fellows-status-tabs">
+            <button type="button" class="tab-btn active" data-status="all">All ({{ total_count }})</button>
+            <button type="button" class="tab-btn" data-status="active">Active ({{ active_count }})</button>
+            <button type="button" class="tab-btn" data-status="emeritus">Emeritus ({{ emeritus_count }})</button>
+            <button type="button" class="tab-btn" data-status="deceased">In Memoriam ({{ deceased_count }})</button>
+        </div>
+        <button type="button" class="fellows-sort-toggle" id="fellow-sort-toggle" data-sort="name">Sort: Name A-Z</button>
+        <span class="fellows-count" id="fellows-count">Showing {{ total_count }} of {{ total_count }} fellows</span>
+    </div>
+
+    <ol class="list-row-container menu" id="fellows-list">
+        {% for fellow in active_fellows %}
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="active">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }})</span>
+        </li>
+        {% endfor %}
+
+        {% for fellow in emeritus_fellows %}
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="emeritus">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }}{% if fellow.emeritus_year %}&ndash;{{ fellow.emeritus_year }}{% endif %})</span>
+            <span class="fellow-badge emeritus">Emeritus</span>
+        </li>
+        {% endfor %}
+
+        {% for fellow in deceased_fellows %}
+        <li data-name="{{ fellow.name|lower }}" data-year="{{ fellow.year_elected }}" data-status="deceased">
+            <span class="fellow-name">{{ fellow.name }}</span>
+            <span class="fellow-year">({{ fellow.year_elected }})</span>
+            <span class="fellow-badge deceased">In Memoriam</span>
+            {% if fellow.notes %}<span class="fellow-notes">{{ fellow.notes }}</span>{% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+
+    <p class="fellows-no-results" id="fellows-no-results">No fellows match your filters.</p>
+    {% endif %}
+</article>
+{% endblock content %}
+
+{% block extra_js %}
+<script>
+$(function () {
+    var $list = $('#fellows-list');
+    var $items = $list.children('li');
+    var total = $items.length;
+    var $count = $('#fellows-count');
+    var $noResults = $('#fellows-no-results');
+    var $search = $('#fellow-search');
+    var $yearFilter = $('#fellow-year-filter');
+    var $tabs = $('.fellows-status-tabs .tab-btn');
+    var $sortBtn = $('#fellow-sort-toggle');
+
+    var currentStatus = 'all';
+    var currentSort = 'name';
+
+    function applyFilters() {
+        var query = $search.val().toLowerCase();
+        var year = $yearFilter.val();
+        var visible = 0;
+
+        $items.each(function () {
+            var $el = $(this);
+            var matchName = !query || $el.attr('data-name').indexOf(query) !== -1;
+            var matchYear = !year || $el.attr('data-year') === year;
+            var matchStatus = currentStatus === 'all' || $el.attr('data-status') === currentStatus;
+
+            if (matchName && matchYear && matchStatus) {
+                $el.show();
+                visible++;
+            } else {
+                $el.hide();
+            }
+        });
+
+        $count.text('Showing ' + visible + ' of ' + total + ' fellows');
+        if (visible === 0 && total > 0) {
+            $noResults.show();
+        } else {
+            $noResults.hide();
+        }
+    }
+
+    function sortItems() {
+        var sorted = $items.toArray().sort(function (a, b) {
+            if (currentSort === 'name') {
+                return $(a).attr('data-name').localeCompare($(b).attr('data-name'));
+            } else {
+                var yA = parseInt($(a).attr('data-year'), 10);
+                var yB = parseInt($(b).attr('data-year'), 10);
+                if (yB !== yA) return yB - yA;
+                return $(a).attr('data-name').localeCompare($(b).attr('data-name'));
+            }
+        });
+        $list.append(sorted);
+        $items = $list.children('li');
+        applyFilters();
+    }
+
+    $search.on('keyup', applyFilters);
+    $yearFilter.on('change', applyFilters);
+
+    $tabs.on('click', function () {
+        $tabs.removeClass('active');
+        $(this).addClass('active');
+        currentStatus = $(this).attr('data-status');
+        applyFilters();
+    });
+
+    $sortBtn.on('click', function () {
+        if (currentSort === 'name') {
+            currentSort = 'year';
+            $sortBtn.text('Sort: Year (newest)');
+        } else {
+            currentSort = 'name';
+            $sortBtn.text('Sort: Name A-Z');
+        }
+        $sortBtn.attr('data-sort', currentSort);
+        sortItems();
+    });
+});
+</script>
+{% endblock extra_js %}

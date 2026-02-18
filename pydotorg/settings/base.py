@@ -43,6 +43,8 @@ _REDIS_URL = config("REDIS_URL", default="redis://redis:6379/0")
 CELERY_BROKER_URL = _REDIS_URL
 CELERY_RESULT_BACKEND = _REDIS_URL
 
+from celery.schedules import crontab
+
 CELERY_BEAT_SCHEDULE = {
     # "example-management-command": {
     #    "task": "pydotorg.celery.run_management_command",
@@ -52,6 +54,10 @@ CELERY_BEAT_SCHEDULE = {
     # 'example-task': {
     #     'task': 'users.tasks.example_task',
     # },
+    'close-expired-fellow-nominations': {
+        'task': 'nominations.tasks.close_expired_fellow_nominations',
+        'schedule': crontab(hour=0, minute=0, day_of_month=1),
+    },
 }
 
 ### Locale settings
@@ -303,6 +309,10 @@ SPONSORSHIP_NOTIFICATION_TO_EMAIL = config(
     "SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org"
 )
 PYPI_SPONSORS_CSV = os.path.join(BASE, "data", "pypi-sponsors.csv")
+
+FELLOW_WG_NOTIFICATION_EMAIL = config(
+    "FELLOW_WG_NOTIFICATION_EMAIL", default="psf-fellow@python.org"
+)
 
 # Mail
 DEFAULT_FROM_EMAIL = 'noreply@python.org'

@@ -1,0 +1,46 @@
+{% extends "psf/default.html" %}
+
+{% block page_title %}
+Vote on Nomination: {{ nomination.nominee_name }} | {{ SITE_INFO.site_name }}
+{% endblock %}
+
+{% block body_attributes %}class="nominations fellow_nomination_vote_form"{% endblock %}
+{% block left_sidebar %}{% endblock %}
+{% block content_attributes %}{% endblock %}
+
+{% block content %}
+<article class="text">
+    <header class="article-header">
+        <h1 class="page-title">Vote on Nomination: {{ nomination.nominee_name }}</h1>
+    </header>
+
+    <div>
+        <h2>Nomination Summary</h2>
+        <ul>
+            <li><b>Nominee</b>: {{ nomination.nominee_name }}</li>
+            <li><b>Nominated by</b>: {{ nomination.nominator.get_full_name }}</li>
+            <li><b>Round</b>: {{ nomination.nomination_round }}</li>
+        </ul>
+
+        <h3>Statement</h3>
+        {{ nomination.nomination_statement.rendered|safe }}
+    </div>
+
+    <div class="user-feedback level-warning">
+        <p role="warning">Per the WG Charter, members with a conflict of interest should recuse themselves from voting.</p>
+    </div>
+
+    <form class="wide-form" action="" method="post">
+        {% csrf_token %}
+        <table>
+            {{ form.as_table }}
+        </table>
+        <br>
+        <div style="text-align: center;">
+            <button type="submit" name="Submit">Submit Vote</button>
+        </div>
+    </form>
+
+    <p><a href="{{ nomination.get_absolute_url }}">&larr; Cancel</a></p>
+</article>
+{% endblock content %}
