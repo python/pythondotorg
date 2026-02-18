@@ -35,10 +35,15 @@ WORKDIR /code
 
 RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
 
-COPY . /code/
+COPY pyproject.toml /code/
+
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -x \
     && pip --disable-pip-version-check \
         install \
         '.[prod]'
+
+COPY . /code/
+
+RUN pip --disable-pip-version-check install --no-deps '.'
 RUN DJANGO_SETTINGS_MODULE=pydotorg.settings.static python manage.py collectstatic --noinput
