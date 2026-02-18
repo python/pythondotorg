@@ -23,12 +23,15 @@ services:
   static:
     command: bin/static
     build:
-      dockerfile: Dockerfile.static
+      context: .
+      dockerfile: docker/Dockerfile.static
     volumes:
       - .:/code
 
   web:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
     image: pythondotorg:docker-compose
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
