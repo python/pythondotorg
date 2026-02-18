@@ -59,6 +59,15 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+prod = [
+    "gunicorn==23.0.0",
+    "sentry-sdk[django]==2.40.0",
+    "Whitenoise==6.11.0",
+    "django-storages==1.14.4",
+    "boto3==1.26.165",
+]
+
+[dependency-groups]
 dev = [
     "factory-boy==3.3.1",
     "Faker==0.8.1",
@@ -72,15 +81,9 @@ dev = [
 ]
 docs = [
     "sphinx",
+    "sphinx-autobuild",
     "myst-parser",
     "furo",
-]
-prod = [
-    "gunicorn==23.0.0",
-    "sentry-sdk[django]==2.40.0",
-    "Whitenoise==6.11.0",
-    "django-storages==1.14.4",
-    "boto3==1.26.165",
 ]
 
 [tool.coverage.run]
@@ -175,3 +178,4 @@ known-first-party = [
 
 [tool.ruff.format]
 quote-style = "double"
+

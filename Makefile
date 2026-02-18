@@ -64,5 +64,27 @@ test: .state/db-initialized ## Run test suite
 
 ci: lint fmt test ## Run lint, fmt, then tests
 
+# =============================================================================
+# Documentation
+# =============================================================================
+
+##@ Documentation
+
+docs: docs-clean ## Build documentation
+	@echo "=> Building documentation"
+	@uv sync --group docs
+	@uv run sphinx-build -M html docs/source docs/_build/ -E -a -j auto --keep-going
+
+docs-serve: docs-clean ## Serve documentation with live reload
+	@echo "=> Serving documentation"
+	@uv sync --group docs
+	@uv run sphinx-autobuild docs/source docs/_build/ -j auto --port 0
+
+docs-clean: ## Clean built documentation
+	@echo "=> Cleaning documentation build assets"
+	@rm -rf docs/_build
+	@echo "=> Removed existing documentation build assets"
+
 .PHONY: help serve migrations migrate manage shell docker_shell clean
 .PHONY: lint fmt test ci
+.PHONY: docs docs-serve docs-clean
