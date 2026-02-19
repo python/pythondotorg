@@ -97,6 +97,19 @@ class Sponsor(ContentManageable):
         return f"{self.name}"
 
     @property
+    def incorporation_location(self):
+        """Return the incorporation location for use in contracts.
+
+        For non-US companies, return the country name (preferring country of
+        incorporation over mailing country). For US companies, return the state
+        of incorporation if provided, otherwise the mailing state.
+        """
+        country = self.country_of_incorporation or self.country
+        if country and str(country) != "US":
+            return str(country.name)
+        return self.state_of_incorporation or self.state
+
+    @property
     def full_address(self):
         """Return the full mailing address as a formatted string."""
         addr = self.mailing_address_line_1

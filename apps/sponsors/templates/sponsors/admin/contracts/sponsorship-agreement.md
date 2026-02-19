@@ -16,7 +16,7 @@ is entered into and made effective as of the
 by and between the **Python Software Foundation** (the **"PSF"**),
 a Delaware nonprofit corporation,
 and **{{sponsor.name|upper}}** (**"Sponsor"**),
-a {{sponsor.state}} corporation.
+a {{sponsor.incorporation_location}} corporation.
 Each of the PSF and Sponsor are hereinafter sometimes individually
 referred to as a **"Party"** and collectively as the **"Parties"**.
 
@@ -180,7 +180,7 @@ wishes to support the Programs by making a contribution to the PSF.
 
 >    **SPONSOR**:  
 >    **{{sponsor.name|upper}}**,  
->    a {{sponsor.state}} entity
+>    a {{sponsor.incorporation_location}} entity
 
 &nbsp;
 
