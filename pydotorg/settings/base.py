@@ -265,6 +265,7 @@ MAILING_LIST_PSF_MEMBERS = "psf-members-announce-request@python.org"
 ### Fastly ###
 FASTLY_API_KEY = False  # Set to Fastly API key in production to allow pages to
 # be purged on save
+FASTLY_SERVICE_ID = config("FASTLY_SERVICE_ID", default=None)  # Required for surrogate key purging
 
 # Jobs
 JOB_THRESHOLD_DAYS = 90

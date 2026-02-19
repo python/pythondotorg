@@ -1,0 +1,28 @@
+name: Purge Fastly Cache
+
+on:
+  push:
+    branches: [main]
+    paths: ['static/**', 'templates/**', '**/templates/**']
+  workflow_dispatch:
+    inputs:
+      target:
+        description: 'Surrogate key to purge'
+        required: true
+        default: 'pydotorg-app'
+        type: choice
+        options: [pydotorg-app, downloads, events, sponsors, jobs]
+
+permissions: {}
+
+jobs:
+  purge:
+    runs-on: ubuntu-latest
+    env:
+      KEY: ${{ inputs.target || 'pydotorg-app' }}
+    steps:
+      - name: Purge ${{ env.KEY }}
+        run: |
+          curl -fsS -X POST \
+            "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/${{ env.KEY }}" \
+            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
