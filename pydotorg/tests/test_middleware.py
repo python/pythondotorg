@@ -26,7 +26,7 @@ class MiddlewareTests(TestCase):
 
 
 class GlobalSurrogateKeyTests(TestCase):
-    def testget_section_key(self):
+    def test_get_section_key(self):
         """Test section key extraction from URL paths."""
         middleware = GlobalSurrogateKey(lambda _: None)
 
