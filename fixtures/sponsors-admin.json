@@ -3821,7 +3821,7 @@
         "model": "sponsors.sponsorship",
         "pk": 1,
         "fields": {
-            "submited_by": 1,
+            "submited_by": ["admin"],
             "sponsor": 1,
             "status": "applied",
             "locked": false,
