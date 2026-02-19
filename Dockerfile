@@ -39,8 +39,8 @@ COPY pyproject.toml /code/
 RUN --mount=type=cache,target=/root/.cache/pip \
     set -x \
     && pip --disable-pip-version-check \
-        install \
-        '.[dev]'
+        install --group dev \
+        .
 
 COPY . /code/
 
