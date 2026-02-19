@@ -1,0 +1,181 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = []
+
+[project]
+name = "pythondotorg"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "dj-database-url==0.5.0",
+    "django-pipeline==4.1.0",
+    "django-sitetree==1.18.0",
+    "django-apptemplates==1.5",
+    "django-admin-interface==0.28.9",
+    "django-translation-aliases==0.1.0",
+    "Django==5.2.11",
+    "docutils==0.21.2",
+    "Markdown==3.7",
+    "cmarkgfm==2024.11.20",
+    "Pillow==10.4.0",
+    "psycopg2-binary==2.9.9",
+    "python3-openid==3.2.0",
+    "python-decouple==3.8",
+    "lxml==5.2.2",
+    "cssselect==1.2.0",
+    "feedparser==6.0.11",
+    "beautifulsoup4==4.12.3",
+    "icalendar==4.0.7",
+    "chardet==4.0.0",
+    "celery[redis]==5.4.0",
+    "django-celery-beat==2.8.1",
+    "django-imagekit==5.0",
+    "django-haystack==3.3.0",
+    "elasticsearch>=7,<8",
+    "django-tastypie==0.14.7",
+    "pytz==2021.1",
+    "python-dateutil==2.8.2",
+    "requests>=2.26.0",
+    "django-honeypot==1.3.0",
+    "django-markupfield==2.0.1",
+    "django-allauth==65.13.0",
+    "django-waffle==2.2.1",
+    "djangorestframework==3.14.0",
+    "django-filter==25.1",
+    "django-ordered-model==3.7.4",
+    "django-widget-tweaks==1.5.0",
+    "django-countries==8.2.0",
+    "num2words==0.5.13",
+    "django-polymorphic==4.1.0",
+    "sorl-thumbnail==12.11.0",
+    "django-extensions==3.2.3",
+    "django-import-export==2.7.1",
+    "pypandoc==1.12",
+    "panflute==2.3.1",
+    "Unidecode==1.3.8",
+]
+
+[project.optional-dependencies]
+prod = [
+    "gunicorn==23.0.0",
+    "sentry-sdk[django]==2.40.0",
+    "Whitenoise==6.11.0",
+    "django-storages==1.14.4",
+    "boto3==1.26.165",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy==3.3.1",
+    "Faker==0.8.1",
+    "tblib==1.7.0",
+    "responses==0.13.3",
+    "django-debug-toolbar==5.2.0",
+    "coverage",
+    "ddt",
+    "model-bakery==1.4.0",
+    "ruff==0.15",
+]
+docs = [
+    "sphinx",
+    "sphinx-autobuild",
+    "myst-parser",
+    "furo",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["."]
+omit = [
+    "*venv*",
+    "manage.py",
+    "pydotorg/wsgi.py",
+    "pydotorg/settings/*",
+    "pydotorg/compilers.py",
+    "*/migrations/*",
+    "*/tests/*",
+    "*/tests.py",
+    "*/actions.py",
+    "*/admin.py",
+    "*/factories.py",
+    "*/search_indexes.py",
+]
+
+[tool.coverage.report]
+exclude_lines = [
+    "def get_absolute_url",
+    "def __repr__",
+    "def __str__",
+    "if settings.DEBUG",
+    "if __name__ == .__main__.:",
+]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    # Formatter conflicts (recommended by ruff)
+    "COM812",  # trailing comma (conflicts with formatter)
+    "ISC001",  # implicit string concatenation (conflicts with formatter)
+    # Conflicting docstring rules (pick one style)
+    "D203",    # one-blank-line-before-class (conflicts with D211)
+    "D213",    # multi-line-summary-second-line (conflicts with D212 - we want summary on first line)
+    # Line length handled by formatter
+    "E501",    # line too long
+    # Type annotations - separate project, not practical to add to entire legacy codebase at once
+    "ANN",     # flake8-annotations (all ANN rules)
+    # Django TestCase uses self.assertEqual, not bare pytest assert
+    "PT009",   # pytest-unittest-assertion
+    "PT027",   # pytest-unittest-raises-assertion
+    # Django views/signals/admin methods have required unused args by framework contract
+    "ARG001",  # unused-function-argument
+    "ARG002",  # unused-method-argument
+    # Django model fields are mutable class-level defaults by design
+    "RUF012",  # mutable-class-default
+    # Boolean args are idiomatic in Django models, forms, and views
+    "FBT001",  # boolean-positional-arg-in-function-definition
+    "FBT002",  # boolean-default-value-positional-argument
+    # mark_safe is required Django pattern for admin display
+    "S308",    # suspicious-mark-safe-usage
+    # Circular imports are resolved with local imports in Django
+    "PLC0415", # import-outside-top-level
+    # TODO comment formatting is not worth enforcing
+    "TD",      # flake8-todos
+    "FIX",     # flake8-fixme
+]
+
+[tool.ruff.lint.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.lint.isort]
+known-first-party = [
+    "apps",
+    "custom_storages",
+    "fastly",
+    "pydotorg",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Settings files use star imports (Django convention)
+# TODO: will fix later
+"pydotorg/settings/*.py" = ["F403", "F405"]
+# Migrations are auto-generated
+"*/migrations/*.py" = ["D", "RUF012", "N999"]
+# Tests don't need docstrings, can use magic values, hardcoded test passwords
+"*/tests/*.py" = ["D", "S101", "S106", "S105", "PLR2004", "N803", "N806"]
+"*/tests.py" = ["D", "S101", "S106", "S105", "PLR2004", "N803", "N806"]
+# Management commands don't need docstrings
+"*/management/commands/*.py" = ["D"]
+# conftest files
+"conftest.py" = ["D"]
+"*/conftest.py" = ["D"]
+
+[tool.ruff.format]
+quote-style = "double"
+

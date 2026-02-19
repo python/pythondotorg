@@ -1,27 +1,33 @@
-from django.urls import re_path
+"""API URL configuration for v1 (Tastypie) and v2 (DRF) endpoints."""
 
+from django.urls import re_path
 from rest_framework import routers
 from tastypie.api import Api
 
-from downloads.api import OSResource, ReleaseResource, ReleaseFileResource
-from downloads.api import OSViewSet, ReleaseViewSet, ReleaseFileViewSet
-from pages.api import PageResource
-from pages.api import PageViewSet
-from sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
+from apps.downloads.api import (
+    OSResource,
+    OSViewSet,
+    ReleaseFileResource,
+    ReleaseFileViewSet,
+    ReleaseResource,
+    ReleaseViewSet,
+)
+from apps.pages.api import PageResource, PageViewSet
+from apps.sponsors.api import LogoPlacementeAPIList, SponsorshipAssetsAPIList
 
-v1_api = Api(api_name='v1')
+v1_api = Api(api_name="v1")
 v1_api.register(PageResource())
 v1_api.register(OSResource())
 v1_api.register(ReleaseResource())
 v1_api.register(ReleaseFileResource())
 
 router = routers.DefaultRouter()
-router.register(r'pages/page', PageViewSet, basename='page')
-router.register(r'downloads/os', OSViewSet)
-router.register(r'downloads/release', ReleaseViewSet, basename='release')
-router.register(r'downloads/release_file', ReleaseFileViewSet)
+router.register(r"pages/page", PageViewSet, basename="page")
+router.register(r"downloads/os", OSViewSet)
+router.register(r"downloads/release", ReleaseViewSet, basename="release")
+router.register(r"downloads/release_file", ReleaseFileViewSet)
 
 urlpatterns = [
-    re_path(r'sponsors/logo-placement/', LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
-    re_path(r'sponsors/sponsorship-assets/', SponsorshipAssetsAPIList.as_view(), name="assets_list"),
+    re_path(r"sponsors/logo-placement/", LogoPlacementeAPIList.as_view(), name="logo_placement_list"),
+    re_path(r"sponsors/sponsorship-assets/", SponsorshipAssetsAPIList.as_view(), name="assets_list"),
 ]
