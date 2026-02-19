@@ -2808,7 +2808,7 @@
         "pk": 162,
         "fields": {
             "related_to": "sponsorship",
-            "internal_name": "pycon-us-2022-comlimentary-lead-retreival",
+            "internal_name": "pycon-us-2022-complimentary-lead-retrieval",
             "shared": true,
             "label": "Complimentary Lead Retrieval",
             "help_text": "Follow these instructions to claim your Expo Pass Exhibitor Profile. Do not purchase lead retrieval, you will receive your promo code via email and will enter this code into Expo Pass to receive your complimentary lead retrieval license.",
@@ -3620,7 +3620,7 @@
         "pk": 29,
         "fields": {
             "related_to": "sponsorship",
-            "internal_name": "pycon-us-2022-comlimentary-lead-retreival",
+            "internal_name": "pycon-us-2022-complimentary-lead-retrieval",
             "shared": true,
             "label": "Complimentary Lead Retrieval",
             "help_text": "Follow these instructions to claim your Expo Pass Exhibitor Profile. Do not purchase lead retrieval, you will receive your promo code via email and will enter this code into Expo Pass to receive your complimentary lead retrieval license.",
@@ -4792,7 +4792,7 @@
         "fields": {
             "order": 37,
             "name": "Social Media promotion",
-            "description": "Promotion of sponsorshp on @pycon Twitter.",
+            "description": "Promotion of sponsorship on @pycon Twitter.",
             "program": 5,
             "package_only": true,
             "new": false,
