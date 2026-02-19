@@ -20,37 +20,11 @@
     --cyan: #39d2c0;
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    padding: 2rem;
-  }
-  h1 {
-    font-size: 1.75rem;
-    margin-bottom: 0.25rem;
-  }
-  .subtitle {
-    color: var(--text-muted);
-    margin-bottom: 2rem;
-    font-size: 0.9rem;
-  }
-  .stats-bar {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-bottom: 2rem;
-  }
-  .stat {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    min-width: 140px;
-    cursor: pointer;
-    transition: border-color 0.15s;
-  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; padding: 2rem; }
+  h1 { font-size: 1.75rem; margin-bottom: 0.25rem; }
+  .subtitle { color: var(--text-muted); margin-bottom: 2rem; font-size: 0.9rem; }
+  .stats-bar { display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 2rem; }
+  .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; min-width: 140px; cursor: pointer; transition: border-color 0.15s; }
   .stat:hover { border-color: var(--accent); }
   .stat-num { font-size: 1.75rem; font-weight: 700; }
   .stat-label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
@@ -58,136 +32,39 @@
   .stat-security .stat-num { color: var(--orange); }
   .stat-close .stat-num { color: var(--text-muted); }
   .stat-discussion .stat-num { color: var(--purple); }
-  .stat-label-needed .stat-num { color: var(--cyan); }
   .stat-medium .stat-num { color: var(--accent); }
   .stat-low .stat-num { color: var(--green); }
   .stat-other-repo .stat-num { color: var(--pink); }
-
-  nav {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 1rem 1.25rem;
-    margin-bottom: 2rem;
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  nav a {
-    color: var(--text-muted);
-    text-decoration: none;
-    font-size: 0.85rem;
-    padding: 0.3rem 0.75rem;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    transition: all 0.15s;
-    white-space: nowrap;
-  }
+  nav { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin-bottom: 2rem; display: flex; gap: 0.5rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 100; }
+  nav a { color: var(--text-muted); text-decoration: none; font-size: 0.85rem; padding: 0.3rem 0.75rem; border-radius: 20px; border: 1px solid var(--border); transition: all 0.15s; white-space: nowrap; }
   nav a:hover { color: var(--text); border-color: var(--accent); background: rgba(88,166,255,0.1); }
-
-  .search-box {
-    margin-bottom: 2rem;
-  }
-  .search-box input {
-    width: 100%;
-    max-width: 500px;
-    padding: 0.6rem 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 0.95rem;
-    outline: none;
-  }
+  .search-box { margin-bottom: 2rem; }
+  .search-box input { width: 100%; max-width: 500px; padding: 0.6rem 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 0.95rem; outline: none; }
   .search-box input:focus { border-color: var(--accent); }
   .search-box input::placeholder { color: var(--text-muted); }
-
-  section {
-    margin-bottom: 2.5rem;
-  }
-  section h2 {
-    font-size: 1.25rem;
-    margin-bottom: 0.25rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-  section h2 .badge {
-    font-size: 0.75rem;
-    background: var(--border);
-    padding: 0.15rem 0.5rem;
-    border-radius: 10px;
-    font-weight: 400;
-    color: var(--text-muted);
-  }
-  section > p {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 0.9rem;
-  }
-  thead th {
-    text-align: left;
-    padding: 0.6rem 0.75rem;
-    border-bottom: 2px solid var(--border);
-    color: var(--text-muted);
-    font-weight: 600;
-    font-size: 0.8rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    position: sticky;
-    top: 52px;
-    background: var(--bg);
-    z-index: 10;
-  }
-  tbody tr {
-    border-bottom: 1px solid var(--border);
-    transition: background 0.1s;
-  }
+  section { margin-bottom: 2.5rem; }
+  details { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  details[open] { background: transparent; border-color: transparent; }
+  details summary { cursor: pointer; padding: 0.75rem 1rem; list-style: none; user-select: none; }
+  details summary::-webkit-details-marker { display: none; }
+  details summary::before { content: '▶'; display: inline-block; margin-right: 0.5rem; font-size: 0.7rem; transition: transform 0.15s; color: var(--text-muted); }
+  details[open] summary::before { transform: rotate(90deg); }
+  details summary:hover { background: rgba(88,166,255,0.04); }
+  section h2 { font-size: 1.25rem; margin-bottom: 0; display: inline-flex; align-items: center; gap: 0.5rem; }
+  section h2 .badge { font-size: 0.75rem; background: var(--border); padding: 0.15rem 0.5rem; border-radius: 10px; font-weight: 400; color: var(--text-muted); }
+  section > p, details > p { color: var(--text-muted); font-size: 0.85rem; margin: 0.5rem 1rem 1rem; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+  thead th { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--border); color: var(--text-muted); font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; position: sticky; top: 52px; background: var(--bg); z-index: 10; }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
   tbody tr:hover { background: rgba(88,166,255,0.04); }
-  tbody td {
-    padding: 0.6rem 0.75rem;
-    vertical-align: top;
-  }
+  tbody td { padding: 0.6rem 0.75rem; vertical-align: top; }
   tbody tr.hidden { display: none; }
-
-  a.issue-link {
-    color: var(--accent);
-    text-decoration: none;
-    font-weight: 500;
-  }
+  a.issue-link { color: var(--accent); text-decoration: none; font-weight: 500; }
   a.issue-link:hover { text-decoration: underline; }
-  .issue-num {
-    color: var(--text-muted);
-    font-variant-numeric: tabular-nums;
-    white-space: nowrap;
-  }
-  .age {
-    color: var(--text-muted);
-    font-size: 0.8rem;
-    white-space: nowrap;
-  }
-  .reason {
-    color: var(--text-muted);
-    font-size: 0.85rem;
-  }
-  .label {
-    display: inline-block;
-    font-size: 0.7rem;
-    padding: 0.1rem 0.45rem;
-    border-radius: 10px;
-    font-weight: 500;
-    margin: 1px 2px;
-    white-space: nowrap;
-  }
+  .issue-num { color: var(--text-muted); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .age { color: var(--text-muted); font-size: 0.8rem; white-space: nowrap; }
+  .reason { color: var(--text-muted); font-size: 0.85rem; }
+  .label { display: inline-block; font-size: 0.7rem; padding: 0.1rem 0.45rem; border-radius: 10px; font-weight: 500; margin: 1px 2px; white-space: nowrap; }
   .label-bug { background: #f8514922; color: #f85149; border: 1px solid #f8514944; }
   .label-enhancement { background: #58a6ff22; color: #58a6ff; border: 1px solid #58a6ff44; }
   .label-security { background: #d2992222; color: #d29922; border: 1px solid #d2992244; }
@@ -199,87 +76,32 @@
   .label-needs { background: #d2992222; color: #d29922; border: 1px solid #d2992244; }
   .label-admin { background: #e3b34122; color: #e3b341; border: 1px solid #e3b34144; }
   .label-help { background: #3fb95022; color: #3fb950; border: 1px solid #3fb95044; }
-
-  .action-col { white-space: nowrap; }
-  .action {
-    font-size: 0.75rem;
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-  }
-  .action-close { background: #f8514933; color: #f85149; }
-  .action-label { background: #39d2c033; color: #39d2c0; }
-  .action-move { background: #bc8cff33; color: #bc8cff; }
-  .action-discuss { background: #bc8cff33; color: #bc8cff; }
-  .action-keep { background: #3fb95033; color: #3fb950; }
-
-  .expand-btn {
-    background: none;
-    border: 1px solid var(--border);
-    color: var(--text-muted);
-    cursor: pointer;
-    padding: 0.15rem 0.4rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    transition: all 0.15s;
-  }
-  .expand-btn:hover { border-color: var(--accent); color: var(--accent); }
-
-  details {
-    margin-top: 0.3rem;
-  }
-  details summary {
-    cursor: pointer;
-    color: var(--text-muted);
-    font-size: 0.8rem;
-  }
-  details summary:hover { color: var(--accent); }
-  details .detail-content {
-    margin-top: 0.4rem;
-    padding: 0.5rem 0.75rem;
-    background: var(--surface);
-    border-radius: 6px;
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    border: 1px solid var(--border);
-  }
-
-  footer {
-    margin-top: 3rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border);
-    color: var(--text-muted);
-    font-size: 0.8rem;
-  }
+  .closed-row { opacity: 0.4; text-decoration: line-through; }
+  footer { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid var(--border); color: var(--text-muted); font-size: 0.8rem; }
 </style>
 </head>
 <body>
 
 <h1>pythondotorg Issue Triage Report</h1>
-<p class="subtitle">157 open issues reviewed &middot; Generated 2026-02-18 &middot; python/pythondotorg</p>
+<p class="subtitle">118 open issues (down from 157) &middot; Updated 2026-02-19 &middot; python/pythondotorg &middot; 39 issues closed since initial triage</p>
 
 <div class="stats-bar">
   <a href="#critical" style="text-decoration:none"><div class="stat stat-critical"><div class="stat-num">8</div><div class="stat-label">Critical</div></div></a>
   <a href="#security" style="text-decoration:none"><div class="stat stat-security"><div class="stat-num">3</div><div class="stat-label">Security</div></div></a>
-  <a href="#close" style="text-decoration:none"><div class="stat stat-close"><div class="stat-num">35</div><div class="stat-label">Close</div></div></a>
-  <a href="#discussion" style="text-decoration:none"><div class="stat stat-discussion"><div class="stat-num">15</div><div class="stat-label">To Discussion</div></div></a>
-  <a href="#other-repo" style="text-decoration:none"><div class="stat stat-other-repo"><div class="stat-num">5</div><div class="stat-label">Other Repo</div></div></a>
-  <a href="#labels" style="text-decoration:none"><div class="stat stat-label-needed"><div class="stat-num">30</div><div class="stat-label">Need Labels</div></div></a>
-  <a href="#medium" style="text-decoration:none"><div class="stat stat-medium"><div class="stat-num">14</div><div class="stat-label">Medium</div></div></a>
-  <a href="#low" style="text-decoration:none"><div class="stat stat-low"><div class="stat-num">~30</div><div class="stat-label">Low</div></div></a>
+  <a href="#close" style="text-decoration:none"><div class="stat stat-close"><div class="stat-num">11</div><div class="stat-label">Still to Close</div></div></a>
+  <a href="#discussion" style="text-decoration:none"><div class="stat stat-discussion"><div class="stat-num">7</div><div class="stat-label">To Discussion</div></div></a>
+  <a href="#medium" style="text-decoration:none"><div class="stat stat-medium"><div class="stat-num">20</div><div class="stat-label">Medium</div></div></a>
+  <a href="#low" style="text-decoration:none"><div class="stat stat-low"><div class="stat-num">~45</div><div class="stat-label">Low</div></div></a>
 </div>
 
 <nav>
   <a href="#critical">Critical</a>
   <a href="#security">Security</a>
-  <a href="#close">Recommend Close</a>
-  <a href="#discussion">Move to Discussion</a>
-  <a href="#other-repo">Other Repo</a>
-  <a href="#labels">Need Labels</a>
+  <a href="#close">Still to Close</a>
+  <a href="#discussion">To Discussion</a>
   <a href="#medium">Medium Priority</a>
   <a href="#low">Low Priority</a>
+  <a href="#all">All 118 Issues</a>
 </nav>
 
 <div class="search-box">
@@ -288,299 +110,382 @@
 
 <!-- ============================================================ -->
 <section id="critical">
-<h2>Critical / High Priority <span class="badge">8</span></h2>
+<details open>
+<summary><h2>Critical / High Priority <span class="badge">8</span></h2></summary>
 <p>Issues requiring immediate attention &mdash; data integrity, user-facing regressions, governance gaps.</p>
 <table>
-<thead><tr><th>#</th><th>Title</th><th>Why Critical</th><th>Suggested Labels</th></tr></thead>
+<thead><tr><th>#</th><th>Title</th><th>Why Critical</th><th>Labels</th></tr></thead>
 <tbody>
-<tr data-search="2566 membership levels bylaws">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2566" target="_blank">#2566</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2566" target="_blank">Update membership level choices</a></td>
-  <td class="reason">PSF bylaws changed (psf/bylaws#4); model choices out of sync. "Managing" members need converting to "contributing". Data integrity &amp; compliance issue.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/psf-membership</span><span class="label label-app">backend</span></td>
-</tr>
-<tr data-search="2599 elasticsearch8 search">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2599" target="_blank">#2599</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2599" target="_blank">Update to elasticsearch8</a></td>
-  <td class="reason">ES7 client running against ES8 server in production. Blocked on django-haystack upstream (#1980).</td>
-  <td><span class="label label-app">backend</span><span class="label label-app">search</span><span class="label label-infrastructure">dependencies</span></td>
-</tr>
-<tr data-search="2677 resolutions board psf minutes">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2677" target="_blank">#2677</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2677" target="_blank">PSF Board Resolutions missing from Resolutions page</a></td>
-  <td class="reason">Two 2024-05-19 resolutions (incl. Fellow removal for CoC violations) missing from public record. Governance transparency gap.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/pages</span></td>
-</tr>
-<tr data-search="2617 password reset allauth styling">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2617" target="_blank">#2617</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2617" target="_blank">Password reset page styling broken</a></td>
-  <td class="reason">User-facing auth regression after django-allauth upgrade. Templates need auditing.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/users</span><span class="label label-frontend">frontend</span></td>
-</tr>
-<tr data-search="2761 usenet mailing list gateway mailman">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2761" target="_blank">#2761</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2761" target="_blank">Usenet/mailing list gateway broken</a></td>
-  <td class="reason">python-list &harr; comp.lang.python gateway broke during Mailman 3 migration (May 2025). Community communication channel down.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td>
-</tr>
-<tr data-search="2059 honeypot 400 account creation signup">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2059" target="_blank">#2059</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2059" target="_blank">400 Honeypot Error on account creation</a></td>
-  <td class="reason">Password managers/autofill populate honeypot field, blocking legitimate users with a 400 error. Confirmed in Firefox 117+.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/users</span></td>
-</tr>
-<tr data-search="2358 renewal checkbox sponsorship contract">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2358" target="_blank">#2358</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2358" target="_blank">Renewal checkbox doesn't persist through contract generation</a></td>
-  <td class="reason">Data-loss bug: <code>use_cases.py:80</code> defaults renewal to <code>False</code> instead of forwarding existing state. Affects PSF sponsorship workflow.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td>
-</tr>
-<tr data-search="2332 sponsor logos adblocker ethicalads ublock">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2332" target="_blank">#2332</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2332" target="_blank">Sponsor logos invisible with adblocker</a></td>
-  <td class="reason">Logos served exclusively via EthicalAds (<code>data-ea-publisher</code>). uBlock Origin blocks <code>media.ethicalads.io</code>, hiding all sponsor logos. Breaks PSF contractual visibility commitments.</td>
-  <td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span><span class="label label-frontend">frontend</span></td>
-</tr>
+<tr data-search="2566 membership levels bylaws"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2566" target="_blank">#2566</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2566" target="_blank">Update membership level choices</a></td><td class="reason">PSF bylaws changed; model choices out of sync. Data integrity &amp; compliance.</td><td><span class="label label-app">backend</span><span class="label label-app">app/psf-membership</span></td></tr>
+<tr data-search="2599 elasticsearch8 search"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2599" target="_blank">#2599</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2599" target="_blank">Update to elasticsearch8</a></td><td class="reason">ES7 client against ES8 server in production. Blocked on upstream.</td><td><span class="label label-app">backend</span><span class="label label-app">search</span></td></tr>
+<tr data-search="2677 resolutions board psf"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2677" target="_blank">#2677</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2677" target="_blank">PSF Resolutions missing from page</a></td><td class="reason">Board resolutions missing from public record. Governance transparency.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/pages</span></td></tr>
+<tr data-search="2617 password reset allauth"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2617" target="_blank">#2617</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2617" target="_blank">Password reset page styling broken</a></td><td class="reason">Auth regression after allauth upgrade. User-facing.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/users</span><span class="label label-frontend">frontend</span></td></tr>
+<tr data-search="2761 usenet mailing list mailman"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2761" target="_blank">#2761</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2761" target="_blank">Usenet/mailing list gateway broken</a></td><td class="reason">python-list &harr; comp.lang.python broken since Mailman 3 migration.</td><td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2059 honeypot 400 signup"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2059" target="_blank">#2059</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2059" target="_blank">400 Honeypot Error on account creation</a></td><td class="reason">Password managers fill honeypot field, blocking legitimate users.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/users</span><span class="label label-help">help-wanted</span></td></tr>
+<tr data-search="2358 renewal checkbox sponsorship"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2358" target="_blank">#2358</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2358" target="_blank">Renewal checkbox doesn't persist</a></td><td class="reason">Data-loss bug in sponsorship contract generation.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2332 sponsor logos adblocker"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2332" target="_blank">#2332</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2332" target="_blank">Sponsor logos invisible with adblocker</a></td><td class="reason">EthicalAds-only serving; uBlock hides all logos. Breaks PSF commitments.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span><span class="label label-frontend">frontend</span></td></tr>
 </tbody>
 </table>
+</details>
 </section>
 
 <!-- ============================================================ -->
 <section id="security">
-<h2>Security Concerns <span class="badge">3</span></h2>
-<p>Vulnerabilities and supply-chain gaps that warrant review.</p>
+<details open>
+<summary><h2>Security Concerns <span class="badge">3</span></h2></summary>
 <table>
 <thead><tr><th>#</th><th>Title</th><th>Severity</th><th>Details</th></tr></thead>
 <tbody>
-<tr data-search="2203 rate limiting password reset email bombing">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2203" target="_blank">#2203</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2203" target="_blank">No rate limiting on password reset</a></td>
-  <td><span class="action action-close">MEDIUM</span></td>
-  <td class="reason">No rate-limit middleware installed (no django-axes, django-ratelimit). Only Tastypie API has throttling. Password reset form allows email bombing.</td>
-</tr>
-<tr data-search="2261 mark_safe xss sponsors forms">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2261" target="_blank">#2261</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2261" target="_blank"><code>mark_safe()</code> XSS risk in sponsors/forms.py</a></td>
-  <td><span class="action action-label">LOW</span></td>
-  <td class="reason">Lines 754/758 interpolate <code>field.label</code> via f-string into <code>mark_safe()</code>. Data is admin-sourced only (not user input), but should use <code>format_html()</code> per Django best practices.</td>
-</tr>
-<tr data-search="2340 vex sbom supply chain cpython">
-  <td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2340" target="_blank">#2340</a></td>
-  <td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2340" target="_blank">Add VEX statements for CPython SBOMs</a></td>
-  <td><span class="action action-label">SUPPLY CHAIN</span></td>
-  <td class="reason">SBOM (SPDX) exists on release pages but no VEX documents to clarify which dependency vulnerabilities are actually exploitable by CPython. Increasingly expected by scanners.</td>
-</tr>
+<tr data-search="2203 rate limiting password reset"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2203" target="_blank">#2203</a></td><td>No rate limiting on password reset</td><td><span class="label label-security">MEDIUM</span></td><td class="reason">No rate-limit middleware. Password reset allows email bombing.</td></tr>
+<tr data-search="2261 mark_safe xss"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2261" target="_blank">#2261</a></td><td><code>mark_safe()</code> XSS risk</td><td><span class="label label-easy">LOW</span></td><td class="reason">Admin-sourced data only, but should use <code>format_html()</code>.</td></tr>
+<tr data-search="2340 vex sbom supply chain"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2340" target="_blank">#2340</a></td><td>Add VEX statements for SBOMs</td><td><span class="label label-needs">SUPPLY CHAIN</span></td><td class="reason">SBOM exists but no VEX documents for vulnerability clarification.</td></tr>
 </tbody>
 </table>
+</details>
 </section>
 
 <!-- ============================================================ -->
 <section id="close">
-<h2>Recommend Closing <span class="badge">~35</span></h2>
-<p>Issues that are resolved, obsolete, stale, or not actionable as code changes.</p>
+<details open>
+<summary><h2>Still Recommend Closing <span class="badge">11</span></h2></summary>
+<p>Issues from the original triage that haven't been closed yet. These are resolved, stale, or not actionable.</p>
 <table>
-<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Reason to Close</th></tr></thead>
+<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Reason</th></tr></thead>
 <tbody>
-<tr data-search="832 css django pipeline"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/832" target="_blank">#832</a></td><td>Generate CSS via django-pipeline</td><td class="age">10y</td><td class="reason">Already integrated: <code>pydotorg/settings/pipeline.py</code>, <code>PipelineStorage</code> configured.</td></tr>
-<tr data-search="862 download buttons os windows"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/862" target="_blank">#862</a></td><td>Add buttons to OS-specific download pages</td><td class="age">10y</td><td class="reason">Implemented: <code>download_button</code> field on <code>ReleaseFile</code>, OS-specific links in templates.</td></tr>
-<tr data-search="849 recurring calendar events"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/849" target="_blank">#849</a></td><td>Recurring calendar entries not shown</td><td class="age">10y</td><td class="reason">Model has full <code>RecurringRule</code> support with <code>dateutil.rrule</code>.</td></tr>
-<tr data-search="1162 events workflow submit"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1162" target="_blank">#1162</a></td><td>New events workflow</td><td class="age">8y</td><td class="reason"><code>EventSubmit</code> view exists at <code>events/submit/</code>.</td></tr>
-<tr data-search="1113 cache backend"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1113" target="_blank">#1113</a></td><td>Use more efficient cache backend</td><td class="age">8y</td><td class="reason">Production uses <code>DatabaseCache</code>, not <code>LocMemCache</code>.</td></tr>
-<tr data-search="1227 checksum sha256 md5"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1227" target="_blank">#1227</a></td><td>Download checksum in MD5</td><td class="age">7y</td><td class="reason">SHA256 is now default; MD5 only shown as fallback.</td></tr>
-<tr data-search="1615 gfm markdown election nomination"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1615" target="_blank">#1615</a></td><td>Switch to GFM for election nominations</td><td class="age">5y</td><td class="reason">CMS switched to GFM (PR #1613 merged); nominations use <code>markup_type="markdown"</code>.</td></tr>
-<tr data-search="1352 api releases version"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1352" target="_blank">#1352</a></td><td>API to check releases by major/minor version</td><td class="age">7y</td><td class="reason"><code>downloads/latest/python3.{minor}/</code> URL implemented.</td></tr>
-<tr data-search="1784 windows 8 python 3.9"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1784" target="_blank">#1784</a></td><td>Windows 8.0 and Python 3.9+</td><td class="age">4y</td><td class="reason">Templates now reference "Windows 7 or earlier".</td></tr>
-<tr data-search="2138 ongoing events display"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2138" target="_blank">#2138</a></td><td>Currently ongoing events do not display</td><td class="age">3y</td><td class="reason">PR #2556 merged 2024-09-19 fixing this.</td></tr>
-<tr data-search="2135 linter ruff code quality"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2135" target="_blank">#2135</a></td><td>Define linter tools for code quality</td><td class="age">3y</td><td class="reason">Ruff configured in <code>pyproject.toml</code>; <code>lint.yml</code> workflow runs on every push/PR.</td></tr>
-<tr data-search="1269 ruby gems python"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1269" target="_blank">#1269</a></td><td>Replace Ruby gems with Python equivalents</td><td class="age">7y</td><td class="reason">No <code>Gemfile</code> in repo. Ruby compass/susy gems are gone.</td></tr>
-<tr data-search="1270 sqlite backend docker"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1270" target="_blank">#1270</a></td><td>Use SQLite backend by default</td><td class="age">7y</td><td class="reason">Docker Compose makes dev setup self-contained, solving the original pain.</td></tr>
-<tr data-search="103 layout small screen"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/103" target="_blank">#103</a></td><td>Peculiar layout at small screen width</td><td class="age">12y</td><td class="reason">12 years old, screenshot from 2014. Site redesigned since.</td></tr>
-<tr data-search="61 nav menu collapsed ios"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/61" target="_blank">#61</a></td><td>Top nav should default to collapsed</td><td class="age">12y</td><td class="reason">12 years old, iOS-era bug. Nav redesigned.</td></tr>
-<tr data-search="554 sub-site navigation bar"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/554" target="_blank">#554</a></td><td>Remove top sub-site navigation bar</td><td class="age">11y</td><td class="reason">Navigation has been significantly changed since 2015.</td></tr>
-<tr data-search="1003 navbar vertical space mobile"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1003" target="_blank">#1003</a></td><td>Navbar takes up lots of space on mobile</td><td class="age">9y</td><td class="reason">Navbar redesigned since 2016.</td></tr>
-<tr data-search="1124 dropdown list jobs"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1124" target="_blank">#1124</a></td><td>Dropdown list goes off-screen</td><td class="age">8y</td><td class="reason">Jobs nav has changed; UI certainly different now.</td></tr>
-<tr data-search="1278 back to top"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1278" target="_blank">#1278</a></td><td>Back to top not working</td><td class="age">7y</td><td class="reason">Vague, no repro steps, no follow-up since 2018.</td></tr>
-<tr data-search="574 andrew dalke python 0.9.1"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/574" target="_blank">#574</a></td><td>Pointer to Dalke's Python 0.9.1p1</td><td class="age">11y</td><td class="reason">Superseded by #1734.</td></tr>
-<tr data-search="546 ancient releases consolidate"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/546" target="_blank">#546</a></td><td>Consolidate links to ancient releases</td><td class="age">11y</td><td class="reason">Subsumed by #1734.</td></tr>
-<tr data-search="822 django contrib redirects"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/822" target="_blank">#822</a></td><td>Consider removing django.contrib.redirects</td><td class="age">10y</td><td class="reason">Ops decision, not a code issue. No urgency in 10 years.</td></tr>
-<tr data-search="1090 peps legacy python org"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1090" target="_blank">#1090</a></td><td>Out-of-date PEPs on legacy.python.org</td><td class="age">8y</td><td class="reason"><code>peps.python.org</code> is canonical now; legacy no longer appears in Google.</td></tr>
-<tr data-search="608 wiki republish pages"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/608" target="_blank">#608</a></td><td>Republish wiki pages on main site</td><td class="age">10y</td><td class="reason">10 years, no progress, high complexity, unclear value.</td></tr>
-<tr data-search="529 community poem semicolons"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/529" target="_blank">#529</a></td><td>Community poem has weird semicolons</td><td class="age">11y</td><td class="reason">Trivial content issue from 2015. Page content has certainly changed.</td></tr>
-<tr data-search="586 image links broken legacy"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/586" target="_blank">#586</a></td><td>Many image links from legacy are broken</td><td class="age">10y</td><td class="reason">Merchandise page is 404. The page itself is gone.</td></tr>
-<tr data-search="1426 resources loading js error"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1426" target="_blank">#1426</a></td><td>Resources not properly loaded</td><td class="age">6y</td><td class="reason">Vague, no repro steps, screenshot of JS error from 2019. No activity.</td></tr>
-<tr data-search="980 owner expert list"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/980" target="_blank">#980</a></td><td>Create owner/expert list for website</td><td class="age">9y</td><td class="reason">Meta/process issue, not a code change. Governance documentation.</td></tr>
-<tr data-search="967 financial info update"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/967" target="_blank">#967</a></td><td>Update Financial Info</td><td class="age">9y</td><td class="reason">Content maintenance from 2016. Editorial, not code.</td></tr>
-<tr data-search="965 press release"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/965" target="_blank">#965</a></td><td>Press Release page</td><td class="age">9y</td><td class="reason">Editorial decision, not a code issue.</td></tr>
-<tr data-search="1252 python 2.7.15 release notes"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1252" target="_blank">#1252</a></td><td>Python 2.7.15 release notes unavailable</td><td class="age">7y</td><td class="reason">Python 2 is EOL since Jan 2020.</td></tr>
-<tr data-search="2051 art success stories"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2051" target="_blank">#2051</a></td><td>Populating Art section in Success Stories</td><td class="age">3y</td><td class="reason">Content contribution offer, not a code change. No follow-up.</td></tr>
-<tr data-search="2042 discuss python org status"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2042" target="_blank">#2042</a></td><td>Include discuss.python.org in status page</td><td class="age">3y</td><td class="reason">Maintainer confirmed infeasible: Discourse is hosted directly.</td></tr>
-<tr data-search="2022 html elements job page"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2022" target="_blank">#2022</a></td><td>Unwanted HTML in a job page</td><td class="age">3y</td><td class="reason">References specific old job listing content, not a code bug.</td></tr>
-<tr data-search="2174 datadump jobs data"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2174" target="_blank">#2174</a></td><td>Datadump of jobs data</td><td class="age">3y</td><td class="reason">One-time data request, not a feature. No comments.</td></tr>
-<tr data-search="1965 add category about page ml"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1965" target="_blank">#1965</a></td><td>Add New Category In About Page</td><td class="age">4y</td><td class="reason">No follow-up in 4 years. No labels, no comments.</td></tr>
-<tr data-search="2804 full page ui layout ux"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2804" target="_blank">#2804</a></td><td>Improve Full-Page UI Layout and UX</td><td class="age">&lt;1y</td><td class="reason">Too vague, no specific actionable items. Design wish-list.</td></tr>
+<tr data-search="832 css django pipeline"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/832" target="_blank">#832</a></td><td>Generate CSS via django-pipeline</td><td class="age">10y</td><td class="reason">Already integrated in settings/pipeline.py.</td></tr>
+<tr data-search="862 download buttons os"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/862" target="_blank">#862</a></td><td>Add buttons to OS download pages</td><td class="age">10y</td><td class="reason">Implemented: download_button field exists.</td></tr>
+<tr data-search="1227 checksum sha256"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1227" target="_blank">#1227</a></td><td>Download checksum in MD5</td><td class="age">7y</td><td class="reason">SHA256 is now default.</td></tr>
+<tr data-search="1615 gfm markdown election"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1615" target="_blank">#1615</a></td><td>Switch to GFM for elections</td><td class="age">5y</td><td class="reason">Already using markdown; PR #1613 merged.</td></tr>
+<tr data-search="2138 ongoing events display"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2138" target="_blank">#2138</a></td><td>Ongoing events don't display</td><td class="age">3y</td><td class="reason">Fixed by PR #2556 (merged 2024-09-19).</td></tr>
+<tr data-search="1269 ruby gems"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1269" target="_blank">#1269</a></td><td>Replace Ruby gems</td><td class="age">7y</td><td class="reason">No Gemfile in repo. Ruby deps are gone.</td></tr>
+<tr data-search="1270 sqlite backend"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1270" target="_blank">#1270</a></td><td>Use SQLite by default</td><td class="age">7y</td><td class="reason">Docker Compose solved the dev setup pain.</td></tr>
+<tr data-search="1124 dropdown list jobs"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1124" target="_blank">#1124</a></td><td>Dropdown goes off-screen</td><td class="age">8y</td><td class="reason">Jobs nav redesigned. 8 years stale.</td></tr>
+<tr data-search="1426 resources loading"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1426" target="_blank">#1426</a></td><td>Resources not loading</td><td class="age">6y</td><td class="reason">Vague JS error from 2019, no repro steps.</td></tr>
+<tr data-search="980 owner expert list"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/980" target="_blank">#980</a></td><td>Create owner/expert list</td><td class="age">9y</td><td class="reason">Meta/process issue, not code.</td></tr>
+<tr data-search="2051 art success stories"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2051" target="_blank">#2051</a></td><td>Art section in Success Stories</td><td class="age">3y</td><td class="reason">Content offer, not code. No follow-up.</td></tr>
 </tbody>
 </table>
+</details>
 </section>
 
 <!-- ============================================================ -->
 <section id="discussion">
-<h2>Migrate to Discussion <span class="badge">15</span></h2>
-<p>Open-ended ideas, community input requests, and content debates better suited as GitHub Discussions.</p>
+<details open>
+<summary><h2>Migrate to Discussion <span class="badge">7</span></h2></summary>
+<p>Open-ended ideas better suited as GitHub Discussions.</p>
 <table>
 <thead><tr><th>#</th><th>Title</th><th>Age</th><th>Why Discussion</th></tr></thead>
 <tbody>
-<tr data-search="2230 unicode animal homepage code sample"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2230" target="_blank">#2230</a></td><td>Add Unicode animal to homepage code sample</td><td class="age">3y</td><td class="reason">Fun community input opportunity; which animal?</td></tr>
-<tr data-search="2309 ai ml use python for"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2309" target="_blank">#2309</a></td><td>Add AI/ML to "Use Python for..."</td><td class="age">2y</td><td class="reason">Content/editorial debate about what to feature.</td></tr>
-<tr data-search="2035 fastapi web2py use python for"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2035" target="_blank">#2035</a></td><td>Include FastAPI, drop web2py</td><td class="age">3y</td><td class="reason">Content/editorial debate on featured frameworks.</td></tr>
-<tr data-search="2201 use python for outdated links"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2201" target="_blank">#2201</a></td><td>"Use Python for..." has outdated links</td><td class="age">3y</td><td class="reason">Content curation: which links to update and to what.</td></tr>
-<tr data-search="535 explain account creation"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/535" target="_blank">#535</a></td><td>Explain why to create an account</td><td class="age">11y</td><td class="reason">UX philosophy discussion; what is the value proposition?</td></tr>
-<tr data-search="1725 dark theme dark mode"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1725" target="_blank">#1725</a></td><td>Dark theme for python.org</td><td class="age">5y</td><td class="reason">Large design discussion, community input useful. Already <code>help-wanted</code>.</td></tr>
-<tr data-search="2066 release status lifecycle page"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2066" target="_blank">#2066</a></td><td>Add a release status/lifecycle page</td><td class="age">3y</td><td class="reason">Feature design discussion; partial data exists via PEPs API.</td></tr>
-<tr data-search="1592 recommended way installing python"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1592" target="_blank">#1592</a></td><td>Recommended way of installing Python?</td><td class="age">5y</td><td class="reason">Community guidance discussion (MS Store vs python.org vs package manager).</td></tr>
-<tr data-search="1549 getting started macos"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1549" target="_blank">#1549</a></td><td>Near impossible to get started on macOS</td><td class="age">6y</td><td class="reason">Community UX discussion; multiple valid approaches.</td></tr>
-<tr data-search="1266 obstacles installing python"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1266" target="_blank">#1266</a></td><td>Far too many obstacles to installing Python</td><td class="age">7y</td><td class="reason">Community UX discussion; pymanager partially addresses Windows.</td></tr>
-<tr data-search="2541 structure cleanup app src"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2541" target="_blank">#2541</a></td><td>Structural cleanup (move apps to <code>app/</code>)</td><td class="age">1y</td><td class="reason">Architectural discussion, very large scope, needs buy-in.</td></tr>
-<tr data-search="2572 single login pycon sso"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2572" target="_blank">#2572</a></td><td>Single login python.org &harr; us.pycon.org</td><td class="age">1y</td><td class="reason">Design discussion; OAuth/JWT, large scope, needs architecture.</td></tr>
-<tr data-search="244 job types categories expand"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/244" target="_blank">#244</a></td><td>Expand job types and categories</td><td class="age">11y</td><td class="reason">Community input on what categories to add.</td></tr>
-<tr data-search="353 books merchandise"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/353" target="_blank">#353</a></td><td>Add Python books to merchandise</td><td class="age">11y</td><td class="reason">Content curation discussion (merchandise page is now 404).</td></tr>
-<tr data-search="1656 agenda reports minutes working groups"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1656" target="_blank">#1656</a></td><td>Agenda, Reports, and Minuting feature</td><td class="age">5y</td><td class="reason">Feature scoping discussion; affects minutes app architecture.</td></tr>
+<tr data-search="2230 unicode animal homepage"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2230" target="_blank">#2230</a></td><td>Add Unicode animal to homepage code sample</td><td class="age">3y</td><td class="reason">Community input opportunity.</td></tr>
+<tr data-search="2201 use python for outdated"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2201" target="_blank">#2201</a></td><td>"Use Python for..." outdated links</td><td class="age">3y</td><td class="reason">Content curation debate.</td></tr>
+<tr data-search="535 explain account creation"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/535" target="_blank">#535</a></td><td>Explain why to create an account</td><td class="age">11y</td><td class="reason">UX philosophy discussion.</td></tr>
+<tr data-search="1725 dark theme"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1725" target="_blank">#1725</a></td><td>Dark theme for python.org</td><td class="age">5y</td><td class="reason">Large design discussion.</td></tr>
+<tr data-search="2066 release status lifecycle"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2066" target="_blank">#2066</a></td><td>Release status/lifecycle page</td><td class="age">3y</td><td class="reason">Feature design discussion.</td></tr>
+<tr data-search="1592 recommended installing python"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1592" target="_blank">#1592</a></td><td>Recommended way of installing Python?</td><td class="age">5y</td><td class="reason">Community guidance discussion.</td></tr>
+<tr data-search="2572 single login pycon sso"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2572" target="_blank">#2572</a></td><td>Single login python.org &harr; us.pycon.org</td><td class="age">1y</td><td class="reason">Design discussion, large scope.</td></tr>
 </tbody>
 </table>
-</section>
-
-<!-- ============================================================ -->
-<section id="other-repo">
-<h2>Migrate to Other Repo <span class="badge">5</span></h2>
-<p>Issues filed here that belong in a different repository or service.</p>
-<table>
-<thead><tr><th>#</th><th>Title</th><th>Destination</th></tr></thead>
-<tbody>
-<tr data-search="1691 docs python org seo"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1691" target="_blank">#1691</a></td><td>Extremely poor docs.python.org SEO</td><td class="reason"><code>python/cpython</code> or <code>python/docsbuild-scripts</code></td></tr>
-<tr data-search="2139 devguide sponsor logos"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2139" target="_blank">#2139</a></td><td>Add sponsor logos to devguide</td><td class="reason"><code>python/devguide</code></td></tr>
-<tr data-search="2662 redirect blogspot blog python org"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2662" target="_blank">#2662</a></td><td>Redirect pythoninsider.blogspot.com</td><td class="reason">Blogger/Google config, not this repo</td></tr>
-<tr data-search="2658 newsletter subscription form"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2658" target="_blank">#2658</a></td><td>Newsletter subscription form broken</td><td class="reason">Third-party service (Mailchimp/ConvertKit)</td></tr>
-<tr data-search="1903 psf member public profile"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1903" target="_blank">#1903</a></td><td>PSF member profile not showing info</td><td class="reason">Likely a privacy policy decision, not a code bug. PSF staff.</td></tr>
-</tbody>
-</table>
-</section>
-
-<!-- ============================================================ -->
-<section id="labels">
-<h2>Need Labels <span class="badge">~30</span></h2>
-<p>Currently unlabeled issues that should be tagged for discoverability and triage.</p>
-<table>
-<thead><tr><th>#</th><th>Title</th><th>Suggested Labels</th></tr></thead>
-<tbody>
-<tr data-search="2761 usenet mailing list"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2761" target="_blank">#2761</a></td><td>Usenet/mailing list gateway broken</td><td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td></tr>
-<tr data-search="2750 docs downloads api"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2750" target="_blank">#2750</a></td><td>Document Downloads API</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/downloads</span></td></tr>
-<tr data-search="2640 fixture data dev"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2640" target="_blank">#2640</a></td><td>More fixture data for dev</td><td><span class="label label-enhancement">enhancement</span><span class="label label-infrastructure">infrastructure</span></td></tr>
-<tr data-search="2349 anchor tags resolutions"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2349" target="_blank">#2349</a></td><td>Add anchor tags to PSF Board resolutions</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span></td></tr>
-<tr data-search="2332 sponsor logos adblocker"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2332" target="_blank">#2332</a></td><td>Sponsor logos invisible with adblocker</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span><span class="label label-frontend">frontend</span></td></tr>
-<tr data-search="2301 markdown success stories"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2301" target="_blank">#2301</a></td><td>Add Markdown hint to Success Stories form</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span><span class="label label-help">help-wanted</span></td></tr>
-<tr data-search="2261 mark_safe xss"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2261" target="_blank">#2261</a></td><td><code>mark_safe()</code> XSS risk</td><td><span class="label label-security">security</span></td></tr>
-<tr data-search="2238 job board email field"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2238" target="_blank">#2238</a></td><td>Job Board: add additional email field</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/jobs</span></td></tr>
-<tr data-search="2203 rate limiting password reset"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2203" target="_blank">#2203</a></td><td>No rate limiting on password reset</td><td><span class="label label-security">security</span></td></tr>
-<tr data-search="2123 new this year badge"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2123" target="_blank">#2123</a></td><td>"New This Year" badge not displaying</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2104 publish logos before contract"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2104" target="_blank">#2104</a></td><td>Publish logos before contract finalized</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2103 email template copy"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2103" target="_blank">#2103</a></td><td>Email template copy option</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
-<tr data-search="2102 email template archive"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2102" target="_blank">#2102</a></td><td>Email template archive option</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
-<tr data-search="2101 send notifications sponsorship detail"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2101" target="_blank">#2101</a></td><td>Send notifications from sponsorship detail</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
-<tr data-search="2100 notification send history"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2100" target="_blank">#2100</a></td><td>Full history of notifications sent</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
-<tr data-search="2099 benefit internal value quantity"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2099" target="_blank">#2099</a></td><td>Benefit value not multiplied by quantity</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2098 pycon passes per sponsor"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2098" target="_blank">#2098</a></td><td>View/adjust PyCon passes per sponsor</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2097 filter sponsorship by benefit"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2097" target="_blank">#2097</a></td><td>Filter sponsorships by benefit</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
-<tr data-search="2095 change log sponsor"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2095" target="_blank">#2095</a></td><td>Add change log to sponsor objects</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2094 character limit sponsor description"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2094" target="_blank">#2094</a></td><td>Character limit for sponsor description</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2093 pycon voucher redemption count"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2093" target="_blank">#2093</a></td><td>PyCon voucher redemption count</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2092 provided assets navigation"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2092" target="_blank">#2092</a></td><td>Update assets navigation</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-frontend">frontend</span></td></tr>
-<tr data-search="2091 benefit type description"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2091" target="_blank">#2091</a></td><td>Add description for benefit types</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-easy">easy</span></td></tr>
-<tr data-search="2090 dashboard help text"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2090" target="_blank">#2090</a></td><td>Dashboard help text</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-easy">easy</span></td></tr>
-<tr data-search="2059 honeypot 400 signup"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2059" target="_blank">#2059</a></td><td>400 Honeypot Error on signup</td><td><span class="label label-bug">bug</span><span class="label label-app">app/users</span></td></tr>
-<tr data-search="1742 grey create account button"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1742" target="_blank">#1742</a></td><td>"Create Account" button is grey</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span><span class="label label-help">help-wanted</span></td></tr>
-<tr data-search="1743 press contact"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1743" target="_blank">#1743</a></td><td>Add press contact page</td><td><span class="label label-enhancement">enhancement</span><span class="label label-content">content</span></td></tr>
-<tr data-search="2460 celery async email"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2460" target="_blank">#2460</a></td><td>Async/Celery for sending emails</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
-<tr data-search="2863 pg18 postgres upgrade"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2863" target="_blank">#2863</a></td><td>Update to PG18</td><td><span class="label label-infrastructure">infrastructure</span><span class="label label-enhancement">enhancement</span></td></tr>
-<tr data-search="2869 ci duplication lint"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2869" target="_blank">#2869</a></td><td>CI duplication and messiness</td><td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td></tr>
-<tr data-search="2865 dead release notes links hg"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2865" target="_blank">#2865</a></td><td>Dead release notes links (hg.python.org)</td><td><span class="label label-bug">bug</span><span class="label label-app">app/downloads</span><span class="label label-needs">needs-feedback</span></td></tr>
-</tbody>
-</table>
+</details>
 </section>
 
 <!-- ============================================================ -->
 <section id="medium">
-<h2>Medium Priority <span class="badge">14</span></h2>
+<details open>
+<summary><h2>Medium Priority <span class="badge">20</span></h2></summary>
 <p>Real bugs and meaningful features that deserve attention.</p>
 <table>
-<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Notes</th></tr></thead>
+<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Notes</th><th>Labels</th></tr></thead>
 <tbody>
-<tr data-search="2869 ci duplication lint yml guard"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2869" target="_blank">#2869</a></td><td>CI duplication</td><td class="age">&lt;1y</td><td class="reason">One-line fix: add <code>if:</code> guard to <code>lint.yml</code> like <code>ci.yml</code> has.</td></tr>
-<tr data-search="2865 dead release notes hg python org"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2865" target="_blank">#2865</a></td><td>Dead release note links</td><td class="age">&lt;1y</td><td class="reason">hg.python.org retired. Old Misc/NEWS links broken. Needs maintainer decision on approach.</td></tr>
-<tr data-search="2887 sponsor logo header overlap"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2887" target="_blank">#2887</a></td><td>Sponsor logo/header overlap</td><td class="age">&lt;1y</td><td class="reason">CSS fix needed. Contributor ready to work on it.</td></tr>
-<tr data-search="2486 python 3.11 latest stale"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2486" target="_blank">#2486</a></td><td>"Python 3.11 is latest" text stale</td><td class="age">1y</td><td class="reason">Should say 3.13. Hardcoded in release pages. Template/CMS fix needed.</td></tr>
-<tr data-search="2460 bulk email timeouts celery"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2460" target="_blank">#2460</a></td><td>Bulk email causes admin timeouts</td><td class="age">1y</td><td class="reason">Celery async fix available (PR #2395). Infrastructure already in place.</td></tr>
-<tr data-search="2685 latest news blogspot blog python"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2685" target="_blank">#2685</a></td><td>Homepage news links to blogspot</td><td class="age">1y</td><td class="reason">Should link to blog.python.org, not pythoninsider.blogspot.com.</td></tr>
-<tr data-search="2099 benefit internal value quantity"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2099" target="_blank">#2099</a></td><td>Benefit value not multiplied by qty</td><td class="age">3y</td><td class="reason">Shows $700 instead of $7000 for 10 tickets at $700 each. Line 260 in sponsors model.</td></tr>
-<tr data-search="2370 merge duplicate sponsors"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2370" target="_blank">#2370</a></td><td>Merge duplicate sponsor objects</td><td class="age">2y</td><td class="reason">Duplicates cause 500 errors on contract downloads. No merge functionality in admin.</td></tr>
-<tr data-search="2411 downloads page gzip binary"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2411" target="_blank">#2411</a></td><td>Downloads page returns binary data</td><td class="age">1y</td><td class="reason">gzip without Content-Encoding header. Breaks <code>curl</code> and scripted users.</td></tr>
-<tr data-search="2863 pg18 postgres upgrade"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2863" target="_blank">#2863</a></td><td>Update to PG18</td><td class="age">&lt;1y</td><td class="reason">Currently on PG 15.8. Infrastructure upgrade goal.</td></tr>
-<tr data-search="2899 minio s3 archived"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2899" target="_blank">#2899</a></td><td>Migrate from archived minio</td><td class="age">&lt;1y</td><td class="reason">Minio repo is archived. Need to move to S3 native or alternative.</td></tr>
-<tr data-search="1080 celery send emails reliability"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1080" target="_blank">#1080</a></td><td>Use Celery to send emails</td><td class="age">8y</td><td class="reason">Email in request cycle causes timeouts. Celery already in infrastructure.</td></tr>
-<tr data-search="1457 admin preview cdn purge"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1457" target="_blank">#1457</a></td><td>Admin preview doesn't purge CDN</td><td class="age">6y</td><td class="reason">Release manager workflow bug. "View on Site" shows stale cached page.</td></tr>
-<tr data-search="2645 sponsor application 404 prospectus"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2645" target="_blank">#2645</a></td><td>Sponsor app form 404 / prospectus missing</td><td class="age">1y</td><td class="reason"><code>/psf/sponsorship-old/</code> links to unpublished form and deleted Dropbox file. CMS fix needed.</td></tr>
+<tr data-search="2869 ci duplication lint"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2869" target="_blank">#2869</a></td><td>CI duplication</td><td class="age">1mo</td><td class="reason">One-line fix: add guard to lint.yml.</td><td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2865 dead release notes hg"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2865" target="_blank">#2865</a></td><td>Dead release note links</td><td class="age">1mo</td><td class="reason">hg.python.org retired. Needs approach decision.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/downloads</span></td></tr>
+<tr data-search="2887 sponsor logo header overlap"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2887" target="_blank">#2887</a></td><td>Sponsor logo/header overlap</td><td class="age">9d</td><td class="reason">CSS fix. Contributor ready.</td><td><span class="label label-bug">bug</span><span class="label label-frontend">frontend</span></td></tr>
+<tr data-search="2486 python 3.11 latest stale"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2486" target="_blank">#2486</a></td><td>"Python 3.11 is latest" stale text</td><td class="age">1y</td><td class="reason">Should say 3.13. Hardcoded in release pages.</td><td><span class="label label-frontend">frontend</span><span class="label label-app">app/downloads</span></td></tr>
+<tr data-search="2460 bulk email celery"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2460" target="_blank">#2460</a></td><td>Bulk email causes admin timeouts</td><td class="age">1y</td><td class="reason">Celery async fix available.</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span></td></tr>
+<tr data-search="2685 latest news blogspot"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2685" target="_blank">#2685</a></td><td>Homepage news links to blogspot</td><td class="age">1y</td><td class="reason">Should link to blog.python.org.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2662 redirect blogspot"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2662" target="_blank">#2662</a></td><td>Redirect blogspot to blog.python.org</td><td class="age">1y</td><td class="reason">Blogger/Fastly config. In progress.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2099 benefit value quantity"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2099" target="_blank">#2099</a></td><td>Benefit value not multiplied by qty</td><td class="age">3y</td><td class="reason">Shows $700 instead of $7000 for 10 tickets.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span></td></tr>
+<tr data-search="2370 merge duplicate sponsors"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2370" target="_blank">#2370</a></td><td>Merge duplicate sponsors</td><td class="age">2y</td><td class="reason">Duplicates cause 500 errors on downloads.</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/sponsors</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2411 downloads gzip binary"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2411" target="_blank">#2411</a></td><td>Downloads page returns binary</td><td class="age">1y</td><td class="reason">gzip without Content-Encoding. Breaks curl.</td><td><span class="label label-bug">bug</span><span class="label label-help">help-wanted</span></td></tr>
+<tr data-search="2895 minio s3"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2895" target="_blank">#2895</a></td><td>Migrate from archived minio</td><td class="age">0d</td><td class="reason">Minio repo is archived.</td><td><span class="label label-enhancement">enhancement</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2853 pg18 postgres"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2853" target="_blank">#2853</a></td><td>Update to PG18</td><td class="age">2mo</td><td class="reason">Currently PG 15.8.</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="1080 celery emails"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1080" target="_blank">#1080</a></td><td>Use Celery to send emails</td><td class="age">8y</td><td class="reason">Email in request cycle causes timeouts.</td><td><span class="label label-app">backend</span></td></tr>
+<tr data-search="1457 admin cdn purge"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1457" target="_blank">#1457</a></td><td>Admin preview doesn't purge CDN</td><td class="age">6y</td><td class="reason">Release managers see stale pages.</td><td><span class="label label-bug">bug</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2645 sponsor form 404"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2645" target="_blank">#2645</a></td><td>Sponsor app form 404</td><td class="age">1y</td><td class="reason">Stale CMS page links to unpublished form.</td><td><span class="label label-bug">bug</span><span class="label label-app">app/sponsors</span></td></tr>
+<tr data-search="2860 javascript please turn on"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2860" target="_blank">#2860</a></td><td>"Please turn on JavaScript" intermittent</td><td class="age">1mo</td><td class="reason">Stochastic JS failures on download pages.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2857 pep719 bug"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2857" target="_blank">#2857</a></td><td>PEP719 bug</td><td class="age">1mo</td><td class="reason">PEP link issue.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2847 mailman3 archives timeout"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2847" target="_blank">#2847</a></td><td>Mailman3 archive downloads timeout</td><td class="age">2mo</td><td class="reason">Downloading mail archives often times out.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2752 ssl ipv6 certificates"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2752" target="_blank">#2752</a></td><td>SSL certs invalid for some IPv6</td><td class="age">7mo</td><td class="reason">Some server IPv6 addresses have invalid certs.</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2739 outbound links slow"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2739" target="_blank">#2739</a></td><td>Outbound links take 5+ seconds</td><td class="age">8mo</td><td class="reason">Slow navigation on outbound clicks.</td><td><span class="label label-bug">bug</span></td></tr>
 </tbody>
 </table>
+</details>
 </section>
 
 <!-- ============================================================ -->
 <section id="low">
-<h2>Low Priority <span class="badge">~30</span></h2>
+<details>
+<summary><h2>Low Priority <span class="badge">~45</span></h2></summary>
 <p>Valid issues that are real but not urgent. Good candidates for contributors.</p>
 <table>
-<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Category</th></tr></thead>
+<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Category</th><th>Labels</th></tr></thead>
 <tbody>
-<tr data-search="2090 dashboard help text sponsors"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2090" target="_blank">#2090</a></td><td>Dashboard help text</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2091 benefit type description"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2091" target="_blank">#2091</a></td><td>Benefit type descriptions</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2092 assets navigation"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2092" target="_blank">#2092</a></td><td>Update assets navigation</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2093 voucher redemption count"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2093" target="_blank">#2093</a></td><td>PyCon voucher count on dashboard</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2094 character limit description"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2094" target="_blank">#2094</a></td><td>Character limit for sponsor description</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2095 change log sponsor"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2095" target="_blank">#2095</a></td><td>Sponsor change log</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2097 filter by benefit"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2097" target="_blank">#2097</a></td><td>Filter sponsorships by benefit</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2098 pycon passes per sponsor"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2098" target="_blank">#2098</a></td><td>View/adjust PyCon passes</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2100 notification history"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2100" target="_blank">#2100</a></td><td>Notification send history</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2101 send from detail page"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2101" target="_blank">#2101</a></td><td>Send notifications from detail page</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2102 email template archive"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2102" target="_blank">#2102</a></td><td>Email template archive</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2103 email template copy"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2103" target="_blank">#2103</a></td><td>Email template copy</td><td class="age">3y</td><td class="reason">Sponsors admin UX</td></tr>
-<tr data-search="2104 publish logos before contract"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2104" target="_blank">#2104</a></td><td>Publish logos before contract</td><td class="age">3y</td><td class="reason">Sponsors admin workflow</td></tr>
-<tr data-search="87 timezone calendar events"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/87" target="_blank">#87</a></td><td>Timezone info on calendar is wrong</td><td class="age">12y</td><td class="reason">Events</td></tr>
-<tr data-search="158 google calendar links events"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/158" target="_blank">#158</a></td><td>Event pages should link to Google Calendar</td><td class="age">11y</td><td class="reason">Events</td></tr>
-<tr data-search="677 job filtering country"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/677" target="_blank">#677</a></td><td>Job filtering by country</td><td class="age">10y</td><td class="reason">Jobs board</td></tr>
-<tr data-search="728 normalize job locations"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/728" target="_blank">#728</a></td><td>Normalize job locations</td><td class="age">10y</td><td class="reason">Jobs board</td></tr>
-<tr data-search="819 relocation visa filter jobs"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/819" target="_blank">#819</a></td><td>Relocation/visa sponsorship filters</td><td class="age">10y</td><td class="reason">Jobs board</td></tr>
-<tr data-search="852 job board throttle spam"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/852" target="_blank">#852</a></td><td>Job board submission throttle</td><td class="age">10y</td><td class="reason">Jobs board / spam</td></tr>
-<tr data-search="655 rich text editor jobs"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/655" target="_blank">#655</a></td><td>Rich text editor for jobs forms</td><td class="age">10y</td><td class="reason">Jobs board</td></tr>
-<tr data-search="171 download buttons multiple files os"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/171" target="_blank">#171</a></td><td>Download buttons: one file per OS</td><td class="age">11y</td><td class="reason">Downloads</td></tr>
-<tr data-search="1258 release candidate download link"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1258" target="_blank">#1258</a></td><td>Make RC downloads more obvious</td><td class="age">7y</td><td class="reason">Downloads</td></tr>
-<tr data-search="1370 microsoft store link"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1370" target="_blank">#1370</a></td><td>Link to Microsoft Store app</td><td class="age">7y</td><td class="reason">Downloads</td></tr>
-<tr data-search="1551 downloads mention linux distro packages"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1551" target="_blank">#1551</a></td><td>Downloads don't mention distro packages</td><td class="age">6y</td><td class="reason">Downloads</td></tr>
-<tr data-search="813 email update account"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/813" target="_blank">#813</a></td><td>Cannot update email address properly</td><td class="age">10y</td><td class="reason">User accounts</td></tr>
-<tr data-search="2301 markdown hint success stories"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2301" target="_blank">#2301</a></td><td>Markdown hint on Success Stories form</td><td class="age">2y</td><td class="reason">Easy fix, one-line change</td></tr>
-<tr data-search="2349 anchor tags resolutions"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2349" target="_blank">#2349</a></td><td>Anchor tags for resolutions page</td><td class="age">2y</td><td class="reason">Accessibility/shareability</td></tr>
-<tr data-search="2611 deprecate assets view dead code"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2611" target="_blank">#2611</a></td><td>Deprecate ProvidedSponsorshipAssetsView</td><td class="age">1y</td><td class="reason">Dead code cleanup</td></tr>
-<tr data-search="985 html validation w3c"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/985" target="_blank">#985</a></td><td>python.org does not validate (W3C)</td><td class="age">9y</td><td class="reason">Accessibility</td></tr>
-<tr data-search="1734 python 0.9.1 source historical"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1734" target="_blank">#1734</a></td><td>Python 0.9.1 source availability</td><td class="age">5y</td><td class="reason">Historical preservation</td></tr>
-<tr data-search="2530 gpg keys release managers"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2530" target="_blank">#2530</a></td><td>Explicit list of Release Manager GPG keys</td><td class="age">1y</td><td class="reason">Supply chain / trust</td></tr>
-<tr data-search="1742 grey create account button"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1742" target="_blank">#1742</a></td><td>"Create Account" button is grey</td><td class="age">5y</td><td class="reason">Easy CSS fix</td></tr>
-<tr data-search="2640 fixture data dev environment"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2640" target="_blank">#2640</a></td><td>More fixture data for dev</td><td class="age">1y</td><td class="reason">Dev experience</td></tr>
+<!-- Sponsors admin batch -->
+<tr data-search="2090 dashboard help text"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2090" target="_blank">#2090</a></td><td>Dashboard help text</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-easy">easy</span></td></tr>
+<tr data-search="2091 benefit descriptions"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2091" target="_blank">#2091</a></td><td>Benefit type descriptions</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-easy">easy</span></td></tr>
+<tr data-search="2092 assets navigation"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2092" target="_blank">#2092</a></td><td>Update assets navigation</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-frontend">frontend</span></td></tr>
+<tr data-search="2093 voucher count"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2093" target="_blank">#2093</a></td><td>PyCon voucher count</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2094 character limit"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2094" target="_blank">#2094</a></td><td>Sponsor description limit</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2095 change log"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2095" target="_blank">#2095</a></td><td>Sponsor change log</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2097 filter by benefit"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2097" target="_blank">#2097</a></td><td>Filter by benefit</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2098 pycon passes"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2098" target="_blank">#2098</a></td><td>View/adjust PyCon passes</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2100 notification history"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2100" target="_blank">#2100</a></td><td>Notification send history</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2101 send from detail"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2101" target="_blank">#2101</a></td><td>Send from detail page</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2102 template archive"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2102" target="_blank">#2102</a></td><td>Email template archive</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2103 template copy"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2103" target="_blank">#2103</a></td><td>Email template copy</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2104 publish before contract"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2104" target="_blank">#2104</a></td><td>Publish logos before contract</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2123 new this year badge"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2123" target="_blank">#2123</a></td><td>"New This Year" badge</td><td class="age">3y</td><td class="reason">Sponsors</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2578 voucher codes before contract"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2578" target="_blank">#2578</a></td><td>Voucher codes before signing</td><td class="age">1y</td><td class="reason">Sponsors</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2611 deprecate assets view"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2611" target="_blank">#2611</a></td><td>Deprecate assets view</td><td class="age">1y</td><td class="reason">Sponsors dead code</td><td><span class="label label-enhancement">enhancement</span><span class="label label-help">help-wanted</span></td></tr>
+<tr data-search="1806 ethicalads hardcoded logos"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1806" target="_blank">#1806</a></td><td>Replace hardcoded sponsor logos</td><td class="age">4y</td><td class="reason">Sponsors</td><td></td></tr>
+<!-- Jobs -->
+<tr data-search="677 job filtering country"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/677" target="_blank">#677</a></td><td>Job filtering by country</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="694 job emails to user"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/694" target="_blank">#694</a></td><td>Job emails to user's email</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="728 normalize locations"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/728" target="_blank">#728</a></td><td>Normalize job locations</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="778 canned responses"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/778" target="_blank">#778</a></td><td>Canned responses in admin</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="819 relocation visa"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/819" target="_blank">#819</a></td><td>Relocation/visa filters</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="852 throttle spam"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/852" target="_blank">#852</a></td><td>Job board throttle</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="655 rich text editor"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/655" target="_blank">#655</a></td><td>Rich text editor for jobs</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="601 agency vs direct"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/601" target="_blank">#601</a></td><td>Agency vs direct hire</td><td class="age">10y</td><td class="reason">Jobs</td><td><span class="label label-app">app/jobs</span></td></tr>
+<tr data-search="1643 rss feed jobs metadata"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1643" target="_blank">#1643</a></td><td>Jobs RSS: add location/tags</td><td class="age">5y</td><td class="reason">Jobs</td><td></td></tr>
+<tr data-search="2238 job email field"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2238" target="_blank">#2238</a></td><td>Job Board: extra email field</td><td class="age">3y</td><td class="reason">Jobs</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/jobs</span></td></tr>
+<!-- Events -->
+<tr data-search="87 timezone calendar"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/87" target="_blank">#87</a></td><td>Timezone info wrong</td><td class="age">12y</td><td class="reason">Events</td><td><span class="label label-app">app/events</span></td></tr>
+<tr data-search="158 google calendar links"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/158" target="_blank">#158</a></td><td>Google Calendar links</td><td class="age">11y</td><td class="reason">Events</td><td><span class="label label-app">app/events</span></td></tr>
+<tr data-search="1173 meetup import"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1173" target="_blank">#1173</a></td><td>Import events from meetup.com</td><td class="age">8y</td><td class="reason">Events</td><td><span class="label label-app">app/events</span></td></tr>
+<tr data-search="2626 duplicate year events"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2626" target="_blank">#2626</a></td><td>Duplicate year for events</td><td class="age">1y</td><td class="reason">Events</td><td><span class="label label-bug">bug</span></td></tr>
+<!-- Downloads -->
+<tr data-search="171 download buttons"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/171" target="_blank">#171</a></td><td>One download file per OS</td><td class="age">11y</td><td class="reason">Downloads</td><td><span class="label label-app">app/downloads</span></td></tr>
+<tr data-search="1156 prebuilt binaries"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1156" target="_blank">#1156</a></td><td>Pointers to other binaries</td><td class="age">8y</td><td class="reason">Downloads</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="1258 rc downloads"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1258" target="_blank">#1258</a></td><td>RC downloads more obvious</td><td class="age">7y</td><td class="reason">Downloads</td><td><span class="label label-app">app/downloads</span></td></tr>
+<tr data-search="1370 microsoft store"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1370" target="_blank">#1370</a></td><td>Link to Microsoft Store</td><td class="age">7y</td><td class="reason">Downloads</td><td></td></tr>
+<tr data-search="1551 distro packages"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1551" target="_blank">#1551</a></td><td>Mention distro packages</td><td class="age">6y</td><td class="reason">Downloads</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="2750 document api"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2750" target="_blank">#2750</a></td><td>Document Downloads API</td><td class="age">7mo</td><td class="reason">Downloads</td><td><span class="label label-enhancement">enhancement</span><span class="label label-app">app/downloads</span></td></tr>
+<tr data-search="2818 more download buttons"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2818" target="_blank">#2818</a></td><td>Add more download buttons</td><td class="age">2mo</td><td class="reason">Downloads</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<!-- Users / Auth -->
+<tr data-search="813 email update"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/813" target="_blank">#813</a></td><td>Cannot update email</td><td class="age">10y</td><td class="reason">Users</td><td><span class="label label-bug">bug</span><span class="label label-app">app/users</span></td></tr>
+<tr data-search="1742 grey create account"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1742" target="_blank">#1742</a></td><td>"Create Account" button grey</td><td class="age">4y</td><td class="reason">Easy CSS fix</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span><span class="label label-help">help-wanted</span></td></tr>
+<!-- PSF / Membership -->
+<tr data-search="329 group permissions"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/329" target="_blank">#329</a></td><td>Group permissions for pages</td><td class="age">11y</td><td class="reason">PSF</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="398 membership visibility"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/398" target="_blank">#398</a></td><td>Membership class visibility</td><td class="age">11y</td><td class="reason">PSF</td><td><span class="label label-app">app/psf-membership</span></td></tr>
+<tr data-search="556 working groups"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/556" target="_blank">#556</a></td><td>Define PSF Working Groups</td><td class="age">11y</td><td class="reason">PSF</td><td><span class="label label-app">app/psf-membership</span></td></tr>
+<tr data-search="599 voters list"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/599" target="_blank">#599</a></td><td>Compile eligible voters list</td><td class="age">10y</td><td class="reason">PSF</td><td><span class="label label-app">app/psf-membership</span></td></tr>
+<tr data-search="607 membership sanity checks"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/607" target="_blank">#607</a></td><td>Membership sanity checks</td><td class="age">10y</td><td class="reason">PSF</td><td><span class="label label-app">app/psf-membership</span></td></tr>
+<tr data-search="1443 cla forms"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1443" target="_blank">#1443</a></td><td>Update CLA forms</td><td class="age">6y</td><td class="reason">PSF</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="2348 psfmember sliding scale"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2348" target="_blank">#2348</a></td><td>psfmember.org sliding scale</td><td class="age">2y</td><td class="reason">PSF</td><td><span class="label label-app">psfmember.org</span></td></tr>
+<tr data-search="2453 board email"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2453" target="_blank">#2453</a></td><td>PSF Board contact email</td><td class="age">1y</td><td class="reason">PSF</td><td><span class="label label-easy">easy</span></td></tr>
+<!-- Content / Pages -->
+<tr data-search="168 undo pages"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/168" target="_blank">#168</a></td><td>Pages: view changes/undo</td><td class="age">11y</td><td class="reason">CMS</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="1053 cla form size"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1053" target="_blank">#1053</a></td><td>CLA form too small</td><td class="age">9y</td><td class="reason">Content</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="1172 user groups section"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1172" target="_blank">#1172</a></td><td>Python user groups section</td><td class="age">8y</td><td class="reason">Content</td><td></td></tr>
+<tr data-search="1202 database access section"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1202" target="_blank">#1202</a></td><td>Missing Database Access section</td><td class="age">8y</td><td class="reason">Content</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="1251 edit user menu"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1251" target="_blank">#1251</a></td><td>Edit user menu</td><td class="age">7y</td><td class="reason">Content</td><td><span class="label label-content">content</span></td></tr>
+<tr data-search="1743 press contact"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1743" target="_blank">#1743</a></td><td>Add press contact page</td><td class="age">4y</td><td class="reason">Content</td><td><span class="label label-enhancement">enhancement</span><span class="label label-content">content</span></td></tr>
+<tr data-search="2301 markdown hint"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2301" target="_blank">#2301</a></td><td>Markdown hint on form</td><td class="age">2y</td><td class="reason">Easy fix</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span><span class="label label-help">help-wanted</span></td></tr>
+<tr data-search="2349 anchor tags resolutions"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2349" target="_blank">#2349</a></td><td>Anchor tags for resolutions</td><td class="age">2y</td><td class="reason">Easy fix</td><td><span class="label label-frontend">frontend</span><span class="label label-easy">easy</span></td></tr>
+<tr data-search="2646 dead links distutils"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2646" target="_blank">#2646</a></td><td>Dead links on Distutils page</td><td class="age">1y</td><td class="reason">Content</td><td><span class="label label-bug">bug</span><span class="label label-easy">easy</span></td></tr>
+<tr data-search="2729 broken images success story"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2729" target="_blank">#2729</a></td><td>Broken images in success story</td><td class="age">9mo</td><td class="reason">Content</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2787 feedburner spam"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2787" target="_blank">#2787</a></td><td>Feedburner feed contains spam</td><td class="age">4mo</td><td class="reason">Content</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="2811 full page ui"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2811" target="_blank">#2811</a></td><td>Improve UI layout and UX</td><td class="age">3mo</td><td class="reason">Design</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<!-- Infra -->
+<tr data-search="1062 registration workflow"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1062" target="_blank">#1062</a></td><td>Registration workflow</td><td class="age">8y</td><td class="reason">Infrastructure</td><td><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="1349 purge_urls connectionerror"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1349" target="_blank">#1349</a></td><td>purge_urls() ConnectionError</td><td class="age">7y</td><td class="reason">Infrastructure</td><td><span class="label label-bug">bug</span></td></tr>
+<tr data-search="1734 python 0.9.1"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/1734" target="_blank">#1734</a></td><td>Python 0.9.1 source</td><td class="age">5y</td><td class="reason">Historical</td><td></td></tr>
+<tr data-search="2530 gpg keys"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2530" target="_blank">#2530</a></td><td>Release Manager GPG keys</td><td class="age">1y</td><td class="reason">Supply chain</td><td><span class="label label-app">backend</span><span class="label label-admin">admin</span></td></tr>
+<tr data-search="2539 code formatting"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2539" target="_blank">#2539</a></td><td>Code formatting/linting</td><td class="age">1y</td><td class="reason">Infrastructure</td><td><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2584 datadog signal sciences"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2584" target="_blank">#2584</a></td><td>Datadog Signal Sciences</td><td class="age">1y</td><td class="reason">Infrastructure</td><td><span class="label label-enhancement">enhancement</span></td></tr>
+<tr data-search="2612 fixture data"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2612" target="_blank">#2612</a></td><td>More fixture data</td><td class="age">1y</td><td class="reason">Dev experience</td><td><span class="label label-enhancement">enhancement</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2640 sortable assets"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2640" target="_blank">#2640</a></td><td>Sortable assets</td><td class="age">1y</td><td class="reason">Dev experience</td><td><span class="label label-enhancement">enhancement</span><span class="label label-infrastructure">infrastructure</span></td></tr>
+<tr data-search="2899 docs license"><td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/2899" target="_blank">#2899</a></td><td>Docs: License</td><td class="age">0d</td><td class="reason">Documentation</td><td></td></tr>
 </tbody>
 </table>
+</details>
+</section>
+
+<!-- ============================================================ -->
+<section id="all">
+<details>
+<summary><h2>All Open Issues <span class="badge">118</span></h2></summary>
+<p>Complete list of every open issue, sortable via search.</p>
+<table>
+<thead><tr><th>#</th><th>Title</th><th>Age</th><th>Labels</th></tr></thead>
+<tbody id="all-issues">
+</tbody>
+</table>
+</details>
 </section>
 
 <footer>
-  <p>Generated by Claude Code &middot; 2026-02-18 &middot; <a href="https://github.com/python/pythondotorg/issues" target="_blank" style="color:var(--accent)">python/pythondotorg issues</a></p>
-  <p style="margin-top:0.5rem">Duplicates found: #2853 (dup of #2863), #2612 (dup of #2640). Close the older ones.</p>
+  <p>Generated by Claude Code &middot; Updated 2026-02-19 &middot; <a href="https://github.com/python/pythondotorg/issues" target="_blank" style="color:var(--accent)">python/pythondotorg issues</a></p>
+  <p style="margin-top:0.5rem">39 issues closed since initial triage (157 &rarr; 118). Labels added to 39 previously unlabeled issues.</p>
 </footer>
 
 <script>
+const ALL_ISSUES = [
+  [87,"Timezone information on the user group calendar page is wrong","12y","app/events"],
+  [158,"Event pages should have links to the Google calendar entries","11y","app/events"],
+  [168,"Need option to view previous changes and/or 'undo' to Pages","11y","enhancement, backend, app/pages"],
+  [171,"Download buttons only support one download file per OS","11y","psf-review, app/downloads"],
+  [329,"Need group permissions system for site pages","11y","enhancement, backend, psf-review"],
+  [398,"Membership Class Designation and its visibility","11y","app/psf-membership"],
+  [535,"Explain why someone should create an account","11y","content, psf-review"],
+  [556,"Add the ability to define and manage PSF Working Groups","11y","app/psf-membership"],
+  [599,"Provide an interim solution for compiling the eligible voters list","10y","app/psf-membership"],
+  [601,"Designate whether jobs are posted by agency or direct hire","10y","app/jobs"],
+  [607,"PSF membership subsystem should add basic sanity checks","10y","psf-review, app/users, app/psf-membership"],
+  [655,"Add a rich text editor to the jobs board entry forms","10y","enhancement, app/jobs"],
+  [677,"Job filtering by country","10y","app/jobs"],
+  [694,"Job review emails should go to user's email","10y","app/jobs"],
+  [728,"Normalize jobs locations","10y","app/jobs"],
+  [778,"Allow configuring canned responses in admin","10y","app/jobs"],
+  [813,"You can not update your email address properly","10y","bug, app/users"],
+  [819,"Add relocation/visa sponsorship filters for jobs","10y","app/jobs"],
+  [832,"Generate CSS files via django-pipeline","10y","build"],
+  [852,"Job board may need submission throttle","10y","app/jobs"],
+  [862,"Add buttons to OS specific download pages","10y","app/downloads"],
+  [980,"Create an owner/expert list for the website tree","9y","psf-review"],
+  [1053,"PSF Contributor Agreement form should be larger","9y","content, psf-review"],
+  [1062,"Improve registration handling workflow","8y","infrastructure"],
+  [1080,"Use Celery to send emails","8y","backend, sentry"],
+  [1124,"Issue on dropdown list","8y","app/jobs"],
+  [1156,"Provide pointers to other pre-built Python binaries","8y","content, app/downloads"],
+  [1172,"Create a section for Python user groups","8y","psf-review"],
+  [1173,"Automatically import events from meetup.com","8y","app/events"],
+  [1202,"Missing section 'Database Access' on Applications page","8y","content"],
+  [1227,"Python download checksum in MD5","7y","app/downloads"],
+  [1251,"Edit user menu","7y","content"],
+  [1258,"Make download link to RCs more obvious","7y","app/downloads"],
+  [1269,"Replace ruby gems by Python equivalents","7y","backend"],
+  [1270,"Use sqlite backend by default","7y","backend"],
+  [1349,"purge_urls() sporadically raises ConnectionError","7y","bug, sentry"],
+  [1370,"Link to Microsoft Store app","7y","psf-review"],
+  [1426,"Resources are not properly being loaded","6y","bug"],
+  [1443,"Update PSF contribution forms for new CLA process","6y","content"],
+  [1457,"Admin previews don't purge CDN cache","6y","bug, infrastructure"],
+  [1551,"Downloads pages don't mention Linux distro packages","6y","content"],
+  [1592,"Recommended way of installing Python?","5y","(none)"],
+  [1615,"Switch to GFM for election nomination pages","5y","(none)"],
+  [1643,"Add location, tags, published to RSS feed for jobs","5y","(none)"],
+  [1725,"Upgrading website appearance (dark theme)","5y","frontend, help-wanted"],
+  [1734,"Python 0.9.1 source","5y","(none)"],
+  [1742,"Create New Account button is not obvious (grey)","4y","frontend, easy, help-wanted"],
+  [1743,"Add contact for matters of the press","4y","enhancement, content"],
+  [1806,"Replace hardcoded sponsor logos with EthicalAds","4y","(none)"],
+  [2051,"Populating the Art section in Success Stories","3y","(none)"],
+  [2059,"400 Honey Pot Error when creating new account","3y","bug, backend, app/users, help-wanted"],
+  [2066,"Add a page about the status of Python releases","3y","(none)"],
+  [2090,"Sponsorship Dashboard: Add help text","3y","enhancement, easy, app/sponsors"],
+  [2091,"Sponsorship Dashboard: Add benefit type descriptions","3y","enhancement, easy, app/sponsors"],
+  [2092,"Sponsorship Dashboard: Update assets navigation","3y","enhancement, frontend, app/sponsors"],
+  [2093,"Dashboard: PyCon voucher registration count","3y","enhancement, app/sponsors"],
+  [2094,"Sponsor: character/word limit for description","3y","enhancement, app/sponsors"],
+  [2095,"Sponsor: Add change log","3y","enhancement, app/sponsors"],
+  [2097,"Admin: Filter sponsorship by benefit","3y","enhancement, admin, app/sponsors"],
+  [2098,"View/adjust PyCon US passes per sponsor","3y","enhancement, app/sponsors"],
+  [2099,"Benefit internal value doesn't reflect quantity","3y","bug, app/sponsors"],
+  [2100,"Admin: full history of notifications sent","3y","enhancement, admin, app/sponsors"],
+  [2101,"Admin: send notifications from detail page","3y","enhancement, admin, app/sponsors"],
+  [2102,"Admin: archive option for email templates","3y","enhancement, admin, app/sponsors"],
+  [2103,"Admin: copy option for email templates","3y","enhancement, admin, app/sponsors"],
+  [2104,"Publish logos/vouchers before contract finalized","3y","enhancement, app/sponsors"],
+  [2123,"'New This Year' badge not displaying","3y","bug, app/sponsors"],
+  [2138,"Ongoing events do not display","3y","bug, app/events"],
+  [2201,"'Use Python for...' section has outdated links","3y","(none)"],
+  [2203,"No Rate Limiting on Reset Features","3y","security"],
+  [2230,"Homepage code sample: add Unicode animal","3y","(none)"],
+  [2238,"Job Board - add additional email field","3y","enhancement, app/jobs"],
+  [2261,"mark_safe() XSS vulnerability review","2y","security"],
+  [2301,"Add Markdown hint to Success Stories form","2y","frontend, easy, help-wanted"],
+  [2332,"Sponsor logos invisible with adblocker","2y","bug, frontend, app/sponsors"],
+  [2340,"Add VEX statements for CPython SBOMs","2y","enhancement, app/downloads, security, needs-feedback"],
+  [2348,"Update psfmember.org for sliding scale membership","2y","psfmember.org"],
+  [2349,"Add anchor tags for PSF Board resolutions","2y","frontend, easy"],
+  [2358,"Sponsorship 'Renewal' checkbox doesn't save","2y","bug, admin, app/sponsors"],
+  [2370,"Merge duplicate sponsor objects in admin","2y","enhancement, backend, admin, app/sponsors"],
+  [2411,"Downloads page returns binary data","1y","bug, help-wanted"],
+  [2453,"Provide email for reaching PSF Board members","1y","backend, easy"],
+  [2460,"Move to async/celery for sending emails","1y","enhancement, backend, app/sponsors"],
+  [2486,"Releases refer to 3.11 as latest (stale)","1y","frontend, app/downloads, needs-feedback"],
+  [2530,"Explicit list of Release Manager GPG keys","1y","backend, admin"],
+  [2539,"Add code formatting/linting","1y","infrastructure"],
+  [2566,"Update membership level choices","1y","backend, app/psf-membership"],
+  [2572,"Single login Python.org <-> us.pycon.org","1y","enhancement, backend, app/sponsors"],
+  [2578,"Publish logos/voucher codes before contract signing","1y","enhancement, backend, app/sponsors"],
+  [2584,"Add Datadog Signal Sciences integration","1y","enhancement, backend, cdn"],
+  [2599,"Update to elasticsearch8","1y","backend, search, dependencies"],
+  [2611,"Deprecate Sponsor Assets view","1y","enhancement, help-wanted, app/sponsors"],
+  [2612,"More fixture data for dev","1y","enhancement, infrastructure"],
+  [2617,"Password reset page styling broken","1y","bug, frontend, app/users"],
+  [2626,"Duplicate scheduled year for single day events","1y","bug"],
+  [2640,"Sortable assets","1y","enhancement, infrastructure"],
+  [2645,"Sponsor application form 404","1y","bug, app/pages, app/sponsors"],
+  [2646,"Dead links on Distutils-SIG Documentation","1y","bug, easy, app/pages"],
+  [2662,"Redirect pythoninsider.blogspot.com","1y","bug"],
+  [2677,"PSF Resolutions missing from Resolutions page","1y","bug, app/pages"],
+  [2685,"Latest news links to blogspot not blog.python.org","1y","bug"],
+  [2729,"Broken images in success story","9mo","bug"],
+  [2739,"Outbound links take 5+ seconds","8mo","bug"],
+  [2750,"Document Downloads API","7mo","enhancement, app/downloads"],
+  [2752,"SSL certificates invalid for some IPv6 addresses","7mo","bug"],
+  [2761,"Usenet/mailing list gateway broken (Mailman 3)","6mo","bug, infrastructure"],
+  [2787,"Feedburner feed contains spam","4mo","bug"],
+  [2811,"Improve Full-Page UI Layout","3mo","enhancement"],
+  [2818,"Add more download buttons","2mo","enhancement, app/downloads"],
+  [2847,"Downloading Mailman3 archives times out","2mo","bug"],
+  [2853,"Update to PG18","2mo","enhancement"],
+  [2857,"PEP719 bug","1mo","bug"],
+  [2860,"Stochastic 'Please turn on JavaScript'","1mo","bug"],
+  [2865,"Dead Release notes links (hg.python.org)","1mo","bug, app/downloads, needs-feedback"],
+  [2869,"CI duplication and messiness","1mo","bug, infrastructure"],
+  [2887,"Sponsor logo collides with section header","9d","bug, frontend, app/sponsors"],
+  [2895,"Migrate from minio to S3 native","0d","enhancement, infrastructure"],
+  [2899,"Docs: License","0d","(none)"]
+];
+
+function labelClass(l) {
+  l = l.trim();
+  if (l === 'bug') return 'label-bug';
+  if (l === 'enhancement') return 'label-enhancement';
+  if (l === 'security') return 'label-security';
+  if (l.startsWith('infrastructure') || l === 'dependencies' || l === 'build' || l === 'cdn' || l === 'search' || l === 'sentry') return 'label-infrastructure';
+  if (l === 'frontend') return 'label-frontend';
+  if (l === 'easy') return 'label-easy';
+  if (l.startsWith('content') || l.startsWith('psfmember')) return 'label-content';
+  if (l.startsWith('app/') || l === 'backend') return 'label-app';
+  if (l.startsWith('needs') || l.startsWith('psf-review')) return 'label-needs';
+  if (l === 'admin') return 'label-admin';
+  if (l.startsWith('help')) return 'label-help';
+  return 'label-app';
+}
+
+const tbody = document.getElementById('all-issues');
+ALL_ISSUES.forEach(([num, title, age, labels]) => {
+  const labelHtml = labels === '(none)' ? '<span class="reason">(none)</span>' :
+    labels.split(',').map(l => `<span class="label ${labelClass(l)}">${l.trim()}</span>`).join('');
+  const tr = document.createElement('tr');
+  tr.setAttribute('data-search', `${num} ${title} ${labels}`);
+  tr.innerHTML = `<td class="issue-num"><a class="issue-link" href="https://github.com/python/pythondotorg/issues/${num}" target="_blank">#${num}</a></td><td><a class="issue-link" href="https://github.com/python/pythondotorg/issues/${num}" target="_blank">${title}</a></td><td class="age">${age}</td><td>${labelHtml}</td>`;
+  tbody.appendChild(tr);
+});
+
+// Auto-open collapsed section when clicking nav links
+document.querySelectorAll('nav a').forEach(a => {
+  a.addEventListener('click', () => {
+    const id = a.getAttribute('href').slice(1);
+    const details = document.querySelector(`#${id} details`);
+    if (details) details.open = true;
+  });
+});
+
 function filterIssues() {
   const query = document.getElementById('search').value.toLowerCase();
   document.querySelectorAll('tbody tr').forEach(row => {
