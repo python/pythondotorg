@@ -3,7 +3,7 @@
         <li class="tier-1 last" aria-haspopup="true">
             {% if request.user.is_authenticated %}
             <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
-            <ul class="subnav menu">
+            <ul class="subnav menu" role="menu">
                 <li class="tier-2 element-1" role="menuitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
                 <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
                 {% if request.user.has_membership %}
@@ -30,7 +30,7 @@
             </ul>
             {% else %}
             <a href="{% url 'account_login' %}" title="Sign Up or Sign In to Python.org">Sign In</a>
-            <ul class="subnav menu">
+            <ul class="subnav menu" role="menu">
                 <li class="tier-2 element-1" role="menuitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
                 <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_login' %}">Sign In</a></li>
             </ul>
