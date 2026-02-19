@@ -162,15 +162,11 @@ Whichever database type you chose, now it's time to run migrations:
 $ ./manage.py migrate
 ```
 
-To compile and compress static media, you will need *compass* and *yui-compressor*:
+To minify CSS (optional for development):
 
 ```
-$ gem install bundler
-$ bundle install
-```
-
-```{note}
-To install *yui-compressor*, use your OS's package manager or download it directly then add the executable to your `PATH`.
+$ npm install
+$ make css
 ```
 
 To create initial data for the most used applications, run:
@@ -194,20 +190,20 @@ The search feature in Python.org uses Elasticsearch engine. If you want to test 
 
 Once you have it installed, update the URL value of `HAYSTACK_CONNECTIONS` settings in `pydotorg/settings/local.py` to your local ElasticSearch server.
 
-Generating CSS files automatically
-----------------------------------
+Working with CSS
+----------------
 
-```{warning}
-When editing frontend styles, ensure you ONLY edit the `.scss` files. 
+The site's CSS source files are in `static/css/`. These are plain CSS files
+(no preprocessor required). To minify them for production using
+[Lightning CSS](https://lightningcss.dev/):
 
-These will then be compiled into `.css` files automatically.
+```
+npm install
+make css
 ```
 
-Static files are automatically compiled inside the [Docker Compose `static` container](../../docker-compose.yml)
-when running `make serve`.
-
-When your pull request has stylesheet changes, commit the `.scss` files and the compiled `.css` files. 
-Otherwise, ignore committing and pushing the `.css` files.
+When your pull request has stylesheet changes, commit the modified `.css` files
+in `static/css/`.
 
 Running tests
 -------------

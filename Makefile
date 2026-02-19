@@ -85,6 +85,21 @@ docs-clean: ## Clean built documentation
 	@rm -rf docs/_build
 	@echo "=> Removed existing documentation build assets"
 
+# =============================================================================
+# Frontend
+# =============================================================================
+
+##@ Frontend
+
+css: ## Minify CSS with Lightning CSS
+	npx lightningcss-cli --minify static/css/style.css -o static/css/style.min.css
+	npx lightningcss-cli --minify static/css/mq.css -o static/css/mq.min.css
+
+css-check: ## Validate CSS parses without errors
+	npx lightningcss-cli --minify static/css/style.css -o /dev/null
+	npx lightningcss-cli --minify static/css/mq.css -o /dev/null
+
 .PHONY: help serve migrations migrate manage shell docker_shell clean
 .PHONY: lint fmt test ci
 .PHONY: docs docs-serve docs-clean
+.PHONY: css css-check

@@ -20,13 +20,6 @@ services:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
 
-  static:
-    command: bin/static
-    build:
-      dockerfile: Dockerfile.static
-    volumes:
-      - .:/code
-
   web:
     build: .
     image: pythondotorg:docker-compose

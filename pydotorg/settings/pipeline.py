@@ -2,7 +2,7 @@
 
 PIPELINE_CSS = {
     "style": {
-        "source_filenames": ("sass/style.css",),
+        "source_filenames": ("css/style.css",),
         "output_filename": "stylesheets/style.css",
         "extra_context": {
             "title": "default",
@@ -10,7 +10,7 @@ PIPELINE_CSS = {
         },
     },
     "mq": {
-        "source_filenames": ("sass/mq.css",),
+        "source_filenames": ("css/mq.css",),
         "output_filename": "stylesheets/mq.css",
         "extra_context": {
             "media": "not print, braille, embossed, speech, tty",
