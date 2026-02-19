@@ -697,9 +697,15 @@ input#s,
             display: inline-block;
             color: $code-green;
 
-            .comment { color: $grey; }
-
-            .output { color: $grey-lighterer; }
+            .k, .ow { color: #6ab825; font-weight: bold; }
+            .nb { color: #24909d; }
+            .nf { color: #447fcf; }
+            .s1, .s2, .sa, .si { color: #ed9d13; }
+            .mi { color: #3677a9; }
+            .o { color: $grey-light; }
+            .c1 { color: $grey-light; font-style: italic; }
+            .go { color: $grey-lighterer; }
+            .gp { color: #c65d09; font-weight: bold; }
         }
     }
 

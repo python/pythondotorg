@@ -1529,18 +1529,14 @@ input#s,
   .slide-code code {
     display: inline-block;
     color: #0d870d; }
-    .slide-code code .k,
-    .slide-code code .ow {
+    .slide-code code .k, .slide-code code .ow {
       color: #6ab825;
       font-weight: bold; }
     .slide-code code .nb {
       color: #24909d; }
     .slide-code code .nf {
       color: #447fcf; }
-    .slide-code code .s1,
-    .slide-code code .s2,
-    .slide-code code .sa,
-    .slide-code code .si {
+    .slide-code code .s1, .slide-code code .s2, .slide-code code .sa, .slide-code code .si {
       color: #ed9d13; }
     .slide-code code .mi {
       color: #3677a9; }
@@ -1550,7 +1546,7 @@ input#s,
       color: #999999;
       font-style: italic; }
     .slide-code code .go {
-      color: #cccccc; }
+      color: #dddddd; }
     .slide-code code .gp {
       color: #c65d09;
       font-weight: bold; }
@@ -2188,7 +2184,7 @@ table .checksum {
 /* ! ===== Success Stories landing page ===== */
 .featured-success-story {
   padding: 1.3125em 0;
-  background: center -230px no-repeat url('../img/success-glow2.png?1694722768') transparent;
+  background: center -230px no-repeat url('../img/success-glow2.png?1726783859') transparent;
   /*blockquote*/ }
   .featured-success-story img {
     padding: 10px 30px; }
@@ -3174,11 +3170,11 @@ span.highlighted {
     .python .site-headline a:before {
       width: 290px;
       height: 82px;
-      content: url('../img/python-logo_print.png?1694722768'); }
+      content: url('../img/python-logo_print.png?1726783859'); }
     .psf .site-headline a:before {
       width: 334px;
       height: 82px;
-      content: url('../img/psf-logo_print.png?1694722768'); } }
+      content: url('../img/psf-logo_print.png?1726783859'); } }
 /*
  * When we want to review the markup for W3 and similar errors, turn some of these on
  * Uses :not selectors a bunch, so only modern browsers will support them
