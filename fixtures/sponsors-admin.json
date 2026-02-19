@@ -745,7 +745,7 @@
             "sponsorship_benefit": 75,
             "program_name": "PyCon US 2022",
             "name": "Social Media promotion",
-            "description": "Promotion of sponsorshp on @pycon Twitter.",
+            "description": "Promotion of sponsorship on @pycon Twitter.",
             "program": 5,
             "benefit_internal_value": 1500,
             "added_by_user": false,
