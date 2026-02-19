@@ -44,7 +44,7 @@ dependencies = [
     "django-markupfield==2.0.1",
     "django-allauth==65.13.0",
     "django-waffle==2.2.1",
-    "djangorestframework==3.14.0",
+    "djangorestframework==3.15.2",
     "django-filter==25.1",
     "django-ordered-model==3.7.4",
     "django-widget-tweaks==1.5.0",
