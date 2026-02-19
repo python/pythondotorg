@@ -18,7 +18,7 @@ dependencies = [
     "django-translation-aliases==0.1.0",
     "Django==5.2.11",
     "docutils==0.21.2",
-    "Markdown==3.7",
+    "Markdown==3.10.2",
     "cmarkgfm==2024.11.20",
     "Pygments>=2.17,<3",
     "Pillow==10.4.0",
