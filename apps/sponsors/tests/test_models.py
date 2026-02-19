@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.core.mail import EmailMessage
 from django.db import IntegrityError
-from django.test import TestCase
+from django.test import TestCase, override_settings
 from django.utils import timezone
 from model_bakery import baker, seq
 
@@ -327,6 +327,14 @@ class SponsorshipCurrentYearTests(TestCase):
 
         self.assertIn("Singleton object cannot be delete. Try updating it instead.", str(context.exception))
 
+    @override_settings(
+        CACHES={
+            "default": {
+                "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
+                "LOCATION": "pythondotorg-local-cache",
+            }
+        }
+    )
     def test_current_year_is_cached(self):
         # cleans cached from previous test runs
         cache.clear()

@@ -16,6 +16,7 @@ help: ## Display this help text
 	mkdir -p .state && touch .state/db-migrated
 
 .state/db-initialized: .state/docker-build-web .state/db-migrated
+	docker compose run --rm web ./manage.py createcachetable
 	docker compose run --rm web ./manage.py loaddata fixtures/*.json
 	mkdir -p .state && touch .state/db-initialized
 

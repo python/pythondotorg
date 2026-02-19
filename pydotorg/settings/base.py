@@ -195,6 +195,7 @@ INSTALLED_APPS = [
     "widget_tweaks",
     "django_countries",
     "sorl.thumbnail",
+    "pydotorg",
     "apps.banners",
     "apps.blogs",
     "apps.boxes",
