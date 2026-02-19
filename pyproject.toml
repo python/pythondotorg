@@ -71,7 +71,7 @@ prod = [
 [dependency-groups]
 dev = [
     "factory-boy==3.3.3",
-    "Faker==0.8.1",
+    "Faker==40.4.0",
     "tblib==1.7.0",
     "responses==0.26.0",
     "django-debug-toolbar==5.2.0",
