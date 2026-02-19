@@ -26,9 +26,9 @@
         <a href="{% url 'jobs:job_types' %}">Types</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for t in active_types %}
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_type' slug=t.slug %}">{{ t.name }}</a></li>
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_list_type' slug=t.slug %}">{{ t.name }}</a></li>
             {% empty %}
-            <li class="tier-2" role="treeitem">No Active Types</li>
+            <li class="tier-2">No Active Types</li>
             {% endfor %}
         </ul>
     </li>
@@ -36,18 +36,18 @@
         <a href="{% url 'jobs:job_categories' %}">Categories</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
             {% for c in active_categories %}
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_category' slug=c.slug %}">{{ c.name }}</a></li>
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_list_category' slug=c.slug %}">{{ c.name }}</a></li>
             {% empty %}
-            <li class="tier-2" role="treeitem">No Active Categories</li>
+            <li class="tier-2">No Active Categories</li>
             {% endfor %}
         </ul>
     </li>
     <li class="tier-1 element-4 {% if view.job_location_view %}current_item selected{% endif %}">
         <a href="{% url 'jobs:job_locations' %}">Locations</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_telecommute' %}">Telecommute</a></li>
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_telecommute' %}">Telecommute</a></li>
             {% for l in active_locations %}
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_list_location' slug=l.location_slug %}">
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_list_location' slug=l.location_slug %}">
                 {% if l.region and l.region != l.city %}
                     {{ l.city }}, {{ l.region }} &ndash; {{ l.country }}
                 {% else %}
@@ -55,7 +55,7 @@
                 {% endif %}
             </a></li>
             {% empty %}
-            <li class="tier-2" role="treeitem">No Active Locations</li>
+            <li class="tier-2">No Active Locations</li>
             {% endfor %}
         </ul>
     </li>
@@ -64,8 +64,8 @@
     <li class="tier-1 element-6 last">
         <a href="{% url 'jobs:job_review' %}">Admin</a>
         <ul class="subnav menu" role="menu" aria-hidden="true">
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_review' %}">Review queue</a></li>
-            <li class="tier-2" role="treeitem"><a href="{% url 'jobs:job_moderate' %}">Moderate approved posts</a></li>
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_review' %}">Review queue</a></li>
+            <li class="tier-2" role="menuitem"><a href="{% url 'jobs:job_moderate' %}">Moderate approved posts</a></li>
         </ul>
     </li>
     {% endif %}

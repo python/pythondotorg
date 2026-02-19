@@ -3,11 +3,11 @@
         <li class="tier-1 last" aria-haspopup="true">
             {% if request.user.is_authenticated %}
             <a href="{% url 'users:user_detail' slug=request.user.username %}">Your account</a>
-            <ul class="subnav menu">
-                <li class="tier-2 element-1" role="treeitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
-                <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
+            <ul class="subnav menu" role="menu">
+                <li class="tier-2 element-1" role="menuitem"><a href="{% url 'users:user_profile_edit' %}">Edit your user profile</a></li>
+                <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_change_password' %}">Change your password</a></li>
                 {% if request.user.has_membership %}
-                <li class="tier-2 element-3" role="treeitem">
+                <li class="tier-2 element-3" role="menuitem">
                      {% if user.is_authenticated %}
                         {% if user.has_membership %}
                             <a href="{% url 'users:user_membership_edit' %}">Edit your PSF Basic membership</a>
@@ -21,18 +21,18 @@
                     {% endif %}
                 </li>
                 {% else %}
-                <li class="tier-2 element-3" role="treeitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF Basic member</a></li>
+                <li class="tier-2 element-3" role="menuitem"><a href="{% url 'users:user_membership_create' %}">Become a PSF Basic member</a></li>
                 {% endif %}
                 {% if request.user.sponsorships %}
-                <li class="tier-2 element-6" role="treeitem"><a href="{% url 'users:user_sponsorships_dashboard' %}">Sponsorships</a>
+                <li class="tier-2 element-6" role="menuitem"><a href="{% url 'users:user_sponsorships_dashboard' %}">Sponsorships</a>
                 {% endif %}
-                <li class="tier-2 element-5" role=treeitem"><a href="{% url 'account_logout' %}" title="Sign out of Python.org">Sign out</a></li>
+                <li class="tier-2 element-5" role="menuitem"><a href="{% url 'account_logout' %}" title="Sign out of Python.org">Sign out</a></li>
             </ul>
             {% else %}
             <a href="{% url 'account_login' %}" title="Sign Up or Sign In to Python.org">Sign In</a>
-            <ul class="subnav menu">
-                <li class="tier-2 element-1" role="treeitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
-                <li class="tier-2 element-2" role="treeitem"><a href="{% url 'account_login' %}">Sign In</a></li>
+            <ul class="subnav menu" role="menu">
+                <li class="tier-2 element-1" role="menuitem"><a href="{% url 'account_signup' %}">Sign Up / Register</a></li>
+                <li class="tier-2 element-2" role="menuitem"><a href="{% url 'account_login' %}">Sign In</a></li>
             </ul>
             {% endif %}
         </li>
