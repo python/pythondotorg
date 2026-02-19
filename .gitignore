@@ -9,13 +9,13 @@
 #
 # $ git config --global core.excludesfile ~/.gitignore_global
 
-.sass-cache/
 docs/build
 media/*
 static-root/
 static/stylesheets/mq.css
 static/stylesheets/no-mq.css
 static/stylesheets/style.css
+static/css/*.min.css
 __pycache__
 *.db
 *.py[co]

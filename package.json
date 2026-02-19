@@ -1,4 +1,11 @@
 {
   "name": "pythondotorg",
-  "description": "Django App behind python.org"
+  "description": "Django App behind python.org",
+  "devDependencies": {
+    "lightningcss-cli": "^1.28.0"
+  },
+  "scripts": {
+    "css:minify": "npx lightningcss-cli --minify static/css/style.css -o static/css/style.min.css && npx lightningcss-cli --minify static/css/mq.css -o static/css/mq.min.css",
+    "css:check": "npx lightningcss-cli --minify static/css/style.css -o /dev/null && npx lightningcss-cli --minify static/css/mq.css -o /dev/null"
+  }
 }
