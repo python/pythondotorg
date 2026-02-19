@@ -47,6 +47,9 @@ CELERY_BEAT_SCHEDULE = {}
 
 TIME_ZONE = "UTC"
 LANGUAGE_CODE = "en-us"
+LANGUAGES = [
+    ("en-us", "English"),
+]
 USE_I18N = True
 USE_TZ = True
 
