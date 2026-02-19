@@ -56,7 +56,7 @@ dependencies = [
     "django-import-export==2.7.1",
     "pypandoc==1.12",
     "panflute==2.3.1",
-    "Unidecode==1.3.8",
+    "Unidecode==1.4.0",
 ]
 
 [project.optional-dependencies]
