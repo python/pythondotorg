@@ -91,7 +91,6 @@ class Membership(models.Model):
     BASIC = 0
     SUPPORTING = 1
     SPONSOR = 2
-    MANAGING = 3
     CONTRIBUTING = 4
     FELLOW = 5
 
@@ -99,7 +98,6 @@ class Membership(models.Model):
         (BASIC, "Basic Member"),
         (SUPPORTING, "Supporting Member"),
         (SPONSOR, "Sponsor Member"),
-        (MANAGING, "Managing Member"),
         (CONTRIBUTING, "Contributing Member"),
         (FELLOW, "Fellow"),
     )
