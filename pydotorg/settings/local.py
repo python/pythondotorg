@@ -25,13 +25,19 @@ HAYSTACK_CONNECTIONS = {
 EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
-INSTALLED_APPS += [
-    "debug_toolbar",
-]
+try:
+    import debug_toolbar  # noqa: F401
 
-MIDDLEWARE += [
-    "debug_toolbar.middleware.DebugToolbarMiddleware",
-]
+    INSTALLED_APPS += [
+        "debug_toolbar",
+    ]
+
+    MIDDLEWARE += [
+        "debug_toolbar.middleware.DebugToolbarMiddleware",
+    ]
+except ModuleNotFoundError as exc:
+    if exc.name != "debug_toolbar":
+        raise
 
 CACHES = {
     "default": {

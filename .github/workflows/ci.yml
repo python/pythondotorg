@@ -32,7 +32,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: pip install -e '.[dev]'
+        run: pip install --group dev -e .
 
       - name: Check for ungenerated migrations
         run: python manage.py makemigrations --check --dry-run
@@ -82,9 +82,7 @@ jobs:
           restore-keys: ${{ runner.os }}-pip-
 
       - name: Install dependencies
-        run: |
-          pip install -U pip setuptools wheel
-          pip install -e '.[dev]'
+        run: pip install --group dev -e .
 
       - name: Run tests
         run: python -Wd -m coverage run manage.py test -v2
