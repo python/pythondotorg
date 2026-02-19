@@ -1529,10 +1529,27 @@ input#s,
   .slide-code code {
     display: inline-block;
     color: #0d870d; }
-    .slide-code code .comment {
-      color: #666666; }
-    .slide-code code .output {
+    .slide-code code .k, .slide-code code .ow {
+      color: #6ab825;
+      font-weight: bold; }
+    .slide-code code .nb {
+      color: #24909d; }
+    .slide-code code .nf {
+      color: #447fcf; }
+    .slide-code code .s1, .slide-code code .s2, .slide-code code .sa, .slide-code code .si {
+      color: #ed9d13; }
+    .slide-code code .mi {
+      color: #3677a9; }
+    .slide-code code .o {
+      color: #999999; }
+    .slide-code code .c1 {
+      color: #999999;
+      font-style: italic; }
+    .slide-code code .go {
       color: #dddddd; }
+    .slide-code code .gp {
+      color: #c65d09;
+      font-weight: bold; }
 
 .js .launch-shell, .no-js .launch-shell {
   display: none; }
