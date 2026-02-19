@@ -200,7 +200,7 @@
   color: #4d4d4d !important;
   font-weight: normal;
   margin-bottom: 0.4375em;
-  padding: .4em .75em .35em;
+  padding: 0.4em 0.75em 0.35em;
   text-align: left;
   white-space: nowrap;
   text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.3);
@@ -331,13 +331,13 @@ button[type=submit], .search-button, #dive-into-python .flex-control-paging a, .
     position: absolute;
     top: 50%;
     left: 0;
-    margin-top: -.75em; }
+    margin-top: -0.75em; }
 
 .pagination a {
   /* Used in the pagination UL anchors, and in the Previous Next pattern */
   display: block;
   color: #999999;
-  padding: .5em .75em .4em;
+  padding: 0.5em 0.75em 0.4em;
   border: 1px solid #caccce;
   background-color: transparent; }
 
@@ -483,8 +483,8 @@ ins {
 
 mark {
   display: inline-block;
-  padding: 0 .25em;
-  margin: 0 -.125em;
+  padding: 0 0.25em;
+  margin: 0 -0.125em;
   background-color: #ffb;
   /* light yellow */ }
 
@@ -582,7 +582,7 @@ sub {
   bottom: -0.25em; }
 
 pre, code, kbd, samp, var {
-  font-family: Consolas, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace, sans-serif; }
+  font-family: Consolas, "Lucida Console", "Liberation Mono", "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace, sans-serif; }
 
 pre {
   /* Get spaces to display for PRE tags but dont let long lines break out of containers */
@@ -724,21 +724,21 @@ img, embed, object, video {
   .fontface .giga {
     font-size: 2.875em; }
     .fontface .giga span:before {
-      font-size: .875em; }
+      font-size: 0.875em; }
 
 .mega {
   font-size: 2.25em; }
   .fontface .mega {
     font-size: 2.5875em; }
     .fontface .mega span:before {
-      font-size: .875em; }
+      font-size: 0.875em; }
 
 .kilo {
   font-size: 2em; }
   .fontface .kilo {
     font-size: 2.3em; }
     .fontface .kilo span:before {
-      font-size: .875em; }
+      font-size: 0.875em; }
 
 h1, .alpha {
   color: #3776ab;
@@ -797,7 +797,7 @@ blockquote {
 
     &:before {
         content: "“";
-        top: -.25em;
+        top: -0.25em;
         left: 0;
     }*/ }
   blockquote footer {
@@ -835,7 +835,7 @@ label {
 
 input, textarea {
   width: 100%;
-  padding: .65em;
+  padding: 0.65em;
   border: 1px solid #caccce;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -849,10 +849,10 @@ input, textarea, select {
 input[type=checkbox], input[type=radio] {
   width: auto;
   border: none;
-  margin-right: .25em; }
+  margin-right: 0.25em; }
 
 input[type=radio] {
-  margin-bottom: .25em; }
+  margin-bottom: 0.25em; }
 
 input {
   /*modernizr*/ }
@@ -947,14 +947,14 @@ h2.not-column {
 .prompt, .readmore:before, .give-me-more a:before {
   font-family: Flux-Regular, SourceSansProRegular, Arial, sans-serif;
   font-size: 120%;
-  letter-spacing: -.0625em; }
+  letter-spacing: -0.0625em; }
 
 /* Used on "Read More" or "More" links (duh)  */
 .readmore, .give-me-more a {
   white-space: nowrap; }
   .readmore:before, .give-me-more a:before {
     content: ">>>";
-    margin-right: .25em; }
+    margin-right: 0.25em; }
 
 .larger {
   font-size: 120%; }
@@ -984,7 +984,7 @@ h2.not-column {
     color: #999999;
     background: transparent;
     text-align: center;
-    padding: .5em .75em .4em;
+    padding: 0.5em 0.75em 0.4em;
     font-size: 1em;
     line-height: 1.75em;
     /* no fallback for .no-generatedcontent. This is a progressive enhancement */ }
@@ -1001,7 +1001,7 @@ h2.not-column {
       border-left-color: transparent;
       top: 0;
       left: -9999px;
-      margin-left: -.25em; }
+      margin-left: -0.25em; }
   .top-bar li {
     border-top: 3px solid #3776ab; }
   .top-bar .python-meta, .top-bar .python-meta a:before {
@@ -1033,10 +1033,10 @@ h2.not-column {
 /* Used in both the main-header and the header-banner */
 .main-header {
   border-top: 1px solid #191919;
-  border-bottom: 1px solid #444; }
+  border-bottom: 1px solid #444444; }
   .main-header .container {
     text-align: center;
-    padding: .75em 1em; }
+    padding: 0.75em 1em; }
 
 .site-headline {
   color: white;
@@ -1121,15 +1121,15 @@ input#s,
 .menu-icon {
   display: inline-block;
   font-size: 1.25em;
-  margin: -.125em -.125em 0 0; }
+  margin: -0.125em -0.125em 0 0; }
 
 /*form*/
 .search-the-site {
   text-align: left;
-  padding: .35em .2em .3em; }
+  padding: 0.35em 0.2em 0.3em; }
   .search-the-site .icon-search:before {
     font-size: 1.75em;
-    margin: 0 .125em 0 .25em; }
+    margin: 0 0.125em 0 0.25em; }
   .search-the-site .no-touch {
     border-left: 0; }
 
@@ -1140,8 +1140,8 @@ input#s,
   color: #bbbbbb;
   background-color: transparent;
   border: none;
-  margin: .125em 0;
-  padding: .4em 0 .3em;
+  margin: 0.125em 0;
+  padding: 0.4em 0 0.3em;
   -webkit-border-radius: 0px;
   -moz-border-radius: 0px;
   -ms-border-radius: 0px;
@@ -1156,7 +1156,7 @@ input#s,
   .search-field:focus {
     background-color: white;
     color: #444444;
-    padding: .4em .5em .3em;
+    padding: 0.4em 0.5em 0.3em;
     /* removed this line because it was making the height fluctuate on focus:
     @include pe-border( $color-top: darken( $darkerblue, 12% ), $color-bottom: lighten( $darkerblue, 8% ) ); */ }
   .search-field:blur {
@@ -1185,7 +1185,7 @@ input#s,
     /*.close-subnav {
         @include pe-border( $color-bottom: $grey-light );
 
-        .close-text { padding: .9em 3.25em .8em 1em; }
+        .close-text { padding: 0.9em 3.25em 0.8em 1em; }
     }*/ }
   .adjust-font-size .menu, .adjust-font-size form ul, form .adjust-font-size ul, .adjust-font-size .errorlist, .adjust-font-size .text form label + ul, .text form .adjust-font-size label + ul,
   .adjust-font-size .sidebar-widget form label + ul,
@@ -1219,7 +1219,7 @@ input#s,
     .account-signin .tier-1 > a,
     .account-signin .tier-2 > a {
       display: block;
-      padding: .5em 1.5em .4em 1em;
+      padding: 0.5em 1.5em 0.4em 1em;
       position: relative; }
   .adjust-font-size .tier-1,
   .winkwink-nudgenudge .tier-1,
@@ -1473,8 +1473,8 @@ input#s,
       .touch .adjust-font-size .subnav a .tier-2, .touch
       .winkwink-nudgenudge .subnav a .tier-2, .touch
       .account-signin .subnav a .tier-2 {
-        padding-top: .75em;
-        padding-bottom: .6em; }
+        padding-top: 0.75em;
+        padding-bottom: 0.6em; }
     .adjust-font-size .subnav .text-reset,
     .winkwink-nudgenudge .subnav .text-reset,
     .account-signin .subnav .text-reset {
@@ -1507,7 +1507,7 @@ input#s,
 .adjust-font-size .tier-1 > a,
 .winkwink-nudgenudge .tier-1 > a,
 .account-signin .tier-1 > a {
-  padding: 1em 1em .875em; }
+  padding: 1em 1em 0.875em; }
 
 /* ! ===== Main navigation – In _layout.scss and _mixins.scss, as we don't display it here ===== */
 .main-navigation {
@@ -1658,19 +1658,19 @@ input#s,
 
 .page-title {
   color: #666666;
-  word-spacing: .15em;
+  word-spacing: 0.15em;
   font-size: 2em; }
   .fontface .page-title {
     font-size: 2.3em; }
     .fontface .page-title span:before {
-      font-size: .875em; }
+      font-size: 0.875em; }
 
 .event-form .page-title {
   margin-top: 0 !important; }
 
 /* For when we dont need to extra size buyt do want the margin */
 .default-title {
-  word-spacing: .15em; }
+  word-spacing: 0.15em; }
 
 .text {
   font-size: 1em; }
@@ -1700,7 +1700,7 @@ input#s,
   .text h1,
   .sidebar-widget h1 {
     margin-top: 1em;
-    margin-bottom: .25em; }
+    margin-bottom: 0.25em; }
   .text .default-title, .text .page-title,
   .sidebar-widget .default-title,
   .sidebar-widget .page-title {
@@ -1785,7 +1785,7 @@ input#s,
     .sidebar-widget form button,
     .sidebar-widget form input[type=submit] {
       font-size: 1.125em;
-      padding: .4em 1em .35em; }
+      padding: 0.4em 1em 0.35em; }
   .text a:not(.button),
   .sidebar-widget a:not(.button) {
     display: inline;
@@ -1795,7 +1795,7 @@ input#s,
         display: inline-block;
         font-weight: bold;
         color: $grey-light;
-        margin-right: .5em;
+        margin-right: 0.5em;
     } */ }
   .text nav a, .text .menu a, .text form ul a, form .text ul a, .text .errorlist a, .text input[type=submit], .text input[type=reset], .text input[type=button], .text button, .text .prompt, .text .readmore:before, .text .give-me-more a:before, .give-me-more .text a:before,
   .text nav a:hover, .text .menu a:hover, .text form ul a:hover, form .text ul a:hover, .text .errorlist a:hover, .text input[type=submit]:hover, .text input[type=reset]:hover, .text input[type=button]:hover, .text .prompt:hover, .text .readmore:hover:before, .text .give-me-more a:hover:before, .give-me-more .text a:hover:before,
@@ -1849,7 +1849,7 @@ input#s,
     border-bottom: 1px dotted #3776ab; }
   .text abbr[title],
   .sidebar-widget abbr[title] {
-    font-size: .875em;
+    font-size: 0.875em;
     text-transform: uppercase;
     letter-spacing: 0.125em; }
   .text var,
@@ -1870,12 +1870,12 @@ input#s,
   .sidebar-widget samp {
     border-bottom: 1px solid #caccce;
     background-color: #e6e8ea;
-    padding: .125em .375em 0;
-    margin: 0 .25em; }
+    padding: 0.125em 0.375em 0;
+    margin: 0 0.25em; }
   .text kbd,
   .sidebar-widget kbd {
-    padding: .125em .375em 0;
-    margin: 0 -.0625em;
+    padding: 0.125em 0.375em 0;
+    margin: 0 -0.0625em;
     background: #e6e8ea;
     background: rgba(230, 232, 234, 0.5);
     -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
@@ -1888,7 +1888,7 @@ input#s,
     border-radius: 6px; }
   .text pre,
   .sidebar-widget pre {
-    padding: .5em;
+    padding: 0.5em;
     border-left: 5px solid #0d870d;
     background: #e6e8ea;
     -webkit-box-shadow: 0 0 0.5em rgba(0, 0, 0, 0.1) inset;
@@ -1929,7 +1929,7 @@ table tr {
 table tr:nth-of-type(even), table tr.even {
   background-color: #f0f0f0; }
 table th, table td {
-  padding: .25em .5em .2em;
+  padding: 0.25em 0.5em 0.2em;
   border-left: 2px solid white; }
   table th:first-child, table td:first-child {
     border-left: none; }
@@ -1985,7 +1985,7 @@ table .checksum {
     font-size: 1.50938em; }
     .fontface .widget-title span:before, .fontface
     .listing-company span:before {
-      font-size: .875em; }
+      font-size: 0.875em; }
   .widget-title .prompt, .widget-title .readmore:before, .widget-title .give-me-more a:before, .give-me-more .widget-title a:before,
   .listing-company .prompt,
   .listing-company .readmore:before,
@@ -1995,7 +1995,7 @@ table .checksum {
     /* show this at first breakpoint */ }
   .widget-title > span,
   .listing-company > span {
-    margin-right: .25em; }
+    margin-right: 0.25em; }
   .widget-title > span:before,
   .listing-company > span:before {
     color: #999999; }
@@ -2099,7 +2099,7 @@ table .checksum {
   display: block;
   font-size: 0.875em;
   font-style: italic;
-  margin-bottom: .75em; }
+  margin-bottom: 0.75em; }
 
 .blog-name {
   display: block;
@@ -2140,7 +2140,7 @@ table .checksum {
     .success-stories-widget blockquote a:hover, .success-stories-widget blockquote a:focus, .success-stories-widget blockquote a:active {
       color: #3776ab; }
 .success-stories-widget .quote-from td {
-  padding: .5em;
+  padding: 0.5em;
   vertical-align: middle; }
 .success-stories-widget .quote-from img {
   max-height: 5em; }
@@ -2148,7 +2148,7 @@ table .checksum {
   font-size: 0.875em; }
 
 /*.statistics-widget {
-    padding-left: .75em;
+    padding-left: 0.75em;
 
     .stat {
         background: lighten($blue, 50%);
@@ -2163,7 +2163,7 @@ table .checksum {
         font-size: px2em( 42px );
         line-height: 1em;
         margin-top: 0;
-        margin-bottom: .05em;
+        margin-bottom: 0.05em;
         text-align: center;
     }
     .explanation {
@@ -2175,11 +2175,11 @@ table .checksum {
     }
 }*/
 .applications-widget {
-  padding-left: .75em; }
+  padding-left: 0.75em; }
   .applications-widget ul {
     border-top: 1px solid #caccce; }
   .applications-widget li {
-    padding: .5em 0 .4em;
+    padding: 0.5em 0 0.4em;
     border-bottom: 1px solid #caccce; }
 
 .shrubbery {
@@ -2188,8 +2188,8 @@ table .checksum {
     color: #caccce;
     display: none;
     position: absolute;
-    top: .25em;
-    right: .25em; }
+    top: 0.25em;
+    right: 0.25em; }
     .shrubbery .give-me-more a {
       color: #999999; }
       .shrubbery .give-me-more a:hover, .shrubbery .give-me-more a:active {
@@ -2224,18 +2224,18 @@ table .checksum {
       content: "“";
       top: auto;
       left: auto;
-      margin-left: -.2em; }
+      margin-left: -0.2em; }
     .featured-success-story .success-quote:after {
       content: "”";
       bottom: auto;
       right: auto;
-      margin-right: -.2em; }
+      margin-right: -0.2em; }
 
 a.activity-feed {
   border-bottom: none;
   font-size: 0.75em; }
   a.activity-feed span {
-    margin-right: .25em; }
+    margin-right: 0.25em; }
 
 p.quote-by {
   color: #e6e8ea;
@@ -2323,9 +2323,9 @@ p.quote-by-organization {
 /* Event single page */
 .single-event-date {
   /* resets as this is an H3 element and it behaves differently */
-  margin-top: .75em;
+  margin-top: 0.75em;
   margin-bottom: 1.25em;
-  padding: .5em .75em; }
+  padding: 0.5em 0.75em; }
 
 .event-description {
   padding: 1.3125em 0; }
@@ -2348,14 +2348,14 @@ p.quote-by-organization {
   -ms-border-radius: 0 0 8px 8px;
   -o-border-radius: 0 0 8px 8px;
   border-radius: 0 0 8px 8px;
-  padding: .75em 1em; }
+  padding: 0.75em 1em; }
 
 /*ul*/
 .twitter-stream li {
   background-color: #f2f4f6;
   line-height: 1.3;
-  padding: .5em;
-  margin-bottom: .25em; }
+  padding: 0.5em;
+  margin-bottom: 0.25em; }
   .twitter-stream li .view-on-twitter {
     font-family: SourceSansProBold, Arial, sans-serif;
     font-size: 0.85714em; }
@@ -2379,7 +2379,7 @@ p.quote-by-organization {
     color: #666666;
     font-size: 0.875em;
     vertical-align: baseline;
-    padding: .2em .4em .1em;
+    padding: 0.2em 0.4em 0.1em;
     background-color: #e6e8ea;
     border-top: 1px solid #f2f4f6;
     border-bottom: 1px solid #caccce; }
@@ -2394,21 +2394,21 @@ p.quote-by-organization {
   vertical-align: bottom; }
 
 .git-avatar {
-  margin-right: .5em; }
+  margin-right: 0.5em; }
 
 .git-repo {
-  padding-bottom: .25em; }
+  padding-bottom: 0.25em; }
 
 /* ! ===== Stylized lists of items, used on Downloads and others ===== */
 .list-row-headings {
   font-family: SourceSansProBold, Arial, sans-serif;
-  padding: .5em .5em .4em .75em;
+  padding: 0.5em 0.5em 0.4em 0.75em;
   margin-right: 1.25em; }
 
 .list-row-container {
   border: 1px solid #caccce; }
   .list-row-container li {
-    padding: .5em .5em .4em .75em;
+    padding: 0.5em 0.5em 0.4em 0.75em;
     margin-right: 0; }
     .list-row-container li:nth-child(odd) {
       background-color: #f2f4f6; }
@@ -2469,7 +2469,7 @@ p.quote-by-organization {
   .previous-next .prev-button,
   .previous-next .next-button {
     display: block;
-    padding: .5em .75em .4em;
+    padding: 0.5em 0.75em 0.4em;
     margin-bottom: 0.875em; }
     .previous-next .prev-button:not(.disabled):hover, .previous-next .prev-button:not(.disabled):focus,
     .previous-next .next-button:not(.disabled):hover,
@@ -2480,10 +2480,10 @@ p.quote-by-organization {
   .previous-next .next-button-text {
     display: block;
     border-bottom: 1px solid #caccce;
-    padding-bottom: .5em; }
+    padding-bottom: 0.5em; }
   .previous-next .prevnext-description {
     display: block;
-    padding-top: .5em; }
+    padding-top: 0.5em; }
   .previous-next .disabled .prev-button-text,
   .previous-next .disabled .next-button-text {
     color: #caccce;
@@ -2519,7 +2519,7 @@ p.quote-by-organization {
 .active-release-list-widget .list-row-container li {
   font-size: 0.875em; }
 .active-release-list-widget .list-row-container {
-  margin-bottom: .5em; }
+  margin-bottom: 0.5em; }
 .active-release-list-widget .release-cycle-chart img {
   display: block;
   margin: 0 auto;
@@ -2534,7 +2534,7 @@ p.quote-by-organization {
   .download-list-widget .list-row-container li {
     font-size: 0.875em; }
   .download-list-widget .list-row-container {
-    margin-bottom: .5em; }
+    margin-bottom: 0.5em; }
   .no-touch .download-list-widget .list-row-container {
     height: 16.75em;
     overflow-y: scroll; }
@@ -2560,7 +2560,7 @@ p.quote-by-organization {
         <p role="alert">Can’t find what you’re looking for? <a href="#">Try our comprehensive Help section</a></p>
     </div>*/
 .user-feedback {
-  padding: .75em 1em .65em;
+  padding: 0.75em 1em 0.65em;
   margin-bottom: 1.3125em;
   -webkit-border-radius: 6px;
   -moz-border-radius: 6px;
@@ -2605,7 +2605,7 @@ p.quote-by-organization {
   border: 2px solid #82b043; }
   .level-success span {
     color: #82b043;
-    margin-right: .5em; }
+    margin-right: 0.5em; }
 
 /* ! ===== SIDEBAR syles ===== */
 /*<aside class="main-sidebar | right-sidebar | left-sidebar">*/
@@ -2628,18 +2628,18 @@ p.quote-by-organization {
   background-color: #b55863;
   font-size: 0.58333em;
   text-transform: uppercase;
-  letter-spacing: .0625em;
-  padding: .45em .5em 0;
-  margin-right: .25em; }
+  letter-spacing: 0.0625em;
+  padding: 0.45em 0.5em 0;
+  margin-right: 0.25em; }
 .listing-company .listing-removed {
   display: inline-block;
   color: white;
   background-color: #666666;
   font-size: 0.58333em;
   text-transform: uppercase;
-  letter-spacing: .0625em;
-  padding: .45em .5em 0;
-  margin-right: .25em; }
+  letter-spacing: 0.0625em;
+  padding: 0.45em 0.5em 0;
+  margin-right: 0.25em; }
 .listing-company .listing-location a {
   color: #999999; }
   .listing-company .listing-location a:hover, .listing-company .listing-location a:focus {
@@ -2671,14 +2671,14 @@ p.quote-by-organization {
 
 /* ! ===== Inner pages ===== */
 .breadcrumbs {
-  padding: .5em 0;
+  padding: 0.5em 0;
   border-bottom: 1px solid #caccce; }
   .breadcrumbs li {
     display: -moz-inline-stack;
     display: inline-block;
     vertical-align: baseline; }
   .breadcrumbs .prompt, .breadcrumbs .readmore:before, .breadcrumbs .give-me-more a:before, .give-me-more .breadcrumbs a:before {
-    margin-left: .5em; }
+    margin-left: 0.5em; }
 
 .section-navigation {
   border-top: 3px solid #75a8d3;
@@ -2691,7 +2691,7 @@ p.quote-by-organization {
 
 .section-nav a {
   display: block;
-  padding: .3em 0 .2em; }
+  padding: 0.3em 0 0.2em; }
 
 .psf-sidebar-widget {
   color: #f2f4f6;
@@ -2760,7 +2760,7 @@ p.quote-by-organization {
 
 .psf-codeofconduct {
   font-size: 0.875em;
-  padding: .5em 1em;
+  padding: 0.5em 1em;
   margin-bottom: 1em;
   background-color: white;
   -webkit-box-shadow: 0.25em 0.25em 0.75em rgba(0, 0, 0, 0.15);
@@ -2783,7 +2783,7 @@ p.quote-by-organization {
 .main-footer .jump-link, .sitemap a, .footer-links a {
   display: block;
   text-align: center;
-  padding: .5em .75em .4em; }
+  padding: 0.5em 0.75em 0.4em; }
 
 .main-footer {
   clear: both;
@@ -2791,7 +2791,7 @@ p.quote-by-organization {
   background-color: #e6e8ea;
   border-top: 1px solid #d8dbde; }
   .main-footer .container {
-    padding: 0 .75em .75em; }
+    padding: 0 0.75em 0.75em; }
   .main-footer a {
     color: #666666; }
     .main-footer a:hover, .main-footer a:focus {
@@ -2799,7 +2799,7 @@ p.quote-by-organization {
   .main-footer .jump-link {
     background-color: #e0e3e5; }
   .main-footer a.jump-link {
-    margin: .75em 0;
+    margin: 0.75em 0;
     border-top: 1px solid #e6e8ea;
     border-bottom: 1px solid #dbdee1; }
     .main-footer a.jump-link:hover, .main-footer a.jump-link:focus {
@@ -2808,12 +2808,12 @@ p.quote-by-organization {
       border-bottom: 1px solid #d5d9dc; }
 
 .sitemap {
-  padding-bottom: .5em; }
+  padding-bottom: 0.5em; }
   .sitemap .tier-1 {
     margin-bottom: 1.3125em; }
     .sitemap .tier-1 > a {
       color: #3776ab;
-      padding: .4em .5em .3em;
+      padding: 0.4em 0.5em 0.3em;
       font-family: Flux-Bold, SourceSansProBold, Arial, sans-serif;
       font-size: 1.25em;
       margin-top: 0.875em;
@@ -2845,7 +2845,7 @@ p.quote-by-organization {
     .fontface .footer-links a {
       font-size: 1.29375em; }
       .fontface .footer-links a span:before {
-        font-size: .875em; }
+        font-size: 0.875em; }
     .footer-links a:hover, .footer-links a:focus {
       color: #fff7dc;
       text-shadow: 0 0 5px rgba(255, 211, 67, 0.2); }
@@ -2971,7 +2971,7 @@ span.highlighted {
   .flex-slideshow .slide-container {
     position: relative; }
   .flex-slideshow .frame-wrapper {
-    margin-bottom: .75em; }
+    margin-bottom: 0.75em; }
   .flex-slideshow .caption-wrapper h2 {
     margin-top: 0; }
   .flex-slideshow .caption-wrapper p {
@@ -2996,7 +2996,7 @@ span.highlighted {
     font-size: 1em;
     line-height: 1em;
     color: #888;
-    margin-left: .5em; }
+    margin-left: 0.5em; }
     .flex-control-nav a:hover, .flex-control-nav a:focus {
       color: #444444;
       background-color: #ccc;
@@ -3008,7 +3008,7 @@ span.highlighted {
     background-color: white; }
   .touch .flex-control-nav a {
     /* Larger touch target */
-    padding: .5em .75em; }
+    padding: 0.5em 0.75em; }
 
 /*<ul class="flex-direction-nav">
     <li>
@@ -3024,7 +3024,7 @@ span.highlighted {
     display: none; }
   .flex-direction-nav .flex-prev, .flex-direction-nav .flex-next {
     position: absolute;
-    bottom: -.25em;
+    bottom: -0.25em;
     font-size: 1.25em;
     font-weight: bold;
     line-height: 1em;
@@ -3044,9 +3044,9 @@ span.highlighted {
     .home-slideshow .flex-direction-nav .flex-prev:hover, .home-slideshow .flex-direction-nav .flex-prev:focus, .home-slideshow .flex-direction-nav .flex-next:hover, .home-slideshow .flex-direction-nav .flex-next:focus {
       opacity: 1; }
   .home-slideshow .flex-direction-nav .flex-prev {
-    left: .75em; }
+    left: 0.75em; }
   .home-slideshow .flex-direction-nav .flex-next {
-    right: .75em; }
+    right: 0.75em; }
   .home-slideshow .flex-direction-nav .flex-prev:hover, .home-slideshow .flex-direction-nav .flex-next:hover {
     background-color: #e6e8ea; }
 
@@ -3057,7 +3057,7 @@ span.highlighted {
     display: none; } }
 /* ! ==== No JS warning message... more of a suggestion, really ==== */
 #nojs {
-  padding: .75em .75em .65em;
+  padding: 0.75em 0.75em 0.65em;
   text-align: center;
   background-color: #c33; }
   #nojs p {
@@ -3208,7 +3208,7 @@ span.highlighted {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-  margin-right: .5em;
+  margin-right: 0.5em;
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -3225,7 +3225,7 @@ span.highlighted {
   font-variant: normal;
   text-transform: none;
   line-height: 1;
-  margin-right: .5em;
+  margin-right: 0.5em;
   /* Better Font Rendering =========== */
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
