@@ -303,7 +303,11 @@ def purge_fastly_download_pages(sender, instance, **kwargs):
     if instance.is_published:
         # Purge all /downloads/* pages via surrogate key (preferred method)
         # This catches everything: /downloads/android/, /downloads/release/*, etc.
-        purge_surrogate_key("downloads")
+        # Falls back to purge_url if FASTLY_SERVICE_ID is not configured.
+        if getattr(settings, "FASTLY_SERVICE_ID", None):
+            purge_surrogate_key("downloads")
+        else:
+            purge_url("/downloads/")
 
         # Also purge related pages outside /downloads/
         purge_url("/ftp/python/")
