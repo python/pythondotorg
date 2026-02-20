@@ -85,6 +85,8 @@ class MediaMigrationView(RedirectView):
     def get_redirect_url(self, *args, **kwargs):
         """Build the S3 redirect URL from the media path."""
         image_path = kwargs["url"]
+        # Sanitize path to prevent open redirect via path traversal
+        image_path = image_path.lstrip("/").replace("../", "")
         if self.prefix:
             image_path = f"{self.prefix}/{image_path}"
         return f"{settings.AWS_S3_ENDPOINT_URL}/{settings.AWS_STORAGE_BUCKET_NAME}/{image_path}"

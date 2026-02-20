@@ -2,7 +2,7 @@
 
 from django.core.mail import EmailMessage
 from django.db import models
-from django.template import Context, Template
+from django.template import Context, Engine
 from django.urls import reverse
 
 
@@ -33,15 +33,20 @@ class BaseEmailTemplate(models.Model):
         url_name = f"admin:{prefix}_preview"
         return reverse(url_name, args=[self.pk])
 
+    template_engine = Engine(
+        builtins=["django.template.defaultfilters"],
+        autoescape=True,
+    )
+
     def render_content(self, context):
-        """Render the email body using the Django template engine."""
-        template = Template(self.content)
+        """Render the email body using a sandboxed Django template engine."""
+        template = self.template_engine.from_string(self.content)
         ctx = Context(context)
         return template.render(ctx)
 
     def render_subject(self, context):
-        """Render the email subject using the Django template engine."""
-        template = Template(self.subject)
+        """Render the email subject using a sandboxed Django template engine."""
+        template = self.template_engine.from_string(self.subject)
         ctx = Context(context)
         return template.render(ctx)
 

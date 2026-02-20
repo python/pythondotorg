@@ -184,7 +184,10 @@
 <script>
 $(function(){
     $('#dataRangeSelect').change(function(e) {
-        window.location = $(this).val();
+        var url = $(this).val();
+        if (url && url.charAt(0) === '/') {
+            window.location = url;
+        }
     });
 });
 </script>

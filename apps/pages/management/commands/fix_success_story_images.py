@@ -1,5 +1,5 @@
 import re
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 from urllib.parse import urlparse
 
 import requests
@@ -38,19 +38,26 @@ class Command(BaseCommand):
         img = Image()
         img.page = page
 
-        filename = Path(urlparse(url).path).name
+        # Sanitize filename from URL to prevent path traversal
+        parsed_name = PurePosixPath(urlparse(url).path).name
+        filename = Path(parsed_name).name  # strip any remaining path components
         output_path = page_image_path(img, filename)
 
+        # Ensure output stays within MEDIA_ROOT
+        resolved = Path(output_path).resolve()
+        media_root = Path(settings.MEDIA_ROOT).resolve()
+        if not str(resolved).startswith(str(media_root)):
+            return None
+
         # Make sure our directories exist
-        directory = Path(output_path).parent
-        directory.mkdir(parents=True, exist_ok=True)
+        resolved.parent.mkdir(parents=True, exist_ok=True)
 
         # Write image data to our location
-        with Path(output_path).open("wb") as f:
+        with resolved.open("wb") as f:
             f.write(r.content)
 
         # Re-open the image as a Django File object
-        with Path(output_path).open("rb") as reopen:
+        with resolved.open("rb") as reopen:
             new_file = File(reopen)
             img.image.save(filename, new_file, save=True)
 
