@@ -62,7 +62,7 @@ dependencies = [
 [project.optional-dependencies]
 prod = [
     "gunicorn==23.0.0",
-    "sentry-sdk[django]==2.40.0",
+    "sentry-sdk[django]==2.53.0",
     "Whitenoise==6.11.0",
     "django-storages==1.14.4",
     "boto3==1.26.165",
