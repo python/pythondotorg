@@ -113,9 +113,7 @@
                             <div class="benefit-content">
                                 <span class="benefit-name">{{ benefit.name_for_display }}</span>
                                 {% if benefit.description %}
-                                    <span class="benefit-description" title="{{ benefit.description }}">
-                            <i class="fa fa-info-circle"></i>
-                        </span>
+                                    <span class="benefit-description"> - {{ benefit.description }}</span>
                                 {% endif %}
                                 <span class="benefit-category">{{ benefit.program.name }}</span>
                             </div>
