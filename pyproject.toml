@@ -52,7 +52,7 @@ dependencies = [
     "num2words==0.5.13",
     "django-polymorphic==4.1.0",
     "sorl-thumbnail==12.11.0",
-    "django-extensions==3.2.3",
+    "django-extensions==4.1",
     "django-import-export==2.7.1",
     "pypandoc==1.12",
     "panflute==2.3.1",
