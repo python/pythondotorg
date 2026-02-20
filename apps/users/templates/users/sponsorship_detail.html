@@ -33,7 +33,7 @@
                     <li><b>State:</b> {{ sponsor.state }}</li>
                     <li><b>Country:</b> {{ sponsor.country }}</li>
                 </ul>
-                <small><a href="{% url 'users:edit_sponsor_info' sponsorship.sponsor.pk %}">Edit sponsor information</a></small>
+                <a href="{% url 'users:edit_sponsor_info' sponsorship.sponsor.pk %}" class="button">Edit sponsor information</a>
             </div>
 
             <div id="application-info" class="card small-column">
