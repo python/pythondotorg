@@ -54,7 +54,7 @@ dependencies = [
     "sorl-thumbnail==12.11.0",
     "django-extensions==3.2.3",
     "django-import-export==2.7.1",
-    "pypandoc==1.12",
+    "pypandoc==1.16.2",
     "panflute==2.3.1",
     "Unidecode==1.4.0",
 ]
