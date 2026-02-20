@@ -2,10 +2,10 @@ const DESKTOP_WIDTH_LIMIT = 1200;
 
 function isSafeImageSrc(url) {
   if (!url) return false;
-  // Allow relative URLs and data URIs for static assets
-  if (url.charAt(0) === '/' || url.indexOf('/static/') === 0) return true;
+  // Allow relative URLs starting with / (but not protocol-relative //)
+  if (url.charAt(0) === '/' && url.charAt(1) !== '/') return true;
   try {
-    var parsed = new URL(url, window.location.origin);
+    let parsed = new URL(url, window.location.origin);
     return parsed.origin === window.location.origin;
   } catch (e) {
     return false;

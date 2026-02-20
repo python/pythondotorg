@@ -4,7 +4,7 @@ import datetime as dt
 import json
 import re
 from collections import defaultdict
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 from django.conf import settings
 from django.http import HttpResponse, JsonResponse
@@ -84,9 +84,11 @@ class MediaMigrationView(RedirectView):
 
     def get_redirect_url(self, *args, **kwargs):
         """Build the S3 redirect URL from the media path."""
-        image_path = kwargs["url"]
-        # Sanitize path to prevent open redirect via path traversal
-        image_path = image_path.lstrip("/").replace("../", "")
+        # Normalize path to prevent traversal (../, ....//,  %2e%2e/, etc.)
+        image_path = PurePosixPath(kwargs["url"]).as_posix().lstrip("/")
+        # Collapse any remaining parent references after normalization
+        parts = [p for p in image_path.split("/") if p not in (".", "..")]
+        image_path = "/".join(parts)
         if self.prefix:
             image_path = f"{self.prefix}/{image_path}"
         return f"{settings.AWS_S3_ENDPOINT_URL}/{settings.AWS_STORAGE_BUCKET_NAME}/{image_path}"

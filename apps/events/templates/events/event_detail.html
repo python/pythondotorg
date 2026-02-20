@@ -184,8 +184,8 @@
 <script>
 $(function(){
     $('#dataRangeSelect').change(function(e) {
-        var url = $(this).val();
-        if (url && url.charAt(0) === '/') {
+        let url = $(this).val();
+        if (url && url.charAt(0) === '/' && url.charAt(1) !== '/') {
             window.location = url;
         }
     });
