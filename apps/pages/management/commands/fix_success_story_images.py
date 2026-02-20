@@ -1,13 +1,12 @@
 import re
-from pathlib import Path
+from pathlib import PurePosixPath
 from urllib.parse import urlparse
 
 import requests
-from django.conf import settings
-from django.core.files import File
+from django.core.files.base import ContentFile
 from django.core.management.base import BaseCommand
 
-from apps.pages.models import Image, Page, page_image_path
+from apps.pages.models import Image, Page
 
 HTTP_OK = 200
 
@@ -18,14 +17,6 @@ class Command(BaseCommand):
     def get_success_pages(self):
         return Page.objects.filter(path__startswith="about/success/")
 
-    def image_url(self, path):
-        """
-        Given a full filesystem path to an image, return the proper media
-        url for it
-        """
-        new_url = path.replace(settings.MEDIA_ROOT, settings.MEDIA_URL)
-        return new_url.replace("//", "/")
-
     def fix_image(self, path, page):
         url = f"http://legacy.python.org{path}"
         # Retrieve the image
@@ -34,27 +25,18 @@ class Command(BaseCommand):
         if r.status_code != HTTP_OK:
             return None
 
-        # Create new associated image and generate ultimate path
+        # Extract and validate filename (alphanumeric, hyphens, dots only)
+        raw_name = PurePosixPath(urlparse(url).path).name
+        filename = re.sub(r"[^\w.\-]", "_", raw_name)
+        if not filename or filename.startswith("."):
+            return None
+
+        # Use Django's storage API to safely write the file
         img = Image()
         img.page = page
+        img.image.save(filename, ContentFile(r.content), save=True)
 
-        filename = Path(urlparse(url).path).name
-        output_path = page_image_path(img, filename)
-
-        # Make sure our directories exist
-        directory = Path(output_path).parent
-        directory.mkdir(parents=True, exist_ok=True)
-
-        # Write image data to our location
-        with Path(output_path).open("wb") as f:
-            f.write(r.content)
-
-        # Re-open the image as a Django File object
-        with Path(output_path).open("rb") as reopen:
-            new_file = File(reopen)
-            img.image.save(filename, new_file, save=True)
-
-        return self.image_url(output_path)
+        return img.image.url
 
     def find_image_paths(self, page):
         content = page.content.raw

@@ -51,7 +51,7 @@ def api_call(uri, query):
 
     headers = {
         "X-API-Key": str(settings.PYCON_API_KEY),
-        "X-API-Signature": str(sha1(base_string.encode("utf-8")).hexdigest()),  # noqa: S324 - API signature, not for security storage
+        "X-API-Signature": str(sha1(base_string.encode("utf-8")).hexdigest()),  # noqa: S324 - required by PyCon API
         "X-API-Timestamp": str(timestamp),
     }
     scheme = "http" if settings.DEBUG else "https"

@@ -1,5 +1,17 @@
 const DESKTOP_WIDTH_LIMIT = 1200;
 
+function isSafeImageSrc(url) {
+  if (!url) return false;
+  // Allow relative URLs starting with / (but not protocol-relative //)
+  if (url.charAt(0) === '/' && url.charAt(1) !== '/') return true;
+  try {
+    let parsed = new URL(url, window.location.origin);
+    return parsed.origin === window.location.origin;
+  } catch (e) {
+    return false;
+  }
+}
+
 $(document).ready(function(){
   const SELECTORS = {
     packageInput:  function() { return $("input[name=package]"); },
@@ -66,7 +78,9 @@ $(document).ready(function(){
         img.setAttribute('data-next-state', src);
       }
 
-      img.setAttribute('src', initImg);
+      if (isSafeImageSrc(initImg)) {
+        img.setAttribute('src', initImg);
+      }
     });
     $(".selected").removeClass("selected");
     $('.custom-fee').hide();
@@ -89,7 +103,9 @@ $(document).ready(function(){
         img.setAttribute('data-next-state', src);
       }
 
-      img.setAttribute('src', initImg);
+      if (isSafeImageSrc(initImg)) {
+        img.setAttribute('src', initImg);
+      }
     });
     $(".selected").removeClass("selected");
 
@@ -166,7 +182,9 @@ function benefitUpdate(benefitId, packageId) {
   const benefitsInputs = Array(...document.querySelectorAll('[data-benefit-id]'));
   const hiddenInput = benefitsInputs.filter((b) => b.getAttribute('data-benefit-id') == benefitId)[0];
   hiddenInput.checked = !hiddenInput.checked;
-  clickedImg.src = newSrc;
+  if (isSafeImageSrc(newSrc)) {
+    clickedImg.src = newSrc;
+  }
 
   // Check if there are any type of customization. If so, display custom-fee label.
   let pkgBenefits = Array(...document.getElementById(`package_benefits_${packageId}`).children).map(div => div.textContent).sort();

@@ -2,6 +2,8 @@ name: CI
 
 on: [push, pull_request, workflow_dispatch]
 
+permissions: {}
+
 jobs:
   migrations:
     if: github.event_name != 'push' || github.event.repository.fork == true || github.ref == 'refs/heads/main'
