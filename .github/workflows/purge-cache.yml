@@ -24,5 +24,6 @@ jobs:
       - name: Purge ${{ env.KEY }}
         run: |
           curl -fsS -X POST \
-            "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/${{ env.KEY }}" \
-            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
+            "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge" \
+            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}" \
+            -H "Surrogate-Key: ${{ env.KEY }}"
