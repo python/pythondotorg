@@ -114,7 +114,8 @@ class IdealSizeTemplateTagTests(TestCase):
         class MockImageWithoutFileValue:
             @property
             def width(self):
-                raise ValueError("The 'web_logo' attribute has no file associated with it.")
+                msg = "The 'web_logo' attribute has no file associated with it."
+                raise ValueError(msg)
 
         size = ideal_size(MockImageWithoutFileValue(), 250)
         self.assertEqual(size, 158)
