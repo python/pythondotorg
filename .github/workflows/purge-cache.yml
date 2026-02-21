@@ -19,20 +19,20 @@ jobs:
   purge:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        if: inputs.target == ''
+      - uses: actions/checkout@v6
+        if: github.event_name == 'push'
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Resolve keys
         id: keys
         run: |
           if [ -n "${{ inputs.target }}" ]; then
             echo "keys=${{ inputs.target }}" >> "$GITHUB_OUTPUT"
-          elif git diff --name-only HEAD~1 HEAD | grep -qE '^(static/|templates/)'; then
+          elif git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -qE '^(static/|templates/)'; then
             echo "keys=pydotorg-app" >> "$GITHUB_OUTPUT"
           else
-            echo "keys=$(git diff --name-only HEAD~1 HEAD | grep -oP '^apps/\K[^/]+(?=/(templates|static)/)' | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+            echo "keys=$(git diff --name-only ${{ github.event.before }}..${{ github.sha }} | grep -oP '^apps/\K[^/]+(?=/(templates|static)/)' | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Purge ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
