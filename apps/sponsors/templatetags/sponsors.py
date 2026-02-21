@@ -83,7 +83,7 @@ def ideal_size(image, ideal_dimension):
     ideal_dimension = int(ideal_dimension)
     try:
         w, h = image.width, image.height
-    except FileNotFoundError:
+    except (FileNotFoundError, ValueError):
         # local dev doesn't have all images if DB is a copy from prod environment
         # this is just a fallback to return ideal_dimension instead
         w, h = ideal_dimension, ideal_dimension
