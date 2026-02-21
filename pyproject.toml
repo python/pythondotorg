@@ -26,7 +26,7 @@ dependencies = [
     "python3-openid==3.2.0",
     "python-decouple==3.8",
     "lxml==5.2.2",
-    "cssselect==1.2.0",
+    "cssselect==1.4.0",
     "feedparser==6.0.11",
     "beautifulsoup4==4.12.3",
     "icalendar==4.0.7",
