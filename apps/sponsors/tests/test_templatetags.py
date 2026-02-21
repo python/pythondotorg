@@ -9,6 +9,7 @@ from apps.sponsors.templatetags.sponsors import (
     benefit_quantity_for_package,
     full_sponsorship,
     list_sponsors,
+    ideal_size,
 )
 
 
@@ -88,3 +89,32 @@ class BenefitNameForDisplayTests(TestCase):
 
         self.assertEqual(name, "Modified name")
         mocked_name_for_display.assert_called_once_with(package=package)
+
+
+class IdealSizeTemplateTagTests(TestCase):
+    def test_ideal_size_scales_properly(self):
+        class MockImage:
+            width = 400
+            height = 200
+
+        size = ideal_size(MockImage(), 200)
+        # int(400 * sqrt(20000 / 80000)) = int(400 * 0.5) = 200
+        self.assertEqual(size, 200)
+
+    def test_ideal_size_handles_file_not_found(self):
+        class MockImageWithoutFile:
+            @property
+            def width(self):
+                raise FileNotFoundError()
+
+        size = ideal_size(MockImageWithoutFile(), 300)
+        self.assertEqual(size, 173)
+
+    def test_ideal_size_handles_value_error(self):
+        class MockImageWithoutFileValue:
+            @property
+            def width(self):
+                raise ValueError("The 'web_logo' attribute has no file associated with it.")
+
+        size = ideal_size(MockImageWithoutFileValue(), 250)
+        self.assertEqual(size, 158)
