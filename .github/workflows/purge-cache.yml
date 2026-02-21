@@ -18,11 +18,27 @@ permissions: {}
 jobs:
   purge:
     runs-on: ubuntu-latest
-    env:
-      KEY: ${{ inputs.target || 'pydotorg-app' }}
     steps:
-      - name: Purge ${{ env.KEY }}
+      - uses: actions/checkout@v4
+        if: inputs.target == ''
+        with:
+          fetch-depth: 2
+
+      - name: Resolve keys
+        id: keys
         run: |
-          curl -fsS -X POST \
-            "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/${{ env.KEY }}" \
-            -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
+          if [ -n "${{ inputs.target }}" ]; then
+            echo "keys=${{ inputs.target }}" >> "$GITHUB_OUTPUT"
+          elif git diff --name-only HEAD~1 HEAD | grep -qE '^(static/|templates/)'; then
+            echo "keys=pydotorg-app" >> "$GITHUB_OUTPUT"
+          else
+            echo "keys=$(git diff --name-only HEAD~1 HEAD | grep -oP '^apps/\K[^/]+(?=/(templates|static)/)' | sort -u | tr '\n' ' ')" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Purge ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
+        run: |
+          for KEY in ${{ steps.keys.outputs.keys || 'pydotorg-app' }}; do
+            curl -fsS -X POST \
+              "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/$KEY" \
+              -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
+          done
