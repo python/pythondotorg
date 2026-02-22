@@ -18,11 +18,16 @@ def get_all_entries(feed_url):
     for e in d["entries"]:
         published = datetime.datetime(*e["published_parsed"][:7], tzinfo=datetime.UTC)
 
+        # Rewrite Blogger domains to canonical python.org domain (Issue #2685)
+        url = e["link"].replace(
+            "//pythoninsider.blogspot.com",
+            "//blog.python.org"
+        )
         entry = {
             "title": e["title"],
             "summary": e.get("summary", ""),
             "pub_date": published,
-            "url": e["link"],
+            "url": url,
         }
 
         entries.append(entry)
