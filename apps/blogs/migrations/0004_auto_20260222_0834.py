@@ -5,9 +5,12 @@ from django.db import migrations
 
 def rewrite_blog_urls(apps, schema_editor):
     BlogEntry = apps.get_model("blogs", "BlogEntry")
+    entries_to_update = []
     for entry in BlogEntry.objects.filter(url__contains="pythoninsider.blogspot.com"):
         entry.url = entry.url.replace("pythoninsider.blogspot.com", "blog.python.org")
-        entry.save()
+        entries_to_update.append(entry)
+    if entries_to_update:
+        BlogEntry.objects.bulk_update(entries_to_update, ['url'])
 
 
 class Migration(migrations.Migration):

@@ -31,13 +31,20 @@ class BlogParserTest(unittest.TestCase):
         mock_parse.return_value = {
             "entries": [
                 {
-                    "title": "Test Title",
+                    "title": "Test Title HTTPS",
                     "summary": "Summary",
-                    "published_parsed": (2026, 2, 22, 12, 0, 0, 0, 0, 0),
-                    "link": "https://pythoninsider.blogspot.com/2026/02/test.html",
+                    "published_parsed": (2024, 1, 15, 12, 0, 0, 0, 0, 0),
+                    "link": "https://pythoninsider.blogspot.com/2024/01/test.html",
+                },
+                {
+                    "title": "Test Title HTTP",
+                    "summary": "Summary",
+                    "published_parsed": (2024, 1, 15, 12, 0, 0, 0, 0, 0),
+                    "link": "http://pythoninsider.blogspot.com/2024/01/test2.html",
                 }
             ]
         }
         entries = get_all_entries("http://fake.url")
-        self.assertEqual(len(entries), 1)
-        self.assertEqual(entries[0]["url"], "https://blog.python.org/2026/02/test.html")
+        self.assertEqual(len(entries), 2)
+        self.assertEqual(entries[0]["url"], "https://blog.python.org/2024/01/test.html")
+        self.assertEqual(entries[1]["url"], "http://blog.python.org/2024/01/test2.html")
