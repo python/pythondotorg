@@ -34,3 +34,13 @@ class ViewsTests(TestCase):
         self.assertContains(response, "Browse Python 3.6.0 Documentation")
         self.assertContains(response, "https://docs.python.org/3/whatsnew/3.6.html")
         self.assertContains(response, "What's new in Python 3.6")
+
+    def test_docs_versions_ignores_malformed_release_version(self):
+        Release.objects.create(
+            name="Python 4",
+            is_published=True,
+            pre_release=False,
+        )
+
+        response = self.client.get(reverse("docs-versions"))
+        self.assertEqual(response.status_code, 200)

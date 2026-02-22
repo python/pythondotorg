@@ -125,6 +125,8 @@ class DocsByVersionView(TemplateView):
 
                 # Get major.minor version ("3.14.0" -> "3.14")
                 version_parts = full_version.split(".")
+                if len(version_parts) < 2:
+                    continue
                 major_minor = f"{version_parts[0]}.{version_parts[1]}"
 
                 # For 3.2.0 and earlier, use X.Y instead of X.Y.0
