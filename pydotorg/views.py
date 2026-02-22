@@ -125,7 +125,7 @@ class DocsByVersionView(TemplateView):
 
                 # Get major.minor version ("3.14.0" -> "3.14")
                 version_parts = full_version.split(".")
-                if len(version_parts) < 2:
+                if len(version_parts) < SEMANTIC_VERSION_PARTS - 1:
                     continue
                 major_minor = f"{version_parts[0]}.{version_parts[1]}"
 
