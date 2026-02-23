@@ -1,4 +1,5 @@
 import datetime as dt
+from unittest.mock import patch
 
 from apps.downloads.models import Release, ReleaseFile
 from apps.downloads.tests.base import BaseDownloadTests
@@ -232,3 +233,59 @@ class DownloadModelTests(BaseDownloadTests):
 
         # Android (no files) should not be present
         self.assertNotIn("android", content.lower())
+
+    @patch("apps.downloads.models.update_supernav")
+    @patch("apps.downloads.models.update_download_landing_sources_box")
+    @patch("apps.downloads.models.update_homepage_download_box")
+    def test_release_file_save_triggers_box_updates(self, mock_home, mock_sources, mock_supernav):
+        """Saving a ReleaseFile on a published release should update boxes."""
+        mock_supernav.reset_mock()
+        mock_sources.reset_mock()
+        mock_home.reset_mock()
+
+        ReleaseFile.objects.create(
+            os=self.windows,
+            release=self.python_3,
+            name="Windows installer",
+            url="/ftp/python/3.10.19/python-3.10.19.exe",
+            download_button=True,
+        )
+
+        mock_supernav.assert_called()
+        mock_sources.assert_called()
+        mock_home.assert_called()
+
+    @patch("apps.downloads.models.update_supernav")
+    @patch("apps.downloads.models.update_download_landing_sources_box")
+    @patch("apps.downloads.models.update_homepage_download_box")
+    def test_release_file_save_skips_unpublished_release(self, mock_home, mock_sources, mock_supernav):
+        """Saving a ReleaseFile on a draft release should not update boxes."""
+        mock_supernav.reset_mock()
+        mock_sources.reset_mock()
+        mock_home.reset_mock()
+
+        ReleaseFile.objects.create(
+            os=self.windows,
+            release=self.draft_release,
+            name="Windows installer draft",
+            url="/ftp/python/9.7.2/python-9.7.2.exe",
+        )
+
+        mock_supernav.assert_not_called()
+        mock_sources.assert_not_called()
+        mock_home.assert_not_called()
+
+    @patch("apps.downloads.models.update_supernav")
+    @patch("apps.downloads.models.update_download_landing_sources_box")
+    @patch("apps.downloads.models.update_homepage_download_box")
+    def test_release_file_delete_triggers_box_updates(self, mock_home, mock_sources, mock_supernav):
+        """Deleting a ReleaseFile on a published release should update boxes."""
+        mock_supernav.reset_mock()
+        mock_sources.reset_mock()
+        mock_home.reset_mock()
+
+        self.release_275_windows_32bit.delete()
+
+        mock_supernav.assert_called()
+        mock_sources.assert_called()
+        mock_home.assert_called()
