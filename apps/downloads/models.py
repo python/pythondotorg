@@ -5,7 +5,7 @@ import re
 from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -330,6 +330,31 @@ def update_download_supernav_and_boxes(sender, instance, **kwargs):
         update_supernav()
         update_download_landing_sources_box()
         update_homepage_download_box()
+
+
+def _update_boxes_for_release_file(instance):
+    """Update supernav and download boxes if the file's release is published."""
+    if instance.release_id and instance.release.is_published:
+        update_supernav()
+        update_download_landing_sources_box()
+        update_homepage_download_box()
+        purge_url("/box/supernav-python-downloads/")
+        purge_url("/box/homepage-downloads/")
+        purge_url("/box/download-sources/")
+
+
+@receiver(post_save, sender="downloads.ReleaseFile")
+def update_boxes_on_release_file_save(sender, instance, **kwargs):
+    """Refresh supernav when a release file is added or changed."""
+    if kwargs.get("raw", False):
+        return
+    _update_boxes_for_release_file(instance)
+
+
+@receiver(post_delete, sender="downloads.ReleaseFile")
+def update_boxes_on_release_file_delete(sender, instance, **kwargs):
+    """Refresh supernav when a release file is deleted."""
+    _update_boxes_for_release_file(instance)
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):
