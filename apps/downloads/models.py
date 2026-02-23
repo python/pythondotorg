@@ -361,7 +361,7 @@ class ReleaseFile(ContentManageable, NameSlugModel):
 
     def validate_unique(self, exclude=None):
         """Ensure only one release file per OS has the download button enabled."""
-        if self.download_button:
+        if self.download_button and self.release_id:
             qs = ReleaseFile.objects.filter(release=self.release, os=self.os, download_button=True).exclude(pk=self.id)
             if qs.count() > 0:
                 msg = 'Only one Release File per OS can have "Download button" enabled'
