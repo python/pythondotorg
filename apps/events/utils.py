@@ -3,7 +3,6 @@
 import datetime
 import re
 
-import pytz
 from django.utils.timezone import is_aware, make_aware
 
 
@@ -20,7 +19,7 @@ def minutes_resolution(dt):
 def date_to_datetime(date, tzinfo=None):
     """Convert a date to a timezone-aware datetime at midnight."""
     if tzinfo is None:
-        tzinfo = pytz.UTC
+        tzinfo = datetime.UTC
     return datetime.datetime(*date.timetuple()[:6], tzinfo=tzinfo)
 
 
@@ -39,7 +38,7 @@ def convert_dt_to_aware(dt):
         # we don't want to use get_current_timezone() because
         # settings.TIME_ZONE may be set something different than
         # UTC in the future
-        return make_aware(dt, timezone=pytz.UTC)
+        return make_aware(dt, timezone=datetime.UTC)
     return dt
 
 
