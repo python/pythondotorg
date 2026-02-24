@@ -34,3 +34,11 @@ class ViewsTests(TestCase):
         self.assertContains(response, "Browse Python 3.6.0 Documentation")
         self.assertContains(response, "https://docs.python.org/3/whatsnew/3.6.html")
         self.assertContains(response, "What's new in Python 3.6")
+
+    def test_legacy_sponsor_redirects(self):
+        """Test that old sponsorship pages correctly redirect to modern active ones."""
+        response = self.client.get("/psf/sponsorship-old/")
+        self.assertRedirects(response, "/psf/sponsors/", status_code=301)
+
+        response = self.client.get("/psf/forms/sponsor-application/")
+        self.assertRedirects(response, "/sponsors/application/", status_code=301)
