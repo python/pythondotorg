@@ -3,7 +3,7 @@ import datetime
 from django.template.loader import render_to_string
 from django.test import TestCase
 
-from ..models import Event, EventLocation, Calendar
+from apps.events.models import Event, Calendar
 
 
 class TimeTagTemplateTests(TestCase):
