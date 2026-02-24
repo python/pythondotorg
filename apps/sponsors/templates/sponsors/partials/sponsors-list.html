@@ -6,13 +6,20 @@
 {% if logo_place == "download" %}
 {% comment %}cache for 1 day{% endcomment %}
 {% cache 86400 CACHED_DOWNLOAD_SPONSORS_LIST %}
-  <h2 class="widget-title">Sponsors</h2>
-  <p>Visionary sponsors help to host Python downloads.</p>
+  <h2 class="widget-title" style="text-align: center;">Sponsors</h2>
+  <p style="text-align: center;">Visionary sponsors help to host Python downloads.</p>
+  <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax(150px, 0fr)); align-items: center; justify-content: center; margin-top: 1.5em;">
   {% for sponsorship in sponsorships %}
-  {% thumbnail sponsorship.sponsor.web_logo "x200" format="PNG" quality=100 as im %}
-    <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:200px;max-width:200px;height:auto;width:auto;">
+  {% thumbnail sponsorship.sponsor.web_logo "x150" format="PNG" quality=100 as im %}
+    <div style="text-align: center;">
+      <a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" style="border-bottom: 0;">
+        <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:150px;max-width:150px;height:auto;width:auto;">
+      </a>
+      <p style="margin-top: 0.5em; margin-bottom: 0; font-size: 0.875em; color: #4d4d4d;">{{ sponsorship.sponsor.name }}</p>
+    </div>
   {% endthumbnail %}
   {% endfor %}
+  </div>
 {% endcache CACHED_DOWNLOAD_SPONSORS_LIST %}
 
 {% elif logo_place == "jobs" %}
