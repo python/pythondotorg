@@ -12,11 +12,6 @@ from tastypie.throttle import CacheThrottle
 class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
     """Authentication backend that falls back to guest access when no API key is provided."""
 
-    def _unauthorized(self):
-        """Allow guests anyway."""
-        # Allow guests anyway
-        return True
-
     def is_authenticated(self, request, **kwargs):
         """Authenticate via API key, handling custom user model.
 
@@ -26,19 +21,26 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         User = get_user_model()  # noqa: N806 - Django convention for user model reference
         username_field = User.USERNAME_FIELD
 
+        # Note that it's only safe to return 'True'
+        # in the guest case. If there is an API key supplied
+        # then we must not return 'True' unless the
+        # API key is valid.
         try:
             username, api_key = self.extract_credentials(request)
         except ValueError:
-            return self._unauthorized()
-
+            return True  # Allow guests.
         if not username or not api_key:
-            return self._unauthorized()
+            return True  # Allow guests.
+
+        # IMPORTANT: Beyond this point we are no longer
+        # handling the guest case, so all incorrect usernames
+        # or credentials MUST return HttpUnauthorized()
 
         try:
             lookup_kwargs = {username_field: username}
             user = User.objects.get(**lookup_kwargs)
         except (User.DoesNotExist, User.MultipleObjectsReturned):
-            return self._unauthorized()
+            return HttpUnauthorized()
 
         if not self.check_active(user):
             return False
