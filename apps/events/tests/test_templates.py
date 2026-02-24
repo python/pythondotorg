@@ -14,7 +14,10 @@ class TimeTagTemplateTests(TestCase):
         # Create a single day event in the future to trigger the year rendering condition
         future_year = datetime.date.today().year + 1
         
-        calendar = Calendar.objects.create(name="Test Calendar")
+        calendar = Calendar.objects.create(
+            name="Test Calendar",
+            slug="test-calendar-time-tag-single-day-event",
+        )
         
         event = Event.objects.create(
             title="Single Day Future Event",
