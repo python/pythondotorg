@@ -427,5 +427,6 @@ class ReleaseFile(ContentManageable, NameSlugModel):
                     & condition_url_is_blank_or_python_dot_org("sbom_spdx2_file")
                 ),
                 name="only_python_dot_org_urls",
+                violation_error_message="All file URLs must begin with 'https://www.python.org/'"
             ),
         ]
