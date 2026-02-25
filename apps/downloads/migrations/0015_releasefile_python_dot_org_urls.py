@@ -53,6 +53,7 @@ class Migration(migrations.Migration):
                     ),
                 ),
                 name="only_python_dot_org_urls",
+                violation_error_message="All file URLs must begin with 'https://www.python.org/'",
             ),
         ),
     ]
