@@ -1,11 +1,11 @@
 import datetime as dt
 from unittest.mock import patch
 
-from django.db import transaction
-from django.db import IntegrityError
+from django.db import IntegrityError, transaction
 from django.db.models import URLField
-from apps.downloads.models import Release, ReleaseFile, Page, OS
-from apps.downloads.tests.base import BaseDownloadTests, TestCase
+
+from apps.downloads.models import OS, Release, ReleaseFile
+from apps.downloads.tests.base import BaseDownloadTests
 
 
 class DownloadModelTests(BaseDownloadTests):
@@ -202,7 +202,7 @@ class DownloadModelTests(BaseDownloadTests):
         """
         # Arrange
         from apps.boxes.models import Box
-        from apps.downloads.models import OS, update_supernav
+        from apps.downloads.models import update_supernav
 
         # Create an OS without any release files
         OS.objects.create(name="Android", slug="android")
@@ -294,7 +294,7 @@ class DownloadModelTests(BaseDownloadTests):
         mock_home.assert_called()
 
     def test_release_file_urls_not_python_dot_org(self):
-        for field in ReleaseFile._meta.get_fields():
+        for field in ReleaseFile._meta.get_fields():  # noqa: SLF001
             if not isinstance(field, URLField):
                 continue
             with self.subTest(field.name), transaction.atomic():

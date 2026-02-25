@@ -358,8 +358,7 @@ def update_boxes_on_release_file_delete(sender, instance, **kwargs):
 
 
 def condition_url_is_blank_or_python_dot_org(column: str):
-    # Creates a condition for a URLField column to either be
-    # blank or to start with 'http(s)://www.python.org/'.
+    """Conditions for a URLField column to force 'http[s]://python.org'."""
     return (
         models.Q(**{f"{column}__exact": ""})
         | models.Q(**{f"{column}__startswith": "https://www.python.org/"})
