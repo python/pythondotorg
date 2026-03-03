@@ -766,11 +766,11 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         sponsor = obj.sponsor
         if sponsor.state:
             city_row_html = format_html(
-                "<p>{} - {} - {} ()</p>", sponsor.city, sponsor.state, sponsor.get_country_display(), sponsor.country
+                "<p>{} - {} - {} ({})</p>", sponsor.city, sponsor.state, sponsor.get_country_display(), sponsor.country
             )
         else:
             city_row_html = format_html(
-                "<p>{} - {} ()</p>", sponsor.city, sponsor.get_country_display(), sponsor.country
+                "<p>{} - {} ({})</p>", sponsor.city, sponsor.get_country_display(), sponsor.country
             )
 
         if sponsor.mailing_address_line_2:
