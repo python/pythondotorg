@@ -2,12 +2,12 @@
 
 from django import template
 from django.template.defaultfilters import stringfilter
-from django.utils.html import format_html
+from django.utils.html import format_html_join, mark_safe
 
 register = template.Library()
 
 
-@register.filter(is_safe=True)
+@register.filter()
 @stringfilter
 def render_email(value):
     """Render an email address with obfuscated dots and at-sign using spans."""
@@ -16,8 +16,8 @@ def render_email(value):
         mailbox_tokens = mailbox.split(".")
         domain_tokens = domain.split(".")
 
-        mailbox = "<span>.</span>".join(mailbox_tokens)
-        domain = "<span>.</span>".join(domain_tokens)
+        mailbox = format_html_join("<span>.</span>", "{}", mailbox_tokens)
+        domain = format_html_join("<span>.</span>", "{}", domain_tokens)
 
-        return format_html(f"{mailbox}<span>@</span>{domain}")
+        return mailbox + mark_safe("<span>@</span>") + domain
     return None
