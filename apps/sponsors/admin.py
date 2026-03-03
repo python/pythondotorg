@@ -1,6 +1,7 @@
 """Django admin configuration for the sponsors app."""
 
 import contextlib
+from textwrap import dedent
 
 from django.contrib import admin
 from django.contrib.contenttypes.admin import GenericTabularInline
@@ -12,7 +13,7 @@ from django.forms import ModelForm
 from django.template import Context, Template
 from django.urls import path, reverse
 from django.utils.functional import cached_property
-from django.utils.html import mark_safe
+from django.utils.html import format_html, format_html_join, mark_safe
 from import_export import resources
 from import_export.admin import ImportExportActionModelAdmin
 from import_export.fields import Field
@@ -296,12 +297,12 @@ class SponsorshipPackageAdmin(OrderedModelAdmin):
         for i, (name, pct) in enumerate(split):
             pct_str = f"{pct:.0f}%"
             widths.append(pct_str)
-            spans.append(f"<span title='{name}' style='background-color:{colors[i]}'>{pct_str}</span>")
+            spans.append((name, colors[i], pct_str))
         # define a style that will show our span elements like a single horizontal stacked bar chart
         style = f"color:#fff;text-align:center;cursor:pointer;display:grid;grid-template-columns:{' '.join(widths)}"
+        split_bar = format_html_join("", "<span title='{}' style='background-color:{}'>{}</span>", spans)
         # wrap it all up and put a bow on it
-        html = f"<div style='{style}'>{''.join(spans)}</div>"
-        return mark_safe(html)
+        return format_html("<div style='{}'>{}</div>", style, split_bar)
 
 
 class SponsorContactInline(admin.TabularInline):
@@ -325,7 +326,7 @@ class SponsorshipsInline(admin.TabularInline):
     def link(self, obj):
         """Return a link to the sponsorship change page."""
         url = reverse("admin:sponsors_sponsorship_change", args=[obj.id])
-        return mark_safe(f"<a href={url}>{obj.id}</a>")
+        return format_html("<a href='{}'>{}</a>", url, obj.id)
 
 
 @admin.register(Sponsor)
@@ -652,18 +653,17 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     def sponsor_link(self, obj):
         """Return an HTML link to the sponsor's admin change page."""
         url = reverse("admin:sponsors_sponsor_change", args=[obj.sponsor.id])
-        return mark_safe(f"<a href={url}>{obj.sponsor.name}</a>")
+        return format_html("<a href='{}'>{}</a>", url, obj.sponsor.name)
 
     @admin.display(description="Estimated cost")
     def get_estimated_cost(self, obj):
         """Return the estimated cost HTML for customized sponsorships."""
-        cost = None
         html = "This sponsorship has not customizations so there's no estimated cost"
         if obj.for_modified_package:
             msg = "This sponsorship has customizations and this cost is a sum of all benefit's internal values from when this sponsorship was created"
             cost = intcomma(obj.estimated_cost)
-            html = f"{cost} USD <br/><b>Important: </b> {msg}"
-        return mark_safe(html)
+            html = format_html("{} USD <br/><b>Important: </b> {}", cost, msg)
+        return html
 
     @admin.display(description="Contract")
     def get_contract(self, obj):
@@ -671,8 +671,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not obj.contract:
             return "---"
         url = reverse("admin:sponsors_contract_change", args=[obj.contract.pk])
-        html = f"<a href='{url}' target='_blank'>{obj.contract}</a>"
-        return mark_safe(html)
+        return format_html("<a href='{}' target='_blank'>{}</a>", url, obj.contract)
 
     def get_urls(self):
         """Register custom admin URLs for sponsorship workflow actions."""
@@ -741,19 +740,20 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         template = Template(html)
         context = Context({"sponsor": obj.sponsor})
         html = template.render(context)
-        return mark_safe(html)
+        return mark_safe(html)  # noqa: S308
 
     @admin.display(description="Print Logo")
     def get_sponsor_print_logo(self, obj):
         """Render and return the sponsor's print logo as a thumbnail image."""
         img = obj.sponsor.print_logo
-        html = ""
+        html = "---"
         if img:
-            html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
-            template = Template(html)
+            template = Template(
+                "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+            )
             context = Context({"img": img})
-            html = template.render(context)
-        return mark_safe(html) if html else "---"
+            html = mark_safe(template.render(context))  # noqa: S308
+        return html
 
     @admin.display(description="Primary Phone")
     def get_sponsor_primary_phone(self, obj):
@@ -764,18 +764,24 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     def get_sponsor_mailing_address(self, obj):
         """Return the sponsor's formatted mailing address as HTML."""
         sponsor = obj.sponsor
-        city_row = f"{sponsor.city} - {sponsor.get_country_display()} ({sponsor.country})"
         if sponsor.state:
-            city_row = f"{sponsor.city} - {sponsor.state} - {sponsor.get_country_display()} ({sponsor.country})"
+            city_row_html = format_html(
+                "<p>{} - {} - {} ()</p>", sponsor.city, sponsor.state, sponsor.get_country_display(), sponsor.country
+            )
+        else:
+            city_row_html = format_html(
+                "<p>{} - {} ()</p>", sponsor.city, sponsor.get_country_display(), sponsor.country
+            )
 
-        mail_row = sponsor.mailing_address_line_1
         if sponsor.mailing_address_line_2:
-            mail_row += f" - {sponsor.mailing_address_line_2}"
+            mail_row_html = format_html(
+                "<p>{} - {}</p>", sponsor.mailing_address_line_1, sponsor.mailing_address_line_2
+            )
+        else:
+            mail_row_html = format_html("<p>{}</p>", sponsor.mailing_address_line_1)
 
-        html = f"<p>{city_row}</p>"
-        html += f"<p>{mail_row}</p>"
-        html += f"<p>{sponsor.postal_code}</p>"
-        return mark_safe(html)
+        postal_code_row = format_html("<p>{}</p>", sponsor.postal_code)
+        return city_row_html + mail_row_html + postal_code_row
 
     @admin.display(description="Contacts")
     def get_sponsor_contacts(self, obj):
@@ -785,14 +791,14 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         primary = [c for c in contacts if c.primary]
         not_primary = [c for c in contacts if not c.primary]
         if primary:
-            html = "<b>Primary contacts</b><ul>"
-            html += "".join([f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in primary])
-            html += "</ul>"
+            html = mark_safe("<b>Primary contacts</b><ul>")
+            html += format_html_join("", "<li>{}: {} / {}</li>", [(c.name, c.email, c.phone) for c in primary])
+            html += mark_safe("</ul>")
         if not_primary:
-            html += "<b>Other contacts</b><ul>"
-            html += "".join([f"<li>{c.name}: {c.email} / {c.phone}</li>" for c in not_primary])
-            html += "</ul>"
-        return mark_safe(html)
+            html += mark_safe("<b>Other contacts</b><ul>")
+            html += format_html_join("", "<li>{}: {} / {}</li>", [(c.name, c.email, c.phone) for c in not_primary])
+            html += mark_safe("</ul>")
+        return html
 
     @admin.display(description="Added by User")
     def get_custom_benefits_added_by_user(self, obj):
@@ -801,8 +807,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        html = "".join([f"<p>{b}</p>" for b in benefits])
-        return mark_safe(html)
+        return format_html_join("", "<p>{}</p>", benefits)
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -811,8 +816,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        html = "".join([f"<p>{b}</p>" for b in benefits])
-        return mark_safe(html)
+        return format_html_join("", "<p>{}</p>", benefits)
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -878,18 +882,25 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
         benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
         preview_label = "View sponsorship application"
         year = obj.year
-        html = "<ul>"
         preview_querystring = f"config_year={year}"
         preview_url = f"{application_url}?{preview_querystring}"
         filter_querystring = f"year={year}"
         year_benefits_url = f"{benefits_url}?{filter_querystring}"
         year_packages_url = f"{benefits_url}?{filter_querystring}"
 
-        html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
-        html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
-        html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
-        html += "</ul>"
-        return mark_safe(html)
+        return format_html(
+            dedent("""
+            <ul>
+                <li><a target='_blank' href='{year_packages_url}'>List packages</a>
+                <li><a target='_blank' href='{year_benefits_url}'>List benefits</a>
+                <li><a target='_blank' href='{preview_url}'>{preview_label}</a>
+            </ul>
+            """),
+            year_packages_url=year_packages_url,
+            year_benefits_url=year_benefits_url,
+            preview_url=preview_url,
+            preview_label=preview_label,
+        )
 
     @admin.display(description="Other configured years")
     def other_years(self, obj):
@@ -904,7 +915,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
         application_url = reverse("select_sponsorship_application_benefits")
         benefits_url = reverse("admin:sponsors_sponsorshipbenefit_changelist")
         preview_label = "View sponsorship application form for this year"
-        html = "<ul>"
+        html = mark_safe("<ul>")
         for year in configured_years:
             preview_querystring = f"config_year={year}"
             preview_url = f"{application_url}?{preview_querystring}"
@@ -912,14 +923,24 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
             year_benefits_url = f"{benefits_url}?{filter_querystring}"
             year_packages_url = f"{benefits_url}?{filter_querystring}"
 
-            html += f"<li><b>{year}</b>:"
-            html += "<ul>"
-            html += f"<li><a target='_blank' href='{year_packages_url}'>List packages</a>"
-            html += f"<li><a target='_blank' href='{year_benefits_url}'>List benefits</a>"
-            html += f"<li><a target='_blank' href='{preview_url}'>{preview_label}</a>"
-            html += "</ul></li>"
-        html += "</ul>"
-        return mark_safe(html)
+            html += format_html(
+                dedent("""
+            <li><b>{year}</b>:"
+                <ul>
+                    <li><a target='_blank' href='{year_packages_url}'>List packages</a>
+                    <li><a target='_blank' href='{year_benefits_url}'>List benefits</a>
+                    <li><a target='_blank' href='{preview_url}'>{preview_label}</a>
+                </ul>
+            </li>
+            """),
+                year=year,
+                year_packages_url=year_packages_url,
+                year_benefits_url=year_benefits_url,
+                preview_url=preview_url,
+                preview_label=preview_label,
+            )
+        html += mark_safe("</ul>")
+        return html
 
     def clone_application_config(self, request):
         """Delegate to the clone_application_config admin view."""
@@ -1042,8 +1063,8 @@ class ContractModelAdmin(admin.ModelAdmin):
             msg = "Download Signed Contract"
 
         if url and msg:
-            html = f'<a href="{url}" target="_blank">{msg}</a>'
-        return mark_safe(html)
+            html = format_html('<a href="{}" target="_blank">{}</a>', url, msg)
+        return html
 
     @admin.display(description="Sponsorship")
     def get_sponsorship_url(self, obj):
@@ -1051,8 +1072,7 @@ class ContractModelAdmin(admin.ModelAdmin):
         if not obj.sponsorship:
             return "---"
         url = reverse("admin:sponsors_sponsorship_change", args=[obj.sponsorship.pk])
-        html = f"<a href='{url}' target='_blank'>{obj.sponsorship}</a>"
-        return mark_safe(html)
+        return format_html("<a href='{}' target='_blank'>{}</a>", url, obj.sponsorship)
 
     def get_urls(self):
         """Register custom admin URLs for contract workflow actions."""
@@ -1257,8 +1277,8 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """Return the asset value, linking to the file URL if applicable."""
         html = obj.value
         if obj.value and getattr(obj.value, "url", None):
-            html = f"<a href='{obj.value.url}' target='_blank'>{obj.value}</a>"
-        return mark_safe(html)
+            html = format_html("<a href='{}' target='_blank'>{}</a>", (obj.value.url, obj.value))
+        return html
 
     @admin.display(description="Associated with")
     def get_related_object(self, obj):
@@ -1276,8 +1296,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         if not content_object:  # safety belt
             return obj.content_object
 
-        html = f"<a href='{content_object.admin_url}' target='_blank'>{content_object}</a>"
-        return mark_safe(html)
+        return format_html("<a href='{}' target='_blank'>{}</a>", content_object.admin_url, content_object)
 
     @admin.action(description="Export selected")
     def export_assets_as_zipfile(self, request, queryset):
