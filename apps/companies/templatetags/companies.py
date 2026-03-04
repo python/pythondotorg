@@ -16,8 +16,8 @@ def render_email(value):
         mailbox_tokens = mailbox.split(".")
         domain_tokens = domain.split(".")
 
-        mailbox = format_html_join("<span>.</span>", "{}", mailbox_tokens)
-        domain = format_html_join("<span>.</span>", "{}", domain_tokens)
+        mailbox = format_html_join(mark_safe("<span>.</span>"), "{}", [(token,) for token in mailbox_tokens])
+        domain = format_html_join(mark_safe("<span>.</span>"), "{}", [(token,) for token in domain_tokens])
 
         return mailbox + mark_safe("<span>@</span>") + domain
     return None
