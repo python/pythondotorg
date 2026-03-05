@@ -110,8 +110,8 @@ def wbr_wrap(value: str | None) -> str:
 
     # Split into two halves, each half has internal <wbr> breaks
     midpoint = len(chunks) // 2
-    first_half = format_html_join(mark_safe("<wbr>"), "{}", chunks[:midpoint])
-    second_half = format_html_join(mark_safe("<wbr>"), "{}", chunks[midpoint:])
+    first_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[:midpoint]])
+    second_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[midpoint:]])
 
     return format_html(
         '<span class="checksum-half">{}</span><wbr><span class="checksum-half">{}</span>', first_half, second_half
