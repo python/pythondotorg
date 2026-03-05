@@ -141,8 +141,6 @@ ignore = [
     # Boolean args are idiomatic in Django models, forms, and views
     "FBT001",  # boolean-positional-arg-in-function-definition
     "FBT002",  # boolean-default-value-positional-argument
-    # mark_safe is required Django pattern for admin display
-    "S308",    # suspicious-mark-safe-usage
     # Circular imports are resolved with local imports in Django
     "PLC0415", # import-outside-top-level
     # TODO comment formatting is not worth enforcing

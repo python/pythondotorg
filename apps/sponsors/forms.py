@@ -10,7 +10,7 @@ from django.core.validators import FileExtensionValidator
 from django.db.models import Q
 from django.utils import timezone
 from django.utils.functional import cached_property
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_countries.fields import CountryField
@@ -751,11 +751,11 @@ class SponsorRequiredAssetsForm(forms.Form):
             field = required_asset.as_form_field(required=required, initial=value)
 
             if required_asset.due_date and not bool(value):
-                field.label = mark_safe(
-                    f"<big><b>{field.label}</b></big><br><b>(Required by {required_asset.due_date})</b>"
+                field.label = format_html(
+                    "<big><b>{}</b></big><br><b>(Required by {})</b>", field.label, required_asset.due_date
                 )
             if bool(value):
-                field.label = mark_safe(f"<big><b>{field.label}</b></big><br><small>(Fulfilled, thank you!)</small>")
+                field.label = format_html("<big><b>{}</b></big><br><small>(Fulfilled, thank you!)</small>", field.label)
 
             fields[f_name] = field
 
