@@ -807,7 +807,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -816,7 +816,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -1277,7 +1277,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """Return the asset value, linking to the file URL if applicable."""
         html = obj.value
         if obj.value and getattr(obj.value, "url", None):
-            html = format_html("<a href='{}' target='_blank'>{}</a>", (obj.value.url, obj.value))
+            html = format_html("<a href='{}' target='_blank'>{}</a>", obj.value.url, obj.value)
         return html
 
     @admin.display(description="Associated with")
@@ -1289,9 +1289,9 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """
         content_object = None
         if obj.from_sponsorship:
-            content_object = self.all_sponsorships[obj.object_id]
+            content_object = self.all_sponsorships.get(obj.object_id)
         elif obj.from_sponsor:
-            content_object = self.all_sponsors[obj.object_id]
+            content_object = self.all_sponsors.get(obj.object_id)
 
         if not content_object:  # safety belt
             return obj.content_object
