@@ -807,7 +807,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -816,7 +816,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -925,7 +925,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
             html += format_html(
                 dedent("""
-            <li><b>{year}</b>:"
+            <li><b>{year}</b>:
                 <ul>
                     <li><a target='_blank' href='{year_packages_url}'>List packages</a>
                     <li><a target='_blank' href='{year_benefits_url}'>List benefits</a>
@@ -1277,7 +1277,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """Return the asset value, linking to the file URL if applicable."""
         html = obj.value
         if obj.value and getattr(obj.value, "url", None):
-            html = format_html("<a href='{}' target='_blank'>{}</a>", (obj.value.url, obj.value))
+            html = format_html("<a href='{}' target='_blank'>{}</a>", obj.value.url, obj.value)
         return html
 
     @admin.display(description="Associated with")
