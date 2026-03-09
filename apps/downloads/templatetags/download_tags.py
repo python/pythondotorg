@@ -6,8 +6,7 @@ import re
 import requests
 from django import template
 from django.core.cache import cache
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html, format_html_join, mark_safe
 
 from apps.downloads.models import Release
 
@@ -111,11 +110,11 @@ def wbr_wrap(value: str | None) -> str:
 
     # Split into two halves, each half has internal <wbr> breaks
     midpoint = len(chunks) // 2
-    first_half = "<wbr>".join(chunks[:midpoint])
-    second_half = "<wbr>".join(chunks[midpoint:])
+    first_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[:midpoint]])
+    second_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[midpoint:]])
 
-    return mark_safe(
-        f'<span class="checksum-half">{first_half}</span><wbr><span class="checksum-half">{second_half}</span>'
+    return format_html(
+        '<span class="checksum-half">{}</span><wbr><span class="checksum-half">{}</span>', first_half, second_half
     )
 
 

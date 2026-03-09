@@ -1,7 +1,10 @@
 import datetime as dt
 from unittest.mock import patch
 
-from apps.downloads.models import Release, ReleaseFile
+from django.db import IntegrityError, transaction
+from django.db.models import URLField
+
+from apps.downloads.models import OS, Release, ReleaseFile
 from apps.downloads.tests.base import BaseDownloadTests
 
 
@@ -160,7 +163,7 @@ class DownloadModelTests(BaseDownloadTests):
                 release=self.python_3,
                 slug=slug,
                 name="Python 3.10",
-                url=f"/ftp/python/{slug}.zip",
+                url=f"https://www.python.org/ftp/python/{slug}.zip",
                 download_button=True,
             )
 
@@ -179,7 +182,7 @@ class DownloadModelTests(BaseDownloadTests):
             os=self.windows,
             release=release,
             name="MSIX",
-            url="/ftp/python/pymanager/pymanager-25.0.msix",
+            url="https://www.python.org/ftp/python/pymanager/pymanager-25.0.msix",
             download_button=True,
         )
 
@@ -199,7 +202,7 @@ class DownloadModelTests(BaseDownloadTests):
         """
         # Arrange
         from apps.boxes.models import Box
-        from apps.downloads.models import OS, update_supernav
+        from apps.downloads.models import update_supernav
 
         # Create an OS without any release files
         OS.objects.create(name="Android", slug="android")
@@ -215,7 +218,7 @@ class DownloadModelTests(BaseDownloadTests):
                 release=self.python_3,
                 slug=slug,
                 name="Python 3.10",
-                url=f"/ftp/python/{slug}.zip",
+                url=f"https://www.python.org/ftp/python/{slug}.zip",
                 download_button=True,
             )
 
@@ -247,7 +250,7 @@ class DownloadModelTests(BaseDownloadTests):
             os=self.windows,
             release=self.python_3,
             name="Windows installer",
-            url="/ftp/python/3.10.19/python-3.10.19.exe",
+            url="https://www.python.org/ftp/python/3.10.19/python-3.10.19.exe",
             download_button=True,
         )
 
@@ -268,7 +271,7 @@ class DownloadModelTests(BaseDownloadTests):
             os=self.windows,
             release=self.draft_release,
             name="Windows installer draft",
-            url="/ftp/python/9.7.2/python-9.7.2.exe",
+            url="https://www.python.org/ftp/python/9.7.2/python-9.7.2.exe",
         )
 
         mock_supernav.assert_not_called()
@@ -289,3 +292,22 @@ class DownloadModelTests(BaseDownloadTests):
         mock_supernav.assert_called()
         mock_sources.assert_called()
         mock_home.assert_called()
+
+    def test_release_file_urls_not_python_dot_org(self):
+        for field in ReleaseFile._meta.get_fields():  # noqa: SLF001
+            if not isinstance(field, URLField):
+                continue
+            with self.subTest(field.name), transaction.atomic():
+                kwargs = {
+                    "url": "https://www.python.org/ftp/python/9.7.2/python-9.7.2.exe",
+                    # field.name may be 'url', but will replace the default value.
+                    field.name: "https://notpython.com/python-9.7.2.txt",
+                }
+
+                with self.assertRaises(IntegrityError):
+                    ReleaseFile.objects.create(
+                        os=self.windows,
+                        release=self.draft_release,
+                        name="Windows installer draft",
+                        **kwargs,
+                    )

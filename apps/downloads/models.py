@@ -357,6 +357,17 @@ def update_boxes_on_release_file_delete(sender, instance, **kwargs):
     _update_boxes_for_release_file(instance)
 
 
+def condition_url_is_blank_or_python_dot_org(column: str):
+    """Conditions for a URLField column to force 'http[s]://python.org'."""
+    return (
+        models.Q(**{f"{column}__exact": ""})
+        | models.Q(**{f"{column}__startswith": "https://www.python.org/"})
+        # Older releases allowed 'http://'. 'https://' is required at
+        # the API level, so shouldn't show up in newer releases.
+        | models.Q(**{f"{column}__startswith": "http://www.python.org/"})
+    )
+
+
 class ReleaseFile(ContentManageable, NameSlugModel):
     """Individual files in a release.
 
@@ -405,5 +416,17 @@ class ReleaseFile(ContentManageable, NameSlugModel):
                 fields=["os", "release"],
                 condition=models.Q(download_button=True),
                 name="only_one_download_per_os_per_release",
+            ),
+            models.CheckConstraint(
+                condition=(
+                    condition_url_is_blank_or_python_dot_org("url")
+                    & condition_url_is_blank_or_python_dot_org("gpg_signature_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_signature_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_cert_file")
+                    & condition_url_is_blank_or_python_dot_org("sigstore_bundle_file")
+                    & condition_url_is_blank_or_python_dot_org("sbom_spdx2_file")
+                ),
+                name="only_python_dot_org_urls",
+                violation_error_message="All file URLs must begin with 'https://www.python.org/'",
             ),
         ]
