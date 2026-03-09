@@ -194,10 +194,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
 
         url = self.create_url("os")
         response = self.client.get(url, headers={"authorization": self.Authorization_invalid})
-        # TODO: API v1 returns 200 for a GET request even if token is invalid.
-        # 'StaffAuthorization.read_list` returns 'object_list' unconditionally,
-        # and 'StaffAuthorization.read_detail` returns 'True'.
-        self.assertIn(response.status_code, [200, 401])
+        self.assertEqual(response.status_code, 401)
 
     def test_get_os(self):
         response = self.client.get(self.create_url("os"))
