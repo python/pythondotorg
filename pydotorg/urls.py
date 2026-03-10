@@ -37,11 +37,11 @@ urlpatterns = [
     # other section landing pages
     path(
         "psf/sponsorship-old/",
-        RedirectView.as_view(url="/psf/sponsors/", permanent=True),
+        RedirectView.as_view(pattern_name="psf-sponsors", permanent=True),
     ),
     path(
         "psf/forms/sponsor-application/",
-        RedirectView.as_view(url="/sponsors/application/", permanent=True),
+        RedirectView.as_view(pattern_name="new_sponsorship_application", permanent=True),
     ),
     path("psf-landing/", TemplateView.as_view(template_name="psf/index.html"), name="psf-landing"),
     path("psf/sponsors/", TemplateView.as_view(template_name="psf/sponsors-list.html"), name="psf-sponsors"),
