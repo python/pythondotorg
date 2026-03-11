@@ -1,8 +1,10 @@
 from django.test import TestCase
 from django.urls import reverse
 from model_bakery import baker
-from apps.sponsors.models import Sponsorship, SponsorBenefit
+
+from apps.sponsors.models import SponsorBenefit, Sponsorship
 from apps.sponsors.models.benefits import ProvidedTextAsset
+
 
 class AssetMixinTests(TestCase):
     def setUp(self):
@@ -14,6 +16,6 @@ class AssetMixinTests(TestCase):
     def test_user_view_url_includes_anchor(self):
         expected_url = reverse("users:sponsorship_application_detail", args=[self.sponsorship.pk])
         expected_url += "#provided-assets-info"
-        
+
         self.assertEqual(self.asset.user_view_url, expected_url)
         self.assertIn("#provided-assets-info", self.asset.user_view_url)
