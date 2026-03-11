@@ -89,6 +89,6 @@ def ideal_size(image, ideal_dimension):
         # we only catch the specific ValueError raised by Django when a file is missing.
         if isinstance(e, ValueError) and "no file associated with it" not in str(e):
             raise
-        w, h = ideal_dimension, ideal_dimension
+        return ideal_dimension
 
     return int(w * math.sqrt((100 * ideal_dimension) / (w * h)))

@@ -108,7 +108,8 @@ class IdealSizeTemplateTagTests(TestCase):
                 raise FileNotFoundError
 
         size = ideal_size(MockImageWithoutFile(), 300)
-        self.assertEqual(size, 173)
+        # Should return ideal_dimension directly as fallback
+        self.assertEqual(size, 300)
 
     def test_ideal_size_handles_value_error(self):
         class MockImageWithoutFileValue:
@@ -118,7 +119,8 @@ class IdealSizeTemplateTagTests(TestCase):
                 raise ValueError(msg)
 
         size = ideal_size(MockImageWithoutFileValue(), 250)
-        self.assertEqual(size, 158)
+        # Should return ideal_dimension directly as fallback
+        self.assertEqual(size, 250)
 
     def test_ideal_size_raises_other_value_errors(self):
         class MockImageWithOtherValueError:
