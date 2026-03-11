@@ -43,7 +43,7 @@
 
   {% for package, placement_info in sponsorships_by_package.items %}
   {% if placement_info.sponsorships %}
-  <div title="{{ package }} Sponsors" align="center" style="{% if not forloop.last %}margin-bottom: 3rem;{% endif %}">
+  <div title="{{ package }} Sponsors" align="center"{% if not forloop.last %} style="margin-bottom: 3rem;"{% endif %}>
     {% with dimension=placement_info.logo_dimension %}
 
     <h1 style="font-size: {% if forloop.first %}350%{% else %}300%{% endif %}">{{ placement_info.label }} Sponsors</h1>
