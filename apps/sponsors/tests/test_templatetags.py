@@ -8,8 +8,8 @@ from apps.sponsors.templatetags.sponsors import (
     benefit_name_for_display,
     benefit_quantity_for_package,
     full_sponsorship,
-    list_sponsors,
     ideal_size,
+    list_sponsors,
 )
 
 
@@ -105,7 +105,7 @@ class IdealSizeTemplateTagTests(TestCase):
         class MockImageWithoutFile:
             @property
             def width(self):
-                raise FileNotFoundError()
+                raise FileNotFoundError
 
         size = ideal_size(MockImageWithoutFile(), 300)
         self.assertEqual(size, 173)
@@ -119,3 +119,13 @@ class IdealSizeTemplateTagTests(TestCase):
 
         size = ideal_size(MockImageWithoutFileValue(), 250)
         self.assertEqual(size, 158)
+
+    def test_ideal_size_raises_other_value_errors(self):
+        class MockImageWithOtherValueError:
+            @property
+            def width(self):
+                msg = "Other error"
+                raise ValueError(msg)
+
+        with self.assertRaises(ValueError):
+            ideal_size(MockImageWithOtherValueError(), 250)
