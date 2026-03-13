@@ -1127,6 +1127,19 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.config.create_benefit_feature(self.sponsor_benefit)
         self.assertEqual(1, TextAsset.objects.count())
 
+    def test_create_benefit_feature_with_preexisting_asset_no_crash(self):
+        """Regression: submitting a new sponsorship when the sponsor already
+        has an asset with the same internal_name (from a prior application)
+        should not raise an IntegrityError."""
+        sponsor = self.sponsor_benefit.sponsorship.sponsor
+        TextAsset.objects.create(
+            content_object=sponsor,
+            internal_name=self.config.internal_name,
+        )
+        # should not raise IntegrityError
+        self.config.create_benefit_feature(self.sponsor_benefit)
+        self.assertEqual(1, TextAsset.objects.count())
+
     def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
         sp_benefit = baker.make(SponsorshipBenefit, year=2023)
 
