@@ -1140,6 +1140,17 @@ class RequiredTextAssetConfigurationTests(TestCase):
         self.config.create_benefit_feature(self.sponsor_benefit)
         self.assertEqual(1, TextAsset.objects.count())
 
+    def test_integrity_error_reraised_when_asset_missing(self):
+        """An IntegrityError that is NOT a duplicate-asset collision must
+        propagate so it doesn't get silently swallowed."""
+        from unittest.mock import patch
+
+        with (
+            patch.object(TextAsset, "save", side_effect=IntegrityError("unrelated")),
+            self.assertRaises(IntegrityError),
+        ):
+            self.config.create_benefit_feature(self.sponsor_benefit)
+
     def test_clone_configuration_for_new_sponsorship_benefit_with_new_due_date(self):
         sp_benefit = baker.make(SponsorshipBenefit, year=2023)
 

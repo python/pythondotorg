@@ -163,7 +163,8 @@ class AssetConfigurationMixin:
                     )
                     asset.save()
             except IntegrityError:
-                pass  # asset already exists, created by another benefit config
+                if not content_object.assets.filter(internal_name=self.internal_name).exists():
+                    raise
 
         return benefit_feature
 
