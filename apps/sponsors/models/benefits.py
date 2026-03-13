@@ -1,7 +1,7 @@
 """Benefit feature and configuration models for the sponsors app."""
 
 from django import forms
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
@@ -155,11 +155,15 @@ class AssetConfigurationMixin:
 
         asset_qs = content_object.assets.filter(internal_name=self.internal_name)
         if not asset_qs.exists():
-            asset = self.ASSET_CLASS(
-                content_object=content_object,
-                internal_name=self.internal_name,
-            )
-            asset.save()
+            try:
+                with transaction.atomic():
+                    asset = self.ASSET_CLASS(
+                        content_object=content_object,
+                        internal_name=self.internal_name,
+                    )
+                    asset.save()
+            except IntegrityError:
+                pass  # asset already exists, created by another benefit config
 
         return benefit_feature
 
