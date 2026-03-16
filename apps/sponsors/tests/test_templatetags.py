@@ -91,43 +91,36 @@ class BenefitNameForDisplayTests(TestCase):
         mocked_name_for_display.assert_called_once_with(package=package)
 
 
-class IdealSizeTemplateTagTests(TestCase):
+    def test_ideal_size_handles_missing_file_association(self):
+        class MockImageWithoutFile:
+            def __bool__(self):
+                return False
+
+        size = ideal_size(MockImageWithoutFile(), 250)
+        # Should return ideal_dimension directly as fallback
+        self.assertEqual(size, 250)
+
     def test_ideal_size_scales_properly(self):
         class MockImage:
             width = 400
             height = 200
+
+            def __bool__(self):
+                return True
 
         size = ideal_size(MockImage(), 200)
         # int(400 * sqrt(20000 / 80000)) = int(400 * 0.5) = 200
         self.assertEqual(size, 200)
 
     def test_ideal_size_handles_file_not_found(self):
-        class MockImageWithoutFile:
+        class MockImageWithMissingFileOnDisk:
             @property
             def width(self):
                 raise FileNotFoundError
 
-        size = ideal_size(MockImageWithoutFile(), 300)
+            def __bool__(self):
+                return True
+
+        size = ideal_size(MockImageWithMissingFileOnDisk(), 300)
         # Should return ideal_dimension directly as fallback
         self.assertEqual(size, 300)
-
-    def test_ideal_size_handles_value_error(self):
-        class MockImageWithoutFileValue:
-            @property
-            def width(self):
-                msg = "The 'web_logo' attribute has no file associated with it."
-                raise ValueError(msg)
-
-        size = ideal_size(MockImageWithoutFileValue(), 250)
-        # Should return ideal_dimension directly as fallback
-        self.assertEqual(size, 250)
-
-    def test_ideal_size_raises_other_value_errors(self):
-        class MockImageWithOtherValueError:
-            @property
-            def width(self):
-                msg = "Other error"
-                raise ValueError(msg)
-
-        with self.assertRaises(ValueError):
-            ideal_size(MockImageWithOtherValueError(), 250)

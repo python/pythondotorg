@@ -81,14 +81,16 @@ def benefit_name_for_display(benefit, package):
 def ideal_size(image, ideal_dimension):
     """Scale an image width to fit within the given ideal dimension area."""
     ideal_dimension = int(ideal_dimension)
+
+    # image could be an ImageFieldFile; if it's falsey, it means no file is associated with it.
+    if not image:
+        return ideal_dimension
+
     try:
         w, h = image.width, image.height
-    except (FileNotFoundError, ValueError) as e:
+    except FileNotFoundError:
         # local dev doesn't have all images if DB is a copy from prod environment
         # in that case, we return a fallback size to avoid 500 errors.
-        # we only catch the specific ValueError raised by Django when a file is missing.
-        if isinstance(e, ValueError) and "no file associated with it" not in str(e):
-            raise
         return ideal_dimension
 
     return int(w * math.sqrt((100 * ideal_dimension) / (w * h)))
