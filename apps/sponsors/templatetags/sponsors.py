@@ -83,9 +83,12 @@ def ideal_size(image, ideal_dimension):
     ideal_dimension = int(ideal_dimension)
     try:
         w, h = image.width, image.height
-    except FileNotFoundError:
+    except (FileNotFoundError, ValueError) as e:
         # local dev doesn't have all images if DB is a copy from prod environment
-        # this is just a fallback to return ideal_dimension instead
-        w, h = ideal_dimension, ideal_dimension
+        # in that case, we return a fallback size to avoid 500 errors.
+        # we only catch the specific ValueError raised by Django when a file is missing.
+        if isinstance(e, ValueError) and "no file associated with it" not in str(e):
+            raise
+        return ideal_dimension
 
     return int(w * math.sqrt((100 * ideal_dimension) / (w * h)))
