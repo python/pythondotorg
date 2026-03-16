@@ -91,6 +91,7 @@ class BenefitNameForDisplayTests(TestCase):
         mocked_name_for_display.assert_called_once_with(package=package)
 
 
+class IdealSizeFilterTests(TestCase):
     def test_ideal_size_handles_missing_file_association(self):
         class MockImageWithoutFile:
             def __bool__(self):
