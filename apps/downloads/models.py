@@ -114,6 +114,29 @@ class Release(ContentManageable, NameSlugModel):
             return self.release_page.get_absolute_url()
         return reverse("download:download_release_detail", kwargs={"release_slug": self.slug})
 
+    @property
+    def corrected_release_notes_url(self):
+        """Return the release notes URL, converting dead hg.python.org links to GitHub.
+
+        Old Mercurial-hosted URLs (hg.python.org) are no longer reachable.
+        This property remaps them to their equivalent paths on GitHub so that
+        the "Release notes" links on the downloads page still work for legacy
+        releases (3.3.6 and earlier).
+
+        Example::
+
+            http://hg.python.org/cpython/file/v3.3.6/Misc/NEWS
+            → https://github.com/python/cpython/blob/v3.3.6/Misc/NEWS
+        """
+        url = self.release_notes_url
+        if not url:
+            return url
+        match = re.match(r"https?://hg\.python\.org/cpython/file/([^/]+)/(.+)", url)
+        if match:
+            tag, path = match.group(1), match.group(2)
+            return f"https://github.com/python/cpython/blob/{tag}/{path}"
+        return url
+
     def download_file_for_os(self, os_slug):
         """Given an OS slug return the appropriate download file."""
         try:
@@ -430,3 +453,4 @@ class ReleaseFile(ContentManageable, NameSlugModel):
                 violation_error_message="All file URLs must begin with 'https://www.python.org/'",
             ),
         ]
+
