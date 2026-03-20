@@ -736,24 +736,35 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     @admin.display(description="Web Logo")
     def get_sponsor_web_logo(self, obj):
         """Render and return the sponsor's web logo as a thumbnail image."""
-        html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        img = obj.sponsor.web_logo
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px"/>',
+                img.url,
+            )
+        html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
         template = Template(html)
-        context = Context({"sponsor": obj.sponsor})
-        html = template.render(context)
-        return mark_safe(html)  # noqa: S308
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
 
     @admin.display(description="Print Logo")
     def get_sponsor_print_logo(self, obj):
         """Render and return the sponsor's print logo as a thumbnail image."""
         img = obj.sponsor.print_logo
-        html = "---"
-        if img:
-            template = Template(
-                "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px"/>',
+                img.url,
             )
-            context = Context({"img": img})
-            html = mark_safe(template.render(context))  # noqa: S308
-        return html
+        template = Template(
+            "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        )
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
 
     @admin.display(description="Primary Phone")
     def get_sponsor_primary_phone(self, obj):
