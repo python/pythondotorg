@@ -16,21 +16,20 @@ class AddHeadingAnchorsFilterTests(SimpleTestCase):
         self.assertIn('href="#2023"', result)
         self.assertIn("¶", result)
 
-    def test_h3_and_h4_also_processed(self):
-        """h3 and h4 headings are also processed."""
-        for tag in ("h3", "h4"):
+    def test_h1_h3_h4_also_processed(self):
+        """h1, h3, and h4 headings are also processed."""
+        for tag in ("h1", "h3", "h4"):
             html = f"<{tag}>Section Title</{tag}>"
             result = add_heading_anchors(html)
             self.assertIn('id="section-title"', result)
             self.assertIn('href="#section-title"', result)
 
-    def test_h1_and_h5_are_not_changed(self):
-        """h1 and h5 headings are left untouched."""
-        for tag in ("h1", "h5"):
-            html = f"<{tag}>Title</{tag}>"
-            result = add_heading_anchors(html)
-            self.assertNotIn("id=", result)
-            self.assertNotIn("href=", result)
+    def test_h5_is_not_changed(self):
+        """h5 headings are left untouched."""
+        html = "<h5>Title</h5>"
+        result = add_heading_anchors(html)
+        self.assertNotIn("id=", result)
+        self.assertNotIn("href=", result)
 
     def test_duplicate_headings_get_unique_ids(self):
         """Duplicate heading text produces unique, numbered ids."""
@@ -39,13 +38,35 @@ class AddHeadingAnchorsFilterTests(SimpleTestCase):
         self.assertIn('id="board-resolution"', result)
         self.assertIn('id="board-resolution-2"', result)
 
-    def test_heading_with_existing_id_is_unchanged(self):
-        """A heading that already has an id attribute is left as-is."""
+    def test_heading_with_existing_id_gets_pilcrow_link(self):
+        """A heading with an existing id (e.g. from RST/docutils) gets a pilcrow
+        link using that id, without the id being changed or duplicated."""
         html = '<h2 id="custom-id">My Section</h2>'
-        result = add_heading_anchors(html)
+        result = str(add_heading_anchors(html))
+        # Original id is preserved and not duplicated.
         self.assertIn('id="custom-id"', result)
-        # No extra anchor link should be injected.
-        self.assertNotIn("headerlink", result)
+        self.assertEqual(result.count('id="'), 1)
+        # Pilcrow link is injected using the existing id.
+        self.assertIn('href="#custom-id"', result)
+        self.assertIn("headerlink", result)
+
+    def test_rst_generated_headings_get_pilcrow_links(self):
+        """RST/docutils headings that already carry ids get pilcrow links added."""
+        html = (
+            '<h2 id="board-resolutions">Board Resolutions</h2>'
+            '<h3 id="resolution-1-budget">Resolution 1: Budget</h3>'
+        )
+        result = str(add_heading_anchors(html))
+        self.assertIn('href="#board-resolutions"', result)
+        self.assertIn('href="#resolution-1-budget"', result)
+        self.assertEqual(result.count("headerlink"), 2)
+
+    def test_filter_is_idempotent(self):
+        """Running the filter twice does not add duplicate pilcrow links."""
+        html = "<h2>Section</h2>"
+        once = str(add_heading_anchors(html))
+        twice = str(add_heading_anchors(once))
+        self.assertEqual(once, twice)
 
     def test_heading_with_nested_html_tags(self):
         """Plain text is extracted from headings that contain nested tags."""
@@ -73,5 +94,4 @@ class AddHeadingAnchorsFilterTests(SimpleTestCase):
         """The pilcrow anchor link appears inside the heading element."""
         html = "<h2>Resolutions 2022</h2>"
         result = str(add_heading_anchors(html))
-        # The closing </h2> must come after the anchor link.
         self.assertIn("¶</a></h2>", result)
