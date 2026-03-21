@@ -54,6 +54,7 @@ fi
   # We expect nginx to run in foreground.
   # We also expect a socket to be at /tmp/nginx.socket.
   echo 'buildpack=nginx at=nginx-start'
+  rm -f /var/run/cabotage/cabotage.sock
   cd /tmp
   /usr/bin/nginx -p . -c /code/config/nginx.conf
   echo 'nginx' >$psmgr
