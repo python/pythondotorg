@@ -18,6 +18,13 @@
 </div>
 {% endblock %}
 
+{% block topbar_actions %}
+{% if not is_create and object %}
+    <a href="{% url 'manage_contact_create' object.pk %}" class="btn btn-sm btn-secondary">+ Contact</a>
+    <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ object.pk }}" class="btn btn-sm btn-primary">+ Sponsorship</a>
+{% endif %}
+{% endblock %}
+
 {% block manage_content %}
     <div class="manage-form">
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">{% if is_create %}New Sponsor{% else %}Edit Sponsor: {{ object.name }}{% endif %}</h2>
@@ -104,6 +111,7 @@
                 {% endif %}
             </div>
         </form>
+
     </div>
 {% endblock %}
 
