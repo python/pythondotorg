@@ -10,6 +10,7 @@ from apps.sponsors.models import (
     SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
 )
 
@@ -187,6 +188,7 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
             "to_accounting": SponsorContact.ACCOUTING_CONTACT in contact_types,
             "to_manager": SponsorContact.MANAGER_CONTACT in contact_types,
         }
+        request = kwargs.get("request")
 
         for sponsorship in sponsorships:
             email = notification.get_email_message(sponsorship, **msg_kwargs)
@@ -194,11 +196,21 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                 continue
             email.send()
 
+            # Persist notification log
+            SponsorshipNotificationLog.objects.create(
+                sponsorship=sponsorship,
+                subject=email.subject,
+                content=email.body,
+                recipients=", ".join(email.to),
+                contact_types=", ".join(contact_types),
+                sent_by=request.user if request and hasattr(request, "user") else None,
+            )
+
             self.notify(
                 notification=notification,
                 sponsorship=sponsorship,
                 contact_types=contact_types,
-                request=kwargs.get("request"),
+                request=request,
             )
 
 

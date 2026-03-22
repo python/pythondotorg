@@ -52,6 +52,7 @@ from apps.sponsors.models import (
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
     SponsorshipProgram,
 )
@@ -534,6 +535,8 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         # Benefit add form (only when editable)
         if sp.open_for_editing:
             context["add_benefit_form"] = AddBenefitToSponsorshipForm(sponsorship=sp)
+        # Communication history
+        context["notification_logs"] = sp.notification_logs.select_related("sent_by").all()[:20]
         return context
 
 
@@ -1213,6 +1216,33 @@ class NotificationTemplateDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
         """Return URL to template list after deletion."""
         messages.success(self.request, f'Template "{self.object.internal_name}" deleted.')
         return reverse("manage_notification_templates")
+
+
+class NotificationHistoryView(SponsorshipAdminRequiredMixin, ListView):
+    """Show history of all sent notifications across all sponsorships."""
+
+    model = SponsorshipNotificationLog
+    template_name = "sponsors/manage/notification_history.html"
+    context_object_name = "logs"
+    paginate_by = 50
+
+    def get_queryset(self):
+        """Return logs ordered by most recent, with related data."""
+        qs = SponsorshipNotificationLog.objects.select_related("sponsorship__sponsor", "sent_by").order_by("-sent_at")
+        search = self.request.GET.get("search", "").strip()
+        if search:
+            qs = qs.filter(
+                Q(subject__icontains=search)
+                | Q(recipients__icontains=search)
+                | Q(sponsorship__sponsor__name__icontains=search)
+            )
+        return qs
+
+    def get_context_data(self, **kwargs):
+        """Add search term to context."""
+        context = super().get_context_data(**kwargs)
+        context["filter_search"] = self.request.GET.get("search", "")
+        return context
 
 
 # ── Sponsor contact management ───────────────────────────────────────
