@@ -1,0 +1,67 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Edit Sponsorship | {{ object.sponsor.name }}{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorship_detail' object.pk %}">{{ object.sponsor.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Edit</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Edit Sponsorship</h2>
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            {{ object.sponsor.name }} &middot; {{ object.get_status_display }}
+        </p>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <fieldset class="manage-fieldset">
+                <legend>Sponsorship Details</legend>
+
+                <div class="form-group">
+                    <label for="id_package">Package</label>
+                    {{ form.package }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_sponsorship_fee">Sponsorship Fee ($)</label>
+                        {{ form.sponsorship_fee }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_year">Year</label>
+                        {{ form.year }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                <a href="{% url 'manage_sponsorship_detail' object.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

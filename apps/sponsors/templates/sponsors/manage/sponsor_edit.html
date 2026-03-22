@@ -1,0 +1,110 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Edit {{ object.name }} | Sponsor Management{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    {% if from_sponsorship %}
+    <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}">{{ object.name }}</a>
+    <span class="sep">/</span>
+    {% endif %}
+    <span class="current">Edit Sponsor</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">Edit Sponsor: {{ object.name }}</h2>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}<li>{{ field }}: {{ error }}</li>{% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            {% if from_sponsorship %}<input type="hidden" name="from_sponsorship" value="{{ from_sponsorship }}">{% endif %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Company Info</legend>
+
+                <div class="form-group">
+                    <label for="id_name">Name</label>
+                    {{ form.name }}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    {{ form.description }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_landing_page_url">Website</label>
+                        {{ form.landing_page_url }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_primary_phone">Phone</label>
+                        {{ form.primary_phone }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset class="manage-fieldset">
+                <legend>Address</legend>
+
+                <div class="form-group">
+                    <label for="id_mailing_address_line_1">Address Line 1</label>
+                    {{ form.mailing_address_line_1 }}
+                </div>
+                <div class="form-group">
+                    <label for="id_mailing_address_line_2">Address Line 2</label>
+                    {{ form.mailing_address_line_2 }}
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_city">City</label>
+                        {{ form.city }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_state">State / Province</label>
+                        {{ form.state }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_postal_code">Postal Code</label>
+                        {{ form.postal_code }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_country">Country</label>
+                        {{ form.country }}
+                    </div>
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">Save Changes</button>
+                {% if from_sponsorship %}
+                <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}" class="btn btn-secondary">Cancel</a>
+                {% else %}
+                <a href="{% url 'manage_sponsorships' %}" class="btn btn-secondary">Cancel</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}
