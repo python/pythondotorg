@@ -1661,7 +1661,19 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         """Render the current wizard step."""
         # Clear session when starting a new composer session
         if request.GET.get("new") == "1":
-            self._set_composer_data(request, {})
+            data = {}
+            # Pre-select sponsor if passed
+            sponsor_id = request.GET.get("sponsor_id")
+            if sponsor_id:
+                try:
+                    sponsor = Sponsor.objects.get(pk=int(sponsor_id))
+                    data["sponsor_id"] = sponsor.pk
+                except (Sponsor.DoesNotExist, TypeError, ValueError):
+                    pass
+            self._set_composer_data(request, data)
+            # Skip to step 2 if sponsor was pre-selected
+            if data.get("sponsor_id"):
+                return redirect(reverse("manage_composer") + "?step=2")
             return redirect(reverse("manage_composer"))
 
         step = self._get_step(request)
