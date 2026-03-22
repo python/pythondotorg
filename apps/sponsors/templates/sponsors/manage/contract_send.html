@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block manage_content %}
-    <div style="max-width:820px;margin:0 auto;">
+    <div>
         <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Contract for {{ sponsorship.sponsor.name }}</h2>
         <p style="font-size:13px;color:#777;margin:0 0 24px;">
             {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
