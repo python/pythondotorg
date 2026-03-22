@@ -47,6 +47,7 @@
                 {% if filter_year or filter_search or filter_status %}
                 <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
                 {% endif %}
+                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-sm btn-primary">Export CSV</a>
             </div>
         </form>
     </div>
@@ -58,9 +59,31 @@
     </div>
 
     {% if sponsorships %}
+    <form method="post" action="{% url 'manage_bulk_action' %}" id="bulk-action-form">
+        {% csrf_token %}
+        <!-- Bulk action bar -->
+        <div class="manage-filter-bar" style="margin-bottom:12px;padding:10px 12px;">
+            <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div class="filter-field">
+                    <select name="action">
+                        <option value="">-- Bulk Action --</option>
+                        <option value="export_csv">Export Selected as CSV</option>
+                        <option value="send_notification">Send Notification</option>
+                    </select>
+                </div>
+                <div class="filter-actions">
+                    <button type="submit" class="btn btn-sm btn-secondary" onclick="return validateBulkAction();">Apply</button>
+                </div>
+                <span id="bulk-count" style="font-size:12px;color:#777;margin-left:auto;line-height:36px;">0 selected</span>
+            </div>
+        </div>
+
     <table class="manage-table">
         <thead>
             <tr>
+                <th style="width:30px;text-align:center;">
+                    <input type="checkbox" id="select-all" title="Select all">
+                </th>
                 <th style="width:25%;">Sponsor</th>
                 <th>Package</th>
                 <th style="text-align:right;">Fee</th>
@@ -74,6 +97,9 @@
         <tbody>
             {% for sp in sponsorships %}
             <tr>
+                <td style="text-align:center;">
+                    <input type="checkbox" name="selected_ids" value="{{ sp.pk }}" class="row-select">
+                </td>
                 <td>
                     <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
                         {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
@@ -82,7 +108,7 @@
                     {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
                 </td>
                 <td>
-                    {% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                    {% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>
                 <td style="text-align:right;font-variant-numeric:tabular-nums;">
                     {% if sp.sponsorship_fee %}<span style="font-weight:600;">${{ sp.sponsorship_fee|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
@@ -111,6 +137,7 @@
             {% endfor %}
         </tbody>
     </table>
+    </form>
 
     {% if is_paginated %}
     <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
@@ -130,6 +157,47 @@
         <p>No sponsorships match your filters.</p>
     </div>
     {% endif %}
+
+<script>
+(function() {
+    var selectAll = document.getElementById('select-all');
+    var bulkCount = document.getElementById('bulk-count');
+
+    function updateCount() {
+        var checked = document.querySelectorAll('.row-select:checked').length;
+        bulkCount.textContent = checked + ' selected';
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            var boxes = document.querySelectorAll('.row-select');
+            for (var i = 0; i < boxes.length; i++) {
+                boxes[i].checked = selectAll.checked;
+            }
+            updateCount();
+        });
+    }
+
+    var rows = document.querySelectorAll('.row-select');
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].addEventListener('change', updateCount);
+    }
+})();
+
+function validateBulkAction() {
+    var action = document.querySelector('[name="action"]').value;
+    if (!action) {
+        alert('Please select a bulk action.');
+        return false;
+    }
+    var checked = document.querySelectorAll('.row-select:checked').length;
+    if (checked === 0) {
+        alert('Please select at least one sponsorship.');
+        return false;
+    }
+    return true;
+}
+</script>
 {% endblock %}
 
 {% endwith %}

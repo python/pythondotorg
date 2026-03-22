@@ -1,6 +1,6 @@
 {% extends "sponsors/manage/_base.html" %}
 
-{% block page_title %}Notify {{ sponsorship.sponsor.name }} | Sponsorship Management{% endblock %}
+{% block page_title %}Bulk Notify | Sponsorship Management{% endblock %}
 
 {% with active_tab="sponsorships" %}
 
@@ -10,9 +10,7 @@
     <span class="sep">/</span>
     <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
     <span class="sep">/</span>
-    <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}">{{ sponsorship.sponsor.name }}</a>
-    <span class="sep">/</span>
-    <span class="current">Send Notification</span>
+    <span class="current">Bulk Notification</span>
 </div>
 {% endblock %}
 
@@ -37,7 +35,16 @@
 </style>
 
 <div class="manage-form">
-    <h2 style="font-size:20px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">Send Notification to {{ sponsorship.sponsor.name }}</h2>
+    <h2 style="font-size:20px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">Send Bulk Notification</h2>
+
+    <div class="manage-fieldset" style="margin-bottom:20px;">
+        <legend>Recipients ({{ sponsorships|length }} sponsorship{{ sponsorships|length|pluralize }})</legend>
+        <ul style="margin:0;padding:0 0 0 18px;font-size:13px;line-height:1.8;">
+            {% for sp in sponsorships %}
+            <li>{{ sp.sponsor.name }}{% if sp.package %} &mdash; {{ sp.package.name }}{% endif %}</li>
+            {% endfor %}
+        </ul>
+    </div>
 
     {% if form.non_field_errors %}
     <div class="form-errors">
@@ -47,7 +54,7 @@
 
     {% if email_preview %}
     <div class="manage-fieldset" style="margin-bottom:24px;background:#f7f8fa;">
-        <legend>Email Preview</legend>
+        <legend>Email Preview ({{ sponsorships.0.sponsor.name }})</legend>
         <div class="sp-field">
             <div class="sp-label">Subject</div>
             <div class="sp-value">{{ email_preview.subject }}</div>
@@ -102,7 +109,7 @@
             </div>
         </fieldset>
 
-        <!-- Template variables — click to copy -->
+        <!-- Template variables -->
         <fieldset class="manage-fieldset" style="background:#f7f8fa;">
             <legend>Template Variables</legend>
             <p style="font-size:12px;color:#777;margin:0 0 10px;">Click to copy, then paste into subject or content.</p>
@@ -117,8 +124,8 @@
 
         <div style="display:flex;gap:10px;margin-top:20px;">
             <button type="submit" name="preview" class="btn btn-secondary">Preview</button>
-            <button type="submit" name="confirm" class="btn btn-primary">Send Notification</button>
-            <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
+            <button type="submit" name="confirm" class="btn btn-primary">Send to {{ sponsorships|length }} Sponsor{{ sponsorships|length|pluralize }}</button>
+            <a href="{% url 'manage_sponsorships' %}" class="btn btn-secondary">Cancel</a>
         </div>
     </form>
 </div>
