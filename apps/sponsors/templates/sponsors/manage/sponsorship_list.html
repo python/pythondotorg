@@ -26,7 +26,7 @@
                 </select>
             </div>
             <div class="filter-field">
-                <input type="text" name="search" placeholder="Search..." value="{{ filter_search }}" style="width:140px;">
+                <input type="text" name="search" id="live-search" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
             </div>
             <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Go</button>
@@ -45,16 +45,16 @@
     {% if sponsorships %}
     <form method="post" action="{% url 'manage_bulk_action' %}" id="bulk-action-form">
         {% csrf_token %}
-        <!-- Bulk action bar (compact, aligned) -->
+        <!-- Bulk action bar -->
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <select name="action" style="height:24px;padding:0 6px;font-size:11px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;">
+            <select name="action" style="height:28px;padding:0 8px;font-size:12px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;">
                 <option value="">Bulk action...</option>
                 <option value="export_csv">Export CSV</option>
                 <option value="export_assets">Export Assets ZIP</option>
                 <option value="send_notification">Send Notification</option>
             </select>
-            <button type="submit" style="height:24px;padding:0 8px;font-size:11px;font-weight:600;border:1px solid #ccc;border-radius:3px;background:#f0f0f0;color:#333;cursor:pointer;box-sizing:border-box;font-family:inherit;" onclick="return validateBulkAction();">Apply</button>
-            <span id="bulk-count" style="font-size:11px;color:#999;">0 selected</span>
+            <button type="submit" style="height:28px;padding:0 10px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:3px;background:#f0f0f0;color:#333;cursor:pointer;box-sizing:border-box;font-family:inherit;" onclick="return validateBulkAction();">Apply</button>
+            <span style="font-size:11px;color:#999;" id="bulk-count">0 selected</span>
         </div>
 
     <table class="manage-table">
@@ -75,7 +75,7 @@
         </thead>
         <tbody>
             {% for sp in sponsorships %}
-            <tr>
+            <tr class="sp-row" data-search="{% if sp.sponsor %}{{ sp.sponsor.name|lower }}{% endif %} {% if sp.package %}{{ sp.package.name|lower }}{% endif %} {{ sp.status|lower }} {{ sp.year|default:'' }} {% if sp.sponsorship_fee %}{{ sp.sponsorship_fee|floatformat:"0" }}{% endif %}">
                 <td style="text-align:center;">
                     <input type="checkbox" name="selected_ids" value="{{ sp.pk }}" class="row-select">
                 </td>
@@ -176,6 +176,50 @@ function validateBulkAction() {
     }
     return true;
 }
+
+// Live search filtering
+(function() {
+    var input = document.getElementById('live-search');
+    if (!input) return;
+    var rows = document.querySelectorAll('tr.sp-row');
+    var debounceTimer;
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            var q = input.value.toLowerCase().trim();
+            var visible = 0;
+            for (var i = 0; i < rows.length; i++) {
+                var haystack = rows[i].getAttribute('data-search') || '';
+                var match = !q || haystack.indexOf(q) !== -1;
+                rows[i].style.display = match ? '' : 'none';
+                if (match) visible++;
+            }
+            // Update empty state
+            var emptyRow = document.getElementById('live-search-empty');
+            if (visible === 0 && q) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.id = 'live-search-empty';
+                    emptyRow.innerHTML = '<td colspan="9" style="text-align:center;padding:20px;color:#999;">No sponsorships match &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</td>';
+                    rows[0].parentNode.appendChild(emptyRow);
+                } else {
+                    emptyRow.innerHTML = '<td colspan="9" style="text-align:center;padding:20px;color:#999;">No sponsorships match &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</td>';
+                    emptyRow.style.display = '';
+                }
+            } else if (emptyRow) {
+                emptyRow.style.display = 'none';
+            }
+        }, 100);
+    });
+
+    // Prevent form submit on Enter in search field — just filter live
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+})();
 </script>
 {% endblock %}
 
