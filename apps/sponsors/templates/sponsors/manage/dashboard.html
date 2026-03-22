@@ -130,6 +130,38 @@
     </div>
     {% endif %}
 
+    <!-- Sponsors without sponsorship this year -->
+    {% if unsponsored %}
+    <div class="manage-section">
+        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+            <h2>
+                <span class="collapse-arrow">&#9662;</span>
+                No Sponsorship for {{ selected_year }} <span class="badge" style="background:#999;">{{ unsponsored|length }}</span>
+            </h2>
+        </div>
+        <div class="collapse-body">
+        <table class="manage-table">
+            <thead>
+                <tr>
+                    <th>Sponsor</th>
+                    <th>Location</th>
+                    <th style="width:120px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in unsponsored %}
+                <tr>
+                    <td><a href="{% url 'manage_sponsor_edit' s.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ s.name }}</a></td>
+                    <td style="font-size:12px;color:#777;">{% if s.city %}{{ s.city }}{% endif %}{% if s.country %}, {{ s.country }}{% endif %}</td>
+                    <td style="text-align:right;"><a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ s.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;font-weight:500;">+ Sponsorship</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        </div>
+    </div>
+    {% endif %}
+
     <!-- Config overview cards -->
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
         <div class="sp-card" style="background:#fff;border:1px solid #e8e8e8;border-radius:6px;padding:16px 20px;">
