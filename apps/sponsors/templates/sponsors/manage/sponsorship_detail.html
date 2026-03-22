@@ -72,6 +72,7 @@
         {% if can_rollback and sponsorship.status != 'applied' %}
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('rollback-confirm').classList.toggle('visible')">Rollback to Edit</button>
         {% endif %}
+        <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="lock">
@@ -223,18 +224,36 @@
         {% endwith %}
         {% endif %}
 
-        {% if contacts %}
         <div style="margin-top:14px;padding-top:14px;border-top:1px solid #f0f0f0;">
-            <div class="sp-label" style="margin-bottom:8px;">Contacts</div>
-            {% for contact in contacts %}
-            <div style="font-size:13px;margin-bottom:6px;padding:6px 8px;background:#f7f8fa;border-radius:4px;">
-                <strong>{{ contact.name }}</strong>
-                <span style="color:#999;margin-left:4px;">{{ contact.email }}</span>
-                {% if contact.primary %}<span class="tag tag-blue" style="margin-left:4px;">Primary</span>{% endif %}
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <div class="sp-label">Contacts</div>
+                {% if sponsorship.sponsor %}
+                <a href="{% url 'manage_contact_create' sponsorship.sponsor.pk %}?from_sponsorship={{ sponsorship.pk }}" style="font-size:11px;color:#3776ab;text-decoration:none;">+ Add</a>
+                {% endif %}
             </div>
+            {% for contact in contacts %}
+            <div style="font-size:13px;margin-bottom:6px;padding:6px 8px;background:#f7f8fa;border-radius:4px;display:flex;align-items:center;justify-content:space-between;">
+                <div>
+                    <strong>{{ contact.name }}</strong>
+                    <span style="color:#999;margin-left:4px;">{{ contact.email }}</span>
+                    {% if contact.primary %}<span class="tag tag-blue" style="margin-left:4px;">Primary</span>{% endif %}
+                    {% if contact.administrative %}<span class="tag tag-gray" style="margin-left:2px;">Admin</span>{% endif %}
+                    {% if contact.accounting %}<span class="tag tag-gray" style="margin-left:2px;">Billing</span>{% endif %}
+                    {% if contact.manager %}<span class="tag tag-gray" style="margin-left:2px;">Manager</span>{% endif %}
+                </div>
+                <div style="display:flex;gap:6px;align-items:center;">
+                    <a href="{% url 'manage_contact_edit' contact.pk %}?from_sponsorship={{ sponsorship.pk }}" style="font-size:11px;color:#3776ab;text-decoration:none;">Edit</a>
+                    <form method="post" action="{% url 'manage_contact_delete' contact.pk %}" style="display:inline;margin:0;" onsubmit="return confirm('Remove this contact?');">
+                        {% csrf_token %}
+                        <input type="hidden" name="from_sponsorship" value="{{ sponsorship.pk }}">
+                        <button type="submit" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:11px;padding:0;">&times;</button>
+                    </form>
+                </div>
+            </div>
+            {% empty %}
+            <div style="font-size:12px;color:#999;padding:4px 0;">No contacts.</div>
             {% endfor %}
         </div>
-        {% endif %}
     </div>
 </div>
 
@@ -260,17 +279,20 @@
                 <span style="font-size:12px;color:#777;margin-left:8px;">Sent {{ contract.sent_on|date:"M j, Y" }}</span>
                 {% endif %}
             </div>
-            <div style="display:flex;gap:6px;">
+            <div style="display:flex;gap:6px;align-items:stretch;">
                 {% if 'awaiting signature' in contract.next_status %}
-                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Send Contract</a>
+                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Generate</a>
+                {% endif %}
+                {% if contract.status == 'awaiting signature' %}
+                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Send</a>
                 {% endif %}
                 {% if 'executed' in contract.next_status %}
-                <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-gold">Upload Signed</a>
+                <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-secondary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Upload Signed</a>
                 {% endif %}
                 {% if 'nullified' in contract.next_status %}
-                <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:inline;" onsubmit="return confirm('Nullify this contract?');">
+                <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:flex;margin:0;padding:0;" onsubmit="return confirm('Nullify this contract?');">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger">Nullify</button>
+                    <button type="submit" class="btn btn-sm btn-danger" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;margin:0;">Nullify</button>
                 </form>
                 {% endif %}
             </div>
@@ -288,12 +310,12 @@
             <!-- Stored sent documents -->
             {% if contract.document %}
             <a href="{{ contract.document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
-                <span style="color:#e74c3c;font-weight:700;">PDF</span> Sent Version
+                <span style="color:#e74c3c;font-weight:700;">PDF</span> Final Version
             </a>
             {% endif %}
             {% if contract.document_docx %}
             <a href="{{ contract.document_docx.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
-                <span style="color:#3776ab;font-weight:700;">DOCX</span> Sent Version
+                <span style="color:#3776ab;font-weight:700;">DOCX</span> Final Version
             </a>
             {% endif %}
             <!-- Signed document -->
@@ -312,6 +334,43 @@
         {% endif %}
     </div>
     {% endif %}
+</div>
+{% endif %}
+
+<!-- Required Assets -->
+{% if required_assets %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Required Assets <span class="badge">{{ assets_submitted }}/{{ assets_total }}</span></h2>
+    </div>
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Type</th>
+                <th>Benefit</th>
+                <th>Label</th>
+                <th>Due Date</th>
+                <th style="text-align:center;">Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for asset in required_assets %}
+            <tr>
+                <td style="font-size:12px;">{{ asset|title }}</td>
+                <td>{{ asset.sponsor_benefit.name }}</td>
+                <td>{{ asset.label|default:"--" }}</td>
+                <td style="font-size:12px;color:#777;">
+                    {% if asset.due_date %}{{ asset.due_date|date:"M j, Y" }}{% else %}<span style="color:#ccc;">--</span>{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    <span class="tag {% if asset.value and asset.value != None %}tag-green{% else %}tag-gold{% endif %}">
+                        {% if asset.value and asset.value != None %}Submitted{% else %}Pending{% endif %}
+                    </span>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
 </div>
 {% endif %}
 
@@ -364,14 +423,72 @@
     <!-- Add benefit form -->
     {% if add_benefit_form %}
     <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:14px 20px;margin-top:12px;">
-        <form method="post" action="{% url 'manage_sponsorship_add_benefit' sponsorship.pk %}" style="display:flex;gap:12px;align-items:end;">
+        <form method="post" action="{% url 'manage_sponsorship_add_benefit' sponsorship.pk %}" style="display:flex;gap:12px;align-items:end;" id="add-benefit-form">
             {% csrf_token %}
-            <div style="flex:1;">
+            <div style="flex:1;position:relative;" id="benefit-search-wrap">
                 <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Add Benefit</label>
-                {{ add_benefit_form.benefit }}
+                <input type="text" id="benefit-search" autocomplete="off" placeholder="Type to search benefits..." style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                <select name="benefit" id="benefit-select" style="display:none;">
+                    <option value="">---------</option>
+                    {% for opt in add_benefit_form.benefit.field.queryset %}
+                    <option value="{{ opt.pk }}">{{ opt.program.name }} &gt; {{ opt.name }}</option>
+                    {% endfor %}
+                </select>
+                <div id="benefit-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;max-height:260px;overflow-y:auto;background:#fff;border:1px solid #ccc;border-top:none;border-radius:0 0 4px 4px;z-index:100;box-shadow:0 4px 12px rgba(0,0,0,0.1);"></div>
             </div>
             <button type="submit" class="btn btn-sm btn-primary">Add</button>
         </form>
+        <script>
+        (function() {
+            var input = document.getElementById('benefit-search');
+            var select = document.getElementById('benefit-select');
+            var dropdown = document.getElementById('benefit-dropdown');
+            var options = [];
+            for (var i = 1; i < select.options.length; i++) {
+                options.push({ value: select.options[i].value, text: select.options[i].text });
+            }
+
+            function renderDropdown(filter) {
+                var html = '';
+                var q = (filter || '').toLowerCase();
+                var count = 0;
+                options.forEach(function(opt) {
+                    if (q && opt.text.toLowerCase().indexOf(q) === -1) return;
+                    var highlighted = opt.value === select.value;
+                    html += '<div class="bs-opt' + (highlighted ? ' bs-sel' : '') + '" data-val="' + opt.value + '"'
+                         + ' style="padding:7px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;'
+                         + (highlighted ? 'background:#e8f0fe;font-weight:600;' : '')
+                         + '">' + opt.text + '</div>';
+                    count++;
+                });
+                if (!count) html = '<div style="padding:10px 12px;font-size:13px;color:#999;">No matching benefits</div>';
+                dropdown.innerHTML = html;
+                dropdown.style.display = 'block';
+
+                dropdown.querySelectorAll('.bs-opt').forEach(function(el) {
+                    el.addEventListener('mousedown', function(e) {
+                        e.preventDefault();
+                        select.value = el.dataset.val;
+                        input.value = el.textContent;
+                        dropdown.style.display = 'none';
+                    });
+                    el.addEventListener('mouseenter', function() {
+                        el.style.background = '#e8f0fe';
+                    });
+                    el.addEventListener('mouseleave', function() {
+                        el.style.background = el.classList.contains('bs-sel') ? '#e8f0fe' : '';
+                    });
+                });
+            }
+
+            input.addEventListener('focus', function() { renderDropdown(input.value); });
+            input.addEventListener('input', function() { select.value = ''; renderDropdown(input.value); });
+            input.addEventListener('blur', function() { setTimeout(function() { dropdown.style.display = 'none'; }, 200); });
+            input.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') { dropdown.style.display = 'none'; input.blur(); }
+            });
+        })();
+        </script>
     </div>
     {% endif %}
 </div>

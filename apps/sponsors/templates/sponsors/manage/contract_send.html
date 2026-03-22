@@ -17,31 +17,82 @@
 {% endblock %}
 
 {% block manage_content %}
-    <div class="manage-form">
-        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Send Contract for Signing</h2>
-        <p style="font-size:13px;color:#777;margin:0 0 20px;">
-            {{ sponsorship.sponsor.name }} &middot; {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
+    <div style="max-width:820px;margin:0 auto;">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Contract for {{ sponsorship.sponsor.name }}</h2>
+        <p style="font-size:13px;color:#777;margin:0 0 24px;">
+            {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
+            &middot; {{ contract.get_status_display }} (Rev {{ contract.revision }})
         </p>
 
-        <div class="manage-alert manage-alert-info" style="margin-bottom:20px;">
-            This will generate the contract PDF/DOCX and mark it as <strong>Awaiting Signature</strong>.
-            The PSF team will be notified.
+        <!-- Step 1: Generate -->
+        <div class="manage-fieldset" style="margin-bottom:24px;">
+            <legend>Step 1: Generate Contract</legend>
+            {% if contract.document %}
+            <div class="manage-alert manage-alert-success">
+                Contract has been generated.
+                <a href="{{ contract.document.url }}" target="_blank" style="margin-left:8px;font-weight:600;">Download PDF</a>
+                {% if contract.document_docx %}
+                <a href="{{ contract.document_docx.url }}" target="_blank" style="margin-left:8px;font-weight:600;">Download DOCX</a>
+                {% endif %}
+            </div>
+            {% else %}
+            <p style="font-size:13px;color:#555;margin:0 0 12px;">
+                Generate the contract PDF and DOCX. This finalizes the document and marks it as "Awaiting Signature".
+            </p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="generate">
+                <button type="submit" class="btn btn-primary">Generate Contract</button>
+            </form>
+            {% endif %}
         </div>
 
-        <div class="sp-card" style="margin-bottom:20px;">
-            <div class="sp-field">
-                <div class="sp-label">Current Status</div>
-                <div class="sp-value">{{ contract.get_status_display }} (Revision {{ contract.revision }})</div>
+        {% if contract.document %}
+        <!-- Step 2: Send -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <!-- Send to Sponsor -->
+            <div class="manage-fieldset">
+                <legend>Send to Sponsor</legend>
+                <p style="font-size:13px;color:#555;margin:0 0 8px;">
+                    Send the contract directly to the sponsor's contacts:
+                </p>
+                <div style="margin-bottom:12px;">
+                    {% for email in sponsor_emails %}
+                    <div style="font-size:12px;padding:4px 8px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;">{{ email }}</div>
+                    {% empty %}
+                    <div style="font-size:12px;color:#999;">No verified emails found.</div>
+                    {% endfor %}
+                </div>
+                {% if sponsor_emails %}
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_sponsor">
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Send contract to sponsor contacts?');">Send</button>
+                </form>
+                {% endif %}
+            </div>
+
+            <!-- Send Internal Review -->
+            <div class="manage-fieldset">
+                <legend>Internal Review</legend>
+                <p style="font-size:13px;color:#555;margin:0 0 8px;">
+                    Send to a PSF team member for review before sending to sponsor:
+                </p>
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_internal">
+                    <div class="form-group" style="margin-bottom:12px;">
+                        <input type="email" name="internal_email" value="{{ internal_email }}" placeholder="reviewer@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;">
+                    </div>
+                    <button type="submit" class="btn btn-secondary">Send for Review</button>
+                </form>
             </div>
         </div>
+        {% endif %}
 
-        <form method="post">
-            {% csrf_token %}
-            <div style="display:flex;gap:10px;">
-                <button type="submit" class="btn btn-primary">Generate &amp; Send Contract</button>
-                <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
-            </div>
-        </form>
+        <div style="margin-top:24px;">
+            <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">&larr; Back to Sponsorship</a>
+        </div>
     </div>
 {% endblock %}
 

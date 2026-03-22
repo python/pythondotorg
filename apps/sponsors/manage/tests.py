@@ -11,6 +11,8 @@ from apps.sponsors.models import (
     Contract,
     Sponsor,
     SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
@@ -534,3 +536,249 @@ class ContractViewTests(SponsorshipReviewTestBase):
         self.assertEqual(response.status_code, 302)
         contract.refresh_from_db()
         self.assertEqual(contract.status, Contract.DRAFT)  # unchanged
+
+
+class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
+    """Test notification sending from sponsorship detail."""
+
+    def test_notify_page_loads(self):
+        response = self.client.get(reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Send Notification")
+        self.assertContains(response, self.sponsor.name)
+
+    def test_notify_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_notify_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_notify_preview_with_custom_content(self):
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Test Contact", email="test@example.com", phone="555-0001", primary=True
+        )
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello {{ sponsor_name }}",
+                "preview": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Email Preview")
+        self.assertContains(response, "Test Subject")
+
+    def test_notify_preview_without_contacts_no_preview(self):
+        """Preview returns None email_preview when no contacts match."""
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello",
+                "preview": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        # No contacts, so email_preview is None
+        self.assertIsNone(response.context["email_preview"])
+
+    def test_notify_confirm_sends(self):
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Test Contact", email="test@example.com", phone="555-0001", primary=True
+        )
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello {{ sponsor_name }}",
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(
+            reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]),
+            response.url,
+        )
+
+    def test_notify_empty_form_shows_errors(self):
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+
+    def test_notify_both_template_and_custom_rejected(self):
+        tpl = SponsorEmailNotificationTemplate.objects.create(internal_name="Test TPL", subject="Subj", content="Body")
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "notification": tpl.pk,
+                "subject": "Also custom",
+                "content": "Also custom body",
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a template or use custom content")
+
+    def test_notify_with_template_sends(self):
+        tpl = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Welcome", subject="Welcome {{ sponsor_name }}", content="Hello!"
+        )
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
+        )
+        response = self.client.post(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "notification": tpl.pk,
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+
+
+class SponsorshipDetailAssetTests(SponsorshipReviewTestBase):
+    """Test that the sponsorship detail view includes asset data."""
+
+    def test_detail_context_has_asset_fields(self):
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("required_assets", response.context)
+        self.assertIn("assets_submitted", response.context)
+        self.assertIn("assets_total", response.context)
+        self.assertEqual(response.context["assets_total"], 0)
+        self.assertEqual(response.context["assets_submitted"], 0)
+
+
+class NotificationTemplateListViewTests(SponsorManageTestBase):
+    """Test notification template list view."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_list_loads_empty(self):
+        response = self.client.get(reverse("manage_notification_templates"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Notification Templates")
+
+    def test_list_shows_templates(self):
+        SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Welcome Email", subject="Welcome", content="Hello"
+        )
+        response = self.client.get(reverse("manage_notification_templates"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Welcome Email")
+
+    def test_list_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_notification_templates"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+
+class NotificationTemplateCreateViewTests(SponsorManageTestBase):
+    """Test notification template creation."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_create_form_loads(self):
+        response = self.client.get(reverse("manage_notification_template_create"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Create Notification Template")
+
+    def test_create_template(self):
+        response = self.client.post(
+            reverse("manage_notification_template_create"),
+            {
+                "internal_name": "New Template",
+                "subject": "Hello {{ sponsor_name }}",
+                "content": "Dear {{ sponsor_name }}, your level is {{ sponsorship_level }}.",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(SponsorEmailNotificationTemplate.objects.filter(internal_name="New Template").exists())
+
+    def test_create_missing_fields_rejected(self):
+        response = self.client.post(
+            reverse("manage_notification_template_create"),
+            {"internal_name": ""},
+        )
+        self.assertEqual(response.status_code, 200)  # Re-renders form
+
+
+class NotificationTemplateUpdateViewTests(SponsorManageTestBase):
+    """Test notification template editing."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.template = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="Editable", subject="Subject", content="Content"
+        )
+
+    def test_edit_form_loads(self):
+        response = self.client.get(reverse("manage_notification_template_edit", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Editable")
+
+    def test_edit_template(self):
+        response = self.client.post(
+            reverse("manage_notification_template_edit", args=[self.template.pk]),
+            {
+                "internal_name": "Updated Name",
+                "subject": "Updated Subject",
+                "content": "Updated Content",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.template.refresh_from_db()
+        self.assertEqual(self.template.internal_name, "Updated Name")
+        self.assertEqual(self.template.subject, "Updated Subject")
+
+
+class NotificationTemplateDeleteViewTests(SponsorManageTestBase):
+    """Test notification template deletion."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.template = SponsorEmailNotificationTemplate.objects.create(
+            internal_name="ToDelete", subject="Subject", content="Content"
+        )
+
+    def test_delete_confirm_loads(self):
+        response = self.client.get(reverse("manage_notification_template_delete", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "ToDelete")
+
+    def test_delete_template(self):
+        pk = self.template.pk
+        response = self.client.post(reverse("manage_notification_template_delete", args=[pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(SponsorEmailNotificationTemplate.objects.filter(pk=pk).exists())
+
+    def test_delete_requires_auth(self):
+        self.client.logout()
+        response = self.client.post(reverse("manage_notification_template_delete", args=[self.template.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+        # Template still exists
+        self.assertTrue(SponsorEmailNotificationTemplate.objects.filter(pk=self.template.pk).exists())

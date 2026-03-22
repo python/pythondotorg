@@ -5,6 +5,7 @@ Locked down to users in the 'Sponsorship Admin' group (or staff/superuser).
 
 import contextlib
 
+from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q, Sum
@@ -21,6 +22,9 @@ from apps.sponsors.manage.forms import (
     CloneYearForm,
     CurrentYearForm,
     ExecuteContractForm,
+    NotificationTemplateForm,
+    SendSponsorshipNotificationManageForm,
+    SponsorContactForm,
     SponsorEditForm,
     SponsorshipApproveForm,
     SponsorshipBenefitManageForm,
@@ -29,9 +33,12 @@ from apps.sponsors.manage.forms import (
     SponsorshipPackageManageForm,
 )
 from apps.sponsors.models import (
+    BenefitFeature,
     Contract,
     Sponsor,
     SponsorBenefit,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
@@ -500,6 +507,17 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
             context["contract"] = sp.contract
         except Contract.DoesNotExist:
             context["contract"] = None
+        # Required assets
+        required_assets = list(BenefitFeature.objects.required_assets().from_sponsorship(sp))
+        assets_submitted = 0
+        for asset in required_assets:
+            with contextlib.suppress(Exception):
+                val = asset.value
+                if val and (not hasattr(val, "url") or val.url):
+                    assets_submitted += 1
+        context["required_assets"] = required_assets
+        context["assets_submitted"] = assets_submitted
+        context["assets_total"] = len(required_assets)
         # Benefit add form (only when editable)
         if sp.open_for_editing:
             context["add_benefit_form"] = AddBenefitToSponsorshipForm(sponsorship=sp)
@@ -702,32 +720,122 @@ class ContractPreviewView(SponsorshipAdminRequiredMixin, View):
 
 
 class ContractSendView(SponsorshipAdminRequiredMixin, View):
-    """Generate and send contract for signing."""
+    """Generate contract and send to sponsor or internal review."""
 
     def get(self, request, pk):
-        """Render the contract send confirmation page."""
+        """Render the contract send page with both options."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
         try:
             contract = sp.contract
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists for this sponsorship.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
-        context = {"sponsorship": sp, "contract": contract}
+        context = {
+            "sponsorship": sp,
+            "contract": contract,
+            "sponsor_emails": sp.verified_emails if sp.sponsor else [],
+            "internal_email": request.GET.get("internal_email", ""),
+        }
         return render(request, "sponsors/manage/contract_send.html", context)
 
     def post(self, request, pk):
-        """Generate and send the contract."""
+        """Handle send to sponsor or internal review."""
         sp = get_object_or_404(Sponsorship, pk=pk)
+        action = request.POST.get("action", "")
+
         try:
             contract = sp.contract
-            use_case = use_cases.SendContractUseCase.build()
-            use_case.execute(contract, request=request)
-            messages.success(request, "Contract generated and sent.")
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+        handler = {
+            "generate": self._handle_generate,
+            "send_sponsor": self._handle_send_sponsor,
+            "send_internal": self._handle_send_internal,
+        }.get(action)
+
+        if handler:
+            return handler(request, sp, contract)
+
+        messages.error(request, "Unknown action.")
+        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+    @staticmethod
+    def _handle_generate(request, sp, contract):
+        try:
+            use_case = use_cases.SendContractUseCase.build()
+            use_case.execute(contract, request=request)
+            messages.success(request, "Contract generated and finalized. Ready to send.")
         except InvalidStatusError as e:
             messages.error(request, str(e))
-        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+        return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
+    @staticmethod
+    def _handle_send_sponsor(request, sp, contract):
+        from apps.sponsors.notifications import ContractNotificationToSponsors
+
+        if not contract.document:
+            messages.error(request, "Generate the contract first before sending to sponsor.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+        notification = ContractNotificationToSponsors()
+        notification.notify(contract=contract, request=request)
+        recipient_list = ", ".join(sp.verified_emails)
+        messages.success(request, f"Contract sent to sponsor ({recipient_list}).")
+        return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
+
+    @staticmethod
+    def _handle_send_internal(request, sp, contract):
+        from django.core.mail import EmailMessage
+
+        from apps.sponsors.contracts import render_contract_to_docx_file, render_contract_to_pdf_file
+
+        internal_email = request.POST.get("internal_email", "").strip()
+        if not internal_email:
+            messages.error(request, "Please enter an email address.")
+            return redirect(reverse("manage_contract_send", args=[sp.pk]))
+
+        email = EmailMessage(
+            subject=f"[Internal Review] Contract for {sp.sponsor.name}",
+            body=f"Contract for {sp.sponsor.name} ({sp.level_name}, ${sp.sponsorship_fee}) attached for review.",
+            from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
+            to=[internal_email],
+        )
+
+        # Use stored files if available, otherwise render live
+        pdf_content = None
+        if contract.document:
+            try:
+                with contract.document.open("rb") as f:
+                    pdf_content = f.read()
+            except FileNotFoundError:
+                pass
+        if not pdf_content:
+            pdf_content = render_contract_to_pdf_file(contract)
+
+        if pdf_content:
+            email.attach("Contract.pdf", pdf_content, "application/pdf")
+
+        docx_content = None
+        if contract.document_docx:
+            try:
+                with contract.document_docx.open("rb") as f:
+                    docx_content = f.read()
+            except FileNotFoundError:
+                pass
+        if not docx_content:
+            docx_content = render_contract_to_docx_file(contract)
+
+        if docx_content:
+            email.attach(
+                "Contract.docx",
+                docx_content,
+                "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            )
+
+        email.send()
+        messages.success(request, f"Contract sent to {internal_email} for internal review.")
+        return redirect(reverse("manage_sponsorship_detail", args=[sp.pk]))
 
 
 class ContractExecuteView(SponsorshipAdminRequiredMixin, View):
@@ -781,3 +889,207 @@ class ContractNullifyView(SponsorshipAdminRequiredMixin, View):
         except InvalidStatusError as e:
             messages.error(request, str(e))
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+
+# ── Notification views ────────────────────────────────────────────────
+
+
+class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
+    """Send a notification to sponsor contacts for a specific sponsorship."""
+
+    def get(self, request, pk):
+        """Render the notification form with optional preview."""
+        sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        form = SendSponsorshipNotificationManageForm()
+        context = {"sponsorship": sp, "form": form, "email_preview": None}
+        return render(request, "sponsors/manage/sponsorship_notify.html", context)
+
+    def post(self, request, pk):
+        """Preview or send the notification."""
+        sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
+        form = SendSponsorshipNotificationManageForm(request.POST)
+        email_preview = None
+
+        if "preview" in request.POST:
+            if form.is_valid():
+                notification = form.get_notification()
+                msg_kwargs = {
+                    "to_primary": True,
+                    "to_administrative": True,
+                    "to_accounting": True,
+                    "to_manager": True,
+                }
+                email_preview = notification.get_email_message(sp, **msg_kwargs)
+            context = {"sponsorship": sp, "form": form, "email_preview": email_preview}
+            return render(request, "sponsors/manage/sponsorship_notify.html", context)
+
+        if "confirm" in request.POST and form.is_valid():
+            use_case = use_cases.SendSponsorshipNotificationUseCase.build()
+            use_case.execute(
+                notification=form.get_notification(),
+                sponsorships=[sp],
+                contact_types=form.cleaned_data["contact_types"],
+                request=request,
+            )
+            messages.success(request, f"Notification sent to {sp.sponsor.name} contacts.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+        context = {"sponsorship": sp, "form": form, "email_preview": email_preview}
+        return render(request, "sponsors/manage/sponsorship_notify.html", context)
+
+
+# ── Notification template CRUD ────────────────────────────────────────
+
+
+class NotificationTemplateListView(SponsorshipAdminRequiredMixin, ListView):
+    """List all SponsorEmailNotificationTemplate instances."""
+
+    model = SponsorEmailNotificationTemplate
+    template_name = "sponsors/manage/notification_template_list.html"
+    context_object_name = "templates"
+
+    def get_queryset(self):
+        """Return templates ordered by most recently updated."""
+        return SponsorEmailNotificationTemplate.objects.order_by("-updated_at")
+
+
+NOTIFICATION_TEMPLATE_VARS = [
+    "sponsor_name",
+    "sponsorship_level",
+    "sponsorship_start_date",
+    "sponsorship_end_date",
+    "sponsorship_status",
+]
+
+
+class NotificationTemplateCreateView(SponsorshipAdminRequiredMixin, CreateView):
+    """Create a new notification template."""
+
+    model = SponsorEmailNotificationTemplate
+    form_class = NotificationTemplateForm
+    template_name = "sponsors/manage/notification_template_form.html"
+
+    def get_success_url(self):
+        """Return URL to template list after creation."""
+        messages.success(self.request, f'Template "{self.object.internal_name}" created.')
+        return reverse("manage_notification_templates")
+
+    def get_context_data(self, **kwargs):
+        """Return context with create flag and template variables."""
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = True
+        context["template_vars"] = NOTIFICATION_TEMPLATE_VARS
+        return context
+
+
+class NotificationTemplateUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
+    """Edit an existing notification template."""
+
+    model = SponsorEmailNotificationTemplate
+    form_class = NotificationTemplateForm
+    template_name = "sponsors/manage/notification_template_form.html"
+
+    def get_success_url(self):
+        """Return URL to template list after update."""
+        messages.success(self.request, f'Template "{self.object.internal_name}" updated.')
+        return reverse("manage_notification_templates")
+
+    def get_context_data(self, **kwargs):
+        """Return context with edit flag and template variables."""
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = False
+        context["template_vars"] = NOTIFICATION_TEMPLATE_VARS
+        return context
+
+
+class NotificationTemplateDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
+    """Delete a notification template."""
+
+    model = SponsorEmailNotificationTemplate
+    template_name = "sponsors/manage/notification_template_confirm_delete.html"
+
+    def get_success_url(self):
+        """Return URL to template list after deletion."""
+        messages.success(self.request, f'Template "{self.object.internal_name}" deleted.')
+        return reverse("manage_notification_templates")
+
+
+# ── Sponsor contact management ───────────────────────────────────────
+
+
+class SponsorContactCreateView(SponsorshipAdminRequiredMixin, CreateView):
+    """Add a contact to a sponsor."""
+
+    model = SponsorContact
+    form_class = SponsorContactForm
+    template_name = "sponsors/manage/contact_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Look up the sponsor from the URL."""
+        self.sponsor = get_object_or_404(Sponsor, pk=kwargs["sponsor_pk"])
+        self.from_sponsorship = request.GET.get("from_sponsorship", "")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """Return context with sponsor and create flag."""
+        context = super().get_context_data(**kwargs)
+        context["sponsor"] = self.sponsor
+        context["is_create"] = True
+        context["from_sponsorship"] = self.from_sponsorship
+        return context
+
+    def form_valid(self, form):
+        """Set sponsor on the contact before saving."""
+        form.instance.sponsor = self.sponsor
+        return super().form_valid(form)
+
+    def get_success_url(self):
+        """Return URL back to sponsorship detail or sponsor edit."""
+        messages.success(self.request, f'Contact "{self.object.name}" added.')
+        if self.from_sponsorship:
+            return reverse("manage_sponsorship_detail", args=[self.from_sponsorship])
+        return reverse("manage_sponsor_edit", args=[self.sponsor.pk])
+
+
+class SponsorContactUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
+    """Edit a sponsor contact."""
+
+    model = SponsorContact
+    form_class = SponsorContactForm
+    template_name = "sponsors/manage/contact_form.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Store from_sponsorship for redirect."""
+        self.from_sponsorship = request.GET.get("from_sponsorship", "")
+        return super().dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """Return context with sponsor and edit flag."""
+        context = super().get_context_data(**kwargs)
+        context["sponsor"] = self.object.sponsor
+        context["is_create"] = False
+        context["from_sponsorship"] = self.from_sponsorship
+        return context
+
+    def get_success_url(self):
+        """Return URL back to sponsorship detail or sponsor edit."""
+        messages.success(self.request, f'Contact "{self.object.name}" updated.')
+        if self.from_sponsorship:
+            return reverse("manage_sponsorship_detail", args=[self.from_sponsorship])
+        return reverse("manage_sponsor_edit", args=[self.object.sponsor.pk])
+
+
+class SponsorContactDeleteView(SponsorshipAdminRequiredMixin, View):
+    """Delete a sponsor contact."""
+
+    def post(self, request, pk):
+        """Delete the contact and redirect."""
+        contact = get_object_or_404(SponsorContact, pk=pk)
+        name = contact.name
+        sponsor_pk = contact.sponsor_id
+        from_sp = request.POST.get("from_sponsorship", "")
+        contact.delete()
+        messages.success(request, f'Contact "{name}" deleted.')
+        if from_sp:
+            return redirect(reverse("manage_sponsorship_detail", args=[from_sp]))
+        return redirect(reverse("manage_sponsor_edit", args=[sponsor_pk]))
