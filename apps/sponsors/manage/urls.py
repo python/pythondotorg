@@ -12,6 +12,16 @@ urlpatterns = [
     path("benefits/new/", views.BenefitCreateView.as_view(), name="manage_benefit_create"),
     path("benefits/<int:pk>/edit/", views.BenefitUpdateView.as_view(), name="manage_benefit_edit"),
     path("benefits/<int:pk>/delete/", views.BenefitDeleteView.as_view(), name="manage_benefit_delete"),
+    # Benefit feature configurations
+    path(
+        "benefits/<int:pk>/add-config/<str:config_type>/",
+        views.BenefitConfigAddView.as_view(),
+        name="manage_benefit_config_add",
+    ),
+    path("benefit-configs/<int:pk>/edit/", views.BenefitConfigEditView.as_view(), name="manage_benefit_config_edit"),
+    path(
+        "benefit-configs/<int:pk>/delete/", views.BenefitConfigDeleteView.as_view(), name="manage_benefit_config_delete"
+    ),
     # Packages
     path("packages/", views.PackageListView.as_view(), name="manage_packages"),
     path("packages/new/", views.PackageCreateView.as_view(), name="manage_package_create"),
@@ -28,6 +38,11 @@ urlpatterns = [
     path("sponsorships/bulk-notify/", views.BulkNotifyView.as_view(), name="manage_bulk_notify"),
     path("sponsorships/<int:pk>/", views.SponsorshipDetailView.as_view(), name="manage_sponsorship_detail"),
     path("sponsorships/<int:pk>/approve/", views.SponsorshipApproveView.as_view(), name="manage_sponsorship_approve"),
+    path(
+        "sponsorships/<int:pk>/approve-signed/",
+        views.SponsorshipApproveSignedView.as_view(),
+        name="manage_sponsorship_approve_signed",
+    ),
     path("sponsorships/<int:pk>/reject/", views.SponsorshipRejectView.as_view(), name="manage_sponsorship_reject"),
     path(
         "sponsorships/<int:pk>/rollback/", views.SponsorshipRollbackView.as_view(), name="manage_sponsorship_rollback"
@@ -61,7 +76,14 @@ urlpatterns = [
     path(
         "sponsorships/<int:pk>/contract/redraft/", views.ContractRedraftView.as_view(), name="manage_contract_redraft"
     ),
-    # Sponsor (company) edit
+    # Asset export
+    path(
+        "sponsorships/<int:pk>/export-assets/",
+        views.AssetExportView.as_view(),
+        name="manage_sponsorship_export_assets",
+    ),
+    # Sponsor (company) create/edit
+    path("sponsors/new/", views.SponsorCreateView.as_view(), name="manage_sponsor_create"),
     path("sponsors/<int:pk>/edit/", views.SponsorEditView.as_view(), name="manage_sponsor_edit"),
     # Sponsor contacts
     path(
@@ -77,6 +99,8 @@ urlpatterns = [
         views.SponsorshipNotifyView.as_view(),
         name="manage_sponsorship_notify",
     ),
+    # Composer wizard
+    path("composer/", views.ComposerView.as_view(), name="manage_composer"),
     # Notification template CRUD
     path("notifications/", views.NotificationTemplateListView.as_view(), name="manage_notification_templates"),
     path(

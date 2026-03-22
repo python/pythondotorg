@@ -1,0 +1,1224 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Sponsorship Composer | Sponsor Management{% endblock %}
+
+{% with active_tab="composer" %}
+
+{% block manage_content %}
+<style>
+    /* ── Step Indicator ── */
+    .composer-steps {
+        display: flex;
+        align-items: center;
+        margin-bottom: 32px;
+        padding: 0;
+    }
+    .composer-step {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        color: #aaa;
+        font-size: 13px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+    .composer-step .step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        background: #e8e8e8;
+        color: #999;
+        font-size: 13px;
+        font-weight: 700;
+        flex-shrink: 0;
+    }
+    .composer-step.completed .step-num {
+        background: #4caf50;
+        color: #fff;
+    }
+    .composer-step.completed { color: #4caf50; }
+    .composer-step.active .step-num {
+        background: #3776ab;
+        color: #fff;
+    }
+    .composer-step.active { color: #3776ab; }
+    .composer-step-line {
+        flex: 1;
+        height: 2px;
+        background: #e0e0e0;
+        margin: 0 12px;
+        min-width: 20px;
+    }
+    .composer-step-line.completed { background: #4caf50; }
+
+    /* ── Sponsor list ── */
+    .sponsor-list {
+        margin-bottom: 20px;
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
+        overflow: hidden;
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    .sponsor-list-letter {
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #999;
+        padding: 6px 16px 4px;
+        background: #f7f8fa;
+        border-bottom: 1px solid #e8e8e8;
+        position: sticky;
+        top: 0;
+        z-index: 1;
+    }
+    .sponsor-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        cursor: pointer;
+        border-bottom: 1px solid #f0f0f0;
+        transition: background 0.1s;
+    }
+    .sponsor-card:hover {
+        background: #f0f6fc;
+    }
+    .sponsor-card.selected {
+        background: #e8f0fe;
+        border-left: 3px solid #3776ab;
+    }
+    .sponsor-card:last-child {
+        border-bottom: none;
+    }
+    .sponsor-card .sponsor-name {
+        font-weight: 600;
+        font-size: 14px;
+        color: #1a1a2e;
+    }
+    .sponsor-card .sponsor-meta {
+        font-size: 12px;
+        color: #999;
+        margin-left: auto;
+    }
+
+    /* ── Package cards ── */
+    .package-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+    .package-card {
+        background: #fff;
+        border: 2px solid #e8e8e8;
+        border-radius: 8px;
+        padding: 20px;
+        cursor: pointer;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        text-align: center;
+        position: relative;
+    }
+    .package-card:hover {
+        border-color: #3776ab;
+        box-shadow: 0 2px 8px rgba(55, 118, 171, 0.15);
+    }
+    .package-card.selected {
+        border-color: #3776ab;
+        background: #f0f6fc;
+    }
+    .package-card.selected::after {
+        content: '\2713';
+        position: absolute;
+        top: 8px;
+        right: 10px;
+        color: #3776ab;
+        font-size: 18px;
+        font-weight: 700;
+    }
+    .package-card .pkg-name {
+        font-weight: 700;
+        font-size: 16px;
+        color: #1a1a2e;
+        margin-bottom: 6px;
+    }
+    .package-card .pkg-price {
+        font-size: 22px;
+        font-weight: 700;
+        color: #3776ab;
+        margin-bottom: 4px;
+    }
+    .package-card .pkg-benefits-count {
+        font-size: 12px;
+        color: #777;
+    }
+    .package-card.custom-pkg {
+        border-style: dashed;
+        border-color: #ffd43b;
+    }
+    .package-card.custom-pkg .pkg-name { color: #b8860b; }
+
+    /* ── Benefits columns ── */
+    .benefits-columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+    .benefits-col {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
+        overflow: hidden;
+    }
+    .benefits-col-header {
+        padding: 12px 16px;
+        background: #f7f8fa;
+        border-bottom: 1px solid #e8e8e8;
+        font-size: 13px;
+        font-weight: 700;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    .benefits-col-body {
+        max-height: 500px;
+        overflow-y: auto;
+        padding: 8px;
+    }
+    .benefit-group-label {
+        font-size: 11px;
+        font-weight: 700;
+        color: #3776ab;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 8px 8px 4px;
+        margin-top: 4px;
+    }
+    .benefit-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 6px 8px;
+        border-radius: 4px;
+        font-size: 13px;
+        transition: background 0.1s;
+    }
+    .benefit-item:hover { background: #f7f8fa; }
+    .benefit-item .benefit-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .benefit-item .benefit-name {
+        color: #1a1a2e;
+        font-weight: 500;
+    }
+    .benefit-item .benefit-value {
+        color: #777;
+        font-size: 11px;
+        margin-left: 6px;
+    }
+    .benefit-item .benefit-tags {
+        display: inline-flex;
+        gap: 4px;
+        margin-left: 6px;
+    }
+    .benefit-item .benefit-tags .tag {
+        font-size: 9px;
+        padding: 1px 5px;
+    }
+    .benefit-item .benefit-action {
+        flex-shrink: 0;
+        margin-left: 8px;
+    }
+    .benefit-item .benefit-action button {
+        width: 24px;
+        height: 24px;
+        border: 1px solid #d0d0d0;
+        border-radius: 4px;
+        background: #fff;
+        cursor: pointer;
+        font-size: 14px;
+        line-height: 1;
+        color: #666;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.1s;
+    }
+    .benefit-item .benefit-action button.add-btn:hover {
+        background: #e8f0fe;
+        border-color: #3776ab;
+        color: #3776ab;
+    }
+    .benefit-item .benefit-action button.remove-btn:hover {
+        background: #fde8e8;
+        border-color: #e74c3c;
+        color: #e74c3c;
+    }
+    .benefits-total {
+        padding: 12px 16px;
+        border-top: 2px solid #e8e8e8;
+        background: #f7f8fa;
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a1a2e;
+        display: flex;
+        justify-content: space-between;
+    }
+    .benefit-search {
+        width: 100%;
+        padding: 8px 12px;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        font-size: 13px;
+        margin-bottom: 4px;
+        box-sizing: border-box;
+    }
+    .benefit-search:focus {
+        border-color: #3776ab;
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(55, 118, 171, 0.15);
+    }
+
+    /* ── Summary card ── */
+    .summary-card {
+        background: #fff;
+        border: 1px solid #e8e8e8;
+        border-radius: 8px;
+        overflow: hidden;
+        margin-bottom: 24px;
+    }
+    .summary-card .summary-header {
+        padding: 16px 20px;
+        background: #3776ab;
+        color: #fff;
+        font-size: 16px;
+        font-weight: 700;
+    }
+    .summary-section {
+        padding: 16px 20px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    .summary-section:last-child { border-bottom: none; }
+    .summary-section h3 {
+        font-size: 12px;
+        font-weight: 700;
+        color: #777;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin: 0 0 8px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 4px 0;
+        font-size: 14px;
+    }
+    .summary-row .label { color: #666; }
+    .summary-row .value { color: #1a1a2e; font-weight: 600; }
+    .summary-benefits {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .summary-benefits li {
+        padding: 4px 0;
+        font-size: 13px;
+        color: #333;
+        display: flex;
+        justify-content: space-between;
+    }
+    .summary-benefits li .prog { color: #3776ab; font-weight: 600; margin-right: 6px; }
+
+    /* ── Actions bar ── */
+    .composer-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid #e8e8e8;
+        flex-wrap: wrap;
+    }
+    .composer-actions .spacer { flex: 1; }
+
+    /* ── Collapsible new sponsor ── */
+    .collapse-section {
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
+        margin-bottom: 20px;
+    }
+    .collapse-header {
+        padding: 12px 16px;
+        cursor: pointer;
+        font-size: 14px;
+        font-weight: 600;
+        color: #3776ab;
+        background: #f7f8fa;
+        border-radius: 6px 6px 0 0;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        user-select: none;
+    }
+    .collapse-header:hover { background: #e8f0fe; }
+    .collapse-body {
+        padding: 16px;
+        display: none;
+    }
+    .collapse-section.open .collapse-body { display: block; }
+    .collapse-section.open .collapse-arrow { transform: rotate(90deg); }
+
+    /* ── Quick date buttons ── */
+    .date-quick-btn {
+        display: inline-block;
+        padding: 3px 8px;
+        font-size: 11px;
+        font-weight: 600;
+        background: #f0f0f0;
+        border: 1px solid #d0d0d0;
+        border-radius: 3px;
+        cursor: pointer;
+        color: #555;
+        transition: background 0.1s;
+        font-family: inherit;
+    }
+    .date-quick-btn:hover {
+        background: #e8f0fe;
+        border-color: #3776ab;
+        color: #3776ab;
+    }
+
+    /* ── Step 5 action cards ── */
+    .action-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 14px;
+    }
+    .action-card {
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
+        padding: 16px;
+        background: #fff;
+    }
+    .action-card h4 {
+        font-size: 14px;
+        font-weight: 700;
+        color: #1a1a2e;
+        margin: 0 0 8px;
+    }
+    .action-card p {
+        font-size: 12px;
+        color: #777;
+        margin: 0 0 12px;
+    }
+</style>
+
+<!-- Step indicator -->
+<div class="composer-steps">
+    {% if step > 1 %}
+        <a href="{% url 'manage_composer' %}?step=1" class="composer-step completed">
+            <span class="step-num">1</span> Sponsor
+        </a>
+    {% elif step == 1 %}
+        <span class="composer-step active"><span class="step-num">1</span> Sponsor</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">1</span> Sponsor</span>
+    {% endif %}
+
+    <div class="composer-step-line {% if step >= 2 %}completed{% endif %}"></div>
+
+    {% if step > 2 %}
+        <a href="{% url 'manage_composer' %}?step=2" class="composer-step completed">
+            <span class="step-num">2</span> Package
+        </a>
+    {% elif step == 2 %}
+        <span class="composer-step active"><span class="step-num">2</span> Package</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">2</span> Package</span>
+    {% endif %}
+
+    <div class="composer-step-line {% if step >= 3 %}completed{% endif %}"></div>
+
+    {% if step > 3 %}
+        <a href="{% url 'manage_composer' %}?step=3" class="composer-step completed">
+            <span class="step-num">3</span> Benefits
+        </a>
+    {% elif step == 3 %}
+        <span class="composer-step active"><span class="step-num">3</span> Benefits</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">3</span> Benefits</span>
+    {% endif %}
+
+    <div class="composer-step-line {% if step >= 4 %}completed{% endif %}"></div>
+
+    {% if step > 4 %}
+        <a href="{% url 'manage_composer' %}?step=4" class="composer-step completed">
+            <span class="step-num">4</span> Terms
+        </a>
+    {% elif step == 4 %}
+        <span class="composer-step active"><span class="step-num">4</span> Terms</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">4</span> Terms</span>
+    {% endif %}
+
+    <div class="composer-step-line {% if step >= 5 %}completed{% endif %}"></div>
+
+    {% if step == 5 %}
+        <span class="composer-step active"><span class="step-num">5</span> Review</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">5</span> Review</span>
+    {% endif %}
+</div>
+
+{% if messages %}
+{% for message in messages %}
+<div class="manage-alert manage-alert-{% if message.tags %}{{ message.tags }}{% else %}info{% endif %}">
+    {{ message }}
+</div>
+{% endfor %}
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 1: Select Sponsor                     -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 1 %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Select a Sponsor</h2>
+    </div>
+
+    <!-- Search (live filter) -->
+    <div style="margin-bottom:20px;">
+        <input type="text" id="sponsor-live-search" value="{{ search_query }}" placeholder="Start typing to filter sponsors..."
+               style="width:100%;padding:10px 14px;border:1px solid #ccc;border-radius:4px;font-size:14px;box-sizing:border-box;"
+               autocomplete="off" autofocus>
+    </div>
+
+    <!-- Sponsor list -->
+    {% if sponsors %}
+    <div class="sponsor-list" id="sponsor-list">
+        {% for s in sponsors %}
+        <form method="post" style="display:contents;" class="sponsor-form" data-name="{{ s.name|lower }}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="select_sponsor">
+            <input type="hidden" name="sponsor_id" value="{{ s.pk }}">
+            <div class="sponsor-card {% if data.sponsor_id == s.pk %}selected{% endif %}"
+                 onclick="this.closest('form').submit();">
+                <div class="sponsor-name">{{ s.name }}</div>
+                <div class="sponsor-meta">
+                    {% if s.city %}{{ s.city }}{% endif %}{% if s.country %}, {{ s.country }}{% endif %}
+                </div>
+            </div>
+        </form>
+        {% endfor %}
+    </div>
+    <script>
+    (function() {
+        var input = document.getElementById('sponsor-live-search');
+        var forms = document.querySelectorAll('.sponsor-form');
+        input.addEventListener('input', function() {
+            var q = this.value.toLowerCase();
+            forms.forEach(function(f) {
+                f.style.display = (!q || f.dataset.name.indexOf(q) !== -1) ? '' : 'none';
+            });
+        });
+    })();
+    </script>
+    {% elif search_query %}
+    <div class="empty-state" style="padding:24px;">
+        <p>No sponsors found matching "{{ search_query }}".</p>
+    </div>
+    {% endif %}
+
+    <!-- Create new sponsor -->
+    <div class="collapse-section" id="new-sponsor-section">
+        <div class="collapse-header" onclick="this.parentElement.classList.toggle('open');">
+            <span class="collapse-arrow" style="display:inline-block;font-size:12px;transition:transform 0.2s;">&#9654;</span>
+            Create New Sponsor
+        </div>
+        <div class="collapse-body">
+            <form method="post" class="manage-form">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_sponsor">
+
+                {% if form.errors %}
+                <div class="form-errors">
+                    <strong>Please correct the errors below:</strong>
+                    <ul>
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                        <li>{{ field }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+                    {% if field.errors %}<div class="field-errors">{{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+
+                <div style="display:flex;gap:8px;">
+                    <button type="submit" class="btn btn-primary">Create & Continue</button>
+                    <button type="submit" name="action" value="create_sponsor_only" class="btn btn-secondary" style="border:1px solid #ccc !important;">Create Only</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 2: Choose Package                     -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 2 %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Choose a Base Package</h2>
+    </div>
+
+    <!-- Year selector -->
+    {% if years %}
+    <div class="year-pills">
+        {% for y in years %}
+        <a href="{% url 'manage_composer' %}?step=2&year={{ y }}"
+           class="year-pill {% if y == selected_year %}active{% endif %}">{{ y }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <form method="post" id="package-form">
+        {% csrf_token %}
+        <input type="hidden" name="package_id" id="package-id-input" value="">
+        <input type="hidden" name="year" value="{{ selected_year }}">
+
+        <div class="package-cards">
+            {% for pkg in packages %}
+            <div class="package-card {% if data.package_id == pkg.pk %}selected{% endif %}"
+                 data-pkg-id="{{ pkg.pk }}"
+                 onclick="selectPackage('{{ pkg.pk }}');">
+                <div class="pkg-name">{{ pkg.name }}</div>
+                <div class="pkg-price">${{ pkg.sponsorship_amount|floatformat:"0" }}</div>
+                <div class="pkg-benefits-count">{{ pkg.benefits.count }} benefits</div>
+            </div>
+            {% endfor %}
+
+            <!-- Custom option -->
+            <div class="package-card custom-pkg {% if data.custom_package %}selected{% endif %}"
+                 data-pkg-id="custom"
+                 onclick="selectPackage('custom');">
+                <div class="pkg-name">Custom</div>
+                <div class="pkg-price" style="color:#b8860b;">A la carte</div>
+                <div class="pkg-benefits-count">Build from scratch</div>
+            </div>
+        </div>
+
+        <div class="composer-actions">
+            <a href="{% url 'manage_composer' %}?step=1" class="btn btn-secondary">Back</a>
+            <div class="spacer"></div>
+            <button type="submit" class="btn btn-primary" id="pkg-continue-btn">Continue</button>
+        </div>
+    </form>
+</div>
+
+<script>
+function selectPackage(pkgId) {
+    document.getElementById('package-id-input').value = pkgId;
+    document.querySelectorAll('.package-card').forEach(function(c) {
+        c.classList.remove('selected');
+    });
+    document.querySelector('.package-card[data-pkg-id="' + pkgId + '"]').classList.add('selected');
+}
+</script>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 3: Customize Benefits                 -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 3 %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Customize Benefits</h2>
+    </div>
+
+    <form method="post" id="benefits-form">
+        {% csrf_token %}
+        <div id="benefit-hidden-inputs">
+            {% for b in selected_benefits %}
+            <input type="hidden" name="benefit_ids" value="{{ b.pk }}">
+            {% endfor %}
+        </div>
+
+        <div class="benefits-columns">
+            <!-- LEFT: Available benefits -->
+            <div class="benefits-col">
+                <div class="benefits-col-header">
+                    Available Benefits
+                </div>
+                <div style="padding:8px;">
+                    <input type="text" class="benefit-search" id="benefit-search"
+                           placeholder="Filter benefits..." oninput="filterBenefits(this.value);">
+                </div>
+                <div class="benefits-col-body" id="available-benefits">
+                    {% for group in benefits_by_program %}
+                    <div class="benefit-group" data-program="{{ group.program.name }}">
+                        <div class="benefit-group-label" style="cursor:pointer;user-select:none;" onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.collapse-arrow').textContent=body.style.display==='none'?'&#9656;':'&#9662;';"><span class="collapse-arrow" style="font-size:10px;margin-right:4px;">&#9662;</span>{{ group.program.name }} <span style="font-size:11px;opacity:0.6;font-weight:400;">({{ group.benefits|length }})</span></div>
+                        <div class="benefit-group-items">
+                        {% for b in group.benefits %}
+                        <div class="benefit-item" id="avail-{{ b.pk }}"
+                             data-name="{{ b.name|lower }}"
+                             style="cursor:pointer;{% if b.pk in selected_ids %}display:none;{% endif %}"
+                             data-pkg-only="{% if b.package_only %}{% for p in b.packages.all %}{{ p.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}"
+                             onclick="addBenefitClick(this, {{ b.pk }}, '{{ b.name|escapejs }}', '{{ b.program.name|escapejs }}', {{ b.internal_value|default_if_none:"0" }}, '{{ b.description|default:""|escapejs }}', {% if b.pk in package_benefit_ids %}true{% else %}false{% endif %});">
+                            <div class="benefit-info">
+                                <span class="benefit-name">{{ b.name }}</span>
+                                {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                                {% if b.internal_value %}
+                                <span class="benefit-value">${{ b.internal_value|floatformat:"0" }}</span>
+                                {% endif %}
+                                <span class="benefit-tags">
+                                    {% if b.new %}<span class="tag tag-green">New</span>{% endif %}
+                                    {% if b.package_only %}<span class="tag tag-blue">Pkg Only</span>{% endif %}
+                                    {% if b.standalone %}<span class="tag tag-gold">Standalone</span>{% endif %}
+                                </span>
+                            </div>
+                            <div class="benefit-action">
+                                <span class="add-btn" style="pointer-events:none;">+</span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- RIGHT: Selected benefits -->
+            <div class="benefits-col">
+                <div class="benefits-col-header">
+                    <span>Selected Benefits</span>
+                    <span id="selected-count">{{ selected_benefits|length }}</span>
+                </div>
+                <div class="benefits-col-body" id="selected-benefits">
+                    {% for b in selected_benefits %}
+                    <div class="benefit-item" id="sel-{{ b.pk }}"
+                         {% if b.pk in package_benefit_ids %}data-package="true" style="background:#e8f4fd;"{% endif %}>
+                        <div class="benefit-info">
+                            <span class="benefit-name">{{ b.name }}</span>
+                            {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                            {% if b.internal_value %}
+                            <span class="benefit-value">${{ b.internal_value|floatformat:"0" }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="benefit-action">
+                            {% if b.pk in package_benefit_ids %}
+                            <span style="font-size:10px;color:#3776ab;font-weight:600;padding:2px 6px;background:#d0e4f5;border-radius:3px;" title="Included in package">Pkg</span>
+                            {% else %}
+                            <button type="button" class="remove-btn"
+                                    onclick="removeBenefit({{ b.pk }}, {{ b.internal_value|default_if_none:"0" }});">x</button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                <div class="benefits-total">
+                    <span>Total Internal Value</span>
+                    <span id="total-value">${{ total_value|floatformat:"0" }}</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="composer-actions">
+            <a href="{% url 'manage_composer' %}?step=2" class="btn btn-secondary">Back</a>
+            <div class="spacer"></div>
+            <button type="submit" class="btn btn-primary">Continue</button>
+        </div>
+    </form>
+</div>
+
+<script>
+var currentTotal = {{ total_value }};
+var selectedCount = {{ selected_benefits|length }};
+
+function updateTotal() {
+    document.getElementById('total-value').textContent = '$' + currentTotal.toLocaleString();
+    document.getElementById('selected-count').textContent = selectedCount;
+}
+
+function addBenefitClick(el, id, name, program, value, description, isPackage) {
+    var pkgOnly = el.dataset.pkgOnly;
+    if (pkgOnly) {
+        if (!confirm('This benefit is normally only available as part of these packages: ' + pkgOnly + '.\n\nAdd it as an a-la-carte item anyway?')) {
+            return;
+        }
+    }
+    addBenefit(id, name, program, value, description, isPackage);
+}
+
+function addBenefit(id, name, program, value, description, isPackage) {
+    // Hide from available
+    var avail = document.getElementById('avail-' + id);
+    if (avail) avail.style.display = 'none';
+
+    // Add hidden input
+    var inp = document.createElement('input');
+    inp.type = 'hidden';
+    inp.name = 'benefit_ids';
+    inp.value = id;
+    inp.id = 'input-' + id;
+    document.getElementById('benefit-hidden-inputs').appendChild(inp);
+
+    // Add to selected list
+    var sel = document.getElementById('selected-benefits');
+    var div = document.createElement('div');
+    div.className = 'benefit-item';
+    div.id = 'sel-' + id;
+    if (isPackage) {
+        div.setAttribute('data-package', 'true');
+        div.style.background = '#e8f4fd';
+    }
+    var tooltip = description ? '<span title="' + description.replace(/"/g, '&quot;') + '" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>' : '';
+    var actionHtml;
+    if (isPackage) {
+        actionHtml = '<span style="font-size:10px;color:#3776ab;font-weight:600;padding:2px 6px;background:#d0e4f5;border-radius:3px;" title="Included in package">Pkg</span>';
+    } else {
+        actionHtml = '<button type="button" class="remove-btn" onclick="removeBenefit(' + id + ', ' + value + ');">x</button>';
+    }
+    div.innerHTML = '<div class="benefit-info">' +
+        '<span class="benefit-name">' + name + '</span>' +
+        tooltip +
+        (value ? '<span class="benefit-value">$' + value.toLocaleString() + '</span>' : '') +
+        '</div>' +
+        '<div class="benefit-action">' + actionHtml + '</div>';
+    sel.appendChild(div);
+
+    currentTotal += value;
+    selectedCount++;
+    updateTotal();
+}
+
+function removeBenefit(id, value) {
+    // Check if this is a package benefit
+    var selEl = document.getElementById('sel-' + id);
+    if (selEl && selEl.getAttribute('data-package') === 'true') {
+        if (!confirm('This benefit is included in your package. Remove anyway?')) {
+            return;
+        }
+    }
+
+    // Show in available
+    var avail = document.getElementById('avail-' + id);
+    if (avail) avail.style.display = '';
+
+    // Remove hidden input
+    var inp = document.getElementById('input-' + id);
+    if (inp) inp.remove();
+
+    // Remove from selected
+    if (selEl) selEl.remove();
+
+    currentTotal -= value;
+    selectedCount--;
+    updateTotal();
+}
+
+function filterBenefits(query) {
+    query = query.toLowerCase();
+    document.querySelectorAll('#available-benefits .benefit-item').forEach(function(item) {
+        var name = item.getAttribute('data-name') || '';
+        if (item.style.display === 'none' && !query) return;
+        if (name.indexOf(query) !== -1 || !query) {
+            // Only show if not already selected
+            var id = item.id.replace('avail-', '');
+            var inp = document.getElementById('input-' + id);
+            if (!inp) item.style.display = '';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    // Show/hide group labels
+    document.querySelectorAll('#available-benefits .benefit-group').forEach(function(grp) {
+        var visible = grp.querySelectorAll('.benefit-item:not([style*="display: none"])').length > 0;
+        grp.style.display = visible ? '' : 'none';
+    });
+}
+</script>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 4: Set Terms                          -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 4 %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Set Sponsorship Terms</h2>
+    </div>
+
+    <form method="post" class="manage-form">
+        {% csrf_token %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% for field, errors in form.errors.items %}
+                {% if field != '__all__' %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <fieldset class="manage-fieldset">
+            <legend>Financial</legend>
+            <div class="form-group">
+                <label for="id_fee">{{ form.fee.label }}</label>
+                {{ form.fee }}
+                {% if form.fee.errors %}<div class="field-errors">{{ form.fee.errors.0 }}</div>{% endif %}
+                {% if total_internal_value %}
+                <div style="margin-top:8px;font-size:12px;color:#888;">
+                    Internal benefit cost: <strong style="color:#555;">${{ total_internal_value|floatformat:"0" }}</strong>
+                    <span style="font-size:10px;color:#aaa;margin-left:4px;">(staff only)</span>
+                </div>
+                <!-- Fee adjustment buttons -->
+                <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;" id="fee-btns">
+                    <button type="button" class="date-quick-btn" onclick="document.getElementById('id_fee').value={{ total_internal_value }};checkFeeWarning();">Match internal cost</button>
+                    <span style="width:1px;background:#ddd;margin:0 4px;align-self:stretch;"></span>
+                    <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(-0.10);">-10%</button>
+                    <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(-0.05);">-5%</button>
+                    <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(0.05);">+5%</button>
+                    <button type="button" class="date-quick-btn" style="font-size:10px;padding:2px 6px;color:#999;" onclick="nudgeFee(0.10);">+10%</button>
+                </div>
+                <!-- Fee warning -->
+                <div id="fee-warning" style="display:none;margin-top:8px;padding:8px 12px;border-radius:4px;font-size:12px;"></div>
+                <script>
+                var internalCost = {{ total_internal_value }};
+                var packageCost = {{ package_amount|default:"0" }};
+                var feeInput = document.getElementById('id_fee');
+
+                function nudgeFee(pct) {
+                    var v = parseInt(feeInput.value) || 0;
+                    feeInput.value = Math.round(v * (1 + pct));
+                    checkFeeWarning();
+                }
+
+                function checkFeeWarning() {
+                    var fee = parseInt(feeInput.value) || 0;
+                    var warn = document.getElementById('fee-warning');
+                    var msgs = [];
+                    if (fee < internalCost) {
+                        msgs.push('Fee ($' + fee.toLocaleString() + ') is below internal benefit cost ($' + internalCost.toLocaleString() + ')');
+                    }
+                    if (packageCost > 0 && fee < packageCost) {
+                        msgs.push('Fee is below the package list price ($' + packageCost.toLocaleString() + ')');
+                    }
+                    if (msgs.length) {
+                        warn.style.display = 'block';
+                        warn.style.background = '#fff8dc';
+                        warn.style.border = '1px solid #ffd43b';
+                        warn.style.color = '#7c6c00';
+                        warn.innerHTML = msgs.join('<br>');
+                    } else {
+                        warn.style.display = 'none';
+                    }
+                }
+                feeInput.addEventListener('input', checkFeeWarning);
+                checkFeeWarning();
+                </script>
+                {% endif %}
+            </div>
+        </fieldset>
+
+        <fieldset class="manage-fieldset">
+            <legend>Dates</legend>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="id_start_date">{{ form.start_date.label }}</label>
+                    {{ form.start_date }}
+                    <div style="display:flex;gap:4px;margin-top:6px;" id="start-quick-btns"></div>
+                    {% if form.start_date.errors %}<div class="field-errors">{{ form.start_date.errors.0 }}</div>{% endif %}
+                </div>
+                <div class="form-group">
+                    <label for="id_end_date">{{ form.end_date.label }}</label>
+                    {{ form.end_date }}
+                    <div style="display:flex;gap:4px;margin-top:6px;" id="end-quick-btns"></div>
+                    {% if form.end_date.errors %}<div class="field-errors">{{ form.end_date.errors.0 }}</div>{% endif %}
+                </div>
+            </div>
+
+            <script>
+            (function() {
+                var startInput = document.getElementById('id_start_date');
+                var endInput = document.getElementById('id_end_date');
+                var startBtns = document.getElementById('start-quick-btns');
+                var endBtns = document.getElementById('end-quick-btns');
+
+                function fmt(d) {
+                    return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                }
+                function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+                function addYears(d, n) { var r = new Date(d); r.setFullYear(r.getFullYear() + n); return r; }
+                function nextMonday() {
+                    var d = new Date();
+                    var day = d.getDay();
+                    var diff = day === 0 ? 1 : 8 - day;
+                    return addDays(d, diff);
+                }
+                function makeBtn(label, date, target) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'date-quick-btn';
+                    b.textContent = label;
+                    b.title = fmt(date);
+                    b.addEventListener('click', function() {
+                        target.value = fmt(date);
+                        target.dispatchEvent(new Event('change'));
+                        if (target === startInput) renderEndBtns();
+                    });
+                    return b;
+                }
+
+                var today = new Date();
+                startBtns.appendChild(makeBtn('Today', today, startInput));
+                startBtns.appendChild(makeBtn('Tomorrow', addDays(today, 1), startInput));
+                startBtns.appendChild(makeBtn('Next Monday', nextMonday(), startInput));
+                startBtns.appendChild(makeBtn('1st Next Month', new Date(today.getFullYear(), today.getMonth()+1, 1), startInput));
+
+                function makeNudgeBtn(label, days, target) {
+                    var b = document.createElement('button');
+                    b.type = 'button';
+                    b.className = 'date-quick-btn';
+                    b.style.fontSize = '10px';
+                    b.style.padding = '2px 6px';
+                    b.style.color = '#999';
+                    b.textContent = label;
+                    b.addEventListener('click', function() {
+                        var cv = target.value;
+                        if (!cv) {
+                            // If end date empty, base off start date + 1 year
+                            var sv = startInput.value;
+                            if (!sv) return;
+                            cv = fmt(addYears(new Date(sv + 'T00:00:00'), 1));
+                        }
+                        var d = new Date(cv + 'T00:00:00');
+                        if (isNaN(d.getTime())) return;
+                        target.value = fmt(addDays(d, days));
+                        target.dispatchEvent(new Event('change'));
+                    });
+                    return b;
+                }
+
+                function renderEndBtns() {
+                    endBtns.innerHTML = '';
+                    var sv = startInput.value;
+                    if (!sv) sv = fmt(today);
+                    var sd = new Date(sv + 'T00:00:00');
+                    if (isNaN(sd.getTime())) return;
+                    endBtns.appendChild(makeBtn('+1 yr', addYears(sd, 1), endInput));
+                    endBtns.appendChild(makeBtn('+2 yr', addYears(sd, 2), endInput));
+                    endBtns.appendChild(makeBtn('+3 yr', addYears(sd, 3), endInput));
+                    endBtns.appendChild(makeNudgeBtn('-30d', -30, endInput));
+                    endBtns.appendChild(makeNudgeBtn('+30d', 30, endInput));
+                }
+                renderEndBtns();
+                startInput.addEventListener('change', renderEndBtns);
+            })();
+            </script>
+        </fieldset>
+
+        <fieldset class="manage-fieldset">
+            <legend>Options</legend>
+            <div class="form-group">
+                <label style="display:flex;align-items:center;gap:8px;font-weight:400;cursor:pointer;">
+                    {{ form.renewal }} {{ form.renewal.label }}
+                </label>
+                {% if form.renewal.help_text %}<span class="helptext">{{ form.renewal.help_text }}</span>{% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_notes">{{ form.notes.label }}</label>
+                {{ form.notes }}
+                {% if form.notes.errors %}<div class="field-errors">{{ form.notes.errors.0 }}</div>{% endif %}
+            </div>
+        </fieldset>
+
+        <div class="composer-actions">
+            <a href="{% url 'manage_composer' %}?step=3" class="btn btn-secondary">Back</a>
+            <div class="spacer"></div>
+            <button type="submit" class="btn btn-primary">Continue to Review</button>
+        </div>
+    </form>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 5: Review & Create                    -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 5 %}
+<div class="manage-section">
+    <div class="summary-card">
+        <div class="summary-header">Sponsorship Summary</div>
+
+        <div class="summary-section">
+            <h3>Sponsor</h3>
+            {% if sponsor %}
+            <div class="summary-row">
+                <span class="label">Name</span>
+                <span class="value">{{ sponsor.name }}</span>
+            </div>
+            {% if sponsor.city %}
+            <div class="summary-row">
+                <span class="label">Location</span>
+                <span class="value">{{ sponsor.city }}{% if sponsor.country %}, {{ sponsor.country }}{% endif %}</span>
+            </div>
+            {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="summary-section">
+            <h3>Package</h3>
+            <div class="summary-row">
+                <span class="label">Package</span>
+                <span class="value">{% if package %}{{ package.name }}{% else %}Custom{% endif %}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Year</span>
+                <span class="value">{{ data.year|default:"N/A" }}</span>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h3>Benefits ({{ selected_benefits|length }})</h3>
+            {% for group in review_benefits_by_program %}
+            <div style="margin-bottom:12px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;padding:6px 0;border-bottom:1px solid #eee;user-select:none;"
+                     onclick="var body=this.nextElementSibling;body.style.display=body.style.display==='none'?'':'none';this.querySelector('.review-arrow').textContent=body.style.display==='none'?'\u25b6':'\u25bc';">
+                    <span style="font-size:13px;font-weight:700;color:#3776ab;">
+                        <span class="review-arrow" style="font-size:10px;margin-right:4px;">&#9660;</span>
+                        {{ group.program.name }}
+                        <span style="font-size:11px;opacity:0.6;font-weight:400;">({{ group.benefits|length }})</span>
+                    </span>
+                </div>
+                <ul class="summary-benefits" style="padding-left:8px;">
+                    {% for b in group.benefits %}
+                    <li style="{% if b.pk in package_benefit_ids %}background:#e8f4fd;border-radius:3px;padding:4px 6px;{% endif %}">
+                        <span>
+                            {{ b.name }}
+                            {% if b.pk in package_benefit_ids %}<span style="font-size:9px;color:#3776ab;font-weight:600;margin-left:4px;">Pkg</span>{% endif %}
+                            {% if b.description %}<span title="{{ b.description }}" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>{% endif %}
+                        </span>
+                        <span>${{ b.internal_value|default:"0"|floatformat:"0" }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+            <div class="summary-row" style="margin-top:8px;border-top:2px solid #e8e8e8;padding-top:8px;">
+                <span class="label" style="font-weight:700;">Total Internal Value</span>
+                <span class="value">
+                    ${{ total_value|floatformat:"0" }}
+                    <span style="font-size:10px;color:#aaa;margin-left:4px;">(staff only)</span>
+                </span>
+            </div>
+        </div>
+
+        <div class="summary-section">
+            <h3>Terms</h3>
+            <div class="summary-row">
+                <span class="label">Fee</span>
+                <span class="value">${{ data.fee|floatformat:"0" }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Start Date</span>
+                <span class="value">{{ data.start_date }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">End Date</span>
+                <span class="value">{{ data.end_date }}</span>
+            </div>
+            <div class="summary-row">
+                <span class="label">Renewal</span>
+                <span class="value">{% if data.renewal %}Yes{% else %}No{% endif %}</span>
+            </div>
+            {% if data.notes %}
+            <div style="margin-top:8px;">
+                <div class="label" style="font-size:12px;color:#666;margin-bottom:4px;">Notes</div>
+                <div style="font-size:13px;color:#333;white-space:pre-wrap;background:#f7f8fa;padding:10px;border-radius:4px;">{{ data.notes }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Action cards -->
+    <div class="action-cards">
+        <div class="action-card" style="border-color:#4caf50;">
+            <h4 style="color:#2e7d32;">Create Sponsorship</h4>
+            <p>Create the sponsorship record immediately. It will appear in the sponsorship list as "Applied".</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create">
+                <button type="submit" class="btn btn-primary" style="background:#4caf50 !important;"
+                        onclick="return confirm('Create this sponsorship?');">
+                    Create Sponsorship
+                </button>
+            </form>
+        </div>
+
+        <div class="action-card">
+            <h4>Send for Internal Review</h4>
+            <p>Email this summary to a colleague for review before creating.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send_internal">
+                <div style="display:flex;gap:6px;">
+                    <input type="email" name="internal_email" placeholder="reviewer@python.org"
+                           style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+                    <button type="submit" class="btn btn-secondary">Send</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="action-card" style="border-color:#ffd43b;">
+            <h4 style="color:#b8860b;">Send Proposal to Sponsor</h4>
+            <p>Email this summary to the sponsor's contacts on file.</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="send_proposal">
+                <button type="submit" class="btn btn-gold">Send to Sponsor</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="composer-actions">
+        <a href="{% url 'manage_composer' %}?step=4" class="btn btn-secondary">Back</a>
+        <div class="spacer"></div>
+        <form method="get" action="{% url 'manage_composer' %}" style="display:inline;">
+            <input type="hidden" name="step" value="1">
+            <button type="submit" class="btn btn-danger"
+                    onclick="if(confirm('Start over? All composer data will be cleared.')){fetch('{% url 'manage_composer' %}',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'},body:new URLSearchParams({action:'reset'})});return true;}return false;">
+                Start Over
+            </button>
+        </form>
+    </div>
+</div>
+{% endif %}
+
+{% endblock manage_content %}
+{% endwith %}

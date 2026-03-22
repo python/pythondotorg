@@ -154,6 +154,53 @@
     <!-- Related data sections below the form -->
     <div style="max-width:820px;margin:40px auto 0;">
 
+        <!-- Feature Configurations -->
+        <div class="manage-section">
+            <div class="manage-section-header">
+                <h2>Feature Configurations <span class="badge">{{ feature_configs|length }}</span></h2>
+                <div style="position:relative;display:inline-block;">
+                    <button type="button" class="btn btn-primary btn-sm" onclick="document.getElementById('config-type-menu').style.display = document.getElementById('config-type-menu').style.display === 'block' ? 'none' : 'block';">
+                        Add Configuration
+                    </button>
+                    <div id="config-type-menu" style="display:none;position:absolute;right:0;top:100%;margin-top:4px;background:#fff;border:1px solid #e0e0e0;border-radius:4px;box-shadow:0 4px 12px rgba(0,0,0,0.1);z-index:10;min-width:220px;">
+                        {% for slug, type_info in config_types.items %}
+                        <a href="{% url 'manage_benefit_config_add' object.pk slug %}" style="display:block;padding:8px 16px;font-size:13px;color:#1a1a2e;text-decoration:none;border-bottom:1px solid #f0f0f0;">{{ type_info.2 }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% if feature_configs %}
+            <table class="manage-table">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Details</th>
+                        <th style="width:100px;text-align:right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cfg in feature_configs %}
+                    <tr>
+                        <td><span class="tag tag-blue">{{ cfg.polymorphic_ctype.name|title }}</span></td>
+                        <td style="font-size:12px;color:#555;">{{ cfg }}</td>
+                        <td style="text-align:right;">
+                            <a href="{% url 'manage_benefit_config_edit' cfg.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;margin-right:8px;">Edit</a>
+                            <form method="post" action="{% url 'manage_benefit_config_delete' cfg.pk %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" onclick="return confirm('Delete this configuration?');" style="font-size:12px;color:#e74c3c;background:none;border:none;cursor:pointer;padding:0;">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div style="text-align:center;padding:24px;color:#999;font-size:13px;">
+                No feature configurations yet. Click "Add Configuration" to create one.
+            </div>
+            {% endif %}
+        </div>
+
         <!-- Packages this benefit belongs to -->
         {% if benefit_packages %}
         <div class="manage-section">

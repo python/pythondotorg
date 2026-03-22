@@ -1058,3 +1058,716 @@ class SponsorshipListBulkUITests(SponsorshipReviewTestBase):
     def test_list_has_export_csv_button(self):
         response = self.client.get(reverse("manage_sponsorships"))
         self.assertContains(response, "Export CSV")
+
+    def test_list_has_export_assets_option(self):
+        response = self.client.get(reverse("manage_sponsorships"))
+        self.assertContains(response, "export_assets")
+        self.assertContains(response, "Export Assets as ZIP")
+
+
+class SponsorshipApproveSignedViewTests(SponsorshipReviewTestBase):
+    """Test approve-with-signed-contract workflow."""
+
+    def test_approve_signed_form_loads(self):
+        response = self.client.get(reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Approve with Signed Contract")
+
+    def test_approve_signed_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_approve_signed_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_approve_signed_sponsorship(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        signed_doc = SimpleUploadedFile("signed.pdf", b"fake-pdf-content", content_type="application/pdf")
+        response = self.client.post(
+            reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]),
+            {
+                "start_date": "2024-01-01",
+                "end_date": "2024-12-31",
+                "package": self.package.pk,
+                "sponsorship_fee": 150000,
+                "signed_contract": signed_doc,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.FINALIZED)
+        # Contract should exist and be executed
+        contract = self.sponsorship.contract
+        self.assertEqual(contract.status, Contract.EXECUTED)
+
+    def test_approve_signed_bad_dates_rejected(self):
+        from django.core.files.uploadedfile import SimpleUploadedFile
+
+        signed_doc = SimpleUploadedFile("signed.pdf", b"fake-pdf-content", content_type="application/pdf")
+        response = self.client.post(
+            reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]),
+            {
+                "start_date": "2024-12-31",
+                "end_date": "2024-01-01",
+                "package": self.package.pk,
+                "sponsorship_fee": 150000,
+                "signed_contract": signed_doc,
+            },
+        )
+        self.assertEqual(response.status_code, 200)  # Re-renders form with errors
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+
+    def test_approve_signed_missing_file_rejected(self):
+        response = self.client.post(
+            reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]),
+            {
+                "start_date": "2024-01-01",
+                "end_date": "2024-12-31",
+                "package": self.package.pk,
+                "sponsorship_fee": 150000,
+            },
+        )
+        self.assertEqual(response.status_code, 200)  # Re-renders form with errors
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.APPLIED)
+
+    def test_approve_signed_shows_on_detail_for_applied(self):
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertContains(response, "Approve with Signed Contract")
+        self.assertContains(response, reverse("manage_sponsorship_approve_signed", args=[self.sponsorship.pk]))
+
+    def test_approve_signed_hidden_for_approved(self):
+        self.sponsorship.approve(
+            start_date=datetime.date(2024, 1, 1),
+            end_date=datetime.date(2024, 12, 31),
+        )
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertNotContains(response, "Approve with Signed Contract")
+
+
+class AssetExportViewTests(SponsorshipReviewTestBase):
+    """Test asset export as ZIP."""
+
+    def test_export_assets_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_sponsorship_export_assets", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_export_assets_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_sponsorship_export_assets", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_export_assets_no_assets_redirects(self):
+        response = self.client.get(reverse("manage_sponsorship_export_assets", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(
+            reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]),
+            response.url,
+        )
+
+    def test_bulk_export_assets_no_selection_warns(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "export_assets"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+
+
+class BenefitFeatureConfigViewTests(SponsorManageTestBase):
+    """Test benefit feature configuration CRUD views."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    # ── Display on benefit edit page ──
+
+    def test_benefit_edit_shows_config_section(self):
+        response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Feature Configurations")
+        self.assertContains(response, "Add Configuration")
+
+    def test_benefit_edit_shows_existing_configs(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logo")
+        self.assertContains(response, "Sidebar")
+
+    # ── Add config ──
+
+    def test_add_config_get(self):
+        response = self.client.get(reverse("manage_benefit_config_add", args=[self.benefit.pk, "logo_placement"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logo Placement")
+        self.assertContains(response, "Add Configuration")
+
+    def test_add_config_post_logo_placement(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        response = self.client.post(
+            reverse("manage_benefit_config_add", args=[self.benefit.pk, "logo_placement"]),
+            {
+                "publisher": "psf",
+                "logo_place": "sidebar",
+                "link_to_sponsors_page": False,
+                "describe_as_sponsor": False,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(LogoPlacementConfiguration.objects.filter(benefit=self.benefit, publisher="psf").exists())
+
+    def test_add_config_post_email_targetable(self):
+        from apps.sponsors.models import EmailTargetableConfiguration
+
+        response = self.client.post(
+            reverse("manage_benefit_config_add", args=[self.benefit.pk, "email_targetable"]),
+            {},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(EmailTargetableConfiguration.objects.filter(benefit=self.benefit).exists())
+
+    def test_add_config_post_tiered_benefit(self):
+        from apps.sponsors.models import TieredBenefitConfiguration
+
+        response = self.client.post(
+            reverse("manage_benefit_config_add", args=[self.benefit.pk, "tiered_benefit"]),
+            {
+                "package": self.package.pk,
+                "quantity": 5,
+                "display_label": "",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(TieredBenefitConfiguration.objects.filter(benefit=self.benefit, quantity=5).exists())
+
+    def test_add_config_invalid_type_redirects(self):
+        response = self.client.get(reverse("manage_benefit_config_add", args=[self.benefit.pk, "nonexistent"]))
+        self.assertEqual(response.status_code, 302)
+
+    def test_add_config_invalid_data_rerenders(self):
+        response = self.client.post(
+            reverse("manage_benefit_config_add", args=[self.benefit.pk, "logo_placement"]),
+            {
+                "publisher": "",
+                "logo_place": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+
+    # ── Edit config ──
+
+    def test_edit_config_get(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.get(reverse("manage_benefit_config_edit", args=[cfg.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Edit")
+        self.assertContains(response, "Logo Placement")
+
+    def test_edit_config_post(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.post(
+            reverse("manage_benefit_config_edit", args=[cfg.pk]),
+            {
+                "publisher": "pycon",
+                "logo_place": "footer",
+                "link_to_sponsors_page": True,
+                "describe_as_sponsor": False,
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        cfg.refresh_from_db()
+        self.assertEqual(cfg.publisher, "pycon")
+        self.assertEqual(cfg.logo_place, "footer")
+        self.assertTrue(cfg.link_to_sponsors_page)
+
+    def test_edit_config_invalid_data_rerenders(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.post(
+            reverse("manage_benefit_config_edit", args=[cfg.pk]),
+            {
+                "publisher": "",
+                "logo_place": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+
+    # ── Delete config ──
+
+    def test_delete_config(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.post(reverse("manage_benefit_config_delete", args=[cfg.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(LogoPlacementConfiguration.objects.filter(pk=cfg.pk).exists())
+
+    def test_delete_config_redirects_to_benefit_edit(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.post(reverse("manage_benefit_config_delete", args=[cfg.pk]))
+        self.assertRedirects(
+            response,
+            reverse("manage_benefit_edit", args=[self.benefit.pk]),
+            fetch_redirect_response=False,
+        )
+
+    def test_delete_config_get_not_allowed(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(
+            benefit=self.benefit,
+            publisher="psf",
+            logo_place="sidebar",
+        )
+        response = self.client.get(reverse("manage_benefit_config_delete", args=[cfg.pk]))
+        self.assertEqual(response.status_code, 405)
+
+    # ── Access control ──
+
+    def test_add_config_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_benefit_config_add", args=[self.benefit.pk, "logo_placement"]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_add_config_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_benefit_config_add", args=[self.benefit.pk, "logo_placement"]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_edit_config_requires_auth(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(benefit=self.benefit, publisher="psf", logo_place="sidebar")
+        self.client.logout()
+        response = self.client.get(reverse("manage_benefit_config_edit", args=[cfg.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_delete_config_requires_auth(self):
+        from apps.sponsors.models import LogoPlacementConfiguration
+
+        cfg = LogoPlacementConfiguration.objects.create(benefit=self.benefit, publisher="psf", logo_place="sidebar")
+        self.client.logout()
+        response = self.client.post(reverse("manage_benefit_config_delete", args=[cfg.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+
+class ComposerAccessTests(SponsorManageTestBase):
+    """Test that the composer view is properly access-controlled."""
+
+    def test_anonymous_redirected(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_composer"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_non_group_user_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_composer"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_staff_user_allowed(self):
+        self.client.login(username="staff", password="pass")
+        response = self.client.get(reverse("manage_composer"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_group_user_allowed(self):
+        self.client.login(username="groupuser", password="pass")
+        response = self.client.get(reverse("manage_composer"))
+        self.assertEqual(response.status_code, 200)
+
+
+class ComposerStep1Tests(SponsorManageTestBase):
+    """Test step 1 — sponsor selection."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+
+    def test_step1_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=1")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a Sponsor")
+
+    def test_step1_search(self):
+        response = self.client.get(reverse("manage_composer") + "?step=1&q=Acme")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Acme Corp")
+
+    def test_step1_search_no_results(self):
+        response = self.client.get(reverse("manage_composer") + "?step=1&q=ZZZNonexistent")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "No sponsors found")
+
+    def test_step1_select_sponsor(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=1",
+            {"action": "select_sponsor", "sponsor_id": self.sponsor.pk},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=2", response.url)
+        self.assertEqual(self.client.session["composer"]["sponsor_id"], self.sponsor.pk)
+
+    def test_step1_create_sponsor(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=1",
+            {
+                "action": "create_sponsor",
+                "name": "New Co",
+                "description": "A new company",
+                "primary_phone": "555-9999",
+                "city": "Seattle",
+                "country": "US",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=2", response.url)
+        new_sponsor = Sponsor.objects.get(name="New Co")
+        self.assertEqual(self.client.session["composer"]["sponsor_id"], new_sponsor.pk)
+
+    def test_step1_create_sponsor_invalid(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=1",
+            {"action": "create_sponsor", "name": ""},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+
+
+class ComposerStep2Tests(SponsorManageTestBase):
+    """Test step 2 — package selection."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+        # Set up session for step 2
+        session = self.client.session
+        session["composer"] = {"sponsor_id": self.sponsor.pk}
+        session.save()
+
+    def test_step2_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=2")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Choose a Base Package")
+        self.assertContains(response, "Visionary")
+
+    def test_step2_select_package(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=2",
+            {"package_id": self.package.pk, "year": self.year},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=3", response.url)
+        data = self.client.session["composer"]
+        self.assertEqual(data["package_id"], self.package.pk)
+
+    def test_step2_select_custom(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=2",
+            {"package_id": "custom", "year": self.year},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=3", response.url)
+        data = self.client.session["composer"]
+        self.assertIsNone(data["package_id"])
+        self.assertTrue(data["custom_package"])
+
+    def test_step2_no_selection(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=2",
+            {"package_id": "", "year": self.year},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=2", response.url)
+
+
+class ComposerStep3Tests(SponsorManageTestBase):
+    """Test step 3 — benefit customization."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+        session = self.client.session
+        session["composer"] = {
+            "sponsor_id": self.sponsor.pk,
+            "package_id": self.package.pk,
+            "year": self.year,
+            "benefit_ids": [self.benefit.pk],
+        }
+        session.save()
+
+    def test_step3_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=3")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Customize Benefits")
+
+    def test_step3_submit_benefits(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=3",
+            {"benefit_ids": [self.benefit.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=4", response.url)
+        data = self.client.session["composer"]
+        self.assertEqual(data["benefit_ids"], [self.benefit.pk])
+
+
+class ComposerStep4Tests(SponsorManageTestBase):
+    """Test step 4 — terms setting."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+        session = self.client.session
+        session["composer"] = {
+            "sponsor_id": self.sponsor.pk,
+            "package_id": self.package.pk,
+            "year": self.year,
+            "benefit_ids": [self.benefit.pk],
+        }
+        session.save()
+
+    def test_step4_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=4")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Set Sponsorship Terms")
+
+    def test_step4_submit_terms(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=4",
+            {
+                "fee": "150000",
+                "start_date": "2024-01-01",
+                "end_date": "2025-01-01",
+                "renewal": "",
+                "notes": "Test notes",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=5", response.url)
+        data = self.client.session["composer"]
+        self.assertEqual(data["fee"], 150000)
+        self.assertEqual(data["start_date"], "2024-01-01")
+
+    def test_step4_invalid_dates(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=4",
+            {
+                "fee": "150000",
+                "start_date": "2025-01-01",
+                "end_date": "2024-01-01",
+                "renewal": "",
+                "notes": "",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "End date must be after start date")
+
+    def test_step4_fee_prefilled_from_package(self):
+        response = self.client.get(reverse("manage_composer") + "?step=4")
+        self.assertContains(response, "150000")
+
+
+class ComposerStep5Tests(SponsorManageTestBase):
+    """Test step 5 — review and create."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+        session = self.client.session
+        session["composer"] = {
+            "sponsor_id": self.sponsor.pk,
+            "package_id": self.package.pk,
+            "year": self.year,
+            "benefit_ids": [self.benefit.pk],
+            "fee": 150000,
+            "start_date": "2024-01-01",
+            "end_date": "2025-01-01",
+            "renewal": False,
+            "notes": "Some notes",
+        }
+        session.save()
+
+    def test_step5_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Sponsorship Summary")
+        self.assertContains(response, "Acme Corp")
+        self.assertContains(response, "Visionary")
+
+    def test_step5_create_sponsorship(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=5",
+            {"action": "create"},
+        )
+        self.assertEqual(response.status_code, 302)
+        sponsorship = Sponsorship.objects.get(sponsor=self.sponsor)
+        self.assertIn(str(sponsorship.pk), response.url)
+        self.assertEqual(sponsorship.sponsorship_fee, 150000)
+        self.assertEqual(sponsorship.year, self.year)
+        self.assertEqual(sponsorship.package, self.package)
+        # Benefits should be copied
+        self.assertEqual(sponsorship.benefits.count(), 1)
+        self.assertEqual(sponsorship.benefits.first().name, "Logo on python.org")
+        # Session should be cleared
+        self.assertNotIn("composer", self.client.session)
+
+    def test_step5_send_internal(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=5",
+            {"action": "send_internal", "internal_email": "reviewer@python.org"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=5", response.url)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 1)
+        self.assertIn("Acme Corp", outbox[0].subject)
+        self.assertIn("reviewer@python.org", outbox[0].to)
+
+    def test_step5_send_internal_no_email(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=5",
+            {"action": "send_internal", "internal_email": ""},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=5", response.url)
+
+    def test_step5_send_proposal_no_contacts(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=5",
+            {"action": "send_proposal"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=5", response.url)
+
+    def test_step5_send_proposal_with_contacts(self):
+        SponsorContact.objects.create(
+            sponsor=self.sponsor,
+            name="Contact One",
+            email="contact@acme.com",
+            phone="555-0000",
+            primary=True,
+        )
+        response = self.client.post(
+            reverse("manage_composer") + "?step=5",
+            {"action": "send_proposal"},
+        )
+        self.assertEqual(response.status_code, 302)
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 1)
+        self.assertIn("contact@acme.com", outbox[0].to)
+
+
+class ComposerNavigationTests(SponsorManageTestBase):
+    """Test wizard navigation constraints."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_cannot_skip_to_step2_without_sponsor(self):
+        response = self.client.get(reverse("manage_composer") + "?step=2")
+        self.assertEqual(response.status_code, 200)
+        # Should be rendered as step 1
+        self.assertContains(response, "Select a Sponsor")
+
+    def test_cannot_skip_to_step5_without_data(self):
+        response = self.client.get(reverse("manage_composer") + "?step=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a Sponsor")
+
+    def test_invalid_step_defaults_to_1(self):
+        response = self.client.get(reverse("manage_composer") + "?step=abc")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a Sponsor")

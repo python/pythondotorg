@@ -1,0 +1,209 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Approve with Signed Contract | {{ sponsorship.sponsor.name }}{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}">{{ sponsorship.sponsor.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Approve with Signed Contract</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            Approve with Signed Contract
+        </h2>
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            <strong>{{ sponsorship.sponsor.name }}</strong> &middot; {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
+            {% if previous_effective %}
+            <br>Previous effective date: <strong>{{ previous_effective }}</strong>
+            {% endif %}
+        </p>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+            {% endfor %}
+            {% for field, errors in form.errors.items %}
+                {% if field != '__all__' %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+                {% endif %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <div class="manage-alert manage-alert-info" style="margin-bottom:20px;">
+            This will approve the sponsorship <strong>and</strong> immediately execute the contract using the uploaded signed document. The generate/send flow will be skipped.
+        </div>
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Approval Details</legend>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_start_date">Start Date</label>
+                        {{ form.start_date }}
+                        <div style="display:flex;gap:4px;margin-top:6px;" id="start-quick-btns"></div>
+                        {% if form.start_date.errors %}<div class="field-errors">{{ form.start_date.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_end_date">End Date</label>
+                        {{ form.end_date }}
+                        <div style="display:flex;gap:4px;margin-top:6px;" id="end-quick-btns"></div>
+                        {% if form.end_date.errors %}<div class="field-errors">{{ form.end_date.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <style>
+                    .date-quick-btn {
+                        display: inline-block;
+                        padding: 3px 8px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        background: #f0f0f0;
+                        border: 1px solid #d0d0d0;
+                        border-radius: 3px;
+                        cursor: pointer;
+                        color: #555;
+                        transition: background 0.1s;
+                        font-family: inherit;
+                    }
+                    .date-quick-btn:hover {
+                        background: #e8f0fe;
+                        border-color: #3776ab;
+                        color: #3776ab;
+                    }
+                </style>
+                <script>
+                (function() {
+                    var startInput = document.getElementById('id_start_date');
+                    var endInput = document.getElementById('id_end_date');
+                    var startBtns = document.getElementById('start-quick-btns');
+                    var endBtns = document.getElementById('end-quick-btns');
+
+                    function fmt(d) {
+                        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                    }
+                    function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+                    function addYears(d, n) { var r = new Date(d); r.setFullYear(r.getFullYear() + n); return r; }
+                    function nextMonday() {
+                        var d = new Date();
+                        var day = d.getDay();
+                        var diff = day === 0 ? 1 : 8 - day;
+                        return addDays(d, diff);
+                    }
+                    function makeBtn(label, date, target) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'date-quick-btn';
+                        b.textContent = label;
+                        b.title = fmt(date);
+                        b.addEventListener('click', function() {
+                            target.value = fmt(date);
+                            target.dispatchEvent(new Event('change'));
+                            if (target === startInput) renderEndBtns();
+                        });
+                        return b;
+                    }
+
+                    var today = new Date();
+                    startBtns.appendChild(makeBtn('Today', today, startInput));
+                    startBtns.appendChild(makeBtn('Tomorrow', addDays(today, 1), startInput));
+                    startBtns.appendChild(makeBtn('Next Monday', nextMonday(), startInput));
+                    startBtns.appendChild(makeBtn('1st Next Month', new Date(today.getFullYear(), today.getMonth()+1, 1), startInput));
+
+                    function makeNudgeBtn(label, days, target) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'date-quick-btn';
+                        b.style.fontSize = '10px';
+                        b.style.padding = '2px 6px';
+                        b.style.color = '#999';
+                        b.textContent = label;
+                        b.addEventListener('click', function() {
+                            var cv = target.value;
+                            if (!cv) return;
+                            var d = new Date(cv + 'T00:00:00');
+                            if (isNaN(d.getTime())) return;
+                            target.value = fmt(addDays(d, days));
+                            target.dispatchEvent(new Event('change'));
+                        });
+                        return b;
+                    }
+
+                    function renderEndBtns() {
+                        endBtns.innerHTML = '';
+                        var sv = startInput.value;
+                        if (!sv) return;
+                        var sd = new Date(sv + 'T00:00:00');
+                        if (isNaN(sd.getTime())) return;
+                        endBtns.appendChild(makeBtn('1 Year', addYears(sd, 1), endInput));
+                        endBtns.appendChild(makeBtn('2 Years', addYears(sd, 2), endInput));
+                        endBtns.appendChild(makeBtn('3 Years', addYears(sd, 3), endInput));
+                        endBtns.appendChild(makeBtn('5 Years', addYears(sd, 5), endInput));
+                        var sep = document.createElement('span');
+                        sep.style.cssText = 'width:1px;background:#ddd;margin:0 2px;align-self:stretch;';
+                        endBtns.appendChild(sep);
+                        endBtns.appendChild(makeNudgeBtn('-30d', -30, endInput));
+                        endBtns.appendChild(makeNudgeBtn('-7d', -7, endInput));
+                        endBtns.appendChild(makeNudgeBtn('+7d', 7, endInput));
+                        endBtns.appendChild(makeNudgeBtn('+30d', 30, endInput));
+                    }
+                    startInput.addEventListener('change', renderEndBtns);
+                    if (startInput.value) renderEndBtns();
+                })();
+                </script>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_package">Package</label>
+                        {{ form.package }}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_sponsorship_fee">Sponsorship Fee ($)</label>
+                        {{ form.sponsorship_fee }}
+                    </div>
+                </div>
+
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;width:fit-content;">
+                    {{ form.renewal }} Renewal sponsorship
+                </label>
+                {% if form.renewal.help_text %}<span class="helptext" style="display:block;font-size:12px;color:#888;margin-top:4px;">{{ form.renewal.help_text }}</span>{% endif %}
+            </fieldset>
+
+            <fieldset class="manage-fieldset" style="margin-top:16px;">
+                <legend>Signed Contract</legend>
+                <div class="form-group">
+                    <label for="id_signed_contract">{{ form.signed_contract.label }}</label>
+                    {{ form.signed_contract }}
+                    {% if form.signed_contract.help_text %}<span class="helptext">{{ form.signed_contract.help_text }}</span>{% endif %}
+                    {% if form.signed_contract.errors %}<div class="field-errors">{{ form.signed_contract.errors.0 }}</div>{% endif %}
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-gold">Approve with Signed Contract</button>
+                <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}
