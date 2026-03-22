@@ -25,12 +25,9 @@ from apps.sponsors.models import (
     TieredBenefitConfiguration,
 )
 
-MIN_YEAR = 2022
-MAX_YEAR = 2050
-
 
 def year_choices():
-    """Return year choices for select widgets."""
+    """Return year choices for select widgets. Current year + 2 years forward, plus historical years with data."""
     current = timezone.now().year
     return [(y, str(y)) for y in range(current + 2, 2021, -1)]
 
@@ -177,8 +174,9 @@ class CloneYearForm(forms.Form):
     def clean_target_year(self):
         """Validate target year is in acceptable range."""
         year = self.cleaned_data["target_year"]
-        if year < MIN_YEAR or year > MAX_YEAR:
-            msg = f"Year must be between {MIN_YEAR} and {MAX_YEAR}."
+        current = timezone.now().year
+        if year < current:
+            msg = f"Target year must be {current} or later."
             raise forms.ValidationError(msg)
         return year
 
