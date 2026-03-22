@@ -109,7 +109,9 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 )
 
         # Sponsorship stats for this year
-        year_sponsorships = Sponsorship.objects.filter(year=selected_year) if selected_year else Sponsorship.objects.none()
+        year_sponsorships = (
+            Sponsorship.objects.filter(year=selected_year) if selected_year else Sponsorship.objects.none()
+        )
         count_applied = year_sponsorships.filter(status=Sponsorship.APPLIED).count()
         count_approved = year_sponsorships.filter(status=Sponsorship.APPROVED).count()
         count_finalized = year_sponsorships.filter(status=Sponsorship.FINALIZED).count()
@@ -128,9 +130,12 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
         )
 
         # Revenue summary
-        total_revenue = year_sponsorships.filter(
-            status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED],
-        ).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        total_revenue = (
+            year_sponsorships.filter(
+                status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED],
+            ).aggregate(total=Sum("sponsorship_fee"))["total"]
+            or 0
+        )
 
         context.update(
             {
