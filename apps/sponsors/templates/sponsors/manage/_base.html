@@ -543,6 +543,47 @@
         color: #3776ab;
     }
 
+    /* ── Filter bar ── */
+    .manage-filter-bar {
+        background: #f7f8fa;
+        border: 1px solid #e8e8e8;
+        border-radius: 6px;
+        padding: 14px 20px;
+        margin-bottom: 24px;
+    }
+    .manage-filter-bar form {
+        display: flex;
+        gap: 14px;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+    .manage-filter-bar .filter-field label {
+        display: block;
+        font-size: 11px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #777;
+        margin-bottom: 4px;
+    }
+    .manage-filter-bar .filter-field select,
+    .manage-filter-bar .filter-field input[type="text"],
+    .manage-filter-bar .filter-field input[type="search"] {
+        padding: 7px 10px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        font-size: 13px;
+        font-family: inherit;
+        height: 34px;
+        box-sizing: border-box;
+    }
+    .manage-filter-bar .filter-actions {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+        height: 34px;
+    }
+
     /* ── Breadcrumbs (shown below navbar on sub-pages) ── */
     .manage-crumbs {
         font-size: 12px;

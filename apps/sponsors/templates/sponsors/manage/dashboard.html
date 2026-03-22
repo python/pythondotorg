@@ -25,27 +25,143 @@
     {% endif %}
 
     {% if selected_year %}
+
     <!-- Summary cards -->
     <div class="manage-cards">
         <div class="manage-card">
-            <div class="card-value">{{ total_benefits }}</div>
-            <div class="card-label">Total Benefits</div>
+            <div class="card-value">{{ total_sponsorships }}</div>
+            <div class="card-label">Sponsorships</div>
         </div>
         <div class="manage-card gold">
-            <div class="card-value">{{ total_packages }}</div>
-            <div class="card-label">Packages</div>
+            <div class="card-value">${{ total_revenue|floatformat:"0" }}</div>
+            <div class="card-label">Revenue</div>
         </div>
-        {% for label, count in sponsorship_counts.items %}
-        <div class="manage-card {% if label == 'Finalized' %}green{% elif label == 'Rejected' %}red{% endif %}">
-            <div class="card-value">{{ count }}</div>
-            <div class="card-label">{{ label }}</div>
+        <div class="manage-card">
+            <div class="card-value">{{ count_applied }}</div>
+            <div class="card-label">Pending Review</div>
         </div>
-        {% endfor %}
+        <div class="manage-card">
+            <div class="card-value">{{ count_approved }}</div>
+            <div class="card-label">Approved</div>
+        </div>
+        <div class="manage-card green">
+            <div class="card-value">{{ count_finalized }}</div>
+            <div class="card-label">Finalized</div>
+        </div>
+    </div>
+
+    <!-- Action needed sections -->
+    {% if needs_review %}
+    <div class="manage-section">
+        <div class="manage-section-header">
+            <h2 style="color:#e74c3c;">Needs Review <span class="badge" style="background:#e74c3c;">{{ count_applied }}</span></h2>
+            <a href="{% url 'manage_sponsorships' %}?status=applied&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All</a>
+        </div>
+        <table class="manage-table">
+            <thead>
+                <tr>
+                    <th>Sponsor</th>
+                    <th>Package</th>
+                    <th style="text-align:right;">Fee</th>
+                    <th>Applied</th>
+                    <th style="width:80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sp in needs_review %}
+                <tr>
+                    <td>
+                        <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                            {{ sp.sponsor.name }}
+                        </a>
+                        {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
+                        {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
+                    </td>
+                    <td>{% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% endif %}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="font-size:12px;color:#777;">{{ sp.applied_on|date:"M j" }}</td>
+                    <td><a href="{% url 'manage_sponsorship_detail' sp.pk %}" class="btn btn-xs btn-primary">Review</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if pending_contracts %}
+    <div class="manage-section">
+        <div class="manage-section-header">
+            <h2 style="color:#b8860b;">Pending Contracts <span class="badge" style="background:#b8860b;">{{ count_approved }}</span></h2>
+            <a href="{% url 'manage_sponsorships' %}?status=approved&year={{ selected_year }}" class="btn btn-sm btn-secondary">View All</a>
+        </div>
+        <table class="manage-table">
+            <thead>
+                <tr>
+                    <th>Sponsor</th>
+                    <th>Package</th>
+                    <th style="text-align:right;">Fee</th>
+                    <th>Approved</th>
+                    <th>Period</th>
+                    <th style="width:80px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sp in pending_contracts %}
+                <tr>
+                    <td>
+                        <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                            {{ sp.sponsor.name }}
+                        </a>
+                    </td>
+                    <td>{% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% endif %}</td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
+                    <td style="font-size:12px;color:#777;">{{ sp.approved_on|date:"M j" }}</td>
+                    <td style="font-size:12px;color:#777;">
+                        {% if sp.start_date %}{{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}{% endif %}
+                    </td>
+                    <td><a href="{% url 'manage_sponsorship_detail' sp.pk %}" class="btn btn-xs btn-gold">Manage</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
+
+    {% if not needs_review and not pending_contracts %}
+    <div class="manage-alert manage-alert-success" style="margin-bottom:28px;">
+        No sponsorships need attention for {{ selected_year }}. All caught up.
+    </div>
+    {% endif %}
+
+    <!-- Config overview cards -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:28px;">
+        <div class="sp-card" style="background:#fff;border:1px solid #e8e8e8;border-radius:6px;padding:16px 20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <strong style="font-size:14px;">Benefits</strong>
+                <a href="{% url 'manage_benefit_list' %}?year={{ selected_year }}" style="font-size:12px;color:#3776ab;text-decoration:none;">View All ({{ total_benefits }})</a>
+            </div>
+            <div style="font-size:12px;color:#777;">
+                {% for stat in program_stats %}
+                {{ stat.program.name }}: {{ stat.count }}{% if not forloop.last %} &middot; {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+        <div class="sp-card" style="background:#fff;border:1px solid #e8e8e8;border-radius:6px;padding:16px 20px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+                <strong style="font-size:14px;">Packages</strong>
+                <a href="{% url 'manage_packages' %}?year={{ selected_year }}" style="font-size:12px;color:#3776ab;text-decoration:none;">View All ({{ total_packages }})</a>
+            </div>
+            <div style="font-size:12px;color:#777;">
+                {% for pkg in year_packages %}
+                {{ pkg.name }}: ${{ pkg.sponsorship_amount|floatformat:"0" }}{% if not forloop.last %} &middot; {% endif %}
+                {% endfor %}
+            </div>
+        </div>
     </div>
 
     <!-- Packages overview — collapsible -->
     {% if year_packages %}
-    <div class="manage-section">
+    <div class="manage-section collapsed">
         <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
@@ -82,7 +198,7 @@
 
     <!-- Benefits by program — collapsible -->
     {% for stat in program_stats %}
-    <div class="manage-section {% if not forloop.first %}collapsed{% endif %}">
+    <div class="manage-section collapsed">
         <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
             <h2>
                 <span class="collapse-arrow">&#9662;</span>
@@ -138,7 +254,7 @@
     </div>
     {% endfor %}
 
-    {% if not program_stats %}
+    {% if not program_stats and not needs_review %}
     <div class="empty-state">
         <div class="empty-icon">&#9744;</div>
         <p>No benefits configured for {{ selected_year }}.</p>

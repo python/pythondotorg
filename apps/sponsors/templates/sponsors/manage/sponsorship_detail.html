@@ -239,40 +239,79 @@
 </div>
 
 <!-- Contract section -->
-{% if contract %}
+{% if contract or sponsorship.status != 'applied' %}
 <div class="manage-section">
     <div class="manage-section-header">
         <h2>Contract</h2>
     </div>
-    <div class="sp-card" style="display:flex;justify-content:space-between;align-items:center;">
-        <div>
-            <span style="font-weight:600;">Revision {{ contract.revision }}</span>
-            &middot;
-            {% if contract.status == 'draft' %}<span class="tag tag-gray">Draft</span>
-            {% elif contract.status == 'awaiting signature' %}<span class="tag tag-gold">Awaiting Signature</span>
-            {% elif contract.status == 'executed' %}<span class="tag tag-green">Executed</span>
-            {% elif contract.status == 'nullified' %}<span class="tag tag-red">Nullified</span>
-            {% elif contract.status == 'outdated' %}<span class="tag tag-gray">Outdated</span>
-            {% endif %}
-            {% if contract.sent_on %}
-            <span style="font-size:12px;color:#777;margin-left:8px;">Sent {{ contract.sent_on|date:"M j, Y" }}</span>
-            {% endif %}
+    {% if contract %}
+    <div class="sp-card">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+            <div>
+                <span style="font-weight:600;">Revision {{ contract.revision }}</span>
+                &middot;
+                {% if contract.status == 'draft' %}<span class="tag tag-gray">Draft</span>
+                {% elif contract.status == 'awaiting signature' %}<span class="tag tag-gold">Awaiting Signature</span>
+                {% elif contract.status == 'executed' %}<span class="tag tag-green">Executed</span>
+                {% elif contract.status == 'nullified' %}<span class="tag tag-red">Nullified</span>
+                {% elif contract.status == 'outdated' %}<span class="tag tag-gray">Outdated</span>
+                {% endif %}
+                {% if contract.sent_on %}
+                <span style="font-size:12px;color:#777;margin-left:8px;">Sent {{ contract.sent_on|date:"M j, Y" }}</span>
+                {% endif %}
+            </div>
+            <div style="display:flex;gap:6px;">
+                {% if 'awaiting signature' in contract.next_status %}
+                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Send Contract</a>
+                {% endif %}
+                {% if 'executed' in contract.next_status %}
+                <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-gold">Upload Signed</a>
+                {% endif %}
+                {% if 'nullified' in contract.next_status %}
+                <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:inline;" onsubmit="return confirm('Nullify this contract?');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-danger">Nullify</button>
+                </form>
+                {% endif %}
+            </div>
         </div>
-        <div style="display:flex;gap:6px;">
-            {% if 'awaiting signature' in contract.next_status %}
-            <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Send Contract</a>
+
+        <!-- Document downloads -->
+        <div style="border-top:1px solid #f0f0f0;padding-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
+            <!-- Preview (renders live from contract template data) -->
+            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+                <span style="color:#e74c3c;font-weight:700;">PDF</span> Preview
+            </a>
+            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=docx" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+                <span style="color:#3776ab;font-weight:700;">DOCX</span> Preview
+            </a>
+            <!-- Stored sent documents -->
+            {% if contract.document %}
+            <a href="{{ contract.document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+                <span style="color:#e74c3c;font-weight:700;">PDF</span> Sent Version
+            </a>
             {% endif %}
-            {% if 'executed' in contract.next_status %}
-            <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-gold">Upload Signed</a>
+            {% if contract.document_docx %}
+            <a href="{{ contract.document_docx.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+                <span style="color:#3776ab;font-weight:700;">DOCX</span> Sent Version
+            </a>
             {% endif %}
-            {% if 'nullified' in contract.next_status %}
-            <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:inline;" onsubmit="return confirm('Nullify this contract?');">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-danger">Nullify</button>
-            </form>
+            <!-- Signed document -->
+            {% if contract.signed_document %}
+            <a href="{{ contract.signed_document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;font-size:12px;color:#2e7d32;text-decoration:none;font-weight:600;">
+                <span style="font-weight:700;">PDF</span> Signed Contract
+            </a>
             {% endif %}
         </div>
     </div>
+    {% else %}
+    <div class="sp-card" style="text-align:center;padding:20px;color:#999;">
+        <p style="margin:0 0 8px;font-size:13px;">No contract on file for this sponsorship.</p>
+        {% if sponsorship.status == 'approved' or sponsorship.status == 'finalized' %}
+        <p style="margin:0;font-size:12px;color:#bbb;">Contract may have been managed outside this system or before this tool was available.</p>
+        {% endif %}
+    </div>
+    {% endif %}
 </div>
 {% endif %}
 
@@ -295,8 +334,8 @@
         <tbody>
             {% for b in benefits %}
             <tr>
-                <td style="font-weight:500;">{{ b.name }}</td>
-                <td style="font-size:12px;color:#777;">{{ b.program_name }}</td>
+                <td>{% if b.sponsorship_benefit %}<a href="{% url 'manage_benefit_edit' b.sponsorship_benefit.pk %}" style="font-weight:500;color:#1a1a2e;text-decoration:none;">{{ b.name }}</a>{% else %}<span style="font-weight:500;">{{ b.name }}</span>{% endif %}</td>
+                <td>{% if b.program %}<a href="{% url 'manage_benefit_list' %}?year={{ sponsorship.year }}&program={{ b.program.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;">{{ b.program_name }}</a>{% else %}<span style="font-size:12px;color:#777;">{{ b.program_name }}</span>{% endif %}</td>
                 <td style="text-align:right;font-variant-numeric:tabular-nums;">
                     {% if b.benefit_internal_value %}${{ b.benefit_internal_value|floatformat:"0" }}{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>

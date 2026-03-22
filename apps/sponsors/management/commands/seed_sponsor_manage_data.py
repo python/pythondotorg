@@ -8,6 +8,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.utils import timezone
 
 from apps.sponsors.models import (
+    Contract,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
@@ -209,6 +210,17 @@ class Command(BaseCommand):
             for b in benefits:
                 SponsorBenefit.new_copy(b, sponsorship=sp)
 
+            # Create contracts for approved/finalized sponsorships
+            if status in ("approved", "finalized"):
+                try:
+                    contract = Contract.new(sp)
+                    if status == "finalized":
+                        # Mark contract as executed
+                        contract.status = Contract.EXECUTED
+                        contract.save()
+                except Exception:
+                    pass  # Contract creation may fail if sponsor has no primary contact
+
             created_count += 1
         return created_count
 
@@ -232,6 +244,7 @@ class Command(BaseCommand):
 
     def _clean(self):
         names = [s["name"] for s in SPONSORS]
+        Contract.objects.filter(sponsorship__sponsor__name__in=names).delete()
         Sponsorship.objects.filter(sponsor__name__in=names).delete()
         Sponsor.objects.filter(name__in=names).delete()
         User.objects.filter(username="sponsor_admin").delete()
