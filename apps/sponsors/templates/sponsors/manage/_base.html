@@ -203,7 +203,7 @@
         border-radius: 4px;
         text-decoration: none !important;
         cursor: pointer;
-        border: none;
+        border: 1px solid transparent;
         transition: background 0.15s, box-shadow 0.15s;
         line-height: 1.4;
         vertical-align: middle;
@@ -619,6 +619,7 @@
             <a href="{% url 'manage_benefit_list' %}" class="{% if active_tab == 'benefits' %}active{% endif %}">Benefits</a>
             <a href="{% url 'manage_packages' %}" class="{% if active_tab == 'packages' %}active{% endif %}">Packages</a>
             <a href="{% url 'manage_clone_year' %}" class="{% if active_tab == 'clone' %}active{% endif %}">Clone Year</a>
+            <a href="{% url 'manage_notification_templates' %}" class="{% if active_tab == 'notifications' %}active{% endif %}">Notifications</a>
         </div>
         <div class="manage-navbar-right">
             {% block topbar_actions %}{% endblock %}

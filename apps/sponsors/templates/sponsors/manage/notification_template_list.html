@@ -1,0 +1,55 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Notification Templates | Sponsorship Management{% endblock %}
+
+{% with active_tab="notifications" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Notification Templates</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Notification Templates <span class="badge">{{ templates|length }}</span></h2>
+        <a href="{% url 'manage_notification_template_create' %}" class="btn btn-primary">New Template</a>
+    </div>
+
+    {% if templates %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Subject</th>
+                <th>Updated</th>
+                <th style="width:120px;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for tpl in templates %}
+            <tr>
+                <td><a href="{% url 'manage_notification_template_edit' tpl.pk %}" style="font-weight:500;color:#1a1a2e;text-decoration:none;">{{ tpl.internal_name }}</a></td>
+                <td style="color:#555;">{{ tpl.subject|truncatewords:10 }}</td>
+                <td style="font-size:12px;color:#999;">{{ tpl.updated_at|date:"M j, Y H:i" }}</td>
+                <td>
+                    <a href="{% url 'manage_notification_template_edit' tpl.pk %}" class="btn btn-xs btn-secondary">Edit</a>
+                    <a href="{% url 'manage_notification_template_delete' tpl.pk %}" class="btn btn-xs btn-danger">Delete</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">
+        <p>No notification templates yet.</p>
+        <a href="{% url 'manage_notification_template_create' %}" class="btn btn-primary">Create your first template</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% endwith %}

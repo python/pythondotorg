@@ -60,14 +60,120 @@
                     <div class="form-group">
                         <label for="id_start_date">Start Date</label>
                         {{ form.start_date }}
+                        <div style="display:flex;gap:4px;margin-top:6px;" id="start-quick-btns"></div>
                         {% if form.start_date.errors %}<div class="field-errors">{{ form.start_date.errors.0 }}</div>{% endif %}
                     </div>
                     <div class="form-group">
                         <label for="id_end_date">End Date</label>
                         {{ form.end_date }}
+                        <div style="display:flex;gap:4px;margin-top:6px;" id="end-quick-btns"></div>
                         {% if form.end_date.errors %}<div class="field-errors">{{ form.end_date.errors.0 }}</div>{% endif %}
                     </div>
                 </div>
+
+                <style>
+                    .date-quick-btn {
+                        display: inline-block;
+                        padding: 3px 8px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        background: #f0f0f0;
+                        border: 1px solid #d0d0d0;
+                        border-radius: 3px;
+                        cursor: pointer;
+                        color: #555;
+                        transition: background 0.1s;
+                        font-family: inherit;
+                    }
+                    .date-quick-btn:hover {
+                        background: #e8f0fe;
+                        border-color: #3776ab;
+                        color: #3776ab;
+                    }
+                </style>
+                <script>
+                (function() {
+                    var startInput = document.getElementById('id_start_date');
+                    var endInput = document.getElementById('id_end_date');
+                    var startBtns = document.getElementById('start-quick-btns');
+                    var endBtns = document.getElementById('end-quick-btns');
+
+                    function fmt(d) {
+                        return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+                    }
+                    function addDays(d, n) { var r = new Date(d); r.setDate(r.getDate() + n); return r; }
+                    function addYears(d, n) { var r = new Date(d); r.setFullYear(r.getFullYear() + n); return r; }
+                    function nextMonday() {
+                        var d = new Date();
+                        var day = d.getDay();
+                        var diff = day === 0 ? 1 : 8 - day;
+                        return addDays(d, diff);
+                    }
+                    function makeBtn(label, date, target) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'date-quick-btn';
+                        b.textContent = label;
+                        b.title = fmt(date);
+                        b.addEventListener('click', function() {
+                            target.value = fmt(date);
+                            target.dispatchEvent(new Event('change'));
+                            if (target === startInput) renderEndBtns();
+                        });
+                        return b;
+                    }
+
+                    // Start date quick buttons
+                    var today = new Date();
+                    startBtns.appendChild(makeBtn('Today', today, startInput));
+                    startBtns.appendChild(makeBtn('Tomorrow', addDays(today, 1), startInput));
+                    startBtns.appendChild(makeBtn('Next Monday', nextMonday(), startInput));
+                    startBtns.appendChild(makeBtn('1st Next Month', new Date(today.getFullYear(), today.getMonth()+1, 1), startInput));
+
+                    // End date quick buttons (relative to start date)
+                    // +/- 30 day nudge buttons
+                    function makeNudgeBtn(label, days, target) {
+                        var b = document.createElement('button');
+                        b.type = 'button';
+                        b.className = 'date-quick-btn';
+                        b.style.fontSize = '10px';
+                        b.style.padding = '2px 6px';
+                        b.style.color = '#999';
+                        b.textContent = label;
+                        b.addEventListener('click', function() {
+                            var cv = target.value;
+                            if (!cv) return;
+                            var d = new Date(cv + 'T00:00:00');
+                            if (isNaN(d.getTime())) return;
+                            target.value = fmt(addDays(d, days));
+                            target.dispatchEvent(new Event('change'));
+                        });
+                        return b;
+                    }
+
+                    function renderEndBtns() {
+                        endBtns.innerHTML = '';
+                        var sv = startInput.value;
+                        if (!sv) return;
+                        var sd = new Date(sv + 'T00:00:00');
+                        if (isNaN(sd.getTime())) return;
+                        endBtns.appendChild(makeBtn('1 Year', addYears(sd, 1), endInput));
+                        endBtns.appendChild(makeBtn('2 Years', addYears(sd, 2), endInput));
+                        endBtns.appendChild(makeBtn('3 Years', addYears(sd, 3), endInput));
+                        endBtns.appendChild(makeBtn('5 Years', addYears(sd, 5), endInput));
+                        // Nudge buttons
+                        var sep = document.createElement('span');
+                        sep.style.cssText = 'width:1px;background:#ddd;margin:0 2px;align-self:stretch;';
+                        endBtns.appendChild(sep);
+                        endBtns.appendChild(makeNudgeBtn('-30d', -30, endInput));
+                        endBtns.appendChild(makeNudgeBtn('-7d', -7, endInput));
+                        endBtns.appendChild(makeNudgeBtn('+7d', 7, endInput));
+                        endBtns.appendChild(makeNudgeBtn('+30d', 30, endInput));
+                    }
+                    startInput.addEventListener('change', renderEndBtns);
+                    if (startInput.value) renderEndBtns();
+                })();
+                </script>
 
                 <div class="form-row">
                     <div class="form-group">

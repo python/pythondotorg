@@ -57,4 +57,35 @@ urlpatterns = [
     ),
     # Sponsor (company) edit
     path("sponsors/<int:pk>/edit/", views.SponsorEditView.as_view(), name="manage_sponsor_edit"),
+    # Sponsor contacts
+    path(
+        "sponsors/<int:sponsor_pk>/contacts/new/",
+        views.SponsorContactCreateView.as_view(),
+        name="manage_contact_create",
+    ),
+    path("contacts/<int:pk>/edit/", views.SponsorContactUpdateView.as_view(), name="manage_contact_edit"),
+    path("contacts/<int:pk>/delete/", views.SponsorContactDeleteView.as_view(), name="manage_contact_delete"),
+    # Sponsorship notifications
+    path(
+        "sponsorships/<int:pk>/notify/",
+        views.SponsorshipNotifyView.as_view(),
+        name="manage_sponsorship_notify",
+    ),
+    # Notification template CRUD
+    path("notifications/", views.NotificationTemplateListView.as_view(), name="manage_notification_templates"),
+    path(
+        "notifications/new/",
+        views.NotificationTemplateCreateView.as_view(),
+        name="manage_notification_template_create",
+    ),
+    path(
+        "notifications/<int:pk>/edit/",
+        views.NotificationTemplateUpdateView.as_view(),
+        name="manage_notification_template_edit",
+    ),
+    path(
+        "notifications/<int:pk>/delete/",
+        views.NotificationTemplateDeleteView.as_view(),
+        name="manage_notification_template_delete",
+    ),
 ]

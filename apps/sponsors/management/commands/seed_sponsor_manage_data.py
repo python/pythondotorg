@@ -12,6 +12,7 @@ from apps.sponsors.models import (
     Sponsor,
     SponsorBenefit,
     SponsorContact,
+    SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
@@ -99,6 +100,7 @@ class Command(BaseCommand):
 
         sponsors = self._create_sponsors()
         created_count = self._create_sponsorships(sponsors, user, current_year, today)
+        self._create_notification_templates()
 
         self.stdout.write(
             self.style.SUCCESS(f"Created {created_count} sponsorships across {len(sponsors)} sponsors, years {years}.")
@@ -218,8 +220,8 @@ class Command(BaseCommand):
                         # Mark contract as executed
                         contract.status = Contract.EXECUTED
                         contract.save()
-                except Exception:
-                    pass  # Contract creation may fail if sponsor has no primary contact
+                except (AttributeError, ValueError, TypeError):
+                    self.stderr.write(f"  Could not create contract for {sp.sponsor.name}")
 
             created_count += 1
         return created_count
@@ -241,6 +243,53 @@ class Command(BaseCommand):
             sp.status = Sponsorship.REJECTED
             sp.rejected_on = applied_on + timedelta(days=3)
             sp.locked = True
+
+    def _create_notification_templates(self):
+        templates = [
+            {
+                "internal_name": "Welcome & Next Steps",
+                "subject": "Welcome to the PSF Sponsorship Program, {{ sponsor_name }}!",
+                "content": (
+                    "Dear {{ sponsor_name }},\n\n"
+                    "Thank you for your {{ sponsorship_level }} sponsorship! "
+                    "Your sponsorship period runs from {{ sponsorship_start_date }} to {{ sponsorship_end_date }}.\n\n"
+                    "We will be in touch shortly with next steps regarding your benefits.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+            },
+            {
+                "internal_name": "Asset Reminder",
+                "subject": "Action Required: Sponsorship assets needed for {{ sponsor_name }}",
+                "content": (
+                    "Dear {{ sponsor_name }},\n\n"
+                    "This is a reminder that we still need your sponsorship assets (logos, descriptions, etc.) "
+                    "for your {{ sponsorship_level }} sponsorship.\n\n"
+                    "Please submit them at your earliest convenience.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+            },
+            {
+                "internal_name": "Renewal Invitation",
+                "subject": "Renew your PSF Sponsorship, {{ sponsor_name }}?",
+                "content": (
+                    "Dear {{ sponsor_name }},\n\n"
+                    "Your {{ sponsorship_level }} sponsorship is approaching its end date ({{ sponsorship_end_date }}). "
+                    "We'd love to have you continue as a sponsor!\n\n"
+                    "Please let us know if you'd like to renew.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+            },
+        ]
+        created = 0
+        for tpl in templates:
+            _, was_created = SponsorEmailNotificationTemplate.objects.get_or_create(
+                internal_name=tpl["internal_name"],
+                defaults={"subject": tpl["subject"], "content": tpl["content"]},
+            )
+            if was_created:
+                created += 1
+        if created:
+            self.stdout.write(f"  Created {created} notification templates.")
 
     def _clean(self):
         names = [s["name"] for s in SPONSORS]

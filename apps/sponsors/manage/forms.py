@@ -4,7 +4,10 @@ from django import forms
 from django.utils import timezone
 
 from apps.sponsors.models import (
+    SPONSOR_TEMPLATE_HELP_TEXT,
     Sponsor,
+    SponsorContact,
+    SponsorEmailNotificationTemplate,
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
@@ -380,3 +383,90 @@ class ExecuteContractForm(forms.Form):
         help_text="Upload the signed PDF.",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
     )
+
+
+class SendSponsorshipNotificationManageForm(forms.Form):
+    """Form for sending email notifications to sponsorship contacts from the manage UI."""
+
+    contact_types = forms.MultipleChoiceField(
+        choices=SponsorContact.CONTACT_TYPES,
+        required=True,
+        widget=forms.CheckboxSelectMultiple,
+        label="Send to contact types",
+    )
+    notification = forms.ModelChoiceField(
+        queryset=SponsorEmailNotificationTemplate.objects.all(),
+        help_text="Select an existing notification template, or write custom content below.",
+        required=False,
+        label="Template",
+    )
+    subject = forms.CharField(
+        max_length=140,
+        required=False,
+        widget=forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "Custom email subject"}),
+    )
+    content = forms.CharField(
+        widget=forms.Textarea(
+            attrs={"rows": 8, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Custom email content"}
+        ),
+        required=False,
+        help_text=SPONSOR_TEMPLATE_HELP_TEXT,
+    )
+
+    def clean(self):
+        """Validate that either a notification template or custom content is provided, not both."""
+        cleaned_data = super().clean()
+        notification = cleaned_data.get("notification")
+        subject = cleaned_data.get("subject", "").strip()
+        content = cleaned_data.get("content", "").strip()
+        custom_notification = subject or content
+
+        if not (notification or custom_notification):
+            msg = "You must select a template or provide custom subject and content."
+            raise forms.ValidationError(msg)
+        if notification and custom_notification:
+            msg = "Select a template or use custom content, not both."
+            raise forms.ValidationError(msg)
+
+        return cleaned_data
+
+    def get_notification(self):
+        """Return the selected template or build one from custom fields."""
+        default_notification = SponsorEmailNotificationTemplate(
+            content=self.cleaned_data["content"],
+            subject=self.cleaned_data["subject"],
+        )
+        return self.cleaned_data.get("notification") or default_notification
+
+
+class NotificationTemplateForm(forms.ModelForm):
+    """Form for creating and editing SponsorEmailNotificationTemplate instances."""
+
+    class Meta:
+        """Meta options."""
+
+        model = SponsorEmailNotificationTemplate
+        fields = ["internal_name", "subject", "content"]
+        widgets = {
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "subject": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "content": forms.Textarea(attrs={"rows": 12, "style": INPUT_STYLE + "resize:vertical;"}),
+        }
+        help_texts = {
+            "content": SPONSOR_TEMPLATE_HELP_TEXT,
+        }
+
+
+class SponsorContactForm(forms.ModelForm):
+    """Form for adding/editing a sponsor contact."""
+
+    class Meta:
+        """Meta options."""
+
+        model = SponsorContact
+        fields = ["name", "email", "phone", "primary", "administrative", "accounting", "manager"]
+        widgets = {
+            "name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "email": forms.EmailInput(attrs={"style": INPUT_STYLE}),
+            "phone": forms.TextInput(attrs={"style": INPUT_STYLE}),
+        }
