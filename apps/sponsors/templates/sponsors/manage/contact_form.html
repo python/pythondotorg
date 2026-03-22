@@ -59,17 +59,18 @@
 
             <fieldset class="manage-fieldset">
                 <legend>Roles</legend>
+                <style>.role-check input[type="checkbox"]{margin:0 !important;vertical-align:middle !important;}</style>
                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                    <label class="role-check" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;color:#333;">
                         {{ form.primary }} Primary
                     </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                    <label class="role-check" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;color:#333;">
                         {{ form.administrative }} Administrative
                     </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                    <label class="role-check" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;color:#333;">
                         {{ form.accounting }} Accounting
                     </label>
-                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                    <label class="role-check" style="display:inline-flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;color:#333;">
                         {{ form.manager }} Manager
                     </label>
                 </div>
