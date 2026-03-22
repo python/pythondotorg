@@ -81,6 +81,40 @@
         color: #3776ab;
         border-bottom-color: #3776ab;
     }
+    .manage-nav-more .manage-nav-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: #fff;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        z-index: 100;
+        min-width: 160px;
+        margin-top: 2px;
+    }
+    .manage-nav-more.open .manage-nav-dropdown {
+        display: block;
+    }
+    .manage-nav-more .manage-nav-dropdown a {
+        display: block;
+        padding: 8px 16px;
+        font-size: 12px;
+        color: #333;
+        text-decoration: none;
+        border-bottom: 1px solid #f0f0f0;
+        text-transform: none;
+        letter-spacing: 0;
+        font-weight: 500;
+    }
+    .manage-nav-more .manage-nav-dropdown a:last-child {
+        border-bottom: none;
+    }
+    .manage-nav-more .manage-nav-dropdown a:hover {
+        background: #f7f8fa;
+        color: #3776ab;
+    }
     .manage-navbar-right {
         margin-left: auto;
         display: flex;
@@ -639,10 +673,16 @@
         <div class="manage-nav">
             <a href="{% url 'manage_dashboard' %}" class="{% if active_tab == 'dashboard' %}active{% endif %}">Dashboard</a>
             <a href="{% url 'manage_sponsorships' %}" class="{% if active_tab == 'sponsorships' %}active{% endif %}">Sponsorships</a>
+            <a href="{% url 'manage_composer' %}?new=1" class="{% if active_tab == 'composer' %}active{% endif %}">Composer</a>
             <a href="{% url 'manage_benefit_list' %}" class="{% if active_tab == 'benefits' %}active{% endif %}">Benefits</a>
             <a href="{% url 'manage_packages' %}" class="{% if active_tab == 'packages' %}active{% endif %}">Packages</a>
-            <a href="{% url 'manage_clone_year' %}" class="{% if active_tab == 'clone' %}active{% endif %}">Clone Year</a>
             <a href="{% url 'manage_notification_templates' %}" class="{% if active_tab == 'notifications' %}active{% endif %}">Notifications</a>
+            <div class="manage-nav-more" style="position:relative;">
+                <a href="#" class="{% if active_tab == 'clone' %}active{% endif %}" onclick="event.preventDefault();this.parentElement.classList.toggle('open');">More &#9662;</a>
+                <div class="manage-nav-dropdown">
+                    <a href="{% url 'manage_clone_year' %}">Clone Year</a>
+                </div>
+            </div>
         </div>
         <div class="manage-navbar-right">
             {% block topbar_actions %}{% endblock %}

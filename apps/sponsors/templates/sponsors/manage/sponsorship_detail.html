@@ -65,6 +65,7 @@
     <div class="sp-actions">
         {% if can_approve %}
         <a href="{% url 'manage_sponsorship_approve' sponsorship.pk %}" class="btn btn-primary">Approve</a>
+        <a href="{% url 'manage_sponsorship_approve_signed' sponsorship.pk %}" class="btn btn-gold">Approve with Signed Contract</a>
         {% endif %}
         {% if can_reject %}
         <button type="button" class="btn btn-danger" onclick="document.getElementById('reject-confirm').classList.toggle('visible')">Reject</button>
@@ -346,8 +347,11 @@
 <!-- Required Assets -->
 {% if required_assets %}
 <div class="manage-section">
-    <div class="manage-section-header">
+    <div class="manage-section-header" style="display:flex;justify-content:space-between;align-items:center;">
         <h2>Required Assets <span class="badge">{{ assets_submitted }}/{{ assets_total }}</span></h2>
+        {% if assets_submitted > 0 %}
+        <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-sm btn-secondary">Export Assets</a>
+        {% endif %}
     </div>
     <table class="manage-table">
         <thead>
@@ -412,9 +416,9 @@
                 </td>
                 {% if sponsorship.open_for_editing %}
                 <td>
-                    <form method="post" action="{% url 'manage_sponsorship_remove_benefit' sponsorship.pk b.pk %}" style="display:inline;" onsubmit="return confirm('Remove this benefit?');">
+                    <form method="post" action="{% url 'manage_sponsorship_remove_benefit' sponsorship.pk b.pk %}" style="display:inline;" onsubmit="return confirm('{% if not b.added_by_user and not b.standalone %}This is a package benefit. Removing it will customize the sponsorship. Are you sure?{% else %}Remove this benefit?{% endif %}');">
                         {% csrf_token %}
-                        <button type="submit" style="background:none;border:none;color:#e74c3c;cursor:pointer;font-size:12px;padding:2px 4px;" title="Remove">&times;</button>
+                        <button type="submit" class="btn btn-xs btn-danger" title="Remove">Remove</button>
                     </form>
                 </td>
                 {% endif %}

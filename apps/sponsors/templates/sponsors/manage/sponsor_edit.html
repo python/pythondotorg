@@ -1,6 +1,6 @@
 {% extends "sponsors/manage/_base.html" %}
 
-{% block page_title %}Edit {{ object.name }} | Sponsor Management{% endblock %}
+{% block page_title %}{% if is_create %}New Sponsor{% else %}Edit {{ object.name }}{% endif %} | Sponsor Management{% endblock %}
 
 {% with active_tab="sponsorships" %}
 
@@ -14,13 +14,13 @@
     <a href="{% url 'manage_sponsorship_detail' from_sponsorship %}">{{ object.name }}</a>
     <span class="sep">/</span>
     {% endif %}
-    <span class="current">Edit Sponsor</span>
+    <span class="current">{% if is_create %}New Sponsor{% else %}Edit Sponsor{% endif %}</span>
 </div>
 {% endblock %}
 
 {% block manage_content %}
     <div class="manage-form">
-        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">Edit Sponsor: {{ object.name }}</h2>
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">{% if is_create %}New Sponsor{% else %}Edit Sponsor: {{ object.name }}{% endif %}</h2>
 
         {% if form.errors %}
         <div class="form-errors">

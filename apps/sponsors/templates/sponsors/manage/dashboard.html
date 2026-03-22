@@ -5,10 +5,7 @@
 {% with active_tab="dashboard" %}
 
 {% block topbar_actions %}
-    {% if current_year %}
-    <span class="tag tag-gold" style="font-size:12px;">Active Year: {{ current_year }}</span>
-    {% endif %}
-    <a href="{% url 'manage_current_year' %}" class="btn btn-sm btn-secondary">Change Active Year</a>
+    <a href="{% url 'manage_current_year' %}" class="btn btn-sm btn-secondary" style="gap:6px;">{% if current_year %}{{ current_year }} &#9662;{% else %}Set Year &#9662;{% endif %}</a>
 {% endblock %}
 
 {% block manage_content %}

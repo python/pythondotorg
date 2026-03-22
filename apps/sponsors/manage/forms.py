@@ -1,10 +1,19 @@
 """Forms for the sponsor management UI."""
 
+import contextlib
+
 from django import forms
 from django.utils import timezone
 
 from apps.sponsors.models import (
     SPONSOR_TEMPLATE_HELP_TEXT,
+    EmailTargetableConfiguration,
+    LogoPlacementConfiguration,
+    ProvidedFileAssetConfiguration,
+    ProvidedTextAssetConfiguration,
+    RequiredImgAssetConfiguration,
+    RequiredResponseAssetConfiguration,
+    RequiredTextAssetConfiguration,
     Sponsor,
     SponsorContact,
     SponsorEmailNotificationTemplate,
@@ -13,6 +22,7 @@ from apps.sponsors.models import (
     SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
+    TieredBenefitConfiguration,
 )
 
 MIN_YEAR = 2022
@@ -76,9 +86,19 @@ class SponsorshipBenefitManageForm(forms.ModelForm):
             choices=[("", "---"), *year_choices()],
             attrs={"style": "padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;"},
         )
-        # Filter packages to show year context
+        # Filter packages to benefit's year, or initial year, or current year
+        filter_year = None
         if self.instance and self.instance.year:
-            self.fields["packages"].queryset = SponsorshipPackage.objects.filter(year=self.instance.year)
+            filter_year = self.instance.year
+        elif self.initial.get("year"):
+            filter_year = self.initial["year"]
+        else:
+            with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
+                filter_year = SponsorshipCurrentYear.get_year()
+        if filter_year:
+            self.fields["packages"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
+                "-sponsorship_amount"
+            )
 
 
 class SponsorshipPackageManageForm(forms.ModelForm):
@@ -262,6 +282,16 @@ class SponsorshipApproveForm(forms.ModelForm):
             msg = "End date must be after start date."
             raise forms.ValidationError(msg)
         return cleaned
+
+
+class SponsorshipApproveSignedForm(SponsorshipApproveForm):
+    """Form for approving a sponsorship with an already-signed contract."""
+
+    signed_contract = forms.FileField(
+        label="Signed contract document",
+        help_text="Upload the final version of the signed contract (PDF or DOCX).",
+        widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
+    )
 
 
 class SponsorshipEditForm(forms.ModelForm):
@@ -470,3 +500,219 @@ class SponsorContactForm(forms.ModelForm):
             "email": forms.EmailInput(attrs={"style": INPUT_STYLE}),
             "phone": forms.TextInput(attrs={"style": INPUT_STYLE}),
         }
+
+
+# ── Benefit Feature Configuration Forms ──
+
+
+class LogoPlacementConfigForm(forms.ModelForm):
+    """Form for LogoPlacementConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = LogoPlacementConfiguration
+        fields = ["publisher", "logo_place", "link_to_sponsors_page", "describe_as_sponsor"]
+        widgets = {
+            "publisher": forms.Select(attrs={"style": INPUT_STYLE}),
+            "logo_place": forms.Select(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class TieredBenefitConfigForm(forms.ModelForm):
+    """Form for TieredBenefitConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = TieredBenefitConfiguration
+        fields = ["package", "quantity", "display_label"]
+        widgets = {
+            "package": forms.Select(attrs={"style": INPUT_STYLE}),
+            "quantity": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+            "display_label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class EmailTargetableConfigForm(forms.ModelForm):
+    """Form for EmailTargetableConfiguration (no extra fields)."""
+
+    class Meta:
+        """Meta options."""
+
+        model = EmailTargetableConfiguration
+        fields = []
+
+
+class RequiredImgAssetConfigForm(forms.ModelForm):
+    """Form for RequiredImgAssetConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = RequiredImgAssetConfiguration
+        fields = [
+            "related_to",
+            "internal_name",
+            "label",
+            "help_text",
+            "due_date",
+            "min_width",
+            "max_width",
+            "min_height",
+            "max_height",
+        ]
+        widgets = {
+            "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "due_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
+            "min_width": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+            "max_width": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+            "min_height": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+            "max_height": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class RequiredTextAssetConfigForm(forms.ModelForm):
+    """Form for RequiredTextAssetConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = RequiredTextAssetConfiguration
+        fields = ["related_to", "internal_name", "label", "help_text", "due_date", "max_length"]
+        widgets = {
+            "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "due_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
+            "max_length": forms.NumberInput(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class RequiredResponseAssetConfigForm(forms.ModelForm):
+    """Form for RequiredResponseAssetConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = RequiredResponseAssetConfiguration
+        fields = ["related_to", "internal_name", "label", "help_text", "due_date"]
+        widgets = {
+            "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "due_date": forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
+        }
+
+
+class ProvidedTextAssetConfigForm(forms.ModelForm):
+    """Form for ProvidedTextAssetConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = ProvidedTextAssetConfiguration
+        fields = ["related_to", "internal_name", "label", "help_text", "shared"]
+        widgets = {
+            "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class ProvidedFileAssetConfigForm(forms.ModelForm):
+    """Form for ProvidedFileAssetConfiguration."""
+
+    class Meta:
+        """Meta options."""
+
+        model = ProvidedFileAssetConfiguration
+        fields = ["related_to", "internal_name", "label", "help_text", "shared"]
+        widgets = {
+            "related_to": forms.Select(attrs={"style": INPUT_STYLE}),
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "label": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "help_text": forms.TextInput(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class ComposerSponsorForm(forms.ModelForm):
+    """Form for creating a new sponsor inline within the composer wizard."""
+
+    class Meta:
+        """Meta options."""
+
+        model = Sponsor
+        fields = ["name", "description", "primary_phone", "city", "country"]
+        widgets = {
+            "name": forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "Company name"}),
+            "description": forms.Textarea(
+                attrs={"rows": 3, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Brief description"}
+            ),
+            "primary_phone": forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "Phone number"}),
+            "city": forms.TextInput(attrs={"style": INPUT_STYLE, "placeholder": "City"}),
+            "country": forms.Select(attrs={"style": INPUT_STYLE}),
+        }
+
+
+class ComposerTermsForm(forms.Form):
+    """Form for setting sponsorship terms in the composer wizard."""
+
+    fee = forms.IntegerField(
+        min_value=0,
+        widget=forms.NumberInput(attrs={"style": INPUT_STYLE, "placeholder": "Sponsorship fee in USD"}),
+        label="Sponsorship Fee (USD)",
+    )
+    start_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
+        label="Start Date",
+    )
+    end_date = forms.DateField(
+        widget=forms.DateInput(attrs={"type": "date", "style": INPUT_STYLE}),
+        label="End Date",
+    )
+    renewal = forms.BooleanField(
+        required=False,
+        label="Renewal",
+        help_text="Use renewal contract template instead of new sponsorship template.",
+    )
+    notes = forms.CharField(
+        required=False,
+        widget=forms.Textarea(
+            attrs={"rows": 4, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Internal notes..."}
+        ),
+        label="Notes",
+    )
+
+    def clean(self):
+        """Validate that end date is after start date."""
+        cleaned = super().clean()
+        start = cleaned.get("start_date")
+        end = cleaned.get("end_date")
+        if start and end and end <= start:
+            msg = "End date must be after start date."
+            raise forms.ValidationError(msg)
+        return cleaned
+
+
+# Dispatcher mapping config type slugs to (model, form) tuples
+CONFIG_TYPES = {
+    "logo_placement": (LogoPlacementConfiguration, LogoPlacementConfigForm, "Logo Placement"),
+    "tiered_benefit": (TieredBenefitConfiguration, TieredBenefitConfigForm, "Tiered Benefit"),
+    "email_targetable": (EmailTargetableConfiguration, EmailTargetableConfigForm, "Email Targetable"),
+    "required_image": (RequiredImgAssetConfiguration, RequiredImgAssetConfigForm, "Required Image Asset"),
+    "required_text": (RequiredTextAssetConfiguration, RequiredTextAssetConfigForm, "Required Text Asset"),
+    "required_response": (
+        RequiredResponseAssetConfiguration,
+        RequiredResponseAssetConfigForm,
+        "Required Response Asset",
+    ),
+    "provided_text": (ProvidedTextAssetConfiguration, ProvidedTextAssetConfigForm, "Provided Text Asset"),
+    "provided_file": (ProvidedFileAssetConfiguration, ProvidedFileAssetConfigForm, "Provided File Asset"),
+}

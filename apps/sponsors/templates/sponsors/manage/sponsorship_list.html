@@ -5,7 +5,7 @@
 {% with active_tab="sponsorships" %}
 
 {% block manage_content %}
-    <!-- Status quick-filter pills -->
+    <!-- Status quick-filter pills + action buttons -->
     <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
         <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}"
            class="year-pill {% if not filter_status %}active{% endif %}">
@@ -52,10 +52,16 @@
         </form>
     </div>
 
-    <div style="font-size:13px;color:#777;margin-bottom:16px;">
-        {{ sponsorships|length }} sponsorship{{ sponsorships|length|pluralize }}
-        {% if filter_status %} with status <strong>{{ filter_status }}</strong>{% endif %}
-        {% if filter_year %} in <strong>{{ filter_year }}</strong>{% endif %}
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+        <div style="font-size:13px;color:#777;">
+            {{ sponsorships|length }} sponsorship{{ sponsorships|length|pluralize }}
+            {% if filter_status %} with status <strong>{{ filter_status }}</strong>{% endif %}
+            {% if filter_year %} in <strong>{{ filter_year }}</strong>{% endif %}
+        </div>
+        <div style="display:flex;gap:6px;">
+            <a href="{% url 'manage_composer' %}?new=1" class="btn btn-sm btn-primary">+ New Sponsorship</a>
+            <a href="{% url 'manage_sponsor_create' %}" class="btn btn-sm btn-secondary" style="border:1px solid #ccc !important;">+ New Sponsor</a>
+        </div>
     </div>
 
     {% if sponsorships %}
@@ -68,6 +74,7 @@
                     <select name="action">
                         <option value="">-- Bulk Action --</option>
                         <option value="export_csv">Export Selected as CSV</option>
+                        <option value="export_assets">Export Assets as ZIP</option>
                         <option value="send_notification">Send Notification</option>
                     </select>
                 </div>
