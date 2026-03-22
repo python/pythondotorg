@@ -678,9 +678,10 @@
             <a href="{% url 'manage_packages' %}" class="{% if active_tab == 'packages' %}active{% endif %}">Packages</a>
             <a href="{% url 'manage_notification_templates' %}" class="{% if active_tab == 'notifications' %}active{% endif %}">Notifications</a>
             <div class="manage-nav-more" style="position:relative;">
-                <a href="#" class="{% if active_tab == 'clone' %}active{% endif %}" onclick="event.preventDefault();this.parentElement.classList.toggle('open');">More &#9662;</a>
+                <a href="#" class="{% if active_tab == 'clone' or active_tab == 'guide' %}active{% endif %}" onclick="event.preventDefault();this.parentElement.classList.toggle('open');">More &#9662;</a>
                 <div class="manage-nav-dropdown">
                     <a href="{% url 'manage_clone_year' %}">Clone Year</a>
+                    <a href="{% url 'manage_guide' %}">Guide</a>
                 </div>
             </div>
         </div>
