@@ -47,13 +47,13 @@
         {% csrf_token %}
         <!-- Bulk action bar -->
         <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
-            <select name="action" style="height:28px;padding:0 8px;font-size:12px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;">
+            <select name="action" style="all:unset !important;height:28px !important;padding:0 8px !important;font-size:12px !important;border:1px solid #aaa !important;border-radius:3px !important;box-sizing:border-box !important;background:#fff !important;color:#333 !important;cursor:pointer !important;-webkit-appearance:menulist !important;appearance:menulist !important;">
                 <option value="">Bulk action...</option>
                 <option value="export_csv">Export CSV</option>
                 <option value="export_assets">Export Assets ZIP</option>
                 <option value="send_notification">Send Notification</option>
             </select>
-            <button type="submit" style="height:28px;padding:0 10px;font-size:12px;font-weight:600;border:1px solid #ccc;border-radius:3px;background:#f0f0f0;color:#333;cursor:pointer;box-sizing:border-box;font-family:inherit;" onclick="return validateBulkAction();">Apply</button>
+            <button type="submit" onclick="return validateBulkAction();" style="all:unset !important;height:28px !important;padding:0 12px !important;font-size:12px !important;font-weight:600 !important;border:1px solid #aaa !important;border-radius:3px !important;background:#e8e8e8 !important;color:#333 !important;cursor:pointer !important;box-sizing:border-box !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;">Apply</button>
             <span style="font-size:11px;color:#999;" id="bulk-count">0 selected</span>
         </div>
 

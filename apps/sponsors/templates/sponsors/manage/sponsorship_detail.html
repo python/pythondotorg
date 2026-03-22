@@ -503,6 +503,67 @@
     {% endif %}
 </div>
 
+<!-- Communication History -->
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Communications <span class="badge">{{ notification_logs|length }}</span></h2>
+        <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-sm btn-primary">Send Notification</a>
+    </div>
+    {% if notification_logs %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th style="width:35%;">Subject</th>
+                <th>Recipients</th>
+                <th>Sent By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in notification_logs %}
+            <tr class="comm-row" style="cursor:pointer;" onclick="toggleComm(this)">
+                <td style="font-size:12px;color:#777;white-space:nowrap;">{{ log.sent_at|date:"M j, Y H:i" }}</td>
+                <td style="font-weight:500;">{{ log.subject|truncatewords:12 }}</td>
+                <td style="font-size:12px;color:#555;">{{ log.recipients|truncatechars:50 }}</td>
+                <td style="font-size:12px;color:#777;">
+                    {% if log.sent_by %}{{ log.sent_by.get_full_name|default:log.sent_by.email }}{% else %}<span style="color:#ccc;">system</span>{% endif %}
+                </td>
+            </tr>
+            <tr class="comm-detail" style="display:none;">
+                <td colspan="4" style="background:#f7f8fa;padding:16px 20px;">
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">To:</strong>
+                        <span style="font-size:13px;">{{ log.recipients }}</span>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Contact Types:</strong>
+                        {% for ct in log.contact_type_list %}
+                        <span class="tag tag-gray" style="margin-right:2px;">{{ ct }}</span>
+                        {% endfor %}
+                    </div>
+                    <div>
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Content:</strong>
+                        <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;font-size:13px;white-space:pre-wrap;max-height:300px;overflow-y:auto;">{{ log.content }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="color:#999;font-size:13px;padding:12px 0;">No notifications sent yet.</p>
+    {% endif %}
+</div>
+
+<script>
+function toggleComm(row) {
+    var detail = row.nextElementSibling;
+    if (detail && detail.classList.contains('comm-detail')) {
+        detail.style.display = detail.style.display === 'none' ? '' : 'none';
+    }
+}
+</script>
+
 {% endblock %}
 
 {% endwith %}

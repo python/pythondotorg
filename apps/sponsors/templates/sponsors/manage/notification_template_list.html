@@ -8,11 +8,17 @@
 <div class="manage-crumbs">
     <a href="{% url 'manage_dashboard' %}">Dashboard</a>
     <span class="sep">/</span>
-    <span class="current">Notification Templates</span>
+    <span class="current">Notifications</span>
 </div>
 {% endblock %}
 
 {% block manage_content %}
+<!-- Subtabs -->
+<div style="display:flex;gap:0;border-bottom:1px solid #e0e0e0;margin-bottom:20px;">
+    <a href="{% url 'manage_notification_templates' %}" style="padding:8px 18px;font-size:13px;font-weight:600;color:#3776ab;border-bottom:2px solid #3776ab;text-decoration:none;margin-bottom:-1px;">Templates</a>
+    <a href="{% url 'manage_notification_history' %}" style="padding:8px 18px;font-size:13px;font-weight:500;color:#777;text-decoration:none;margin-bottom:-1px;">History</a>
+</div>
+
 <div class="manage-section">
     <div class="manage-section-header">
         <h2>Notification Templates <span class="badge">{{ templates|length }}</span></h2>

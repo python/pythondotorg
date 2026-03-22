@@ -101,8 +101,9 @@ urlpatterns = [
     ),
     # Composer wizard
     path("composer/", views.ComposerView.as_view(), name="manage_composer"),
-    # Notification template CRUD
+    # Notification template CRUD + history
     path("notifications/", views.NotificationTemplateListView.as_view(), name="manage_notification_templates"),
+    path("notifications/history/", views.NotificationHistoryView.as_view(), name="manage_notification_history"),
     path(
         "notifications/new/",
         views.NotificationTemplateCreateView.as_view(),

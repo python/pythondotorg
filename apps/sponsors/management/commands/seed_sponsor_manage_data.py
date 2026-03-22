@@ -1,6 +1,6 @@
 """Create realistic test data for the sponsor management UI."""
 
-from datetime import timedelta
+from datetime import datetime, timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -16,6 +16,7 @@ from apps.sponsors.models import (
     Sponsorship,
     SponsorshipBenefit,
     SponsorshipCurrentYear,
+    SponsorshipNotificationLog,
     SponsorshipPackage,
     SponsorshipProgram,
 )
@@ -101,9 +102,13 @@ class Command(BaseCommand):
         sponsors = self._create_sponsors()
         created_count = self._create_sponsorships(sponsors, user, current_year, today)
         self._create_notification_templates()
+        notif_count = self._create_notification_logs(user, today)
 
         self.stdout.write(
-            self.style.SUCCESS(f"Created {created_count} sponsorships across {len(sponsors)} sponsors, years {years}.")
+            self.style.SUCCESS(
+                f"Created {created_count} sponsorships across {len(sponsors)} sponsors, years {years}. "
+                f"{notif_count} notification logs."
+            )
         )
         self.stdout.write("View at: http://localhost:8000/sponsors/manage/sponsorships/")
 
@@ -291,8 +296,117 @@ class Command(BaseCommand):
         if created:
             self.stdout.write(f"  Created {created} notification templates.")
 
+    def _create_notification_logs(self, user, today):
+        """Create realistic notification log entries for existing sponsorships."""
+        # Skip if logs already exist for seeded sponsors
+        names = [s["name"] for s in SPONSORS]
+        if SponsorshipNotificationLog.objects.filter(sponsorship__sponsor__name__in=names).exists():
+            return 0
+
+        messages = [
+            {
+                "subject": "Welcome to the PSF Sponsorship Program, {name}!",
+                "content": (
+                    "Dear {name},\n\n"
+                    "Thank you for your {level} sponsorship! "
+                    "Your sponsorship period runs from {start} to {end}.\n\n"
+                    "We will be in touch shortly with next steps regarding your benefits.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+                "contact_types": "primary, administrative",
+                "days_after_applied": 1,
+                "statuses": ("approved", "finalized"),
+            },
+            {
+                "subject": "Action Required: Sponsorship assets needed for {name}",
+                "content": (
+                    "Dear {name},\n\n"
+                    "This is a reminder that we still need your sponsorship assets "
+                    "(logos, descriptions, etc.) for your {level} sponsorship.\n\n"
+                    "Please submit them at your earliest convenience.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+                "contact_types": "primary",
+                "days_after_applied": 15,
+                "statuses": ("finalized",),
+            },
+            {
+                "subject": "Contract Sent: {name} {level} Sponsorship",
+                "content": (
+                    "Dear {name},\n\n"
+                    "Please find attached the sponsorship contract for your "
+                    "{level} sponsorship.\n\n"
+                    "Please review and sign at your earliest convenience.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+                "contact_types": "primary, administrative, accounting",
+                "days_after_applied": 7,
+                "statuses": ("approved", "finalized"),
+            },
+            {
+                "subject": "Sponsorship Finalized: Welcome aboard, {name}!",
+                "content": (
+                    "Dear {name},\n\n"
+                    "Great news! Your {level} sponsorship has been finalized. "
+                    "Your benefits are now active.\n\n"
+                    "If you have any questions, don't hesitate to reach out.\n\n"
+                    "Best regards,\nPSF Sponsorship Team"
+                ),
+                "contact_types": "primary, manager",
+                "days_after_applied": 20,
+                "statuses": ("finalized",),
+            },
+        ]
+
+        created = 0
+        sponsorships = Sponsorship.objects.filter(
+            sponsor__name__in=names,
+            status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED],
+        ).select_related("sponsor", "package")
+
+        for sp in sponsorships:
+            primary_email = f"contact@{sp.sponsor.name.lower().replace(' ', '')}.com"
+            billing_email = f"billing@{sp.sponsor.name.lower().replace(' ', '')}.com"
+
+            for msg in messages:
+                if sp.status not in msg["statuses"]:
+                    continue
+
+                recipients = primary_email
+                if "accounting" in msg["contact_types"] or "administrative" in msg["contact_types"]:
+                    recipients = f"{primary_email}, {billing_email}"
+
+                base_date = sp.applied_on or today
+                sent_at = timezone.make_aware(
+                    datetime.combine(base_date + timedelta(days=msg["days_after_applied"]), datetime.min.time())
+                )
+
+                SponsorshipNotificationLog.objects.create(
+                    sponsorship=sp,
+                    subject=msg["subject"].format(
+                        name=sp.sponsor.name,
+                        level=sp.level_name,
+                    ),
+                    content=msg["content"].format(
+                        name=sp.sponsor.name,
+                        level=sp.level_name,
+                        start=sp.start_date or "TBD",
+                        end=sp.end_date or "TBD",
+                    ),
+                    recipients=recipients,
+                    contact_types=msg["contact_types"],
+                    sent_by=user,
+                    sent_at=sent_at,
+                )
+                created += 1
+
+        if created:
+            self.stdout.write(f"  Created {created} notification log entries.")
+        return created
+
     def _clean(self):
         names = [s["name"] for s in SPONSORS]
+        SponsorshipNotificationLog.objects.filter(sponsorship__sponsor__name__in=names).delete()
         Contract.objects.filter(sponsorship__sponsor__name__in=names).delete()
         Sponsorship.objects.filter(sponsor__name__in=names).delete()
         Sponsor.objects.filter(name__in=names).delete()
