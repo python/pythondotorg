@@ -155,6 +155,12 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
             or 0
         )
 
+        # Sponsors without a sponsorship for this year
+        sponsors_with_sponsorship_ids = year_sponsorships.values_list("sponsor_id", flat=True) if selected_year else []
+        unsponsored = (
+            Sponsor.objects.exclude(pk__in=sponsors_with_sponsorship_ids).order_by("name")[:20] if selected_year else []
+        )
+
         context.update(
             {
                 "years": years,
@@ -173,6 +179,7 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 "total_revenue": total_revenue,
                 "needs_review": needs_review,
                 "pending_contracts": pending_contracts,
+                "unsponsored": unsponsored,
             }
         )
         return context
