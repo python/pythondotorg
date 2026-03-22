@@ -18,16 +18,17 @@
 </div>
 {% endblock %}
 
-{% block topbar_actions %}
-{% if not is_create and object %}
-    <a href="{% url 'manage_contact_create' object.pk %}" class="btn btn-sm btn-secondary">+ Contact</a>
-    <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ object.pk }}" class="btn btn-sm btn-primary">+ Sponsorship</a>
-{% endif %}
-{% endblock %}
-
 {% block manage_content %}
     <div class="manage-form">
-        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">{% if is_create %}New Sponsor{% else %}Edit Sponsor: {{ object.name }}{% endif %}</h2>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+            <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0;">{% if is_create %}New Sponsor{% else %}Edit Sponsor: {{ object.name }}{% endif %}</h2>
+            {% if not is_create and object %}
+            <div style="display:flex;gap:6px;">
+                <a href="{% url 'manage_contact_create' object.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;font-weight:500;padding:4px 10px;border:1px solid #ccc;border-radius:3px;">+ Contact</a>
+                <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ object.pk }}" style="font-size:12px;color:#fff;text-decoration:none;font-weight:500;padding:4px 10px;border:1px solid #3776ab;border-radius:3px;background:#3776ab;">+ Sponsorship</a>
+            </div>
+            {% endif %}
+        </div>
 
         {% if form.errors %}
         <div class="form-errors">
