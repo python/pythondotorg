@@ -77,7 +77,7 @@
                         {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
                         {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
                     </td>
-                    <td>{% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% endif %}</td>
+                    <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
                     <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
                     <td style="font-size:12px;color:#777;">{{ sp.applied_on|date:"M j" }}</td>
                     <td><a href="{% url 'manage_sponsorship_detail' sp.pk %}" class="btn btn-xs btn-primary">Review</a></td>
@@ -113,7 +113,7 @@
                             {{ sp.sponsor.name }}
                         </a>
                     </td>
-                    <td>{% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% endif %}</td>
+                    <td>{% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% endif %}</td>
                     <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ sp.sponsorship_fee|default:"0"|floatformat:"0" }}</td>
                     <td style="font-size:12px;color:#777;">{{ sp.approved_on|date:"M j" }}</td>
                     <td style="font-size:12px;color:#777;">

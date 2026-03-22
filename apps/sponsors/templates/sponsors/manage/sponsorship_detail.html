@@ -279,20 +279,26 @@
                 <span style="font-size:12px;color:#777;margin-left:8px;">Sent {{ contract.sent_on|date:"M j, Y" }}</span>
                 {% endif %}
             </div>
-            <div style="display:flex;gap:6px;align-items:stretch;">
+            <div style="display:flex;gap:6px;align-items:center;">
                 {% if 'awaiting signature' in contract.next_status %}
-                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Generate</a>
+                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Generate</a>
                 {% endif %}
                 {% if contract.status == 'awaiting signature' %}
-                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Send</a>
+                <a href="{% url 'manage_contract_send' sponsorship.pk %}" class="btn btn-sm btn-primary">Send</a>
                 {% endif %}
                 {% if 'executed' in contract.next_status %}
-                <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-secondary" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;">Upload Signed</a>
+                <a href="{% url 'manage_contract_execute' sponsorship.pk %}" class="btn btn-sm btn-secondary">Upload Signed</a>
                 {% endif %}
                 {% if 'nullified' in contract.next_status %}
-                <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:flex;margin:0;padding:0;" onsubmit="return confirm('Nullify this contract?');">
+                <form method="post" action="{% url 'manage_contract_nullify' sponsorship.pk %}" style="display:flex;margin:0;" onsubmit="return confirm('Nullify this contract?');">
                     {% csrf_token %}
-                    <button type="submit" class="btn btn-sm btn-danger" style="padding:5px 12px;font-size:12px;line-height:1.4;display:inline-flex;align-items:center;margin:0;">Nullify</button>
+                    <button type="submit" class="btn btn-sm btn-danger">Nullify</button>
+                </form>
+                {% endif %}
+                {% if 'draft' in contract.next_status and contract.status == 'nullified' %}
+                <form method="post" action="{% url 'manage_contract_redraft' sponsorship.pk %}" style="display:flex;margin:0;" onsubmit="return confirm('Re-draft this contract? A new revision will be created.');">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-sm btn-secondary">Re-draft</button>
                 </form>
                 {% endif %}
             </div>

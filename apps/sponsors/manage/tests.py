@@ -1,6 +1,8 @@
 """Tests for the sponsor management UI views."""
 
+import csv
 import datetime
+import io
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
@@ -782,3 +784,277 @@ class NotificationTemplateDeleteViewTests(SponsorManageTestBase):
         self.assertIn("login", response.url)
         # Template still exists
         self.assertTrue(SponsorEmailNotificationTemplate.objects.filter(pk=self.template.pk).exists())
+
+
+class SponsorshipExportViewTests(SponsorshipReviewTestBase):
+    """Test CSV export of sponsorships."""
+
+    def _parse_csv(self, response):
+        """Parse a CSV response into a list of dicts."""
+        content = response.content.decode("utf-8")
+        reader = csv.DictReader(io.StringIO(content))
+        return list(reader)
+
+    def test_export_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_export_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        self.assertEqual(response.status_code, 403)
+
+    def test_export_csv_content_type(self):
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        self.assertIn("attachment", response["Content-Disposition"])
+        self.assertIn("sponsorships.csv", response["Content-Disposition"])
+
+    def test_export_csv_has_header_row(self):
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        rows = self._parse_csv(response)
+        # Should have at least one data row (from setUp sponsorship)
+        self.assertGreaterEqual(len(rows), 1)
+        self.assertIn("Sponsor Name", rows[0])
+        self.assertIn("Package", rows[0])
+        self.assertIn("Fee", rows[0])
+
+    def test_export_csv_contains_sponsorship_data(self):
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        rows = self._parse_csv(response)
+        names = [r["Sponsor Name"] for r in rows]
+        self.assertIn("Acme Corp", names)
+
+    def test_export_csv_filter_by_status(self):
+        response = self.client.get(reverse("manage_sponsorship_export") + "?status=applied")
+        rows = self._parse_csv(response)
+        names = [r["Sponsor Name"] for r in rows]
+        self.assertIn("Acme Corp", names)
+
+        # Rejected should be excluded by default
+        self.sponsorship.status = Sponsorship.REJECTED
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        rows = self._parse_csv(response)
+        names = [r["Sponsor Name"] for r in rows]
+        self.assertNotIn("Acme Corp", names)
+
+    def test_export_csv_filter_by_year(self):
+        response = self.client.get(reverse("manage_sponsorship_export") + f"?year={self.year}")
+        rows = self._parse_csv(response)
+        names = [r["Sponsor Name"] for r in rows]
+        self.assertIn("Acme Corp", names)
+
+        response = self.client.get(reverse("manage_sponsorship_export") + "?year=2099")
+        rows = self._parse_csv(response)
+        self.assertEqual(len(rows), 0)
+
+    def test_export_csv_filter_by_search(self):
+        response = self.client.get(reverse("manage_sponsorship_export") + "?search=Acme")
+        rows = self._parse_csv(response)
+        self.assertEqual(len(rows), 1)
+
+        response = self.client.get(reverse("manage_sponsorship_export") + "?search=Nonexistent")
+        rows = self._parse_csv(response)
+        self.assertEqual(len(rows), 0)
+
+    def test_export_csv_includes_primary_contact(self):
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Jane Doe", email="jane@acme.com", phone="555-1234", primary=True
+        )
+        response = self.client.get(reverse("manage_sponsorship_export"))
+        rows = self._parse_csv(response)
+        acme_row = next(r for r in rows if r["Sponsor Name"] == "Acme Corp")
+        self.assertEqual(acme_row["Primary Contact Name"], "Jane Doe")
+        self.assertEqual(acme_row["Primary Contact Email"], "jane@acme.com")
+
+    def test_export_post_selected_ids(self):
+        response = self.client.post(
+            reverse("manage_sponsorship_export"),
+            {"selected_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        rows = self._parse_csv(response)
+        self.assertEqual(len(rows), 1)
+        self.assertEqual(rows[0]["Sponsor Name"], "Acme Corp")
+
+    def test_export_post_no_ids_falls_back_to_filters(self):
+        response = self.client.post(
+            reverse("manage_sponsorship_export"),
+            {"status": "applied"},
+        )
+        self.assertEqual(response.status_code, 200)
+        rows = self._parse_csv(response)
+        names = [r["Sponsor Name"] for r in rows]
+        self.assertIn("Acme Corp", names)
+
+
+class BulkActionDispatchViewTests(SponsorshipReviewTestBase):
+    """Test bulk action dispatch from sponsorship list."""
+
+    def test_bulk_action_requires_auth(self):
+        self.client.logout()
+        response = self.client.post(reverse("manage_bulk_action"), {"action": "export_csv"})
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_bulk_export_csv(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "export_csv", "selected_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "text/csv")
+        content = response.content.decode("utf-8")
+        self.assertIn("Acme Corp", content)
+
+    def test_bulk_export_no_selection_warns(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "export_csv"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+
+    def test_bulk_send_notification_redirects(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "send_notification", "selected_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_bulk_notify"), response.url)
+        # Check session was set
+        session = self.client.session
+        self.assertEqual(session["bulk_notify_ids"], [str(self.sponsorship.pk)])
+
+    def test_bulk_send_notification_no_selection_warns(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "send_notification"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+
+    def test_unknown_action_redirects(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "unknown", "selected_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_no_action_selected_redirects(self):
+        response = self.client.post(
+            reverse("manage_bulk_action"),
+            {"action": "", "selected_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+
+
+class BulkNotifyViewTests(SponsorshipReviewTestBase):
+    """Test bulk notification view."""
+
+    def _set_session_ids(self):
+        """Store sponsorship IDs in the session for bulk notify."""
+        session = self.client.session
+        session["bulk_notify_ids"] = [str(self.sponsorship.pk)]
+        session.save()
+
+    def test_bulk_notify_requires_auth(self):
+        self.client.logout()
+        response = self.client.get(reverse("manage_bulk_notify"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_bulk_notify_no_ids_redirects(self):
+        response = self.client.get(reverse("manage_bulk_notify"))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+
+    def test_bulk_notify_page_loads(self):
+        self._set_session_ids()
+        response = self.client.get(reverse("manage_bulk_notify"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Bulk Notification")
+        self.assertContains(response, "Acme Corp")
+
+    def test_bulk_notify_preview(self):
+        self._set_session_ids()
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
+        )
+        response = self.client.post(
+            reverse("manage_bulk_notify"),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello {{ sponsor_name }}",
+                "preview": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Email Preview")
+
+    def test_bulk_notify_confirm_sends(self):
+        self._set_session_ids()
+        SponsorContact.objects.create(
+            sponsor=self.sponsor, name="Contact", email="c@example.com", phone="555", primary=True
+        )
+        response = self.client.post(
+            reverse("manage_bulk_notify"),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test Subject",
+                "content": "Hello {{ sponsor_name }}",
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+        # Session should be cleared
+        self.assertNotIn("bulk_notify_ids", self.client.session)
+
+    def test_bulk_notify_post_no_ids_redirects(self):
+        response = self.client.post(
+            reverse("manage_bulk_notify"),
+            {
+                "contact_types": [SponsorContact.PRIMARY_CONTACT],
+                "subject": "Test",
+                "content": "Hello",
+                "confirm": "1",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("manage_sponsorships"), response.url)
+
+    def test_bulk_notify_empty_form_shows_errors(self):
+        self._set_session_ids()
+        response = self.client.post(
+            reverse("manage_bulk_notify"),
+            {"confirm": "1"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "This field is required")
+
+
+class SponsorshipListBulkUITests(SponsorshipReviewTestBase):
+    """Test that the sponsorship list page includes bulk action UI elements."""
+
+    def test_list_has_checkboxes(self):
+        response = self.client.get(reverse("manage_sponsorships"))
+        self.assertContains(response, 'id="select-all"')
+        self.assertContains(response, 'class="row-select"')
+
+    def test_list_has_bulk_action_form(self):
+        response = self.client.get(reverse("manage_sponsorships"))
+        self.assertContains(response, 'id="bulk-action-form"')
+        self.assertContains(response, "Bulk Action")
+        self.assertContains(response, "export_csv")
+        self.assertContains(response, "send_notification")
+
+    def test_list_has_export_csv_button(self):
+        response = self.client.get(reverse("manage_sponsorships"))
+        self.assertContains(response, "Export CSV")

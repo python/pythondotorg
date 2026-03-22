@@ -72,7 +72,7 @@
                     {% endif %}
                 </td>
                 {% if not filter_year %}<td><span class="tag tag-blue">{{ benefit.year|default:"-" }}</span></td>{% endif %}
-                <td style="color:#555;font-size:12px;">{{ benefit.program.name }}</td>
+                <td style="font-size:12px;"><a href="{% url 'manage_benefit_list' %}?year={{ benefit.year }}&program={{ benefit.program.pk }}" style="color:#3776ab;text-decoration:none;">{{ benefit.program.name }}</a></td>
                 <td style="text-align:center;">
                     {% with pkg_count=benefit.packages.count %}
                     {% if pkg_count %}

@@ -23,6 +23,9 @@ urlpatterns = [
     path("current-year/", views.CurrentYearUpdateView.as_view(), name="manage_current_year"),
     # Sponsorship review
     path("sponsorships/", views.SponsorshipListView.as_view(), name="manage_sponsorships"),
+    path("sponsorships/export/", views.SponsorshipExportView.as_view(), name="manage_sponsorship_export"),
+    path("sponsorships/bulk-action/", views.BulkActionDispatchView.as_view(), name="manage_bulk_action"),
+    path("sponsorships/bulk-notify/", views.BulkNotifyView.as_view(), name="manage_bulk_notify"),
     path("sponsorships/<int:pk>/", views.SponsorshipDetailView.as_view(), name="manage_sponsorship_detail"),
     path("sponsorships/<int:pk>/approve/", views.SponsorshipApproveView.as_view(), name="manage_sponsorship_approve"),
     path("sponsorships/<int:pk>/reject/", views.SponsorshipRejectView.as_view(), name="manage_sponsorship_reject"),
@@ -54,6 +57,9 @@ urlpatterns = [
     ),
     path(
         "sponsorships/<int:pk>/contract/nullify/", views.ContractNullifyView.as_view(), name="manage_contract_nullify"
+    ),
+    path(
+        "sponsorships/<int:pk>/contract/redraft/", views.ContractRedraftView.as_view(), name="manage_contract_redraft"
     ),
     # Sponsor (company) edit
     path("sponsors/<int:pk>/edit/", views.SponsorEditView.as_view(), name="manage_sponsor_edit"),

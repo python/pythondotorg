@@ -4,11 +4,13 @@ Locked down to users in the 'Sponsorship Admin' group (or staff/superuser).
 """
 
 import contextlib
+import csv
 
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
 from django.db.models import Q, Sum
+from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
 from django.views import View
@@ -891,6 +893,25 @@ class ContractNullifyView(SponsorshipAdminRequiredMixin, View):
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 
+class ContractRedraftView(SponsorshipAdminRequiredMixin, View):
+    """Re-draft a nullified contract, creating a new revision."""
+
+    def post(self, request, pk):
+        """Transition contract from nullified back to draft."""
+        sp = get_object_or_404(Sponsorship, pk=pk)
+        try:
+            contract = sp.contract
+            if Contract.DRAFT not in contract.next_status:
+                messages.error(request, f"Cannot re-draft a {contract.get_status_display()} contract.")
+            else:
+                contract.status = Contract.DRAFT
+                contract.save()
+                messages.success(request, f"Contract re-drafted (Revision {contract.revision}).")
+        except Contract.DoesNotExist:
+            messages.error(request, "No contract exists.")
+        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+
 # ── Notification views ────────────────────────────────────────────────
 
 
@@ -901,7 +922,12 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
         """Render the notification form with optional preview."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
         form = SendSponsorshipNotificationManageForm()
-        context = {"sponsorship": sp, "form": form, "email_preview": None}
+        context = {
+            "sponsorship": sp,
+            "form": form,
+            "email_preview": None,
+            "template_vars": NOTIFICATION_TEMPLATE_VARS,
+        }
         return render(request, "sponsors/manage/sponsorship_notify.html", context)
 
     def post(self, request, pk):
@@ -920,7 +946,12 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
                     "to_manager": True,
                 }
                 email_preview = notification.get_email_message(sp, **msg_kwargs)
-            context = {"sponsorship": sp, "form": form, "email_preview": email_preview}
+            context = {
+                "sponsorship": sp,
+                "form": form,
+                "email_preview": email_preview,
+                "template_vars": NOTIFICATION_TEMPLATE_VARS,
+            }
             return render(request, "sponsors/manage/sponsorship_notify.html", context)
 
         if "confirm" in request.POST and form.is_valid():
@@ -934,7 +965,12 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
             messages.success(request, f"Notification sent to {sp.sponsor.name} contacts.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
-        context = {"sponsorship": sp, "form": form, "email_preview": email_preview}
+        context = {
+            "sponsorship": sp,
+            "form": form,
+            "email_preview": email_preview,
+            "template_vars": NOTIFICATION_TEMPLATE_VARS,
+        }
         return render(request, "sponsors/manage/sponsorship_notify.html", context)
 
 
@@ -1093,3 +1129,212 @@ class SponsorContactDeleteView(SponsorshipAdminRequiredMixin, View):
         if from_sp:
             return redirect(reverse("manage_sponsorship_detail", args=[from_sp]))
         return redirect(reverse("manage_sponsor_edit", args=[sponsor_pk]))
+
+
+# ── CSV Export & Bulk Actions ─────────────────────────────────────────
+
+
+def _filtered_sponsorship_queryset(request):
+    """Build a Sponsorship queryset from request query params.
+
+    Applies the same filters as SponsorshipListView: status, year, search.
+    """
+    qs = Sponsorship.objects.select_related("sponsor", "package").order_by("-applied_on")
+
+    status = request.GET.get("status", "") or request.POST.get("status", "")
+    year = request.GET.get("year", "") or request.POST.get("year", "")
+    search = request.GET.get("search", "") or request.POST.get("search", "")
+
+    qs = qs.filter(status=status) if status else qs.exclude(status=Sponsorship.REJECTED)
+    if year:
+        qs = qs.filter(year=int(year))
+    if search:
+        qs = qs.filter(Q(sponsor__name__icontains=search))
+
+    return qs
+
+
+def _write_sponsorship_csv(sponsorships, response):
+    """Write sponsorship rows to a CSV response using csv.writer."""
+    writer = csv.writer(response)
+    writer.writerow(
+        [
+            "Sponsor Name",
+            "Package",
+            "Fee",
+            "Year",
+            "Status",
+            "Applied Date",
+            "Start Date",
+            "End Date",
+            "Primary Contact Name",
+            "Primary Contact Email",
+        ]
+    )
+    # Pre-fetch primary contacts for all sponsors in one query
+    sponsor_ids = [sp.sponsor_id for sp in sponsorships if sp.sponsor_id]
+    primary_contacts = {}
+    if sponsor_ids:
+        for contact in SponsorContact.objects.filter(sponsor_id__in=sponsor_ids, primary=True):
+            # Keep the first primary contact per sponsor
+            primary_contacts.setdefault(contact.sponsor_id, contact)
+
+    for sp in sponsorships:
+        contact = primary_contacts.get(sp.sponsor_id) if sp.sponsor_id else None
+        writer.writerow(
+            [
+                sp.sponsor.name if sp.sponsor else "Unknown",
+                sp.package.name if sp.package else "",
+                sp.sponsorship_fee or "",
+                sp.year or "",
+                sp.get_status_display(),
+                sp.applied_on.isoformat() if sp.applied_on else "",
+                sp.start_date.isoformat() if sp.start_date else "",
+                sp.end_date.isoformat() if sp.end_date else "",
+                contact.name if contact else "",
+                contact.email if contact else "",
+            ]
+        )
+    return response
+
+
+class SponsorshipExportView(SponsorshipAdminRequiredMixin, View):
+    """Export sponsorships as CSV for accounting.
+
+    Supports both GET (with filter query params) and POST (with selected_ids
+    for bulk export of specific sponsorships).
+    """
+
+    def get(self, request):
+        """Export all sponsorships matching current filters."""
+        sponsorships = list(_filtered_sponsorship_queryset(request))
+        return self._make_csv(sponsorships)
+
+    def post(self, request):
+        """Export specific sponsorships by selected IDs."""
+        selected_ids = request.POST.getlist("selected_ids")
+        if selected_ids:
+            sponsorships = list(
+                Sponsorship.objects.select_related("sponsor", "package")
+                .filter(pk__in=selected_ids)
+                .order_by("-applied_on")
+            )
+        else:
+            sponsorships = list(_filtered_sponsorship_queryset(request))
+        return self._make_csv(sponsorships)
+
+    def _make_csv(self, sponsorships):
+        """Build and return an HttpResponse with CSV content."""
+        response = HttpResponse(content_type="text/csv")
+        response["Content-Disposition"] = 'attachment; filename="sponsorships.csv"'
+        return _write_sponsorship_csv(sponsorships, response)
+
+
+class BulkActionDispatchView(SponsorshipAdminRequiredMixin, View):
+    """Dispatch bulk actions from the sponsorship list.
+
+    Routes to the appropriate handler based on the ``action`` field:
+    - ``export_csv``: export selected sponsorships as CSV
+    - ``send_notification``: redirect to bulk notification page
+    """
+
+    def post(self, request):
+        """Route to the correct bulk action."""
+        action = request.POST.get("action", "")
+        selected_ids = request.POST.getlist("selected_ids")
+
+        if action == "export_csv":
+            if selected_ids:
+                sponsorships = list(
+                    Sponsorship.objects.select_related("sponsor", "package")
+                    .filter(pk__in=selected_ids)
+                    .order_by("-applied_on")
+                )
+            else:
+                messages.warning(request, "No sponsorships selected.")
+                return redirect(reverse("manage_sponsorships"))
+            response = HttpResponse(content_type="text/csv")
+            response["Content-Disposition"] = 'attachment; filename="sponsorships.csv"'
+            return _write_sponsorship_csv(sponsorships, response)
+
+        if action == "send_notification":
+            if not selected_ids:
+                messages.warning(request, "No sponsorships selected.")
+                return redirect(reverse("manage_sponsorships"))
+            request.session["bulk_notify_ids"] = selected_ids
+            return redirect(reverse("manage_bulk_notify"))
+
+        messages.error(request, "Unknown action.")
+        return redirect(reverse("manage_sponsorships"))
+
+
+class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
+    """Send a notification to contacts for multiple sponsorships at once."""
+
+    def get(self, request):
+        """Render the bulk notification form."""
+        ids = request.session.get("bulk_notify_ids", [])
+        sponsorships = list(Sponsorship.objects.select_related("sponsor").filter(pk__in=ids).order_by("-applied_on"))
+        if not sponsorships:
+            messages.warning(request, "No sponsorships selected for notification.")
+            return redirect(reverse("manage_sponsorships"))
+        form = SendSponsorshipNotificationManageForm()
+        context = {
+            "sponsorships": sponsorships,
+            "form": form,
+            "email_preview": None,
+            "template_vars": NOTIFICATION_TEMPLATE_VARS,
+        }
+        return render(request, "sponsors/manage/bulk_notify.html", context)
+
+    def post(self, request):
+        """Preview or send bulk notification."""
+        ids = request.session.get("bulk_notify_ids", [])
+        sponsorships = list(Sponsorship.objects.select_related("sponsor").filter(pk__in=ids).order_by("-applied_on"))
+        if not sponsorships:
+            messages.warning(request, "No sponsorships selected for notification.")
+            return redirect(reverse("manage_sponsorships"))
+
+        form = SendSponsorshipNotificationManageForm(request.POST)
+        email_preview = None
+
+        if "preview" in request.POST:
+            if form.is_valid():
+                notification = form.get_notification()
+                msg_kwargs = {
+                    "to_primary": True,
+                    "to_administrative": True,
+                    "to_accounting": True,
+                    "to_manager": True,
+                }
+                # Preview using the first sponsorship
+                email_preview = notification.get_email_message(sponsorships[0], **msg_kwargs)
+            context = {
+                "sponsorships": sponsorships,
+                "form": form,
+                "email_preview": email_preview,
+                "template_vars": NOTIFICATION_TEMPLATE_VARS,
+            }
+            return render(request, "sponsors/manage/bulk_notify.html", context)
+
+        if "confirm" in request.POST and form.is_valid():
+            use_case = use_cases.SendSponsorshipNotificationUseCase.build()
+            use_case.execute(
+                notification=form.get_notification(),
+                sponsorships=sponsorships,
+                contact_types=form.cleaned_data["contact_types"],
+                request=request,
+            )
+            # Clear session data
+            request.session.pop("bulk_notify_ids", None)
+            names = ", ".join(sp.sponsor.name for sp in sponsorships if sp.sponsor)
+            messages.success(request, f"Notification sent to {len(sponsorships)} sponsor(s): {names}.")
+            return redirect(reverse("manage_sponsorships"))
+
+        context = {
+            "sponsorships": sponsorships,
+            "form": form,
+            "email_preview": email_preview,
+            "template_vars": NOTIFICATION_TEMPLATE_VARS,
+        }
+        return render(request, "sponsors/manage/bulk_notify.html", context)
