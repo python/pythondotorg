@@ -5,32 +5,19 @@
 {% with active_tab="sponsorships" %}
 
 {% block manage_content %}
-    <!-- Status quick-filter pills + action buttons -->
-    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
-        <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}"
-           class="year-pill {% if not filter_status %}active{% endif %}">
-            All
-        </a>
-        <a href="?status=applied{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}">
-            Applied <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_applied }}</span>
-        </a>
-        <a href="?status=approved{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}">
-            Approved <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_approved }}</span>
-        </a>
-        <a href="?status=finalized{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}">
-            Finalized <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_finalized }}</span>
-        </a>
-        <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}">
-            Rejected <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_rejected }}</span>
-        </a>
-    </div>
-
-    <!-- Filters row -->
-    <div class="manage-filter-bar">
-        <form method="get">
+    <!-- Combined toolbar: status pills + filters + actions in one bar -->
+    <div class="manage-filter-bar" style="padding:12px 20px;">
+        <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
             {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
+            <!-- Status pills inline -->
+            <div style="display:flex;gap:4px;align-items:center;margin-right:8px;">
+                <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}" style="padding:4px 10px;font-size:12px;">All</a>
+                <a href="?status=applied{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Applied {{ count_applied }}</a>
+                <a href="?status=approved{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Approved {{ count_approved }}</a>
+                <a href="?status=finalized{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Finalized {{ count_finalized }}</a>
+                <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
+            </div>
             <div class="filter-field">
-                <label>Year</label>
                 <select name="year" onchange="this.form.submit()">
                     <option value="">All years</option>
                     {% for val, label in filter_form.year.field.choices %}
@@ -39,50 +26,35 @@
                 </select>
             </div>
             <div class="filter-field">
-                <label>Search</label>
-                <input type="text" name="search" placeholder="Search sponsor name..." value="{{ filter_search }}">
+                <input type="text" name="search" placeholder="Search..." value="{{ filter_search }}" style="width:140px;">
             </div>
             <div class="filter-actions">
-                <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
+                <button type="submit" class="btn btn-sm btn-secondary">Go</button>
                 {% if filter_year or filter_search or filter_status %}
                 <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
                 {% endif %}
-                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-sm btn-primary">Export CSV</a>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">CSV</a>
+                <a href="{% url 'manage_composer' %}?new=1" class="btn btn-sm btn-primary">+ Sponsorship</a>
+                <a href="{% url 'manage_sponsor_create' %}" class="btn btn-sm btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
             </div>
         </form>
-    </div>
-
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-        <div style="font-size:13px;color:#777;">
-            {{ sponsorships|length }} sponsorship{{ sponsorships|length|pluralize }}
-            {% if filter_status %} with status <strong>{{ filter_status }}</strong>{% endif %}
-            {% if filter_year %} in <strong>{{ filter_year }}</strong>{% endif %}
-        </div>
-        <div style="display:flex;gap:6px;">
-            <a href="{% url 'manage_composer' %}?new=1" class="btn btn-sm btn-primary">+ New Sponsorship</a>
-            <a href="{% url 'manage_sponsor_create' %}" class="btn btn-sm btn-secondary" style="border:1px solid #ccc !important;">+ New Sponsor</a>
-        </div>
     </div>
 
     {% if sponsorships %}
     <form method="post" action="{% url 'manage_bulk_action' %}" id="bulk-action-form">
         {% csrf_token %}
-        <!-- Bulk action bar -->
-        <div class="manage-filter-bar" style="margin-bottom:12px;padding:10px 12px;">
-            <div style="display:flex;gap:8px;align-items:flex-end;">
-                <div class="filter-field">
-                    <select name="action">
-                        <option value="">-- Bulk Action --</option>
-                        <option value="export_csv">Export Selected as CSV</option>
-                        <option value="export_assets">Export Assets as ZIP</option>
-                        <option value="send_notification">Send Notification</option>
-                    </select>
-                </div>
-                <div class="filter-actions">
-                    <button type="submit" class="btn btn-sm btn-secondary" onclick="return validateBulkAction();">Apply</button>
-                </div>
-                <span id="bulk-count" style="font-size:12px;color:#777;margin-left:auto;line-height:36px;">0 selected</span>
-            </div>
+        <!-- Bulk action bar (compact, aligned) -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <select name="action" style="height:24px;padding:0 6px;font-size:11px;border:1px solid #ccc;border-radius:3px;box-sizing:border-box;">
+                <option value="">Bulk action...</option>
+                <option value="export_csv">Export CSV</option>
+                <option value="export_assets">Export Assets ZIP</option>
+                <option value="send_notification">Send Notification</option>
+            </select>
+            <button type="submit" style="height:24px;padding:0 8px;font-size:11px;font-weight:600;border:1px solid #ccc;border-radius:3px;background:#f0f0f0;color:#333;cursor:pointer;box-sizing:border-box;font-family:inherit;" onclick="return validateBulkAction();">Apply</button>
+            <span id="bulk-count" style="font-size:11px;color:#999;">0 selected</span>
         </div>
 
     <table class="manage-table">
