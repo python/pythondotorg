@@ -1,0 +1,126 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Benefits | Sponsor Management{% endblock %}
+
+{% with active_tab="benefits" %}
+
+{% block topbar_actions %}
+    <a href="{% url 'manage_benefit_create' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="btn btn-sm btn-primary">+ New Benefit</a>
+{% endblock %}
+
+{% block manage_content %}
+    <!-- Filters -->
+    <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:14px 20px;margin-bottom:24px;">
+        <form method="get" style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;">
+            <div>
+                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Year</label>
+                <select name="year" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;" onchange="this.form.submit()">
+                    <option value="">All years</option>
+                    {% for choice_val, choice_label in filter_form.year.field.choices %}
+                    {% if choice_val %}
+                    <option value="{{ choice_val }}" {% if choice_val|slugify == filter_year %}selected{% endif %}>{{ choice_label }}</option>
+                    {% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Program</label>
+                <select name="program" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;" onchange="this.form.submit()">
+                    <option value="">All programs</option>
+                    {% for program in filter_form.program.field.queryset %}
+                    <option value="{{ program.pk }}" {% if program.pk|slugify == filter_program %}selected{% endif %}>{{ program.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
+                {% if filter_year or filter_program or filter_package %}
+                <a href="{% url 'manage_benefit_list' %}" class="btn btn-sm btn-secondary" style="margin-left:4px;">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <!-- Results count -->
+    <div style="font-size:13px;color:#777;margin-bottom:16px;">
+        Showing {{ benefits|length }} benefit{{ benefits|length|pluralize }}
+        {% if filter_year %} for <strong>{{ filter_year }}</strong>{% endif %}
+    </div>
+
+    {% if benefits %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th style="width:40%;">Benefit</th>
+                {% if not filter_year %}<th>Year</th>{% endif %}
+                <th>Program</th>
+                <th style="text-align:center;">Tiers</th>
+                <th style="text-align:right;">Value</th>
+                <th style="text-align:center;">Status</th>
+                <th style="width:60px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for benefit in benefits %}
+            <tr>
+                <td>
+                    <a href="{% url 'manage_benefit_edit' benefit.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ benefit.short_name }}</a>
+                    {% if benefit.new %}<span class="tag tag-gold" style="margin-left:4px;">New</span>{% endif %}
+                    {% if benefit.standalone %}<span class="tag tag-blue" style="margin-left:4px;">Standalone</span>{% endif %}
+                    {% if benefit.description %}
+                    <div style="font-size:12px;color:#999;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:400px;">{{ benefit.description|truncatewords:12 }}</div>
+                    {% endif %}
+                </td>
+                {% if not filter_year %}<td><span class="tag tag-blue">{{ benefit.year|default:"-" }}</span></td>{% endif %}
+                <td style="color:#555;font-size:12px;">{{ benefit.program.name }}</td>
+                <td style="text-align:center;">
+                    {% with pkg_count=benefit.packages.count %}
+                    {% if pkg_count %}
+                    <span title="{% for pkg in benefit.packages.all %}{{ pkg.name }}{% if not forloop.last %}, {% endif %}{% endfor %}" style="cursor:help;font-size:12px;color:#555;">
+                        {{ pkg_count }} pkg{{ pkg_count|pluralize }}
+                    </span>
+                    {% else %}
+                    <span style="color:#ccc;font-size:12px;">&mdash;</span>
+                    {% endif %}
+                    {% endwith %}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                    {% if benefit.internal_value %}<span style="font-weight:600;">${{ benefit.internal_value|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if benefit.unavailable %}<span class="tag tag-red">Unavailable</span>
+                    {% elif benefit.package_only %}<span class="tag tag-gray">Pkg Only</span>
+                    {% else %}<span class="tag tag-green">Available</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right;">
+                    <a href="{% url 'manage_benefit_edit' benefit.pk %}" class="btn btn-xs btn-secondary">Edit</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Pagination -->
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_program %}&program={{ filter_program }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        {% endif %}
+        <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_program %}&program={{ filter_program }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128269;</div>
+        <p>No benefits match your filters.</p>
+        <a href="{% url 'manage_benefit_create' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="btn btn-primary">Create Benefit</a>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}

@@ -1,0 +1,48 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Send Contract | {{ sponsorship.sponsor.name }}{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorships' %}">Sponsorships</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}">{{ sponsorship.sponsor.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Send Contract</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Send Contract for Signing</h2>
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            {{ sponsorship.sponsor.name }} &middot; {{ sponsorship.level_name }} &middot; ${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}
+        </p>
+
+        <div class="manage-alert manage-alert-info" style="margin-bottom:20px;">
+            This will generate the contract PDF/DOCX and mark it as <strong>Awaiting Signature</strong>.
+            The PSF team will be notified.
+        </div>
+
+        <div class="sp-card" style="margin-bottom:20px;">
+            <div class="sp-field">
+                <div class="sp-label">Current Status</div>
+                <div class="sp-value">{{ contract.get_status_display }} (Revision {{ contract.revision }})</div>
+            </div>
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">Generate &amp; Send Contract</button>
+                <a href="{% url 'manage_sponsorship_detail' sponsorship.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

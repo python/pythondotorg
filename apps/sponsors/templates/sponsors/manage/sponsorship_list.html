@@ -1,0 +1,135 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Sponsorships | Sponsor Management{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_content %}
+    <!-- Status quick-filter pills -->
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;align-items:center;">
+        <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}"
+           class="year-pill {% if not filter_status %}active{% endif %}">
+            All
+        </a>
+        <a href="?status=applied{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}">
+            Applied <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_applied }}</span>
+        </a>
+        <a href="?status=approved{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}">
+            Approved <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_approved }}</span>
+        </a>
+        <a href="?status=finalized{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}">
+            Finalized <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_finalized }}</span>
+        </a>
+        <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}">
+            Rejected <span style="font-size:11px;opacity:0.7;margin-left:2px;">{{ count_rejected }}</span>
+        </a>
+    </div>
+
+    <!-- Filters row -->
+    <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:14px 20px;margin-bottom:24px;">
+        <form method="get" style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;">
+            {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
+            <div>
+                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Year</label>
+                <select name="year" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;" onchange="this.form.submit()">
+                    <option value="">All years</option>
+                    {% for val, label in filter_form.year.field.choices %}
+                    {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div>
+                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Search</label>
+                {{ filter_form.search }}
+            </div>
+            <div>
+                <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
+                {% if filter_year or filter_search or filter_status %}
+                <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary" style="margin-left:4px;">Clear</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <div style="font-size:13px;color:#777;margin-bottom:16px;">
+        {{ sponsorships|length }} sponsorship{{ sponsorships|length|pluralize }}
+        {% if filter_status %} with status <strong>{{ filter_status }}</strong>{% endif %}
+        {% if filter_year %} in <strong>{{ filter_year }}</strong>{% endif %}
+    </div>
+
+    {% if sponsorships %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th style="width:25%;">Sponsor</th>
+                <th>Package</th>
+                <th style="text-align:right;">Fee</th>
+                <th>Year</th>
+                <th style="text-align:center;">Status</th>
+                <th>Applied</th>
+                <th>Period</th>
+                <th style="width:50px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sp in sponsorships %}
+            <tr>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
+                    </a>
+                    {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
+                    {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
+                </td>
+                <td>
+                    {% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                    {% if sp.sponsorship_fee %}<span style="font-weight:600;">${{ sp.sponsorship_fee|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td>{{ sp.year|default:"&mdash;" }}</td>
+                <td style="text-align:center;">
+                    {% if sp.status == 'applied' %}<span class="tag tag-blue">Applied</span>
+                    {% elif sp.status == 'approved' %}<span class="tag tag-gold">Approved</span>
+                    {% elif sp.status == 'finalized' %}<span class="tag tag-green">Finalized</span>
+                    {% elif sp.status == 'rejected' %}<span class="tag tag-red">Rejected</span>
+                    {% endif %}
+                    {% if not sp.locked and sp.status != 'applied' %}
+                    <span title="Unlocked" style="color:#ffd43b;font-size:10px;vertical-align:super;">&#128275;</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#777;">{{ sp.applied_on|date:"M j, Y" }}</td>
+                <td style="font-size:12px;color:#777;">
+                    {% if sp.start_date and sp.end_date %}
+                    {{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                    {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Review</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        {% endif %}
+        <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128203;</div>
+        <p>No sponsorships match your filters.</p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}

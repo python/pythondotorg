@@ -1,0 +1,252 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}New Benefit{% else %}Edit {{ object.short_name }}{% endif %} | Sponsor Management{% endblock %}
+
+{% with active_tab="benefits" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_list' %}">Benefits</a>
+    <span class="sep">/</span>
+    <span class="current">{% if is_create %}New Benefit{% else %}{{ object.short_name }}{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            {% if is_create %}Create New Benefit{% else %}Edit Benefit{% endif %}
+        </h2>
+        {% if not is_create %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            {{ object.program.name }} &middot; {{ object.year }}
+            {% if related_sponsorships_count %}
+            &middot; <span style="color:#e74c3c;">{{ related_sponsorships_count }} sponsorship{{ related_sponsorships_count|pluralize }}</span>
+            {% endif %}
+        </p>
+        {% else %}
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            Fill in the benefit details below.
+        </p>
+        {% endif %}
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <!-- Public info -->
+            <fieldset class="manage-fieldset">
+                <legend>Public Information</legend>
+
+                <div class="form-group">
+                    <label for="id_name">Benefit Name</label>
+                    {{ form.name }}
+                    {% if form.name.help_text %}<span class="helptext">{{ form.name.help_text }}</span>{% endif %}
+                    {% if form.name.errors %}<div class="field-errors">{{ form.name.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    {{ form.description }}
+                    {% if form.description.help_text %}<span class="helptext">{{ form.description.help_text }}</span>{% endif %}
+                    {% if form.description.errors %}<div class="field-errors">{{ form.description.errors.0 }}</div>{% endif %}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_program">Program</label>
+                        {{ form.program }}
+                        {% if form.program.errors %}<div class="field-errors">{{ form.program.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_year">Year</label>
+                        {{ form.year }}
+                        {% if form.year.errors %}<div class="field-errors">{{ form.year.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Included in Packages</label>
+                    <div class="checkbox-list">
+                        {% for checkbox in form.packages %}
+                        {{ checkbox }}
+                        {% endfor %}
+                    </div>
+                    {% if form.packages.errors %}<div class="field-errors">{{ form.packages.errors.0 }}</div>{% endif %}
+                </div>
+            </fieldset>
+
+            <!-- Flags -->
+            <fieldset class="manage-fieldset">
+                <legend>Flags &amp; Visibility</legend>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.package_only }} Package only
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.new }} New this year
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.unavailable }} Unavailable
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.standalone }} Standalone
+                    </label>
+                </div>
+            </fieldset>
+
+            <!-- Internal -->
+            <fieldset class="manage-fieldset">
+                <legend>Internal Details</legend>
+
+                <div class="form-group">
+                    <label for="id_internal_description">Internal Notes</label>
+                    {{ form.internal_description }}
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_internal_value">Internal Value ($)</label>
+                        {{ form.internal_value }}
+                        {% if form.internal_value.help_text %}<span class="helptext">{{ form.internal_value.help_text }}</span>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_capacity">Capacity</label>
+                        {{ form.capacity }}
+                        {% if form.capacity.help_text %}<span class="helptext">{{ form.capacity.help_text }}</span>{% endif %}
+                    </div>
+                </div>
+
+                <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;width:fit-content;">
+                    {{ form.soft_capacity }} Soft capacity (flexible limit)
+                </label>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_create %}Create Benefit{% else %}Save Changes{% endif %}
+                </button>
+                <a href="{% url 'manage_benefit_list' %}" class="btn btn-secondary">Cancel</a>
+                {% if not is_create %}
+                <a href="{% url 'manage_benefit_delete' object.pk %}" class="btn btn-danger" style="margin-left:auto;">Delete</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    {% if not is_create %}
+    <!-- Related data sections below the form -->
+    <div style="max-width:820px;margin:40px auto 0;">
+
+        <!-- Packages this benefit belongs to -->
+        {% if benefit_packages %}
+        <div class="manage-section">
+            <div class="manage-section-header">
+                <h2>Included in Packages <span class="badge">{{ benefit_packages|length }}</span></h2>
+            </div>
+            <table class="manage-table">
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th style="text-align:right;">Amount</th>
+                        <th style="text-align:center;">Advertised</th>
+                        <th style="width:50px;"></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for pkg in benefit_packages %}
+                    <tr>
+                        <td style="font-weight:600;">{{ pkg.name }}</td>
+                        <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ pkg.sponsorship_amount|floatformat:"0" }}</td>
+                        <td style="text-align:center;">{% if pkg.advertise %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
+                        <td><a href="{% url 'manage_package_edit' pkg.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a></td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        <!-- Sponsors using this benefit -->
+        {% if related_sponsorships %}
+        <div class="manage-section">
+            <div class="manage-section-header">
+                <h2>Sponsors Using This Benefit <span class="badge">{{ related_sponsorships_count }}</span></h2>
+            </div>
+            <table class="manage-table">
+                <thead>
+                    <tr>
+                        <th>Sponsor</th>
+                        <th>Package</th>
+                        <th>Year</th>
+                        <th style="text-align:center;">Status</th>
+                        <th>Date Range</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sp in related_sponsorships %}
+                    <tr>
+                        <td>
+                            {% if sp.sponsor %}
+                            <a href="{{ sp.admin_url }}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ sp.sponsor.name }}</a>
+                            {% else %}
+                            <span style="color:#999;">Unknown sponsor</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if sp.package %}
+                            <span class="tag tag-blue">{{ sp.package.name }}</span>
+                            {% else %}
+                            <span style="color:#ccc;">&mdash;</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ sp.year|default:"&mdash;" }}</td>
+                        <td style="text-align:center;">
+                            {% if sp.status == 'applied' %}<span class="tag tag-blue">Applied</span>
+                            {% elif sp.status == 'approved' %}<span class="tag tag-gold">Approved</span>
+                            {% elif sp.status == 'finalized' %}<span class="tag tag-green">Finalized</span>
+                            {% elif sp.status == 'rejected' %}<span class="tag tag-red">Rejected</span>
+                            {% else %}<span class="tag tag-gray">{{ sp.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size:12px;color:#777;">
+                            {% if sp.start_date and sp.end_date %}
+                            {{ sp.start_date|date:"M j, Y" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                            {% else %}
+                            <span style="color:#ccc;">&mdash;</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if not benefit_packages and not related_sponsorships %}
+        <div style="text-align:center;padding:24px;color:#999;font-size:13px;">
+            No packages or sponsors are using this benefit yet.
+        </div>
+        {% endif %}
+
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}
