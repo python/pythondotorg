@@ -43,6 +43,11 @@ urlpatterns = [
         name="manage_sponsorship_remove_benefit",
     ),
     # Contract actions (keyed by sponsorship pk)
+    path(
+        "sponsorships/<int:pk>/contract/preview/",
+        views.ContractPreviewView.as_view(),
+        name="manage_contract_preview",
+    ),
     path("sponsorships/<int:pk>/contract/send/", views.ContractSendView.as_view(), name="manage_contract_send"),
     path(
         "sponsorships/<int:pk>/contract/execute/", views.ContractExecuteView.as_view(), name="manage_contract_execute"

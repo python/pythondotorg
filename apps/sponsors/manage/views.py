@@ -108,13 +108,29 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                     }
                 )
 
-        # Sponsorship counts for this year
-        sponsorship_counts = {}
-        if selected_year:
-            for status_code, status_label in Sponsorship.STATUS_CHOICES:
-                sponsorship_counts[status_label] = Sponsorship.objects.filter(
-                    year=selected_year, status=status_code
-                ).count()
+        # Sponsorship stats for this year
+        year_sponsorships = Sponsorship.objects.filter(year=selected_year) if selected_year else Sponsorship.objects.none()
+        count_applied = year_sponsorships.filter(status=Sponsorship.APPLIED).count()
+        count_approved = year_sponsorships.filter(status=Sponsorship.APPROVED).count()
+        count_finalized = year_sponsorships.filter(status=Sponsorship.FINALIZED).count()
+        count_rejected = year_sponsorships.filter(status=Sponsorship.REJECTED).count()
+
+        # Action-needed lists
+        needs_review = (
+            year_sponsorships.filter(status=Sponsorship.APPLIED)
+            .select_related("sponsor", "package")
+            .order_by("applied_on")[:10]
+        )
+        pending_contracts = (
+            year_sponsorships.filter(status=Sponsorship.APPROVED)
+            .select_related("sponsor", "package")
+            .order_by("approved_on")[:10]
+        )
+
+        # Revenue summary
+        total_revenue = year_sponsorships.filter(
+            status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED],
+        ).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
 
         context.update(
             {
@@ -124,9 +140,16 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 "year_benefits": year_benefits,
                 "year_packages": year_packages.order_by("-sponsorship_amount"),
                 "program_stats": program_stats,
-                "sponsorship_counts": sponsorship_counts,
                 "total_benefits": year_benefits.count(),
                 "total_packages": year_packages.count(),
+                "count_applied": count_applied,
+                "count_approved": count_approved,
+                "count_finalized": count_finalized,
+                "count_rejected": count_rejected,
+                "total_sponsorships": count_applied + count_approved + count_finalized + count_rejected,
+                "total_revenue": total_revenue,
+                "needs_review": needs_review,
+                "pending_contracts": pending_contracts,
             }
         )
         return context
@@ -648,6 +671,29 @@ class SponsorshipRemoveBenefitView(SponsorshipAdminRequiredMixin, View):
 
 
 # ── Contract management ───────────────────────────────────────────────
+
+
+class ContractPreviewView(SponsorshipAdminRequiredMixin, View):
+    """Preview/download a contract as PDF or DOCX."""
+
+    def get(self, request, pk):
+        """Render contract preview in the requested format."""
+        from apps.sponsors.contracts import render_contract_to_docx_response, render_contract_to_pdf_response
+
+        sp = get_object_or_404(Sponsorship, pk=pk)
+        try:
+            contract = sp.contract
+        except Contract.DoesNotExist:
+            messages.error(request, "No contract exists.")
+            return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+        output_format = request.GET.get("format", "pdf")
+        if output_format == "docx":
+            response = render_contract_to_docx_response(request, contract)
+        else:
+            response = render_contract_to_pdf_response(request, contract)
+        response["X-Frame-Options"] = "SAMEORIGIN"
+        return response
 
 
 class ContractSendView(SponsorshipAdminRequiredMixin, View):

@@ -26,26 +26,26 @@
     </div>
 
     <!-- Filters row -->
-    <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:14px 20px;margin-bottom:24px;">
-        <form method="get" style="display:flex;gap:14px;align-items:end;flex-wrap:wrap;">
+    <div class="manage-filter-bar">
+        <form method="get">
             {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
-            <div>
-                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Year</label>
-                <select name="year" style="padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;" onchange="this.form.submit()">
+            <div class="filter-field">
+                <label>Year</label>
+                <select name="year" onchange="this.form.submit()">
                     <option value="">All years</option>
                     {% for val, label in filter_form.year.field.choices %}
                     {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
                     {% endfor %}
                 </select>
             </div>
-            <div>
-                <label style="display:block;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:4px;">Search</label>
-                {{ filter_form.search }}
+            <div class="filter-field">
+                <label>Search</label>
+                <input type="text" name="search" placeholder="Search sponsor name..." value="{{ filter_search }}">
             </div>
-            <div>
+            <div class="filter-actions">
                 <button type="submit" class="btn btn-sm btn-secondary">Filter</button>
                 {% if filter_year or filter_search or filter_status %}
-                <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary" style="margin-left:4px;">Clear</a>
+                <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
                 {% endif %}
             </div>
         </form>
