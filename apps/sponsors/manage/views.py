@@ -2104,3 +2104,9 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         email.send()
         messages.success(request, f"Proposal sent to sponsor contacts ({', '.join(emails)}).")
         return redirect(reverse("manage_composer") + "?step=5")
+
+
+class GuideView(SponsorshipAdminRequiredMixin, TemplateView):
+    """Help guide for the sponsor management UI."""
+
+    template_name = "sponsors/manage/guide.html"

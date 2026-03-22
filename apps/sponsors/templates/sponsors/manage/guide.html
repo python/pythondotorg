@@ -1,0 +1,134 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Guide | Sponsor Management{% endblock %}
+
+{% with active_tab="guide" %}
+
+{% block manage_content %}
+<div style="max-width:820px;margin:0 auto;">
+
+<h2 style="font-size:22px;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Sponsor Management Guide</h2>
+<p style="font-size:13px;color:#777;margin:0 0 28px;">For PSF sponsorship team members. This UI replaces most Django admin workflows.</p>
+
+<!-- TOC -->
+<div class="manage-fieldset" style="margin-bottom:28px;">
+<legend>Contents</legend>
+<div style="columns:2;font-size:13px;line-height:2;">
+<a href="#workflow" style="color:#3776ab;text-decoration:none;">Sponsorship Workflow</a><br>
+<a href="#composer" style="color:#3776ab;text-decoration:none;">Composer (Package Builder)</a><br>
+<a href="#contracts" style="color:#3776ab;text-decoration:none;">Contract Management</a><br>
+<a href="#benefits" style="color:#3776ab;text-decoration:none;">Benefits & Packages</a><br>
+<a href="#notifications" style="color:#3776ab;text-decoration:none;">Notifications</a><br>
+<a href="#bulk" style="color:#3776ab;text-decoration:none;">Bulk Actions & Export</a><br>
+<a href="#contacts" style="color:#3776ab;text-decoration:none;">Sponsor Contacts</a><br>
+<a href="#admin-only" style="color:#3776ab;text-decoration:none;">Django Admin Only</a><br>
+</div>
+</div>
+
+<!-- Workflow -->
+<div class="manage-section" id="workflow">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Sponsorship Workflow</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Sponsorships follow this lifecycle: <span class="tag tag-blue">Applied</span> &rarr; <span class="tag tag-gold">Approved</span> &rarr; <span class="tag tag-green">Finalized</span> (or <span class="tag tag-red">Rejected</span>)
+</p>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Key Actions</legend>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Review</strong> &mdash; Click any sponsorship from the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsorships</a> tab to see full details</li>
+<li><strong>Approve</strong> &mdash; Set start/end dates, fee, and package. Creates a draft contract. Use quick-date buttons for speed</li>
+<li><strong>Approve with Signed Contract</strong> &mdash; Upload a pre-signed contract during approval (skips generate/send)</li>
+<li><strong>Reject</strong> &mdash; Sponsor gets notified by email</li>
+<li><strong>Rollback</strong> &mdash; Returns an approved/rejected sponsorship to "Applied" for corrections</li>
+<li><strong>Lock/Unlock</strong> &mdash; Controls whether a finalized sponsorship can be edited</li>
+</ul>
+</div>
+</div>
+
+<!-- Composer -->
+<div class="manage-section" id="composer">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Composer (Package Builder)</h3>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_composer' %}?new=1" style="color:#3776ab;">Composer</a> is a 5-step wizard for building custom sponsorship packages:
+</p>
+<ol style="font-size:13px;line-height:2.2;color:#444;padding-left:20px;">
+<li><strong>Select Sponsor</strong> &mdash; Search existing or create new</li>
+<li><strong>Choose Package</strong> &mdash; Pick a base tier or go custom/a-la-carte</li>
+<li><strong>Customize Benefits</strong> &mdash; Add/remove benefits. Package benefits are locked (blue). Pkg-only benefits warn before adding</li>
+<li><strong>Set Terms</strong> &mdash; Fee (with match/adjust buttons), dates, renewal flag, notes</li>
+<li><strong>Review & Send</strong> &mdash; Create the sponsorship, email internally for review, or send proposal to sponsor</li>
+</ol>
+</div>
+
+<!-- Contracts -->
+<div class="manage-section" id="contracts">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Contract Management</h3>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Contracts flow: <span class="tag tag-gray">Draft</span> &rarr; <span class="tag tag-gold">Awaiting Signature</span> &rarr; <span class="tag tag-green">Executed</span>
+</p>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Generate</strong> &mdash; Renders PDF/DOCX from the contract template</li>
+<li><strong>Send</strong> &mdash; Email to sponsor contacts or internal review (any @pyfound.org address)</li>
+<li><strong>Upload Signed</strong> &mdash; Upload the signed PDF to execute and finalize</li>
+<li><strong>Nullify</strong> &mdash; Void a contract. Can re-draft afterward</li>
+<li><strong>Preview/Download</strong> &mdash; PDF and DOCX available at any stage</li>
+</ul>
+</div>
+
+<!-- Benefits -->
+<div class="manage-section" id="benefits">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Benefits & Packages</h3>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><a href="{% url 'manage_benefit_list' %}" style="color:#3776ab;">Benefits</a> &mdash; Create/edit benefits, manage feature configurations (logo placements, tiered quantities, required assets)</li>
+<li><a href="{% url 'manage_packages' %}" style="color:#3776ab;">Packages</a> &mdash; Create/edit sponsorship tiers (Visionary, Sustainability, etc.)</li>
+<li><a href="{% url 'manage_clone_year' %}" style="color:#3776ab;">Clone Year</a> &mdash; Copy all packages and benefits from one year to another</li>
+</ul>
+</div>
+
+<!-- Notifications -->
+<div class="manage-section" id="notifications">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Notifications</h3>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Send from sponsorship</strong> &mdash; Click "Notify" on any sponsorship detail page</li>
+<li><strong>Templates</strong> &mdash; Create reusable templates at <a href="{% url 'manage_notification_templates' %}" style="color:#3776ab;">Notifications</a></li>
+<li><strong>Variables</strong> &mdash; Use <code>{% templatetag openvariable %} sponsor_name {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} sponsorship_level {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} sponsorship_start_date {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} sponsorship_end_date {% templatetag closevariable %}</code>, <code>{% templatetag openvariable %} sponsorship_status {% templatetag closevariable %}</code></li>
+</ul>
+</div>
+
+<!-- Bulk -->
+<div class="manage-section" id="bulk">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Bulk Actions & Export</h3>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>CSV Export</strong> &mdash; Click "Export CSV" on the sponsorships page, or select rows and use bulk action</li>
+<li><strong>Asset Export</strong> &mdash; Download all submitted assets as ZIP from sponsorship detail or via bulk action</li>
+<li><strong>Bulk Notify</strong> &mdash; Select multiple sponsorships and send a notification to all their contacts</li>
+</ul>
+</div>
+
+<!-- Contacts -->
+<div class="manage-section" id="contacts">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Sponsor Contacts</h3>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Each sponsor can have multiple contacts with roles: <span class="tag tag-blue">Primary</span>, <span class="tag tag-gray">Administrative</span>, <span class="tag tag-gray">Accounting</span>, <span class="tag tag-gray">Manager</span>. Edit contacts from the sponsorship detail page's Sponsor card.
+</p>
+</div>
+
+<!-- Admin only -->
+<div class="manage-section" id="admin-only">
+<h3 style="font-size:16px;font-weight:700;color:#e74c3c;border-bottom:2px solid #e74c3c;padding-bottom:6px;">Still in Django Admin</h3>
+<p style="font-size:13px;line-height:1.8;color:#444;">These tasks still require <a href="/admin/sponsors/" style="color:#3776ab;">Django Admin</a>:</p>
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li>Benefit ordering (drag to reorder)</li>
+<li>Benefit conflict configuration</li>
+<li>Legal clause management</li>
+<li>Sponsorship program management (Foundation, PyCon, PyPI, etc.)</li>
+<li>Advanced import/export with django-import-export</li>
+<li>Detailed asset filtering and administration</li>
+</ul>
+</div>
+
+</div>
+{% endblock %}
+
+{% endwith %}

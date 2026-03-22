@@ -100,6 +100,21 @@
                 {% endif %}
             </div>
         </form>
+        {% if is_create %}
+        <script>
+        (function() {
+            var nameInput = document.getElementById('id_name');
+            var slugInput = document.getElementById('id_slug');
+            var slugEdited = false;
+            slugInput.addEventListener('input', function() { slugEdited = true; });
+            nameInput.addEventListener('input', function() {
+                if (!slugEdited) {
+                    slugInput.value = nameInput.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+                }
+            });
+        })();
+        </script>
+        {% endif %}
     </div>
 {% endblock %}
 
