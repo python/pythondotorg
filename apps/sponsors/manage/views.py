@@ -2051,7 +2051,14 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         """Create the Sponsorship and SponsorBenefit copies."""
         import datetime
 
+        from apps.sponsors.exceptions import SponsorWithExistingApplicationError
+
         year = data.get("year") or SponsorshipCurrentYear.get_year()
+
+        # Guard: prevent duplicate in-progress sponsorships (same check as Sponsorship.new())
+        if Sponsorship.objects.in_progress().filter(sponsor=sponsor).exists():
+            msg = f"Sponsor pk: {sponsor.pk}"
+            raise SponsorWithExistingApplicationError(msg)
 
         sponsorship = Sponsorship.objects.create(
             submited_by=request.user,
