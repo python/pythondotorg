@@ -24,6 +24,7 @@ from apps.sponsors.models import (
     SponsorshipCurrentYear,
     SponsorshipPackage,
     SponsorshipProgram,
+    TextAsset,
 )
 
 
@@ -2459,3 +2460,54 @@ class LegalClauseViewTests(SponsorManageTestBase):
     def test_nav_has_legal_clauses_link(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "Legal Clauses")
+
+
+class AssetBrowserViewTests(SponsorshipReviewTestBase):
+    """Test asset browser view."""
+
+    def _create_text_asset(self, content_object, internal_name, text=""):
+        """Helper to create a TextAsset via generic relation."""
+        from django.contrib.contenttypes.models import ContentType
+
+        ct = ContentType.objects.get_for_model(content_object)
+        return TextAsset.objects.create(
+            content_type=ct,
+            object_id=content_object.pk,
+            internal_name=internal_name,
+            text=text,
+        )
+
+    def test_browser_loads(self):
+        response = self.client.get(reverse("manage_assets"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_browser_shows_assets(self):
+        self._create_text_asset(self.sponsor, "company_bio", text="Acme makes things")
+        response = self.client.get(reverse("manage_assets"))
+        self.assertContains(response, "company_bio")
+        self.assertContains(response, "Acme Corp")
+
+    def test_filter_by_value_with(self):
+        self._create_text_asset(self.sponsor, "filled_asset", text="Has value")
+        self._create_text_asset(self.sponsor, "empty_asset", text="")
+        response = self.client.get(reverse("manage_assets") + "?value=with")
+        self.assertContains(response, "filled_asset")
+        self.assertNotContains(response, "empty_asset")
+
+    def test_filter_by_value_without(self):
+        self._create_text_asset(self.sponsor, "filled_asset", text="Has value")
+        self._create_text_asset(self.sponsor, "empty_asset", text="")
+        response = self.client.get(reverse("manage_assets") + "?value=without")
+        self.assertNotContains(response, "filled_asset")
+        self.assertContains(response, "empty_asset")
+
+    def test_filter_by_search(self):
+        self._create_text_asset(self.sponsor, "logo_2025", text="logo")
+        self._create_text_asset(self.sponsor, "bio_text", text="bio")
+        response = self.client.get(reverse("manage_assets") + "?search=logo")
+        self.assertContains(response, "logo_2025")
+        self.assertNotContains(response, "bio_text")
+
+    def test_nav_has_assets_link(self):
+        response = self.client.get(reverse("manage_dashboard"))
+        self.assertContains(response, "Assets")

@@ -48,6 +48,7 @@ from apps.sponsors.models import (
     BenefitFeature,
     BenefitFeatureConfiguration,
     Contract,
+    GenericAsset,
     LegalClause,
     Sponsor,
     SponsorBenefit,
@@ -446,6 +447,80 @@ class LegalClauseMoveView(SponsorshipAdminRequiredMixin, View):
         elif direction == "down":
             clause.down()
         return redirect(reverse("manage_legal_clauses"))
+
+
+# ── Asset Browser ─────────────────────────────────────────────────────
+
+
+class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
+    """Browse all sponsor/sponsorship assets with filters."""
+
+    template_name = "sponsors/manage/asset_browser.html"
+
+    def get_context_data(self, **kwargs):
+        """Return context with filtered assets and lookup caches."""
+        context = super().get_context_data(**kwargs)
+        from django.contrib.contenttypes.models import ContentType
+
+        qs = GenericAsset.objects.all_assets().select_related("content_type")
+
+        # Filters
+        self.filter_type = self.request.GET.get("type", "")
+        self.filter_related = self.request.GET.get("related", "")
+        self.filter_value = self.request.GET.get("value", "")
+        self.filter_search = self.request.GET.get("search", "")
+
+        if self.filter_type:
+            type_map = {cls.__name__: cls for cls in GenericAsset.all_asset_types()}
+            if self.filter_type in type_map:
+                qs = qs.instance_of(type_map[self.filter_type])
+
+        if self.filter_related:
+            with contextlib.suppress(ContentType.DoesNotExist, ValueError):
+                qs = qs.filter(content_type=ContentType.objects.get(pk=int(self.filter_related)))
+
+        if self.filter_search:
+            qs = qs.filter(internal_name__icontains=self.filter_search)
+
+        assets = list(qs[:200])
+
+        # Value filter (property-based, must be done in Python)
+        if self.filter_value == "with":
+            assets = [a for a in assets if a.has_value]
+        elif self.filter_value == "without":
+            assets = [a for a in assets if not a.has_value]
+
+        # Batch-load related objects to avoid N+1
+        sponsor_ids = {a.object_id for a in assets if a.from_sponsor}
+        sponsorship_ids = {a.object_id for a in assets if a.from_sponsorship}
+        sponsors_map = {s.pk: s for s in Sponsor.objects.filter(pk__in=sponsor_ids)} if sponsor_ids else {}
+        sponsorships_map = (
+            {s.pk: s for s in Sponsorship.objects.filter(pk__in=sponsorship_ids).select_related("sponsor", "package")}
+            if sponsorship_ids
+            else {}
+        )
+        for asset in assets:
+            if asset.from_sponsor:
+                asset.resolved_owner = sponsors_map.get(asset.object_id)
+                asset.owner_type = "sponsor"
+            else:
+                asset.resolved_owner = sponsorships_map.get(asset.object_id)
+                asset.owner_type = "sponsorship"
+
+        content_types = ContentType.objects.filter(model__in=["sponsor", "sponsorship"])
+        context.update(
+            {
+                "assets": assets,
+                "asset_count": len(assets),
+                "type_choices": [(cls.__name__, cls._meta.verbose_name) for cls in GenericAsset.all_asset_types()],
+                "content_type_choices": [(ct.pk, ct.model.title()) for ct in content_types],
+                "filter_type": self.filter_type,
+                "filter_related": self.filter_related,
+                "filter_value": self.filter_value,
+                "filter_search": self.filter_search,
+            }
+        )
+        return context
 
 
 class PackageListView(SponsorshipAdminRequiredMixin, ListView):
