@@ -35,9 +35,9 @@
                 {% endif %}
             </div>
             <div style="margin-left:auto;display:flex;gap:6px;">
-                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">CSV</a>
-                <a href="{% url 'manage_composer' %}?new=1" class="btn btn-sm btn-primary">+ Sponsorship</a>
-                <a href="{% url 'manage_sponsor_create' %}" class="btn btn-sm btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
+                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-secondary">CSV</a>
+                <a href="{% url 'manage_composer' %}?new=1" class="btn btn-primary">+ Sponsorship</a>
+                <a href="{% url 'manage_sponsor_create' %}" class="btn btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
             </div>
         </form>
     </div>
