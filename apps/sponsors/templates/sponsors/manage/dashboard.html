@@ -29,10 +29,10 @@
             <div class="card-value">{{ total_sponsorships }}</div>
             <div class="card-label">Sponsorships</div>
         </div>
-        <div class="manage-card gold">
+        <a href="{% url 'manage_revenue' %}?year={{ selected_year }}" class="manage-card gold" style="text-decoration:none;cursor:pointer;">
             <div class="card-value">${{ total_revenue|floatformat:"0" }}</div>
-            <div class="card-label">Revenue</div>
-        </div>
+            <div class="card-label">Revenue &rarr;</div>
+        </a>
         <div class="manage-card">
             <div class="card-value">{{ count_applied }}</div>
             <div class="card-label">Pending Review</div>

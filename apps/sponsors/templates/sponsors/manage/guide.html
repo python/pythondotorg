@@ -24,6 +24,7 @@
 <a href="#sponsors-contacts" style="color:#3776ab;text-decoration:none;">Sponsors &amp; Contacts</a><br>
 <a href="#renewals" style="color:#3776ab;text-decoration:none;">Renewals &amp; Expiry</a><br>
 <a href="#assets" style="color:#3776ab;text-decoration:none;">Assets</a><br>
+<a href="#revenue" style="color:#3776ab;text-decoration:none;">Revenue Report</a><br>
 <a href="#bulk" style="color:#3776ab;text-decoration:none;">Bulk Actions &amp; Export</a><br>
 <a href="#admin-only" style="color:#3776ab;text-decoration:none;">What's Still in Django Admin</a><br>
 </div>
@@ -328,6 +329,26 @@ The <a href="{% url 'manage_assets' %}" style="color:#3776ab;">Asset Browser</a>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
 Filter by asset type (text, image, file, response), related object (sponsor vs sponsorship), submission status, or search by internal name. Assets from expired or rejected sponsorships are automatically hidden. Companies with missing assets show a <strong>"Send Reminder"</strong> button that links to the notification page for that sponsorship.
+</p>
+</div>
+
+<!-- Revenue Report -->
+<div class="manage-section" id="revenue">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Revenue Report</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_revenue' %}" style="color:#3776ab;">Revenue Report</a> (under More) gives a financial overview of sponsorship income by year. It includes:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Summary cards</strong> &mdash; total revenue, finalized revenue, approved (pending), sponsorship count with average deal size</li>
+<li><strong>Revenue by package</strong> &mdash; horizontal bar chart showing income by package tier with deal counts</li>
+<li><strong>Year-over-year</strong> &mdash; compare total revenue across all years at a glance</li>
+<li><strong>Sponsorship detail table</strong> &mdash; every sponsorship for the selected year with fee, internal value, margin percentage, and period</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Only approved and finalized sponsorships are counted toward revenue. Applied and rejected sponsorships are excluded.
 </p>
 </div>
 
