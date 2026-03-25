@@ -1355,8 +1355,34 @@ function filterBenefits(query) {
                         <button type="button" onclick="mdFootnoteRef(this)" title="Footnote ref">[^]</button>
                         <button type="button" onclick="mdFootnoteDef(this)" title="Footnote def">[^]:</button>
                     </div>
-                    <textarea name="legal_clauses" rows="8" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:0 0 4px 4px;font-size:13px;font-family:monospace;box-sizing:border-box;resize:vertical;line-height:1.5;">{{ contract_legal_clauses }}</textarea>
+                    <textarea name="legal_clauses" id="legal-clauses-textarea" rows="8" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:0 0 4px 4px;font-size:13px;font-family:monospace;box-sizing:border-box;resize:vertical;line-height:1.5;">{{ contract_legal_clauses }}</textarea>
                 </div>
+                {% if available_clauses %}
+                <div style="margin-top:8px;">
+                    <div style="font-size:11px;font-weight:600;color:#999;margin-bottom:4px;">Insert clause:</div>
+                    <div style="display:flex;gap:4px;flex-wrap:wrap;">
+                        {% for clause in available_clauses %}
+                        <button type="button" class="date-quick-btn" onclick="insertClause(this)" data-clause="{{ clause.clause|escapejs }}" data-name="{{ clause.internal_name|escapejs }}" title="{{ clause.clause|truncatechars:200 }}">{{ clause.internal_name }}</button>
+                        {% endfor %}
+                    </div>
+                </div>
+                <script>
+                function insertClause(btn) {
+                    var ta = document.getElementById('legal-clauses-textarea');
+                    var text = btn.getAttribute('data-clause');
+                    var name = btn.getAttribute('data-name');
+                    if (!ta || !text) return;
+                    var val = ta.value;
+                    if (val && !val.endsWith('\n')) val += '\n';
+                    if (val) val += '\n';
+                    ta.value = val + text;
+                    ta.focus();
+                    ta.scrollTop = ta.scrollHeight;
+                    btn.style.opacity = '0.5';
+                    btn.title = 'Inserted: ' + name;
+                }
+                </script>
+                {% endif %}
             </div>
 
             <button type="submit" class="btn btn-primary" style="padding:8px 20px;">Save Changes</button>
