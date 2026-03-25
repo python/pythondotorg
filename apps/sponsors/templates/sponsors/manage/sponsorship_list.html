@@ -201,10 +201,14 @@ function validateBulkAction() {
                 if (!emptyRow) {
                     emptyRow = document.createElement('tr');
                     emptyRow.id = 'live-search-empty';
-                    emptyRow.innerHTML = '<td colspan="9" style="text-align:center;padding:20px;color:#999;">No sponsorships match &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</td>';
+                    var td = document.createElement('td');
+                    td.setAttribute('colspan', '9');
+                    td.style.cssText = 'text-align:center;padding:20px;color:#999;';
+                    td.textContent = 'No sponsorships match \u201C' + q + '\u201D';
+                    emptyRow.appendChild(td);
                     rows[0].parentNode.appendChild(emptyRow);
                 } else {
-                    emptyRow.innerHTML = '<td colspan="9" style="text-align:center;padding:20px;color:#999;">No sponsorships match &ldquo;' + q.replace(/</g, '&lt;') + '&rdquo;</td>';
+                    emptyRow.firstChild.textContent = 'No sponsorships match \u201C' + q + '\u201D';
                     emptyRow.style.display = '';
                 }
             } else if (emptyRow) {
