@@ -1637,13 +1637,16 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
 
         if "confirm" in request.POST and form.is_valid():
             use_case = use_cases.SendSponsorshipNotificationUseCase.build()
-            use_case.execute(
+            sent = use_case.execute(
                 notification=form.get_notification(),
                 sponsorships=[sp],
                 contact_types=form.cleaned_data["contact_types"],
                 request=request,
             )
-            messages.success(request, f"Notification sent to {sp.sponsor.name} contacts.")
+            if sent:
+                messages.success(request, f"Notification sent to {sp.sponsor.name} contacts.")
+            else:
+                messages.warning(request, f"No matching contacts found for {sp.sponsor.name}. Nothing was sent.")
             return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
         context = {
@@ -2030,7 +2033,7 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
 
         if "confirm" in request.POST and form.is_valid():
             use_case = use_cases.SendSponsorshipNotificationUseCase.build()
-            use_case.execute(
+            sent = use_case.execute(
                 notification=form.get_notification(),
                 sponsorships=sponsorships,
                 contact_types=form.cleaned_data["contact_types"],
@@ -2039,7 +2042,12 @@ class BulkNotifyView(SponsorshipAdminRequiredMixin, View):
             # Clear session data
             request.session.pop("bulk_notify_ids", None)
             names = ", ".join(sp.sponsor.name for sp in sponsorships if sp.sponsor)
-            messages.success(request, f"Notification sent to {len(sponsorships)} sponsor(s): {names}.")
+            if sent:
+                messages.success(request, f"Notification sent to {sent} of {len(sponsorships)} sponsor(s): {names}.")
+            else:
+                messages.warning(
+                    request, f"No matching contacts found for {len(sponsorships)} sponsor(s). Nothing was sent."
+                )
             return redirect(reverse("manage_sponsorships"))
 
         context = {
@@ -2857,9 +2865,11 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             messages.error(request, "Failed to generate contract files. Check that pypandoc is installed.")
             return redirect(reverse("manage_composer") + "?step=6")
 
-        # Finalize the contract
+        # Finalize the contract — requires at least PDF to persist
         if pdf_bytes:
             contract.set_final_version(pdf_bytes, docx_bytes)
+        else:
+            messages.error(request, "PDF generation failed. Contract was not finalized. Only DOCX will be attached.")
 
         email = EmailMessage(
             subject=subject,

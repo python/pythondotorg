@@ -193,12 +193,14 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
             "to_manager": SponsorContact.MANAGER_CONTACT in contact_types,
         }
         request = kwargs.get("request")
+        sent_count = 0
 
         for sponsorship in sponsorships:
             email = notification.get_email_message(sponsorship, **msg_kwargs)
             if not email:
                 continue
             email.send()
+            sent_count += 1
 
             # Persist notification log (best-effort, don't break sending)
             try:
@@ -222,6 +224,8 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                 contact_types=contact_types,
                 request=request,
             )
+
+        return sent_count
 
 
 class CloneSponsorshipYearUseCase(BaseUseCaseWithNotifications):
