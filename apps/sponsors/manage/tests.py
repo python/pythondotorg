@@ -219,6 +219,51 @@ class PackageViewTests(SponsorManageTestBase):
     def test_package_edit_get(self):
         response = self.client.get(reverse("manage_package_edit", args=[self.package.pk]))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logo on python.org")
+        self.assertIn(self.benefit.pk, list(response.context["form"].initial["benefits"]))
+
+    def test_package_edit_get_filters_benefits_to_package_year(self):
+        next_year_benefit = SponsorshipBenefit.objects.create(
+            name="Future benefit",
+            program=self.program,
+            year=self.year + 1,
+        )
+
+        response = self.client.get(reverse("manage_package_edit", args=[self.package.pk]))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Logo on python.org")
+        self.assertNotContains(response, next_year_benefit.name)
+
+    def test_package_edit_post_can_add_and_remove_benefits(self):
+        added_benefit = SponsorshipBenefit.objects.create(
+            name="Blog post mention",
+            program=self.program,
+            year=self.year,
+            internal_value=500,
+        )
+
+        response = self.client.post(
+            reverse("manage_package_edit", args=[self.package.pk]),
+            {
+                "name": self.package.name,
+                "slug": self.package.slug,
+                "sponsorship_amount": self.package.sponsorship_amount,
+                "logo_dimension": self.package.logo_dimension,
+                "year": self.package.year,
+                "advertise": "on",
+                "allow_a_la_carte": "on",
+                "benefits": [added_benefit.pk],
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.package.refresh_from_db()
+        self.assertQuerySetEqual(
+            self.package.benefits.order_by("pk"),
+            [added_benefit],
+            transform=lambda benefit: benefit,
+        )
 
     def test_package_delete_get(self):
         response = self.client.get(reverse("manage_package_delete", args=[self.package.pk]))
@@ -657,7 +702,7 @@ class ContractRegenerateViewTests(SponsorshipReviewTestBase):
         self._approve_sponsorship()
         response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]), follow=True)
         self.assertContains(response, "New contract draft created")
-        self.assertContains(response, "Previous contract preserved as outdated")
+        self.assertContains(response, "Previous contract preserved.")
 
 
 class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
@@ -1949,7 +1994,7 @@ class ComposerStep6Tests(SponsorManageTestBase):
         self.assertIn("step=6", response.url)
         self.contract.refresh_from_db()
         self.assertEqual(self.contract.sponsor_info, "Updated Acme Info")
-        self.assertEqual(self.contract.sponsor_contact, "Updated Contact")
+        self.assertEqual(self.contract.sponsor_contact, "Jane Doe - 555-0000 | jane@acme.com")
         self.assertEqual(self.contract.benefits_list.raw, "- Updated benefit")
         self.assertEqual(self.contract.legal_clauses.raw, "[^1]: Updated clause")
 

@@ -1,5 +1,7 @@
 """Use case classes orchestrating sponsorship business logic with notifications."""
 
+import logging
+
 from django.db import transaction
 
 from apps.sponsors import notifications
@@ -13,6 +15,8 @@ from apps.sponsors.models import (
     SponsorshipNotificationLog,
     SponsorshipPackage,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class BaseUseCaseWithNotifications:
@@ -209,8 +213,8 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                     contact_types=", ".join(contact_types),
                     sent_by=sent_by,
                 )
-            except Exception:  # noqa: BLE001, S110
-                pass
+            except Exception:
+                logger.exception("Failed to persist notification log for sponsorship %s", sponsorship.pk)
 
             self.notify(
                 notification=notification,

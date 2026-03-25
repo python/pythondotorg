@@ -74,7 +74,7 @@
                 </td>
                 <td style="font-size:12px;">
                     {% if sponsor.landing_page_url %}
-                    <a href="{{ sponsor.landing_page_url }}" target="_blank" style="color:#3776ab;text-decoration:none;">{{ sponsor.landing_page_url|truncatechars:30 }}</a>
+                    <a href="{{ sponsor.landing_page_url }}" target="_blank" rel="noopener noreferrer" style="color:#3776ab;text-decoration:none;">{{ sponsor.landing_page_url|truncatechars:30 }}</a>
                     {% else %}
                     <span style="color:#ccc;">&mdash;</span>
                     {% endif %}

@@ -30,9 +30,9 @@
             {% if contract.document %}
             <div class="manage-alert manage-alert-success">
                 Contract has been generated.
-                <a href="{{ contract.document.url }}" target="_blank" style="margin-left:8px;font-weight:600;">Download PDF</a>
+                <a href="{{ contract.document.url }}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;font-weight:600;">Download PDF</a>
                 {% if contract.document_docx %}
-                <a href="{{ contract.document_docx.url }}" target="_blank" style="margin-left:8px;font-weight:600;">Download DOCX</a>
+                <a href="{{ contract.document_docx.url }}" target="_blank" rel="noopener noreferrer" style="margin-left:8px;font-weight:600;">Download DOCX</a>
                 {% endif %}
             </div>
             {% else %}
