@@ -836,9 +836,13 @@ class CloneYearView(SponsorshipAdminRequiredMixin, FormView):
 
         if clone_benefits:
             for benefit in SponsorshipBenefit.objects.filter(year=source_year):
-                _, created = benefit.clone(target_year)
+                new_benefit, created = benefit.clone(target_year)
                 if created:
                     cloned_benefits += 1
+                    if not clone_packages:
+                        # benefit.clone() creates packages as a side effect;
+                        # clear them when packages weren't requested
+                        new_benefit.packages.clear()
 
         messages.success(
             self.request,
