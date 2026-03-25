@@ -408,7 +408,7 @@ class ExecuteContractForm(forms.Form):
 
     signed_document = forms.FileField(
         label="Signed contract document",
-        help_text="Upload the signed PDF.",
+        help_text="Upload the signed contract (PDF or DOCX).",
         widget=forms.ClearableFileInput(attrs={"style": INPUT_STYLE, "accept": ".pdf,.docx"}),
     )
 
