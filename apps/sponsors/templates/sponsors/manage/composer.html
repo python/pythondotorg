@@ -470,10 +470,22 @@
 
     <div class="composer-step-line {% if step >= 5 %}completed{% endif %}"></div>
 
-    {% if step == 5 %}
-        <span class="composer-step active"><span class="step-num">5</span> Review</span>
+    {% if step > 5 %}
+        <a href="{% url 'manage_composer' %}?step=5" class="composer-step completed">
+            <span class="step-num">5</span> Review &amp; Create
+        </a>
+    {% elif step == 5 %}
+        <span class="composer-step active"><span class="step-num">5</span> Review &amp; Create</span>
     {% else %}
-        <span class="composer-step"><span class="step-num">5</span> Review</span>
+        <span class="composer-step"><span class="step-num">5</span> Review &amp; Create</span>
+    {% endif %}
+
+    <div class="composer-step-line {% if step >= 6 %}completed{% endif %}"></div>
+
+    {% if step == 6 %}
+        <span class="composer-step active"><span class="step-num">6</span> Contract &amp; Send</span>
+    {% else %}
+        <span class="composer-step"><span class="step-num">6</span> Contract &amp; Send</span>
     {% endif %}
 </div>
 
@@ -1191,120 +1203,346 @@ function filterBenefits(query) {
         </div>
     </div>
 
-    <!-- Action cards -->
-    <div class="action-cards">
-        <div class="action-card" style="border-color:#4caf50;">
-            <h4 style="color:#2e7d32;">Create Sponsorship</h4>
-            <p>Create the sponsorship record immediately. It will appear in the sponsorship list as "Applied".</p>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="create">
-                <button type="submit" class="btn btn-primary" style="background:#4caf50 !important;"
-                        onclick="return confirm('Create this sponsorship?');">
-                    Create Sponsorship
-                </button>
-            </form>
-        </div>
-
-        <div class="action-card">
-            <h4>Send for Internal Review</h4>
-            <p>Email this summary to a colleague for review before creating.</p>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="send_internal">
-                <div style="display:flex;gap:6px;">
-                    <input type="email" name="internal_email" placeholder="reviewer@python.org"
-                           style="flex:1;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
-                    <button type="submit" class="btn btn-secondary">Send</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="action-card" style="border-color:#ffd43b;">
-            <h4 style="color:#b8860b;">Send Draft to Sponsor</h4>
-            <p>Compose and send the proposal email to sponsor contacts.</p>
-            <button type="button" class="btn btn-gold" onclick="document.getElementById('send-sponsor-preview').style.display=document.getElementById('send-sponsor-preview').style.display==='none'?'block':'none';">Compose Email</button>
-
-            <div id="send-sponsor-preview" style="display:none;margin-top:16px;border-top:1px solid #e8e8e8;padding-top:16px;">
-                <form method="post">
-                    {% csrf_token %}
-                    <input type="hidden" name="action" value="send_proposal">
-
-                    <!-- Recipients -->
-                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">To</div>
-                    <div style="margin-bottom:12px;">
-                        {% for c in sponsor_contacts %}
-                        <div style="font-size:13px;padding:4px 8px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;display:flex;justify-content:space-between;">
-                            <span><strong>{{ c.name }}</strong> &lt;{{ c.email }}&gt;</span>
-                            <span style="font-size:11px;color:#999;">{{ c.type }}</span>
-                        </div>
-                        {% endfor %}
-                        {% if not sponsor_contacts %}
-                        <div style="font-size:12px;color:#999;margin-bottom:8px;">No sponsor contacts on file. Send to a PSF team address instead:</div>
-                        {% endif %}
-                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
-                            <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='sponsors@python.org';f.style.display='';">sponsors@python.org</button>
-                            <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='loren@python.org';f.style.display='';">loren@python.org</button>
-                        </div>
-                        <input type="email" name="extra_to" id="extra-to" placeholder="name@python.org or name@pyfound.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-top:6px;{% if sponsor_contacts %}display:none;{% endif %}" pattern=".*@(python\.org|pyfound\.org)$" title="Must be @python.org or @pyfound.org">
-                    </div>
-
-                    <div style="display:flex;gap:12px;margin-bottom:12px;">
-                        <div style="flex:1;">
-                            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">CC</div>
-                            <input type="email" name="cc_email" placeholder="cc@python.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
-                        </div>
-                        <div style="flex:1;">
-                            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">BCC</div>
-                            <input type="email" name="bcc_email" placeholder="bcc@python.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
-                        </div>
-                    </div>
-
-                    <!-- Editable subject -->
-                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Subject</div>
-                    <input type="text" name="email_subject" value="Sponsorship Proposal from the Python Software Foundation" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:12px;">
-
-                    <!-- Editable body -->
-                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Message Body</div>
-                    <textarea name="email_body" rows="12" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:monospace;box-sizing:border-box;margin-bottom:12px;resize:vertical;">Dear {{ sponsor.name }},
-
-Thank you for your interest in sponsoring the Python Software Foundation!
-
-Please find below a summary of the proposed {{ package.name|default:"custom" }} sponsorship package for {{ data.year }}.
-
-Fee: ${{ data.fee|default:"0" }}
-Period: {{ data.start_date|default:"TBD" }} to {{ data.end_date|default:"TBD" }}
-
-We have attached the full benefits breakdown for your review. Please let us know if you have any questions or would like to discuss adjustments.
-
-Best regards,
-The PSF Sponsorship Team
-sponsors@python.org</textarea>
-
-                    <!-- Attachment info -->
-                    <div style="font-size:12px;color:#777;margin-bottom:16px;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
-                        <strong>Attachment:</strong> The full sponsorship summary (shown above) will be included in the email body.
-                    </div>
-
-                    <button type="submit" class="btn btn-gold" onclick="return confirm('Send this draft proposal?');">Send Draft</button>
-                </form>
-            </div>
-        </div>
+    <!-- Action -->
+    <div style="margin-top:24px;text-align:center;">
+        <form method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary" style="font-size:16px;padding:12px 32px;background:#4caf50 !important;"
+                    onclick="return confirm('Create the sponsorship and draft contract? This cannot be undone.');">
+                Create Sponsorship &amp; Draft Contract
+            </button>
+        </form>
+        <p style="font-size:12px;color:#999;margin-top:8px;">
+            This will create the sponsorship record (status: Applied) and a draft contract.
+            You can edit the contract on the next step before sending.
+        </p>
     </div>
 
     <div class="composer-actions">
         <a href="{% url 'manage_composer' %}?step=4" class="btn btn-secondary">Back</a>
         <div class="spacer"></div>
-        <form method="get" action="{% url 'manage_composer' %}" style="display:inline;">
-            <input type="hidden" name="step" value="1">
-            <button type="submit" class="btn btn-danger"
-                    onclick="if(confirm('Start over? All composer data will be cleared.')){fetch('{% url 'manage_composer' %}',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}'},body:new URLSearchParams({action:'reset'})});return true;}return false;">
-                Start Over
+    </div>
+</div>
+{% endif %}
+
+<!-- ═══════════════════════════════════════════ -->
+<!-- STEP 6: Contract & Send                    -->
+<!-- ═══════════════════════════════════════════ -->
+{% if step == 6 %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Contract Editor &amp; Send</h2>
+        <div style="font-size:13px;color:#777;">
+            Contract status: <strong style="color:#333;">{{ contract.get_status_display }}</strong>
+            &middot; Revision: <strong style="color:#333;">{{ contract.revision }}</strong>
+        </div>
+    </div>
+
+    <!-- Section 1: Contract Editor -->
+    <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
+        <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 16px;">Edit Contract Fields</h3>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="save_contract">
+
+            <!-- Hidden fields: rebuilt from structured data on save -->
+            <input type="hidden" name="sponsor_info" id="sponsor-info-hidden" value="{{ contract_sponsor_info }}">
+            <input type="hidden" name="sponsor_contact" id="sponsor-contact-hidden" value="{{ contract_sponsor_contact }}">
+
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+                <!-- Sponsor Information (structured fields) -->
+                <div>
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:8px;">Sponsor Information</div>
+                    <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:16px;">
+                        <div style="margin-bottom:10px;">
+                            <label style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Sponsor Name</label>
+                            <div style="font-size:13px;padding:8px 10px;background:#eee;border:1px solid #ddd;border-radius:4px;color:#555;">{{ sponsor.name }}</div>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label for="si-description" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Description</label>
+                            <textarea name="si_description" id="si-description" rows="2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;resize:vertical;">{{ sponsor.description }}</textarea>
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label for="si-website" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Website URL</label>
+                            <input type="url" name="si_website" id="si-website" value="{{ sponsor.landing_page_url|default_if_none:'' }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                        </div>
+                        <div style="margin-bottom:10px;">
+                            <label for="si-phone" style="font-size:11px;font-weight:600;color:#666;display:block;margin-bottom:2px;">Phone</label>
+                            <input type="text" name="si_phone" id="si-phone" value="{{ sponsor.primary_phone }}" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                        </div>
+                        <div style="font-size:11px;font-weight:600;color:#666;margin-bottom:4px;">Mailing Address</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                            <div>
+                                <input type="text" name="si_address1" id="si-address1" value="{{ sponsor.mailing_address_line_1 }}" placeholder="Address line 1" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <input type="text" name="si_address2" id="si-address2" value="{{ sponsor.mailing_address_line_2 }}" placeholder="Address line 2" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <input type="text" name="si_city" id="si-city" value="{{ sponsor.city }}" placeholder="City" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <input type="text" name="si_state" id="si-state" value="{{ sponsor.state }}" placeholder="State/Province" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <input type="text" name="si_postal" id="si-postal" value="{{ sponsor.postal_code }}" placeholder="Postal code" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                            <div>
+                                <input type="text" name="si_country" id="si-country" value="{{ sponsor.country }}" placeholder="Country" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sponsor Contacts (structured list) -->
+                <div>
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:8px;">
+                        Sponsor Contacts
+                        <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="font-size:11px;font-weight:400;text-transform:none;color:#306998;margin-left:8px;">+ Add Contact</a>
+                    </div>
+                    <div style="background:#f7f8fa;border:1px solid #e8e8e8;border-radius:6px;padding:16px;">
+                        {% for c in sponsor_contacts %}
+                        <div style="padding:10px 12px;background:#fff;border:1px solid #e0e0e0;border-radius:4px;margin-bottom:8px;{% if c.primary %}border-left:3px solid #306998;{% endif %}">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                                <strong style="font-size:13px;">{{ c.name }}</strong>
+                                <div style="display:flex;align-items:center;gap:8px;">
+                                    {% if c.primary %}<span style="font-size:10px;font-weight:600;color:#fff;background:#306998;padding:2px 6px;border-radius:3px;">PRIMARY</span>{% endif %}
+                                    <a href="{% url 'manage_contact_edit' pk=c.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="font-size:11px;color:#306998;">Edit</a>
+                                </div>
+                            </div>
+                            <div style="font-size:12px;color:#666;">
+                                {% if c.email %}<div>{{ c.email }}</div>{% endif %}
+                                {% if c.phone %}<div>{{ c.phone }}</div>{% endif %}
+                                {% if c.type %}<div style="font-size:11px;color:#999;margin-top:2px;">{{ c.type }}</div>{% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <div style="font-size:13px;color:#999;text-align:center;padding:16px;">
+                            No contacts on file.
+                            <a href="{% url 'manage_contact_create' sponsor_pk=sponsor.pk %}?from_sponsorship={{ data.sponsorship_id }}" style="color:#306998;">Add one now</a>.
+                        </div>
+                        {% endfor %}
+                        {% if sponsor_contacts %}
+                        <div style="font-size:11px;color:#999;margin-top:4px;">The primary contact is used for the contract's contact field.</div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Benefits List <span style="font-weight:400;text-transform:none;">(Markdown)</span></div>
+                <div class="md-editor">
+                    <div class="md-toolbar">
+                        <button type="button" onclick="mdBold(this)" title="Bold"><b>B</b></button>
+                        <button type="button" onclick="mdItalic(this)" title="Italic"><i>I</i></button>
+                        <button type="button" onclick="mdBullet(this)" title="Bullet list">&#8226;</button>
+                        <button type="button" onclick="mdHeading(this)" title="Heading">H</button>
+                        <button type="button" onclick="mdFootnoteRef(this)" title="Footnote ref">[^]</button>
+                        <button type="button" onclick="mdFootnoteDef(this)" title="Footnote def">[^]:</button>
+                    </div>
+                    <textarea name="benefits_list" rows="10" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:0 0 4px 4px;font-size:13px;font-family:monospace;box-sizing:border-box;resize:vertical;line-height:1.5;">{{ contract_benefits_list }}</textarea>
+                </div>
+            </div>
+
+            <div style="margin-bottom:16px;">
+                <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Legal Clauses <span style="font-weight:400;text-transform:none;">(Markdown)</span></div>
+                <div class="md-editor">
+                    <div class="md-toolbar">
+                        <button type="button" onclick="mdBold(this)" title="Bold"><b>B</b></button>
+                        <button type="button" onclick="mdItalic(this)" title="Italic"><i>I</i></button>
+                        <button type="button" onclick="mdBullet(this)" title="Bullet list">&#8226;</button>
+                        <button type="button" onclick="mdHeading(this)" title="Heading">H</button>
+                        <button type="button" onclick="mdFootnoteRef(this)" title="Footnote ref">[^]</button>
+                        <button type="button" onclick="mdFootnoteDef(this)" title="Footnote def">[^]:</button>
+                    </div>
+                    <textarea name="legal_clauses" rows="8" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:0 0 4px 4px;font-size:13px;font-family:monospace;box-sizing:border-box;resize:vertical;line-height:1.5;">{{ contract_legal_clauses }}</textarea>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="padding:8px 20px;">Save Changes</button>
+        </form>
+    </div>
+
+    <!-- Section 2: Preview & Download -->
+    <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
+        <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 16px;">Preview &amp; Download</h3>
+        <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <a href="{% url 'manage_composer_contract_preview' %}" target="_blank" class="btn btn-primary" style="padding:8px 20px;text-decoration:none;">
+                Preview PDF
+            </a>
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="download_docx">
+                <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Download DOCX</button>
+            </form>
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="download_pdf">
+                <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Download PDF</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Section 3: Email Compose & Send -->
+    <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
+        <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 16px;">Send Contract to Sponsor</h3>
+
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_proposal">
+
+            <!-- Recipients -->
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">To</div>
+            <div style="margin-bottom:16px;">
+                {% for c in sponsor_contacts %}
+                <div style="font-size:13px;padding:6px 10px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;display:flex;justify-content:space-between;">
+                    <span><strong>{{ c.name }}</strong> &lt;{{ c.email }}&gt;</span>
+                    <span style="font-size:11px;color:#999;">{{ c.get_type_display|default:"Contact" }}</span>
+                </div>
+                {% endfor %}
+                {% if not sponsor_contacts %}
+                <div style="font-size:12px;color:#999;margin-bottom:8px;">No sponsor contacts on file. Send to a PSF team address instead:</div>
+                {% endif %}
+                <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
+                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='sponsors@python.org';f.style.display='';">sponsors@python.org</button>
+                    <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='loren@python.org';f.style.display='';">loren@python.org</button>
+                </div>
+                <input type="email" name="extra_to" id="extra-to" placeholder="name@python.org or name@pyfound.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-top:6px;{% if sponsor_contacts %}display:none;{% endif %}" pattern=".*@(python\.org|pyfound\.org)$" title="Must be @python.org or @pyfound.org">
+            </div>
+
+            <div style="display:flex;gap:16px;margin-bottom:16px;">
+                <div style="flex:1;">
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">CC</div>
+                    <input type="email" name="cc_email" placeholder="cc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">BCC</div>
+                    <input type="email" name="bcc_email" placeholder="bcc@python.org" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                </div>
+            </div>
+
+            <!-- Editable subject -->
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Subject</div>
+            <input type="text" name="email_subject" value="{{ default_subject }}" style="width:100%;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:16px;">
+
+            <!-- Editable body -->
+            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Message Body</div>
+            <textarea name="email_body" rows="12" style="width:100%;padding:10px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:monospace;box-sizing:border-box;margin-bottom:16px;resize:vertical;line-height:1.5;">{{ default_body }}</textarea>
+
+            <!-- Attachment info -->
+            <div style="font-size:12px;color:#777;margin-bottom:16px;padding:10px 14px;background:#f7f8fa;border-radius:4px;">
+                <strong>Attachments:</strong> The contract will be attached as PDF and DOCX. The contract status will change to "Awaiting Signature".
+            </div>
+
+            <button type="submit" class="btn btn-gold" style="font-size:14px;padding:10px 24px;" onclick="return confirm('Send the contract? This will finalize the contract and change its status to Awaiting Signature.');">Send with Contract</button>
+        </form>
+    </div>
+
+    <!-- Send for Internal Review -->
+    <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
+        <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Send for Internal Review</h3>
+        <p style="font-size:13px;color:#777;margin:0 0 12px;">Email the draft contract to a colleague for review. The contract status will not change.</p>
+        <form method="post">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="send_internal">
+            <div style="display:flex;gap:8px;">
+                <input type="email" name="internal_email" placeholder="reviewer@python.org"
+                       style="flex:1;padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+                <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">Send Internal Review</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Finish without sending -->
+    <div class="composer-actions">
+        <a href="{% url 'manage_composer' %}?step=5" class="btn btn-secondary">Back to Review</a>
+        <div class="spacer"></div>
+        <form method="post" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="finish">
+            <button type="submit" class="btn btn-secondary" style="padding:8px 20px;">
+                Finish (Don't Send)
             </button>
         </form>
     </div>
 </div>
 {% endif %}
 
+<style>
+.md-toolbar { display:flex; gap:3px; padding:6px 8px; background:#f0f2f5; border:1px solid #d0d0d0; border-bottom:none; border-radius:6px 6px 0 0; }
+.md-toolbar button { all:unset !important; display:inline-flex !important; align-items:center !important; justify-content:center !important; width:28px !important; height:28px !important; font-size:13px !important; font-weight:600 !important; border:1px solid #ccc !important; border-radius:3px !important; background:#fff !important; color:#555 !important; cursor:pointer !important; font-family:'SFMono-Regular',Consolas,monospace !important; }
+.md-toolbar button:hover { background:#e8f0fe !important; border-color:#3776ab !important; color:#3776ab !important; }
+</style>
+<script>
+(function() {
+    "use strict";
+
+    function getTextarea(btn) {
+        return btn.closest(".md-editor").querySelector("textarea");
+    }
+
+    function mdWrap(btn, before, after) {
+        var ta = getTextarea(btn);
+        var start = ta.selectionStart;
+        var end = ta.selectionEnd;
+        var text = ta.value;
+        var selected = text.substring(start, end);
+        var replacement = before + selected + after;
+        ta.value = text.substring(0, start) + replacement + text.substring(end);
+        ta.selectionStart = start + before.length;
+        ta.selectionEnd = start + before.length + selected.length;
+        ta.focus();
+    }
+
+    function mdPrefix(btn, prefix) {
+        var ta = getTextarea(btn);
+        var start = ta.selectionStart;
+        var end = ta.selectionEnd;
+        var text = ta.value;
+        var lineStart = text.lastIndexOf("\n", start - 1) + 1;
+        var lineEnd = text.indexOf("\n", end);
+        if (lineEnd === -1) lineEnd = text.length;
+        var block = text.substring(lineStart, lineEnd);
+        var lines = block.split("\n");
+        var prefixed = lines.map(function(line) { return prefix + line; }).join("\n");
+        ta.value = text.substring(0, lineStart) + prefixed + text.substring(lineEnd);
+        ta.selectionStart = lineStart;
+        ta.selectionEnd = lineStart + prefixed.length;
+        ta.focus();
+    }
+
+    function nextFootnoteNumber(ta) {
+        var matches = ta.value.match(/\[\^(\d+)\]/g);
+        if (!matches) return 1;
+        var nums = matches.map(function(m) { return parseInt(m.replace(/\[\^|\]/g, ""), 10); });
+        return Math.max.apply(null, nums) + 1;
+    }
+
+    window.mdBold = function(btn) { mdWrap(btn, "**", "**"); };
+    window.mdItalic = function(btn) { mdWrap(btn, "*", "*"); };
+    window.mdBullet = function(btn) { mdPrefix(btn, "- "); };
+    window.mdHeading = function(btn) { mdPrefix(btn, "## "); };
+
+    window.mdFootnoteRef = function(btn) {
+        var ta = getTextarea(btn);
+        var n = nextFootnoteNumber(ta);
+        var pos = ta.selectionEnd;
+        var ref = "[^" + n + "]";
+        ta.value = ta.value.substring(0, pos) + ref + ta.value.substring(pos);
+        ta.selectionStart = ta.selectionEnd = pos + ref.length;
+        ta.focus();
+    };
+
+    window.mdFootnoteDef = function(btn) {
+        var ta = getTextarea(btn);
+        var n = nextFootnoteNumber(ta);
+        var pos = ta.selectionEnd;
+        var def = "[^" + n + "]: ";
+        ta.value = ta.value.substring(0, pos) + def + ta.value.substring(pos);
+        ta.selectionStart = ta.selectionEnd = pos + def.length;
+        ta.focus();
+    };
+})();
+</script>
 {% endblock manage_content %}
 {% endwith %}
