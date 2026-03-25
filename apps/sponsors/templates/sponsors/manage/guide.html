@@ -22,6 +22,7 @@
 <a href="#benefits-packages" style="color:#3776ab;text-decoration:none;">Benefits &amp; Packages</a><br>
 <a href="#notifications" style="color:#3776ab;text-decoration:none;">Notifications</a><br>
 <a href="#sponsors-contacts" style="color:#3776ab;text-decoration:none;">Sponsors &amp; Contacts</a><br>
+<a href="#renewals" style="color:#3776ab;text-decoration:none;">Renewals &amp; Expiry</a><br>
 <a href="#bulk" style="color:#3776ab;text-decoration:none;">Bulk Actions &amp; Export</a><br>
 <a href="#admin-only" style="color:#3776ab;text-decoration:none;">What's Still in Django Admin</a><br>
 </div>
@@ -273,6 +274,32 @@ Each sponsor has one or more <strong>contacts</strong> with roles:
 <p style="font-size:13px;line-height:1.8;color:#444;">
 Add, edit, and remove contacts from the sponsor card on the sponsorship detail page. The primary contact's info feeds into the contract's sponsor contact field, so keep it accurate.
 </p>
+</div>
+
+<!-- Renewals & Expiry -->
+<div class="manage-section" id="renewals">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Renewals &amp; Expiry</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The dashboard automatically surfaces sponsorships that need renewal attention:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Expiring Soon</strong> &mdash; finalized sponsorships ending within 90 days. Shows a countdown with color-coded urgency: red for 30 days or less, gold for 31-60 days, gray for 61-90 days</li>
+<li><strong>Recently Expired</strong> &mdash; finalized sponsorships that have already ended and haven't been renewed (no overlapping replacement sponsorship). These are sponsors you should reach out to</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Both sections include a <strong>"+ Renewal"</strong> button that launches the Composer with the sponsor pre-selected and the renewal flag pre-checked. This means the contract will use the renewal template instead of the new-sponsorship template.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+You'll also see expiry indicators on the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">sponsorship list</a> &mdash; finalized sponsorships show days-remaining tags in the Period column. On a sponsorship's detail page, <span class="tag tag-red">Expiring Soon</span> or <span class="tag tag-red">Expired</span> tags appear in the header, and a "+ Renewal" button is available for any finalized sponsorship.
+</p>
+
+<div class="manage-alert manage-alert-info">
+When a renewal sponsorship's contract is executed, the system automatically links the old sponsorship via the "overlapped_by" field. This hides the old sponsorship from public sponsor listings while keeping it in the admin for historical records.
+</div>
 </div>
 
 <!-- Bulk Actions & Export -->

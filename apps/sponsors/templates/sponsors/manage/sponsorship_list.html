@@ -5,6 +5,7 @@
 {% with active_tab="sponsorships" %}
 
 {% block manage_content %}
+    {% load sponsors_manage %}
     <!-- Combined toolbar: status pills + filters + actions in one bar -->
     <div class="manage-filter-bar" style="padding:12px 20px;">
         <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
@@ -107,6 +108,13 @@
                 <td style="font-size:12px;color:#777;">
                     {% if sp.start_date and sp.end_date %}
                     {{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                    {% if sp.status == 'finalized' and sp.end_date %}
+                        {% days_until sp.end_date today as days_left %}
+                        {% if days_left < 0 %}<span class="tag tag-red" style="margin-left:4px;font-size:10px;">Expired</span>
+                        {% elif days_left <= 30 %}<span class="tag tag-red" style="margin-left:4px;font-size:10px;">{{ days_left }}d left</span>
+                        {% elif days_left <= 90 %}<span class="tag tag-gold" style="margin-left:4px;font-size:10px;">{{ days_left }}d left</span>
+                        {% endif %}
+                    {% endif %}
                     {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
                 </td>
                 <td>

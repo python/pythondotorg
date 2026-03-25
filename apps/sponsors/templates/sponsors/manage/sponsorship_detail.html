@@ -60,6 +60,8 @@
             {% endif %}
             {% if sponsorship.for_modified_package %}<span class="tag tag-gold">Custom Package</span>{% endif %}
             {% if sponsorship.renewal %}<span class="tag tag-blue">Renewal</span>{% endif %}
+            {% if is_expiring_soon %}<span class="tag tag-red">Expiring Soon</span>{% endif %}
+            {% if is_expired %}<span class="tag tag-red">Expired</span>{% endif %}
         </div>
     </div>
     <div class="sp-actions">
@@ -73,8 +75,13 @@
         {% if can_rollback and sponsorship.status != 'applied' %}
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('rollback-confirm').classList.toggle('visible')">Rollback to Edit</button>
         {% endif %}
+        {% if can_create_renewal %}
+        <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sponsorship.sponsor_id }}&renewal=1" class="btn btn-gold" title="Create a renewal sponsorship for this sponsor">+ Renewal</a>
+        {% endif %}
         <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
-        <a href="{% url 'manage_sponsorship_export' %}?search={{ sponsorship.sponsor.name|urlencode }}" class="btn btn-secondary" style="font-size:11px;">Export CSV</a>
+        <a href="{% url 'manage_sponsorship_export' %}?search={{ sponsorship.sponsor.name|urlencode }}" class="btn btn-secondary" style="font-size:11px;">CSV</a>
+        <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-secondary" style="font-size:11px;">Assets</a>
+        {% if sponsorship.sponsor %}<a href="{{ sponsorship.detail_url }}" target="_blank" class="btn btn-secondary" style="font-size:11px;" title="View what the sponsor sees">Sponsor View</a>{% endif %}
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="lock">
@@ -308,7 +315,7 @@
                     <button type="submit" class="btn btn-sm btn-secondary">Re-draft</button>
                 </form>
                 {% endif %}
-                <a href="#" onclick="event.preventDefault();document.getElementById('regenerate-confirm').style.display='block';" style="font-size:12px;color:#b8860b;">Regenerate</a>
+                {% if sponsorship.open_for_editing %}<a href="#" onclick="event.preventDefault();document.getElementById('regenerate-confirm').style.display='block';" style="font-size:12px;color:#b8860b;">Regenerate</a>{% endif %}
             </div>
         </div>
 
