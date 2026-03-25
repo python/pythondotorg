@@ -81,15 +81,12 @@
                 <tbody>
                     {% for asset in group.assets %}
                     <tr>
-                        <td style="font-weight:600;font-size:13px;">{{ asset.internal_name }}</td>
+                        <td style="font-size:13px;">{{ asset.internal_name }}</td>
                         <td>
                             <span class="tag tag-gray" style="font-size:10px;">{{ asset.polymorphic_ctype.name|title }}</span>
                         </td>
                         <td>
-                            {% if asset.owner_type == "sponsor" %}
-                            <span class="tag tag-blue" style="font-size:10px;">Sponsor</span>
-                            {% else %}
-                            {% if asset.resolved_owner %}
+                            {% if asset.owner_type == "sponsorship" and asset.resolved_owner %}
                             <a href="{% url 'manage_sponsorship_detail' asset.resolved_owner.pk %}" style="text-decoration:none;">
                                 {% if asset.resolved_owner.package %}<span class="tag tag-gold" style="font-size:10px;">{{ asset.resolved_owner.package.name }}</span>{% endif %}
                                 {% if asset.resolved_owner.status == 'applied' %}<span class="tag tag-blue" style="font-size:10px;">Applied</span>
@@ -98,8 +95,7 @@
                                 {% endif %}
                             </a>
                             {% else %}
-                            <span class="tag tag-gray" style="font-size:10px;">Sponsorship</span>
-                            {% endif %}
+                            <span style="color:#ccc;font-size:11px;">company-level</span>
                             {% endif %}
                         </td>
                         <td style="text-align:center;">
