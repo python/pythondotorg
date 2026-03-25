@@ -736,24 +736,35 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
     @admin.display(description="Web Logo")
     def get_sponsor_web_logo(self, obj):
         """Render and return the sponsor's web logo as a thumbnail image."""
-        html = "{% load thumbnail %}{% thumbnail sponsor.web_logo '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        img = obj.sponsor.web_logo
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px"/>',
+                img.url,
+            )
+        html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
         template = Template(html)
-        context = Context({"sponsor": obj.sponsor})
-        html = template.render(context)
-        return mark_safe(html)  # noqa: S308
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
 
     @admin.display(description="Print Logo")
     def get_sponsor_print_logo(self, obj):
         """Render and return the sponsor's print logo as a thumbnail image."""
         img = obj.sponsor.print_logo
-        html = "---"
-        if img:
-            template = Template(
-                "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px"/>',
+                img.url,
             )
-            context = Context({"img": img})
-            html = mark_safe(template.render(context))  # noqa: S308
-        return html
+        template = Template(
+            "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        )
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
 
     @admin.display(description="Primary Phone")
     def get_sponsor_primary_phone(self, obj):
@@ -807,7 +818,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -816,7 +827,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", benefits)
+        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -1277,7 +1288,7 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """Return the asset value, linking to the file URL if applicable."""
         html = obj.value
         if obj.value and getattr(obj.value, "url", None):
-            html = format_html("<a href='{}' target='_blank'>{}</a>", (obj.value.url, obj.value))
+            html = format_html("<a href='{}' target='_blank'>{}</a>", obj.value.url, obj.value)
         return html
 
     @admin.display(description="Associated with")
@@ -1289,9 +1300,9 @@ class GenericAssetModelAdmin(PolymorphicParentModelAdmin):
         """
         content_object = None
         if obj.from_sponsorship:
-            content_object = self.all_sponsorships[obj.object_id]
+            content_object = self.all_sponsorships.get(obj.object_id)
         elif obj.from_sponsor:
-            content_object = self.all_sponsors[obj.object_id]
+            content_object = self.all_sponsors.get(obj.object_id)
 
         if not content_object:  # safety belt
             return obj.content_object
