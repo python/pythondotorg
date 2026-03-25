@@ -2575,34 +2575,34 @@ class SponsorListViewTests(SponsorManageTestBase):
         self.assertContains(response, "Sponsors")
 
 
-class RevenueReportViewTests(SponsorshipReviewTestBase):
+class FinancesViewTests(SponsorshipReviewTestBase):
     """Test revenue report view."""
 
     def test_report_loads(self):
-        response = self.client.get(reverse("manage_revenue"))
+        response = self.client.get(reverse("manage_finances"))
         self.assertEqual(response.status_code, 200)
 
     def test_report_shows_revenue(self):
         self.sponsorship.status = Sponsorship.FINALIZED
         self.sponsorship.save(update_fields=["status"])
-        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        response = self.client.get(reverse("manage_finances") + f"?year={self.year}")
         self.assertContains(response, "150,000")
         self.assertContains(response, "Acme Corp")
 
     def test_report_excludes_applied(self):
         """Applied sponsorships are not counted in revenue."""
-        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        response = self.client.get(reverse("manage_finances") + f"?year={self.year}")
         self.assertNotContains(response, "Acme Corp")
 
     def test_year_over_year(self):
         self.sponsorship.status = Sponsorship.FINALIZED
         self.sponsorship.save(update_fields=["status"])
-        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        response = self.client.get(reverse("manage_finances") + f"?year={self.year}")
         self.assertContains(response, str(self.year))
 
     def test_dashboard_revenue_links_to_report(self):
         response = self.client.get(reverse("manage_dashboard"))
-        self.assertContains(response, "manage_revenue" if False else "/sponsors/manage/revenue/")
+        self.assertContains(response, "/sponsors/manage/finances/")
 
 
 class SponsorshipDetailFinancialTests(SponsorshipReviewTestBase):

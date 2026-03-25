@@ -555,20 +555,29 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
         return context
 
 
-# ── Revenue Report ────────────────────────────────────────────────────
+# ── Finances ──────────────────────────────────────────────────────────
 
 
-class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
-    """Financial summary with revenue breakdowns and charts."""
+class FinancesView(SponsorshipAdminRequiredMixin, TemplateView):
+    """Financial overview with revenue breakdowns, trends, and charts."""
 
-    template_name = "sponsors/manage/revenue_report.html"
+    template_name = "sponsors/manage/finances.html"
 
     def _year_summary(self, year):
         """Return revenue stats for a single year."""
-        qs = Sponsorship.objects.filter(year=year, status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
-        total = qs.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
-        count = qs.count()
-        return {"year": year, "total": total, "count": count, "avg": total // count if count else 0}
+        base = Sponsorship.objects.filter(year=year)
+        committed = base.filter(status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
+        total = committed.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        finalized = base.filter(status=Sponsorship.FINALIZED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        count = committed.count()
+        return {
+            "year": year,
+            "total": total,
+            "finalized": finalized,
+            "pending": total - finalized,
+            "count": count,
+            "avg": total // count if count else 0,
+        }
 
     def _package_breakdown(self, year_qs):
         """Return revenue grouped by package tier."""
@@ -578,29 +587,27 @@ class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
             .order_by("-revenue")
         )
         return [
-            {"name": r["package__name"] or "Custom / No Package", "revenue": r["revenue"] or 0, "count": r["count"]}
-            for r in rows
+            {"name": r["package__name"] or "Custom", "revenue": r["revenue"] or 0, "count": r["count"]} for r in rows
         ]
 
     def get_context_data(self, **kwargs):
-        """Return context with revenue breakdowns."""
+        """Return context with financial data for charts."""
         context = super().get_context_data(**kwargs)
+        import json
 
-        # Year selection
-        all_years = Sponsorship.objects.values_list("year", flat=True).distinct().order_by("-year")
+        all_years = Sponsorship.objects.values_list("year", flat=True).distinct().order_by("year")
         all_years = [y for y in all_years if y]
 
         selected_year = self.request.GET.get("year")
         if selected_year:
             selected_year = int(selected_year)
         elif all_years:
-            selected_year = all_years[0]
+            selected_year = all_years[-1]
 
-        # Year-over-year comparison
+        # YoY data (chronological for charts)
         yoy = [self._year_summary(y) for y in all_years]
-        max_yoy = max((s["total"] for s in yoy), default=1) or 1
 
-        # Current year detail
+        # Selected year detail
         year_qs = Sponsorship.objects.filter(
             year=selected_year, status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED]
         )
@@ -615,7 +622,15 @@ class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
 
         # Package breakdown
         by_package = self._package_breakdown(year_qs)
-        max_pkg = max((p["revenue"] for p in by_package), default=1) or 1
+
+        # Status breakdown (all statuses for selected year)
+        all_year = Sponsorship.objects.filter(year=selected_year)
+        status_counts = {
+            "applied": all_year.filter(status=Sponsorship.APPLIED).count(),
+            "approved": all_year.filter(status=Sponsorship.APPROVED).count(),
+            "finalized": all_year.filter(status=Sponsorship.FINALIZED).count(),
+            "rejected": all_year.filter(status=Sponsorship.REJECTED).count(),
+        }
 
         # Per-sponsorship detail table
         sponsorships = (
@@ -624,9 +639,29 @@ class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
         for sp in sponsorships:
             sp.internal_total = sp.estimated_cost
 
+        # JSON data for Chart.js
+        chart_data = {
+            "yoy_labels": [s["year"] for s in yoy],
+            "yoy_revenue": [s["total"] for s in yoy],
+            "yoy_finalized": [s["finalized"] for s in yoy],
+            "yoy_pending": [s["pending"] for s in yoy],
+            "yoy_counts": [s["count"] for s in yoy],
+            "yoy_avg": [s["avg"] for s in yoy],
+            "pkg_labels": [p["name"] for p in by_package],
+            "pkg_revenue": [p["revenue"] for p in by_package],
+            "pkg_counts": [p["count"] for p in by_package],
+            "status_labels": ["Applied", "Approved", "Finalized", "Rejected"],
+            "status_counts": [
+                status_counts["applied"],
+                status_counts["approved"],
+                status_counts["finalized"],
+                status_counts["rejected"],
+            ],
+        }
+
         context.update(
             {
-                "years": all_years,
+                "years": list(reversed(all_years)),
                 "selected_year": selected_year,
                 "total_revenue": total_revenue,
                 "total_count": total_count,
@@ -634,10 +669,10 @@ class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
                 "finalized_revenue": finalized_revenue,
                 "approved_revenue": approved_revenue,
                 "by_package": by_package,
-                "max_pkg_revenue": max_pkg,
                 "yoy": yoy,
-                "max_yoy_revenue": max_yoy,
+                "status_counts": status_counts,
                 "sponsorships": sponsorships,
+                "chart_data_json": json.dumps(chart_data),
             }
         )
         return context
