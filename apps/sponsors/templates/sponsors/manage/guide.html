@@ -185,10 +185,15 @@ A draft contract is created automatically when you approve a sponsorship or comp
 <li><strong>Execute</strong> by uploading the signed PDF (this finalizes the sponsorship too)</li>
 <li><strong>Nullify</strong> to void a contract that's no longer valid</li>
 <li><strong>Re-draft</strong> to create a new draft from a nullified contract</li>
+<li><strong>Regenerate</strong> to create a brand new contract when a sponsor changes level mid-cycle. The old contract is preserved as "Outdated" in the Contract History section. Unlock the sponsorship first, change the package/fee/benefits, then hit Regenerate</li>
 </ul>
 
 <div class="manage-alert manage-alert-info">
-Contract content (sponsor info, benefits list, legal clauses) is editable in step 6 of the Composer or from the contract send page. Once you generate the final PDF, changes to the contract fields won't affect the generated file. Nullify and re-draft if you need to regenerate.
+<strong>Mid-cycle upgrades:</strong> When a sponsor upgrades (e.g. Contributing to Visionary), unlock the sponsorship, change the package and fee, then click Regenerate on the contract. This preserves the old contract in history and creates a fresh draft reflecting the new level. No need to delete anything or use the Django shell.
+</div>
+
+<div class="manage-alert manage-alert-info">
+Contract content (sponsor info, benefits list, legal clauses) is editable in step 6 of the Composer or from the contract send page. The generated PDF/DOCX files labeled "Sent" are snapshots from when the contract was sent — editing the contract text after sending won't change those files. Regenerate to create a new version.
 </div>
 </div>
 
