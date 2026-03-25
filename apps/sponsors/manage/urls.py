@@ -76,6 +76,11 @@ urlpatterns = [
     path(
         "sponsorships/<int:pk>/contract/redraft/", views.ContractRedraftView.as_view(), name="manage_contract_redraft"
     ),
+    path(
+        "sponsorships/<int:pk>/contract/regenerate/",
+        views.ContractRegenerateView.as_view(),
+        name="manage_contract_regenerate",
+    ),
     # Asset export
     path(
         "sponsorships/<int:pk>/export-assets/",

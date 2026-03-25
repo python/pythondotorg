@@ -3,9 +3,11 @@
 import csv
 import datetime
 import io
+from unittest import mock
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
+from django.http import HttpResponse
 from django.test import TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
@@ -576,6 +578,84 @@ class ContractViewTests(SponsorshipReviewTestBase):
         self.assertEqual(response.status_code, 302)
         contract.refresh_from_db()
         self.assertEqual(contract.status, Contract.DRAFT)  # unchanged
+
+
+class ContractRegenerateViewTests(SponsorshipReviewTestBase):
+    """Test contract regeneration workflow."""
+
+    def _approve_sponsorship(self):
+        self.sponsorship.approve(
+            start_date=datetime.date(2024, 1, 1),
+            end_date=datetime.date(2024, 12, 31),
+        )
+        self.sponsorship.save()
+        return Contract.new(self.sponsorship)
+
+    def test_regenerate_creates_new_contract_and_preserves_old(self):
+        old_contract = self._approve_sponsorship()
+        old_pk = old_contract.pk
+        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        # Old contract is detached and outdated
+        old_contract.refresh_from_db()
+        self.assertIsNone(old_contract.sponsorship)
+        self.assertEqual(old_contract.status, Contract.OUTDATED)
+        # New contract exists on the sponsorship
+        self.sponsorship.refresh_from_db()
+        new_contract = self.sponsorship.contract
+        self.assertNotEqual(new_contract.pk, old_pk)
+        self.assertEqual(new_contract.status, Contract.DRAFT)
+
+    def test_regenerate_without_existing_contract_creates_new(self):
+        self.sponsorship.approve(
+            start_date=datetime.date(2024, 1, 1),
+            end_date=datetime.date(2024, 12, 31),
+        )
+        self.sponsorship.save()
+        # No contract exists yet
+        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.contract.status, Contract.DRAFT)
+
+    def test_regenerate_requires_auth(self):
+        self.client.logout()
+        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("login", response.url)
+
+    def test_regenerate_non_group_denied(self):
+        self.client.login(username="anon", password="pass")
+        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 403)
+
+    def test_historical_contracts_in_detail_context(self):
+        old_contract = self._approve_sponsorship()
+        # Regenerate to create history
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 200)
+        historical = response.context["historical_contracts"]
+        self.assertEqual(historical.count(), 1)
+        self.assertEqual(historical.first().pk, old_contract.pk)
+
+    def test_multiple_regenerations_preserve_all(self):
+        self._approve_sponsorship()
+        # Regenerate twice
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]))
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        historical = response.context["historical_contracts"]
+        self.assertEqual(historical.count(), 2)
+        for hc in historical:
+            self.assertEqual(hc.status, Contract.OUTDATED)
+            self.assertIsNone(hc.sponsorship)
+
+    def test_regenerate_success_message(self):
+        self._approve_sponsorship()
+        response = self.client.post(reverse("manage_contract_regenerate", args=[self.sponsorship.pk]), follow=True)
+        self.assertContains(response, "New contract draft created")
+        self.assertContains(response, "Previous contract preserved as outdated")
 
 
 class SponsorshipNotifyViewTests(SponsorshipReviewTestBase):
@@ -1688,7 +1768,7 @@ class ComposerStep4Tests(SponsorManageTestBase):
 
 
 class ComposerStep5Tests(SponsorManageTestBase):
-    """Test step 5 — review and create."""
+    """Test step 5 — review and create sponsorship + draft contract."""
 
     def setUp(self):
         super().setUp()
@@ -1700,6 +1780,13 @@ class ComposerStep5Tests(SponsorManageTestBase):
             city="Portland",
             country="US",
             web_logo="test_logo.png",
+        )
+        SponsorContact.objects.create(
+            sponsor=self.sponsor,
+            name="Jane Doe",
+            email="jane@acme.com",
+            phone="555-0000",
+            primary=True,
         )
         session = self.client.session
         session["composer"] = {
@@ -1722,69 +1809,240 @@ class ComposerStep5Tests(SponsorManageTestBase):
         self.assertContains(response, "Acme Corp")
         self.assertContains(response, "Visionary")
 
-    def test_step5_create_sponsorship(self):
-        response = self.client.post(
-            reverse("manage_composer") + "?step=5",
-            {"action": "create"},
-        )
+    def test_step5_shows_create_button(self):
+        response = self.client.get(reverse("manage_composer") + "?step=5")
+        self.assertContains(response, "Create Sponsorship")
+        self.assertContains(response, "Draft Contract")
+
+    def test_step5_creates_sponsorship_and_contract(self):
+        response = self.client.post(reverse("manage_composer") + "?step=5")
         self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+
+        # Sponsorship created
         sponsorship = Sponsorship.objects.get(sponsor=self.sponsor)
-        self.assertIn(str(sponsorship.pk), response.url)
         self.assertEqual(sponsorship.sponsorship_fee, 150000)
         self.assertEqual(sponsorship.year, self.year)
         self.assertEqual(sponsorship.package, self.package)
-        # Benefits should be copied
         self.assertEqual(sponsorship.benefits.count(), 1)
         self.assertEqual(sponsorship.benefits.first().name, "Logo on python.org")
+
+        # Contract created
+        contract = Contract.objects.get(sponsorship=sponsorship)
+        self.assertEqual(contract.status, Contract.DRAFT)
+        self.assertIn("Acme Corp", contract.sponsor_info)
+
+        # Session has both IDs
+        data = self.client.session["composer"]
+        self.assertEqual(data["sponsorship_id"], sponsorship.pk)
+        self.assertEqual(data["contract_id"], contract.pk)
+
+    def test_step5_duplicate_guard(self):
+        # Create first sponsorship
+        self.client.post(reverse("manage_composer") + "?step=5")
+
+        # Reset session to try again (but keep sponsorship_id out so step 5 is accessible)
+        session = self.client.session
+        session["composer"] = {
+            "sponsor_id": self.sponsor.pk,
+            "package_id": self.package.pk,
+            "year": self.year,
+            "benefit_ids": [self.benefit.pk],
+            "fee": 150000,
+            "start_date": "2024-01-01",
+            "end_date": "2025-01-01",
+            "renewal": False,
+        }
+        session.save()
+
+        # Should fail with duplicate guard
+        response = self.client.post(reverse("manage_composer") + "?step=5")
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=5", response.url)
+
+
+class ComposerStep6Tests(SponsorManageTestBase):
+    """Test step 6 — contract editor and send page."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.sponsor = Sponsor.objects.create(
+            name="Acme Corp",
+            description="Test sponsor",
+            primary_phone="555-1234",
+            city="Portland",
+            country="US",
+            web_logo="test_logo.png",
+        )
+        SponsorContact.objects.create(
+            sponsor=self.sponsor,
+            name="Jane Doe",
+            email="jane@acme.com",
+            phone="555-0000",
+            primary=True,
+        )
+        # Create sponsorship and contract directly
+        self.sponsorship = Sponsorship.objects.create(
+            submited_by=self.staff_user,
+            sponsor=self.sponsor,
+            level_name="Visionary",
+            package=self.package,
+            sponsorship_fee=150000,
+            for_modified_package=True,
+            year=self.year,
+            start_date="2024-01-01",
+            end_date="2025-01-01",
+        )
+        SponsorBenefit.new_copy(self.benefit, sponsorship=self.sponsorship)
+        self.contract = Contract.new(self.sponsorship)
+
+        session = self.client.session
+        session["composer"] = {
+            "sponsor_id": self.sponsor.pk,
+            "package_id": self.package.pk,
+            "year": self.year,
+            "benefit_ids": [self.benefit.pk],
+            "fee": 150000,
+            "start_date": "2024-01-01",
+            "end_date": "2025-01-01",
+            "renewal": False,
+            "notes": "Some notes",
+            "sponsorship_id": self.sponsorship.pk,
+            "contract_id": self.contract.pk,
+        }
+        session.save()
+
+    def test_step6_renders(self):
+        response = self.client.get(reverse("manage_composer") + "?step=6")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Contract Editor")
+        self.assertContains(response, "Acme Corp")
+
+    def test_step6_save_contract(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {
+                "action": "save_contract",
+                "sponsor_info": "Updated Acme Info",
+                "sponsor_contact": "Updated Contact",
+                "benefits_list": "- Updated benefit",
+                "legal_clauses": "[^1]: Updated clause",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.sponsor_info, "Updated Acme Info")
+        self.assertEqual(self.contract.sponsor_contact, "Updated Contact")
+        self.assertEqual(self.contract.benefits_list.raw, "- Updated benefit")
+        self.assertEqual(self.contract.legal_clauses.raw, "[^1]: Updated clause")
+
+    @mock.patch("apps.sponsors.contracts.render_contract_to_pdf_response")
+    def test_step6_download_pdf(self, mock_render):
+        mock_render.return_value = HttpResponse(b"fake-pdf", content_type="application/pdf")
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "download_pdf"},
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response["Content-Type"], "application/pdf")
+        mock_render.assert_called_once()
+
+    @mock.patch("apps.sponsors.contracts.render_contract_to_docx_response")
+    def test_step6_download_docx(self, mock_render):
+        mock_render.return_value = HttpResponse(
+            b"fake-docx", content_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+        )
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {"action": "download_docx"},
+        )
+        self.assertEqual(response.status_code, 200)
+        mock_render.assert_called_once()
+
+    @mock.patch("apps.sponsors.contracts.render_contract_to_docx_file")
+    @mock.patch("apps.sponsors.contracts.render_contract_to_pdf_file")
+    def test_step6_send_proposal(self, mock_pdf, mock_docx):
+        mock_pdf.return_value = b"fake-pdf-bytes"
+        mock_docx.return_value = b"fake-docx-bytes"
+
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
+            {
+                "action": "send_proposal",
+                "email_subject": "Test Subject",
+                "email_body": "Test body",
+            },
+        )
+        self.assertEqual(response.status_code, 302)
+        # Should redirect to sponsorship detail
+        self.assertIn(str(self.sponsorship.pk), response.url)
+
+        from django.core.mail import outbox
+
+        self.assertEqual(len(outbox), 1)
+        self.assertIn("jane@acme.com", outbox[0].to)
+        self.assertEqual(outbox[0].subject, "Test Subject")
+        # Should have attachments
+        self.assertEqual(len(outbox[0].attachments), 2)
+
+        # Contract should be awaiting signature
+        self.contract.refresh_from_db()
+        self.assertEqual(self.contract.status, Contract.AWAITING_SIGNATURE)
+
         # Session should be cleared
         self.assertNotIn("composer", self.client.session)
 
-    def test_step5_send_internal(self):
+    def test_step6_send_proposal_no_contacts(self):
+        SponsorContact.objects.filter(sponsor=self.sponsor).delete()
         response = self.client.post(
-            reverse("manage_composer") + "?step=5",
+            reverse("manage_composer") + "?step=6",
+            {"action": "send_proposal"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("step=6", response.url)
+
+    def test_step6_send_internal(self):
+        response = self.client.post(
+            reverse("manage_composer") + "?step=6",
             {"action": "send_internal", "internal_email": "reviewer@python.org"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertIn("step=5", response.url)
+        self.assertIn("step=6", response.url)
         from django.core.mail import outbox
 
         self.assertEqual(len(outbox), 1)
         self.assertIn("Acme Corp", outbox[0].subject)
         self.assertIn("reviewer@python.org", outbox[0].to)
 
-    def test_step5_send_internal_no_email(self):
+    def test_step6_send_internal_no_email(self):
         response = self.client.post(
-            reverse("manage_composer") + "?step=5",
+            reverse("manage_composer") + "?step=6",
             {"action": "send_internal", "internal_email": ""},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertIn("step=5", response.url)
+        self.assertIn("step=6", response.url)
 
-    def test_step5_send_proposal_no_contacts(self):
+    def test_step6_finish(self):
         response = self.client.post(
-            reverse("manage_composer") + "?step=5",
-            {"action": "send_proposal"},
+            reverse("manage_composer") + "?step=6",
+            {"action": "finish"},
         )
         self.assertEqual(response.status_code, 302)
-        self.assertIn("step=5", response.url)
+        self.assertIn(str(self.sponsorship.pk), response.url)
+        # Session should be cleared
+        self.assertNotIn("composer", self.client.session)
 
-    def test_step5_send_proposal_with_contacts(self):
-        SponsorContact.objects.create(
-            sponsor=self.sponsor,
-            name="Contact One",
-            email="contact@acme.com",
-            phone="555-0000",
-            primary=True,
-        )
-        response = self.client.post(
-            reverse("manage_composer") + "?step=5",
-            {"action": "send_proposal"},
-        )
-        self.assertEqual(response.status_code, 302)
-        from django.core.mail import outbox
-
-        self.assertEqual(len(outbox), 1)
-        self.assertIn("contact@acme.com", outbox[0].to)
+    def test_step6_not_accessible_without_sponsorship(self):
+        session = self.client.session
+        del session["composer"]["sponsorship_id"]
+        del session["composer"]["contract_id"]
+        session.save()
+        response = self.client.get(reverse("manage_composer") + "?step=6")
+        self.assertEqual(response.status_code, 200)
+        # Should be clamped back to step 5
+        self.assertContains(response, "Sponsorship Summary")
 
 
 class ComposerNavigationTests(SponsorManageTestBase):
@@ -1802,6 +2060,11 @@ class ComposerNavigationTests(SponsorManageTestBase):
 
     def test_cannot_skip_to_step5_without_data(self):
         response = self.client.get(reverse("manage_composer") + "?step=5")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Select a Sponsor")
+
+    def test_cannot_skip_to_step6_without_sponsorship(self):
+        response = self.client.get(reverse("manage_composer") + "?step=6")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Select a Sponsor")
 

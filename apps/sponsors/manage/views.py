@@ -542,6 +542,15 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
         # Benefit add form (only when editable)
         if sp.open_for_editing:
             context["add_benefit_form"] = AddBenefitToSponsorshipForm(sponsorship=sp)
+        # Historical (detached) contracts for this sponsor
+        if sp.sponsor:
+            context["historical_contracts"] = Contract.objects.filter(
+                sponsor_info__startswith=sp.sponsor.name + ",",
+                sponsorship__isnull=True,
+                status=Contract.OUTDATED,
+            ).order_by("-last_update")
+        else:
+            context["historical_contracts"] = Contract.objects.none()
         # Communication history
         context["notification_logs"] = sp.notification_logs.select_related("sent_by").all()[:20]
         return context
@@ -1103,6 +1112,27 @@ class ContractRedraftView(SponsorshipAdminRequiredMixin, View):
                 messages.success(request, f"Contract re-drafted (Revision {contract.revision}).")
         except Contract.DoesNotExist:
             messages.error(request, "No contract exists.")
+        return redirect(reverse("manage_sponsorship_detail", args=[pk]))
+
+
+class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
+    """Detach the current contract (preserving it as outdated) and create a new draft."""
+
+    def post(self, request, pk):
+        """Regenerate the contract for a sponsorship."""
+        sp = get_object_or_404(Sponsorship, pk=pk)
+        try:
+            old_contract = sp.contract
+            old_contract.sponsorship = None
+            old_contract.status = Contract.OUTDATED
+            old_contract.save()
+        except Contract.DoesNotExist:
+            pass
+        new_contract = Contract.new(sp)
+        messages.success(
+            request,
+            f"New contract draft created (Revision {new_contract.revision}). Previous contract preserved as outdated.",
+        )
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
 

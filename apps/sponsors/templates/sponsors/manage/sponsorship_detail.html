@@ -308,6 +308,7 @@
                     <button type="submit" class="btn btn-sm btn-secondary">Re-draft</button>
                 </form>
                 {% endif %}
+                <a href="#" onclick="event.preventDefault();document.getElementById('regenerate-confirm').style.display='block';" style="font-size:12px;color:#b8860b;">Regenerate</a>
             </div>
         </div>
 
@@ -338,7 +339,49 @@
             </a>
             {% endif %}
         </div>
+
+        <!-- Regenerate confirmation -->
+        <div id="regenerate-confirm" style="display:none;margin-top:12px;padding:12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;">
+            <p style="font-size:13px;margin:0 0 8px;">This will mark the current contract as outdated and create a new draft from the current sponsorship data.</p>
+            <form method="post" action="{% url 'manage_contract_regenerate' sponsorship.pk %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-sm btn-gold">Regenerate Contract</button>
+            </form>
+            <button type="button" onclick="this.parentElement.style.display='none'" style="font-size:12px;margin-left:8px;background:none;border:none;color:#999;cursor:pointer;">Cancel</button>
+        </div>
     </div>
+
+    <!-- Contract History -->
+    {% if historical_contracts %}
+    <div style="margin-top:16px;">
+        <div style="cursor:pointer;font-size:13px;font-weight:600;color:#777;margin-bottom:8px;" onclick="var el=document.getElementById('contract-history');el.style.display=el.style.display==='none'?'block':'none';this.querySelector('.ch-arrow').textContent=el.style.display==='none'?'\u25b6':'\u25bc';">
+            <span class="ch-arrow">&#9656;</span> Contract History <span class="badge">{{ historical_contracts|length }}</span>
+        </div>
+        <div id="contract-history" style="display:none;">
+            {% for hc in historical_contracts %}
+            <div style="padding:10px 14px;background:#f7f8fa;border:1px solid #e8e8e8;border-radius:4px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;">
+                <div>
+                    <span style="font-weight:500;font-size:13px;">Revision {{ hc.revision }}</span>
+                    <span class="tag tag-gray" style="margin-left:6px;">Outdated</span>
+                    <span style="font-size:12px;color:#999;margin-left:8px;">{{ hc.last_update|date:"M j, Y" }}</span>
+                </div>
+                <div style="display:flex;gap:8px;">
+                    {% if hc.document %}
+                    <a href="{{ hc.document.url }}" target="_blank" style="font-size:11px;color:#e74c3c;text-decoration:none;">PDF</a>
+                    {% endif %}
+                    {% if hc.document_docx %}
+                    <a href="{{ hc.document_docx.url }}" target="_blank" style="font-size:11px;color:#3776ab;text-decoration:none;">DOCX</a>
+                    {% endif %}
+                    {% if hc.signed_document %}
+                    <a href="{{ hc.signed_document.url }}" target="_blank" style="font-size:11px;color:#2e7d32;text-decoration:none;">Signed</a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
     {% else %}
     <div class="sp-card" style="text-align:center;padding:20px;color:#999;">
         <p style="margin:0 0 8px;font-size:13px;">No contract on file for this sponsorship.</p>
