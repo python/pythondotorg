@@ -1920,6 +1920,19 @@ class ComposerStep6Tests(SponsorManageTestBase):
         self.assertContains(response, "Contract Editor")
         self.assertContains(response, "Acme Corp")
 
+    def test_step6_shows_available_clauses(self):
+        """Step 6 shows insert buttons for managed legal clauses."""
+        clause = LegalClause.objects.create(
+            internal_name="Trademark",
+            clause="Sponsor may use the Python trademark.",
+        )
+        response = self.client.get(reverse("manage_composer") + "?step=6")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Insert clause")
+        self.assertContains(response, "Trademark")
+        self.assertContains(response, clause.clause)
+        clause.delete()
+
     def test_step6_save_contract(self):
         response = self.client.post(
             reverse("manage_composer") + "?step=6",

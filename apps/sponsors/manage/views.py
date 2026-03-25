@@ -2397,6 +2397,7 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             "contract_sponsor_contact": contract.sponsor_contact,
             "contract_benefits_list": contract.benefits_list.raw,
             "contract_legal_clauses": contract.legal_clauses.raw,
+            "available_clauses": LegalClause.objects.all().order_by("order"),
             "default_subject": "Sponsorship Proposal from the Python Software Foundation",
             "default_body": default_body,
         }
