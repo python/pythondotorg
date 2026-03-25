@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.models import Group
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.sponsors.models import (
     Contract,
@@ -31,7 +32,7 @@ class SponsorManageTestBase(TestCase):
     def setUpTestData(cls):
         cls.group = Group.objects.create(name="Sponsorship Admin")
         cls.program = SponsorshipProgram.objects.create(name="Foundation", order=0)
-        cls.year = 2024
+        cls.year = timezone.now().year
 
         # Update or create current year singleton
         current_year = SponsorshipCurrentYear.objects.first()
@@ -232,7 +233,7 @@ class CloneYearViewTests(SponsorManageTestBase):
         self.assertEqual(response.status_code, 200)
 
     def test_clone_year(self):
-        target_year = 2025
+        target_year = self.year + 1
         response = self.client.post(
             reverse("manage_clone_year"),
             {
@@ -1051,7 +1052,7 @@ class SponsorshipListBulkUITests(SponsorshipReviewTestBase):
     def test_list_has_bulk_action_form(self):
         response = self.client.get(reverse("manage_sponsorships"))
         self.assertContains(response, 'id="bulk-action-form"')
-        self.assertContains(response, "Bulk Action")
+        self.assertContains(response, "Bulk action")
         self.assertContains(response, "export_csv")
         self.assertContains(response, "send_notification")
 
@@ -1062,7 +1063,7 @@ class SponsorshipListBulkUITests(SponsorshipReviewTestBase):
     def test_list_has_export_assets_option(self):
         response = self.client.get(reverse("manage_sponsorships"))
         self.assertContains(response, "export_assets")
-        self.assertContains(response, "Export Assets as ZIP")
+        self.assertContains(response, "Export Assets ZIP")
 
 
 class SponsorshipApproveSignedViewTests(SponsorshipReviewTestBase):
