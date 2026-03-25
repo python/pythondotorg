@@ -457,40 +457,26 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
 
     template_name = "sponsors/manage/asset_browser.html"
 
-    def get_context_data(self, **kwargs):
-        """Return context with filtered assets and lookup caches."""
-        context = super().get_context_data(**kwargs)
+    def _apply_queryset_filters(self, qs):
+        """Apply database-level filters from query params and return filtered queryset."""
         from django.contrib.contenttypes.models import ContentType
-
-        qs = GenericAsset.objects.all_assets().select_related("content_type")
-
-        # Filters
-        self.filter_type = self.request.GET.get("type", "")
-        self.filter_related = self.request.GET.get("related", "")
-        self.filter_value = self.request.GET.get("value", "")
-        self.filter_search = self.request.GET.get("search", "")
 
         if self.filter_type:
             type_map = {cls.__name__: cls for cls in GenericAsset.all_asset_types()}
             if self.filter_type in type_map:
                 qs = qs.instance_of(type_map[self.filter_type])
-
         if self.filter_related:
             with contextlib.suppress(ContentType.DoesNotExist, ValueError):
                 qs = qs.filter(content_type=ContentType.objects.get(pk=int(self.filter_related)))
-
         if self.filter_search:
             qs = qs.filter(internal_name__icontains=self.filter_search)
+        return qs
 
-        assets = list(qs[:200])
+    def _resolve_and_group(self, assets):
+        """Resolve owners, exclude expired/rejected, and group assets by company."""
+        from collections import OrderedDict
 
-        # Value filter (property-based, must be done in Python)
-        if self.filter_value == "with":
-            assets = [a for a in assets if a.has_value]
-        elif self.filter_value == "without":
-            assets = [a for a in assets if not a.has_value]
-
-        # Batch-load related objects to avoid N+1
+        today = tz.now().date()
         sponsor_ids = {a.object_id for a in assets if a.from_sponsor}
         sponsorship_ids = {a.object_id for a in assets if a.from_sponsorship}
         sponsors_map = {s.pk: s for s in Sponsor.objects.filter(pk__in=sponsor_ids)} if sponsor_ids else {}
@@ -499,18 +485,64 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
             if sponsorship_ids
             else {}
         )
+
+        def _is_active_sponsorship_asset(a):
+            sp = sponsorships_map.get(a.object_id)
+            return sp and sp.status != Sponsorship.REJECTED and not (sp.end_date and sp.end_date < today)
+
+        assets = [a for a in assets if a.from_sponsor or _is_active_sponsorship_asset(a)]
+
         for asset in assets:
             if asset.from_sponsor:
-                asset.resolved_owner = sponsors_map.get(asset.object_id)
+                owner = sponsors_map.get(asset.object_id)
+                asset.resolved_owner = owner
                 asset.owner_type = "sponsor"
+                asset.company_name = owner.name if owner else "Unknown"
             else:
-                asset.resolved_owner = sponsorships_map.get(asset.object_id)
+                owner = sponsorships_map.get(asset.object_id)
+                asset.resolved_owner = owner
                 asset.owner_type = "sponsorship"
+                asset.company_name = owner.sponsor.name if owner and owner.sponsor else "Unknown"
+
+        grouped = OrderedDict()
+        for asset in assets:
+            name = asset.company_name
+            if name not in grouped:
+                grouped[name] = {"assets": [], "submitted": 0, "total": 0, "sponsorship_id": None}
+            grouped[name]["assets"].append(asset)
+            grouped[name]["total"] += 1
+            if asset.has_value:
+                grouped[name]["submitted"] += 1
+            if not grouped[name]["sponsorship_id"] and asset.owner_type == "sponsorship" and asset.resolved_owner:
+                grouped[name]["sponsorship_id"] = asset.resolved_owner.pk
+
+        return assets, grouped
+
+    def get_context_data(self, **kwargs):
+        """Return context with filtered assets grouped by company."""
+        context = super().get_context_data(**kwargs)
+        from django.contrib.contenttypes.models import ContentType
+
+        self.filter_type = self.request.GET.get("type", "")
+        self.filter_related = self.request.GET.get("related", "")
+        self.filter_value = self.request.GET.get("value", "")
+        self.filter_search = self.request.GET.get("search", "")
+
+        qs = self._apply_queryset_filters(GenericAsset.objects.all_assets().select_related("content_type"))
+        assets = list(qs[:200])
+
+        if self.filter_value == "with":
+            assets = [a for a in assets if a.has_value]
+        elif self.filter_value == "without":
+            assets = [a for a in assets if not a.has_value]
+
+        assets, grouped = self._resolve_and_group(assets)
 
         content_types = ContentType.objects.filter(model__in=["sponsor", "sponsorship"])
         context.update(
             {
-                "assets": assets,
+                "grouped_assets": grouped,
+                "company_count": len(grouped),
                 "asset_count": len(assets),
                 "type_choices": [(cls.__name__, cls._meta.verbose_name) for cls in GenericAsset.all_asset_types()],
                 "content_type_choices": [(ct.pk, ct.model.title()) for ct in content_types],
