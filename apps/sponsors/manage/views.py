@@ -555,6 +555,36 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
         return context
 
 
+# ── Sponsor Directory ─────────────────────────────────────────────────
+
+
+class SponsorListView(SponsorshipAdminRequiredMixin, ListView):
+    """Browse and search all sponsors."""
+
+    template_name = "sponsors/manage/sponsor_list.html"
+    context_object_name = "sponsors"
+    paginate_by = 50
+
+    def get_queryset(self):
+        """Return sponsors filtered by search, annotated with sponsorship count."""
+        from django.db.models import Count
+
+        qs = Sponsor.objects.annotate(
+            sponsorship_count=Count("sponsorship"),
+            contact_count=Count("contacts"),
+        ).order_by("name")
+        self.filter_search = self.request.GET.get("search", "")
+        if self.filter_search:
+            qs = qs.filter(name__icontains=self.filter_search)
+        return qs
+
+    def get_context_data(self, **kwargs):
+        """Return context with search term."""
+        context = super().get_context_data(**kwargs)
+        context["filter_search"] = self.filter_search
+        return context
+
+
 class PackageListView(SponsorshipAdminRequiredMixin, ListView):
     """List sponsorship packages grouped by year."""
 
@@ -1127,7 +1157,7 @@ class SponsorEditView(SponsorshipAdminRequiredMixin, UpdateView):
         sp_pk = self.request.POST.get("from_sponsorship") or self.request.GET.get("from_sponsorship")
         if sp_pk:
             return reverse("manage_sponsorship_detail", args=[sp_pk])
-        return reverse("manage_sponsorships")
+        return reverse("manage_sponsors")
 
 
 # ── Benefit management on sponsorships ────────────────────────────────

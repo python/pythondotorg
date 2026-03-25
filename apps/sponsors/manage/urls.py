@@ -96,7 +96,8 @@ urlpatterns = [
         views.AssetExportView.as_view(),
         name="manage_sponsorship_export_assets",
     ),
-    # Sponsor (company) create/edit
+    # Sponsor directory + create/edit
+    path("sponsors/", views.SponsorListView.as_view(), name="manage_sponsors"),
     path("sponsors/new/", views.SponsorCreateView.as_view(), name="manage_sponsor_create"),
     path("sponsors/<int:pk>/edit/", views.SponsorEditView.as_view(), name="manage_sponsor_edit"),
     # Sponsor contacts

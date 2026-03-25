@@ -23,6 +23,7 @@
 <a href="#notifications" style="color:#3776ab;text-decoration:none;">Notifications</a><br>
 <a href="#sponsors-contacts" style="color:#3776ab;text-decoration:none;">Sponsors &amp; Contacts</a><br>
 <a href="#renewals" style="color:#3776ab;text-decoration:none;">Renewals &amp; Expiry</a><br>
+<a href="#assets" style="color:#3776ab;text-decoration:none;">Assets</a><br>
 <a href="#bulk" style="color:#3776ab;text-decoration:none;">Bulk Actions &amp; Export</a><br>
 <a href="#admin-only" style="color:#3776ab;text-decoration:none;">What's Still in Django Admin</a><br>
 </div>
@@ -266,7 +267,7 @@ The notification form lets you write a subject and body, pick which contact role
 <h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Sponsors &amp; Contacts</h3>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
-A sponsor is the company entity. Create new sponsors from the Composer (step 1) or from the <a href="{% url 'manage_sponsor_create' %}" style="color:#3776ab;">direct create page</a>. Edit a sponsor's company info (name, description, website, address, phone) from their sponsorship detail page by clicking "Edit Sponsor."
+A sponsor is the company entity. Browse all sponsors from <a href="{% url 'manage_sponsors' %}" style="color:#3776ab;">More &rarr; Sponsors</a> &mdash; search by name, see contact and sponsorship counts, and jump to edit or create a new sponsorship. You can also create new sponsors from the Composer (step 1) or from the <a href="{% url 'manage_sponsor_create' %}" style="color:#3776ab;">direct create page</a>. Edit a sponsor's company info (name, description, website, address, phone) from their sponsorship detail page by clicking "Edit Sponsor."
 </p>
 
 <p style="font-size:13px;line-height:1.8;color:#444;">
@@ -309,6 +310,25 @@ You'll also see expiry indicators on the <a href="{% url 'manage_sponsorships' %
 <div class="manage-alert manage-alert-info">
 When a renewal sponsorship's contract is executed, the system automatically links the old sponsorship via the "overlapped_by" field. This hides the old sponsorship from public sponsor listings while keeping it in the admin for historical records.
 </div>
+</div>
+
+<!-- Assets -->
+<div class="manage-section" id="assets">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Assets</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_assets' %}" style="color:#3776ab;">Asset Browser</a> (under More) shows all sponsor-submitted assets grouped by company. Each company section has a submitted/total badge:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><span class="tag tag-green" style="font-size:10px;">green</span> &mdash; all assets submitted</li>
+<li><span class="tag tag-gold" style="font-size:10px;">orange</span> &mdash; partially submitted</li>
+<li><span class="tag tag-red" style="font-size:10px;">red</span> &mdash; nothing submitted</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Filter by asset type (text, image, file, response), related object (sponsor vs sponsorship), submission status, or search by internal name. Assets from expired or rejected sponsorships are automatically hidden. Companies with missing assets show a <strong>"Send Reminder"</strong> button that links to the notification page for that sponsorship.
+</p>
 </div>
 
 <!-- Bulk Actions & Export -->
