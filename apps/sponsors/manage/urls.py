@@ -23,6 +23,8 @@ urlpatterns = [
     path(
         "benefit-configs/<int:pk>/delete/", views.BenefitConfigDeleteView.as_view(), name="manage_benefit_config_delete"
     ),
+    # Asset browser
+    path("assets/", views.AssetBrowserView.as_view(), name="manage_assets"),
     # Legal clauses
     path("legal-clauses/", views.LegalClauseListView.as_view(), name="manage_legal_clauses"),
     path("legal-clauses/new/", views.LegalClauseCreateView.as_view(), name="manage_legal_clause_create"),
