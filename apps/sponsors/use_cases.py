@@ -196,17 +196,21 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                 continue
             email.send()
 
-            # Persist notification log
-            SponsorshipNotificationLog.objects.create(
-                sponsorship=sponsorship,
-                subject=email.subject,
-                content=email.body,
-                recipients=", ".join(email.to),
-                contact_types=", ".join(contact_types),
-                sent_by=request.user
-                if request and hasattr(request, "user") and request.user.is_authenticated
-                else None,
-            )
+            # Persist notification log (best-effort, don't break sending)
+            try:
+                sent_by = None
+                if request and hasattr(request, "user") and getattr(request.user, "is_authenticated", False):
+                    sent_by = request.user
+                SponsorshipNotificationLog.objects.create(
+                    sponsorship=sponsorship,
+                    subject=getattr(email, "subject", ""),
+                    content=getattr(email, "body", ""),
+                    recipients=", ".join(getattr(email, "to", [])),
+                    contact_types=", ".join(contact_types),
+                    sent_by=sent_by,
+                )
+            except Exception:  # noqa: BLE001, S110
+                pass
 
             self.notify(
                 notification=notification,

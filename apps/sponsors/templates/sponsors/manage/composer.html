@@ -1221,13 +1221,74 @@ function filterBenefits(query) {
         </div>
 
         <div class="action-card" style="border-color:#ffd43b;">
-            <h4 style="color:#b8860b;">Send Proposal to Sponsor</h4>
-            <p>Email this summary to the sponsor's contacts on file.</p>
-            <form method="post">
-                {% csrf_token %}
-                <input type="hidden" name="action" value="send_proposal">
-                <button type="submit" class="btn btn-gold">Send to Sponsor</button>
-            </form>
+            <h4 style="color:#b8860b;">Send Draft to Sponsor</h4>
+            <p>Compose and send the proposal email to sponsor contacts.</p>
+            <button type="button" class="btn btn-gold" onclick="document.getElementById('send-sponsor-preview').style.display=document.getElementById('send-sponsor-preview').style.display==='none'?'block':'none';">Compose Email</button>
+
+            <div id="send-sponsor-preview" style="display:none;margin-top:16px;border-top:1px solid #e8e8e8;padding-top:16px;">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="send_proposal">
+
+                    <!-- Recipients -->
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">To</div>
+                    <div style="margin-bottom:12px;">
+                        {% for c in sponsor_contacts %}
+                        <div style="font-size:13px;padding:4px 8px;background:#f7f8fa;border-radius:4px;margin-bottom:4px;display:flex;justify-content:space-between;">
+                            <span><strong>{{ c.name }}</strong> &lt;{{ c.email }}&gt;</span>
+                            <span style="font-size:11px;color:#999;">{{ c.type }}</span>
+                        </div>
+                        {% endfor %}
+                        {% if not sponsor_contacts %}
+                        <div style="font-size:12px;color:#999;margin-bottom:8px;">No sponsor contacts on file. Send to a PSF team address instead:</div>
+                        {% endif %}
+                        <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:6px;">
+                            <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='sponsors@python.org';f.style.display='';">sponsors@python.org</button>
+                            <button type="button" class="date-quick-btn" onclick="var f=document.getElementById('extra-to');f.value='loren@python.org';f.style.display='';">loren@python.org</button>
+                        </div>
+                        <input type="email" name="extra_to" id="extra-to" placeholder="name@python.org or name@pyfound.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-top:6px;{% if sponsor_contacts %}display:none;{% endif %}" pattern=".*@(python\.org|pyfound\.org)$" title="Must be @python.org or @pyfound.org">
+                    </div>
+
+                    <div style="display:flex;gap:12px;margin-bottom:12px;">
+                        <div style="flex:1;">
+                            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">CC</div>
+                            <input type="email" name="cc_email" placeholder="cc@python.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                        </div>
+                        <div style="flex:1;">
+                            <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">BCC</div>
+                            <input type="email" name="bcc_email" placeholder="bcc@python.org" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;">
+                        </div>
+                    </div>
+
+                    <!-- Editable subject -->
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Subject</div>
+                    <input type="text" name="email_subject" value="Sponsorship Proposal from the Python Software Foundation" style="width:100%;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;box-sizing:border-box;margin-bottom:12px;">
+
+                    <!-- Editable body -->
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:4px;">Message Body</div>
+                    <textarea name="email_body" rows="12" style="width:100%;padding:8px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;font-family:monospace;box-sizing:border-box;margin-bottom:12px;resize:vertical;">Dear {{ sponsor.name }},
+
+Thank you for your interest in sponsoring the Python Software Foundation!
+
+Please find below a summary of the proposed {{ package.name|default:"custom" }} sponsorship package for {{ data.year }}.
+
+Fee: ${{ data.fee|default:"0" }}
+Period: {{ data.start_date|default:"TBD" }} to {{ data.end_date|default:"TBD" }}
+
+We have attached the full benefits breakdown for your review. Please let us know if you have any questions or would like to discuss adjustments.
+
+Best regards,
+The PSF Sponsorship Team
+sponsors@python.org</textarea>
+
+                    <!-- Attachment info -->
+                    <div style="font-size:12px;color:#777;margin-bottom:16px;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        <strong>Attachment:</strong> The full sponsorship summary (shown above) will be included in the email body.
+                    </div>
+
+                    <button type="submit" class="btn btn-gold" onclick="return confirm('Send this draft proposal?');">Send Draft</button>
+                </form>
+            </div>
         </div>
     </div>
 
