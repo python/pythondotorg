@@ -101,6 +101,11 @@ urlpatterns = [
     ),
     # Composer wizard
     path("composer/", views.ComposerView.as_view(), name="manage_composer"),
+    path(
+        "composer/contract-preview/",
+        views.ComposerContractPreviewView.as_view(),
+        name="manage_composer_contract_preview",
+    ),
     # Notification template CRUD + history
     path("notifications/", views.NotificationTemplateListView.as_view(), name="manage_notification_templates"),
     path("notifications/history/", views.NotificationHistoryView.as_view(), name="manage_notification_history"),
