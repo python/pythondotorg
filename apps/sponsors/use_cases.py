@@ -203,7 +203,9 @@ class SendSponsorshipNotificationUseCase(BaseUseCaseWithNotifications):
                 content=email.body,
                 recipients=", ".join(email.to),
                 contact_types=", ".join(contact_types),
-                sent_by=request.user if request and hasattr(request, "user") else None,
+                sent_by=request.user
+                if request and hasattr(request, "user") and request.user.is_authenticated
+                else None,
             )
 
             self.notify(
