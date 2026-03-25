@@ -84,13 +84,16 @@ class SponsorshipBenefitManageForm(forms.ModelForm):
             choices=[("", "---"), *year_choices()],
             attrs={"style": "padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;"},
         )
-        # Filter packages to benefit's year, or initial year, or current year
+        # Filter packages to bound year, instance year, initial year, or current year
         filter_year = None
-        if self.instance and self.instance.year:
+        if self.is_bound and self.data.get("year"):
+            with contextlib.suppress(ValueError):
+                filter_year = int(self.data["year"])
+        if not filter_year and self.instance and self.instance.year:
             filter_year = self.instance.year
-        elif self.initial.get("year"):
+        elif not filter_year and self.initial.get("year"):
             filter_year = self.initial["year"]
-        else:
+        if not filter_year:
             with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
                 filter_year = SponsorshipCurrentYear.get_year()
         if filter_year:
@@ -298,8 +301,9 @@ class SponsorshipApproveForm(forms.ModelForm):
         """Initialize form with year-filtered packages."""
         super().__init__(*args, **kwargs)
         # Filter packages to the sponsorship's year
-        if self.instance and self.instance.year:
-            self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=self.instance.year).order_by(
+        filter_year = self.instance.year if self.instance else None
+        if filter_year:
+            self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
                 "-sponsorship_amount"
             )
 
@@ -341,9 +345,15 @@ class SponsorshipEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         """Initialize form with year-filtered packages."""
         super().__init__(*args, **kwargs)
-        # Filter packages to the sponsorship's year
-        if self.instance and self.instance.year:
-            self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=self.instance.year).order_by(
+        # Filter packages to bound year first (allows changing year + package together)
+        filter_year = None
+        if self.is_bound and self.data.get("year"):
+            with contextlib.suppress(ValueError):
+                filter_year = int(self.data["year"])
+        if not filter_year and self.instance and self.instance.year:
+            filter_year = self.instance.year
+        if filter_year:
+            self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
                 "-sponsorship_amount"
             )
 
