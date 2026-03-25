@@ -348,13 +348,15 @@
         </div>
 
         <!-- Regenerate confirmation -->
-        <div id="regenerate-confirm" style="display:none;margin-top:12px;padding:12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;">
-            <p style="font-size:13px;margin:0 0 8px;">This will mark the current contract as outdated and create a new draft from the current sponsorship data.</p>
-            <form method="post" action="{% url 'manage_contract_regenerate' sponsorship.pk %}" style="display:inline;">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-sm btn-gold">Regenerate Contract</button>
-            </form>
-            <button type="button" onclick="this.parentElement.style.display='none'" style="font-size:12px;margin-left:8px;background:none;border:none;color:#999;cursor:pointer;">Cancel</button>
+        <div id="regenerate-confirm" style="display:none;margin-top:12px;padding:12px 16px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;">
+            <p style="font-size:13px;margin:0 0 10px;color:#555;">This will mark the current contract as outdated and create a new draft from the current sponsorship data.</p>
+            <div style="display:flex;gap:8px;align-items:center;">
+                <form method="post" action="{% url 'manage_contract_regenerate' sponsorship.pk %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" style="all:unset !important;display:inline-flex !important;align-items:center !important;height:34px !important;padding:0 16px !important;font-size:13px !important;font-weight:600 !important;background:#ffd43b !important;color:#1a1a2e !important;border-radius:4px !important;cursor:pointer !important;font-family:inherit !important;">Regenerate</button>
+                </form>
+                <button type="button" onclick="this.closest('#regenerate-confirm').style.display='none'" style="all:unset !important;display:inline-flex !important;align-items:center !important;height:34px !important;padding:0 16px !important;font-size:13px !important;font-weight:600 !important;background:#f0f0f0 !important;color:#333 !important;border-radius:4px !important;cursor:pointer !important;font-family:inherit !important;">Cancel</button>
+            </div>
         </div>
     </div>
 
