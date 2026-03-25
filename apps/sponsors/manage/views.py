@@ -691,8 +691,8 @@ class SponsorListView(SponsorshipAdminRequiredMixin, ListView):
     def get_queryset(self):
         """Return sponsors filtered by search, annotated with sponsorship count."""
         qs = Sponsor.objects.annotate(
-            sponsorship_count=Count("sponsorship"),
-            contact_count=Count("contacts"),
+            sponsorship_count=Count("sponsorship", distinct=True),
+            contact_count=Count("contacts", distinct=True),
         ).order_by("name")
         self.filter_search = self.request.GET.get("search", "")
         if self.filter_search:
