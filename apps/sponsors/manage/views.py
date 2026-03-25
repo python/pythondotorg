@@ -13,7 +13,7 @@ from tempfile import NamedTemporaryFile
 from django.conf import settings
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Q, Sum
+from django.db.models import Count, Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
@@ -555,6 +555,94 @@ class AssetBrowserView(SponsorshipAdminRequiredMixin, TemplateView):
         return context
 
 
+# ── Revenue Report ────────────────────────────────────────────────────
+
+
+class RevenueReportView(SponsorshipAdminRequiredMixin, TemplateView):
+    """Financial summary with revenue breakdowns and charts."""
+
+    template_name = "sponsors/manage/revenue_report.html"
+
+    def _year_summary(self, year):
+        """Return revenue stats for a single year."""
+        qs = Sponsorship.objects.filter(year=year, status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED])
+        total = qs.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        count = qs.count()
+        return {"year": year, "total": total, "count": count, "avg": total // count if count else 0}
+
+    def _package_breakdown(self, year_qs):
+        """Return revenue grouped by package tier."""
+        rows = (
+            year_qs.values("package__name")
+            .annotate(revenue=Sum("sponsorship_fee"), count=Count("id"))
+            .order_by("-revenue")
+        )
+        return [
+            {"name": r["package__name"] or "Custom / No Package", "revenue": r["revenue"] or 0, "count": r["count"]}
+            for r in rows
+        ]
+
+    def get_context_data(self, **kwargs):
+        """Return context with revenue breakdowns."""
+        context = super().get_context_data(**kwargs)
+
+        # Year selection
+        all_years = Sponsorship.objects.values_list("year", flat=True).distinct().order_by("-year")
+        all_years = [y for y in all_years if y]
+
+        selected_year = self.request.GET.get("year")
+        if selected_year:
+            selected_year = int(selected_year)
+        elif all_years:
+            selected_year = all_years[0]
+
+        # Year-over-year comparison
+        yoy = [self._year_summary(y) for y in all_years]
+        max_yoy = max((s["total"] for s in yoy), default=1) or 1
+
+        # Current year detail
+        year_qs = Sponsorship.objects.filter(
+            year=selected_year, status__in=[Sponsorship.APPROVED, Sponsorship.FINALIZED]
+        )
+        total_revenue = year_qs.aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        total_count = year_qs.count()
+        finalized_revenue = (
+            year_qs.filter(status=Sponsorship.FINALIZED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        )
+        approved_revenue = (
+            year_qs.filter(status=Sponsorship.APPROVED).aggregate(total=Sum("sponsorship_fee"))["total"] or 0
+        )
+
+        # Package breakdown
+        by_package = self._package_breakdown(year_qs)
+        max_pkg = max((p["revenue"] for p in by_package), default=1) or 1
+
+        # Per-sponsorship detail table
+        sponsorships = (
+            year_qs.select_related("sponsor", "package").prefetch_related("benefits").order_by("-sponsorship_fee")
+        )
+        for sp in sponsorships:
+            sp.internal_total = sp.estimated_cost
+
+        context.update(
+            {
+                "years": all_years,
+                "selected_year": selected_year,
+                "total_revenue": total_revenue,
+                "total_count": total_count,
+                "avg_deal": total_revenue // total_count if total_count else 0,
+                "finalized_revenue": finalized_revenue,
+                "approved_revenue": approved_revenue,
+                "by_package": by_package,
+                "max_pkg_revenue": max_pkg,
+                "yoy": yoy,
+                "max_yoy_revenue": max_yoy,
+                "sponsorships": sponsorships,
+            }
+        )
+        return context
+
+
 # ── Sponsor Directory ─────────────────────────────────────────────────
 
 
@@ -567,8 +655,6 @@ class SponsorListView(SponsorshipAdminRequiredMixin, ListView):
 
     def get_queryset(self):
         """Return sponsors filtered by search, annotated with sponsorship count."""
-        from django.db.models import Count
-
         qs = Sponsor.objects.annotate(
             sponsorship_count=Count("sponsorship"),
             contact_count=Count("contacts"),
@@ -843,6 +929,14 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
             ).order_by("-last_update")
         else:
             context["historical_contracts"] = Contract.objects.none()
+        # Financial breakdown by program
+        program_values = (
+            sp.benefits.values("program__name").annotate(total=Sum("benefit_internal_value")).order_by("-total")
+        )
+        context["program_breakdown"] = [
+            {"name": pv["program__name"] or "Other", "total": pv["total"] or 0} for pv in program_values
+        ]
+        context["max_program_value"] = max((pv["total"] or 0 for pv in program_values), default=1) or 1
         # Communication history
         context["notification_logs"] = sp.notification_logs.select_related("sent_by").all()[:20]
         # Renewal info

@@ -2573,3 +2573,54 @@ class SponsorListViewTests(SponsorManageTestBase):
     def test_nav_has_sponsors_link(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "Sponsors")
+
+
+class RevenueReportViewTests(SponsorshipReviewTestBase):
+    """Test revenue report view."""
+
+    def test_report_loads(self):
+        response = self.client.get(reverse("manage_revenue"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_report_shows_revenue(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save(update_fields=["status"])
+        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        self.assertContains(response, "150,000")
+        self.assertContains(response, "Acme Corp")
+
+    def test_report_excludes_applied(self):
+        """Applied sponsorships are not counted in revenue."""
+        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        self.assertNotContains(response, "Acme Corp")
+
+    def test_year_over_year(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save(update_fields=["status"])
+        response = self.client.get(reverse("manage_revenue") + f"?year={self.year}")
+        self.assertContains(response, str(self.year))
+
+    def test_dashboard_revenue_links_to_report(self):
+        response = self.client.get(reverse("manage_dashboard"))
+        self.assertContains(response, "manage_revenue" if False else "/sponsors/manage/revenue/")
+
+
+class SponsorshipDetailFinancialTests(SponsorshipReviewTestBase):
+    """Test financial breakdown on sponsorship detail page."""
+
+    def test_financial_breakdown_shown(self):
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.sponsorship_fee = 150000
+        self.sponsorship.save()
+        from apps.sponsors.models import SponsorBenefit
+
+        SponsorBenefit.objects.create(
+            sponsorship=self.sponsorship,
+            sponsorship_benefit=self.benefit,
+            name="Logo",
+            program=self.program,
+            benefit_internal_value=5000,
+        )
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertContains(response, "Financial Breakdown")
+        self.assertContains(response, "Foundation")

@@ -271,6 +271,59 @@
     </div>
 </div>
 
+<!-- Financial breakdown -->
+{% if sponsorship.sponsorship_fee or program_breakdown %}
+<div class="manage-section">
+    <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+        <h2>
+            <span class="collapse-arrow">&#9662;</span>
+            Financial Breakdown
+        </h2>
+    </div>
+    <div class="collapse-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px;">
+            <!-- Fee vs Value -->
+            <div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:12px;">
+                    <div>
+                        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;">Sponsorship Fee</div>
+                        <div style="font-size:20px;font-weight:700;color:#b8860b;font-variant-numeric:tabular-nums;">${{ sponsorship.sponsorship_fee|default:"0"|floatformat:"0" }}</div>
+                    </div>
+                    <div style="text-align:right;">
+                        <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;">Internal Value</div>
+                        <div style="font-size:20px;font-weight:700;color:#555;font-variant-numeric:tabular-nums;">${{ sponsorship.estimated_cost|floatformat:"0" }}</div>
+                    </div>
+                </div>
+                {% if sponsorship.sponsorship_fee and sponsorship.estimated_cost %}
+                <div style="height:8px;background:#f0f0f0;border-radius:4px;overflow:hidden;margin-bottom:8px;">
+                    <div style="height:100%;width:{% widthratio sponsorship.estimated_cost sponsorship.sponsorship_fee 100 %}%;background:#4caf50;border-radius:4px;max-width:100%;"></div>
+                </div>
+                <div style="font-size:11px;color:#777;text-align:center;">
+                    Internal value covers {% widthratio sponsorship.estimated_cost sponsorship.sponsorship_fee 100 %}% of fee
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Value by program -->
+            <div>
+                <div style="font-size:11px;font-weight:600;text-transform:uppercase;color:#999;margin-bottom:8px;">Value by Program</div>
+                {% for pv in program_breakdown %}
+                <div style="margin-bottom:6px;">
+                    <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px;">
+                        <span style="font-weight:600;color:#1a1a2e;">{{ pv.name }}</span>
+                        <span style="color:#777;font-variant-numeric:tabular-nums;">${{ pv.total|floatformat:"0" }}</span>
+                    </div>
+                    <div style="height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;">
+                        <div style="height:100%;width:{% widthratio pv.total max_program_value 100 %}%;background:#3776ab;border-radius:3px;"></div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
 <!-- Contract section -->
 {% if contract or sponsorship.status != 'applied' %}
 <div class="manage-section">
