@@ -2295,3 +2295,75 @@ class ComposerRenewalPreFillTests(SponsorManageTestBase):
         self.client.get(reverse("manage_composer") + f"?new=1&sponsor_id={self.sponsor.pk}")
         session_data = self.client.session.get("composer", {})
         self.assertNotIn("renewal", session_data)
+
+
+class BenefitSyncViewTests(SponsorshipReviewTestBase):
+    """Test benefit sync to active sponsorships."""
+
+    def setUp(self):
+        super().setUp()
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=100)
+        self.sponsorship.end_date = today + datetime.timedelta(days=265)
+        self.sponsorship.save()
+        # Create SponsorBenefit linking sponsorship to benefit template
+        self.sponsor_benefit = SponsorBenefit.objects.create(
+            sponsorship=self.sponsorship,
+            sponsorship_benefit=self.benefit,
+            name=self.benefit.name,
+            description=self.benefit.description,
+            program=self.benefit.program,
+            benefit_internal_value=self.benefit.internal_value,
+        )
+
+    def test_sync_page_loads(self):
+        """Sync page shows eligible sponsorships."""
+        response = self.client.get(reverse("manage_benefit_sync", args=[self.benefit.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Acme Corp")
+        self.assertContains(response, "Sync Benefit to Sponsorships")
+
+    def test_sync_updates_sponsor_benefit(self):
+        """Posting sync updates the SponsorBenefit with latest template data."""
+        # Change the benefit template
+        self.benefit.name = "Updated Logo Benefit"
+        self.benefit.internal_value = 5000
+        self.benefit.save()
+        # Sync
+        response = self.client.post(
+            reverse("manage_benefit_sync", args=[self.benefit.pk]),
+            {"sponsorship_ids": [self.sponsorship.pk]},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.sponsor_benefit.refresh_from_db()
+        self.assertEqual(self.sponsor_benefit.name, "Updated Logo Benefit")
+        self.assertEqual(self.sponsor_benefit.benefit_internal_value, 5000)
+
+    def test_sync_excludes_rejected(self):
+        """Rejected sponsorships are not shown on the sync page."""
+        self.sponsorship.status = Sponsorship.REJECTED
+        self.sponsorship.save(update_fields=["status"])
+        response = self.client.get(reverse("manage_benefit_sync", args=[self.benefit.pk]))
+        self.assertNotContains(response, "Acme Corp")
+
+    def test_sync_excludes_expired(self):
+        """Expired sponsorships are not shown on the sync page."""
+        today = timezone.now().date()
+        self.sponsorship.end_date = today - datetime.timedelta(days=10)
+        self.sponsorship.save(update_fields=["end_date"])
+        response = self.client.get(reverse("manage_benefit_sync", args=[self.benefit.pk]))
+        self.assertNotContains(response, "Acme Corp")
+
+    def test_sync_no_selection_warns(self):
+        """Posting with no selections shows a warning."""
+        response = self.client.post(
+            reverse("manage_benefit_sync", args=[self.benefit.pk]),
+            {},
+        )
+        self.assertEqual(response.status_code, 302)
+
+    def test_sync_button_shown_on_benefit_edit(self):
+        """Benefit edit page shows Sync button when sponsorships exist."""
+        response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
+        self.assertContains(response, "Sync to Sponsorships")

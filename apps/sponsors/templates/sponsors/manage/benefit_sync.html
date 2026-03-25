@@ -1,0 +1,118 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Sync {{ benefit.short_name }} | Sponsor Management{% endblock %}
+
+{% with active_tab="benefits" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_list' %}">Benefits</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_edit' benefit.pk %}">{{ benefit.short_name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Sync</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            Sync Benefit to Sponsorships
+        </h2>
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            <strong>{{ benefit.name }}</strong> &middot; {{ benefit.program.name }} &middot; {{ benefit.year }}
+        </p>
+
+        <div class="manage-alert manage-alert-info" style="margin-bottom:20px;">
+            This will push the current benefit definition (name, description, value, program, features) to the selected sponsorships. Each sponsor's copy of this benefit will be overwritten with the latest template data.
+        </div>
+
+        {% if eligible %}
+        <form method="post">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Select Sponsorships to Update</legend>
+
+                <div style="margin-bottom:12px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;">
+                        <input type="checkbox" id="select-all" checked> Select / deselect all
+                    </label>
+                </div>
+
+                <table class="manage-table">
+                    <thead>
+                        <tr>
+                            <th style="width:30px;text-align:center;"></th>
+                            <th>Sponsor</th>
+                            <th>Package</th>
+                            <th>Year</th>
+                            <th style="text-align:center;">Status</th>
+                            <th>Period</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for sp in eligible %}
+                        <tr>
+                            <td style="text-align:center;">
+                                <input type="checkbox" name="sponsorship_ids" value="{{ sp.pk }}" class="row-select" checked>
+                            </td>
+                            <td>
+                                <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                                    {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
+                                </a>
+                            </td>
+                            <td>
+                                {% if sp.package %}<span class="tag tag-blue">{{ sp.package.name }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                            </td>
+                            <td>{{ sp.year|default:"&mdash;" }}</td>
+                            <td style="text-align:center;">
+                                {% if sp.status == 'applied' %}<span class="tag tag-blue">Applied</span>
+                                {% elif sp.status == 'approved' %}<span class="tag tag-gold">Approved</span>
+                                {% elif sp.status == 'finalized' %}<span class="tag tag-green">Finalized</span>
+                                {% endif %}
+                            </td>
+                            <td style="font-size:12px;color:#777;">
+                                {% if sp.start_date and sp.end_date %}
+                                {{ sp.start_date|date:"M j, Y" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                                {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">Sync {{ eligible|length }} Sponsorship{{ eligible|length|pluralize }}</button>
+                <a href="{% url 'manage_benefit_edit' benefit.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+
+        <script>
+        (function() {
+            var selectAll = document.getElementById('select-all');
+            if (selectAll) {
+                selectAll.addEventListener('change', function() {
+                    var boxes = document.querySelectorAll('.row-select');
+                    for (var i = 0; i < boxes.length; i++) {
+                        boxes[i].checked = selectAll.checked;
+                    }
+                });
+            }
+        })();
+        </script>
+
+        {% else %}
+        <div class="empty-state">
+            <div class="empty-icon">&#9745;</div>
+            <p>No active sponsorships use this benefit. Nothing to sync.</p>
+            <a href="{% url 'manage_benefit_edit' benefit.pk %}" class="btn btn-secondary">Back to Benefit</a>
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% endwith %}

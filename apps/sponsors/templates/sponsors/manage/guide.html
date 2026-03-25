@@ -218,6 +218,10 @@ When creating or editing a benefit, you set its name, description, internal valu
 <strong>Cloning a year:</strong> When setting up a new sponsorship year, go to <a href="{% url 'manage_clone_year' %}" style="color:#3776ab;">Clone Year</a> (under More in the nav). Pick a source year and a target year, and it copies all packages and benefits over. You can then tweak the new year's config without touching the previous year's data.
 </p>
 
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Syncing benefit changes:</strong> When you update a benefit's name, description, value, or feature configurations, those changes only affect <em>new</em> sponsorships. Existing sponsorships keep a snapshot of the benefit as it was when they were created. To push your changes to active sponsorships, open the benefit edit page and click <strong>"Sync to Sponsorships"</strong> in the "Sponsors Using This Benefit" section. You'll see a list of eligible sponsorships (non-expired, non-rejected) and can select which ones to update.
+</p>
+
 <div class="manage-alert manage-alert-info">
 Cloning duplicates everything: packages, benefits, benefit-to-package associations, and feature configurations. It does not copy sponsorships or contracts. Review the cloned data after running it to make sure fees and benefit values are still correct for the new year.
 </div>

@@ -235,6 +235,7 @@
         <div class="manage-section">
             <div class="manage-section-header">
                 <h2>Sponsors Using This Benefit <span class="badge">{{ related_sponsorships_count }}</span></h2>
+                <a href="{% url 'manage_benefit_sync' object.pk %}" class="btn btn-sm btn-gold">Sync to Sponsorships</a>
             </div>
             <table class="manage-table">
                 <thead>
@@ -251,7 +252,7 @@
                     <tr>
                         <td>
                             {% if sp.sponsor %}
-                            <a href="{{ sp.admin_url }}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ sp.sponsor.name }}</a>
+                            <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ sp.sponsor.name }}</a>
                             {% else %}
                             <span style="color:#999;">Unknown sponsor</span>
                             {% endif %}
