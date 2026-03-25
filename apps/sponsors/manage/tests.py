@@ -2533,3 +2533,43 @@ class AssetBrowserViewTests(SponsorshipReviewTestBase):
     def test_nav_has_assets_link(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "Assets")
+
+
+class SponsorListViewTests(SponsorManageTestBase):
+    """Test sponsor directory view."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.sponsor = Sponsor.objects.create(name="Acme Corp", city="Portland", country="US")
+        cls.sponsor2 = Sponsor.objects.create(name="Beta Inc", city="London", country="GB")
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_list_loads(self):
+        response = self.client.get(reverse("manage_sponsors"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Acme Corp")
+        self.assertContains(response, "Beta Inc")
+
+    def test_search(self):
+        response = self.client.get(reverse("manage_sponsors") + "?search=Acme")
+        self.assertContains(response, "Acme Corp")
+        self.assertNotContains(response, "Beta Inc")
+
+    def test_shows_sponsorship_count(self):
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            year=self.year,
+            status=Sponsorship.APPLIED,
+        )
+        response = self.client.get(reverse("manage_sponsors"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_nav_has_sponsors_link(self):
+        response = self.client.get(reverse("manage_dashboard"))
+        self.assertContains(response, "Sponsors")
