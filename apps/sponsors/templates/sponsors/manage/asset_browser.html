@@ -108,7 +108,7 @@
                         <td style="font-size:12px;color:#555;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                             {% if asset.has_value %}
                                 {% if asset.is_file %}
-                                <a href="{{ asset.value.url }}" target="_blank" style="color:#3776ab;text-decoration:none;">{{ asset.value.name|truncatechars:40 }}</a>
+                                <a href="{{ asset.value.url }}" target="_blank" rel="noopener noreferrer" style="color:#3776ab;text-decoration:none;">{{ asset.value.name|truncatechars:40 }}</a>
                                 {% else %}
                                 {{ asset.value|truncatechars:80 }}
                                 {% endif %}

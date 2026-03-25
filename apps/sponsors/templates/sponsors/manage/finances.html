@@ -152,9 +152,10 @@
 </div>
 {% endif %}
 
+{{ chart_data_json|json_script:"chart-data" }}
 <script>
 (function() {
-    var D = {{ chart_data_json|safe }};
+    var D = JSON.parse(document.getElementById('chart-data').textContent);
     var gold = '#b8860b', blue = '#3776ab', green = '#4caf50', red = '#e74c3c',
         lightBlue = '#5a9fd4', lightGold = '#ffd43b', gray = '#ccc';
 

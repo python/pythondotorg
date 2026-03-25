@@ -81,7 +81,7 @@
         <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
         <a href="{% url 'manage_sponsorship_export' %}?search={{ sponsorship.sponsor.name|urlencode }}" class="btn btn-secondary" style="font-size:11px;">CSV</a>
         <a href="{% url 'manage_sponsorship_export_assets' sponsorship.pk %}" class="btn btn-secondary" style="font-size:11px;">Assets</a>
-        {% if sponsorship.sponsor %}<a href="{{ sponsorship.detail_url }}" target="_blank" class="btn btn-secondary" style="font-size:11px;" title="View what the sponsor sees">Sponsor View</a>{% endif %}
+        {% if sponsorship.sponsor %}<a href="{{ sponsorship.detail_url }}" target="_blank" rel="noopener noreferrer" class="btn btn-secondary" style="font-size:11px;" title="View what the sponsor sees">Sponsor View</a>{% endif %}
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="lock">
@@ -375,26 +375,26 @@
         <!-- Document downloads -->
         <div style="border-top:1px solid #f0f0f0;padding-top:12px;display:flex;gap:12px;flex-wrap:wrap;">
             <!-- Preview (renders live from contract template data) -->
-            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=pdf" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=pdf" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
                 <span style="color:#e74c3c;font-weight:700;">PDF</span> Preview
             </a>
-            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=docx" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+            <a href="{% url 'manage_contract_preview' sponsorship.pk %}?format=docx" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#f7f8fa;border:1px solid #e0e0e0;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
                 <span style="color:#3776ab;font-weight:700;">DOCX</span> Preview
             </a>
             <!-- Stored sent documents -->
             {% if contract.document %}
-            <a href="{{ contract.document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+            <a href="{{ contract.document.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
                 <span style="color:#e74c3c;font-weight:700;">PDF</span> Sent
             </a>
             {% endif %}
             {% if contract.document_docx %}
-            <a href="{{ contract.document_docx.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
+            <a href="{{ contract.document_docx.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#fff8dc;border:1px solid #ffd43b;border-radius:4px;font-size:12px;color:#333;text-decoration:none;">
                 <span style="color:#3776ab;font-weight:700;">DOCX</span> Sent
             </a>
             {% endif %}
             <!-- Signed document -->
             {% if contract.signed_document %}
-            <a href="{{ contract.signed_document.url }}" target="_blank" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;font-size:12px;color:#2e7d32;text-decoration:none;font-weight:600;">
+            <a href="{{ contract.signed_document.url }}" target="_blank" rel="noopener noreferrer" style="display:inline-flex;align-items:center;gap:6px;padding:6px 12px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:4px;font-size:12px;color:#2e7d32;text-decoration:none;font-weight:600;">
                 <span style="font-weight:700;">PDF</span> Signed Contract
             </a>
             {% endif %}
@@ -429,13 +429,13 @@
                 </div>
                 <div style="display:flex;gap:8px;">
                     {% if hc.document %}
-                    <a href="{{ hc.document.url }}" target="_blank" style="font-size:11px;color:#e74c3c;text-decoration:none;">PDF</a>
+                    <a href="{{ hc.document.url }}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:#e74c3c;text-decoration:none;">PDF</a>
                     {% endif %}
                     {% if hc.document_docx %}
-                    <a href="{{ hc.document_docx.url }}" target="_blank" style="font-size:11px;color:#3776ab;text-decoration:none;">DOCX</a>
+                    <a href="{{ hc.document_docx.url }}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:#3776ab;text-decoration:none;">DOCX</a>
                     {% endif %}
                     {% if hc.signed_document %}
-                    <a href="{{ hc.signed_document.url }}" target="_blank" style="font-size:11px;color:#2e7d32;text-decoration:none;">Signed</a>
+                    <a href="{{ hc.signed_document.url }}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:#2e7d32;text-decoration:none;">Signed</a>
                     {% endif %}
                 </div>
             </div>

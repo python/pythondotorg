@@ -1393,7 +1393,7 @@ function filterBenefits(query) {
     <div style="background:#fff;border:1px solid #e8e8e8;border-radius:8px;padding:24px;margin-bottom:24px;">
         <h3 style="font-size:16px;font-weight:700;color:#1a1a2e;margin:0 0 16px;">Preview &amp; Download</h3>
         <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
-            <a href="{% url 'manage_composer_contract_preview' %}" target="_blank" class="btn btn-primary" style="padding:8px 20px;text-decoration:none;">
+            <a href="{% url 'manage_composer_contract_preview' %}" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="padding:8px 20px;text-decoration:none;">
                 Preview PDF
             </a>
             <form method="post" style="display:inline;">
