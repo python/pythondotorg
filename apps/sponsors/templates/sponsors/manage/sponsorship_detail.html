@@ -74,6 +74,7 @@
         <button type="button" class="btn btn-secondary" onclick="document.getElementById('rollback-confirm').classList.toggle('visible')">Rollback to Edit</button>
         {% endif %}
         <a href="{% url 'manage_sponsorship_notify' sponsorship.pk %}" class="btn btn-secondary">Notify</a>
+        <a href="{% url 'manage_sponsorship_export' %}?search={{ sponsorship.sponsor.name|urlencode }}" class="btn btn-secondary" style="font-size:11px;">Export CSV</a>
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="lock">
@@ -144,7 +145,7 @@
         <div class="step-label">Approved</div>
         <div class="step-date">{% if sponsorship.approved_on %}{{ sponsorship.approved_on|date:"M j, Y" }}{% endif %}</div>
     </div>
-    <div class="sp-timeline-step {% if sponsorship.status == 'finalized' %}active done{% endif %}">
+    <div class="sp-timeline-step {% if sponsorship.status == 'finalized' %}done{% endif %}">
         <div class="step-label">Finalized</div>
         <div class="step-date">{% if sponsorship.finalized_on %}{{ sponsorship.finalized_on|date:"M j, Y" }}{% endif %}</div>
     </div>
