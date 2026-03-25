@@ -77,13 +77,13 @@
         {% if can_lock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="lock">
-            <button type="submit" class="btn btn-sm btn-secondary">Lock</button>
+            <button type="submit" class="btn btn-secondary">Lock</button>
         </form>
         {% endif %}
         {% if can_unlock %}
         <form method="post" action="{% url 'manage_sponsorship_lock' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}<input type="hidden" name="action" value="unlock">
-            <button type="submit" class="btn btn-sm btn-gold">Unlock</button>
+            <button type="submit" class="btn btn-gold">Unlock</button>
         </form>
         {% endif %}
     </div>
