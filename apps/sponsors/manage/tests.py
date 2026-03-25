@@ -2508,6 +2508,28 @@ class AssetBrowserViewTests(SponsorshipReviewTestBase):
         self.assertContains(response, "logo_2025")
         self.assertNotContains(response, "bio_text")
 
+    def test_excludes_expired_sponsorship_assets(self):
+        """Assets from expired sponsorships are hidden."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=400)
+        self.sponsorship.end_date = today - datetime.timedelta(days=10)
+        self.sponsorship.save()
+        self._create_text_asset(self.sponsorship, "old_asset", text="stale")
+        response = self.client.get(reverse("manage_assets"))
+        self.assertNotContains(response, "old_asset")
+
+    def test_shows_active_sponsorship_assets(self):
+        """Assets from active sponsorships are shown."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=100)
+        self.sponsorship.end_date = today + datetime.timedelta(days=265)
+        self.sponsorship.save()
+        self._create_text_asset(self.sponsorship, "active_asset", text="current")
+        response = self.client.get(reverse("manage_assets"))
+        self.assertContains(response, "active_asset")
+
     def test_nav_has_assets_link(self):
         response = self.client.get(reverse("manage_dashboard"))
         self.assertContains(response, "Assets")
