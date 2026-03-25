@@ -92,16 +92,21 @@
 <!-- Inline reject confirmation -->
 {% if can_reject %}
 <div id="reject-confirm" class="confirm-modal">
-    <div style="display:flex;align-items:center;gap:12px;">
-        <div style="flex:1;">
-            <strong style="color:#e74c3c;">Reject this sponsorship?</strong>
-            <p style="font-size:13px;color:#777;margin:4px 0 0;">The sponsor will be notified by email.</p>
-        </div>
-        <form method="post" action="{% url 'manage_sponsorship_reject' sponsorship.pk %}" style="display:flex;gap:8px;">
+    <div style="flex:1;margin-bottom:12px;">
+        <strong style="color:#e74c3c;">Reject this sponsorship?</strong>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <form method="post" action="{% url 'manage_sponsorship_reject' sponsorship.pk %}" style="display:inline;">
             {% csrf_token %}
-            <button type="submit" class="btn btn-danger">Yes, Reject</button>
-            <button type="button" class="btn btn-secondary" onclick="this.closest('.confirm-modal').classList.remove('visible')">Cancel</button>
+            <input type="hidden" name="action" value="reject_notify">
+            <button type="submit" class="btn btn-danger">Reject &amp; Compose Email</button>
         </form>
+        <form method="post" action="{% url 'manage_sponsorship_reject' sponsorship.pk %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="reject_silent">
+            <button type="submit" class="btn btn-secondary">Reject Without Notifying</button>
+        </form>
+        <button type="button" class="btn btn-secondary" onclick="this.closest('.confirm-modal').classList.remove('visible')">Cancel</button>
     </div>
 </div>
 {% endif %}
