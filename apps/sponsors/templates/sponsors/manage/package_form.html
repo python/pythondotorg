@@ -90,6 +90,26 @@
                 </div>
             </fieldset>
 
+            <fieldset class="manage-fieldset">
+                <legend>Included Benefits</legend>
+                <div class="form-group" style="margin-bottom:0;">
+                    <label for="id_benefits">
+                        Benefits{% if not is_create and benefit_count %} <span class="tag tag-blue">{{ benefit_count }}</span>{% endif %}
+                    </label>
+                    {% if form.fields.benefits.queryset %}
+                    <div class="checkbox-list">
+                        {% for checkbox in form.benefits %}
+                        {{ checkbox }}
+                        {% endfor %}
+                    </div>
+                    <span class="helptext">Checked benefits are included in this package. Uncheck to remove them.</span>
+                    {% else %}
+                    <p style="margin:0;color:#777;font-size:13px;">No benefits are available for the selected year yet.</p>
+                    {% endif %}
+                    {% if form.benefits.errors %}<div class="field-errors">{{ form.benefits.errors.0 }}</div>{% endif %}
+                </div>
+            </fieldset>
+
             <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
                 <button type="submit" class="btn btn-primary">
                     {% if is_create %}Create Package{% else %}Save Changes{% endif %}
