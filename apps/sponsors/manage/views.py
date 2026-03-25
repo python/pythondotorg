@@ -2003,6 +2003,9 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
         if data.get("package_id") and package:
             package_benefit_ids = set(package.benefits.values_list("pk", flat=True))
 
+        sponsor_contacts = sponsor.contacts.all() if sponsor else []
+        sponsor_emails = [c.email for c in sponsor_contacts]
+
         context = {
             "step": 5,
             "total_steps": self.TOTAL_STEPS,
@@ -2013,6 +2016,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
             "total_value": total_value,
             "review_benefits_by_program": review_benefits_by_program,
             "package_benefit_ids": package_benefit_ids,
+            "sponsor_contacts": sponsor_contacts,
+            "sponsor_emails": sponsor_emails,
         }
         return render(request, "sponsors/manage/composer.html", context)
 
@@ -2146,19 +2151,35 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
 
         contacts = SponsorContact.objects.filter(sponsor=sponsor)
         emails = [c.email for c in contacts if c.email]
+        extra_to = request.POST.get("extra_to", "").strip()
+        if extra_to and extra_to.endswith(("@python.org", "@pyfound.org")):
+            emails.append(extra_to)
         if not emails:
-            messages.error(request, "No contacts found for this sponsor.")
+            messages.error(request, "No recipients specified.")
             return redirect(reverse("manage_composer") + "?step=5")
 
-        body = self._build_summary_text(data, sponsor, package, benefits)
+        # Use custom subject/body if provided, otherwise fall back to auto-generated
+        subject = request.POST.get("email_subject", "").strip()
+        body = request.POST.get("email_body", "").strip()
+        if not subject:
+            subject = "Sponsorship Proposal from the Python Software Foundation"
+        if not body:
+            body = self._build_summary_text(data, sponsor, package, benefits)
+
         email = EmailMessage(
-            subject="Sponsorship Proposal from the Python Software Foundation",
+            subject=subject,
             body=body,
             from_email=settings.SPONSORSHIP_NOTIFICATION_FROM_EMAIL,
             to=emails,
         )
+        cc = request.POST.get("cc_email", "").strip()
+        bcc = request.POST.get("bcc_email", "").strip()
+        if cc:
+            email.cc = [cc]
+        if bcc:
+            email.bcc = [bcc]
         email.send()
-        messages.success(request, f"Proposal sent to sponsor contacts ({', '.join(emails)}).")
+        messages.success(request, f"Draft proposal sent to sponsor contacts ({', '.join(emails)}).")
         return redirect(reverse("manage_composer") + "?step=5")
 
 
