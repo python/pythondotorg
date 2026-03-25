@@ -5,6 +5,7 @@ Locked down to users in the 'Sponsorship Admin' group (or staff/superuser).
 
 import contextlib
 import csv
+import datetime
 import io
 import zipfile
 from tempfile import NamedTemporaryFile
@@ -16,6 +17,7 @@ from django.db.models import Q, Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse
+from django.utils import timezone as tz
 from django.views import View
 from django.views.generic import CreateView, DeleteView, DetailView, FormView, ListView, TemplateView, UpdateView
 
@@ -155,6 +157,31 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
             or 0
         )
 
+        # Expiring sponsorships (finalized, end_date within 90 days from today)
+        # Cross-year: shown on every dashboard regardless of selected year
+        today = tz.now().date()
+        expiring_soon = (
+            Sponsorship.objects.filter(
+                status=Sponsorship.FINALIZED,
+                end_date__gte=today,
+                end_date__lte=today + datetime.timedelta(days=90),
+            )
+            .select_related("sponsor", "package")
+            .order_by("end_date")[:10]
+        )
+
+        # Recently expired (finalized, end_date in the past, not overlapped)
+        # Cross-year: shown on every dashboard regardless of selected year
+        recently_expired = (
+            Sponsorship.objects.filter(
+                status=Sponsorship.FINALIZED,
+                end_date__lt=today,
+                overlapped_by__isnull=True,
+            )
+            .select_related("sponsor", "package")
+            .order_by("-end_date")[:10]
+        )
+
         # Sponsors without a sponsorship for this year
         sponsors_with_sponsorship_ids = year_sponsorships.values_list("sponsor_id", flat=True) if selected_year else []
         unsponsored = (
@@ -179,7 +206,10 @@ class ManageDashboardView(SponsorshipAdminRequiredMixin, TemplateView):
                 "total_revenue": total_revenue,
                 "needs_review": needs_review,
                 "pending_contracts": pending_contracts,
+                "expiring_soon": expiring_soon,
+                "recently_expired": recently_expired,
                 "unsponsored": unsponsored,
+                "today": today,
             }
         )
         return context
@@ -488,6 +518,7 @@ class SponsorshipListView(SponsorshipAdminRequiredMixin, ListView):
         context["filter_status"] = self.filter_status
         context["filter_year"] = self.filter_year
         context["filter_search"] = self.filter_search
+        context["today"] = tz.now().date()
         # Individual count vars for template
         context["count_applied"] = Sponsorship.objects.filter(status=Sponsorship.APPLIED).count()
         context["count_approved"] = Sponsorship.objects.filter(status=Sponsorship.APPROVED).count()
@@ -553,6 +584,16 @@ class SponsorshipDetailView(SponsorshipAdminRequiredMixin, DetailView):
             context["historical_contracts"] = Contract.objects.none()
         # Communication history
         context["notification_logs"] = sp.notification_logs.select_related("sent_by").all()[:20]
+        # Renewal info
+        today = tz.now().date()
+        context["today"] = today
+        context["can_create_renewal"] = sp.status == Sponsorship.FINALIZED and sp.sponsor_id is not None
+        context["is_expiring_soon"] = (
+            sp.status == Sponsorship.FINALIZED
+            and sp.end_date
+            and today <= sp.end_date <= today + datetime.timedelta(days=90)
+        )
+        context["is_expired"] = sp.status == Sponsorship.FINALIZED and sp.end_date and sp.end_date < today
         return context
 
 
@@ -1775,6 +1816,8 @@ class ComposerView(SponsorshipAdminRequiredMixin, View):
                     data["sponsor_id"] = sponsor.pk
                 except (Sponsor.DoesNotExist, TypeError, ValueError):
                     pass
+            if request.GET.get("renewal") == "1":
+                data["renewal"] = True
             self._set_composer_data(request, data)
             # Skip to step 2 if sponsor was pre-selected
             if data.get("sponsor_id"):

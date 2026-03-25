@@ -2072,3 +2072,226 @@ class ComposerNavigationTests(SponsorManageTestBase):
         response = self.client.get(reverse("manage_composer") + "?step=abc")
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Select a Sponsor")
+
+
+class DashboardExpiringSoonTests(SponsorManageTestBase):
+    """Test dashboard expiring/expired sponsorship sections."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.sponsor = Sponsor.objects.create(name="Expiring Corp")
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_expiring_soon_shown_on_dashboard(self):
+        """Finalized sponsorship ending within 90 days appears in Expiring Soon."""
+        today = timezone.now().date()
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=300),
+            end_date=today + datetime.timedelta(days=30),
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Expiring Soon")
+        self.assertContains(response, "Expiring Corp")
+
+    def test_expiring_far_future_not_shown(self):
+        """Finalized sponsorship ending more than 90 days out is not in Expiring Soon."""
+        today = timezone.now().date()
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=100),
+            end_date=today + datetime.timedelta(days=200),
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertNotContains(response, "Expiring Soon")
+
+    def test_recently_expired_shown_on_dashboard(self):
+        """Finalized sponsorship with past end_date appears in Recently Expired."""
+        today = timezone.now().date()
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=400),
+            end_date=today - datetime.timedelta(days=10),
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Recently Expired")
+        self.assertContains(response, "Expiring Corp")
+
+    def test_overlapped_expired_not_shown(self):
+        """Expired sponsorship with overlapped_by set is excluded from Recently Expired."""
+        today = timezone.now().date()
+        renewal = Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=30),
+            end_date=today + datetime.timedelta(days=335),
+        )
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=400),
+            end_date=today - datetime.timedelta(days=10),
+            overlapped_by=renewal,
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertNotContains(response, "Recently Expired")
+
+    def test_applied_sponsorship_not_in_expiring(self):
+        """Only finalized sponsorships appear in expiring sections."""
+        today = timezone.now().date()
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=self.year,
+            status=Sponsorship.APPLIED,
+            start_date=today - datetime.timedelta(days=300),
+            end_date=today + datetime.timedelta(days=10),
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertNotContains(response, "Expiring Soon")
+
+    def test_expiring_shown_cross_year(self):
+        """Expiring sponsorships from a prior year show on the current year dashboard."""
+        today = timezone.now().date()
+        prior_year = self.year - 1
+        Sponsorship.objects.create(
+            sponsor=self.sponsor,
+            submited_by=self.staff_user,
+            package=self.package,
+            sponsorship_fee=100000,
+            year=prior_year,
+            status=Sponsorship.FINALIZED,
+            start_date=today - datetime.timedelta(days=300),
+            end_date=today + datetime.timedelta(days=30),
+        )
+        response = self.client.get(reverse("manage_dashboard") + f"?year={self.year}")
+        self.assertContains(response, "Expiring Soon")
+        self.assertContains(response, "Expiring Corp")
+
+
+class SponsorshipDetailRenewalTests(SponsorshipReviewTestBase):
+    """Test renewal-related features on sponsorship detail view."""
+
+    def test_create_renewal_button_shown_for_finalized(self):
+        """Finalized sponsorships show the + Renewal button."""
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.save(update_fields=["status"])
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertContains(response, "+ Renewal")
+        self.assertContains(response, "renewal=1")
+
+    def test_create_renewal_button_hidden_for_applied(self):
+        """Applied sponsorships do not show the + Renewal button."""
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertNotContains(response, "+ Renewal")
+
+    def test_expiring_soon_tag_shown(self):
+        """Finalized sponsorship with end_date within 90 days shows Expiring Soon tag."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=300)
+        self.sponsorship.end_date = today + datetime.timedelta(days=30)
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertContains(response, "Expiring Soon")
+
+    def test_expired_tag_shown(self):
+        """Finalized sponsorship with end_date in past shows Expired tag."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=400)
+        self.sponsorship.end_date = today - datetime.timedelta(days=10)
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertContains(response, "Expired")
+
+    def test_no_expiry_tag_when_not_near_end(self):
+        """Finalized sponsorship with distant end_date shows no expiry tags."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=100)
+        self.sponsorship.end_date = today + datetime.timedelta(days=200)
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorship_detail", args=[self.sponsorship.pk]))
+        self.assertNotContains(response, "Expiring Soon")
+        self.assertNotContains(response, ">Expired<")
+
+
+class SponsorshipListExpiryTagTests(SponsorshipReviewTestBase):
+    """Test expiry tags on sponsorship list view."""
+
+    def test_expired_tag_shown_in_list(self):
+        """Expired finalized sponsorship shows 'Expired' tag in list."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=400)
+        self.sponsorship.end_date = today - datetime.timedelta(days=10)
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorships") + "?status=finalized")
+        self.assertContains(response, "Expired")
+
+    def test_days_left_tag_shown_in_list(self):
+        """Expiring finalized sponsorship shows days-left tag in list."""
+        today = timezone.now().date()
+        self.sponsorship.status = Sponsorship.FINALIZED
+        self.sponsorship.start_date = today - datetime.timedelta(days=300)
+        self.sponsorship.end_date = today + datetime.timedelta(days=20)
+        self.sponsorship.save()
+        response = self.client.get(reverse("manage_sponsorships") + "?status=finalized")
+        self.assertContains(response, "d left")
+
+
+class ComposerRenewalPreFillTests(SponsorManageTestBase):
+    """Test that composer pre-fills renewal flag from query param."""
+
+    @classmethod
+    def setUpTestData(cls):
+        super().setUpTestData()
+        cls.sponsor = Sponsor.objects.create(name="Renewing Corp")
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+
+    def test_renewal_flag_stored_in_session(self):
+        """Starting composer with renewal=1 stores renewal in session."""
+        self.client.get(reverse("manage_composer") + f"?new=1&sponsor_id={self.sponsor.pk}&renewal=1")
+        session_data = self.client.session.get("composer", {})
+        self.assertTrue(session_data.get("renewal"))
+
+    def test_renewal_flag_not_stored_without_param(self):
+        """Starting composer without renewal param does not store renewal."""
+        self.client.get(reverse("manage_composer") + f"?new=1&sponsor_id={self.sponsor.pk}")
+        session_data = self.client.session.get("composer", {})
+        self.assertNotIn("renewal", session_data)
