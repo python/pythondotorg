@@ -12,6 +12,7 @@ urlpatterns = [
     path("benefits/new/", views.BenefitCreateView.as_view(), name="manage_benefit_create"),
     path("benefits/<int:pk>/edit/", views.BenefitUpdateView.as_view(), name="manage_benefit_edit"),
     path("benefits/<int:pk>/delete/", views.BenefitDeleteView.as_view(), name="manage_benefit_delete"),
+    path("benefits/<int:pk>/sync/", views.BenefitSyncView.as_view(), name="manage_benefit_sync"),
     # Benefit feature configurations
     path(
         "benefits/<int:pk>/add-config/<str:config_type>/",

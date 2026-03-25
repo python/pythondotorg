@@ -324,6 +324,48 @@ class BenefitDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
         return reverse("manage_benefit_list") + (f"?year={year}" if year else "")
 
 
+class BenefitSyncView(SponsorshipAdminRequiredMixin, View):
+    """Sync a SponsorshipBenefit template to its related SponsorBenefit instances."""
+
+    def get(self, request, pk):
+        """Show eligible sponsorships with checkboxes for syncing."""
+        benefit = get_object_or_404(SponsorshipBenefit.objects.select_related("program"), pk=pk)
+        today = tz.now().date()
+        eligible = (
+            benefit.related_sponsorships.exclude(Q(end_date__lt=today) | Q(status=Sponsorship.REJECTED))
+            .select_related("sponsor", "package")
+            .order_by("sponsor__name")
+        )
+        return render(
+            request,
+            "sponsors/manage/benefit_sync.html",
+            {
+                "benefit": benefit,
+                "eligible": eligible,
+            },
+        )
+
+    @transaction.atomic
+    def post(self, request, pk):
+        """Sync benefit attributes to selected sponsorships."""
+        benefit = get_object_or_404(SponsorshipBenefit.objects.select_related("program"), pk=pk)
+        selected_ids = request.POST.getlist("sponsorship_ids")
+        if not selected_ids:
+            messages.warning(request, "No sponsorships selected.")
+            return redirect(reverse("manage_benefit_sync", args=[pk]))
+
+        count = 0
+        for sp_id in selected_ids:
+            try:
+                sponsor_benefit = benefit.sponsorbenefit_set.get(sponsorship_id=int(sp_id))
+                sponsor_benefit.reset_attributes(benefit)
+                count += 1
+            except SponsorBenefit.DoesNotExist:
+                continue
+        messages.success(request, f"Updated {count} sponsorship(s) with latest benefit data.")
+        return redirect(reverse("manage_benefit_edit", args=[pk]))
+
+
 class PackageListView(SponsorshipAdminRequiredMixin, ListView):
     """List sponsorship packages grouped by year."""
 
@@ -1170,9 +1212,15 @@ class ContractRegenerateView(SponsorshipAdminRequiredMixin, View):
         except Contract.DoesNotExist:
             pass
         new_contract = Contract.new(sp)
+        # Set revision to count of historical contracts for this sponsor
+        historical_count = Contract.objects.filter(
+            sponsor_info__contains=sp.sponsor.name, sponsorship__isnull=True, status=Contract.OUTDATED
+        ).count()
+        new_contract.revision = historical_count
+        new_contract.save()
         messages.success(
             request,
-            f"New contract draft created (Revision {new_contract.revision}). Previous contract preserved as outdated.",
+            f"New contract draft created (Revision {new_contract.revision}). Previous contract preserved.",
         )
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
 
