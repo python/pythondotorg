@@ -1056,6 +1056,7 @@ function filterBenefits(query) {
                     if (!sv) sv = fmt(today);
                     var sd = new Date(sv + 'T00:00:00');
                     if (isNaN(sd.getTime())) return;
+                    endBtns.appendChild(makeBtn('1yr+1d', addDays(addYears(sd, 1), 1), endInput));
                     endBtns.appendChild(makeBtn('+1 yr', addYears(sd, 1), endInput));
                     endBtns.appendChild(makeBtn('+2 yr', addYears(sd, 2), endInput));
                     endBtns.appendChild(makeBtn('+3 yr', addYears(sd, 3), endInput));
