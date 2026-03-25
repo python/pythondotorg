@@ -102,6 +102,12 @@ class SponsorshipBenefitManageForm(forms.ModelForm):
 class SponsorshipPackageManageForm(forms.ModelForm):
     """Form for creating and editing sponsorship packages."""
 
+    benefits = forms.ModelMultipleChoiceField(
+        queryset=SponsorshipBenefit.objects.none(),
+        required=False,
+        widget=forms.CheckboxSelectMultiple(),
+    )
+
     class Meta:
         """Meta options."""
 
@@ -114,6 +120,7 @@ class SponsorshipPackageManageForm(forms.ModelForm):
             "logo_dimension",
             "year",
             "allow_a_la_carte",
+            "benefits",
         ]
         widgets = {
             "name": forms.TextInput(
@@ -131,12 +138,36 @@ class SponsorshipPackageManageForm(forms.ModelForm):
         }
 
     def __init__(self, *args, **kwargs):
-        """Initialize form with year choices."""
+        """Initialize form with year choices and year-specific benefits."""
         super().__init__(*args, **kwargs)
         self.fields["year"].widget = forms.Select(
             choices=[("", "---"), *year_choices()],
             attrs={"style": "padding:8px 12px;border:1px solid #ccc;border-radius:4px;font-size:14px;"},
         )
+        filter_year = None
+        if self.is_bound and self.data.get(self.add_prefix("year")):
+            filter_year = self.data.get(self.add_prefix("year"))
+        elif self.instance and self.instance.year:
+            filter_year = self.instance.year
+        elif self.initial.get("year"):
+            filter_year = self.initial["year"]
+        else:
+            with contextlib.suppress(SponsorshipCurrentYear.DoesNotExist):
+                filter_year = SponsorshipCurrentYear.get_year()
+
+        if filter_year:
+            self.fields["benefits"].queryset = (
+                SponsorshipBenefit.objects.filter(year=filter_year)
+                .select_related("program")
+                .order_by("program__order", "order", "name")
+            )
+        if self.instance and self.instance.pk:
+            self.initial.setdefault("benefits", self.instance.benefits.values_list("pk", flat=True))
+
+    def _save_m2m(self):
+        """Persist reverse benefit associations after the package is saved."""
+        super()._save_m2m()
+        self.instance.benefits.set(self.cleaned_data["benefits"])
 
 
 class CloneYearForm(forms.Form):
