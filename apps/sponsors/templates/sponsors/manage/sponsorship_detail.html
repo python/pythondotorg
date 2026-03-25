@@ -179,7 +179,7 @@
         <div class="sp-field">
             <div class="sp-label">Contract</div>
             <div class="sp-value">
-                <span class="tag {% if contract.status == 'draft' %}tag-gray{% elif contract.status == 'awaiting_signature' %}tag-gold{% elif contract.status == 'executed' %}tag-green{% else %}tag-red{% endif %}">
+                <span class="tag {% if contract.status == 'draft' %}tag-gray{% elif contract.status == 'awaiting signature' %}tag-gold{% elif contract.status == 'executed' %}tag-green{% else %}tag-red{% endif %}">
                     {{ contract.get_status_display }}
                 </span>
             </div>
@@ -459,23 +459,18 @@
             }
 
             function renderDropdown(filter) {
-                var html = '';
+                dropdown.textContent = '';
                 var q = (filter || '').toLowerCase();
                 var count = 0;
                 options.forEach(function(opt) {
                     if (q && opt.text.toLowerCase().indexOf(q) === -1) return;
                     var highlighted = opt.value === select.value;
-                    html += '<div class="bs-opt' + (highlighted ? ' bs-sel' : '') + '" data-val="' + opt.value + '"'
-                         + ' style="padding:7px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;'
-                         + (highlighted ? 'background:#e8f0fe;font-weight:600;' : '')
-                         + '">' + opt.text + '</div>';
-                    count++;
-                });
-                if (!count) html = '<div style="padding:10px 12px;font-size:13px;color:#999;">No matching benefits</div>';
-                dropdown.innerHTML = html;
-                dropdown.style.display = 'block';
-
-                dropdown.querySelectorAll('.bs-opt').forEach(function(el) {
+                    var el = document.createElement('div');
+                    el.className = 'bs-opt' + (highlighted ? ' bs-sel' : '');
+                    el.setAttribute('data-val', opt.value);
+                    el.style.cssText = 'padding:7px 12px;font-size:13px;cursor:pointer;border-bottom:1px solid #f5f5f5;'
+                        + (highlighted ? 'background:#e8f0fe;font-weight:600;' : '');
+                    el.textContent = opt.text;
                     el.addEventListener('mousedown', function(e) {
                         e.preventDefault();
                         select.value = el.dataset.val;
@@ -488,7 +483,16 @@
                     el.addEventListener('mouseleave', function() {
                         el.style.background = el.classList.contains('bs-sel') ? '#e8f0fe' : '';
                     });
+                    dropdown.appendChild(el);
+                    count++;
                 });
+                if (!count) {
+                    var empty = document.createElement('div');
+                    empty.style.cssText = 'padding:10px 12px;font-size:13px;color:#999;';
+                    empty.textContent = 'No matching benefits';
+                    dropdown.appendChild(empty);
+                }
+                dropdown.style.display = 'block';
             }
 
             input.addEventListener('focus', function() { renderDropdown(input.value); });

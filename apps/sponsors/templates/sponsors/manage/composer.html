@@ -789,19 +789,43 @@ function addBenefit(id, name, program, value, description, isPackage) {
         div.setAttribute('data-package', 'true');
         div.style.background = '#e8f4fd';
     }
-    var tooltip = description ? '<span title="' + description.replace(/"/g, '&quot;') + '" style="cursor:help;color:#999;font-size:12px;margin-left:4px;">?</span>' : '';
-    var actionHtml;
-    if (isPackage) {
-        actionHtml = '<span style="font-size:10px;color:#3776ab;font-weight:600;padding:2px 6px;background:#d0e4f5;border-radius:3px;" title="Included in package">Pkg</span>';
-    } else {
-        actionHtml = '<button type="button" class="remove-btn" onclick="removeBenefit(' + id + ', ' + value + ');">x</button>';
+    var infoDiv = document.createElement('div');
+    infoDiv.className = 'benefit-info';
+    var nameSpan = document.createElement('span');
+    nameSpan.className = 'benefit-name';
+    nameSpan.textContent = name;
+    infoDiv.appendChild(nameSpan);
+    if (description) {
+        var tooltipSpan = document.createElement('span');
+        tooltipSpan.title = description;
+        tooltipSpan.style.cssText = 'cursor:help;color:#999;font-size:12px;margin-left:4px;';
+        tooltipSpan.textContent = '?';
+        infoDiv.appendChild(tooltipSpan);
     }
-    div.innerHTML = '<div class="benefit-info">' +
-        '<span class="benefit-name">' + name + '</span>' +
-        tooltip +
-        (value ? '<span class="benefit-value">$' + value.toLocaleString() + '</span>' : '') +
-        '</div>' +
-        '<div class="benefit-action">' + actionHtml + '</div>';
+    if (value) {
+        var valueSpan = document.createElement('span');
+        valueSpan.className = 'benefit-value';
+        valueSpan.textContent = '$' + value.toLocaleString();
+        infoDiv.appendChild(valueSpan);
+    }
+    div.appendChild(infoDiv);
+    var actionDiv = document.createElement('div');
+    actionDiv.className = 'benefit-action';
+    if (isPackage) {
+        var pkgSpan = document.createElement('span');
+        pkgSpan.style.cssText = 'font-size:10px;color:#3776ab;font-weight:600;padding:2px 6px;background:#d0e4f5;border-radius:3px;';
+        pkgSpan.title = 'Included in package';
+        pkgSpan.textContent = 'Pkg';
+        actionDiv.appendChild(pkgSpan);
+    } else {
+        var removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'remove-btn';
+        removeBtn.textContent = 'x';
+        removeBtn.addEventListener('click', function() { removeBenefit(id, value); });
+        actionDiv.appendChild(removeBtn);
+    }
+    div.appendChild(actionDiv);
     sel.appendChild(div);
 
     currentTotal += value;
