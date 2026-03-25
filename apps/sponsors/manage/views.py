@@ -723,12 +723,24 @@ class SponsorshipRejectView(SponsorshipAdminRequiredMixin, View):
     """Reject a sponsorship application."""
 
     def post(self, request, pk):
-        """Reject the sponsorship application."""
+        """Reject the sponsorship, optionally without notification or redirecting to notify page."""
         sp = get_object_or_404(Sponsorship, pk=pk)
+        action = request.POST.get("action", "reject_notify")
+
         try:
-            use_case = use_cases.RejectSponsorshipApplicationUseCase.build()
-            use_case.execute(sp)
-            messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rejected.')
+            if action == "reject_silent":
+                # Reject without sending any emails
+                sp.reject()
+                sp.save()
+                messages.success(request, f'Sponsorship for "{sp.sponsor.name}" rejected (no notification sent).')
+            else:
+                # Reject and redirect to notify page for customizable email
+                sp.reject()
+                sp.save()
+                messages.success(
+                    request, f'Sponsorship for "{sp.sponsor.name}" rejected. Compose the rejection email below.'
+                )
+                return redirect(reverse("manage_sponsorship_notify", args=[pk]) + "?prefill=rejection")
         except InvalidStatusError as e:
             messages.error(request, str(e))
         return redirect(reverse("manage_sponsorship_detail", args=[pk]))
@@ -1096,7 +1108,23 @@ class SponsorshipNotifyView(SponsorshipAdminRequiredMixin, View):
     def get(self, request, pk):
         """Render the notification form with optional preview."""
         sp = get_object_or_404(Sponsorship.objects.select_related("sponsor"), pk=pk)
-        form = SendSponsorshipNotificationManageForm()
+
+        initial = {}
+        if request.GET.get("prefill") == "rejection":
+            initial["subject"] = f"PSF Sponsorship Application Update — {sp.sponsor.name}"
+            initial["content"] = (
+                "Dear {{ sponsor_name }},\n\n"
+                "Thank you for your interest in sponsoring the Python Software Foundation.\n\n"
+                "After careful review, we are unable to move forward with the "
+                "{{ sponsorship_level }} sponsorship application at this time.\n\n"
+                "If you have any questions or would like to discuss this further, "
+                "please don't hesitate to reach out to us at sponsors@python.org.\n\n"
+                "Best regards,\n"
+                "The PSF Sponsorship Team"
+            )
+            initial["contact_types"] = ["primary", "administrative"]
+
+        form = SendSponsorshipNotificationManageForm(initial=initial)
         context = {
             "sponsorship": sp,
             "form": form,

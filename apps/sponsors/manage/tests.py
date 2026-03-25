@@ -386,11 +386,48 @@ class SponsorshipApproveViewTests(SponsorshipReviewTestBase):
 class SponsorshipRejectViewTests(SponsorshipReviewTestBase):
     """Test rejection workflow."""
 
-    def test_reject_sponsorship(self):
-        response = self.client.post(reverse("manage_sponsorship_reject", args=[self.sponsorship.pk]))
+    def test_reject_notify_redirects_to_notify_page(self):
+        """Default reject action redirects to notify page with prefill."""
+        response = self.client.post(
+            reverse("manage_sponsorship_reject", args=[self.sponsorship.pk]),
+            {"action": "reject_notify"},
+        )
         self.assertEqual(response.status_code, 302)
+        self.assertIn("notify", response.url)
+        self.assertIn("prefill=rejection", response.url)
         self.sponsorship.refresh_from_db()
         self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_reject_silent_no_redirect_to_notify(self):
+        """Silent reject goes back to detail page, not notify."""
+        response = self.client.post(
+            reverse("manage_sponsorship_reject", args=[self.sponsorship.pk]),
+            {"action": "reject_silent"},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn("notify", response.url)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_reject_default_action_is_notify(self):
+        """Without explicit action, defaults to reject_notify."""
+        response = self.client.post(reverse("manage_sponsorship_reject", args=[self.sponsorship.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertIn("prefill=rejection", response.url)
+        self.sponsorship.refresh_from_db()
+        self.assertEqual(self.sponsorship.status, Sponsorship.REJECTED)
+
+    def test_notify_page_prefilled_for_rejection(self):
+        """Notify page pre-fills subject and content for rejection."""
+        self.sponsorship.reject()
+        self.sponsorship.save()
+        response = self.client.get(
+            reverse("manage_sponsorship_notify", args=[self.sponsorship.pk]) + "?prefill=rejection"
+        )
+        self.assertEqual(response.status_code, 200)
+        form = response.context["form"]
+        self.assertIn("Sponsorship Application Update", form.initial.get("subject", ""))
+        self.assertIn("unable to move forward", form.initial.get("content", ""))
 
 
 class SponsorshipRollbackViewTests(SponsorshipReviewTestBase):
