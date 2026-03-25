@@ -1,0 +1,299 @@
+{% extends "sponsors/manage/_base.html" %}
+{% load humanize %}
+
+{% block page_title %}Finances | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Finances</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+
+<style>
+    .fin-cards { display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; margin-bottom:28px; }
+    .fin-card { background:#fff; border:1px solid #e8e8e8; border-radius:6px; padding:16px 20px; }
+    .fin-card .fin-val { font-size:24px; font-weight:700; color:#1a1a2e; font-variant-numeric:tabular-nums; }
+    .fin-card .fin-label { font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:0.5px; color:#999; margin-top:2px; }
+    .fin-card.gold .fin-val { color:#b8860b; }
+    .fin-card.green .fin-val { color:#4caf50; }
+    .chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; margin-bottom:28px; }
+    .chart-box { background:#fff; border:1px solid #e8e8e8; border-radius:6px; padding:20px; }
+    .chart-box h3 { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:#3776ab; margin:0 0 16px; }
+    .chart-box canvas { max-height:280px; }
+    .chart-box.wide { grid-column:1 / -1; }
+</style>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+
+<!-- Year selector -->
+{% if years %}
+<div class="year-pills" style="margin-bottom:20px;">
+    {% for year in years %}
+    <a href="?year={{ year }}" class="year-pill {% if year == selected_year %}active{% endif %}">{{ year }}</a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if selected_year %}
+
+<!-- Summary cards -->
+<div class="fin-cards">
+    <div class="fin-card gold">
+        <div class="fin-val">${{ total_revenue|intcomma }}</div>
+        <div class="fin-label">Total Revenue</div>
+    </div>
+    <div class="fin-card green">
+        <div class="fin-val">${{ finalized_revenue|intcomma }}</div>
+        <div class="fin-label">Finalized</div>
+    </div>
+    <div class="fin-card">
+        <div class="fin-val">${{ approved_revenue|intcomma }}</div>
+        <div class="fin-label">Approved (pending)</div>
+    </div>
+    <div class="fin-card">
+        <div class="fin-val">{{ total_count }}</div>
+        <div class="fin-label">Sponsorships &middot; ${{ avg_deal|intcomma }} avg</div>
+    </div>
+</div>
+
+<!-- Charts row 1: YoY revenue trend + status donut -->
+<div class="chart-grid">
+    <div class="chart-box">
+        <h3>Revenue Trend</h3>
+        <canvas id="yoyRevenueChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3>{{ selected_year }} Status Breakdown</h3>
+        <canvas id="statusChart"></canvas>
+    </div>
+</div>
+
+<!-- Charts row 2: package breakdown + deal metrics -->
+<div class="chart-grid">
+    <div class="chart-box">
+        <h3>{{ selected_year }} Revenue by Package</h3>
+        <canvas id="packageChart"></canvas>
+    </div>
+    <div class="chart-box">
+        <h3>Deal Count &amp; Avg Size Trend</h3>
+        <canvas id="dealTrendChart"></canvas>
+    </div>
+</div>
+
+<!-- Per-sponsorship breakdown -->
+{% if sponsorships %}
+<div class="manage-section">
+    <div class="manage-section-header">
+        <h2>Sponsorship Detail <span class="badge">{{ total_count }}</span></h2>
+    </div>
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Sponsor</th>
+                <th>Package</th>
+                <th style="text-align:center;">Status</th>
+                <th style="text-align:right;">Fee</th>
+                <th style="text-align:right;">Internal Value</th>
+                <th style="text-align:right;">Margin</th>
+                <th>Period</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sp in sponsorships %}
+            <tr>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
+                    </a>
+                </td>
+                <td>
+                    {% if sp.package %}<span class="tag tag-blue" style="font-size:10px;">{{ sp.package.name }}</span>{% else %}<span class="tag tag-gray" style="font-size:10px;">Custom</span>{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if sp.status == 'approved' %}<span class="tag tag-gold" style="font-size:10px;">Approved</span>
+                    {% elif sp.status == 'finalized' %}<span class="tag tag-green" style="font-size:10px;">Finalized</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">
+                    ${{ sp.sponsorship_fee|default:0|intcomma }}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;color:#777;">
+                    ${{ sp.internal_total|intcomma }}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                    {% if sp.sponsorship_fee and sp.internal_total %}
+                        <span style="color:{% if sp.sponsorship_fee >= sp.internal_total %}#4caf50{% else %}#e74c3c{% endif %};font-weight:600;">{% widthratio sp.sponsorship_fee sp.internal_total 100 %}%</span>
+                    {% else %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#777;">
+                    {% if sp.start_date and sp.end_date %}
+                    {{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                    {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+        <tfoot>
+            <tr style="font-weight:700;border-top:2px solid #1a1a2e;">
+                <td colspan="3" style="text-align:right;font-size:12px;text-transform:uppercase;color:#999;">Total</td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">${{ total_revenue|intcomma }}</td>
+                <td colspan="3"></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+{% endif %}
+
+<script>
+(function() {
+    var D = {{ chart_data_json|safe }};
+    var gold = '#b8860b', blue = '#3776ab', green = '#4caf50', red = '#e74c3c',
+        lightBlue = '#5a9fd4', lightGold = '#ffd43b', gray = '#ccc';
+
+    var fmt = function(v) { return '$' + v.toLocaleString(); };
+
+    // --- Revenue Trend (stacked bar) ---
+    new Chart(document.getElementById('yoyRevenueChart'), {
+        type: 'bar',
+        data: {
+            labels: D.yoy_labels,
+            datasets: [
+                {
+                    label: 'Finalized',
+                    data: D.yoy_finalized,
+                    backgroundColor: green,
+                    borderRadius: 2,
+                },
+                {
+                    label: 'Approved',
+                    data: D.yoy_pending,
+                    backgroundColor: lightGold,
+                    borderRadius: 2,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + fmt(c.raw); } } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                x: { stacked: true, grid: { display: false } },
+                y: { stacked: true, ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } }
+            }
+        }
+    });
+
+    // --- Status Donut ---
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: D.status_labels,
+            datasets: [{
+                data: D.status_counts,
+                backgroundColor: [blue, gold, green, red],
+                borderWidth: 0,
+                hoverOffset: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            cutout: '60%',
+            plugins: {
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 }, padding: 16 } }
+            }
+        }
+    });
+
+    // --- Package Revenue (horizontal bar) ---
+    new Chart(document.getElementById('packageChart'), {
+        type: 'bar',
+        data: {
+            labels: D.pkg_labels,
+            datasets: [{
+                label: 'Revenue',
+                data: D.pkg_revenue,
+                backgroundColor: [blue, lightBlue, '#8bc1e8', '#b0d4f1', '#d4e8f7', '#e8f0f7'],
+                borderRadius: 3,
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return fmt(c.raw) + ' (' + D.pkg_counts[c.dataIndex] + ' deal' + (D.pkg_counts[c.dataIndex] !== 1 ? 's' : '') + ')'; } } },
+                legend: { display: false }
+            },
+            scales: {
+                x: { ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { color: '#f0f0f0' } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    // --- Deal Count & Avg Size Trend (combo) ---
+    new Chart(document.getElementById('dealTrendChart'), {
+        type: 'bar',
+        data: {
+            labels: D.yoy_labels,
+            datasets: [
+                {
+                    label: 'Deals',
+                    data: D.yoy_counts,
+                    backgroundColor: blue,
+                    borderRadius: 2,
+                    yAxisID: 'y',
+                    order: 2,
+                },
+                {
+                    label: 'Avg Deal Size',
+                    data: D.yoy_avg,
+                    type: 'line',
+                    borderColor: gold,
+                    backgroundColor: gold,
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    tension: 0.3,
+                    yAxisID: 'y1',
+                    order: 1,
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                tooltip: { callbacks: { label: function(c) { return c.dataset.label + ': ' + (c.dataset.yAxisID === 'y1' ? fmt(c.raw) : c.raw); } } },
+                legend: { position: 'bottom', labels: { boxWidth: 12, font: { size: 11 } } }
+            },
+            scales: {
+                y: { position: 'left', title: { display: true, text: 'Deals', font: { size: 11 } }, grid: { color: '#f0f0f0' } },
+                y1: { position: 'right', title: { display: true, text: 'Avg Size', font: { size: 11 } }, ticks: { callback: function(v) { return '$' + (v/1000) + 'k'; } }, grid: { display: false } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+})();
+</script>
+
+{% else %}
+<div class="empty-state">
+    <div class="empty-icon">&#128200;</div>
+    <p>No sponsorship data found.</p>
+</div>
+{% endif %}
+{% endblock %}
+
+{% endwith %}
