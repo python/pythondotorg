@@ -1,0 +1,44 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete {{ object.internal_name }} | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_legal_clauses' %}">Legal Clauses</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#e74c3c;margin:0 0 20px;">
+            Delete Legal Clause
+        </h2>
+
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            Are you sure you want to delete <strong>"{{ object.internal_name }}"</strong>?
+            {% with bc=object.benefits.count %}
+            {% if bc %}This clause is used by {{ bc }} benefit{{ bc|pluralize }}. Deleting it will remove it from those benefits' contracts.{% endif %}
+            {% endwith %}
+        </div>
+
+        <div style="background:#f7f8fa;padding:12px 16px;border-radius:4px;margin-bottom:20px;font-size:13px;color:#555;">
+            {{ object.clause|truncatechars:300 }}
+        </div>
+
+        <form method="post">
+            {% csrf_token %}
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-danger">Delete Clause</button>
+                <a href="{% url 'manage_legal_clauses' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

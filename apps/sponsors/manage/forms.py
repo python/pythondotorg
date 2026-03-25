@@ -8,6 +8,7 @@ from django.utils import timezone
 from apps.sponsors.models import (
     SPONSOR_TEMPLATE_HELP_TEXT,
     EmailTargetableConfiguration,
+    LegalClause,
     LogoPlacementConfiguration,
     ProvidedFileAssetConfiguration,
     ProvidedTextAssetConfiguration,
@@ -697,6 +698,23 @@ class ComposerTermsForm(forms.Form):
             msg = "End date must be after start date."
             raise forms.ValidationError(msg)
         return cleaned
+
+
+class LegalClauseForm(forms.ModelForm):
+    """Form for creating and editing legal clauses."""
+
+    class Meta:
+        """Meta options."""
+
+        model = LegalClause
+        fields = ["internal_name", "clause", "notes"]
+        widgets = {
+            "internal_name": forms.TextInput(attrs={"style": INPUT_STYLE}),
+            "clause": forms.Textarea(attrs={"rows": 6, "style": INPUT_STYLE + "resize:vertical;"}),
+            "notes": forms.Textarea(
+                attrs={"rows": 3, "style": INPUT_STYLE + "resize:vertical;", "placeholder": "Internal notes..."}
+            ),
+        }
 
 
 # Dispatcher mapping config type slugs to (model, form) tuples

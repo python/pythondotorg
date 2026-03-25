@@ -23,6 +23,12 @@ urlpatterns = [
     path(
         "benefit-configs/<int:pk>/delete/", views.BenefitConfigDeleteView.as_view(), name="manage_benefit_config_delete"
     ),
+    # Legal clauses
+    path("legal-clauses/", views.LegalClauseListView.as_view(), name="manage_legal_clauses"),
+    path("legal-clauses/new/", views.LegalClauseCreateView.as_view(), name="manage_legal_clause_create"),
+    path("legal-clauses/<int:pk>/edit/", views.LegalClauseUpdateView.as_view(), name="manage_legal_clause_edit"),
+    path("legal-clauses/<int:pk>/delete/", views.LegalClauseDeleteView.as_view(), name="manage_legal_clause_delete"),
+    path("legal-clauses/<int:pk>/move/", views.LegalClauseMoveView.as_view(), name="manage_legal_clause_move"),
     # Packages
     path("packages/", views.PackageListView.as_view(), name="manage_packages"),
     path("packages/new/", views.PackageCreateView.as_view(), name="manage_package_create"),

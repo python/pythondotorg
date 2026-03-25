@@ -32,6 +32,7 @@ from apps.sponsors.manage.forms import (
     ComposerTermsForm,
     CurrentYearForm,
     ExecuteContractForm,
+    LegalClauseForm,
     NotificationTemplateForm,
     SendSponsorshipNotificationManageForm,
     SponsorContactForm,
@@ -47,6 +48,7 @@ from apps.sponsors.models import (
     BenefitFeature,
     BenefitFeatureConfiguration,
     Contract,
+    LegalClause,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
@@ -364,6 +366,86 @@ class BenefitSyncView(SponsorshipAdminRequiredMixin, View):
                 continue
         messages.success(request, f"Updated {count} sponsorship(s) with latest benefit data.")
         return redirect(reverse("manage_benefit_edit", args=[pk]))
+
+
+# ── Legal Clause Views ────────────────────────────────────────────────
+
+
+class LegalClauseListView(SponsorshipAdminRequiredMixin, ListView):
+    """List legal clauses with ordering controls."""
+
+    model = LegalClause
+    template_name = "sponsors/manage/legal_clause_list.html"
+    context_object_name = "clauses"
+
+    def get_queryset(self):
+        """Return clauses ordered by position."""
+        return LegalClause.objects.all().order_by("order")
+
+
+class LegalClauseCreateView(SponsorshipAdminRequiredMixin, CreateView):
+    """Create a new legal clause."""
+
+    model = LegalClause
+    form_class = LegalClauseForm
+    template_name = "sponsors/manage/legal_clause_form.html"
+
+    def get_success_url(self):
+        """Return URL to clause list."""
+        messages.success(self.request, f'Legal clause "{self.object.internal_name}" created.')
+        return reverse("manage_legal_clauses")
+
+    def get_context_data(self, **kwargs):
+        """Return context with create flag."""
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = True
+        return context
+
+
+class LegalClauseUpdateView(SponsorshipAdminRequiredMixin, UpdateView):
+    """Edit an existing legal clause."""
+
+    model = LegalClause
+    form_class = LegalClauseForm
+    template_name = "sponsors/manage/legal_clause_form.html"
+
+    def get_success_url(self):
+        """Return URL to clause list."""
+        messages.success(self.request, f'Legal clause "{self.object.internal_name}" updated.')
+        return reverse("manage_legal_clauses")
+
+    def get_context_data(self, **kwargs):
+        """Return context with benefit count."""
+        context = super().get_context_data(**kwargs)
+        context["is_create"] = False
+        context["benefit_count"] = self.object.benefits.count()
+        return context
+
+
+class LegalClauseDeleteView(SponsorshipAdminRequiredMixin, DeleteView):
+    """Delete a legal clause."""
+
+    model = LegalClause
+    template_name = "sponsors/manage/legal_clause_confirm_delete.html"
+
+    def get_success_url(self):
+        """Return URL to clause list."""
+        messages.success(self.request, f'Legal clause "{self.object.internal_name}" deleted.')
+        return reverse("manage_legal_clauses")
+
+
+class LegalClauseMoveView(SponsorshipAdminRequiredMixin, View):
+    """Move a legal clause up or down in order."""
+
+    def post(self, request, pk):
+        """Move clause up or down based on direction parameter."""
+        clause = get_object_or_404(LegalClause, pk=pk)
+        direction = request.POST.get("direction")
+        if direction == "up":
+            clause.up()
+        elif direction == "down":
+            clause.down()
+        return redirect(reverse("manage_legal_clauses"))
 
 
 class PackageListView(SponsorshipAdminRequiredMixin, ListView):

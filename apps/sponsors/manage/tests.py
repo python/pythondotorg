@@ -14,6 +14,7 @@ from django.utils import timezone
 
 from apps.sponsors.models import (
     Contract,
+    LegalClause,
     Sponsor,
     SponsorBenefit,
     SponsorContact,
@@ -2367,3 +2368,81 @@ class BenefitSyncViewTests(SponsorshipReviewTestBase):
         """Benefit edit page shows Sync button when sponsorships exist."""
         response = self.client.get(reverse("manage_benefit_edit", args=[self.benefit.pk]))
         self.assertContains(response, "Sync to Sponsorships")
+
+
+class LegalClauseViewTests(SponsorManageTestBase):
+    """Test legal clause CRUD views."""
+
+    def setUp(self):
+        super().setUp()
+        self.client.login(username="staff", password="pass")
+        self.clause = LegalClause.objects.create(
+            internal_name="Trademark Usage",
+            clause="Sponsor may use the Python trademark per PSF guidelines.",
+            notes="Standard clause",
+        )
+
+    def test_list_loads(self):
+        response = self.client.get(reverse("manage_legal_clauses"))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Trademark Usage")
+
+    def test_create_get(self):
+        response = self.client.get(reverse("manage_legal_clause_create"))
+        self.assertEqual(response.status_code, 200)
+
+    def test_create_post(self):
+        response = self.client.post(
+            reverse("manage_legal_clause_create"),
+            {"internal_name": "New Clause", "clause": "Some legal text.", "notes": ""},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(LegalClause.objects.filter(internal_name="New Clause").exists())
+
+    def test_edit_get(self):
+        response = self.client.get(reverse("manage_legal_clause_edit", args=[self.clause.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Trademark Usage")
+
+    def test_edit_post(self):
+        response = self.client.post(
+            reverse("manage_legal_clause_edit", args=[self.clause.pk]),
+            {"internal_name": "Updated Name", "clause": "Updated text.", "notes": ""},
+        )
+        self.assertEqual(response.status_code, 302)
+        self.clause.refresh_from_db()
+        self.assertEqual(self.clause.internal_name, "Updated Name")
+
+    def test_delete_get(self):
+        response = self.client.get(reverse("manage_legal_clause_delete", args=[self.clause.pk]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Trademark Usage")
+
+    def test_delete_post(self):
+        response = self.client.post(reverse("manage_legal_clause_delete", args=[self.clause.pk]))
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(LegalClause.objects.filter(pk=self.clause.pk).exists())
+
+    def test_move_up(self):
+        clause2 = LegalClause.objects.create(internal_name="Second Clause", clause="Text.")
+        self.client.post(
+            reverse("manage_legal_clause_move", args=[clause2.pk]),
+            {"direction": "up"},
+        )
+        clause2.refresh_from_db()
+        self.clause.refresh_from_db()
+        self.assertLess(clause2.order, self.clause.order)
+
+    def test_move_down(self):
+        clause2 = LegalClause.objects.create(internal_name="Second Clause", clause="Text.")
+        self.client.post(
+            reverse("manage_legal_clause_move", args=[self.clause.pk]),
+            {"direction": "down"},
+        )
+        self.clause.refresh_from_db()
+        clause2.refresh_from_db()
+        self.assertGreater(self.clause.order, clause2.order)
+
+    def test_nav_has_legal_clauses_link(self):
+        response = self.client.get(reverse("manage_dashboard"))
+        self.assertContains(response, "Legal Clauses")
