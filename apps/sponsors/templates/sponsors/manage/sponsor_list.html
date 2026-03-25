@@ -79,9 +79,9 @@
                     <span style="color:#ccc;">&mdash;</span>
                     {% endif %}
                 </td>
-                <td style="text-align:right;">
-                    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;margin-right:8px;">Edit</a>
-                    <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sponsor.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;">+ Sponsorship</a>
+                <td style="text-align:right;white-space:nowrap;">
+                    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;margin-right:10px;">Edit</a>
+                    <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sponsor.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;white-space:nowrap;">+ Sponsorship</a>
                 </td>
             </tr>
             {% endfor %}
