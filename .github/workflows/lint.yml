@@ -21,4 +21,4 @@ jobs:
         with:
           python-version: "3.x"
 
-      - uses: j178/prek-action@v1
+      - uses: j178/prek-action@v2
