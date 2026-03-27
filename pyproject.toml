@@ -49,7 +49,7 @@ dependencies = [
     "django-widget-tweaks==1.5.0",
     "django-countries==8.2.0",
     "num2words==0.5.13",
-    "django-polymorphic==4.1.0",
+    "django-polymorphic==4.11.2",
     "sorl-thumbnail==12.11.0",
     "django-extensions==3.2.3",
     "django-import-export==2.7.1",
