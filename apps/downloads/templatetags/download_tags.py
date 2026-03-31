@@ -197,6 +197,10 @@ def render_active_releases():
             if status == "feature":
                 status = "pre-release"
 
+            # Skip releases not yet in development
+            if status in ("planned", "prerelease"):
+                continue
+
             if status == "end-of-life":
                 # Include only the most recent EOL release
                 if found_eol:
