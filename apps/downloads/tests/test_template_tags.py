@@ -15,6 +15,8 @@ MOCK_RELEASE_CYCLE = {
     "3.10": {"status": "security", "end_of_life": "2026-10-04", "pep": 619},
     "3.14": {"status": "bugfix", "first_release": "2025-10-07", "end_of_life": "2030-10", "pep": 745},
     "3.15": {"status": "feature", "first_release": "2026-10-01", "end_of_life": "2031-10", "pep": 790},
+    "3.16": {"status": "prerelease", "first_release": "2027-10-06", "end_of_life": "2032-10", "pep": 826},
+    "3.17": {"status": "planned", "first_release": "2028-10-05", "end_of_life": "2033-10"},
 }
 
 
@@ -233,6 +235,17 @@ class RenderActiveReleasesTests(BaseDownloadTests):
         self.assertIn("end-of-life", status)
         self.assertIn("last release was", status)
         self.assertIn("<a href=", status)
+
+    @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_planned_and_prerelease_releases_excluded(self, mock_get_data):
+        """Test that planned and prerelease releases are not shown."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+
+        result = render_active_releases()
+
+        versions = [r["version"] for r in result["releases"]]
+        self.assertNotIn("3.16", versions)
+        self.assertNotIn("3.17", versions)
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
     def test_api_failure_returns_empty_releases(self, mock_get_data):
