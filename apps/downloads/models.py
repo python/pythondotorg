@@ -123,18 +123,29 @@ class Release(ContentManageable, NameSlugModel):
         the "Release notes" links on the downloads page still work for legacy
         releases (3.3.6 and earlier).
 
-        Example::
+        Examples::
 
             http://hg.python.org/cpython/file/v3.3.6/Misc/NEWS
             → https://github.com/python/cpython/blob/v3.3.6/Misc/NEWS
+
+            http://hg.python.org/cpython/raw-file/v2.7.3/Misc/NEWS
+            → https://raw.githubusercontent.com/python/cpython/v2.7.3/Misc/NEWS
         """
         url = self.release_notes_url
         if not url:
             return url
-        match = re.match(r"https?://hg\.python\.org/cpython/file/([^/]+)/(.+)", url)
-        if match:
-            tag, path = match.group(1), match.group(2)
-            return f"https://github.com/python/cpython/blob/{tag}/{path}"
+        for prefix in (
+            "http://hg.python.org/cpython/file/",
+            "https://hg.python.org/cpython/file/",
+        ):
+            if url.startswith(prefix):
+                return "https://github.com/python/cpython/blob/" + url[len(prefix):]
+        for prefix in (
+            "http://hg.python.org/cpython/raw-file/",
+            "https://hg.python.org/cpython/raw-file/",
+        ):
+            if url.startswith(prefix):
+                return "https://raw.githubusercontent.com/python/cpython/" + url[len(prefix):]
         return url
 
     def download_file_for_os(self, os_slug):
