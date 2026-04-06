@@ -818,7 +818,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -827,7 +827,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -936,7 +936,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
             html += format_html(
                 dedent("""
-            <li><b>{year}</b>:"
+            <li><b>{year}</b>:
                 <ul>
                     <li><a target='_blank' href='{year_packages_url}'>List packages</a>
                     <li><a target='_blank' href='{year_benefits_url}'>List benefits</a>
