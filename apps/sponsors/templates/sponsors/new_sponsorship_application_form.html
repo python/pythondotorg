@@ -160,6 +160,20 @@
 
           <div>
           <p class="form_field">
+            <label>{{ form.white_logo.label }} <span class="error-message">{% if form.white_logo.errors %}{{ form.white_logo.errors.as_text }}</span>{% endif %}</label>
+            {% render_field form.white_logo %}
+            {% if sponsor.white_logo %}
+          <p>Currently: <a href="{{ sponsor.white_logo.url }}">{{ sponsor.white_logo.name }}</a></p>
+        {% endif %}
+            {% if form.white_logo.help_text %}
+            <br/>
+            <span class="helptext">{{ form.white_logo.help_text }}</span>
+            {% endif %}
+          </p>
+          </div>
+
+          <div>
+          <p class="form_field">
             <label>{{ form.print_logo.label }} <span class="error-message">{% if form.print_logo.errors %}{{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
             {% render_field form.print_logo %}
             {% if sponsor.print_logo %}
