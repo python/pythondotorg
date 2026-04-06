@@ -16,6 +16,7 @@ class LogoPlacementSerializer(serializers.Serializer):
     sponsor_slug = serializers.CharField()
     description = serializers.CharField()
     logo = serializers.URLField()
+    white_logo = serializers.URLField(required=False, allow_null=True)
     start_date = serializers.DateField()
     end_date = serializers.DateField()
     sponsor_url = serializers.URLField()
