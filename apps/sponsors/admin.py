@@ -559,6 +559,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                     "get_sponsor_description",
                     "get_sponsor_landing_page_url",
                     "get_sponsor_web_logo",
+                    "get_sponsor_white_logo",
                     "get_sponsor_print_logo",
                     "get_sponsor_primary_phone",
                     "get_sponsor_mailing_address",
@@ -630,6 +631,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
             "get_sponsor_description",
             "get_sponsor_landing_page_url",
             "get_sponsor_web_logo",
+            "get_sponsor_white_logo",
             "get_sponsor_print_logo",
             "get_sponsor_primary_phone",
             "get_sponsor_mailing_address",
@@ -745,6 +747,22 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                 img.url,
             )
         html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}'/>{% endthumbnail %}"
+        template = Template(html)
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
+
+    @admin.display(description="White Logo")
+    def get_sponsor_white_logo(self, obj):
+        """Render and return the sponsor's white logo as a thumbnail image."""
+        img = obj.sponsor.white_logo
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px;background:#333"/>',
+                img.url,
+            )
+        html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}' style='background:#333'/>{% endthumbnail %}"
         template = Template(html)
         context = Context({"img": img})
         return mark_safe(template.render(context))  # noqa: S308
