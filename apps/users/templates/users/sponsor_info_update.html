@@ -71,41 +71,33 @@
         {% render_field form.description %}
       </p>
 
-      <div class="inline_fields">
-        <div>
-          <p class="form_field">
-            <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}
-              {{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
-            <span
-                class="helptext">Landing page URL. The linked page may not contain any sales or marketing information.</span>
-            {% render_field form.landing_page_url %}
-          </p>
-        </div>
+      <p class="form_field">
+        <label>{{ form.landing_page_url.label }} <span class="error-message">{% if form.landing_page_url.errors %}
+          {{ form.landing_page_url.errors.as_text }}</span>{% endif %}</label>
+        <span
+            class="helptext">Landing page URL. The linked page may not contain any sales or marketing information.</span>
+        {% render_field form.landing_page_url %}
+      </p>
 
-        <div>
-          <p class="form_field">
-            <label>{{ form.twitter_handle.label }} <span class="error-message">{% if form.twitter_handle.errors %}
-              {{ form.twitter_handle.errors.as_text }}</span>{% endif %}</label>
-            {% render_field form.twitter_handle %}
-            {% if form.twitter_handle.help_text %}
-              <br/>
-              <span class="helptext">{{ form.twitter_handle.help_text }}</span>
-            {% endif %}
-          </p>
-        </div>
+      <p class="form_field">
+        <label>{{ form.twitter_handle.label }} <span class="error-message">{% if form.twitter_handle.errors %}
+          {{ form.twitter_handle.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.twitter_handle %}
+        {% if form.twitter_handle.help_text %}
+          <br/>
+          <span class="helptext">{{ form.twitter_handle.help_text }}</span>
+        {% endif %}
+      </p>
 
-        <div>
-          <p class="form_field">
-            <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}
-              {{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
-            {% render_field form.linked_in_page_url%}
-            {% if form.linked_in_page_url.help_text %}
-              <br/>
-              <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
-            {% endif %}
-          </p>
-        </div>
-      </div>
+      <p class="form_field">
+        <label>{{ form.linked_in_page_url.label }} <span class="error-message">{% if form.linked_in_page_url.errors %}
+          {{ form.linked_in_page_url.errors.as_text }}</span>{% endif %}</label>
+        {% render_field form.linked_in_page_url%}
+        {% if form.linked_in_page_url.help_text %}
+          <br/>
+          <span class="helptext">{{ form.linked_in_page_url.help_text }}</span>
+        {% endif %}
+      </p>
             <div class="inline_fields">
               <div>
       <p class="form_field">
@@ -227,7 +219,7 @@
           {{ form.web_logo.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.web_logo %}
         {% if sponsor.web_logo %}
-          <p>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a></p>
+          <br/>Currently: <a href="{{ sponsor.web_logo.url }}">{{ sponsor.web_logo.name }}</a>
         {% endif %}
         {% if form.web_logo.help_text %}
           <span class="helptext">{{ form.web_logo.help_text }}</span>
@@ -239,7 +231,7 @@
           {{ form.white_logo.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.white_logo %}
         {% if sponsor.white_logo %}
-          <p>Currently: <a href="{{ sponsor.white_logo.url }}">{{ sponsor.white_logo.name }}</a></p>
+          <br/>Currently: <a href="{{ sponsor.white_logo.url }}">{{ sponsor.white_logo.name }}</a>
         {% endif %}
         {% if form.white_logo.help_text %}
           <span class="helptext">{{ form.white_logo.help_text }}</span>
@@ -251,7 +243,7 @@
           {{ form.print_logo.errors.as_text }}</span>{% endif %}</label>
         {% render_field form.print_logo %}
         {% if sponsor.print_logo %}
-          <p>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a></p>
+          <br/>Currently: <a href="{{ sponsor.print_logo.url }}">{{ sponsor.print_logo.name }}</a>
         {% endif %}
         {% if form.print_logo.help_text %}
           <span class="helptext">{{ form.print_logo.help_text }}</span>
