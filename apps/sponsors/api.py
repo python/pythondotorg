@@ -53,6 +53,7 @@ class LogoPlacementeAPIList(APIView):
                 "level_order": sponsorship.package.order,
                 "description": sponsor.description,
                 "logo": sponsor.web_logo.url,
+                "white_logo": sponsor.white_logo.url if sponsor.white_logo else None,
                 "sponsor_url": sponsor.landing_page_url,
                 "start_date": sponsorship.start_date,
                 "end_date": sponsorship.end_date,
