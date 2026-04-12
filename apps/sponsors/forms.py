@@ -229,6 +229,11 @@ class SponsorshipApplicationForm(forms.Form):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
+    white_logo = forms.ImageField(
+        label="Sponsor white logo",
+        help_text="For display on dark backgrounds (e.g. PyPI footer). Transparent PNG, smallest dimension no less than 256px",
+        required=False,
+    )
     print_logo = forms.FileField(
         label="Sponsor print logo",
         help_text="For printed materials, signage, and projection. SVG or EPS",
@@ -396,6 +401,7 @@ class SponsorshipApplicationForm(forms.Form):
             landing_page_url=self.cleaned_data.get("landing_page_url", ""),
             twitter_handle=self.cleaned_data["twitter_handle"],
             linked_in_page_url=self.cleaned_data["linked_in_page_url"],
+            white_logo=self.cleaned_data.get("white_logo"),
             print_logo=self.cleaned_data.get("print_logo"),
             country_of_incorporation=self.cleaned_data.get("country_of_incorporation", ""),
             state_of_incorporation=self.cleaned_data.get("state_of_incorporation", ""),
@@ -606,6 +612,11 @@ class SponsorUpdateForm(forms.ModelForm):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than 256px",
         required=False,
     )
+    white_logo = forms.ImageField(
+        widget=forms.widgets.FileInput,
+        help_text="For display on dark backgrounds (e.g. PyPI footer). Transparent PNG, smallest dimension no less than 256px",
+        required=False,
+    )
     print_logo = forms.FileField(
         widget=forms.widgets.FileInput,
         help_text="For printed materials, signage, and projection. SVG or EPS",
@@ -647,6 +658,7 @@ class SponsorUpdateForm(forms.ModelForm):
             "twitter_handle",
             "linked_in_page_url",
             "web_logo",
+            "white_logo",
             "print_logo",
             "primary_phone",
             "mailing_address_line_1",
