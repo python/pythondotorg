@@ -45,6 +45,17 @@ class LogoPlacementeAPIList(APIView):
             sponsorships = sponsorships.filter(year=logo_filters.by_year)
         for sponsorship in sponsorships.select_related("sponsor").iterator():
             sponsor = sponsorship.sponsor
+            contacts = [
+                {
+                    "name": c.name,
+                    "email": c.email,
+                    "primary": c.primary,
+                    "administrative": c.administrative,
+                    "accounting": c.accounting,
+                    "manager": c.manager,
+                }
+                for c in sponsor.contacts.all()
+            ]
             base_data = {
                 "sponsor_id": sponsor.id,
                 "sponsor": sponsor.name,
@@ -55,6 +66,7 @@ class LogoPlacementeAPIList(APIView):
                 "logo": sponsor.web_logo.url,
                 "white_logo": sponsor.white_logo.url if sponsor.white_logo else None,
                 "sponsor_url": sponsor.landing_page_url,
+                "contacts": contacts,
                 "start_date": sponsorship.start_date,
                 "end_date": sponsorship.end_date,
             }
