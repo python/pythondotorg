@@ -1,0 +1,57 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Active Year | Sponsor Management{% endblock %}
+
+{% with active_tab="dashboard" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Active Year</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Active Sponsorship Year</h2>
+        <p style="font-size:13px;color:#777;margin:0 0 24px;">
+            The active year controls which benefits and packages are shown in new sponsorship applications.
+            Currently set to <strong>{{ object.year }}</strong>.
+        </p>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <fieldset class="manage-fieldset">
+                <legend>Update Year</legend>
+                <div class="form-group">
+                    <label for="id_year">Year</label>
+                    {{ form.year }}
+                    <span class="helptext">Must be between 2022 and 2050.</span>
+                </div>
+            </fieldset>
+
+            <div style="display:flex;gap:10px;">
+                <button type="submit" class="btn btn-primary">Update Active Year</button>
+                <a href="{% url 'manage_dashboard' %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

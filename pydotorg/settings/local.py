@@ -22,7 +22,14 @@ HAYSTACK_CONNECTIONS = {
     },
 }
 
-EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+# Use maildev SMTP when EMAIL_HOST is set (via docker-compose), otherwise console
+EMAIL_HOST = config("EMAIL_HOST", default="")
+if EMAIL_HOST:
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+    EMAIL_PORT = config("EMAIL_PORT", default=1025, cast=int)
+    EMAIL_USE_TLS = False
+else:
+    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 
 
 try:

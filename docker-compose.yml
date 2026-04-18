@@ -20,6 +20,12 @@ services:
      test: ["CMD", "redis-cli","ping"]
      interval: 1s
 
+  maildev:
+    image: maildev/maildev:2.1.0
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
   web:
     build: .
     image: pythondotorg:docker-compose
@@ -31,6 +37,8 @@ services:
     environment:
       DATABASE_URL: postgresql://pythondotorg:pythondotorg@postgres:5432/pythondotorg
       DJANGO_SETTINGS_MODULE: pydotorg.settings.local
+      EMAIL_HOST: maildev
+      EMAIL_PORT: "1025"
     depends_on:
       postgres:
         condition: service_healthy
