@@ -76,7 +76,7 @@
                             <span class="release-number"><a href="{{ r.get_absolute_url }}">{{ r.name }}</a></span>
                             <span class="release-date">{{ r.release_date|date }}</span>
                             <span class="release-download"><a href="{{ r.get_absolute_url }}"><span aria-hidden="true" class="icon-download"></span> Download</a></span>
-                            <span class="release-enhancements"><a href="{{ r.release_notes_url }}">Release notes</a></span>
+                            <span class="release-enhancements">{% if r.corrected_release_notes_url %}<a href="{{ r.corrected_release_notes_url }}">Release notes</a>{% else %}Release notes{% endif %}</span>
                         </li>
                         {% endfor %}
                     </ol>
@@ -127,3 +127,4 @@
                     {% box 'download-pgp' %}
                 </div>
 {% endblock content %}
+
