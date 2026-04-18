@@ -1,6 +1,7 @@
 """Benefit feature and configuration models for the sponsors app."""
 
 from django import forms
+from django.conf import settings
 from django.db import IntegrityError, models, transaction
 from django.db.models import UniqueConstraint
 from django.urls import reverse
@@ -16,6 +17,7 @@ from apps.sponsors.models.enums import (
 ########################################
 # Benefit features abstract classes
 from apps.sponsors.models.managers import BenefitFeatureQuerySet
+from apps.sponsors.structured_job_postings import StructuredJobPostingsField
 
 
 ########################################
@@ -711,6 +713,11 @@ class RequiredTextAsset(RequiredAssetMixin, BaseRequiredTextAsset, BenefitFeatur
         help_text = kwargs.pop("help_text", self.help_text)
         label = kwargs.pop("label", self.label)
         required = kwargs.pop("required", False)
+
+        structured_substrings = getattr(settings, "STRUCTURED_JOB_POSTINGS_INTERNAL_NAMES", ())
+        if structured_substrings and any(s in self.internal_name for s in structured_substrings):
+            return StructuredJobPostingsField(required=required, help_text=help_text, label=label, **kwargs)
+
         max_length = self.max_length
         widget = forms.TextInput
         if max_length is None or max_length > self.TEXTAREA_MIN_LENGTH:
