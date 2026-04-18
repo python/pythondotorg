@@ -5,7 +5,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
-from django.views.generic.base import TemplateView
+from django.views.generic.base import RedirectView, TemplateView
 
 from apps.cms.views import custom_404
 from apps.downloads.views import ReleaseEditButton
@@ -35,6 +35,14 @@ urlpatterns = [
     path("blogs/", include("apps.blogs.urls")),
     path("inner/", TemplateView.as_view(template_name="python/inner.html"), name="inner"),
     # other section landing pages
+    path(
+        "psf/sponsorship-old/",
+        RedirectView.as_view(pattern_name="psf-sponsors", permanent=True),
+    ),
+    path(
+        "psf/forms/sponsor-application/",
+        RedirectView.as_view(pattern_name="new_sponsorship_application", permanent=True),
+    ),
     path("psf-landing/", TemplateView.as_view(template_name="psf/index.html"), name="psf-landing"),
     path("psf/sponsors/", TemplateView.as_view(template_name="psf/sponsors-list.html"), name="psf-sponsors"),
     path("docs-landing/", TemplateView.as_view(template_name="docs/index.html"), name="docs-landing"),
