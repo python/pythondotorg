@@ -1,0 +1,10 @@
+--only-binary :all:
+--no-binary django-apptemplates
+--no-binary django-translation-aliases
+--no-binary django-haystack
+--no-binary django-tastypie
+--no-binary sgmllib3k
+--no-binary docopt
+--no-binary odfpy
+
+.[prod]

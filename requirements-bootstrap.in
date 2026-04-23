@@ -1,0 +1,5 @@
+--only-binary :all:
+
+pip
+setuptools
+wheel

@@ -32,7 +32,10 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
+COPY requirements-bootstrap.txt /code/
+
+RUN pip --no-cache-dir --disable-pip-version-check \
+      install -r requirements-bootstrap.txt
 
 COPY pyproject.toml /code/
 
