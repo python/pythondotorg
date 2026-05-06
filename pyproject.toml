@@ -10,7 +10,7 @@ name = "pythondotorg"
 version = "0.1.0"
 requires-python = ">=3.12"
 dependencies = [
-    "dj-database-url==0.5.0",
+    "dj-database-url==3.1.2",
     "django-pipeline==4.1.0",
     "django-sitetree==1.18.0",
     "django-apptemplates==1.5",
