@@ -32,16 +32,22 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
+COPY bootstrap-requirements.txt /code/
 
-COPY pyproject.toml /code/
+RUN pip --no-cache-dir --disable-pip-version-check install \
+      -r bootstrap-requirements.txt
 
-RUN --mount=type=cache,target=/root/.cache/pip \
+COPY pyproject.toml uv.lock /code/
+
+RUN --mount=type=cache,target=/root/.cache \
     set -x \
-    && pip --disable-pip-version-check \
-        install --group dev \
-        .
+    && uv sync \
+         --frozen \
+         --no-editable \
+         --no-install-project
 
 COPY . /code/
 
-RUN pip --disable-pip-version-check install --no-deps -e '.'
+RUN uv sync \
+      --frozen \
+      --no-editable
