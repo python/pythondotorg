@@ -35,6 +35,9 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
+ENV VIRTUAL_ENV=/code/.venv
+ENV PATH="$VIRTUAL_ENV/bin:$PATH"
+
 COPY --from=uv /uv /uvx /usr/local/bin/
 
 COPY pyproject.toml uv.lock /code/
