@@ -32,10 +32,7 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-COPY bootstrap-requirements.txt /code/
-
-RUN pip --no-cache-dir --disable-pip-version-check install \
-      -r bootstrap-requirements.txt
+COPY --from=ghcr.io/astral-sh/uv@sha256:3b7b60a81d3c57ef471703e5c83fd4aaa33abcd403596fb22ab07db85ae91347 /uv /uvx /usr/local/bin/
 
 COPY pyproject.toml uv.lock /code/
 
