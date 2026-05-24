@@ -16,8 +16,8 @@ help: ## Display this help text
 	mkdir -p .state && touch .state/db-migrated
 
 .state/db-initialized: .state/docker-build-web .state/db-migrated
-	docker compose run --rm web ./manage.py createcachetable
-	docker compose run --rm web ./manage.py loaddata fixtures/*.json
+	docker compose run --rm web uv run ./manage.py createcachetable
+	docker compose run --rm web uv run ./manage.py loaddata fixtures/*.json
 	mkdir -p .state && touch .state/db-initialized
 
 # =============================================================================
@@ -30,16 +30,16 @@ serve: .state/db-initialized ## Start the application
 	docker compose up --remove-orphans
 
 migrations: .state/db-initialized ## Generate migrations from models
-	docker compose run --rm web ./manage.py makemigrations
+	docker compose run --rm web uv run ./manage.py makemigrations
 
 migrate: .state/docker-build-web ## Run Django migrate
-	docker compose run --rm web ./manage.py migrate
+	docker compose run --rm web uv run ./manage.py migrate
 
 manage: .state/db-initialized ## Run arbitrary manage.py commands
-	docker compose run --rm web ./manage.py $(filter-out $@,$(MAKECMDGOALS))
+	docker compose run --rm web uv run ./manage.py $(filter-out $@,$(MAKECMDGOALS))
 
 shell: .state/db-initialized ## Open Django interactive shell
-	docker compose run --rm web ./manage.py shell
+	docker compose run --rm web uv run ./manage.py shell
 
 docker_shell: .state/db-initialized ## Open bash in web container
 	docker compose run --rm web /bin/bash
@@ -61,7 +61,7 @@ fmt: ## Run ruff formatter
 	@if command -v ruff >/dev/null 2>&1; then ruff format .; else docker compose run --rm web ruff format .; fi
 
 test: .state/db-initialized ## Run test suite
-	docker compose run --rm web ./manage.py test
+	docker compose run --rm web uv run python ./manage.py test
 
 ci: lint fmt test ## Run lint, fmt, then tests
 
