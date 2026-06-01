@@ -37,8 +37,10 @@ jobs:
           fi
 
       - name: Purge ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
+        env:
+          PURGE_KEYS: ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
         run: |
-          for KEY in ${{ steps.keys.outputs.keys || 'pydotorg-app' }}; do
+          for KEY in ${PURGE_KEYS}; do
             curl -fsS -X POST \
               "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/$KEY" \
               -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
