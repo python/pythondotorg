@@ -23,6 +23,7 @@ jobs:
         if: github.event_name == 'push'
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Resolve keys
         id: keys
