@@ -11,7 +11,7 @@ from apps.downloads.models import OS, Release, ReleaseFile
 from apps.downloads.serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 from apps.pages.api import PageResource
 from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
-from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
+from pydotorg.resources import GenericResource, OnlyPublishedAuthorization, StaffAuthorization
 
 
 class OSResource(GenericResource):
@@ -77,6 +77,22 @@ class ReleaseResource(GenericResource):
         abstract = False
 
 
+class OnlyPublishedReleaseFileAuthorization(StaffAuthorization):
+    """Only staff users can see files attached to unpublished releases."""
+
+    def read_list(self, object_list, bundle):
+        """Filter to files for published releases for non-staff users."""
+        if not bundle.request.user.is_staff:
+            return object_list.filter(release__is_published=True)
+        return super().read_list(object_list, bundle)
+
+    def read_detail(self, object_list, bundle):
+        """Return True only if the related release is published for non-staff users."""
+        if not bundle.request.user.is_staff:
+            return bundle.obj.release.is_published
+        return super().read_detail(object_list, bundle)
+
+
 class ReleaseFileResource(GenericResource):
     """Tastypie resource for individual release files."""
 
@@ -88,6 +104,7 @@ class ReleaseFileResource(GenericResource):
 
         queryset = ReleaseFile.objects.all()
         resource_name = "downloads/release_file"
+        authorization = OnlyPublishedReleaseFileAuthorization()
         fields = [
             "name",
             "slug",
@@ -172,6 +189,13 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     authentication_classes = (TokenAuthentication,)
     permission_classes = (IsStaffOrReadOnly,)
     filterset_class = ReleaseFileFilter
+
+    def get_queryset(self):
+        """Return all files for staff, files for published releases for everyone else."""
+        queryset = super().get_queryset()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(release__is_published=True)
 
     @action(detail=False, methods=["delete"])
     def delete_by_release(self, request):

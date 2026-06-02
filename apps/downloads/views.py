@@ -202,6 +202,13 @@ class DownloadReleaseDetail(DownloadBase, DetailView):
     model = Release
     context_object_name = "release"
 
+    def get_queryset(self):
+        """Return all releases for staff, published releases for everyone else."""
+        queryset = super().get_queryset()
+        if self.request.user.is_staff:
+            return queryset
+        return queryset.filter(is_published=True)
+
     def get_object(self):
         """Retrieve the release by slug or raise 404."""
         try:

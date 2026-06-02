@@ -58,8 +58,11 @@ class PageView(DetailView):
         matched = re.match(r"/download/releases/([\d.]+)/$", self.request.path)
         if matched is not None:
             release_slug = "python-{}".format(matched.group(1).replace(".", ""))
+            release_queryset = Release.objects.filter(slug=release_slug, release_page__isnull=True)
+            if not request.user.is_staff:
+                release_queryset = release_queryset.filter(is_published=True)
             try:
-                Release.objects.get(slug=release_slug, release_page__isnull=True)
+                release_queryset.get()
             except Release.DoesNotExist:
                 pass
             else:

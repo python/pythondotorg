@@ -45,6 +45,12 @@ class DownloadViewsTests(BaseDownloadTests):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
+    def test_download_release_detail_hides_unpublished_release(self):
+        url = reverse("download:download_release_detail", kwargs={"release_slug": self.draft_release.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+        self.assertNotIn(self.draft_release_linux.name, response.content.decode())
+
     def test_download_release_detail_not_superseded(self):
         """Test that latest releases and Python 2 do not show a superseded notice."""
         for release in [self.python_3, self.python_3_8_20, self.release_275]:
@@ -149,6 +155,22 @@ class DownloadViewsTests(BaseDownloadTests):
             ),
             status_code=301,
         )
+
+    def test_redirect_page_object_to_release_detail_page_hides_unpublished_release(self):
+        legacy_page = PageFactory(
+            title="Python 9.7.2 Release",
+            path="download/releases/9.7.2",
+            content="legacy draft release page",
+            is_published=True,
+        )
+        self.draft_release.release_page = None
+        self.draft_release.save()
+
+        response = self.client.get(legacy_page.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn(self.draft_release.get_absolute_url(), response.headers.get("Location", ""))
+        self.assertNotIn(self.draft_release_linux.name, response.content.decode())
 
 
 class RegressionTests(DownloadMixin, TestCase):
@@ -365,13 +387,19 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
-        self.assertEqual(len(content), 5)
+        self.assertEqual(len(content), 4)
+        self.assertNotIn(self.draft_release_linux.name, {release_file["name"] for release_file in content})
 
         url = self.create_url("release_file", self.release_275_linux.pk)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(content["name"], self.release_275_linux.name)
+
+        url = self.create_url("release_file", self.draft_release_linux.pk)
+        response = self.client.get(url)
+        # TODO: API v1 returns 401; and API v2 returns 404.
+        self.assertIn(response.status_code, [401, 404])
 
         url = self.create_url("release_file", 9999999)
         response = self.client.get(url)
@@ -466,10 +494,17 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         content = self.get_json(response)
         self.assertEqual(len(content), 1)
 
-        # Files for a draft release should be shown to users.
-        # TODO: We may deprecate this behavior when we drop API v1.
+        # Anonymous users should only see files attached to published releases.
         response = self.client.get(self.create_url("release_file", filters={"release": self.draft_release.pk}))
         self.assertFalse(self.draft_release.is_published)
+        self.assertEqual(response.status_code, 200)
+        content = self.get_json(response)
+        self.assertEqual(len(content), 0)
+
+        response = self.client.get(
+            self.create_url("release_file", filters={"release": self.draft_release.pk}),
+            headers={"authorization": self.Authorization},
+        )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 1)
