@@ -177,10 +177,14 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     def delete_by_release(self, request):
         """Delete all release files associated with a given release."""
         release = request.query_params.get("release")
-        if release is None:
+        if not release:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            release_id = int(release)
+        except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # TODO: We can add support for pagination in the future.
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.get_queryset().filter(release_id=release_id)
         # This calls 'mixins.DestroyModelMixin.perform_destroy()'.
         self.perform_destroy(queryset)
         return Response(status=status.HTTP_204_NO_CONTENT)

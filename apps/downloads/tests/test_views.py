@@ -547,17 +547,36 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             # http://www.django-rest-framework.org/api-guide/viewsets/#reversing-action-urls
             self.create_url(
                 "release_file/delete_by_release",
-                filters={"release": self.release_275.pk},
+                filters={
+                    "release": self.release_275.pk,
+                    "os": self.linux.pk,
+                },
             ),
             HTTP_AUTHORIZATION=self.Authorization,
         )
         self.assertEqual(response.status_code, 204)
 
         # Making a GET request after the deletion shouldn't return any results.
-        response = self.client.get(self.create_url("release_file", filters={"release": self.release_275.pk}))
+        response = self.client.get(
+            self.create_url(
+                "release_file",
+                filters={"release": self.release_275.pk},
+            )
+        )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 0)
+
+        # Files for other releases should be left intact.
+        response = self.client.get(
+            self.create_url(
+                "release_file",
+                filters={"release": self.draft_release.pk},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        content = self.get_json(response)
+        self.assertEqual(len(content), 1)
 
         # Making a valid request should return 403 Forbidden if it
         # comes from a non-staff user.
@@ -578,6 +597,19 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             HTTP_AUTHORIZATION=self.Authorization,
         )
         self.assertEqual(response.status_code, 400)
+
+        # Blank or malformed release values should also return 400 instead of
+        # reaching queryset evaluation with an invalid primary-key value.
+        for invalid_release in ("", "not-a-release-id"):
+            response = self.json_client(
+                "delete",
+                self.create_url(
+                    "release_file/delete_by_release",
+                    filters={"release": invalid_release},
+                ),
+                HTTP_AUTHORIZATION=self.Authorization,
+            )
+            self.assertEqual(response.status_code, 400)
 
         # /release_file/delete_by_release/ should only accept DELETE requests.
         response = self.client.get(
