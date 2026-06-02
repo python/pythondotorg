@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.exceptions import BadRequest
 
 from apps.downloads.models import OS, Release, ReleaseFile
 from apps.downloads.serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
@@ -88,6 +89,7 @@ class ReleaseFileResource(GenericResource):
 
         queryset = ReleaseFile.objects.all()
         resource_name = "downloads/release_file"
+        list_allowed_methods = ["get", "post", "delete"]
         fields = [
             "name",
             "slug",
@@ -116,6 +118,13 @@ class ReleaseFileResource(GenericResource):
             "description": ("contains",),
         }
         abstract = False
+
+    def delete_list(self, request, **kwargs):
+        """Delete release files only when scoped to a single release."""
+        if set(request.GET) != {"release"} or len(request.GET.getlist("release")) != 1:
+            msg = "Deleting release files requires exactly one 'release' filter."
+            raise BadRequest(msg)
+        return super().delete_list(request, **kwargs)
 
 
 # Django Rest Framework

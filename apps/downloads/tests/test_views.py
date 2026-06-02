@@ -6,7 +6,7 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from apps.downloads.models import Release
+from apps.downloads.models import OS, Release
 from apps.downloads.tests.base import BaseDownloadTests, DownloadMixin
 from apps.pages.factories import PageFactory
 from apps.users.factories import UserFactory
@@ -484,6 +484,108 @@ class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
         self.token_header = "ApiKey"
         self.Authorization = f"{self.token_header} {self.staff_user.username}:{self.staff_key}"
         self.Authorization_invalid = f"{self.token_header} invalid:token"
+
+    def test_staff_session_cannot_write_without_api_key(self):
+        self.client.force_login(self.staff_user)
+        url = self.create_url("os")
+        data = {
+            "name": "Session-only OS",
+            "slug": "session-only",
+        }
+
+        response = self.json_client("post", url, data)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="session-only").exists())
+
+    def test_inactive_staff_api_key_cannot_write(self):
+        self.staff_user.is_active = False
+        self.staff_user.save()
+        url = self.create_url("os")
+        data = {
+            "name": "Inactive API key OS",
+            "slug": "inactive-api-key",
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="inactive-api-key").exists())
+
+    def test_query_string_api_key_cannot_write(self):
+        url = self.create_url(
+            "os",
+            filters={
+                "username": self.staff_user.username,
+                "api_key": self.staff_key,
+            },
+        )
+        data = {
+            "name": "Query string API key OS",
+            "slug": "query-string-api-key",
+        }
+
+        response = self.json_client("post", url, data)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="query-string-api-key").exists())
+
+    def test_form_api_key_cannot_write(self):
+        url = self.create_url("os")
+        response = self.client.post(
+            url,
+            {
+                "username": self.staff_user.username,
+                "api_key": self.staff_key,
+                "name": "Form API key OS",
+                "slug": "form-api-key",
+            },
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="form-api-key").exists())
+
+    def test_v1_list_update_methods_are_not_allowed(self):
+        url = self.create_url("os")
+
+        response = self.json_client("put", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+        response = self.json_client("patch", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+    def test_v1_collection_delete_requires_release_file_scope(self):
+        url = self.create_url("os")
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+        url = self.create_url("release_file")
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+        url = self.create_url(
+            "release_file",
+            filters={
+                "release": self.release_275.pk,
+                "os": self.linux.pk,
+            },
+        )
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+        url = f"{self.create_url('release_file')}?release={self.release_275.pk}&release={self.draft_release.pk}"
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+    def test_v1_release_file_delete_by_release_still_works(self):
+        url = self.create_url("release_file", filters={"release": self.release_275.pk})
+
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 204)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(self.get_json(response)), 0)
 
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):
