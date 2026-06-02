@@ -20,6 +20,9 @@ class TestResources(TestCase):
     def api_key_header(self):
         return f"ApiKey {self.staff_user.username}:{self.staff_user.api_key.key}"
 
+    def assert_api_key_auth_marker(self, request, *, expected):
+        self.assertIs(getattr(request, API_KEY_AUTHENTICATED_ATTR), expected)
+
     def test_authentication(self):
         request = HttpRequest()
         auth = ApiKeyOrGuestAuthentication()
@@ -30,7 +33,7 @@ class TestResources(TestCase):
         request.META["HTTP_AUTHORIZATION"] = self.api_key_header()
         self.assertTrue(auth.is_authenticated(request))
         self.assertEqual(request.user, self.staff_user)
-        self.assertTrue(getattr(request, API_KEY_AUTHENTICATED_ATTR))
+        self.assert_api_key_auth_marker(request, expected=True)
 
     def test_authentication_staff_unauthorized(self):
         auth = ApiKeyOrGuestAuthentication()
@@ -43,6 +46,24 @@ class TestResources(TestCase):
         request.META["HTTP_AUTHORIZATION"] = f"ApiKey not-staff:{self.staff_user.api_key.key}"
         self.assertIsInstance(auth.is_authenticated(request), HttpUnauthorized)
 
+    def test_authentication_rejects_malformed_authorization_header(self):
+        auth = ApiKeyOrGuestAuthentication()
+        headers = [
+            "ApiKey missing-colon",
+            f"ApiKey {self.staff_user.username}:{self.staff_user.api_key.key}:extra",
+            f"ApiKey :{self.staff_user.api_key.key}",
+            f"ApiKey {self.staff_user.username}:",
+        ]
+
+        for header in headers:
+            with self.subTest(header=header):
+                request = HttpRequest()
+                request.user = self.staff_user
+                request.META["HTTP_AUTHORIZATION"] = header
+
+                self.assertIsInstance(auth.is_authenticated(request), HttpUnauthorized)
+                self.assert_api_key_auth_marker(request, expected=False)
+
     def test_authentication_rejects_legacy_query_credentials(self):
         auth = ApiKeyOrGuestAuthentication()
         request = HttpRequest()
@@ -50,7 +71,7 @@ class TestResources(TestCase):
         request.GET["api_key"] = self.staff_user.api_key.key
 
         self.assertIsInstance(auth.is_authenticated(request), HttpUnauthorized)
-        self.assertFalse(getattr(request, API_KEY_AUTHENTICATED_ATTR))
+        self.assert_api_key_auth_marker(request, expected=False)
 
     def test_authentication_rejects_legacy_form_credentials(self):
         auth = ApiKeyOrGuestAuthentication()
@@ -61,7 +82,7 @@ class TestResources(TestCase):
         request.POST["api_key"] = self.staff_user.api_key.key
 
         self.assertIsInstance(auth.is_authenticated(request), HttpUnauthorized)
-        self.assertFalse(getattr(request, API_KEY_AUTHENTICATED_ATTR))
+        self.assert_api_key_auth_marker(request, expected=False)
 
     def test_authentication_rejects_inactive_user(self):
         self.staff_user.is_active = False
@@ -71,7 +92,7 @@ class TestResources(TestCase):
         request.META["HTTP_AUTHORIZATION"] = self.api_key_header()
 
         self.assertFalse(auth.is_authenticated(request))
-        self.assertFalse(getattr(request, API_KEY_AUTHENTICATED_ATTR))
+        self.assert_api_key_auth_marker(request, expected=False)
 
     def test_guest_authentication_ignores_existing_session_user(self):
         auth = ApiKeyOrGuestAuthentication()
@@ -80,4 +101,4 @@ class TestResources(TestCase):
 
         self.assertTrue(auth.is_authenticated(request))
         self.assertFalse(request.user.is_authenticated)
-        self.assertFalse(getattr(request, API_KEY_AUTHENTICATED_ATTR))
+        self.assert_api_key_auth_marker(request, expected=False)

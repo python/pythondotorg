@@ -71,9 +71,16 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         return key_auth_check
 
     def extract_credentials(self, request):
-        """Return API key credentials from the Authorization header only."""
+        """Return API key credentials from the 'Authorization' header only."""
         data = self.get_authorization_data(request)
-        return data.split(":", 1)
+        if data.count(":") != 1:
+            msg = "API key credentials must use the username:key format."
+            raise ValueError(msg)
+        username, api_key = data.split(":", 1)
+        if not username or not api_key:
+            msg = "API key credentials must include both username and key."
+            raise ValueError(msg)
+        return username, api_key
 
     def get_identifier(self, request):
         """Return the username for authenticated users or IP/hostname for guests."""
@@ -87,12 +94,12 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         )
 
     def _has_legacy_credentials(self, request):
-        """Return True when credentials are supplied outside the auth header."""
-        if any(param in request.GET for param in LEGACY_CREDENTIAL_PARAMS):
-            return True
-        if request.method == "POST":
-            return any(param in request.POST for param in LEGACY_CREDENTIAL_PARAMS)
-        return False
+        """Return True when credentials are supplied outside the 'Authorization' header."""
+        return any(
+            param in credential_source
+            for credential_source in (request.GET, request.POST)
+            for param in LEGACY_CREDENTIAL_PARAMS
+        )
 
 
 class StaffAuthorization(Authorization):
@@ -110,43 +117,43 @@ class StaffAuthorization(Authorization):
 
     def create_list(self, object_list, bundle):
         """Allow only staff users to create objects in bulk."""
-        if self._is_authenticated_staff(bundle.request):
+        if self._is_authenticated_staff_via_api_key(bundle.request):
             return object_list
         msg = "Operation restricted to staff users."
         raise Unauthorized(msg)
 
     def create_detail(self, object_list, bundle):
         """Allow only staff users to create individual objects."""
-        return self._is_authenticated_staff(bundle.request)
+        return self._is_authenticated_staff_via_api_key(bundle.request)
 
     def update_list(self, object_list, bundle):
         """Allow only staff users to update objects in bulk."""
-        if self._is_authenticated_staff(bundle.request):
+        if self._is_authenticated_staff_via_api_key(bundle.request):
             return object_list
         msg = "Operation restricted to staff users."
         raise Unauthorized(msg)
 
     def update_detail(self, object_list, bundle):
         """Allow only staff users to update individual objects."""
-        return self._is_authenticated_staff(bundle.request)
+        return self._is_authenticated_staff_via_api_key(bundle.request)
 
     def delete_list(self, object_list, bundle):
         """Allow only staff users to delete objects in bulk."""
-        if not self._is_authenticated_staff(bundle.request):
+        if not self._is_authenticated_staff_via_api_key(bundle.request):
             msg = "Operation restricted to staff users."
             raise Unauthorized(msg)
         return object_list
 
     def delete_detail(self, object_list, bundle):
         """Allow only staff users to delete individual objects."""
-        if not self._is_authenticated_staff(bundle.request):
+        if not self._is_authenticated_staff_via_api_key(bundle.request):
             msg = "Operation restricted to staff users."
             raise Unauthorized(msg)
         return True
 
-    def _is_authenticated_staff(self, request):
-        """Return True when the request has a valid staff API-key identity."""
-        return request.user.is_staff and getattr(request, API_KEY_AUTHENTICATED_ATTR, False)
+    def _is_authenticated_staff_via_api_key(self, request):
+        """Return True only for staff authenticated by v1 API key, not cookies."""
+        return request.user.is_staff and getattr(request, API_KEY_AUTHENTICATED_ATTR, False) is True
 
 
 class OnlyPublishedAuthorization(StaffAuthorization):

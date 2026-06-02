@@ -498,6 +498,19 @@ class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
         self.assertEqual(response.status_code, 401)
         self.assertFalse(OS.objects.filter(slug="session-only").exists())
 
+    def test_staff_session_cannot_write_with_malformed_api_key_header(self):
+        self.client.force_login(self.staff_user)
+        url = self.create_url("os")
+        data = {
+            "name": "Malformed API key OS",
+            "slug": "malformed-api-key",
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION="ApiKey malformed")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="malformed-api-key").exists())
+
     def test_inactive_staff_api_key_cannot_write(self):
         self.staff_user.is_active = False
         self.staff_user.save()
