@@ -1,6 +1,7 @@
 import datetime as dt
 from unittest.mock import patch
 
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.db.models import URLField
 
@@ -311,3 +312,96 @@ class DownloadModelTests(BaseDownloadTests):
                         name="Windows installer draft",
                         **kwargs,
                     )
+
+    def test_release_file_rejects_new_http_urls(self):
+        for field in ReleaseFile._meta.get_fields():  # noqa: SLF001
+            if not isinstance(field, URLField):
+                continue
+            with self.subTest(field.name):
+                kwargs = {
+                    "url": "https://www.python.org/ftp/python/9.7.2/python-9.7.2.exe",
+                    # field.name may be 'url', but will replace the default value.
+                    field.name: "http://www.python.org/ftp/python/9.7.2/python-9.7.2.exe",
+                }
+                release_file = ReleaseFile(
+                    os=self.windows,
+                    release=self.draft_release,
+                    name="Windows installer draft",
+                    slug=f"windows-installer-draft-{field.name}",
+                    **kwargs,
+                )
+
+                with self.assertRaises(ValidationError) as cm:
+                    release_file.full_clean()
+                self.assertIn(field.name, cm.exception.message_dict)
+
+    def test_release_file_allows_existing_http_urls_to_be_edited(self):
+        release_file = ReleaseFile.objects.create(
+            os=self.windows,
+            release=self.draft_release,
+            name="Windows installer draft",
+            url="http://www.python.org/ftp/python/9.7.2/python-9.7.2.exe",
+        )
+
+        release_file.description = "Updated legacy metadata"
+
+        release_file.full_clean()
+
+    def test_release_file_rejects_existing_mismatched_sidecar_urls(self):
+        artifact_url = "https://www.python.org/ftp/python/9.7.2/Python-9.7.2-sidecar.tgz"
+        release_file = ReleaseFile.objects.create(
+            os=self.linux,
+            release=self.draft_release,
+            name="Source tarball draft",
+            slug="source-tarball-draft-mismatch",
+            url=artifact_url,
+            gpg_signature_file=artifact_url.replace("9.7.2", "9.7.1") + ".asc",
+        )
+
+        release_file.description = "Updated metadata"
+
+        with self.assertRaises(ValidationError) as cm:
+            release_file.full_clean()
+        self.assertIn("gpg_signature_file", cm.exception.message_dict)
+
+    def test_release_file_sidecar_urls_must_extend_artifact_url(self):
+        artifact_url = "https://www.python.org/ftp/python/9.7.2/Python-9.7.2-sidecar.tgz"
+        cases = {
+            "gpg_signature_file": f"{artifact_url}.asc",
+            "sigstore_signature_file": f"{artifact_url}.sig",
+            "sigstore_cert_file": f"{artifact_url}.crt",
+            "sigstore_bundle_file": f"{artifact_url}.sigstore",
+            "sbom_spdx2_file": f"{artifact_url}.spdx.json",
+        }
+
+        for field_name, expected_url in cases.items():
+            with self.subTest(field_name):
+                release_file = ReleaseFile(
+                    os=self.linux,
+                    release=self.draft_release,
+                    name="Source tarball draft",
+                    slug=f"source-tarball-draft-{field_name}",
+                    url=artifact_url,
+                    **{field_name: expected_url.replace("9.7.2", "9.7.1")},
+                )
+
+                with self.assertRaises(ValidationError) as cm:
+                    release_file.full_clean()
+                self.assertIn(field_name, cm.exception.message_dict)
+
+    def test_release_file_accepts_sidecar_urls_for_same_artifact(self):
+        artifact_url = "https://www.python.org/ftp/python/9.7.2/Python-9.7.2-sidecar.tgz"
+        release_file = ReleaseFile(
+            os=self.linux,
+            release=self.draft_release,
+            name="Source tarball draft",
+            slug="source-tarball-draft",
+            url=artifact_url,
+            gpg_signature_file=f"{artifact_url}.asc",
+            sigstore_signature_file=f"{artifact_url}.sig",
+            sigstore_cert_file=f"{artifact_url}.crt",
+            sigstore_bundle_file=f"{artifact_url}.sigstore",
+            sbom_spdx2_file=f"{artifact_url}.spdx.json",
+        )
+
+        release_file.full_clean()

@@ -1,5 +1,6 @@
 """REST API endpoints for downloads using Tastypie and Django REST Framework."""
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
@@ -7,12 +8,27 @@ from rest_framework.response import Response
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import BadRequest
+from tastypie.validation import Validation
 
 from apps.downloads.models import OS, Release, ReleaseFile
 from apps.downloads.serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 from apps.pages.api import PageResource
 from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
 from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
+
+
+class ReleaseFileValidation(Validation):
+    """Tastypie validation for release-file URL relationships."""
+
+    def is_valid(self, bundle, request=None):
+        """Return validation errors for hydrated release-file writes."""
+        if bundle.obj is None:
+            return {}
+        try:
+            bundle.obj.clean()
+        except DjangoValidationError as exc:
+            return exc.message_dict
+        return {}
 
 
 class OSResource(GenericResource):
@@ -90,6 +106,7 @@ class ReleaseFileResource(GenericResource):
         queryset = ReleaseFile.objects.all()
         resource_name = "downloads/release_file"
         list_allowed_methods = ["get", "post", "delete"]
+        validation = ReleaseFileValidation()
         fields = [
             "name",
             "slug",

@@ -19,6 +19,24 @@ from apps.pages.models import Page
 from fastly.utils import purge_surrogate_key, purge_url
 
 DEFAULT_MARKUP_TYPE = getattr(settings, "DEFAULT_MARKUP_TYPE", "markdown")
+PYTHON_DOT_ORG_HTTPS_PREFIX = "https://www.python.org/"
+PYTHON_DOT_ORG_HTTP_PREFIX = "http://www.python.org/"
+RELEASE_FILE_URL_FIELDS = (
+    "url",
+    "gpg_signature_file",
+    "sigstore_signature_file",
+    "sigstore_cert_file",
+    "sigstore_bundle_file",
+    "sbom_spdx2_file",
+)
+RELEASE_FILE_SIDECAR_SUFFIXES = {
+    "gpg_signature_file": ".asc",
+    "sigstore_signature_file": ".sig",
+    "sigstore_cert_file": ".crt",
+    "sigstore_bundle_file": ".sigstore",
+    "sbom_spdx2_file": ".spdx.json",
+}
+RELEASE_FILE_HTTPS_ERROR = "Release file URLs must begin with 'https://www.python.org/'."
 
 
 class OS(ContentManageable, NameSlugModel):
@@ -361,11 +379,60 @@ def condition_url_is_blank_or_python_dot_org(column: str):
     """Conditions for a URLField column to force 'http[s]://python.org'."""
     return (
         models.Q(**{f"{column}__exact": ""})
-        | models.Q(**{f"{column}__startswith": "https://www.python.org/"})
+        | models.Q(**{f"{column}__startswith": PYTHON_DOT_ORG_HTTPS_PREFIX})
         # Older releases allowed 'http://'. 'https://' is required at
         # the API level, so shouldn't show up in newer releases.
-        | models.Q(**{f"{column}__startswith": "http://www.python.org/"})
+        | models.Q(**{f"{column}__startswith": PYTHON_DOT_ORG_HTTP_PREFIX})
     )
+
+
+def _release_file_url_values(release_file):
+    return {field_name: getattr(release_file, field_name) or "" for field_name in RELEASE_FILE_URL_FIELDS}
+
+
+def _previous_release_file_url_values(release_file):
+    if release_file.pk is None:
+        return None
+    return type(release_file).objects.filter(pk=release_file.pk).values(*RELEASE_FILE_URL_FIELDS).first()
+
+
+def _release_file_url_changed(field_name, values, previous_values):
+    if previous_values is None:
+        return True
+    return values[field_name] != (previous_values[field_name] or "")
+
+
+def _add_validation_error(errors, field_name, message):
+    errors.setdefault(field_name, []).append(message)
+
+
+def validate_release_file_urls(release_file):
+    """Validate current ReleaseFile URL writes without rejecting unchanged legacy rows."""
+    values = _release_file_url_values(release_file)
+    previous_values = _previous_release_file_url_values(release_file)
+    errors = {}
+
+    for field_name, value in values.items():
+        if not value or value.startswith(PYTHON_DOT_ORG_HTTPS_PREFIX):
+            continue
+        if _release_file_url_changed(field_name, values, previous_values):
+            _add_validation_error(errors, field_name, RELEASE_FILE_HTTPS_ERROR)
+
+    artifact_url = values["url"]
+    if artifact_url:
+        for field_name, suffix in RELEASE_FILE_SIDECAR_SUFFIXES.items():
+            sidecar_url = values[field_name]
+            expected_url = f"{artifact_url}{suffix}"
+            if not sidecar_url or sidecar_url == expected_url:
+                continue
+            _add_validation_error(
+                errors,
+                field_name,
+                f"Sidecar URL must match the artifact URL plus '{suffix}'.",
+            )
+
+    if errors:
+        raise ValidationError(errors)
 
 
 class ReleaseFile(ContentManageable, NameSlugModel):
@@ -394,6 +461,11 @@ class ReleaseFile(ContentManageable, NameSlugModel):
     sha256_sum = models.CharField("SHA256 Sum", max_length=200, blank=True)
     filesize = models.IntegerField(default=0)
     download_button = models.BooleanField(default=False, help_text="Use for the supernav download button for this OS")
+
+    def clean(self):
+        """Validate release-file URL relationships."""
+        super().clean()
+        validate_release_file_urls(self)
 
     def validate_unique(self, exclude=None):
         """Ensure only one release file per OS has the download button enabled."""
