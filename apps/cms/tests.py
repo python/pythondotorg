@@ -81,6 +81,12 @@ class Test404(TestCase):
     def test_legacy_path(self):
         self.assertEqual(legacy_path("/any/thing"), "http://legacy.python.org/any/thing")
 
+    def test_legacy_path_with_encoded_slash(self):
+        self.assertEqual(legacy_path("/%2Fevil.test/x"), "http://legacy.python.org/%2Fevil.test/x")
+
+    def test_legacy_path_with_decoded_encoded_slash(self):
+        self.assertEqual(legacy_path("//evil.test/x"), "http://legacy.python.org//evil.test/x")
+
     def test_custom_404(self):
         """Ensure custom 404 is set to 5 minutes"""
         response = self.client.get("/foo-bar/baz/9876")
