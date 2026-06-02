@@ -27,7 +27,7 @@ class ApiKeyOrGuestAuthentication(ApiKeyAuthentication):
         if self._has_legacy_credentials(request):
             return HttpUnauthorized()
 
-        if not request.META.get("HTTP_AUTHORIZATION"):
+        if not request.headers.get("authorization"):
             return self._authenticate_guest(request)
 
         try:
