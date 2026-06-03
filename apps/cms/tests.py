@@ -81,6 +81,9 @@ class Test404(TestCase):
     def test_legacy_path(self):
         self.assertEqual(legacy_path("/any/thing"), "http://legacy.python.org/any/thing")
 
+    def test_legacy_path_without_leading_slash(self):
+        self.assertEqual(legacy_path("any/thing"), "http://legacy.python.org/any/thing")
+
     def test_legacy_path_with_encoded_slash(self):
         self.assertEqual(legacy_path("/%2Fevil.test/x"), "http://legacy.python.org/%2Fevil.test/x")
 
