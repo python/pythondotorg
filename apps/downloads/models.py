@@ -386,37 +386,24 @@ def condition_url_is_blank_or_python_dot_org(column: str):
     )
 
 
-def _release_file_url_values(release_file):
-    return {field_name: getattr(release_file, field_name) or "" for field_name in RELEASE_FILE_URL_FIELDS}
-
-
-def _previous_release_file_url_values(release_file):
-    if release_file.pk is None:
-        return None
-    return type(release_file).objects.filter(pk=release_file.pk).values(*RELEASE_FILE_URL_FIELDS).first()
-
-
-def _release_file_url_changed(field_name, values, previous_values):
-    if previous_values is None:
-        return True
-    return values[field_name] != (previous_values[field_name] or "")
-
-
-def _add_validation_error(errors, field_name, message):
-    errors.setdefault(field_name, []).append(message)
-
-
 def validate_release_file_urls(release_file):
     """Validate current ReleaseFile URL writes without rejecting unchanged legacy rows."""
-    values = _release_file_url_values(release_file)
-    previous_values = _previous_release_file_url_values(release_file)
+    values = {}
+    for field_name in RELEASE_FILE_URL_FIELDS:
+        values[field_name] = getattr(release_file, field_name) or ""
+
+    previous_values = None
+    if release_file.pk is not None:
+        release_file_model = type(release_file)
+        previous_values_qs = release_file_model.objects.filter(pk=release_file.pk)
+        previous_values = previous_values_qs.values(*RELEASE_FILE_URL_FIELDS).first()
     errors = {}
 
     for field_name, value in values.items():
         if not value or value.startswith(PYTHON_DOT_ORG_HTTPS_PREFIX):
             continue
-        if _release_file_url_changed(field_name, values, previous_values):
-            _add_validation_error(errors, field_name, RELEASE_FILE_HTTPS_ERROR)
+        if previous_values is None or value != (previous_values[field_name] or ""):
+            errors.setdefault(field_name, []).append(RELEASE_FILE_HTTPS_ERROR)
 
     artifact_url = values["url"]
     if artifact_url:
@@ -425,11 +412,8 @@ def validate_release_file_urls(release_file):
             expected_url = f"{artifact_url}{suffix}"
             if not sidecar_url or sidecar_url == expected_url:
                 continue
-            _add_validation_error(
-                errors,
-                field_name,
-                f"Sidecar URL must match the artifact URL plus '{suffix}'.",
-            )
+            message = f"Sidecar URL must match the artifact URL plus '{suffix}'."
+            errors.setdefault(field_name, []).append(message)
 
     if errors:
         raise ValidationError(errors)
