@@ -19,10 +19,11 @@ jobs:
   purge:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         if: github.event_name == 'push'
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Resolve keys
         id: keys
@@ -36,8 +37,10 @@ jobs:
           fi
 
       - name: Purge ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
+        env:
+          PURGE_KEYS: ${{ steps.keys.outputs.keys || 'pydotorg-app' }}
         run: |
-          for KEY in ${{ steps.keys.outputs.keys || 'pydotorg-app' }}; do
+          for KEY in ${PURGE_KEYS}; do
             curl -fsS -X POST \
               "https://api.fastly.com/service/${{ secrets.FASTLY_SERVICE_ID }}/purge/$KEY" \
               -H "Fastly-Key: ${{ secrets.FASTLY_API_KEY }}"
