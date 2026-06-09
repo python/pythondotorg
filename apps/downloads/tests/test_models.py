@@ -311,3 +311,79 @@ class DownloadModelTests(BaseDownloadTests):
                         name="Windows installer draft",
                         **kwargs,
                     )
+
+class ReleaseNotesURLTests(BaseDownloadTests):
+    """Tests for Release.corrected_release_notes_url property."""
+
+    def test_hg_url_converted_to_github(self):
+        """An hg.python.org URL is remapped to its GitHub equivalent."""
+        release = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.3.6",
+            is_published=True,
+            release_notes_url="http://hg.python.org/cpython/file/v3.3.6/Misc/NEWS",
+        )
+        self.assertEqual(
+            release.corrected_release_notes_url,
+            "https://github.com/python/cpython/blob/v3.3.6/Misc/NEWS",
+        )
+
+    def test_https_hg_url_also_converted(self):
+        """An https hg.python.org URL is also remapped to GitHub."""
+        release = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.2.6",
+            is_published=True,
+            release_notes_url="https://hg.python.org/cpython/file/v3.2.6/Misc/NEWS",
+        )
+        self.assertEqual(
+            release.corrected_release_notes_url,
+            "https://github.com/python/cpython/blob/v3.2.6/Misc/NEWS",
+        )
+
+    def test_modern_url_returned_unchanged(self):
+        """A non-hg URL (e.g. already on GitHub) is returned unchanged."""
+        url = "https://github.com/python/cpython/blob/v3.12.0/Misc/NEWS.d"
+        release = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.12.0",
+            is_published=True,
+            release_notes_url=url,
+        )
+        self.assertEqual(release.corrected_release_notes_url, url)
+
+    def test_empty_url_returns_empty(self):
+        """An empty release_notes_url returns an empty string."""
+        release = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.11.0",
+            is_published=True,
+            release_notes_url="",
+        )
+        self.assertEqual(release.corrected_release_notes_url, "")
+
+    def test_raw_file_hg_url_converted_to_github_raw(self):
+        """A raw-file hg.python.org URL is remapped to raw.githubusercontent.com."""
+        release = Release.objects.create(
+            version=Release.PYTHON2,
+            name="Python 2.7.3",
+            is_published=True,
+            release_notes_url="http://hg.python.org/cpython/raw-file/v2.7.3/Misc/NEWS",
+        )
+        self.assertEqual(
+            release.corrected_release_notes_url,
+            "https://raw.githubusercontent.com/python/cpython/v2.7.3/Misc/NEWS",
+        )
+
+    def test_https_raw_file_hg_url_also_converted(self):
+        """An https raw-file hg.python.org URL is also remapped to raw.githubusercontent.com."""
+        release = Release.objects.create(
+            version=Release.PYTHON2,
+            name="Python 2.6.9",
+            is_published=True,
+            release_notes_url="https://hg.python.org/cpython/raw-file/v2.6.9/Misc/NEWS",
+        )
+        self.assertEqual(
+            release.corrected_release_notes_url,
+            "https://raw.githubusercontent.com/python/cpython/v2.6.9/Misc/NEWS",
+        )
