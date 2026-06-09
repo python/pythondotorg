@@ -6,7 +6,12 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from apps.downloads.models import OS, Release
+from apps.downloads.models import (
+    OS,
+    RELEASE_FILE_HTTPS_ERROR,
+    RELEASE_FILE_SIDECAR_SUFFIXES,
+    Release,
+)
 from apps.downloads.tests.base import BaseDownloadTests, DownloadMixin
 from apps.pages.factories import PageFactory
 from apps.users.factories import UserFactory
@@ -182,6 +187,17 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         if "objects" in json_response:
             return json_response["objects"]
         return json_response
+
+    def assert_release_file_validation_error(self, response, field_name, message):
+        content = self.get_json(response)
+        if self.api_version == "v1":
+            content = content["downloads/release_file"]
+
+        self.assertIn(field_name, content)
+        errors = content[field_name]
+        if isinstance(errors, str):
+            errors = [errors]
+        self.assertIn(message, [str(error) for error in errors])
 
     def test_invalid_token(self):
         url = self.create_url("os", self.linux.pk)
@@ -411,6 +427,110 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertIn(data["os"], content["os"])
         self.assertIn(data["release"], content["release"])
         self.assertEqual(content["description"], data["description"])
+
+    def test_post_release_file_rejects_http_urls(self):
+        url = self.create_url("release_file")
+        data = {
+            "name": "HTTP file",
+            "slug": "http-file",
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": "This is a description.",
+            "is_source": True,
+            "url": "http://www.python.org/ftp/python/2.7.5/Python-2.7.5-http.tgz",
+            "md5_sum": "098f6bcd4621d373cade4e832627b4f6",
+            "filesize": 123456,
+            "download_button": False,
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(response, "url", RELEASE_FILE_HTTPS_ERROR)
+
+    def test_post_release_file_rejects_sidecars_for_other_artifacts(self):
+        url = self.create_url("release_file")
+        artifact_url = "https://www.python.org/ftp/python/2.7.5/Python-2.7.5-api.tgz"
+        wrong_gpg_signature_url = "https://www.python.org/ftp/python/2.7.5/Python-2.7.4-api.tgz.asc"
+        data = {
+            "name": "File with wrong sidecar",
+            "slug": "file-with-wrong-sidecar",
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": "This is a description.",
+            "is_source": True,
+            "url": artifact_url,
+            "gpg_signature_file": wrong_gpg_signature_url,
+            "md5_sum": "098f6bcd4621d373cade4e832627b4f6",
+            "filesize": 123456,
+            "download_button": False,
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(
+            response,
+            "gpg_signature_file",
+            "Sidecar URL must match the artifact URL plus '.asc'.",
+        )
+
+    def test_update_release_file_rejects_changed_http_urls(self):
+        url = self.create_url("release_file", self.release_275_linux.pk)
+        data = {
+            "name": self.release_275_linux.name,
+            "slug": self.release_275_linux.slug,
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": self.release_275_linux.description,
+            "is_source": self.release_275_linux.is_source,
+            "url": "http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz",
+            "md5_sum": self.release_275_linux.md5_sum,
+            "sha256_sum": self.release_275_linux.sha256_sum,
+            "filesize": self.release_275_linux.filesize,
+            "download_button": self.release_275_linux.download_button,
+        }
+
+        response = self.json_client("put", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        if self.api_version == "v1":
+            self.assertEqual(response.status_code, 405)
+            return
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(response, "url", RELEASE_FILE_HTTPS_ERROR)
+
+    def test_update_release_file_rejects_changed_sidecars_for_other_artifacts(self):
+        url = self.create_url("release_file", self.release_275_linux.pk)
+        artifact_url = self.release_275_linux.url
+        data = {
+            "name": self.release_275_linux.name,
+            "slug": self.release_275_linux.slug,
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": self.release_275_linux.description,
+            "is_source": self.release_275_linux.is_source,
+            "url": artifact_url,
+            "gpg_signature_file": artifact_url.replace("2.7.5", "2.7.4") + ".asc",
+            "md5_sum": self.release_275_linux.md5_sum,
+            "sha256_sum": self.release_275_linux.sha256_sum,
+            "filesize": self.release_275_linux.filesize,
+            "download_button": self.release_275_linux.download_button,
+        }
+
+        response = self.json_client("put", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        if self.api_version == "v1":
+            self.assertEqual(response.status_code, 405)
+            return
+
+        self.assertEqual(response.status_code, 400)
+        gpg_signature_suffix = RELEASE_FILE_SIDECAR_SUFFIXES["gpg_signature_file"]
+        self.assert_release_file_validation_error(
+            response,
+            "gpg_signature_file",
+            f"Sidecar URL must match the artifact URL plus '{gpg_signature_suffix}'.",
+        )
 
     def test_delete_release_file(self):
         url = self.create_url("release_file", self.release_275_linux.pk)
