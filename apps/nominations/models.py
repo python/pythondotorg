@@ -2,6 +2,7 @@
 
 import datetime
 
+from colorfield.fields import ColorField
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -13,12 +14,48 @@ from markupfield.fields import MarkupField
 from apps.users.models import User
 from fastly.utils import purge_url
 
+DEFAULT_ACCENT_COLOR = "#0073b7"
+
+
+class ElectionKind(models.Model):
+    """An admin-managed category of election (Board, Packaging Council, ...).
+
+    Each kind carries an accent color used to visually distinguish its
+    election pages. New kinds can be added in the Django admin without
+    code changes.
+    """
+
+    name = models.CharField(max_length=100, unique=True)
+    slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
+    accent_color = ColorField(default=DEFAULT_ACCENT_COLOR, help_text="Accent color used to theme this kind's pages.")
+
+    class Meta:
+        """Meta configuration for ElectionKind."""
+
+        ordering = ["name"]
+
+    def __str__(self):
+        """Return the kind name."""
+        return self.name
+
+    def save(self, *args, **kwargs):
+        """Generate slug from name before saving."""
+        self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
 
 class Election(models.Model):
     """A PSF board election with nomination open/close dates."""
 
     name = models.CharField(max_length=100)
     date = models.DateField()
+    kind = models.ForeignKey(
+        ElectionKind,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="elections",
+    )
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(escape_html=False, markup_type="markdown", blank=False, null=True)
@@ -38,6 +75,11 @@ class Election(models.Model):
         """Generate slug from name before saving."""
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def accent_color(self):
+        """Return the CSS accent color for this election's kind."""
+        return self.kind.accent_color if self.kind else DEFAULT_ACCENT_COLOR
 
     @property
     def nominations_open(self):

@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.test import TestCase, override_settings
 from django.urls import reverse
 
+from apps.downloads.models import Release
 from apps.downloads.templatetags.download_tags import get_eol_info, get_release_cycle_data, render_active_releases
 from apps.downloads.tests.base import BaseDownloadTests
 
@@ -14,8 +15,8 @@ MOCK_RELEASE_CYCLE = {
     "3.9": {"status": "end-of-life", "end_of_life": "2025-10-31", "pep": 596},
     "3.10": {"status": "security", "end_of_life": "2026-10-04", "pep": 619},
     "3.14": {"status": "bugfix", "first_release": "2025-10-07", "end_of_life": "2030-10", "pep": 745},
-    "3.15": {"status": "feature", "first_release": "2026-10-01", "end_of_life": "2031-10", "pep": 790},
-    "3.16": {"status": "prerelease", "first_release": "2027-10-06", "end_of_life": "2032-10", "pep": 826},
+    "3.15": {"status": "prerelease", "first_release": "2026-10-01", "end_of_life": "2031-10", "pep": 790},
+    "3.16": {"status": "feature", "first_release": "2027-10-06", "end_of_life": "2032-10", "pep": 826},
     "3.17": {"status": "planned", "first_release": "2028-10-05", "end_of_life": "2033-10"},
 }
 
@@ -177,6 +178,14 @@ class RenderActiveReleasesTests(BaseDownloadTests):
     def setUp(self):
         super().setUp()
         cache.clear()
+        # A 3.15 prerelease exists in the DB (e.g. b1 shipped); 3.16 has no
+        # published release yet, so it should remain hidden.
+        self.python_3_15_b1 = Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.15.0b1",
+            is_published=True,
+            pre_release=True,
+        )
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
     def test_versions_sorted_descending(self, mock_get_data):
@@ -186,12 +195,13 @@ class RenderActiveReleasesTests(BaseDownloadTests):
         result = render_active_releases()
 
         versions = [r["version"] for r in result["releases"]]
-        # 3.15, 3.14, 3.10, 3.9 (first EOL); 3.8 and 2.7 skipped (older EOL)
+        # 3.15, 3.14, 3.10, 3.9 (first EOL); 3.8 and 2.7 skipped (older EOL).
+        # 3.16 ('feature') and 3.17 ('planned') skipped: no published Release in DB.
         self.assertEqual(versions, ["3.15", "3.14", "3.10", "3.9"])
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
-    def test_feature_status_becomes_prerelease(self, mock_get_data):
-        """Test that 'feature' status is converted to 'pre-release'."""
+    def test_prerelease_status_relabelled(self, mock_get_data):
+        """Test that 'prerelease' status is converted to 'pre-release' for display."""
         mock_get_data.return_value = MOCK_RELEASE_CYCLE
 
         result = render_active_releases()
@@ -201,8 +211,8 @@ class RenderActiveReleasesTests(BaseDownloadTests):
         self.assertEqual(prerelease["status"], "pre-release")
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
-    def test_feature_first_release_shows_planned(self, mock_get_data):
-        """Test that feature releases show (planned) in first_release."""
+    def test_prerelease_first_release_shows_planned(self, mock_get_data):
+        """Test that pre-release entries show (planned) in first_release."""
         mock_get_data.return_value = MOCK_RELEASE_CYCLE
 
         result = render_active_releases()
@@ -237,15 +247,33 @@ class RenderActiveReleasesTests(BaseDownloadTests):
         self.assertIn("<a href=", status)
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
-    def test_planned_and_prerelease_releases_excluded(self, mock_get_data):
-        """Test that planned and prerelease releases are not shown."""
+    def test_pre_release_versions_without_shipped_release_excluded(self, mock_get_data):
+        """Pre-release statuses ('feature', 'planned') without a shipped release stay hidden."""
         mock_get_data.return_value = MOCK_RELEASE_CYCLE
 
         result = render_active_releases()
 
         versions = [r["version"] for r in result["releases"]]
+        # 3.16 ('feature') and 3.17 ('planned') have no published Release in the DB.
         self.assertNotIn("3.16", versions)
         self.assertNotIn("3.17", versions)
+
+    @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
+    def test_feature_version_shown_once_alpha_ships(self, mock_get_data):
+        """A 'feature' (in-development on main) version is shown once an alpha ships."""
+        mock_get_data.return_value = MOCK_RELEASE_CYCLE
+        Release.objects.create(
+            version=Release.PYTHON3,
+            name="Python 3.16.0a1",
+            is_published=True,
+            pre_release=True,
+        )
+
+        result = render_active_releases()
+
+        entry = next(r for r in result["releases"] if r["version"] == "3.16")
+        self.assertEqual(entry["status"], "pre-release")
+        self.assertEqual(entry["first_release"], "2027-10-06 (planned)")
 
     @mock.patch("apps.downloads.templatetags.download_tags.get_release_cycle_data")
     def test_api_failure_returns_empty_releases(self, mock_get_data):
