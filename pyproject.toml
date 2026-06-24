@@ -8,7 +8,7 @@ packages = []
 [project]
 name = "pythondotorg"
 version = "0.1.0"
-requires-python = ">=3.12"
+requires-python = ">=3.14"
 dependencies = [
     "dj-database-url==0.5.0",
     "django-pipeline==4.1.0",
