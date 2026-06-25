@@ -2,7 +2,6 @@
 
 import io
 import zipfile
-from tempfile import NamedTemporaryFile
 
 from django.contrib import messages
 from django.db import transaction
@@ -407,9 +406,7 @@ def export_assets_as_zipfile(model_admin, request, queryset):
         else:
             suffix = "." + asset.value.name.split(".")[-1]
             prefix = asset.internal_name
-            with NamedTemporaryFile(suffix=suffix, prefix=prefix) as temp_file:
-                temp_file.write(asset.value.read())
-                zip_file.write(temp_file.name, arcname=f"{zipdir}/{prefix}{suffix}")
+            zip_file.writestr(f"{zipdir}/{prefix}{suffix}", asset.value.read())
 
     zip_file.close()
     response = HttpResponse(buffer.getvalue())
