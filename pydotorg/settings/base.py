@@ -279,6 +279,10 @@ EVENTS_TO_EMAIL = "events@python.org"
 SPONSORSHIP_NOTIFICATION_FROM_EMAIL = config("SPONSORSHIP_NOTIFICATION_FROM_EMAIL", default="sponsors@python.org")
 SPONSORSHIP_NOTIFICATION_TO_EMAIL = config("SPONSORSHIP_NOTIFICATION_TO_EMAIL", default="psf-sponsors@python.org")
 PYPI_SPONSORS_CSV = str(Path(BASE) / "data" / "pypi-sponsors.csv")
+# Required-text-asset benefits whose internal_name contains any of these
+# substrings get the split-field job postings widget instead of a plain
+# textarea. The composed pipe-delimited text is stored in the same field.
+STRUCTURED_JOB_POSTINGS_INTERNAL_NAMES = ("job_listings", "job_postings")
 
 # Mail
 DEFAULT_FROM_EMAIL = "noreply@python.org"

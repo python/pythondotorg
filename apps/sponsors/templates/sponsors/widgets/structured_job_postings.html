@@ -1,0 +1,33 @@
+{% spaceless %}
+<div class="structured-job-postings">
+  <p class="help">
+    Enter each job posting on its own row. All fields optional per row — leave any row blank to skip.
+  </p>
+  <table class="structured-job-postings__table" style="width:100%;border-collapse:collapse;">
+    <thead>
+      <tr>
+        <th style="text-align:left;padding:0.25rem 0.5rem;">Job title</th>
+        <th style="text-align:left;padding:0.25rem 0.5rem;">Location</th>
+        <th style="text-align:left;padding:0.25rem 0.5rem;">Link to job</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in widget.rows %}
+        <tr>
+          <td style="padding:0.25rem 0.5rem;">
+            <input type="text" name="{{ widget.name }}__title" value="{{ row.title }}" maxlength="255" style="width:100%;">
+          </td>
+          <td style="padding:0.25rem 0.5rem;">
+            <input type="text" name="{{ widget.name }}__location" value="{{ row.location }}" maxlength="255" style="width:100%;">
+          </td>
+          <td style="padding:0.25rem 0.5rem;">
+            <input type="url" name="{{ widget.name }}__url" value="{{ row.url }}" maxlength="500" style="width:100%;">
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {# Hide the original field input — the rows above replace it. #}
+  <input type="hidden" name="{{ widget.name }}" value="">
+</div>
+{% endspaceless %}
