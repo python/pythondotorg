@@ -149,8 +149,9 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
     form_class = NominationForm
 
     def test_func(self):
-        """Only allow the original nominator to edit."""
-        return self.request.user == self.get_object().nominator
+        """Only allow the original nominator to edit an editable nomination."""
+        nomination = self.get_object()
+        return self.request.user == nomination.nominator and nomination.editable(user=self.request.user)
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
@@ -179,8 +180,13 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     template_name_suffix = "_accept_form"
 
     def test_func(self):
-        """Only allow the nominee to accept."""
-        return self.request.user == self.get_object().nominee.user
+        """Only allow the nominee to accept an editable nomination."""
+        nomination = self.get_object()
+        return bool(
+            nomination.nominee
+            and self.request.user == nomination.nominee.user
+            and nomination.editable(user=self.request.user)
+        )
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
