@@ -50,7 +50,7 @@ dependencies = [
     "django-countries==8.2.0",
     "num2words==0.5.13",
     "django-polymorphic==4.1.0",
-    "sorl-thumbnail==12.11.0",
+    "sorl-thumbnail==13.0.0",
     "django-extensions==3.2.3",
     "django-import-export==2.7.1",
     "pypandoc==1.12",
