@@ -370,24 +370,3 @@ class UpdateSponsorshipAssetsView(UpdateView):
         return redirect(self.get_success_url())
 
 
-@method_decorator(login_required(login_url=settings.LOGIN_URL), name="dispatch")
-class ProvidedSponsorshipAssetsView(DetailView):
-    """TODO: Deprecate this view now that everything lives in the SponsorshipDetailView."""
-
-    object_name = "sponsorship"
-    template_name = "users/sponsorship_assets_view.html"
-
-    def get_queryset(self):
-        """Return all sponsorships for superusers, user-visible ones otherwise."""
-        if self.request.user.is_superuser:
-            return Sponsorship.objects.select_related("sponsor").all()
-        return self.request.user.sponsorships.select_related("sponsor")
-
-    def get_context_data(self, **kwargs):
-        """Add provided assets with values to the context."""
-        context = super().get_context_data(**kwargs)
-        provided_assets = BenefitFeature.objects.provided_assets().from_sponsorship(context["sponsorship"])
-        provided = [asset for asset in provided_assets if bool(asset.value)]
-        context["provided_assets"] = provided
-        context["provided_asset_id"] = self.request.GET.get("provided_asset", None)
-        return context
