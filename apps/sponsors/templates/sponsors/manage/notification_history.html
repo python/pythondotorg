@@ -1,0 +1,115 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Notification History | Sponsorship Management{% endblock %}
+
+{% with active_tab="notifications" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Notification History</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+<!-- Subtabs -->
+<div style="display:flex;gap:0;border-bottom:1px solid #e0e0e0;margin-bottom:20px;">
+    <a href="{% url 'manage_notification_templates' %}" style="padding:8px 18px;font-size:13px;font-weight:500;color:#777;text-decoration:none;margin-bottom:-1px;">Templates</a>
+    <a href="{% url 'manage_notification_history' %}" style="padding:8px 18px;font-size:13px;font-weight:600;color:#3776ab;border-bottom:2px solid #3776ab;text-decoration:none;margin-bottom:-1px;">History</a>
+</div>
+
+<div class="manage-section">
+    <div class="manage-section-header" style="flex-wrap:wrap;gap:12px;">
+        <h2>Sent Notifications <span class="badge">{{ paginator.count|default:logs|length }}</span></h2>
+        <form method="get" style="display:flex;gap:6px;align-items:center;">
+            <input type="text" name="search" id="history-search" placeholder="Search subject, sponsor, recipient..." value="{{ filter_search }}" autocomplete="off" style="width:260px;padding:6px 10px;border:1px solid #ccc;border-radius:4px;font-size:13px;">
+            <button type="submit" class="btn btn-sm btn-secondary">Go</button>
+            {% if filter_search %}
+            <a href="{% url 'manage_notification_history' %}" class="btn btn-sm btn-secondary">Clear</a>
+            {% endif %}
+        </form>
+    </div>
+
+    {% if logs %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Sent</th>
+                <th>Sponsor</th>
+                <th style="width:30%;">Subject</th>
+                <th>Recipients</th>
+                <th>Contact Types</th>
+                <th>Sent By</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for log in logs %}
+            <tr class="log-row" style="cursor:pointer;" onclick="toggleLogDetail(this)">
+                <td style="font-size:12px;color:#777;white-space:nowrap;">{{ log.sent_at|date:"M j, Y H:i" }}</td>
+                <td>
+                    {% if log.sponsorship.sponsor %}
+                    <a href="{% url 'manage_sponsorship_detail' log.sponsorship.pk %}" style="font-weight:500;color:#1a1a2e;text-decoration:none;" onclick="event.stopPropagation();">{{ log.sponsorship.sponsor.name }}</a>
+                    {% else %}Unknown{% endif %}
+                </td>
+                <td style="font-weight:500;">{{ log.subject|truncatewords:12 }}</td>
+                <td style="font-size:12px;color:#555;">{{ log.recipients|truncatechars:40 }}</td>
+                <td style="font-size:12px;">
+                    {% for ct in log.contact_type_list %}
+                    <span class="tag tag-gray" style="margin-right:2px;">{{ ct }}</span>
+                    {% endfor %}
+                </td>
+                <td style="font-size:12px;color:#777;">
+                    {% if log.sent_by %}{{ log.sent_by.get_full_name|default:log.sent_by.email }}{% else %}<span style="color:#ccc;">system</span>{% endif %}
+                </td>
+            </tr>
+            <tr class="log-detail" style="display:none;">
+                <td colspan="6" style="background:#f7f8fa;padding:16px 20px;">
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">To:</strong>
+                        <span style="font-size:13px;">{{ log.recipients }}</span>
+                    </div>
+                    <div style="margin-bottom:8px;">
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Subject:</strong>
+                        <span style="font-size:13px;">{{ log.subject }}</span>
+                    </div>
+                    <div>
+                        <strong style="font-size:11px;text-transform:uppercase;letter-spacing:0.5px;color:#999;">Content:</strong>
+                        <div style="margin-top:4px;padding:12px;background:#fff;border:1px solid #e8e8e8;border-radius:4px;font-size:13px;white-space:pre-wrap;max-height:300px;overflow-y:auto;">{{ log.content }}</div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        {% endif %}
+        <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <p>{% if filter_search %}No notifications match your search.{% else %}No notifications have been sent yet.{% endif %}</p>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+function toggleLogDetail(row) {
+    var detail = row.nextElementSibling;
+    if (detail && detail.classList.contains('log-detail')) {
+        detail.style.display = detail.style.display === 'none' ? '' : 'none';
+    }
+}
+</script>
+{% endblock %}
+
+{% endwith %}

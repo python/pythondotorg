@@ -1,0 +1,393 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Guide | Sponsor Management{% endblock %}
+
+{% with active_tab="guide" %}
+
+{% block manage_content %}
+<div>
+
+<h2 style="font-size:22px;font-weight:700;color:#1a1a2e;margin:0 0 8px;">Sponsor Management Guide</h2>
+<p style="font-size:13px;color:#777;margin:0 0 28px;">For PSF sponsorship team members. Last updated March 2026.</p>
+
+<!-- TOC -->
+<div class="manage-fieldset" style="margin-bottom:28px;">
+<legend>Contents</legend>
+<div style="columns:2;font-size:13px;line-height:2;">
+<a href="#quick-start" style="color:#3776ab;text-decoration:none;">Quick Start</a><br>
+<a href="#dashboard" style="color:#3776ab;text-decoration:none;">The Dashboard</a><br>
+<a href="#reviewing" style="color:#3776ab;text-decoration:none;">Reviewing Sponsorships</a><br>
+<a href="#composer" style="color:#3776ab;text-decoration:none;">The Composer</a><br>
+<a href="#contracts" style="color:#3776ab;text-decoration:none;">Contracts</a><br>
+<a href="#benefits-packages" style="color:#3776ab;text-decoration:none;">Benefits &amp; Packages</a><br>
+<a href="#notifications" style="color:#3776ab;text-decoration:none;">Notifications</a><br>
+<a href="#sponsors-contacts" style="color:#3776ab;text-decoration:none;">Sponsors &amp; Contacts</a><br>
+<a href="#renewals" style="color:#3776ab;text-decoration:none;">Renewals &amp; Expiry</a><br>
+<a href="#assets" style="color:#3776ab;text-decoration:none;">Assets</a><br>
+<a href="#revenue" style="color:#3776ab;text-decoration:none;">Finances</a><br>
+<a href="#bulk" style="color:#3776ab;text-decoration:none;">Bulk Actions &amp; Export</a><br>
+<a href="#admin-only" style="color:#3776ab;text-decoration:none;">What's Still in Django Admin</a><br>
+</div>
+</div>
+
+<!-- Quick Start -->
+<div class="manage-section" id="quick-start">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Quick Start</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+This is the PSF's internal sponsorship management UI. It lives at <a href="{% url 'manage_dashboard' %}" style="color:#3776ab;">/sponsors/manage/</a> and handles the full lifecycle of sponsorships: reviewing applications, building custom packages, generating contracts, sending notifications, and tracking everything by year.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+You need to be in the <strong>Sponsorship Admin</strong> group or have Django staff status to access it. If you're seeing a 403, ask another admin to add you to the group in Django Admin under <code>/admin/auth/group/</code>.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The navigation bar at the top gives you tabs for Dashboard, Sponsorships, Composer, Benefits, Packages, and Notifications. The "More" dropdown has Clone Year and this guide.
+</p>
+</div>
+
+<!-- Dashboard -->
+<div class="manage-section" id="dashboard">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">The Dashboard</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_dashboard' %}" style="color:#3776ab;">Dashboard</a> is your landing page. It shows summary cards for the selected year: how many sponsorships are applied, approved, finalized, and the total revenue.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Year pills across the top let you switch between years. The yellow dot marks the <strong>Active Year</strong>, which is the year used as the default throughout the UI (the Composer pulls benefits and packages from it, new sponsorships default to it, etc.). Change the active year from the Dashboard using the "Set Active Year" button, or go to <a href="{% url 'manage_current_year' %}" style="color:#3776ab;">/sponsors/manage/current-year/</a> directly.
+</p>
+
+<div class="manage-alert manage-alert-info">
+Switching years on the dashboard is view-only. It doesn't change the active year. The active year is a site-wide setting that affects what the Composer and other pages default to.
+</div>
+</div>
+
+<!-- Reviewing Sponsorships -->
+<div class="manage-section" id="reviewing">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Reviewing Sponsorships</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Every sponsorship moves through a lifecycle:
+<span class="tag tag-blue">Applied</span> &rarr; <span class="tag tag-gold">Approved</span> &rarr; <span class="tag tag-green">Finalized</span>, or it gets <span class="tag tag-red">Rejected</span> at any point.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Go to <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsorships</a> to see the full list. Filter by status, year, or package using the filter bar. Click any row to open the detail page.
+</p>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Actions on a Sponsorship</legend>
+
+<p style="font-size:13px;line-height:1.8;color:#444;margin-bottom:12px;">
+<strong>Approve:</strong> Sets the sponsorship to Approved. You'll pick start and end dates (use the quick-date buttons to auto-fill common ranges like "Jan 1 - Dec 31"), confirm the fee, and select the package. This creates a draft contract automatically.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;margin-bottom:12px;">
+<strong>Approve with Signed Contract:</strong> Use this when a sponsor already sent back a signed contract before you entered it into the system. Upload the signed PDF during approval and it skips the entire contract generation/send flow. The sponsorship goes straight to Finalized.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;margin-bottom:12px;">
+<strong>Reject:</strong> Moves the sponsorship to Rejected. The sponsor gets an email notification.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;margin-bottom:12px;">
+<strong>Rollback:</strong> Returns an Approved or Rejected sponsorship back to Applied. Use this when something was approved by mistake or when a rejected sponsor comes back to renegotiate.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Lock / Unlock:</strong> Finalized sponsorships are locked by default. Unlock one to edit its benefits, fee, or dates after finalization. Lock it again when you're done.
+</p>
+</div>
+
+<div class="manage-alert manage-alert-info">
+The detail page also shows the sponsor's company info, contacts, benefits, contract status, and a notification history. Most actions branch off from this page.
+</div>
+</div>
+
+<!-- Composer -->
+<div class="manage-section" id="composer">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">The Composer</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_composer' %}?new=1" style="color:#3776ab;">Composer</a> is a 6-step wizard for building a sponsorship from scratch. It's the main way to create new sponsorships on behalf of sponsors. Start a new session from the Composer tab (it always resets when you click it).
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;margin-bottom:16px;">
+Here's what each step does:
+</p>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 1: Pick a Sponsor</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Search for an existing sponsor by name (live search, shows top 50 results) or create a new one inline. If you landed here from a sponsor's detail page, the sponsor is pre-selected and you skip straight to step 2.
+</p>
+</div>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 2: Choose a Package</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Pick a base package tier (Visionary, Sustainability, Maintaining, etc.) or go with "Custom / A La Carte" for a one-off deal. Packages are scoped to a year, so make sure you're looking at the right one. The year defaults to the Active Year.
+</p>
+</div>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 3: Customize Benefits</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+If you picked a package, its benefits are pre-selected and locked (shown in blue). You can add more benefits on top of those. If a benefit is marked "package-only," you'll see a warning before it's added. For custom/a-la-carte, nothing is pre-selected and everything is fair game.
+</p>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Benefits are grouped by program (Foundation, PyCon, PyPI, etc.). The sidebar shows your current selection and a running total of internal values.
+</p>
+</div>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 4: Set Terms</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Enter the sponsorship fee. If you picked a package, the fee pre-fills from the package amount. Use the "Match" button to set it to the total internal value of selected benefits, or "Adjust" to bump it up or down. Set start and end dates with the quick-fill buttons (common fiscal year ranges). Toggle renewal on or off and add internal notes.
+</p>
+</div>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 5: Review &amp; Create</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Shows a full summary: sponsor, package, benefits, fee, dates. Hit "Create Sponsorship" to save it. This creates the sponsorship record and a draft contract in one shot, then advances you to step 6.
+</p>
+</div>
+
+<div class="manage-fieldset" style="background:#f7f8fa;">
+<legend>Step 6: Contract &amp; Send</legend>
+<p style="font-size:13px;line-height:1.8;color:#444;">
+This is the contract editor. You can edit the contract's sponsor info, contact details, benefits list, and legal clauses before sending. Preview or download the contract as PDF or DOCX. Compose an email with the contract attached and send it to the sponsor's contacts, or send it to an internal <code>@pyfound.org</code> address for review first. You can also click "Finish without sending" to save everything and deal with the email later.
+</p>
+</div>
+
+<div class="manage-alert manage-alert-info">
+The Composer stores its state in your session. If you navigate away mid-wizard, your progress is still there when you come back (unless you click Composer again, which resets it). Opening a second browser tab with the Composer will share the same session state, so don't run two wizards at once.
+</div>
+</div>
+
+<!-- Contracts -->
+<div class="manage-section" id="contracts">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Contracts</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Contracts follow their own lifecycle: <span class="tag tag-gray">Draft</span> &rarr; <span class="tag tag-gold">Awaiting Signature</span> &rarr; <span class="tag tag-green">Executed</span>.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+A draft contract is created automatically when you approve a sponsorship or complete step 5 of the Composer. From the sponsorship detail page, you can:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Preview / Download</strong> the contract as PDF or DOCX at any stage</li>
+<li><strong>Generate &amp; Send</strong> to the sponsor's contacts (moves it to Awaiting Signature)</li>
+<li><strong>Send internally</strong> to any email address for review before sending to the sponsor</li>
+<li><strong>Execute</strong> by uploading the signed PDF (this finalizes the sponsorship too)</li>
+<li><strong>Nullify</strong> to void a contract that's no longer valid</li>
+<li><strong>Re-draft</strong> to create a new draft from a nullified contract</li>
+<li><strong>Regenerate</strong> to create a brand new contract when a sponsor changes level mid-cycle. The old contract is preserved as "Outdated" in the Contract History section. Unlock the sponsorship first, change the package/fee/benefits, then hit Regenerate</li>
+</ul>
+
+<div class="manage-alert manage-alert-info">
+<strong>Mid-cycle upgrades:</strong> When a sponsor upgrades (e.g. Contributing to Visionary), unlock the sponsorship, change the package and fee, then click Regenerate on the contract. This preserves the old contract in history and creates a fresh draft reflecting the new level. No need to delete anything or use the Django shell.
+</div>
+
+<div class="manage-alert manage-alert-info">
+Contract content (sponsor info, benefits list, legal clauses) is editable in step 6 of the Composer or from the contract send page. The generated PDF/DOCX files labeled "Sent" are snapshots from when the contract was sent — editing the contract text after sending won't change those files. Regenerate to create a new version.
+</div>
+</div>
+
+<!-- Benefits & Packages -->
+<div class="manage-section" id="benefits-packages">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Benefits &amp; Packages</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<a href="{% url 'manage_benefit_list' %}" style="color:#3776ab;">Benefits</a> are the individual perks sponsors get: logo placement, blog posts, job listings, booth space, etc. Each benefit belongs to a program and a year.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+When creating or editing a benefit, you set its name, description, internal value, program, year, and whether it's package-only. After saving, you can add <strong>feature configurations</strong> that control how the benefit behaves:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Logo Placement</strong> &mdash; where the sponsor's logo appears (footer, sidebar, downloads page, etc.)</li>
+<li><strong>Tiered Benefit</strong> &mdash; quantity varies by package level (e.g., 1 blog post for Maintaining, 3 for Visionary)</li>
+<li><strong>Required Asset</strong> &mdash; the sponsor must upload something (logo files, ad copy, etc.)</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<a href="{% url 'manage_packages' %}" style="color:#3776ab;">Packages</a> are the sponsorship tiers (Visionary, Sustainability, Maintaining, etc.). Each package has a name, year, fee amount, and a set of included benefits. Create and edit packages from the Packages tab.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Cloning a year:</strong> When setting up a new sponsorship year, go to <a href="{% url 'manage_clone_year' %}" style="color:#3776ab;">Clone Year</a> (under More in the nav). Pick a source year and a target year, and it copies all packages and benefits over. You can then tweak the new year's config without touching the previous year's data.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Syncing benefit changes:</strong> When you update a benefit's name, description, value, or feature configurations, those changes only affect <em>new</em> sponsorships. Existing sponsorships keep a snapshot of the benefit as it was when they were created. To push your changes to active sponsorships, open the benefit edit page and click <strong>"Sync to Sponsorships"</strong> in the "Sponsors Using This Benefit" section. You'll see a list of eligible sponsorships (non-expired, non-rejected) and can select which ones to update.
+</p>
+
+<div class="manage-alert manage-alert-info">
+Cloning duplicates everything: packages, benefits, benefit-to-package associations, and feature configurations. It does not copy sponsorships or contracts. Review the cloned data after running it to make sure fees and benefit values are still correct for the new year.
+</div>
+</div>
+
+<!-- Notifications -->
+<div class="manage-section" id="notifications">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Notifications</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Send emails to sponsor contacts from two places: the sponsorship detail page ("Notify" button) or in bulk from the sponsorships list.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The notification form lets you write a subject and body, pick which contact roles receive it (Primary, Administrative, Accounting, Manager), and preview the rendered email before sending.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Template variables</strong> get replaced with the sponsor's actual data when the email is sent. Use these in your subject or body:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><code>{% templatetag openvariable %} sponsor_name {% templatetag closevariable %}</code></li>
+<li><code>{% templatetag openvariable %} sponsorship_level {% templatetag closevariable %}</code></li>
+<li><code>{% templatetag openvariable %} sponsorship_start_date {% templatetag closevariable %}</code></li>
+<li><code>{% templatetag openvariable %} sponsorship_end_date {% templatetag closevariable %}</code></li>
+<li><code>{% templatetag openvariable %} sponsorship_status {% templatetag closevariable %}</code></li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+<strong>Reusable templates:</strong> Go to <a href="{% url 'manage_notification_templates' %}" style="color:#3776ab;">Notifications</a> in the nav to create, edit, and delete saved templates. These show up as quick-fill options in the notification form so you don't have to rewrite common emails. The <a href="{% url 'manage_notification_history' %}" style="color:#3776ab;">History</a> tab shows every notification sent, who it went to, and when.
+</p>
+</div>
+
+<!-- Sponsors & Contacts -->
+<div class="manage-section" id="sponsors-contacts">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Sponsors &amp; Contacts</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+A sponsor is the company entity. Browse all sponsors from <a href="{% url 'manage_sponsors' %}" style="color:#3776ab;">More &rarr; Sponsors</a> &mdash; search by name, see contact and sponsorship counts, and jump to edit or create a new sponsorship. You can also create new sponsors from the Composer (step 1) or from the <a href="{% url 'manage_sponsor_create' %}" style="color:#3776ab;">direct create page</a>. Edit a sponsor's company info (name, description, website, address, phone) from their sponsorship detail page by clicking "Edit Sponsor."
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Each sponsor has one or more <strong>contacts</strong> with roles:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><span class="tag tag-blue">Primary</span> &mdash; the main point of contact, used in contracts</li>
+<li><span class="tag tag-gray">Administrative</span> &mdash; handles logistics and agreements</li>
+<li><span class="tag tag-gray">Accounting</span> &mdash; invoicing and payments</li>
+<li><span class="tag tag-gray">Manager</span> &mdash; internal sponsor-side manager</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Add, edit, and remove contacts from the sponsor card on the sponsorship detail page. The primary contact's info feeds into the contract's sponsor contact field, so keep it accurate.
+</p>
+</div>
+
+<!-- Renewals & Expiry -->
+<div class="manage-section" id="renewals">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Renewals &amp; Expiry</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The dashboard automatically surfaces sponsorships that need renewal attention:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Expiring Soon</strong> &mdash; finalized sponsorships ending within 90 days. Shows a countdown with color-coded urgency: red for 30 days or less, gold for 31-60 days, gray for 61-90 days</li>
+<li><strong>Recently Expired</strong> &mdash; finalized sponsorships that have already ended and haven't been renewed (no overlapping replacement sponsorship). These are sponsors you should reach out to</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Both sections include a <strong>"+ Renewal"</strong> button that launches the Composer with the sponsor pre-selected and the renewal flag pre-checked. This means the contract will use the renewal template instead of the new-sponsorship template.
+</p>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+You'll also see expiry indicators on the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">sponsorship list</a> &mdash; finalized sponsorships show days-remaining tags in the Period column. On a sponsorship's detail page, <span class="tag tag-red">Expiring Soon</span> or <span class="tag tag-red">Expired</span> tags appear in the header, and a "+ Renewal" button is available for any finalized sponsorship.
+</p>
+
+<div class="manage-alert manage-alert-info">
+When a renewal sponsorship's contract is executed, the system automatically links the old sponsorship via the "overlapped_by" field. This hides the old sponsorship from public sponsor listings while keeping it in the admin for historical records.
+</div>
+</div>
+
+<!-- Assets -->
+<div class="manage-section" id="assets">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Assets</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_assets' %}" style="color:#3776ab;">Asset Browser</a> (under More) shows all sponsor-submitted assets grouped by company. Each company section has a submitted/total badge:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><span class="tag tag-green" style="font-size:10px;">green</span> &mdash; all assets submitted</li>
+<li><span class="tag tag-gold" style="font-size:10px;">orange</span> &mdash; partially submitted</li>
+<li><span class="tag tag-red" style="font-size:10px;">red</span> &mdash; nothing submitted</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Filter by asset type (text, image, file, response), related object (sponsor vs sponsorship), submission status, or search by internal name. Assets from expired or rejected sponsorships are automatically hidden. Companies with missing assets show a <strong>"Send Reminder"</strong> button that links to the notification page for that sponsorship.
+</p>
+</div>
+
+<!-- Finances -->
+<div class="manage-section" id="revenue">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Finances</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+The <a href="{% url 'manage_finances' %}" style="color:#3776ab;">Finances</a> (under More) gives a financial overview of sponsorship income by year. It includes:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Summary cards</strong> &mdash; total revenue, finalized revenue, approved (pending), sponsorship count with average deal size</li>
+<li><strong>Revenue by package</strong> &mdash; horizontal bar chart showing income by package tier with deal counts</li>
+<li><strong>Year-over-year</strong> &mdash; compare total revenue across all years at a glance</li>
+<li><strong>Sponsorship detail table</strong> &mdash; every sponsorship for the selected year with fee, internal value, margin percentage, and period</li>
+</ul>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Only approved and finalized sponsorships are counted toward revenue. Applied and rejected sponsorships are excluded.
+</p>
+</div>
+
+<!-- Bulk Actions & Export -->
+<div class="manage-section" id="bulk">
+<h3 style="font-size:16px;font-weight:700;color:#3776ab;border-bottom:2px solid #3776ab;padding-bottom:6px;">Bulk Actions &amp; Export</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+On the <a href="{% url 'manage_sponsorships' %}" style="color:#3776ab;">Sponsorships</a> page, select rows using the checkboxes and pick an action from the bulk action dropdown:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Export CSV</strong> &mdash; download selected sponsorships as a CSV file. You can also export the full filtered list (without selecting rows) using the "Export CSV" button in the filter bar</li>
+<li><strong>Export Assets (ZIP)</strong> &mdash; download all submitted assets for selected sponsorships in a single ZIP file. You can also export assets for a single sponsorship from its detail page</li>
+<li><strong>Bulk Notify</strong> &mdash; send a notification to all contacts of the selected sponsorships at once. Same form as single notify, but it fans out to every selected sponsor</li>
+</ul>
+</div>
+
+<!-- Django Admin Only -->
+<div class="manage-section" id="admin-only">
+<h3 style="font-size:16px;font-weight:700;color:#e74c3c;border-bottom:2px solid #e74c3c;padding-bottom:6px;">What's Still in Django Admin</h3>
+
+<p style="font-size:13px;line-height:1.8;color:#444;">
+Some things haven't been moved into this UI yet. For these, go to <a href="/admin/sponsors/" style="color:#3776ab;">/admin/sponsors/</a>:
+</p>
+
+<ul style="font-size:13px;line-height:2;color:#444;padding-left:20px;">
+<li><strong>Benefit ordering</strong> &mdash; drag-to-reorder benefits within a program. The manage UI shows them in order but doesn't let you rearrange</li>
+<li><strong>Benefit conflicts</strong> &mdash; configuring which benefits are mutually exclusive (M2M relationship in the admin)</li>
+<li><strong>Sponsorship program management</strong> &mdash; adding or editing programs (Foundation, PyCon, PyPI, etc.)</li>
+<li><strong>Advanced import/export</strong> &mdash; django-import-export for bulk data operations</li>
+</ul>
+
+<div class="manage-alert manage-alert-info">
+If you find yourself doing something repeatedly in Django Admin that should be in this UI, file a feature request. The goal is to move everything here eventually.
+</div>
+</div>
+
+</div>
+{% endblock %}
+
+{% endwith %}

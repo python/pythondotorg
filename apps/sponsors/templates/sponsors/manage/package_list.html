@@ -1,0 +1,66 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Packages | Sponsor Management{% endblock %}
+
+{% with active_tab="packages" %}
+
+{% block topbar_actions %}
+    <a href="{% url 'manage_package_create' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="btn btn-sm btn-primary">+ New Package</a>
+{% endblock %}
+
+{% block manage_content %}
+    <!-- Year filter -->
+    {% if years %}
+    <div class="year-pills">
+        <a href="{% url 'manage_packages' %}" class="year-pill {% if not filter_year %}active{% endif %}">All</a>
+        {% for year in years %}
+        <a href="?year={{ year }}" class="year-pill {% if year|slugify == filter_year %}active{% endif %}">{{ year }}</a>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {% for year, pkgs in packages_by_year.items %}
+    <div class="manage-section">
+        <div class="manage-section-header">
+            <h2>{{ year|default:"No Year" }} <span class="badge">{{ pkgs|length }}</span></h2>
+            <a href="{% url 'manage_package_create' %}?year={{ year }}" class="btn btn-sm btn-secondary">+ Add</a>
+        </div>
+        <table class="manage-table">
+            <thead>
+                <tr>
+                    <th>Package</th>
+                    <th style="text-align:right;">Amount</th>
+                    <th>Slug</th>
+                    <th style="text-align:center;">Advertised</th>
+                    <th style="text-align:center;">A La Carte</th>
+                    <th style="text-align:center;">Benefits</th>
+                    <th style="width:50px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pkg in pkgs %}
+                <tr>
+                    <td>
+                        <a href="{% url 'manage_package_edit' pkg.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">{{ pkg.name }}</a>
+                    </td>
+                    <td style="text-align:right;font-variant-numeric:tabular-nums;font-weight:600;">${{ pkg.sponsorship_amount|floatformat:"0" }}</td>
+                    <td><code style="background:#f5f5f5;padding:2px 6px;border-radius:3px;font-size:12px;">{{ pkg.slug }}</code></td>
+                    <td style="text-align:center;">{% if pkg.advertise %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
+                    <td style="text-align:center;">{% if pkg.allow_a_la_carte %}<span class="tag tag-green">Yes</span>{% else %}<span class="tag tag-gray">No</span>{% endif %}</td>
+                    <td style="text-align:center;"><span class="tag tag-blue">{{ pkg.benefits.count }}</span></td>
+                    <td><a href="{% url 'manage_package_edit' pkg.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Edit</a></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% empty %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128230;</div>
+        <p>No packages found.</p>
+        <a href="{% url 'manage_package_create' %}" class="btn btn-primary">Create First Package</a>
+    </div>
+    {% endfor %}
+{% endblock %}
+
+{% endwith %}

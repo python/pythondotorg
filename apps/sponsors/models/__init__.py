@@ -29,7 +29,11 @@ from apps.sponsors.models.benefits import (
     TieredBenefitConfiguration,
 )
 from apps.sponsors.models.contract import Contract, LegalClause, signed_contract_random_path
-from apps.sponsors.models.notifications import SPONSOR_TEMPLATE_HELP_TEXT, SponsorEmailNotificationTemplate
+from apps.sponsors.models.notifications import (
+    SPONSOR_TEMPLATE_HELP_TEXT,
+    SponsorEmailNotificationTemplate,
+    SponsorshipNotificationLog,
+)
 from apps.sponsors.models.sponsors import Sponsor, SponsorBenefit, SponsorContact
 from apps.sponsors.models.sponsorship import (
     Sponsorship,
@@ -40,19 +44,15 @@ from apps.sponsors.models.sponsorship import (
 )
 
 __all__ = [
-    # notifications
     "SPONSOR_TEMPLATE_HELP_TEXT",
-    # benefits
     "BaseEmailTargetable",
     "BaseLogoPlacement",
     "BaseTieredBenefit",
     "BenefitFeature",
     "BenefitFeatureConfiguration",
-    # contract
     "Contract",
     "EmailTargetable",
     "EmailTargetableConfiguration",
-    # assets
     "FileAsset",
     "GenericAsset",
     "ImgAsset",
@@ -70,15 +70,14 @@ __all__ = [
     "RequiredTextAsset",
     "RequiredTextAssetConfiguration",
     "ResponseAsset",
-    # sponsors
     "Sponsor",
     "SponsorBenefit",
     "SponsorContact",
     "SponsorEmailNotificationTemplate",
-    # sponsorship
     "Sponsorship",
     "SponsorshipBenefit",
     "SponsorshipCurrentYear",
+    "SponsorshipNotificationLog",
     "SponsorshipPackage",
     "SponsorshipProgram",
     "TextAsset",

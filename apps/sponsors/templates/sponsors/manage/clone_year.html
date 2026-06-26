@@ -1,0 +1,110 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Clone Year | Sponsor Management{% endblock %}
+
+{% with active_tab="clone" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Clone Year</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">Clone Year Configuration</h2>
+        <p style="font-size:13px;color:#777;margin:0 0 24px;">
+            Copy all packages and benefits from one year to another. Existing items in the target year won't be duplicated.
+        </p>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            {% if form.non_field_errors %}
+            <ul>
+                {% for error in form.non_field_errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>Clone Settings</legend>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_source_year">Copy from year</label>
+                        {{ form.source_year }}
+                        {% if form.source_year.errors %}<div class="field-errors">{{ form.source_year.errors.0 }}</div>{% endif %}
+                    </div>
+                    <div class="form-group">
+                        <label for="id_target_year">Copy to year</label>
+                        {{ form.target_year }}
+                        {% if form.target_year.errors %}<div class="field-errors">{{ form.target_year.errors.0 }}</div>{% endif %}
+                    </div>
+                </div>
+
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px;">
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.clone_packages }} Clone packages (tiers)
+                    </label>
+                    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;padding:8px 12px;background:#f7f8fa;border-radius:4px;">
+                        {{ form.clone_benefits }} Clone benefits
+                    </label>
+                </div>
+            </fieldset>
+
+            {% if preview_benefits or preview_packages %}
+            <div class="clone-preview">
+                <h3>Preview: {{ source_year }} configuration</h3>
+
+                {% if preview_packages %}
+                <div style="margin-bottom:16px;">
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:6px;">
+                        Packages ({{ preview_packages|length }})
+                    </div>
+                    <ul class="clone-preview-list">
+                        {% for pkg in preview_packages %}
+                        <li>
+                            <strong>{{ pkg.name }}</strong>
+                            <span style="color:#999;margin-left:8px;">${{ pkg.sponsorship_amount|floatformat:"0" }}</span>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+
+                {% if preview_benefits %}
+                <div>
+                    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px;color:#777;margin-bottom:6px;">
+                        Benefits ({{ preview_benefits|length }})
+                    </div>
+                    <ul class="clone-preview-list">
+                        {% for benefit in preview_benefits %}
+                        <li>
+                            <span style="color:#999;font-size:11px;margin-right:8px;">{{ benefit.program.name }}</span>
+                            {{ benefit.name }}
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div style="padding-top:20px;">
+                <button type="submit" class="btn btn-gold">Clone Configuration</button>
+                <a href="{% url 'manage_dashboard' %}" class="btn btn-secondary" style="margin-left:8px;">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

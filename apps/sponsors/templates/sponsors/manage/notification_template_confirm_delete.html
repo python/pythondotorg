@@ -1,0 +1,31 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete Template | Sponsorship Management{% endblock %}
+
+{% with active_tab="notifications" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_notification_templates' %}">Notification Templates</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+<div class="delete-confirm">
+    <h2>Delete Notification Template</h2>
+    <p>Are you sure you want to delete <strong>"{{ object.internal_name }}"</strong>? This action cannot be undone.</p>
+    <form method="post">
+        {% csrf_token %}
+        <div class="actions">
+            <button type="submit" class="btn btn-danger">Yes, Delete</button>
+            <a href="{% url 'manage_notification_templates' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% endwith %}
