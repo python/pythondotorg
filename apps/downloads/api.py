@@ -1,17 +1,34 @@
 """REST API endpoints for downloads using Tastypie and Django REST Framework."""
 
+from django.core.exceptions import ValidationError as DjangoValidationError
 from rest_framework import status, viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.exceptions import BadRequest
+from tastypie.validation import Validation
 
 from apps.downloads.models import OS, Release, ReleaseFile
 from apps.downloads.serializers import OSSerializer, ReleaseFileSerializer, ReleaseSerializer
 from apps.pages.api import PageResource
 from pydotorg.drf import BaseAPIViewSet, BaseFilterSet, IsStaffOrReadOnly
 from pydotorg.resources import GenericResource, OnlyPublishedAuthorization
+
+
+class ReleaseFileValidation(Validation):
+    """Tastypie validation for release-file URL relationships."""
+
+    def is_valid(self, bundle, request=None):
+        """Return validation errors for hydrated release-file writes."""
+        if bundle.obj is None:
+            return {}
+        try:
+            bundle.obj.clean()
+        except DjangoValidationError as exc:
+            return exc.message_dict
+        return {}
 
 
 class OSResource(GenericResource):
@@ -88,6 +105,8 @@ class ReleaseFileResource(GenericResource):
 
         queryset = ReleaseFile.objects.all()
         resource_name = "downloads/release_file"
+        list_allowed_methods = ["get", "post", "delete"]
+        validation = ReleaseFileValidation()
         fields = [
             "name",
             "slug",
@@ -116,6 +135,13 @@ class ReleaseFileResource(GenericResource):
             "description": ("contains",),
         }
         abstract = False
+
+    def delete_list(self, request, **kwargs):
+        """Delete release files only when scoped to a single release."""
+        if set(request.GET) != {"release"} or len(request.GET.getlist("release")) != 1:
+            msg = "Deleting release files requires exactly one 'release' filter."
+            raise BadRequest(msg)
+        return super().delete_list(request, **kwargs)
 
 
 # Django Rest Framework
@@ -177,10 +203,14 @@ class ReleaseFileViewSet(viewsets.ModelViewSet):
     def delete_by_release(self, request):
         """Delete all release files associated with a given release."""
         release = request.query_params.get("release")
-        if release is None:
+        if not release:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
+        try:
+            release_id = int(release)
+        except ValueError:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         # TODO: We can add support for pagination in the future.
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.get_queryset().filter(release_id=release_id)
         # This calls 'mixins.DestroyModelMixin.perform_destroy()'.
         self.perform_destroy(queryset)
         return Response(status=status.HTTP_204_NO_CONTENT)
