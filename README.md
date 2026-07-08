@@ -32,7 +32,7 @@ Fork the repo, create a branch, and open a pull request. Before submitting:
 CI runs on every PR — it checks for ungenerated migrations and enforces a 75%
 test coverage minimum. PRs that fail CI won't be merged.
 
-See the full [contributing guide](https://pythondotorg.readthedocs.io/en/latest/contributing.html) for details.
+See the full [contributing guide](https://github.com/python/pythondotorg/blob/main/CONTRIBUTING.md) for details.
 
 ### License
 
