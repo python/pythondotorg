@@ -1,5 +1,7 @@
 """Haystack search indexes for the pages app."""
 
+import html
+
 from django.template.defaultfilters import striptags, truncatewords_html
 from haystack import indexes
 
@@ -27,7 +29,7 @@ class PageIndex(indexes.SearchIndex, indexes.Indexable):
         """Create a description if none exists."""
         if obj.description:
             return obj.description
-        return striptags(truncatewords_html(obj.content.rendered, 50))
+        return html.unescape(striptags(truncatewords_html(obj.content.rendered, 50)))
 
     def index_queryset(self, using=None):
         """Only index published pages."""

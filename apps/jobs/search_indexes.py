@@ -1,5 +1,7 @@
 """Haystack search indexes for the jobs app."""
 
+import html
+
 from django.template.defaultfilters import striptags, truncatewords_html
 from django.urls import reverse
 from haystack import indexes
@@ -101,7 +103,7 @@ class JobIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_description(self, obj):
         """Return a truncated plain-text job description."""
-        return striptags(truncatewords_html(obj.description.rendered, 50))
+        return html.unescape(striptags(truncatewords_html(obj.description.rendered, 50)))
 
     def prepare_path(self, obj):
         """Return the URL for this job listing."""
