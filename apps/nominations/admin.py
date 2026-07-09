@@ -3,13 +3,23 @@
 from django.contrib import admin
 from django.db.models.functions import Lower
 
-from apps.nominations.models import Election, Nomination, Nominee
+from apps.nominations.models import Election, ElectionKind, Nomination, Nominee
+
+
+@admin.register(ElectionKind)
+class ElectionKindAdmin(admin.ModelAdmin):
+    """Admin interface for managing election kinds and their accent colors."""
+
+    list_display = ("name", "accent_color", "slug")
+    readonly_fields = ("slug",)
 
 
 @admin.register(Election)
 class ElectionAdmin(admin.ModelAdmin):
     """Admin interface for managing elections."""
 
+    list_display = ("name", "kind", "date", "slug")
+    list_filter = ("kind",)
     readonly_fields = ("slug",)
 
 

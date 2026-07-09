@@ -6,6 +6,7 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
 {% endblock %}
 
 {% block body_attributes %}class="nominations nominations_view"{% endblock %}
+{% block head %}{% include "nominations/_theme.html" with election=nomination.election %}{% endblock %}
 {% block left_sidebar %}{% endblock %}
 {% block content_attributes %}{% endblock %}
 
