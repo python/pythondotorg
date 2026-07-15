@@ -517,13 +517,13 @@ wheels = [
 
 [[package]]
 name = "django-haystack"
-version = "3.3.0"
+version = "3.4.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "django" },
     { name = "packaging" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/b4/09/623634ca5f8b9fe99d07d284491724eb1b0704022e942a1fe815c1d13a02/django_haystack-3.3.0.tar.gz", hash = "sha256:e3ceed6b8000625da14d409eb4dac69894905e2ac8ac18f9bfdb59323ca02eab", size = 467287, upload-time = "2024-06-04T15:09:58.707Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/08/00/2fee5c12b650bbc643f0b65ead96b6f7533f5fa76573449f814d820dda6f/django_haystack-3.4.0.tar.gz", hash = "sha256:1226a7c9ce13e1e7ead8ac83f6e87bfef4996f146ed24971fde7896115b1c530", size = 454662, upload-time = "2026-06-04T19:12:33.644Z" }
 
 [[package]]
 name = "django-honeypot"
@@ -1339,7 +1339,7 @@ requires-dist = [
     { name = "django-countries", specifier = "==8.2.0" },
     { name = "django-extensions", specifier = "==3.2.3" },
     { name = "django-filter", specifier = "==25.1" },
-    { name = "django-haystack", specifier = "==3.3.0" },
+    { name = "django-haystack", specifier = "==3.4.0" },
     { name = "django-honeypot", specifier = "==1.3.0" },
     { name = "django-imagekit", specifier = "==5.0" },
     { name = "django-import-export", specifier = "==2.7.1" },
