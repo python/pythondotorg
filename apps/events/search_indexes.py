@@ -1,5 +1,7 @@
 """Haystack search indexes for the events app."""
 
+import html
+
 from django.template.defaultfilters import striptags, truncatewords_html
 from haystack import indexes
 
@@ -28,7 +30,7 @@ class CalendarIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_description(self, obj):
         """Return a truncated plain-text description."""
-        return striptags(truncatewords_html(obj.description, 50))
+        return html.unescape(striptags(truncatewords_html(obj.description, 50)))
 
     def prepare_include_template(self, obj):
         """Return the search result template path."""
@@ -65,7 +67,7 @@ class EventIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_description(self, obj):
         """Return a truncated plain-text description."""
-        return striptags(truncatewords_html(obj.description.rendered, 50))
+        return html.unescape(striptags(truncatewords_html(obj.description.rendered, 50)))
 
     def prepare_venue(self, obj):
         """Return the venue name or None if no venue is set."""
