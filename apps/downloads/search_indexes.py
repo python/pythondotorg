@@ -1,6 +1,7 @@
 """Haystack search indexes for the downloads app."""
 
 import datetime
+import html
 
 from django.template.defaultfilters import striptags, truncatewords_html
 from django.utils import timezone
@@ -43,7 +44,7 @@ class ReleaseIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_description(self, obj):
         """Return a truncated plain-text description."""
-        return striptags(truncatewords_html(obj.content.rendered, 50))
+        return html.unescape(striptags(truncatewords_html(obj.content.rendered, 50)))
 
     def prepare(self, obj):
         """Boost recent releases."""
