@@ -1,0 +1,20 @@
+{% comment %}
+Acknowledgment checkboxes for a nomination create form, kept out of the main
+field table so the multi-paragraph legal text reads cleanly. Hidden until
+self-nomination is checked (JS in nomination_form.html), but rendered visible
+on redisplay so the flow works without JavaScript.
+{% endcomment %}
+{% if form.acknowledgment_fields %}
+<fieldset class="nomination-acknowledgments" id="nomination-acknowledgments"{% if not form.self_nomination.value %} hidden{% endif %}>
+    <legend>Acknowledgments</legend>
+    {% for field in form.acknowledgment_fields %}
+    <div class="acknowledgment{% if field.field.required %} acknowledgment-required{% endif %}">
+        {% if field.help_text %}<p class="acknowledgment-preamble">{{ field.help_text }}</p>{% endif %}
+        <label for="{{ field.id_for_label }}">
+            {{ field }} {{ field.label }}{% if field.field.required %} <span class="required">*</span>{% endif %}
+        </label>
+        {% if field.errors %}<div class="acknowledgment-errors">{{ field.errors }}</div>{% endif %}
+    </div>
+    {% endfor %}
+</fieldset>
+{% endif %}
