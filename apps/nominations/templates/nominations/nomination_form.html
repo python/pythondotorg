@@ -14,6 +14,20 @@ Update Nomination
 {% block left_sidebar %}{% endblock %}
 {% block content_attributes %}{% endblock %}
 
+{% block extra_js %}
+<script type="text/javascript">
+  // Reveal the acknowledgment checkboxes only while "self nomination" is checked.
+  (function () {
+    var toggle = document.getElementById('id_self_nomination');
+    var acknowledgments = document.getElementById('nomination-acknowledgments');
+    if (!toggle || !acknowledgments) { return; }
+    function sync() { acknowledgments.hidden = !toggle.checked; }
+    toggle.addEventListener('change', sync);
+    sync();
+  })();
+</script>
+{% endblock %}
+
 {% block content %}
     <article class="text">
 
@@ -28,9 +42,22 @@ Update Nomination
         <form class="wide-form jobs-form" action="" method="post">
             {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
+            {{ form.non_field_errors }}
             <table>
-                {{ form.as_table }}
+                {% for field in form %}
+                    {% if field.name not in form.acknowledgment_field_names %}
+                    <tr>
+                        <th>{{ field.label_tag }}</th>
+                        <td>
+                            {{ field }}
+                            {% if field.help_text %}<br><span class="helptext">{{ field.help_text }}</span>{% endif %}
+                            {{ field.errors }}
+                        </td>
+                    </tr>
+                    {% endif %}
+                {% endfor %}
             </table>
+            {% include "nominations/_acknowledgments.html" %}
             <br>
             <center>
                 <button type="submit" name="Submit">Save</button>
