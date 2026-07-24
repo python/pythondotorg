@@ -1,10 +1,13 @@
 """Forms for creating and managing board election nominations."""
 
+import re
+
 from django import forms
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from markupfield.widgets import MarkupTextarea
 
-from apps.nominations.models import Nomination
+from apps.nominations.models import ElectionKind, Nomination
 
 COC_LABEL = mark_safe(
     "I agree to adhere to the Python Software Foundation's "
@@ -56,29 +59,19 @@ PACKAGING_COUNCIL_ELIGIBILITY_HELP = mark_safe(
     "PSF Contributing Member."
 )
 
-PACKAGING_COUNCIL_PREVIOUS_SERVICE_HELP = (
-    "Has the person previously served on the Packaging Council? If so, what "
-    "year(s)? Otherwise, please add 'New Packaging Council member'."
-)
-
 COC_REQUIRED_ERROR = "You must agree to the Code of Conduct acknowledgment to submit a self-nomination."
 
+#: Earliest selectable service year per nomination form variant.
+PREVIOUS_SERVICE_FIRST_YEAR = {
+    ElectionKind.NominationFormVariant.BOARD: 2001,
+    ElectionKind.NominationFormVariant.PACKAGING_COUNCIL: 2025,
+}
 
-class PackagingCouncilPreviousServiceMixin:
-    """Relabel the previous-service field for Packaging Council forms.
-
-    Used by both the create and edit forms so the field is presented
-    consistently. The label comes from ``Election.previous_service_label`` so
-    forms and read-only pages stay in sync.
-    """
-
-    def __init__(self, *args, **kwargs):
-        """Relabel the previous-service field for the Packaging Council."""
-        super().__init__(*args, **kwargs)
-        field = self.fields.get("previous_board_service")
-        if field is not None and self.election is not None:
-            field.label = self.election.previous_service_label
-            field.help_text = PACKAGING_COUNCIL_PREVIOUS_SERVICE_HELP
+#: Canonical stored value for candidates with no previous service.
+NEW_MEMBER_LABEL = {
+    ElectionKind.NominationFormVariant.BOARD: "New board member",
+    ElectionKind.NominationFormVariant.PACKAGING_COUNCIL: "New Packaging Council member",
+}
 
 
 class NominationForm(forms.ModelForm):
@@ -90,11 +83,63 @@ class NominationForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         """Pull the election off kwargs and apply its form settings."""
         self.election = kwargs.pop("election", None)
+        self.variant = (
+            self.election.nomination_form_variant if self.election else ElectionKind.NominationFormVariant.BOARD
+        )
         super().__init__(*args, **kwargs)
-        # blank=False is a form-layer check only; the DB column is nullable, so
-        # omitting the field writes NULL rather than failing to save.
-        if self.election is not None and self.election.hide_previous_service:
-            self.fields.pop("previous_board_service", None)
+        # The free-text model field is replaced by the structured yes/no +
+        # year-picker pair below; its column is nullable, so an election with
+        # hide_previous_service simply writes NULL.
+        del self.fields["previous_board_service"]
+        if not (self.election is not None and self.election.hide_previous_service):
+            self._add_previous_service_fields()
+
+    def _add_previous_service_fields(self):
+        """Add the strict yes/no + year-picker pair for previous service."""
+        label = self.election.previous_service_label if self.election else "Previous Board Service"
+        years = [str(y) for y in range(timezone.now().year, PREVIOUS_SERVICE_FIRST_YEAR[self.variant] - 1, -1)]
+        self.fields["previous_service"] = forms.ChoiceField(
+            label=label,
+            choices=(("no", "No — has not served before"), ("yes", "Yes — has served previously")),
+            widget=forms.RadioSelect,
+        )
+        self.fields["previous_service_years"] = forms.MultipleChoiceField(
+            label="Year(s) served",
+            choices=[(y, y) for y in years],
+            widget=forms.CheckboxSelectMultiple,
+            required=False,
+        )
+        order = []
+        for name in self.fields:
+            if name == "email":
+                order += [name, "previous_service", "previous_service_years"]
+            elif name not in ("previous_service", "previous_service_years"):
+                order.append(name)
+        self.order_fields(order)
+        # Best-effort prefill from the stored free-text value when editing.
+        stored = self.instance.previous_board_service or ""
+        stored_years = [y for y in re.findall(r"\b(?:19|20)\d{2}\b", stored) if y in years]
+        if stored_years:
+            self.fields["previous_service"].initial = "yes"
+            self.fields["previous_service_years"].initial = stored_years
+        elif stored:
+            self.fields["previous_service"].initial = "no"
+
+    def clean(self):
+        """Compose the structured previous-service answer into the model field."""
+        cleaned_data = super().clean()
+        answer = cleaned_data.get("previous_service")
+        if answer == "yes" and not cleaned_data.get("previous_service_years"):
+            self.add_error("previous_service_years", "Select the year(s) served.")
+        elif answer:
+            value = (
+                ", ".join(sorted(cleaned_data["previous_service_years"]))
+                if answer == "yes"
+                else NEW_MEMBER_LABEL[self.variant]
+            )
+            # The model field isn't on the form, so set the instance directly.
+            self.instance.previous_board_service = value
+        return cleaned_data
 
     @property
     def acknowledgment_fields(self):
@@ -117,7 +162,6 @@ class NominationForm(forms.ModelForm):
         help_texts = {
             "name": "Name of the person you are nominating.",
             "email": "Email address for the person you are nominating.",
-            "previous_board_service": "Has the person previously served on the PSF Board? If so what year(s)? Otherwise 'New board member'.",
             "employer": "Nominee's current employer.",
             "other_affiliations": "Any other relevant affiliations the Nominee has.",
             "nomination_statement": "Markdown syntax supported.",
@@ -196,7 +240,7 @@ class BoardNominationCreateForm(BaseNominationCreateForm):
         fields = (*NominationForm.Meta.fields, "coc_acknowledged", "mission_alignment")
 
 
-class PackagingCouncilNominationCreateForm(PackagingCouncilPreviousServiceMixin, BaseNominationCreateForm):
+class PackagingCouncilNominationCreateForm(BaseNominationCreateForm):
     """Public nomination form for Packaging Council elections."""
 
     acknowledgment_field_names = ("coc_acknowledged", "eligibility_confirmed")
@@ -219,10 +263,6 @@ class PackagingCouncilNominationCreateForm(PackagingCouncilPreviousServiceMixin,
         """Meta configuration for PackagingCouncilNominationCreateForm."""
 
         fields = (*NominationForm.Meta.fields, "coc_acknowledged", "eligibility_confirmed")
-
-
-class PackagingCouncilNominationEditForm(PackagingCouncilPreviousServiceMixin, NominationForm):
-    """Edit form for an existing Packaging Council nomination."""
 
 
 class NominationAcceptForm(forms.ModelForm):

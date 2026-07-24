@@ -2,17 +2,19 @@
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import Http404
+from django.http import Http404, JsonResponse
 from django.urls import reverse
 from django.utils.functional import cached_property
+from django.utils.html import escape
+from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
+from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 from apps.nominations.forms import (
     BoardNominationCreateForm,
     NominationAcceptForm,
     NominationForm,
     PackagingCouncilNominationCreateForm,
-    PackagingCouncilNominationEditForm,
 )
 from apps.nominations.models import Election, ElectionKind, Nomination, Nominee
 from pydotorg.mixins import LoginRequiredMixin
@@ -161,11 +163,9 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
     """Edit an existing nomination."""
 
     model = Nomination
-
-    form_classes = {
-        ElectionKind.NominationFormVariant.BOARD: NominationForm,
-        ElectionKind.NominationFormVariant.PACKAGING_COUNCIL: PackagingCouncilNominationEditForm,
-    }
+    form_class = NominationForm
+    # Give authenticated non-owners a 403 instead of a login redirect loop.
+    raise_exception = True
 
     def test_func(self):
         """Only allow the original nominator to edit."""
@@ -180,10 +180,6 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
         kwargs = super().get_form_kwargs()
         kwargs["election"] = self.object.election
         return kwargs
-
-    def get_form_class(self):
-        """Return the edit form matching the election's kind (Packaging Council vs Board)."""
-        return self.form_classes[self.object.election.nomination_form_variant]
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
@@ -210,6 +206,8 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     model = Nomination
     form_class = NominationAcceptForm
     template_name_suffix = "_accept_form"
+    # Give authenticated non-owners a 403 instead of a login redirect loop.
+    raise_exception = True
 
     def test_func(self):
         """Only allow the nominee to accept."""
@@ -236,6 +234,16 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     def get_context_data(self, **kwargs):
         """Return context data for the nomination accept page."""
         return super().get_context_data(**kwargs)
+
+
+class NominationStatementPreview(LoginRequiredMixin, View):
+    """Render a nomination statement preview using the model field's own pipeline."""
+
+    def post(self, request):
+        """Return the statement rendered exactly as it will be stored."""
+        render_markdown = next(m[1] for m in DEFAULT_MARKUP_TYPES if m[0] == "markdown")
+        rendered = render_markdown(escape(request.POST.get("text", "")))
+        return JsonResponse({"html": rendered})
 
 
 class NominationView(DetailView):

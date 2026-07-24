@@ -25,6 +25,33 @@ Update Nomination
     toggle.addEventListener('change', sync);
     sync();
   })();
+  // Reveal the year picker only when previous service is answered "yes".
+  (function () {
+    var yearsRow = document.getElementById('row_previous_service_years');
+    if (!yearsRow) { return; }
+    var radios = document.querySelectorAll('input[name="previous_service"]');
+    function sync() {
+      var checked = document.querySelector('input[name="previous_service"]:checked');
+      yearsRow.hidden = !(checked && checked.value === 'yes');
+    }
+    radios.forEach(function (radio) { radio.addEventListener('change', sync); });
+    sync();
+  })();
+  // Server-rendered markdown preview for the nomination statement.
+  (function () {
+    var button = document.getElementById('preview-statement');
+    var target = document.getElementById('statement-preview');
+    var textarea = document.getElementById('id_nomination_statement');
+    if (!button || !target || !textarea) { return; }
+    button.addEventListener('click', function () {
+      var body = new FormData();
+      body.append('text', textarea.value);
+      body.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
+      fetch('{% url "nominations:nomination_preview" %}', { method: 'POST', body: body })
+        .then(function (response) { return response.json(); })
+        .then(function (data) { target.innerHTML = data.html; target.hidden = false; });
+    });
+  })();
 </script>
 {% endblock %}
 
@@ -43,13 +70,37 @@ Update Nomination
             {% csrf_token %}
             {% if next %}<input type="hidden" name="next" value="{{ next }}" />{% endif %}
             {{ form.non_field_errors }}
+            <style>
+                /* Radio pair inline instead of stacked. */
+                #id_previous_service { display: flex; flex-wrap: wrap; gap: 0.5em 2em; }
+                #id_previous_service div { display: contents; }
+                #id_previous_service label { display: inline-flex; align-items: center; gap: 0.4em; margin: 0; cursor: pointer; }
+                /* Year checkboxes as a compact chip grid. */
+                #id_previous_service_years { display: grid; grid-template-columns: repeat(auto-fill, minmax(6.5em, 1fr)); gap: 0.4em; max-width: 36em; }
+                #id_previous_service_years div { display: contents; }
+                #id_previous_service_years label {
+                    display: flex; align-items: center; gap: 0.45em; margin: 0;
+                    padding: 0.3em 0.65em; border: 1px solid #ccc; border-radius: 4px;
+                    background: #fff; cursor: pointer; white-space: nowrap; font-weight: normal;
+                }
+                #id_previous_service_years label:hover { border-color: #0073b7; }
+                #id_previous_service_years label:has(input:checked) {
+                    border-color: #0073b7; background: #eaf4fb; font-weight: bold;
+                }
+                #id_previous_service_years input { margin: 0; }
+                #statement-preview { border: 1px solid #ccc; border-radius: 4px; background: #fff; padding: 0.75em 1em; margin-top: 0.5em; }
+            </style>
             <table>
                 {% for field in form %}
                     {% if field.name not in form.acknowledgment_field_names %}
-                    <tr>
+                    <tr id="row_{{ field.name }}">
                         <th>{{ field.label_tag }}</th>
                         <td>
                             {{ field }}
+                            {% if field.name == "nomination_statement" %}
+                            <p><button type="button" id="preview-statement">Preview</button></p>
+                            <div id="statement-preview" hidden></div>
+                            {% endif %}
                             {% if field.help_text %}<br><span class="helptext">{{ field.help_text }}</span>{% endif %}
                             {{ field.errors }}
                         </td>
