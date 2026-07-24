@@ -10,7 +10,7 @@ from apps.nominations.models import Election, ElectionKind, Nomination, Nominee
 class ElectionKindAdmin(admin.ModelAdmin):
     """Admin interface for managing election kinds and their accent colors."""
 
-    list_display = ("name", "accent_color", "slug")
+    list_display = ("name", "nomination_form", "accent_color", "slug")
     readonly_fields = ("slug",)
 
 
@@ -18,7 +18,7 @@ class ElectionKindAdmin(admin.ModelAdmin):
 class ElectionAdmin(admin.ModelAdmin):
     """Admin interface for managing elections."""
 
-    list_display = ("name", "kind", "date", "slug")
+    list_display = ("name", "kind", "date", "hide_previous_service", "slug")
     list_filter = ("kind",)
     readonly_fields = ("slug",)
 
@@ -42,8 +42,24 @@ class NominationAdmin(admin.ModelAdmin):
     """Admin interface for managing nominations."""
 
     raw_id_fields = ("nominee", "nominator")
-    list_display = ("__str__", "election", "accepted", "approved", "nominee")
-    list_filter = ("election", "accepted", "approved")
+    list_display = (
+        "__str__",
+        "election",
+        "accepted",
+        "approved",
+        "nominee",
+        "coc_acknowledged",
+        "mission_alignment",
+        "eligibility_confirmed",
+    )
+    list_filter = (
+        "election",
+        "accepted",
+        "approved",
+        "coc_acknowledged",
+        "mission_alignment",
+        "eligibility_confirmed",
+    )
 
     def get_ordering(self, request):
         """Return ordering by election and nominee last name."""
