@@ -4,10 +4,10 @@ from django.test import RequestFactory, TestCase
 
 from apps.nominations.forms import (
     BoardNominationCreateForm,
+    NominationForm,
     PackagingCouncilNominationCreateForm,
-    PackagingCouncilNominationEditForm,
 )
-from apps.nominations.models import Election
+from apps.nominations.models import Election, Nomination
 from apps.nominations.tests.utils import nomination_payload, packaging_council_kind
 from apps.users.factories import UserFactory
 
@@ -55,6 +55,26 @@ class BoardNominationCreateFormTests(TestCase):
         self.assertNotIn("eligibility_confirmed", form.fields)
         self.assertEqual(form.acknowledgment_field_names, ("coc_acknowledged", "mission_alignment"))
 
+    def test_no_previous_service_stores_new_member(self):
+        form = self._form(nomination_payload())
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.instance.previous_board_service, "New board member")
+
+    def test_previous_service_yes_requires_years(self):
+        form = self._form(nomination_payload(previous_service="yes"))
+        self.assertFalse(form.is_valid())
+        self.assertIn("previous_service_years", form.errors)
+
+    def test_previous_service_years_compose_stored_value(self):
+        form = self._form(nomination_payload(previous_service="yes", previous_service_years=["2021", "2019"]))
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.instance.previous_board_service, "2019, 2021")
+
+    def test_previous_service_years_reject_invalid_year(self):
+        form = self._form(nomination_payload(previous_service="yes", previous_service_years=["1999"]))
+        self.assertFalse(form.is_valid())
+        self.assertIn("previous_service_years", form.errors)
+
 
 class PackagingCouncilNominationCreateFormTests(TestCase):
     def setUp(self):
@@ -91,7 +111,18 @@ class PackagingCouncilNominationCreateFormTests(TestCase):
 
     def test_previous_service_relabeled(self):
         form = self._form(nomination_payload())
-        self.assertEqual(form.fields["previous_board_service"].label, "Previous Packaging Council Service")
+        self.assertEqual(form.fields["previous_service"].label, "Previous Packaging Council Service")
+
+    def test_no_previous_service_stores_pc_new_member(self):
+        form = self._form(nomination_payload())
+        self.assertTrue(form.is_valid(), form.errors)
+        self.assertEqual(form.instance.previous_board_service, "New Packaging Council member")
+
+    def test_pc_years_start_at_2025(self):
+        form = self._form(nomination_payload())
+        years = [choice for choice, _ in form.fields["previous_service_years"].choices]
+        self.assertNotIn("2024", years)
+        self.assertIn("2025", years)
 
     def test_hide_previous_service_removes_field(self):
         election = Election.objects.create(
@@ -101,13 +132,14 @@ class PackagingCouncilNominationCreateFormTests(TestCase):
             hide_previous_service=True,
         )
         data = nomination_payload()
-        del data["previous_board_service"]
+        del data["previous_service"]
         form = self._form(data, election=election)
-        self.assertNotIn("previous_board_service", form.fields)
+        self.assertNotIn("previous_service", form.fields)
+        self.assertNotIn("previous_service_years", form.fields)
         self.assertTrue(form.is_valid(), form.errors)
 
 
-class PackagingCouncilNominationEditFormTests(TestCase):
+class NominationEditFormTests(TestCase):
     def setUp(self):
         self.kind = packaging_council_kind()
 
@@ -120,9 +152,20 @@ class PackagingCouncilNominationEditFormTests(TestCase):
         )
 
     def test_relabels_previous_service(self):
-        form = PackagingCouncilNominationEditForm(election=self._election())
-        self.assertEqual(form.fields["previous_board_service"].label, "Previous Packaging Council Service")
+        form = NominationForm(election=self._election())
+        self.assertEqual(form.fields["previous_service"].label, "Previous Packaging Council Service")
 
     def test_hides_previous_service_when_opted_out(self):
-        form = PackagingCouncilNominationEditForm(election=self._election(hide_previous_service=True))
-        self.assertNotIn("previous_board_service", form.fields)
+        form = NominationForm(election=self._election(hide_previous_service=True))
+        self.assertNotIn("previous_service", form.fields)
+
+    def test_prefills_years_from_stored_free_text(self):
+        nomination = Nomination(previous_board_service="Served 2025 and 2026")
+        form = NominationForm(instance=nomination, election=self._election())
+        self.assertEqual(form.fields["previous_service"].initial, "yes")
+        self.assertEqual(form.fields["previous_service_years"].initial, ["2025", "2026"])
+
+    def test_prefills_no_from_stored_new_member(self):
+        nomination = Nomination(previous_board_service="New Packaging Council member")
+        form = NominationForm(instance=nomination, election=self._election())
+        self.assertEqual(form.fields["previous_service"].initial, "no")

@@ -33,7 +33,7 @@ def nomination_payload(**overrides):
     data = {
         "name": "Grace Hopper",
         "email": "grace@example.com",
-        "previous_board_service": "New board member",
+        "previous_service": "no",
         "employer": "US Navy",
         "other_affiliations": "",
         "nomination_statement": "A strong candidate.",

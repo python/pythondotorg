@@ -116,6 +116,41 @@ class NominationCreatePersistenceTests(TestCase):
         self.assertTrue(nomination.eligibility_confirmed)
 
 
+class NominationStatementPreviewTests(TestCase):
+    def test_renders_markdown_with_html_escaped(self):
+        self.client.force_login(UserFactory())
+        response = self.client.post(
+            reverse("nominations:nomination_preview"),
+            {"text": "**bold** <script>alert(1)</script>"},
+        )
+        self.assertEqual(response.status_code, 200)
+        html = response.json()["html"]
+        self.assertIn("<strong>bold</strong>", html)
+        self.assertNotIn("<script>", html)
+
+    def test_requires_login(self):
+        response = self.client.post(reverse("nominations:nomination_preview"), {"text": "hi"})
+        self.assertEqual(response.status_code, 302)
+
+
+class NominationPermissionTests(TestCase):
+    def test_non_owner_gets_403_not_redirect_loop(self):
+        owner = UserFactory(first_name="Nina", last_name="Nominator")
+        other = UserFactory()
+        election = open_election("2026 Board Election")
+        nomination = Nomination.objects.create(
+            election=election,
+            nominator=owner,
+            name="Grace Hopper",
+            email="grace@example.com",
+            nomination_statement="A strong candidate.",
+        )
+        self.client.force_login(other)
+        url = reverse("nominations:nomination_edit", kwargs={"election": election.slug, "pk": nomination.pk})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 403)
+
+
 class NominationEditVariantTests(TestCase):
     def setUp(self):
         self.user = UserFactory()
