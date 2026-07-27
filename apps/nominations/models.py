@@ -8,6 +8,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.text import slugify
 from markupfield.fields import MarkupField
 
@@ -25,9 +26,21 @@ class ElectionKind(models.Model):
     code changes.
     """
 
+    class NominationFormVariant(models.TextChoices):
+        """Which public nomination form (and acknowledgment wording) a kind uses."""
+
+        BOARD = "board", "PSF Board"
+        PACKAGING_COUNCIL = "packaging_council", "Packaging Council"
+
     name = models.CharField(max_length=100, unique=True)
     slug = models.SlugField(max_length=120, unique=True, blank=True, null=True)
     accent_color = ColorField(default=DEFAULT_ACCENT_COLOR, help_text="Accent color used to theme this kind's pages.")
+    nomination_form = models.CharField(
+        max_length=32,
+        choices=NominationFormVariant.choices,
+        default=NominationFormVariant.BOARD,
+        help_text="Which nomination form and acknowledgment wording elections of this kind use.",
+    )
 
     class Meta:
         """Meta configuration for ElectionKind."""
@@ -42,6 +55,13 @@ class ElectionKind(models.Model):
         """Generate slug from name before saving."""
         self.slug = slugify(self.name)
         super().save(*args, **kwargs)
+
+    @property
+    def previous_service_label(self):
+        """Return the display label for the 'previous service' field for this kind."""
+        if self.nomination_form == self.NominationFormVariant.PACKAGING_COUNCIL:
+            return "Previous Packaging Council Service"
+        return "Previous Board Service"
 
 
 class Election(models.Model):
@@ -59,6 +79,10 @@ class Election(models.Model):
     nominations_open_at = models.DateTimeField(blank=True, null=True)
     nominations_close_at = models.DateTimeField(blank=True, null=True)
     description = MarkupField(escape_html=False, markup_type="markdown", blank=False, null=True)
+    hide_previous_service = models.BooleanField(
+        default=False,
+        help_text="Hide the 'previous service' field on the nomination form (e.g. an inaugural election with no prior terms).",
+    )
 
     slug = models.SlugField(max_length=255, blank=True, null=True)  # noqa: DJ001
 
@@ -80,6 +104,16 @@ class Election(models.Model):
     def accent_color(self):
         """Return the CSS accent color for this election's kind."""
         return self.kind.accent_color if self.kind else DEFAULT_ACCENT_COLOR
+
+    @property
+    def previous_service_label(self):
+        """Return the display label for the 'previous service' field for this election."""
+        return self.kind.previous_service_label if self.kind else "Previous Board Service"
+
+    @property
+    def nomination_form_variant(self):
+        """Return the nomination form variant for this election's kind (Board when kindless)."""
+        return self.kind.nomination_form if self.kind else ElectionKind.NominationFormVariant.BOARD
 
     @property
     def nominations_open(self):
@@ -166,7 +200,7 @@ class Nominee(models.Model):
         """Return pending nominations excluding self-nominations."""
         return self.nominations.exclude(accepted=False, approved=False).exclude(nominator=self.user).all()
 
-    @property
+    @cached_property
     def self_nomination(self):
         """Return the self-nomination for this nominee, if any."""
         return self.nominations.filter(nominator=self.user).first()
@@ -199,6 +233,12 @@ class Nominee(models.Model):
             return self.self_nomination.other_affiliations
 
         return self.nominations.first().other_affiliations
+
+    @property
+    def display_mission_alignment(self):
+        """Return True if the relevant nomination affirmed the voter-clarity statement."""
+        nomination = self.self_nomination or self.nominations.filter(accepted=True, approved=True).first()
+        return bool(nomination and nomination.mission_alignment)
 
     def visible(self, user=None):
         """Return True if the nominee is visible to the given user."""
@@ -235,6 +275,12 @@ class Nomination(models.Model):
     accepted = models.BooleanField(null=False, default=False)
     approved = models.BooleanField(null=False, default=False)
 
+    # Candidate acknowledgments collected at submission time; wording and
+    # which are mandatory vary per election kind (see the create forms).
+    coc_acknowledged = models.BooleanField(default=False)
+    mission_alignment = models.BooleanField(default=False)
+    eligibility_confirmed = models.BooleanField(default=False)
+
     def __str__(self):
         """Return the nominee name and email."""
         return f"{self.name} <{self.email}>"
@@ -245,6 +291,18 @@ class Nomination(models.Model):
             "nominations:nomination_detail",
             kwargs={"election": self.election.slug, "pk": self.pk},
         )
+
+    @classmethod
+    def render_statement(cls, text):
+        """Render statement markup exactly as saving would, without touching the database.
+
+        Runs an unsaved instance through the MarkupField's own ``pre_save`` so
+        callers (e.g. the preview endpoint) inherit its markup type and
+        ``escape_html`` setting instead of duplicating them.
+        """
+        nomination = cls(nomination_statement=text)
+        cls._meta.get_field("nomination_statement").pre_save(nomination, add=True)
+        return nomination.nomination_statement.rendered
 
     def get_edit_url(self):
         """Return the URL for editing this nomination."""

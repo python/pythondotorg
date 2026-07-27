@@ -20,7 +20,9 @@ Nomination for {{ nomination.name }} in {{ nomination.election.name }} Election
       <li><b>Name</b>: {{ nomination.name }}</li>
       <li><b>Employer</b>: {{ nomination.employer }}</li>
       <li><b>Other Affiliations</b>: {{ nomination.other_affiliations }}</li>
-      <li><b>Previous Board Service</b>: {{ nomination.previous_board_service }}</li>
+      {% if nomination.previous_board_service %}
+      <li><b>{{ nomination.election.previous_service_label }}</b>: {{ nomination.previous_board_service }}</li>
+      {% endif %}
       <li><b>Nominated By</b>: {{ nomination.nominator.first_name }} {{ nomination.nominator.last_name }}</li>
       {% if nomination.nominee.user == request.user %}
       <li><b>Accepted:</b> {{ nomination.accepted }}</li>

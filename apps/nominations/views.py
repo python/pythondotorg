@@ -2,12 +2,20 @@
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
+from django.utils.functional import cached_property
+from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from apps.nominations.forms import NominationAcceptForm, NominationCreateForm, NominationForm
-from apps.nominations.models import Election, Nomination, Nominee
+from apps.nominations.forms import (
+    BoardNominationCreateForm,
+    NominationAcceptForm,
+    NominationForm,
+    PackagingCouncilNominationCreateForm,
+)
+from apps.nominations.models import Election, ElectionKind, Nomination, Nominee
 from pydotorg.mixins import LoginRequiredMixin
 
 
@@ -27,8 +35,8 @@ class ElectionDetail(DetailView):
         return self.render_to_response(context)
 
     def get_object(self):
-        """Look up the election by slug from the URL."""
-        election = Election.objects.get(slug=self.kwargs["election"])
+        """Look up the election by slug from the URL, 404ing on an unknown slug."""
+        election = get_object_or_404(Election, slug=self.kwargs["election"])
         self.election = election
         return election
 
@@ -40,10 +48,14 @@ class ElectionDetail(DetailView):
 class NominationMixin:
     """Mixin that injects the current election into the template context."""
 
+    @cached_property
+    def election(self):
+        """Return the election named by the URL slug, 404ing on an unknown slug."""
+        return get_object_or_404(Election.objects.select_related("kind"), slug=self.kwargs["election"])
+
     def get_context_data(self, **kwargs):
         """Add the election from the URL slug to the context."""
         context = super().get_context_data(**kwargs)
-        self.election = Election.objects.get(slug=self.kwargs["election"])
         context["election"] = self.election
         return context
 
@@ -55,7 +67,7 @@ class NomineeList(NominationMixin, ListView):
 
     def get_queryset(self, *args, **kwargs):
         """Return visible nominees based on election status and user permissions."""
-        election = Election.objects.get(slug=self.kwargs["election"])
+        election = self.election
         if election.nominations_complete or self.request.user.is_superuser:
             return Nominee.objects.filter(accepted=True, approved=True, election=election).exclude(user=None)
 
@@ -78,8 +90,7 @@ class NomineeDetail(NominationMixin, DetailView):
 
     def get_queryset(self):
         """Return nominees for the election specified in the URL."""
-        election = Election.objects.get(slug=self.kwargs["election"])
-        return Nominee.objects.filter(election=election).select_related()
+        return Nominee.objects.filter(election=self.election).select_related()
 
     def get_context_data(self, **kwargs):
         """Return context data for the nominee detail page."""
@@ -93,15 +104,20 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
 
     login_message = "Please login to make a nomination."
 
+    form_classes = {
+        ElectionKind.NominationFormVariant.BOARD: BoardNominationCreateForm,
+        ElectionKind.NominationFormVariant.PACKAGING_COUNCIL: PackagingCouncilNominationCreateForm,
+    }
+
     def get_form_kwargs(self):
-        """Add the request to the form kwargs for self-nomination validation."""
+        """Add the request and election to the form kwargs."""
         kwargs = super().get_form_kwargs()
-        kwargs.update({"request": self.request})
+        kwargs.update({"request": self.request, "election": self.election})
         return kwargs
 
     def get_form_class(self):
-        """Return the form class, raising 404 if nominations are closed or not open."""
-        election = Election.objects.get(slug=self.kwargs["election"])
+        """Return the form class for the election's kind, 404ing when nominations are not open."""
+        election = self.election
         if election.nominations_complete:
             messages.error(self.request, f"Nominations for {election.name} Election are closed")
             msg = f"Nominations for {election.name} Election are closed"
@@ -111,7 +127,7 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
             msg = f"Nominations for {election.name} Election are not open"
             raise Http404(msg)
 
-        return NominationCreateForm
+        return self.form_classes[election.nomination_form_variant]
 
     def get_success_url(self):
         """Return the URL for the newly created nomination detail page."""
@@ -123,7 +139,7 @@ class NominationCreate(LoginRequiredMixin, NominationMixin, CreateView):
     def form_valid(self, form):
         """Set nominator, election, and handle self-nomination before saving."""
         form.instance.nominator = self.request.user
-        form.instance.election = Election.objects.get(slug=self.kwargs["election"])
+        form.instance.election = self.election
         if form.cleaned_data.get("self_nomination", False):
             try:
                 nominee = Nominee.objects.get(user=self.request.user, election=form.instance.election)
@@ -147,10 +163,22 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
 
     model = Nomination
     form_class = NominationForm
+    # Give authenticated non-owners a 403 instead of a login redirect loop.
+    raise_exception = True
 
     def test_func(self):
         """Only allow the original nominator to edit."""
         return self.request.user == self.get_object().nominator
+
+    def get_queryset(self):
+        """Fetch the nomination for the URL's election with its kind in one query."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related("election__kind")
+
+    def get_form_kwargs(self):
+        """Pass the nomination's election so the form can theme its fields."""
+        kwargs = super().get_form_kwargs()
+        kwargs["election"] = self.object.election
+        return kwargs
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
@@ -177,10 +205,18 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     model = Nomination
     form_class = NominationAcceptForm
     template_name_suffix = "_accept_form"
+    # Give authenticated non-owners a 403 instead of a login redirect loop.
+    raise_exception = True
 
     def test_func(self):
         """Only allow the nominee to accept."""
         return self.request.user == self.get_object().nominee.user
+
+    def get_queryset(self):
+        """Fetch the URL election's nomination with the related objects the template renders."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
@@ -201,6 +237,14 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
         return super().get_context_data(**kwargs)
 
 
+class NominationStatementPreview(LoginRequiredMixin, View):
+    """Render a nomination statement preview using the model field's own pipeline."""
+
+    def post(self, request):
+        """Return the statement rendered exactly as it will be stored."""
+        return JsonResponse({"html": Nomination.render_statement(request.POST.get("text", ""))})
+
+
 class NominationView(DetailView):
     """Display details for a single nomination."""
 
@@ -215,8 +259,10 @@ class NominationView(DetailView):
         return self.render_to_response(context)
 
     def get_queryset(self):
-        """Return all nominations with related objects."""
-        return Nomination.objects.select_related()
+        """Return the URL election's nominations with related objects."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
 
     def get_context_data(self, **kwargs):
         """Return context data for the nomination detail page."""
