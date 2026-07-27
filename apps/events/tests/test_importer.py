@@ -59,7 +59,7 @@ END:VCALENDAR
         e = Event.objects.get(uid="8ceqself979pphq4eu7l5e2db8@google.com")
         self.assertEqual(e.calendar.url, EVENTS_CALENDAR_URL)
         self.assertEqual(
-            e.description.rendered, '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
+            e.description.rendered, '<a href="https://www.barcamptools.eu/pycamp201604" rel="noopener noreferrer">PythonCamp Cologne 2016</a>'
         )
         self.assertTrue(e.next_or_previous_time.all_day)
         self.assertEqual(make_aware(datetime(year=2016, month=4, day=2)), e.next_or_previous_time.dt_start)

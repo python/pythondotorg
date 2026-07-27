@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.test import TestCase
 
 from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind
@@ -50,3 +51,22 @@ class ElectionAccentColorTests(TestCase):
 
         self.assertIsNone(self.election.kind)
         self.assertEqual(self.election.accent_color, DEFAULT_ACCENT_COLOR)
+
+
+class MarkupSanitizationTests(TestCase):
+    def _render(self, markup_type, text):
+        renderers = {entry[0]: entry[1] for entry in settings.MARKUP_FIELD_TYPES}
+        return renderers[markup_type](text)
+
+    def test_markdown_strips_javascript_uri(self):
+        rendered = self._render("markdown", "[x](javascript:alert(document.domain))")
+        self.assertNotIn("javascript:", rendered)
+
+    def test_markdown_preserves_safe_links_and_formatting(self):
+        rendered = self._render("markdown", "[ok](https://www.python.org) **bold**")
+        self.assertIn('href="https://www.python.org"', rendered)
+        self.assertIn("<strong>bold</strong>", rendered)
+
+    def test_restructuredtext_strips_javascript_uri(self):
+        rendered = self._render("restructuredtext", "`x <javascript:alert(1)>`_")
+        self.assertNotIn("javascript:", rendered)

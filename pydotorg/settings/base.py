@@ -6,6 +6,7 @@ from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
+from pydotorg.markup import MARKUP_FIELD_TYPES  # noqa: F401 - read by django-markupfield via settings
 from pydotorg.settings.pipeline import PIPELINE  # noqa: F401 - accessed by django-pipeline via settings
 
 ### Basic config
