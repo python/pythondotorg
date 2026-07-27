@@ -173,8 +173,8 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
         return self.request.user == self.get_object().nominator
 
     def get_queryset(self):
-        """Fetch the nomination with its election and kind in one query."""
-        return Nomination.objects.select_related("election__kind")
+        """Fetch the nomination for the URL's election with its kind in one query."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related("election__kind")
 
     def get_form_kwargs(self):
         """Pass the nomination's election so the form can theme its fields."""
@@ -215,8 +215,10 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
         return self.request.user == self.get_object().nominee.user
 
     def get_queryset(self):
-        """Fetch the nomination with the related objects the template renders."""
-        return Nomination.objects.select_related("election__kind", "nominee__user", "nominator")
+        """Fetch the URL election's nomination with the related objects the template renders."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
 
     def get_success_url(self):
         """Return the next URL from POST data or the nomination detail page."""
@@ -261,8 +263,10 @@ class NominationView(DetailView):
         return self.render_to_response(context)
 
     def get_queryset(self):
-        """Return all nominations with related objects."""
-        return Nomination.objects.select_related("election__kind", "nominee__user", "nominator")
+        """Return the URL election's nominations with related objects."""
+        return Nomination.objects.filter(election__slug=self.kwargs["election"]).select_related(
+            "election__kind", "nominee__user", "nominator"
+        )
 
     def get_context_data(self, **kwargs):
         """Return context data for the nomination detail page."""
