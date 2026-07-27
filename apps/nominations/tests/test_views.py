@@ -193,3 +193,65 @@ class NominationEditVariantTests(TestCase):
         # Field is hidden for the inaugural election, so neither label appears.
         self.assertNotContains(response, "Previous Packaging Council Service")
         self.assertNotContains(response, "Previous Board Service")
+
+    def test_inaugural_pc_edit_clears_stale_previous_service(self):
+        election = open_election(
+            "Inaugural Packaging Council Election", kind=packaging_council_kind(), hide_previous_service=True
+        )
+        nomination = Nomination.objects.create(
+            election=election,
+            nominator=self.user,
+            name="Grace Hopper",
+            email="grace@example.com",
+            previous_board_service="2024",
+            nomination_statement="A strong candidate.",
+        )
+        url = reverse(
+            "nominations:nomination_edit",
+            kwargs={"election": election.slug, "pk": nomination.pk},
+        )
+        payload = nomination_payload()
+        del payload["previous_service"]
+        response = self.client.post(url, payload)
+
+        self.assertEqual(response.status_code, 302)
+        nomination.refresh_from_db()
+        self.assertIsNone(nomination.previous_board_service)
+
+
+class NominationElectionScopingTests(TestCase):
+    """Nomination URLs must be scoped to the election slug they are nested under."""
+
+    def setUp(self):
+        self.user = UserFactory()
+        self.client.force_login(self.user)
+        self.election = open_election("2026 Board Election")
+        self.other_election = open_election("2026 Packaging Council Election", kind=packaging_council_kind())
+        self.nomination = Nomination.objects.create(
+            election=self.election,
+            nominator=self.user,
+            name="Grace Hopper",
+            email="grace@example.com",
+            nomination_statement="A strong candidate.",
+        )
+
+    def _url(self, name, election):
+        return reverse(name, kwargs={"election": election.slug, "pk": self.nomination.pk})
+
+    def test_detail_404s_under_wrong_election(self):
+        self.assertEqual(
+            self.client.get(self._url("nominations:nomination_detail", self.other_election)).status_code, 404
+        )
+
+    def test_edit_404s_under_wrong_election(self):
+        self.assertEqual(
+            self.client.get(self._url("nominations:nomination_edit", self.other_election)).status_code, 404
+        )
+
+    def test_accept_404s_under_wrong_election(self):
+        self.assertEqual(
+            self.client.get(self._url("nominations:nomination_accept", self.other_election)).status_code, 404
+        )
+
+    def test_edit_still_works_under_own_election(self):
+        self.assertEqual(self.client.get(self._url("nominations:nomination_edit", self.election)).status_code, 200)
