@@ -32,6 +32,23 @@ class ElectionDetailThemeTests(TestCase):
         self.assertContains(response, f"--election-accent: {DEFAULT_ACCENT_COLOR}")
 
 
+class UnknownElectionSlugTests(TestCase):
+    """An unknown election slug must 404 rather than blow up with DoesNotExist."""
+
+    def test_election_detail_404s(self):
+        url = reverse("nominations:election_detail", kwargs={"election": "no-such-election"})
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_nominees_list_404s(self):
+        url = reverse("nominations:nominees_list", kwargs={"election": "no-such-election"})
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+    def test_nomination_create_404s(self):
+        self.client.force_login(UserFactory())
+        url = reverse("nominations:nomination_create", kwargs={"election": "no-such-election"})
+        self.assertEqual(self.client.get(url).status_code, 404)
+
+
 class NominationCreateFormSelectionTests(TestCase):
     def setUp(self):
         self.user = UserFactory()
