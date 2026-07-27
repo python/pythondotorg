@@ -3,6 +3,7 @@
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
 from django.http import Http404, JsonResponse
+from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.functional import cached_property
 from django.utils.html import escape
@@ -36,8 +37,8 @@ class ElectionDetail(DetailView):
         return self.render_to_response(context)
 
     def get_object(self):
-        """Look up the election by slug from the URL."""
-        election = Election.objects.get(slug=self.kwargs["election"])
+        """Look up the election by slug from the URL, 404ing on an unknown slug."""
+        election = get_object_or_404(Election, slug=self.kwargs["election"])
         self.election = election
         return election
 
@@ -51,8 +52,8 @@ class NominationMixin:
 
     @cached_property
     def election(self):
-        """Return the election named by the URL slug."""
-        return Election.objects.select_related("kind").get(slug=self.kwargs["election"])
+        """Return the election named by the URL slug, 404ing on an unknown slug."""
+        return get_object_or_404(Election.objects.select_related("kind"), slug=self.kwargs["election"])
 
     def get_context_data(self, **kwargs):
         """Add the election from the URL slug to the context."""

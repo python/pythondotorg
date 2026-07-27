@@ -43,13 +43,21 @@ Update Nomination
     var target = document.getElementById('statement-preview');
     var textarea = document.getElementById('id_nomination_statement');
     if (!button || !target || !textarea) { return; }
+    function showError() {
+      target.textContent = 'Preview is unavailable right now. Your session may have expired — try reloading the page.';
+      target.hidden = false;
+    }
     button.addEventListener('click', function () {
       var body = new FormData();
       body.append('text', textarea.value);
       body.append('csrfmiddlewaretoken', document.querySelector('input[name="csrfmiddlewaretoken"]').value);
       fetch('{% url "nominations:nomination_preview" %}', { method: 'POST', body: body })
-        .then(function (response) { return response.json(); })
-        .then(function (data) { target.innerHTML = data.html; target.hidden = false; });
+        .then(function (response) {
+          if (!response.ok) { throw new Error('Preview request failed: ' + response.status); }
+          return response.json();
+        })
+        .then(function (data) { target.innerHTML = data.html; target.hidden = false; })
+        .catch(showError);
     });
   })();
 </script>
@@ -98,8 +106,8 @@ Update Nomination
                         <td>
                             {{ field }}
                             {% if field.name == "nomination_statement" %}
-                            <p><button type="button" id="preview-statement">Preview</button></p>
-                            <div id="statement-preview" hidden></div>
+                            <p><button type="button" id="preview-statement" aria-controls="statement-preview">Preview</button></p>
+                            <div id="statement-preview" role="region" aria-live="polite" aria-label="Statement preview" hidden></div>
                             {% endif %}
                             {% if field.help_text %}<br><span class="helptext">{{ field.help_text }}</span>{% endif %}
                             {{ field.errors }}
