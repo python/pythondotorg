@@ -292,6 +292,18 @@ class Nomination(models.Model):
             kwargs={"election": self.election.slug, "pk": self.pk},
         )
 
+    @classmethod
+    def render_statement(cls, text):
+        """Render statement markup exactly as saving would, without touching the database.
+
+        Runs an unsaved instance through the MarkupField's own ``pre_save`` so
+        callers (e.g. the preview endpoint) inherit its markup type and
+        ``escape_html`` setting instead of duplicating them.
+        """
+        nomination = cls(nomination_statement=text)
+        cls._meta.get_field("nomination_statement").pre_save(nomination, add=True)
+        return nomination.nomination_statement.rendered
+
     def get_edit_url(self):
         """Return the URL for editing this nomination."""
         return reverse(

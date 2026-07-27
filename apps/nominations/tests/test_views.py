@@ -149,6 +149,21 @@ class NominationStatementPreviewTests(TestCase):
         response = self.client.post(reverse("nominations:nomination_preview"), {"text": "hi"})
         self.assertEqual(response.status_code, 302)
 
+    def test_preview_matches_stored_rendering(self):
+        """The preview must be byte-identical to what the field stores on save."""
+        text = "**bold** <script>alert(1)</script> [link](https://example.com) & <b>raw</b>"
+        self.client.force_login(UserFactory())
+        response = self.client.post(reverse("nominations:nomination_preview"), {"text": text})
+
+        nomination = Nomination.objects.create(
+            election=open_election("2026 Board Election"),
+            nominator=UserFactory(),
+            name="Grace Hopper",
+            email="grace@example.com",
+            nomination_statement=text,
+        )
+        self.assertEqual(response.json()["html"], nomination.nomination_statement.rendered)
+
 
 class NominationPermissionTests(TestCase):
     def test_non_owner_gets_403_not_redirect_loop(self):

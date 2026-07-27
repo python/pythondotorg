@@ -6,10 +6,8 @@ from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
 from django.utils.functional import cached_property
-from django.utils.html import escape
 from django.views import View
 from django.views.generic import CreateView, DetailView, ListView, UpdateView
-from markupfield.markup import DEFAULT_MARKUP_TYPES
 
 from apps.nominations.forms import (
     BoardNominationCreateForm,
@@ -244,9 +242,7 @@ class NominationStatementPreview(LoginRequiredMixin, View):
 
     def post(self, request):
         """Return the statement rendered exactly as it will be stored."""
-        render_markdown = next(m[1] for m in DEFAULT_MARKUP_TYPES if m[0] == "markdown")
-        rendered = render_markdown(escape(request.POST.get("text", "")))
-        return JsonResponse({"html": rendered})
+        return JsonResponse({"html": Nomination.render_statement(request.POST.get("text", ""))})
 
 
 class NominationView(DetailView):
