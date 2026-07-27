@@ -86,12 +86,13 @@ class NominationForm(forms.ModelForm):
         self.variant = (
             self.election.nomination_form_variant if self.election else ElectionKind.NominationFormVariant.BOARD
         )
+        self.hide_previous_service = self.election is not None and self.election.hide_previous_service
         super().__init__(*args, **kwargs)
         # The free-text model field is replaced by the structured yes/no +
         # year-picker pair below; its column is nullable, so an election with
-        # hide_previous_service simply writes NULL.
+        # hide_previous_service writes NULL (see clean()).
         del self.fields["previous_board_service"]
-        if not (self.election is not None and self.election.hide_previous_service):
+        if not self.hide_previous_service:
             self._add_previous_service_fields()
 
     def _add_previous_service_fields(self):
@@ -128,6 +129,12 @@ class NominationForm(forms.ModelForm):
     def clean(self):
         """Compose the structured previous-service answer into the model field."""
         cleaned_data = super().clean()
+        if self.hide_previous_service:
+            # This election doesn't collect previous service, so don't leave a
+            # stale value behind on edit (e.g. the flag was turned on later).
+            self.instance.previous_board_service = None
+            return cleaned_data
+
         answer = cleaned_data.get("previous_service")
         if answer == "yes" and not cleaned_data.get("previous_service_years"):
             self.add_error("previous_service_years", "Select the year(s) served.")
