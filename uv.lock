@@ -1171,11 +1171,11 @@ wheels = [
 
 [[package]]
 name = "pypandoc"
-version = "1.12"
+version = "1.17"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/2e/56/8c544ab77f24627a71d3000cbe426a3fd28b52452250ff5ba656adc6023c/pypandoc-1.12.tar.gz", hash = "sha256:8f44740a9f074e121d81b489f073160421611d4ead62d1b306aeb11aab3c32df", size = 32338, upload-time = "2023-10-17T01:53:19.726Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/ea/d6/410615fc433e5d1eacc00db2044ae2a9c82302df0d35366fe2bd15de024d/pypandoc-1.17.tar.gz", hash = "sha256:51179abfd6e582a25ed03477541b48836b5bba5a4c3b282a547630793934d799", size = 69071, upload-time = "2026-03-14T22:39:07.21Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/01/35/d39a3abc5b0e5ca646081c492b37dc737e0d4563689a78213680de354fc6/pypandoc-1.12-py3-none-any.whl", hash = "sha256:efb4f7d68ead8bec32e22b62f02d5608a1700978b51bfc4af286fd6acfe9d218", size = 20975, upload-time = "2023-10-17T01:53:00.411Z" },
+    { url = "https://files.pythonhosted.org/packages/0c/86/e2ffa604eacfbec3f430b1d850e7e04c4101eca1a5828f9ae54bf51dfba4/pypandoc-1.17-py3-none-any.whl", hash = "sha256:01fdbffa61edb9f8e82e8faad6954efcb7b6f8f0634aead4d89e322a00225a67", size = 23554, upload-time = "2026-03-14T22:38:46.007Z" },
 ]
 
 [[package]]
@@ -1366,7 +1366,7 @@ requires-dist = [
     { name = "pillow", specifier = "==12.2.0" },
     { name = "psycopg2-binary", specifier = "==2.9.11" },
     { name = "pygments", specifier = ">=2.17,<3" },
-    { name = "pypandoc", specifier = "==1.12" },
+    { name = "pypandoc", specifier = "==1.17" },
     { name = "python-dateutil", specifier = "==2.9.0.post0" },
     { name = "python-decouple", specifier = "==3.8" },
     { name = "python3-openid", specifier = "==3.2.0" },
