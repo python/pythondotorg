@@ -12,6 +12,7 @@ class PostList(ListView):
     paginate_by = 25
 
     def get_queryset(self):
+        """Only return public posts."""
         return Post.objects.public()
 
 
@@ -21,4 +22,5 @@ class PostDetail(DetailView):
     model = Post
 
     def get_queryset(self):
+        """Only return public posts."""
         return Post.objects.public()
