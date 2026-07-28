@@ -16,6 +16,7 @@ from apps.downloads.tests.base import BaseDownloadTests, DownloadMixin
 from apps.pages.factories import PageFactory
 from apps.users.factories import UserFactory
 from pydotorg.drf import BaseAPITestCase
+from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
@@ -179,7 +180,7 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
             password="passworduser",
             is_staff=True,
         )
-        self.Authorization = f"Token {self.staff_user.api_v2_token}"
+        self.Authorization = f"Token {Token.objects.get(user=self.staff_user).key}"
         self.Authorization_invalid = "Token invalid-token"
 
     def get_json(self, response):
