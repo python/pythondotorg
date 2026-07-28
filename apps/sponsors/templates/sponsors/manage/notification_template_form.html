@@ -1,0 +1,94 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}New{% else %}Edit{% endif %} Notification Template | Sponsorship Management{% endblock %}
+
+{% with active_tab="notifications" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_notification_templates' %}">Notification Templates</a>
+    <span class="sep">/</span>
+    <span class="current">{% if is_create %}New Template{% else %}{{ object.internal_name }}{% endif %}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+<div class="manage-form">
+    <h2 style="font-size:20px;font-weight:700;color:#1a1a2e;margin:0 0 20px;">
+        {% if is_create %}Create Notification Template{% else %}Edit: {{ object.internal_name }}{% endif %}
+    </h2>
+
+    {% if form.non_field_errors %}
+    <div class="form-errors">
+        <ul>{% for e in form.non_field_errors %}<li>{{ e }}</li>{% endfor %}</ul>
+    </div>
+    {% endif %}
+
+    <form method="post">
+        {% csrf_token %}
+
+        <fieldset class="manage-fieldset">
+            <legend>Template Details</legend>
+
+            <div class="form-group">
+                <label for="{{ form.internal_name.id_for_label }}">Internal Name</label>
+                {{ form.internal_name }}
+                {% if form.internal_name.errors %}<div class="field-errors">{{ form.internal_name.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.subject.id_for_label }}">Subject</label>
+                {{ form.subject }}
+                {% if form.subject.errors %}<div class="field-errors">{{ form.subject.errors }}</div>{% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="{{ form.content.id_for_label }}">Content</label>
+                {{ form.content }}
+                {% if form.content.errors %}<div class="field-errors">{{ form.content.errors }}</div>{% endif %}
+            </div>
+        </fieldset>
+
+        <!-- Template variables reference -->
+        <fieldset class="manage-fieldset" style="background:#f7f8fa;">
+            <legend>Template Variables</legend>
+            <p style="font-size:12px;color:#777;margin:0 0 10px;">Click to copy, then paste into subject or content fields.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px;">
+                {% for var in template_vars %}
+                <button type="button" class="tpl-var-btn" data-var="{% templatetag openvariable %} {{ var }} {% templatetag closevariable %}" onclick="navigator.clipboard.writeText(this.dataset.var);var b=this;b.textContent='Copied!';setTimeout(function(){b.textContent=b.dataset.var},1200)">
+                    {% templatetag openvariable %} {{ var }} {% templatetag closevariable %}
+                </button>
+                {% endfor %}
+            </div>
+        </fieldset>
+
+        <style>
+            .tpl-var-btn {
+                display: inline-block;
+                padding: 4px 10px;
+                font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+                font-size: 12px;
+                background: #fff;
+                border: 1px solid #d0d0d0;
+                border-radius: 4px;
+                cursor: pointer;
+                color: #3776ab;
+                transition: background 0.1s, border-color 0.1s;
+            }
+            .tpl-var-btn:hover {
+                background: #e8f0fe;
+                border-color: #3776ab;
+            }
+        </style>
+
+        <div style="display:flex;gap:10px;margin-top:20px;">
+            <button type="submit" class="btn btn-primary">{% if is_create %}Create Template{% else %}Save Changes{% endif %}</button>
+            <a href="{% url 'manage_notification_templates' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
+
+{% endwith %}
