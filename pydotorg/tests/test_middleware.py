@@ -12,6 +12,12 @@ class MiddlewareTests(TestCase):
         self.assertTrue(response.has_header("Cache-Control"))
         self.assertEqual(response["Cache-Control"], "private")
 
+    def test_csp_report_only_header(self):
+        """CSP ships in Report-Only mode; the enforcing header must not be set."""
+        response = self.client.get("/admin/")
+        self.assertTrue(response.has_header("Content-Security-Policy-Report-Only"))
+        self.assertFalse(response.has_header("Content-Security-Policy"))
+
     def test_redirects(self):
         """
         More of a sanity check just in case some other middleware interferes.
