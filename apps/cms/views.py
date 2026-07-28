@@ -1,6 +1,6 @@
 """Views for the cms app, including custom error handlers."""
 
-from urllib.parse import urljoin
+from urllib.parse import quote
 
 from django.shortcuts import render
 from django.urls import reverse
@@ -11,7 +11,9 @@ PYPI_URL = "https://pypi.org/"
 
 def legacy_path(path):
     """Build a path to the same path under the legacy.python.org domain."""
-    return urljoin(LEGACY_PYTHON_DOMAIN, path)
+    if not path.startswith("/"):
+        path = f"/{path}"
+    return f"{LEGACY_PYTHON_DOMAIN}{quote(path, safe='/%')}"
 
 
 def custom_404(request, exception, template_name="404.html"):

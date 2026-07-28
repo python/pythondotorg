@@ -49,6 +49,13 @@ class Sponsor(ContentManageable):
         help_text="For display on our sponsor webpage. High resolution PNG or JPG, smallest dimension no less than "
         "256px",
     )
+    white_logo = models.ImageField(
+        upload_to="sponsor_white_logos",
+        blank=True,
+        null=True,
+        verbose_name="White logo",
+        help_text="For display on dark backgrounds (e.g. PyPI footer). Transparent PNG, smallest dimension no less than 256px",
+    )
     print_logo = models.FileField(
         upload_to="sponsor_print_logos",
         validators=[FileExtensionValidator(["eps", "epsfepsi", "svg", "png"])],
