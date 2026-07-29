@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.0"]
+requires = ["setuptools>=83.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -10,6 +10,7 @@ name = "pythondotorg"
 version = "0.1.0"
 requires-python = ">=3.14"
 dependencies = [
+    "nh3==0.3.6",
     "dj-database-url==0.5.0",
     "django-csp==4.0",
     "django-pipeline==4.1.0",
@@ -17,12 +18,12 @@ dependencies = [
     "django-apptemplates==1.5",
     "django-admin-interface==0.28.9",
     "django-translation-aliases==0.1.0",
-    "Django==5.2.13",
+    "Django==5.2.16",
     "docutils==0.21.2",
     "Markdown==3.10.2",
     "cmarkgfm==2024.11.20",
     "Pygments>=2.17,<3",
-    "Pillow==12.2.0",
+    "Pillow==12.3.0",
     "psycopg2-binary==2.9.11",
     "python3-openid==3.2.0",
     "python-decouple==3.8",
@@ -35,7 +36,7 @@ dependencies = [
     "celery[redis]==5.4.0",
     "django-celery-beat==2.8.1",
     "django-imagekit==5.0",
-    "django-haystack==3.3.0",
+    "django-haystack==3.4.0",
     "elasticsearch>=7,<8",
     "django-tastypie==0.15.1",
     "python-dateutil==2.9.0.post0",
@@ -54,9 +55,10 @@ dependencies = [
     "sorl-thumbnail==12.11.0",
     "django-extensions==3.2.3",
     "django-import-export==2.7.1",
-    "pypandoc==1.12",
+    "pypandoc==1.17",
     "panflute==2.3.1",
     "Unidecode==1.4.0",
+    "idna==3.15",
 ]
 
 [project.optional-dependencies]

@@ -6,6 +6,7 @@ from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
+from pydotorg.markup import MARKUP_FIELD_TYPES  # noqa: F401 - read by django-markupfield via settings
 from pydotorg.settings.pipeline import PIPELINE  # noqa: F401 - accessed by django-pipeline via settings
 
 ### Basic config
@@ -96,10 +97,10 @@ AUTHENTICATION_BACKENDS = (
 ### Allauth
 LOGIN_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
 # TODO: Enable enumeration prevention
 ACCOUNT_PREVENT_ENUMERATION = False
 SOCIALACCOUNT_EMAIL_REQUIRED = True
