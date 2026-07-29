@@ -153,6 +153,7 @@ ROOT_URLCONF = "pydotorg.urls"
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "pydotorg.middleware.AdminNoCaching",
     "pydotorg.middleware.GlobalSurrogateKey",
@@ -297,6 +298,27 @@ MESSAGE_TAGS = {
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
+
+### Content Security Policy, via django-csp
+
+# Django 6.0 ships built-in CSP support; drop django-csp and this setting
+# and use the framework's own CSP once we upgrade.
+# Report-Only first: collect violations and tune the allowlist before
+# enforcing. Rollout tracked in #3041.
+CONTENT_SECURITY_POLICY_REPORT_ONLY = {
+    "DIRECTIVES": {
+        "default-src": ["'self'"],
+        "script-src": ["'self'"],
+        "style-src": ["'self'"],
+        "img-src": ["'self'", "data:"],
+        "font-src": ["'self'"],
+        "connect-src": ["'self'"],
+        "frame-ancestors": ["'self'"],
+        "base-uri": ["'self'"],
+        "object-src": ["'none'"],
+        "form-action": ["'self'"],
+    },
+}
 
 ### django-rest-framework
 
