@@ -167,8 +167,8 @@ class NominationEdit(LoginRequiredMixin, NominationMixin, UserPassesTestMixin, U
     raise_exception = True
 
     def test_func(self):
-        """Only allow the original nominator to edit."""
-        return self.request.user == self.get_object().nominator
+        """Allow editing only while the nomination is still editable."""
+        return self.get_object().editable(self.request.user)
 
     def get_queryset(self):
         """Fetch the nomination for the URL's election with its kind in one query."""
@@ -209,8 +209,9 @@ class NominationAccept(LoginRequiredMixin, NominationMixin, UserPassesTestMixin,
     raise_exception = True
 
     def test_func(self):
-        """Only allow the nominee to accept."""
-        return self.request.user == self.get_object().nominee.user
+        """Only allow the nominee to accept while nominations are open."""
+        nomination = self.get_object()
+        return self.request.user == nomination.nominee.user and nomination.election.nominations_open
 
     def get_queryset(self):
         """Fetch the URL election's nomination with the related objects the template renders."""
