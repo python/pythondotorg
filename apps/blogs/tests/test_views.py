@@ -1,6 +1,7 @@
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
+from django.utils import timezone
 
 from apps.blogs.models import BlogEntry, Feed
 from apps.blogs.tests.utils import get_test_rss_path
@@ -23,3 +24,17 @@ class BlogViewTest(TestCase):
 
         latest = BlogEntry.objects.latest()
         self.assertEqual(resp.context["latest_entry"], latest)
+
+    def test_blog_home_escapes_excerpt(self):
+        """Excerpt from feed content must be auto-escaped, not marked safe."""
+        feed = Feed.objects.create(name="test", website_url="http://example.org", feed_url="http://example.org/feed")
+        BlogEntry.objects.create(
+            title="Safe Post",
+            summary="<p>&lt;img src=x onerror=alert(1) </p>",
+            pub_date=timezone.now(),
+            url="http://example.org/post",
+            feed=feed,
+        )
+        resp = self.client.get(reverse("blog"))
+        self.assertNotContains(resp, "<img src=x onerror=alert(1)")
+        self.assertContains(resp, "&lt;img src=x onerror=alert(1)")
