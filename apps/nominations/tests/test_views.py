@@ -1,9 +1,16 @@
 import datetime
 
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
-from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind, Nomination
+from apps.nominations.models import (
+    DEFAULT_ACCENT_COLOR,
+    Election,
+    ElectionKind,
+    Nomination,
+    Nominee,
+)
 from apps.nominations.tests.utils import nomination_payload, open_election, packaging_council_kind
 from apps.users.factories import UserFactory
 
@@ -30,6 +37,62 @@ class ElectionDetailThemeTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, f"--election-accent: {DEFAULT_ACCENT_COLOR}")
+
+
+class NominationEditLockTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.nominator = user_model.objects.create_user("nominator", "nominator@example.com", "password")
+        nominee_user = user_model.objects.create_user(
+            "nominee",
+            "nominee@example.com",
+            "password",
+            first_name="The",
+            last_name="Nominee",
+        )
+        now = datetime.datetime.now(datetime.UTC)
+        self.election = Election.objects.create(
+            name="2026 Board Election",
+            date=datetime.date(2026, 1, 1),
+            nominations_open_at=now - datetime.timedelta(days=2),
+            nominations_close_at=now - datetime.timedelta(days=1),
+        )
+        self.nominee = Nominee.objects.create(user=nominee_user, election=self.election, accepted=True)
+        self.nomination = Nomination.objects.create(
+            election=self.election,
+            nominator=self.nominator,
+            nominee=self.nominee,
+            name="Jane Original",
+            email="jane@example.com",
+            nomination_statement="Original statement.",
+            accepted=True,
+            approved=True,
+        )
+
+    def test_nominator_cannot_edit_after_approval_and_close(self):
+        self.assertFalse(self.nomination.editable(self.nominator))
+        self.client.force_login(self.nominator)
+        url = reverse(
+            "nominations:nomination_edit",
+            kwargs={"election": self.election.slug, "pk": self.nomination.pk},
+        )
+
+        response = self.client.post(url, {"name": "Tampered"})
+
+        self.assertEqual(response.status_code, 403)
+        self.nomination.refresh_from_db()
+        self.assertEqual(self.nomination.name, "Jane Original")
+
+    def test_nominee_cannot_accept_after_close(self):
+        self.client.force_login(self.nominee.user)
+        url = reverse(
+            "nominations:nomination_accept",
+            kwargs={"election": self.election.slug, "pk": self.nomination.pk},
+        )
+
+        response = self.client.post(url, {"accepted": True})
+
+        self.assertEqual(response.status_code, 403)
 
 
 class UnknownElectionSlugTests(TestCase):
