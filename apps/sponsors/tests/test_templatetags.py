@@ -8,6 +8,7 @@ from apps.sponsors.templatetags.sponsors import (
     benefit_name_for_display,
     benefit_quantity_for_package,
     full_sponsorship,
+    ideal_size,
     list_sponsors,
 )
 
@@ -88,3 +89,39 @@ class BenefitNameForDisplayTests(TestCase):
 
         self.assertEqual(name, "Modified name")
         mocked_name_for_display.assert_called_once_with(package=package)
+
+
+class IdealSizeFilterTests(TestCase):
+    def test_ideal_size_handles_missing_file_association(self):
+        class MockImageWithoutFile:
+            def __bool__(self):
+                return False
+
+        size = ideal_size(MockImageWithoutFile(), 250)
+        # Should return ideal_dimension directly as fallback
+        self.assertEqual(size, 250)
+
+    def test_ideal_size_scales_properly(self):
+        class MockImage:
+            width = 400
+            height = 200
+
+            def __bool__(self):
+                return True
+
+        size = ideal_size(MockImage(), 200)
+        # int(400 * sqrt(20000 / 80000)) = int(400 * 0.5) = 200
+        self.assertEqual(size, 200)
+
+    def test_ideal_size_handles_file_not_found(self):
+        class MockImageWithMissingFileOnDisk:
+            @property
+            def width(self):
+                raise FileNotFoundError
+
+            def __bool__(self):
+                return True
+
+        size = ideal_size(MockImageWithMissingFileOnDisk(), 300)
+        # Should return ideal_dimension directly as fallback
+        self.assertEqual(size, 300)
