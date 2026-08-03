@@ -4,11 +4,25 @@ import math
 from collections import OrderedDict
 
 from django import template
+from django.utils.safestring import mark_safe
 
 from apps.sponsors.models import Sponsorship, SponsorshipPackage, TieredBenefitConfiguration
 from apps.sponsors.models.enums import LogoPlacementChoices, PublisherChoices
 
 register = template.Library()
+
+
+# Backslash-escape every ASCII punctuation char (Pandoc renders each as a literal) so
+# user input can't form a Markdown or raw-TeX construct in any context.
+MARKDOWN_SPECIAL_CHARS = frozenset("!\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~")
+
+
+@register.filter
+def escape_markdown(value):
+    """Escape a sponsor-supplied value so Pandoc renders it as literal text."""
+    # mark_safe: the output goes to Pandoc (PDF/DOCX), not HTML, so it is not an XSS
+    # sink; it only stops Django autoescaping from interfering with the escaping here.
+    return mark_safe("".join("\\" + ch if ch in MARKDOWN_SPECIAL_CHARS else ch for ch in str(value)))  # noqa: S308
 
 
 @register.inclusion_tag("sponsors/partials/full_sponsorship.txt")

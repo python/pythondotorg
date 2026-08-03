@@ -1,5 +1,7 @@
 """Contract generation models for the sponsors app."""
 
+import posixpath
+import secrets
 import uuid
 from itertools import chain
 from pathlib import Path
@@ -217,9 +219,13 @@ class Contract(models.Model):
 
         sponsor = self.sponsorship.sponsor.name.upper()
 
+        # A random token makes the stored path unguessable. Without it the path is
+        # derived solely from the sponsor name (e.g. "SoW: <name>.pdf"), so anyone
+        # who knows the sponsor could fetch the contract directly from media storage.
+        token = secrets.token_hex(16)
+
         # save contract as PDF file
-        path = f"{self.FINAL_VERSION_PDF_DIR}"
-        pdf_filename = f"{path}SoW: {sponsor}.pdf"
+        pdf_filename = posixpath.join(self.FINAL_VERSION_PDF_DIR, f"SoW: {sponsor}-{token}.pdf")
         file = file_from_storage(pdf_filename, mode="wb")
         file.write(pdf_file)
         file.close()
@@ -227,8 +233,7 @@ class Contract(models.Model):
 
         # save contract as docx file
         if docx_file:
-            path = f"{self.FINAL_VERSION_DOCX_DIR}"
-            docx_filename = f"{path}SoW: {sponsor}.docx"
+            docx_filename = posixpath.join(self.FINAL_VERSION_DOCX_DIR, f"SoW: {sponsor}-{token}.docx")
             file = file_from_storage(docx_filename, mode="wb")
             file.write(docx_file)
             file.close()
