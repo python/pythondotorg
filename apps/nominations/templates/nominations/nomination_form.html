@@ -97,6 +97,15 @@ Update Nomination
                 }
                 #id_previous_service_years input { margin: 0; }
                 #statement-preview { border: 1px solid #ccc; border-radius: 4px; background: #fff; padding: 0.75em 1em; margin-top: 0.5em; }
+                /* Undo the site's form-list styling (`form ul` in style.css and
+                   `.jobs-form ul li` in mq.css float list items into 33% columns)
+                   so rendered markdown lists look like lists. */
+                #statement-preview ul, #statement-preview ol { margin: 0 0 1em 1.5em; }
+                #statement-preview ul { list-style: square; }
+                #statement-preview ol { list-style: decimal; }
+                #statement-preview li { float: none; width: auto; display: list-item; }
+                #statement-preview li > ul, #statement-preview li > ol { margin-bottom: 0; }
+                #statement-preview > *:last-child { margin-bottom: 0; }
             </style>
             <table>
                 {% for field in form %}
