@@ -1,4 +1,4 @@
-{% load humanize %}
+{% load humanize sponsors %}
 ---
 title: SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
 geometry:
@@ -6,7 +6,7 @@ geometry:
 font-size: 12pt
 pagestyle: empty
 header-includes:
-- \pagenumbering{gobble}
+- '`\pagenumbering{gobble}`{=latex}'
 ---
 
 **THIS SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}** (the **"Agreement"**)
@@ -15,8 +15,8 @@ is entered into and made effective as of the
 (the **"Effective Date"**),
 by and between the **Python Software Foundation** (the **"PSF"**),
 a Delaware nonprofit corporation,
-and **{{sponsor.name|upper}}** (**"Sponsor"**),
-a {{sponsor.incorporation_location}} corporation.
+and **{{sponsor.name|upper|escape_markdown}}** (**"Sponsor"**),
+a {{sponsor.incorporation_location|escape_markdown}} corporation.
 Each of the PSF and Sponsor are hereinafter sometimes individually
 referred to as a **"Party"** and collectively as the **"Parties"**.
 
@@ -27,7 +27,7 @@ whose mission is to promote, protect, and advance the Python programming languag
 and to support and facilitate the growth of a diverse
 and international community of Python programmers (the **"Programs"**);
 
-**WHEREAS**, Sponsor is {{contract.sponsor_info}}; and
+**WHEREAS**, Sponsor is {{contract.sponsor_info|escape_markdown}}; and
 
 **WHEREAS**, Sponsor {% if renewal %}
 and the PSF previously entered into a Sponsorship Agreement
@@ -94,13 +94,13 @@ wishes to support the Programs by making a contribution to the PSF.
 
     If to Sponsor:  
     
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.primary_contact.name}}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.name}}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.mailing_address_line_1}}{%if sponsor.mailing_address_line_2%}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.mailing_address_line_2 }}{% endif %}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.city}}, {{sponsor.state}} {{sponsor.postal_code}} {{sponsor.country}}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Facsimile: {{sponsor.primary_contact.phone}}  
-    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: {{sponsor.primary_contact.email}}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.primary_contact.name|escape_markdown}}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.name|escape_markdown}}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.mailing_address_line_1|escape_markdown}}{%if sponsor.mailing_address_line_2%}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.mailing_address_line_2|escape_markdown}}{% endif %}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {{sponsor.city|escape_markdown}}, {{sponsor.state|escape_markdown}} {{sponsor.postal_code|escape_markdown}} {{sponsor.country|escape_markdown}}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Facsimile: {{sponsor.primary_contact.phone|escape_markdown}}  
+    > &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Email: {{sponsor.primary_contact.email|escape_markdown}} 
 
     &nbsp;
 
@@ -155,7 +155,9 @@ wishes to support the Programs by making a contribution to the PSF.
 ### \[Signature Page Follows\]
 
 ::: {.page-break}
+```{=latex}
 \newpage
+```
 :::
 
 ## SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
@@ -179,8 +181,8 @@ wishes to support the Programs by making a contribution to the PSF.
 &nbsp;
 
 >    **SPONSOR**:  
->    **{{sponsor.name|upper}}**,  
->    a {{sponsor.incorporation_location}} entity
+>    **{{sponsor.name|upper|escape_markdown}}**,  
+>    a {{sponsor.incorporation_location|escape_markdown}} entity
 
 &nbsp;
 
@@ -189,7 +191,9 @@ wishes to support the Programs by making a contribution to the PSF.
 >    Title:     ________________________________
 
 ::: {.page-break}
+```{=latex}
 \newpage
+```
 :::
 
 ## SPONSORSHIP AGREEMENT{% if renewal %} RENEWAL{% endif %}
