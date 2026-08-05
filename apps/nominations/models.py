@@ -261,7 +261,9 @@ class Nomination(models.Model):
     previous_board_service = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
     employer = models.CharField(max_length=1024, blank=False, null=True)  # noqa: DJ001
     other_affiliations = models.CharField(max_length=2048, blank=True, null=True)  # noqa: DJ001
-    nomination_statement = MarkupField(escape_html=True, markup_type="markdown", blank=False, null=True)
+    # No escape_html: it escapes `>` too and breaks blockquotes. pydotorg.markup
+    # sanitizes every renderer's output, so raw HTML is dropped there instead.
+    nomination_statement = MarkupField(markup_type="markdown", blank=False, null=True)
 
     nominator = models.ForeignKey(User, related_name="nominations_made", on_delete=models.CASCADE)
     nominee = models.ForeignKey(
