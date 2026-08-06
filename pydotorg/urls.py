@@ -37,7 +37,7 @@ urlpatterns = [
     # other section landing pages
     path(
         "psf/sponsorship-old/",
-        RedirectView.as_view(pattern_name="psf-sponsors", permanent=True),
+        RedirectView.as_view(url="/psf/sponsorship/", permanent=True),
     ),
     path(
         "psf/forms/sponsor-application/",
