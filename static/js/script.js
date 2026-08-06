@@ -174,7 +174,7 @@ $().ready(function() {
     if($('body#homepage').length) {
         var launch_shell = $('#launch-shell');
         launch_shell.toggle();
-        $.get('https://console.python.org/python-dot-org-live-consoles-status', function (data) {
+        $.getJSON('https://console.python.org/python-dot-org-live-consoles-status', function (data) {
             if(data.status == 'OK') {
                 launch_shell.toggle();
             }
