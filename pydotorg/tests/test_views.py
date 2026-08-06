@@ -37,18 +37,17 @@ class ViewsTests(TestCase):
 
     def test_legacy_sponsor_redirects(self):
         """Test that old sponsorship pages correctly redirect to modern active ones."""
-        response = self.client.get("/psf/sponsorship-old/")
-        self.assertRedirects(
-            response,
-            reverse("psf-sponsors"),
-            status_code=301,
-            fetch_redirect_response=False,
+        redirect_cases = (
+            ("/psf/sponsorship-old/", "psf-sponsors"),
+            ("/psf/forms/sponsor-application/", "new_sponsorship_application"),
         )
 
-        response = self.client.get("/psf/forms/sponsor-application/")
-        self.assertRedirects(
-            response,
-            reverse("new_sponsorship_application"),
-            status_code=301,
-            fetch_redirect_response=False,
-        )
+        for source_path, target_name in redirect_cases:
+            with self.subTest(source_path=source_path, target_name=target_name):
+                response = self.client.get(source_path)
+                self.assertRedirects(
+                    response,
+                    reverse(target_name),
+                    status_code=301,
+                    fetch_redirect_response=False,
+                )
