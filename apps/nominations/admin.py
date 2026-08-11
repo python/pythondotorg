@@ -32,6 +32,10 @@ class NomineeAdmin(admin.ModelAdmin):
     list_filter = ("election", "accepted", "approved")
     readonly_fields = ("slug",)
 
+    def get_queryset(self, request):
+        """Select the relations rendered in ``list_display`` to avoid per-row queries."""
+        return super().get_queryset(request).select_related("user", "election")
+
     def get_ordering(self, request):
         """Return ordering by election and last name."""
         return ["election", Lower("user__last_name")]
@@ -60,6 +64,10 @@ class NominationAdmin(admin.ModelAdmin):
         "mission_alignment",
         "eligibility_confirmed",
     )
+
+    def get_queryset(self, request):
+        """Select the relations rendered in ``list_display`` to avoid per-row queries."""
+        return super().get_queryset(request).select_related("election", "nominee__user")
 
     def get_ordering(self, request):
         """Return ordering by election and nominee last name."""
