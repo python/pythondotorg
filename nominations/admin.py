@@ -17,6 +17,9 @@ class NomineeAdmin(admin.ModelAdmin):
     list_filter = ("election", "accepted", "approved")
     readonly_fields = ("slug",)
 
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("user", "election")
+
     def get_ordering(self, request):
         return ['election', Lower('user__last_name')]
 
@@ -26,6 +29,9 @@ class NominationAdmin(admin.ModelAdmin):
     raw_id_fields = ("nominee", "nominator")
     list_display = ("__str__", "election", "accepted", "approved", "nominee")
     list_filter = ("election", "accepted", "approved")
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related("election", "nominee__user")
 
     def get_ordering(self, request):
         return ['election', Lower('nominee__user__last_name')]
