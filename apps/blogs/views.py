@@ -4,6 +4,10 @@ from django.views.generic import TemplateView
 
 from apps.blogs.models import BlogEntry
 
+# Number of entries the page shows. The newest one goes in the page
+# header, the rest go in the "Latest News" list.
+ENTRY_LIST_LIMIT = 10
+
 
 class BlogHome(TemplateView):
     """Main blog view."""
@@ -14,7 +18,7 @@ class BlogHome(TemplateView):
         """Return the latest blog entries for the blog homepage."""
         context = super().get_context_data(**kwargs)
 
-        entries = BlogEntry.objects.order_by("-pub_date")[:6]
+        entries = BlogEntry.objects.order_by("-pub_date")[:ENTRY_LIST_LIMIT]
         latest_entry = None
         other_entries = []
 
