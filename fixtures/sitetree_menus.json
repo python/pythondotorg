@@ -2097,6 +2097,30 @@
 },
 {
     "model": "sitetree.treeitem",
+    "pk": 126,
+    "fields": {
+        "title": "Python Insider",
+        "hint": "Python Insider Blog",
+        "url": "https://blog.python.org/",
+        "urlaspattern": false,
+        "tree": 1,
+        "hidden": false,
+        "alias": null,
+        "description": "Python Insider is the blog used by the Python Core Developers to announce news related to the Python programming language.",
+        "inmenu": true,
+        "inbreadcrumbs": true,
+        "insitetree": true,
+        "access_loggedin": false,
+        "access_guest": false,
+        "access_restricted": false,
+        "access_perm_type": 1,
+        "parent": 12,
+        "sort_order": 97,
+        "access_permissions": []
+    }
+},
+{
+    "model": "sitetree.treeitem",
     "pk": 97,
     "fields": {
         "title": "PSF News",
@@ -2115,7 +2139,7 @@
         "access_restricted": false,
         "access_perm_type": 1,
         "parent": 12,
-        "sort_order": 98,
+        "sort_order": 99,
         "access_permissions": []
     }
 },
@@ -2139,7 +2163,7 @@
         "access_restricted": false,
         "access_perm_type": 1,
         "parent": 12,
-        "sort_order": 97,
+        "sort_order": 98,
         "access_permissions": []
     }
 },
@@ -2163,7 +2187,7 @@
         "access_restricted": false,
         "access_perm_type": 1,
         "parent": 12,
-        "sort_order": 99,
+        "sort_order": 100,
         "access_permissions": []
     }
 },
