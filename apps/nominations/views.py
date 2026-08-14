@@ -81,6 +81,7 @@ class NomineeList(NominationMixin, ListView):
                     Q(user=self.request.user) | Q(nominations__nominator=self.request.user),
                     election=election,
                 )
+                .exclude(user=None)
                 .distinct()
                 .select_related("user")
             )
