@@ -1,3 +1,5 @@
+import datetime
+
 from django.core.management import call_command
 from django.test import TestCase
 from django.urls import reverse
@@ -5,6 +7,7 @@ from django.utils import timezone
 
 from apps.blogs.models import BlogEntry, Feed
 from apps.blogs.tests.utils import get_test_rss_path
+from apps.blogs.views import ENTRY_LIST_LIMIT
 
 
 class BlogViewTest(TestCase):
@@ -38,3 +41,24 @@ class BlogViewTest(TestCase):
         resp = self.client.get(reverse("blog"))
         self.assertNotContains(resp, "<img src=x onerror=alert(1)")
         self.assertContains(resp, "&lt;img src=x onerror=alert(1)")
+
+
+class BlogHomeEntryCountTest(TestCase):
+    """The blog page shows ENTRY_LIST_LIMIT entries: one header plus the list."""
+
+    def test_page_shows_the_limit_with_the_newest_in_the_header(self):
+        feed = Feed.objects.create(name="test", website_url="http://example.org", feed_url="http://example.org/feed")
+        now = timezone.now()
+        for index in range(ENTRY_LIST_LIMIT + 5):
+            BlogEntry.objects.create(
+                title=f"Post {index}",
+                summary="",
+                pub_date=now - datetime.timedelta(days=index),
+                url=f"http://example.org/post/{index}",
+                feed=feed,
+            )
+
+        resp = self.client.get(reverse("blog"))
+
+        self.assertEqual(resp.context["latest_entry"].title, "Post 0")
+        self.assertEqual(len(resp.context["entries"]), ENTRY_LIST_LIMIT - 1)
