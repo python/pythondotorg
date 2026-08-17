@@ -1792,11 +1792,11 @@ wheels = [
 
 [[package]]
 name = "tablib"
-version = "3.9.0"
+version = "3.10.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/11/00/416d2ba54d7d58a7f7c61bf62dfeb48fd553cf49614daf83312f2d2c156e/tablib-3.9.0.tar.gz", hash = "sha256:1b6abd8edb0f35601e04c6161d79660fdcde4abb4a54f66cc9f9054bd55d5fe2", size = 125565, upload-time = "2025-10-15T18:21:56.263Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/96/b9/59d9c8b9c34642e7a718e8a1a7a91af3eb9b48f79bac794263702d41519c/tablib-3.10.0.tar.gz", hash = "sha256:781cfa9a42de8f33c52aff857fd0a04e483de4fd1c53eaaa9a6aeac62bad11de", size = 127128, upload-time = "2026-07-31T17:30:15.577Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/66/6b/32e51d847148b299088fc42d3d896845fd09c5247190133ea69dbe71ba51/tablib-3.9.0-py3-none-any.whl", hash = "sha256:eda17cd0d4dda614efc0e710227654c60ddbeb1ca92cdcfc5c3bd1fc5f5a6e4a", size = 49580, upload-time = "2025-10-15T18:21:44.185Z" },
+    { url = "https://files.pythonhosted.org/packages/fc/0f/3ae17545ff976687f679ed3a101df7017135ee04769e858a4ccea0cc3f3e/tablib-3.10.0-py3-none-any.whl", hash = "sha256:5721bf3a52d491f8f843628a3a3200db164f6ad9e92fb6eaa64dc3f945f30ad9", size = 50170, upload-time = "2026-07-31T17:30:04.925Z" },
 ]
 
 [package.optional-dependencies]
