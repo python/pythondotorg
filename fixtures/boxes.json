@@ -138,9 +138,9 @@
       "created": "2013-10-11T20:12:26.784Z",
       "updated": "2015-03-24T14:25:32.715Z",
       "label": "homepage-jobs",
-      "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you're trying to hire for? Our <strong>relaunched community-run job board</strong> is the place to go.</p>\r\n<p><a href=\"//jobs.python.org\">jobs.python.org</a></p>",
+      "content": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you're trying to hire for?</p>\r\n<p><a href=\"https://www.python.org/jobs/\">Python Job Board</a></p>",
       "content_markup_type": "html",
-      "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you're trying to hire for? Our <strong>relaunched community-run job board</strong> is the place to go.</p>\r\n<p><a href=\"//jobs.python.org\">jobs.python.org</a></p>"
+      "_content_rendered": "<h2 class=\"widget-title\"><span aria-hidden=\"true\" class=\"icon-jobs\"></span>Jobs</h2>\r\n<p>Looking for work or have a Python related position that you're trying to hire for?</p>\r\n<p><a href=\"https://www.python.org/jobs/\">Python Job Board</a></p>"
     }
   },
   {
