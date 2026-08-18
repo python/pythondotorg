@@ -130,8 +130,8 @@
   "pk": 29,
   "fields": {
     "order": 13,
-    "name": "jobs.python.org support",
-    "description": "Logo listed on jobs.python.org for one year",
+    "name": "Python Job Board support",
+    "description": "Logo listed on the Python Job Board (https://www.python.org/jobs/) for one year",
     "program": 1,
     "package_only": true,
     "new": true,
