@@ -2,6 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.db.models import Q
 from django.http import Http404, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse
@@ -72,7 +73,12 @@ class NomineeList(NominationMixin, ListView):
             return Nominee.objects.filter(accepted=True, approved=True, election=election).exclude(user=None)
 
         if self.request.user.is_authenticated:
-            return Nominee.objects.filter(user=self.request.user)
+            return (
+                Nominee.objects.filter(election=election)
+                .filter(Q(user=self.request.user) | Q(nominations__nominator=self.request.user))
+                .exclude(user=None)
+                .distinct()
+            )
         return None
 
 
