@@ -240,8 +240,22 @@ class UsersViewsTestCase(TestCase):
         }
         self.assertUserCreated(data=post_data)
         response = self.assertUserCreated(data=post_data, template_name="account/signup.html")
+        # A taken username still has to be reported. A taken email must not be:
+        # enumeration prevention sends mail to the address instead.
         self.assertContains(response, "A user with that username already exists.")
-        self.assertContains(response, "A user is already registered with this email address.")
+        self.assertNotContains(response, "A user is already registered with this email address.")
+
+    def test_password_reset_does_not_reveal_whether_the_email_is_known(self):
+        """An unknown address gets the same page as a known one."""
+        url = reverse("account_reset_password")
+
+        known = self.client.post(url, {"email": self.user.email}, follow=True)
+        unknown = self.client.post(url, {"email": "nobody@example.com"}, follow=True)
+
+        self.assertEqual(known.status_code, 200)
+        self.assertEqual(unknown.status_code, 200)
+        self.assertEqual(known.redirect_chain, unknown.redirect_chain)
+        self.assertNotContains(unknown, "The email address is not assigned to any user account")
 
     def test_usernames(self):
         url = reverse("account_signup")
