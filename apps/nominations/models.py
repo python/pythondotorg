@@ -245,10 +245,13 @@ class Nominee(models.Model):
         if self.accepted and self.approved and not self.election.nominations_open:
             return True
 
-        if user is None:
+        if user is None or not user.is_authenticated:
             return False
 
-        return bool(user.is_staff or user == self.user)
+        if user.is_staff or user == self.user:
+            return True
+
+        return self.nominations.filter(election=self.election, nominator=user).exists()
 
 
 class Nomination(models.Model):
