@@ -14,6 +14,12 @@ The codebase behind [python.org](https://www.python.org). Built with Django, Pos
 
 ### Quick start
 
+Clone the Repository 
+```bash
+git clone https://github.com/python/pythondotorg.git
+cd pythondotorg
+``` 
+
 ```bash
 make serve
 ```
