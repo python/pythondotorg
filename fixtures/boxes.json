@@ -462,9 +462,9 @@
       "created": "2014-02-13T18:27:05.680Z",
       "updated": "2014-07-20T16:51:28.177Z",
       "label": "blogs-copyright",
-      "content": "<h2 class=\"widget-title\">Copyright</h2>\r\n<p>Python Insider by the Python Core Developers is licensed under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/3.0/us/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href=\"http://blog.python.org\">blog.python.org</a>.</p>",
+      "content": "<h2 class=\"widget-title\">Copyright</h2>\r\n<p>Python Insider by the Python core team is licensed under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/3.0/us/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href=\"https://blog.python.org\">blog.python.org</a>.</p>",
       "content_markup_type": "html",
-      "_content_rendered": "<h2 class=\"widget-title\">Copyright</h2>\r\n<p>Python Insider by the Python Core Developers is licensed under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/3.0/us/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href=\"http://blog.python.org\">blog.python.org</a>.</p>"
+      "_content_rendered": "<h2 class=\"widget-title\">Copyright</h2>\r\n<p>Python Insider by the Python core team is licensed under a <a href=\"https://creativecommons.org/licenses/by-nc-sa/3.0/us/\">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported License</a>. Based on a work at <a href=\"https://blog.python.org\">blog.python.org</a>.</p>"
     }
   },
   {
