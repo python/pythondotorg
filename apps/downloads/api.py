@@ -35,7 +35,7 @@ class OSResource(GenericResource):
     """Tastypie resource for operating systems."""
 
     class Meta(GenericResource.Meta):
-        """Meta configuration for OSResource."""
+        """Meta configuration for OS Resources."""
 
         queryset = OS.objects.all()
         resource_name = "downloads/os"
