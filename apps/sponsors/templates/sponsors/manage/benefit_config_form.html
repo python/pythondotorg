@@ -1,0 +1,73 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}{% if is_create %}Add{% else %}Edit{% endif %} {{ type_label }} | Sponsor Management{% endblock %}
+
+{% with active_tab="benefits" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_list' %}">Benefits</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_edit' benefit.pk %}">{{ benefit.short_name }}</a>
+    <span class="sep">/</span>
+    <span class="current">{% if is_create %}Add{% else %}Edit{% endif %} {{ type_label }}</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="manage-form">
+        <h2 style="font-size:18px;font-weight:700;color:#1a1a2e;margin:0 0 4px;">
+            {% if is_create %}Add {{ type_label }} Configuration{% else %}Edit {{ type_label }} Configuration{% endif %}
+        </h2>
+        <p style="font-size:13px;color:#777;margin:0 0 20px;">
+            Benefit: <strong>{{ benefit.name }}</strong> &middot; {{ benefit.program.name }} &middot; {{ benefit.year }}
+        </p>
+
+        {% if form.errors %}
+        <div class="form-errors">
+            <strong>Please correct the errors below:</strong>
+            <ul>
+            {% for field, errors in form.errors.items %}
+                {% for error in errors %}
+                <li>{{ field }}: {{ error }}</li>
+                {% endfor %}
+            {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+
+            <fieldset class="manage-fieldset">
+                <legend>{{ type_label }}</legend>
+
+                {% for field in form %}
+                <div class="form-group">
+                    <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                    {{ field }}
+                    {% if field.help_text %}<span class="helptext">{{ field.help_text }}</span>{% endif %}
+                    {% if field.errors %}<div class="field-errors">{{ field.errors.0 }}</div>{% endif %}
+                </div>
+                {% endfor %}
+
+                {% if not form.fields %}
+                <p style="font-size:13px;color:#777;">This configuration type has no additional fields.</p>
+                {% endif %}
+            </fieldset>
+
+            <div style="display:flex;gap:10px;align-items:center;padding-top:8px;">
+                <button type="submit" class="btn btn-primary">
+                    {% if is_create %}Add Configuration{% else %}Save Changes{% endif %}
+                </button>
+                <a href="{% url 'manage_benefit_edit' benefit.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

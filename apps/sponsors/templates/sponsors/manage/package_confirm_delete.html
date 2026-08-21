@@ -1,0 +1,46 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete {{ object.name }} | Sponsor Management{% endblock %}
+
+{% with active_tab="packages" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_packages' %}">Packages</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_package_edit' object.pk %}">{{ object.name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="delete-confirm">
+        <h2>Delete Package</h2>
+        <p>
+            Are you sure you want to delete <strong>{{ object.name }}</strong> ({{ object.year }})?
+        </p>
+
+        {% with bc=object.benefits.count %}
+        {% if bc %}
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            This package has <strong>{{ bc }}</strong> benefit{{ bc|pluralize }} assigned to it.
+        </div>
+        {% endif %}
+        {% endwith %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'manage_package_edit' object.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

@@ -1,0 +1,47 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Delete {{ object.short_name }} | Sponsor Management{% endblock %}
+
+{% with active_tab="benefits" %}
+
+{% block topbar_actions %}{% endblock %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_list' %}">Benefits</a>
+    <span class="sep">/</span>
+    <a href="{% url 'manage_benefit_edit' object.pk %}">{{ object.short_name }}</a>
+    <span class="sep">/</span>
+    <span class="current">Delete</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <div class="delete-confirm">
+        <h2>Delete Benefit</h2>
+        <p>
+            Are you sure you want to delete <strong>{{ object.name }}</strong>
+            ({{ object.program.name }}, {{ object.year }})?
+        </p>
+
+        {% if object.related_sponsorships.count %}
+        <div class="manage-alert manage-alert-warning" style="margin-bottom:20px;">
+            This benefit is referenced by <strong>{{ object.related_sponsorships.count }}</strong>
+            sponsorship{{ object.related_sponsorships.count|pluralize }}. Deleting it will remove the
+            benefit from those sponsorships.
+        </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="actions">
+                <button type="submit" class="btn btn-danger">Yes, Delete</button>
+                <a href="{% url 'manage_benefit_edit' object.pk %}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+
+{% endwith %}

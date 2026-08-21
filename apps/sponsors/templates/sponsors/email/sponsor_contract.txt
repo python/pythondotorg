@@ -1,5 +1,13 @@
-content email sponsors
+Dear {{ contract.sponsorship.sponsor.name }},
 
-STATEMENT OF WORK
+Thank you for your {{ contract.sponsorship.level_name }} sponsorship of the Python Software Foundation!
 
-{{ sponsorship }}
+Please find attached your Statement of Work for the sponsorship period{% if contract.sponsorship.start_date and contract.sponsorship.end_date %} from {{ contract.sponsorship.start_date }} to {{ contract.sponsorship.end_date }}{% endif %}.
+
+Please review the document and return a signed copy at your earliest convenience.
+
+If you have any questions, please don't hesitate to reach out.
+
+Best regards,
+The PSF Sponsorship Team
+sponsors@python.org
