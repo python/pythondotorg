@@ -333,3 +333,73 @@ class NominationElectionScopingTests(TestCase):
 
     def test_edit_still_works_under_own_election(self):
         self.assertEqual(self.client.get(self._url("nominations:nomination_edit", self.election)).status_code, 200)
+
+
+class NomineeListPreviewTests(TestCase):
+    """While nominations are open, the list previews the nominees relevant to the user."""
+
+    def setUp(self):
+        self.nominator = UserFactory(first_name="Alan", last_name="Turing")
+        self.election = open_election("2026 Board Election")
+        self.other_election = open_election("2026 Packaging Council Election", kind=packaging_council_kind())
+
+        self.nominee = self._nominee(self.election, "Grace", "Hopper")
+        self._nomination(self.election, self.nominator, self.nominee)
+
+        # The same user is a candidate in an unrelated election.
+        self.nominator_as_nominee = Nominee.objects.create(user=self.nominator, election=self.other_election)
+        self._nomination(
+            self.other_election, UserFactory(first_name="Barbara", last_name="Liskov"), self.nominator_as_nominee
+        )
+
+        # Somebody else's nomination in the election under test.
+        self.unrelated_nominee = self._nominee(self.election, "Ada", "Lovelace")
+        self._nomination(self.election, UserFactory(first_name="Ken", last_name="Thompson"), self.unrelated_nominee)
+
+    def _nominee(self, election, first_name, last_name):
+        user = UserFactory(first_name=first_name, last_name=last_name)
+        return Nominee.objects.create(user=user, election=election)
+
+    def _nomination(self, election, nominator, nominee):
+        return Nomination.objects.create(
+            election=election,
+            nominator=nominator,
+            nominee=nominee,
+            name=f"{nominee.user.first_name} {nominee.user.last_name}",
+            email=nominee.user.email,
+            nomination_statement="A strong candidate.",
+        )
+
+    def _url(self, election):
+        return reverse("nominations:nominees_list", kwargs={"election": election.slug})
+
+    def test_preview_lists_people_the_user_nominated(self):
+        self.client.force_login(self.nominator)
+        response = self.client.get(self._url(self.election))
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(self.nominee, response.context["object_list"])
+
+    def test_preview_excludes_other_elections(self):
+        self.client.force_login(self.nominator)
+        response = self.client.get(self._url(self.election))
+        self.assertNotIn(self.nominator_as_nominee, response.context["object_list"])
+
+    def test_preview_excludes_nominations_by_other_people(self):
+        self.client.force_login(self.nominator)
+        response = self.client.get(self._url(self.election))
+        self.assertNotIn(self.unrelated_nominee, response.context["object_list"])
+
+    def test_preview_includes_the_user_as_a_candidate(self):
+        self.client.force_login(self.nominator)
+        response = self.client.get(self._url(self.other_election))
+        self.assertIn(self.nominator_as_nominee, response.context["object_list"])
+
+    def test_nominator_can_open_the_nominee_they_nominated(self):
+        self.client.force_login(self.nominator)
+        response = self.client.get(self.nominee.get_absolute_url())
+        self.assertEqual(response.status_code, 200)
+
+    def test_other_users_still_cannot_open_the_nominee(self):
+        self.client.force_login(UserFactory(first_name="Guido", last_name="van Rossum"))
+        response = self.client.get(self.nominee.get_absolute_url())
+        self.assertEqual(response.status_code, 404)
