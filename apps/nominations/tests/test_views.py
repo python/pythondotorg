@@ -112,6 +112,62 @@ class UnknownElectionSlugTests(TestCase):
         self.assertEqual(self.client.get(url).status_code, 404)
 
 
+class OpenNomineeVisibilityTests(TestCase):
+    def setUp(self):
+        self.nominator = UserFactory(first_name="Ada", last_name="Lovelace")
+        self.other_user = UserFactory()
+        self.election = open_election("2026 Board Election")
+        self.other_election = open_election("2027 Board Election")
+
+        self.nominated = Nominee.objects.create(
+            user=UserFactory(first_name="Grace", last_name="Hopper"),
+            election=self.election,
+        )
+        Nomination.objects.create(
+            election=self.election,
+            nominator=self.nominator,
+            nominee=self.nominated,
+            name="Grace Hopper",
+            email="grace@example.com",
+            nomination_statement="A strong candidate.",
+        )
+
+        self.own_candidacy = Nominee.objects.create(user=self.nominator, election=self.election)
+        Nomination.objects.create(
+            election=self.election,
+            nominator=self.other_user,
+            nominee=self.own_candidacy,
+            name=self.nominator.get_full_name(),
+            email=self.nominator.email,
+            nomination_statement="Another strong candidate.",
+        )
+
+        self.unrelated = Nominee.objects.create(user=UserFactory(), election=self.election)
+        self.other_election_candidacy = Nominee.objects.create(user=self.nominator, election=self.other_election)
+        self.client.force_login(self.nominator)
+
+    def _list_url(self):
+        return reverse("nominations:nominees_list", kwargs={"election": self.election.slug})
+
+    def test_list_shows_only_nominees_relevant_to_user_in_current_election(self):
+        response = self.client.get(self._list_url())
+
+        self.assertEqual(response.status_code, 200)
+        self.assertCountEqual(response.context["object_list"], [self.nominated, self.own_candidacy])
+
+    def test_nominator_can_view_their_nominee_while_nominations_are_open(self):
+        response = self.client.get(self.nominated.get_absolute_url())
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_unrelated_user_cannot_view_nominee_while_nominations_are_open(self):
+        self.client.force_login(self.other_user)
+
+        response = self.client.get(self.nominated.get_absolute_url())
+
+        self.assertEqual(response.status_code, 404)
+
+
 class NominationCreateFormSelectionTests(TestCase):
     def setUp(self):
         self.user = UserFactory()
