@@ -1,4 +1,4 @@
-import datetime
+import datetime as dt
 
 from django.core.management import call_command
 from django.test import TestCase
@@ -53,7 +53,7 @@ class BlogHomeEntryCountTest(TestCase):
             BlogEntry.objects.create(
                 title=f"Post {index}",
                 summary="",
-                pub_date=now - datetime.timedelta(days=index),
+                pub_date=now - dt.timedelta(days=index),
                 url=f"http://example.org/post/{index}",
                 feed=feed,
             )
