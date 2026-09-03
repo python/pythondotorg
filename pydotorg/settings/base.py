@@ -6,6 +6,7 @@ from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
 
+from pydotorg.markup import MARKUP_FIELD_TYPES  # noqa: F401 - read by django-markupfield via settings
 from pydotorg.settings.pipeline import PIPELINE  # noqa: F401 - accessed by django-pipeline via settings
 
 ### Basic config
@@ -96,12 +97,11 @@ AUTHENTICATION_BACKENDS = (
 ### Allauth
 LOGIN_REDIRECT_URL = "home"
 ACCOUNT_LOGOUT_REDIRECT_URL = "home"
-ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_LOGIN_METHODS = {"email", "username"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "username*", "password1*", "password2*"]
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_EMAIL_VERIFICATION = "mandatory"
-ACCOUNT_AUTHENTICATION_METHOD = "username_email"
-# TODO: Enable enumeration prevention
-ACCOUNT_PREVENT_ENUMERATION = False
+ACCOUNT_PREVENT_ENUMERATION = True
 SOCIALACCOUNT_EMAIL_REQUIRED = True
 SOCIALACCOUNT_EMAIL_VERIFICATION = True
 SOCIALACCOUNT_QUERY_EMAIL = True
@@ -152,6 +152,7 @@ ROOT_URLCONF = "pydotorg.urls"
 MIDDLEWARE = [
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
+    "csp.middleware.CSPMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "pydotorg.middleware.AdminNoCaching",
     "pydotorg.middleware.GlobalSurrogateKey",
@@ -296,6 +297,27 @@ MESSAGE_TAGS = {
 
 X_FRAME_OPTIONS = "SAMEORIGIN"
 SILENCED_SYSTEM_CHECKS = ["security.W019"]
+
+### Content Security Policy, via django-csp
+
+# Django 6.0 ships built-in CSP support; drop django-csp and this setting
+# and use the framework's own CSP once we upgrade.
+# Report-Only first: collect violations and tune the allowlist before
+# enforcing. Rollout tracked in #3041.
+CONTENT_SECURITY_POLICY_REPORT_ONLY = {
+    "DIRECTIVES": {
+        "default-src": ["'self'"],
+        "script-src": ["'self'"],
+        "style-src": ["'self'"],
+        "img-src": ["'self'", "data:"],
+        "font-src": ["'self'"],
+        "connect-src": ["'self'"],
+        "frame-ancestors": ["'self'"],
+        "base-uri": ["'self'"],
+        "object-src": ["'none'"],
+        "form-action": ["'self'"],
+    },
+}
 
 ### django-rest-framework
 

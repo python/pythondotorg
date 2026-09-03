@@ -205,6 +205,87 @@ class RejectedSponsorshipAdminViewTests(TestCase):
         assert_message(msg, "Can't reject a Finalized sponsorship.", messages.ERROR)
 
 
+class LockSponsorshipAdminViewTests(TestCase):
+    def setUp(self):
+        self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True)
+        self.client.force_login(self.user)
+        self.sponsorship = baker.make(
+            Sponsorship,
+            status=Sponsorship.APPLIED,
+            submited_by=self.user,
+            _fill_optional=True,
+        )
+        self.url = reverse("admin:sponsors_sponsorship_lock", args=[self.sponsorship.pk])
+
+    def test_display_confirmation_form_on_get(self):
+        response = self.client.get(self.url)
+        self.sponsorship.refresh_from_db()
+
+        self.assertTemplateUsed(response, "sponsors/admin/lock.html")
+        self.assertEqual(response.context["sponsorship"], self.sponsorship)
+        self.assertFalse(self.sponsorship.locked)  # GET must not lock
+
+    def test_lock_sponsorship_on_post(self):
+        response = self.client.post(self.url, data={"confirm": "yes"})
+        self.sponsorship.refresh_from_db()
+
+        expected_url = reverse("admin:sponsors_sponsorship_change", args=[self.sponsorship.pk])
+        self.assertRedirects(response, expected_url, fetch_redirect_response=True)
+        self.assertTrue(self.sponsorship.locked)
+        msg = next(iter(get_messages(response.wsgi_request)))
+        assert_message(msg, "Sponsorship is now locked!", messages.SUCCESS)
+
+    def test_do_not_lock_if_invalid_post(self):
+        response = self.client.post(self.url, data={})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/lock.html")
+        self.assertFalse(self.sponsorship.locked)  # did not lock
+
+        response = self.client.post(self.url, data={"confirm": "invalid"})
+        self.sponsorship.refresh_from_db()
+        self.assertTemplateUsed(response, "sponsors/admin/lock.html")
+        self.assertFalse(self.sponsorship.locked)
+
+    def test_404_if_sponsorship_does_not_exist(self):
+        self.sponsorship.delete()
+        response = self.client.get(self.url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_login_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.client.logout()
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url)
+
+    def test_staff_required(self):
+        login_url = reverse("admin:login")
+        redirect_url = f"{login_url}?next={self.url}"
+        self.user.is_staff = False
+        self.user.save()
+        self.client.force_login(self.user)
+
+        r = self.client.get(self.url)
+
+        self.assertRedirects(r, redirect_url, fetch_redirect_response=False)
+
+    def test_change_permission_required(self):
+        # A staff account without the sponsorship change permission must not
+        # reach the action, and a GET must never lock the sponsorship.
+        staff = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_superuser=False)
+        self.client.force_login(staff)
+
+        get_response = self.client.get(self.url)
+        post_response = self.client.post(self.url, data={"confirm": "yes"})
+        self.sponsorship.refresh_from_db()
+
+        self.assertEqual(get_response.status_code, 403)
+        self.assertEqual(post_response.status_code, 403)
+        self.assertFalse(self.sponsorship.locked)
+
+
 class ApproveSponsorshipAdminViewTests(TestCase):
     def setUp(self):
         self.user = baker.make(settings.AUTH_USER_MODEL, is_staff=True, is_superuser=True)

@@ -55,5 +55,5 @@ class Command(BaseCommand):
             subject,
             message,
             settings.JOB_FROM_EMAIL,
-            ["jobs@python.org", "olivia@python.org"],
+            ["jobs@python.org", "olivia@python.org", "jaime@python.org"],
         )

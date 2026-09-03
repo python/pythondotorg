@@ -6,7 +6,12 @@ from django.test import TestCase, override_settings
 from django.urls import reverse
 from rest_framework.test import APITestCase
 
-from apps.downloads.models import Release
+from apps.downloads.models import (
+    OS,
+    RELEASE_FILE_HTTPS_ERROR,
+    RELEASE_FILE_SIDECAR_SUFFIXES,
+    Release,
+)
 from apps.downloads.tests.base import BaseDownloadTests, DownloadMixin
 from apps.pages.factories import PageFactory
 from apps.users.factories import UserFactory
@@ -182,6 +187,17 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         if "objects" in json_response:
             return json_response["objects"]
         return json_response
+
+    def assert_release_file_validation_error(self, response, field_name, message):
+        content = self.get_json(response)
+        if self.api_version == "v1":
+            content = content["downloads/release_file"]
+
+        self.assertIn(field_name, content)
+        errors = content[field_name]
+        if isinstance(errors, str):
+            errors = [errors]
+        self.assertIn(message, [str(error) for error in errors])
 
     def test_invalid_token(self):
         url = self.create_url("os", self.linux.pk)
@@ -412,6 +428,110 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
         self.assertIn(data["release"], content["release"])
         self.assertEqual(content["description"], data["description"])
 
+    def test_post_release_file_rejects_http_urls(self):
+        url = self.create_url("release_file")
+        data = {
+            "name": "HTTP file",
+            "slug": "http-file",
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": "This is a description.",
+            "is_source": True,
+            "url": "http://www.python.org/ftp/python/2.7.5/Python-2.7.5-http.tgz",
+            "md5_sum": "098f6bcd4621d373cade4e832627b4f6",
+            "filesize": 123456,
+            "download_button": False,
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(response, "url", RELEASE_FILE_HTTPS_ERROR)
+
+    def test_post_release_file_rejects_sidecars_for_other_artifacts(self):
+        url = self.create_url("release_file")
+        artifact_url = "https://www.python.org/ftp/python/2.7.5/Python-2.7.5-api.tgz"
+        wrong_gpg_signature_url = "https://www.python.org/ftp/python/2.7.5/Python-2.7.4-api.tgz.asc"
+        data = {
+            "name": "File with wrong sidecar",
+            "slug": "file-with-wrong-sidecar",
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": "This is a description.",
+            "is_source": True,
+            "url": artifact_url,
+            "gpg_signature_file": wrong_gpg_signature_url,
+            "md5_sum": "098f6bcd4621d373cade4e832627b4f6",
+            "filesize": 123456,
+            "download_button": False,
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(
+            response,
+            "gpg_signature_file",
+            "Sidecar URL must match the artifact URL plus '.asc'.",
+        )
+
+    def test_update_release_file_rejects_changed_http_urls(self):
+        url = self.create_url("release_file", self.release_275_linux.pk)
+        data = {
+            "name": self.release_275_linux.name,
+            "slug": self.release_275_linux.slug,
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": self.release_275_linux.description,
+            "is_source": self.release_275_linux.is_source,
+            "url": "http://www.python.org/ftp/python/2.7.5/Python-2.7.5.tgz",
+            "md5_sum": self.release_275_linux.md5_sum,
+            "sha256_sum": self.release_275_linux.sha256_sum,
+            "filesize": self.release_275_linux.filesize,
+            "download_button": self.release_275_linux.download_button,
+        }
+
+        response = self.json_client("put", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        if self.api_version == "v1":
+            self.assertEqual(response.status_code, 405)
+            return
+
+        self.assertEqual(response.status_code, 400)
+        self.assert_release_file_validation_error(response, "url", RELEASE_FILE_HTTPS_ERROR)
+
+    def test_update_release_file_rejects_changed_sidecars_for_other_artifacts(self):
+        url = self.create_url("release_file", self.release_275_linux.pk)
+        artifact_url = self.release_275_linux.url
+        data = {
+            "name": self.release_275_linux.name,
+            "slug": self.release_275_linux.slug,
+            "os": self.create_url("os", self.linux.pk),
+            "release": self.create_url("release", self.release_275.pk),
+            "description": self.release_275_linux.description,
+            "is_source": self.release_275_linux.is_source,
+            "url": artifact_url,
+            "gpg_signature_file": artifact_url.replace("2.7.5", "2.7.4") + ".asc",
+            "md5_sum": self.release_275_linux.md5_sum,
+            "sha256_sum": self.release_275_linux.sha256_sum,
+            "filesize": self.release_275_linux.filesize,
+            "download_button": self.release_275_linux.download_button,
+        }
+
+        response = self.json_client("put", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        if self.api_version == "v1":
+            self.assertEqual(response.status_code, 405)
+            return
+
+        self.assertEqual(response.status_code, 400)
+        gpg_signature_suffix = RELEASE_FILE_SIDECAR_SUFFIXES["gpg_signature_file"]
+        self.assert_release_file_validation_error(
+            response,
+            "gpg_signature_file",
+            f"Sidecar URL must match the artifact URL plus '{gpg_signature_suffix}'.",
+        )
+
     def test_delete_release_file(self):
         url = self.create_url("release_file", self.release_275_linux.pk)
         response = self.json_client("delete", url)
@@ -485,6 +605,121 @@ class DownloadApiV1ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests):
         self.Authorization = f"{self.token_header} {self.staff_user.username}:{self.staff_key}"
         self.Authorization_invalid = f"{self.token_header} invalid:token"
 
+    def test_staff_session_cannot_write_without_api_key(self):
+        self.client.force_login(self.staff_user)
+        url = self.create_url("os")
+        data = {
+            "name": "Session-only OS",
+            "slug": "session-only",
+        }
+
+        response = self.json_client("post", url, data)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="session-only").exists())
+
+    def test_staff_session_cannot_write_with_malformed_api_key_header(self):
+        self.client.force_login(self.staff_user)
+        url = self.create_url("os")
+        data = {
+            "name": "Malformed API key OS",
+            "slug": "malformed-api-key",
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION="ApiKey malformed")
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="malformed-api-key").exists())
+
+    def test_inactive_staff_api_key_cannot_write(self):
+        self.staff_user.is_active = False
+        self.staff_user.save()
+        url = self.create_url("os")
+        data = {
+            "name": "Inactive API key OS",
+            "slug": "inactive-api-key",
+        }
+
+        response = self.json_client("post", url, data, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="inactive-api-key").exists())
+
+    def test_query_string_api_key_cannot_write(self):
+        url = self.create_url(
+            "os",
+            filters={
+                "username": self.staff_user.username,
+                "api_key": self.staff_key,
+            },
+        )
+        data = {
+            "name": "Query string API key OS",
+            "slug": "query-string-api-key",
+        }
+
+        response = self.json_client("post", url, data)
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="query-string-api-key").exists())
+
+    def test_form_api_key_cannot_write(self):
+        url = self.create_url("os")
+        response = self.client.post(
+            url,
+            {
+                "username": self.staff_user.username,
+                "api_key": self.staff_key,
+                "name": "Form API key OS",
+                "slug": "form-api-key",
+            },
+        )
+
+        self.assertEqual(response.status_code, 401)
+        self.assertFalse(OS.objects.filter(slug="form-api-key").exists())
+
+    def test_v1_list_update_methods_are_not_allowed(self):
+        url = self.create_url("os")
+
+        response = self.json_client("put", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+        response = self.json_client("patch", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+    def test_v1_collection_delete_requires_release_file_scope(self):
+        url = self.create_url("os")
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 405)
+
+        url = self.create_url("release_file")
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+        url = self.create_url(
+            "release_file",
+            filters={
+                "release": self.release_275.pk,
+                "os": self.linux.pk,
+            },
+        )
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+        url = f"{self.create_url('release_file')}?release={self.release_275.pk}&release={self.draft_release.pk}"
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+        self.assertEqual(response.status_code, 400)
+
+    def test_v1_release_file_delete_by_release_still_works(self):
+        url = self.create_url("release_file", filters={"release": self.release_275.pk})
+
+        response = self.json_client("delete", url, HTTP_AUTHORIZATION=self.Authorization)
+
+        self.assertEqual(response.status_code, 204)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(self.get_json(response)), 0)
+
 
 class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITestCase):
     api_version = "v2"
@@ -547,17 +782,36 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             # http://www.django-rest-framework.org/api-guide/viewsets/#reversing-action-urls
             self.create_url(
                 "release_file/delete_by_release",
-                filters={"release": self.release_275.pk},
+                filters={
+                    "release": self.release_275.pk,
+                    "os": self.linux.pk,
+                },
             ),
             HTTP_AUTHORIZATION=self.Authorization,
         )
         self.assertEqual(response.status_code, 204)
 
         # Making a GET request after the deletion shouldn't return any results.
-        response = self.client.get(self.create_url("release_file", filters={"release": self.release_275.pk}))
+        response = self.client.get(
+            self.create_url(
+                "release_file",
+                filters={"release": self.release_275.pk},
+            )
+        )
         self.assertEqual(response.status_code, 200)
         content = self.get_json(response)
         self.assertEqual(len(content), 0)
+
+        # Files for other releases should be left intact.
+        response = self.client.get(
+            self.create_url(
+                "release_file",
+                filters={"release": self.draft_release.pk},
+            )
+        )
+        self.assertEqual(response.status_code, 200)
+        content = self.get_json(response)
+        self.assertEqual(len(content), 1)
 
         # Making a valid request should return 403 Forbidden if it
         # comes from a non-staff user.
@@ -578,6 +832,19 @@ class DownloadApiV2ViewsTest(BaseDownloadApiViewsTest, BaseDownloadTests, APITes
             HTTP_AUTHORIZATION=self.Authorization,
         )
         self.assertEqual(response.status_code, 400)
+
+        # Blank or malformed release values should also return 400 instead of
+        # reaching queryset evaluation with an invalid primary-key value.
+        for invalid_release in ("", "not-a-release-id"):
+            response = self.json_client(
+                "delete",
+                self.create_url(
+                    "release_file/delete_by_release",
+                    filters={"release": invalid_release},
+                ),
+                HTTP_AUTHORIZATION=self.Authorization,
+            )
+            self.assertEqual(response.status_code, 400)
 
         # /release_file/delete_by_release/ should only accept DELETE requests.
         response = self.client.get(

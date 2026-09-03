@@ -11,6 +11,7 @@ Nominees for {{ election.name }} Election
 {% block content_attributes %}{% endblock %}
 
 {% block head %}
+{% include "nominations/_theme.html" %}
 <style>
 details
 {
@@ -338,7 +339,11 @@ details div p
     <div>
       <ul>
         <li><b>Name</b>: {{ nominee.display_name }}</li>
-        <li><b>Previous Board Service</b>: {{ nominee.display_previous_board_service }}</li>
+        {% with previous_service=nominee.display_previous_board_service %}
+        {% if previous_service %}
+        <li><b>{{ election.previous_service_label }}</b>: {{ previous_service }}</li>
+        {% endif %}
+        {% endwith %}
         <li><b>Employer</b>: {{ nominee.display_employer }}</li>
         <li><b>Other Affiliations</b>: {{ nominee.display_other_affiliations }}</li>
         {% if nominee.self_nomination %}

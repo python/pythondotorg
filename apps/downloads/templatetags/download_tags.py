@@ -187,14 +187,18 @@ def render_active_releases():
 
         found_eol = False
         for release in sorted_releases:
+            minor = int(release.split(".")[1])
             info = release_cycle[release]
             status = info.get("status", "")
             first_release = info.get("first_release", "")
 
-            if status == "feature" and first_release:
-                first_release = f"{first_release} (planned)"
-
-            if status == "feature":
+            if status in ("planned", "feature", "prerelease"):
+                # Only show pre-release entries once at least one alpha/beta/rc
+                # has actually shipped (i.e. a published Release exists in the DB).
+                if not Release.objects.latest_python3(minor):
+                    continue
+                if first_release:
+                    first_release = f"{first_release} (planned)"
                 status = "pre-release"
 
             if status == "end-of-life":
@@ -204,7 +208,6 @@ def render_active_releases():
                 found_eol = True
 
                 # Get last release for EOL versions
-                minor = int(release.split(".")[1])
                 last_release = Release.objects.latest_python3(minor)
                 if last_release:
                     status = format_html(

@@ -559,6 +559,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
                     "get_sponsor_description",
                     "get_sponsor_landing_page_url",
                     "get_sponsor_web_logo",
+                    "get_sponsor_white_logo",
                     "get_sponsor_print_logo",
                     "get_sponsor_primary_phone",
                     "get_sponsor_mailing_address",
@@ -630,6 +631,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
             "get_sponsor_description",
             "get_sponsor_landing_page_url",
             "get_sponsor_web_logo",
+            "get_sponsor_white_logo",
             "get_sponsor_print_logo",
             "get_sponsor_primary_phone",
             "get_sponsor_mailing_address",
@@ -749,6 +751,22 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         context = Context({"img": img})
         return mark_safe(template.render(context))  # noqa: S308
 
+    @admin.display(description="White Logo")
+    def get_sponsor_white_logo(self, obj):
+        """Render and return the sponsor's white logo as a thumbnail image."""
+        img = obj.sponsor.white_logo
+        if not img:
+            return "---"
+        if img.name and img.name.lower().endswith(".svg"):
+            return format_html(
+                '<img src="{}" style="max-width:150px;max-height:150px;background:#333"/>',
+                img.url,
+            )
+        html = "{% load thumbnail %}{% thumbnail img '150x150' format='PNG' quality=100 as im %}<img src='{{ im.url}}' style='background:#333'/>{% endthumbnail %}"
+        template = Template(html)
+        context = Context({"img": img})
+        return mark_safe(template.render(context))  # noqa: S308
+
     @admin.display(description="Print Logo")
     def get_sponsor_print_logo(self, obj):
         """Render and return the sponsor's print logo as a thumbnail image."""
@@ -818,7 +836,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     @admin.display(description="Removed by User")
     def get_custom_benefits_removed_by_user(self, obj):
@@ -827,7 +845,7 @@ class SponsorshipAdmin(ImportExportActionModelAdmin, admin.ModelAdmin):
         if not benefits:
             return "---"
 
-        return format_html_join("", "<p>{}</p>", ((b,) for b in benefits))
+        return format_html_join("", "<p>{}</p>", [(benefit,) for benefit in benefits])
 
     def rollback_to_editing_view(self, request, pk):
         """Delegate to the rollback_to_editing admin view."""
@@ -936,7 +954,7 @@ class SponsorshipCurrentYearAdmin(admin.ModelAdmin):
 
             html += format_html(
                 dedent("""
-            <li><b>{year}</b>:"
+            <li><b>{year}</b>:
                 <ul>
                     <li><a target='_blank' href='{year_packages_url}'>List packages</a>
                     <li><a target='_blank' href='{year_benefits_url}'>List benefits</a>

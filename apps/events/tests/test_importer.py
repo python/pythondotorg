@@ -1,6 +1,7 @@
 from pathlib import Path
 
 from django.test import TestCase
+from django.urls import reverse
 from django.utils.timezone import datetime, make_aware
 
 from apps.events.importer import ICSImporter
@@ -59,7 +60,8 @@ END:VCALENDAR
         e = Event.objects.get(uid="8ceqself979pphq4eu7l5e2db8@google.com")
         self.assertEqual(e.calendar.url, EVENTS_CALENDAR_URL)
         self.assertEqual(
-            e.description.rendered, '<a href="https://www.barcamptools.eu/pycamp201604">PythonCamp Cologne 2016</a>'
+            e.description.rendered,
+            '<a href="https://www.barcamptools.eu/pycamp201604" rel="noopener noreferrer">PythonCamp Cologne 2016</a>',
         )
         self.assertTrue(e.next_or_previous_time.all_day)
         self.assertEqual(make_aware(datetime(year=2016, month=4, day=2)), e.next_or_previous_time.dt_start)
@@ -149,3 +151,27 @@ END:VCALENDAR
             make_aware(datetime(year=2013, month=8, day=2, hour=20, minute=30)),
             single_day_event.next_or_previous_time.dt_end,
         )
+
+    def test_import_event_escaped(self):
+        ical = """BEGIN:VCALENDAR
+BEGIN:VEVENT
+DTSTART;VALUE=DATE:20150328
+DTEND;VALUE=DATE:20150330
+DTSTAMP:20150202T092425Z
+UID:pythoncalendartest@python.org
+SUMMARY:<javascript:alert(1)>
+DESCRIPTION:<javascript:alert(1)>
+LOCATION:<javascript:alert(1)>
+END:VEVENT
+END:VCALENDAR
+"""
+        importer = ICSImporter(self.calendar)
+        importer.import_events_from_text(ical)
+
+        event = Event.objects.get(uid="pythoncalendartest@python.org")
+        url = reverse("events:event_detail", kwargs={"pk": event.pk, "calendar_slug": self.calendar.slug})
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        event_page = response.content.decode()
+        self.assertIn("&lt;javascript:alert(1)&gt;", event_page)
+        self.assertNotIn("<javascript:alert(1)>", event_page)

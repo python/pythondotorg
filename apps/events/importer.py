@@ -8,6 +8,7 @@ from icalendar import Calendar as ICalendar
 
 from apps.events.models import Event, EventLocation, OccurringRule
 from apps.events.utils import extract_date_or_datetime
+from pydotorg.markup import sanitize
 
 logger = logging.getLogger(__name__)
 
@@ -46,6 +47,7 @@ class ICSImporter:
         uid = event_data["UID"]
         title = event_data["SUMMARY"]
         description = event_data.get("DESCRIPTION", "")
+        description = sanitize(description)
         location, _ = EventLocation.objects.get_or_create(calendar=self.calendar, name=event_data["LOCATION"])
         defaults = {
             "title": title,

@@ -619,6 +619,26 @@ class ContractModelTests(TestCase):
         self.assertTrue(contract.document_docx.name)
         self.assertEqual(contract.status, Contract.AWAITING_SIGNATURE)
 
+    def test_final_document_path_includes_unguessable_token(self):
+        contract = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+
+        contract.set_final_version(b"pdf binary content", b"docx binary content")
+        contract.refresh_from_db()
+
+        # A random 32-char hex token is appended before the extension, so the path
+        # can no longer be guessed from the (uppercased) sponsor name.
+        self.assertRegex(contract.document.name, r"sponsors/contracts/SoW: FOO-[0-9a-f]{32}\.pdf$")
+        self.assertRegex(contract.document_docx.name, r"sponsors/contracts/docx/SoW: FOO-[0-9a-f]{32}\.docx$")
+
+    def test_each_send_uses_a_distinct_token(self):
+        first = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+        second = baker.make_recipe("apps.sponsors.tests.empty_contract", sponsorship__sponsor__name="foo")
+
+        first.set_final_version(b"pdf binary content")
+        second.set_final_version(b"pdf binary content")
+
+        self.assertNotEqual(first.document.name, second.document.name)
+
     def test_raise_invalid_status_exception_if_not_draft(self):
         contract = baker.make_recipe("apps.sponsors.tests.empty_contract", status=Contract.AWAITING_SIGNATURE)
 
