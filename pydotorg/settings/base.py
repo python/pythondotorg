@@ -300,6 +300,11 @@ SILENCED_SYSTEM_CHECKS = ["security.W019"]
 
 ### Content Security Policy, via django-csp
 
+# If this setting is unset, the default value of 'None'
+# will mean that the report-uri directive is omitted
+# in the Content-Security-Policy header.
+_CSP_REPORT_URI = config("CSP_REPORT_URI", None)
+
 # Django 6.0 ships built-in CSP support; drop django-csp and this setting
 # and use the framework's own CSP once we upgrade.
 # Report-Only first: collect violations and tune the allowlist before
@@ -316,6 +321,11 @@ CONTENT_SECURITY_POLICY_REPORT_ONLY = {
         "base-uri": ["'self'"],
         "object-src": ["'none'"],
         "form-action": ["'self'"],
+        "report-uri": [_CSP_REPORT_URI],
+        # When we upgrade to Django 6, begin using
+        # 'report-to' and 'Reporting-Endpoints' header.
+        # django-csp doesn't support automatically
+        # setting the HTTP headers required for this.
     },
 }
 
