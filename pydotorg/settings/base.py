@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from csp.constants import NONCE, SELF, UNSAFE_INLINE
 from decouple import config
 from dj_database_url import parse as dj_database_url_parser
 from django.contrib.messages import constants
@@ -311,16 +312,36 @@ _CSP_REPORT_URI = config("CSP_REPORT_URI", None)
 # enforcing. Rollout tracked in #3041.
 CONTENT_SECURITY_POLICY_REPORT_ONLY = {
     "DIRECTIVES": {
-        "default-src": ["'self'"],
-        "script-src": ["'self'"],
-        "style-src": ["'self'"],
-        "img-src": ["'self'", "data:"],
-        "font-src": ["'self'"],
-        "connect-src": ["'self'"],
-        "frame-ancestors": ["'self'"],
-        "base-uri": ["'self'"],
+        "default-src": [SELF],
+        "script-src": [
+            SELF,
+            NONCE,
+            "https://analytics.python.org",
+            "https://media.ethicalads.io",
+            "https://ajax.googleapis.com",
+        ],
+        "style-src": [
+            SELF,
+            # Modernizr injects <style> tags and requires
+            # using 'unsafe-inline'. If we remove Modernizr
+            # then we can remove this directive.
+            UNSAFE_INLINE,
+            "https://ajax.googleapis.com",
+        ],
+        "img-src": [SELF, "data:", "https://media.ethicalads.io"],
+        "font-src": [SELF, "data:"],
+        "connect-src": [
+            SELF,
+            "https://console.python.org",
+            "https://analytics.python.org",
+            "https://server.ethicalads.io",
+            # Status Page, host included in 'static/js/script.js'
+            "https://2p66nmmycsj3.statuspage.io",
+        ],
+        "frame-ancestors": [SELF],
+        "base-uri": [SELF],
         "object-src": ["'none'"],
-        "form-action": ["'self'"],
+        "form-action": [SELF],
         "report-uri": [_CSP_REPORT_URI],
         # When we upgrade to Django 6, begin using
         # 'report-to' and 'Reporting-Endpoints' header.
