@@ -42,6 +42,18 @@ class BlogViewTest(TestCase):
         self.assertNotContains(resp, "<img src=x onerror=alert(1)")
         self.assertContains(resp, "&lt;img src=x onerror=alert(1)")
 
+    def test_blog_home_links_news_sources_instead_of_more(self):
+        """The page already aggregates every source, so it links to each one rather than a single "More" page."""
+        resp = self.client.get(reverse("blog"))
+        self.assertNotContains(resp, 'class="give-me-more"')
+        for url in (
+            "https://blog.python.org/",
+            "https://pyfound.blogspot.com/",
+            "https://pycon.blogspot.com/",
+            "https://planetpython.org/",
+        ):
+            self.assertContains(resp, f'href="{url}"')
+
 
 class BlogHomeEntryCountTest(TestCase):
     """The blog page shows ENTRY_LIST_LIMIT entries: one header plus the list."""

@@ -27,7 +27,6 @@
                     <div class="most-recent-posts">
                         <div class="shrubbery">
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
-                            <p class="give-me-more"><a href="{{ BLOG_URL }}" title="Python Insider, the blog of the Python core team">Python Insider</a></p>
                             <ul class="list-recent-posts menu">
 
                                 {% for entry in entries %}
@@ -41,6 +40,14 @@
                     </div>
 
                     <div class="small-widget subscribe-widget last">
+                        <h2 class="widget-title">News Sources</h2>
+                        <ul class="menu">
+                            <li><a href="https://blog.python.org/">Python Insider</a></li>
+                            <li><a href="https://pyfound.blogspot.com/">PSF Blog</a></li>
+                            <li><a href="https://pycon.blogspot.com/">PyCon Blog</a></li>
+                            <li><a href="https://planetpython.org/">Planet Python</a></li>
+                        </ul>
+
                         {% box 'blogs-subscriptions' %}
                     </div>
 
