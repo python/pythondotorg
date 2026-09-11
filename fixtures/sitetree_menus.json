@@ -2536,7 +2536,7 @@
         "url": "https://brochure.getpython.info/",
         "urlaspattern": false,
         "tree": 1,
-        "hidden": false,
+        "hidden": true,
         "alias": null,
         "description": "",
         "inmenu": true,
