@@ -74,3 +74,5 @@ class BlogHomeEntryCountTest(TestCase):
 
         self.assertEqual(resp.context["latest_entry"].title, "Post 0")
         self.assertEqual(len(resp.context["entries"]), ENTRY_LIST_LIMIT - 1)
+        # Pin the concrete count too, so reverting the constant is caught.
+        self.assertEqual(len(resp.context["entries"]), 14)
