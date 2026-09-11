@@ -6,7 +6,7 @@ from apps.blogs.models import BlogEntry
 
 # Number of entries the page shows. The newest one goes in the page
 # header, the rest go in the "Latest News" list.
-ENTRY_LIST_LIMIT = 10
+ENTRY_LIST_LIMIT = 15
 
 
 class BlogHome(TemplateView):
