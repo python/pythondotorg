@@ -2287,9 +2287,10 @@ p.quote-by-organization {
   .latest-blog-post .readmore:hover, .latest-blog-post .readmore:focus, .featured-event .readmore:hover, .featured-event .readmore:focus {
     color: white; }
 
-.most-recent-posts li > a {
+.most-recent-posts li h3 {
   font-size: 1.125em;
-  line-height: 1.4em; }
+  line-height: 1.4em;
+  margin: 0; }
 
 /* ! ===== Events landing page ===== */
 /*h3*/
