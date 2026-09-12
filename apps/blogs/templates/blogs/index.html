@@ -29,7 +29,7 @@
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
                             <ul class="menu">
                                 {% for entry in entries %}
-                                <li>{% iso_time_tag entry.pub_date %} <a href="{{ entry.url }}">{{ entry.title }}</a></li>
+                                <li>{% iso_time_tag entry.pub_date %} <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3></li>
                                 {% endfor %}
                             </ul>
                         </div>
