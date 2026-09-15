@@ -83,6 +83,7 @@ def approve_sponsorship_view(model_admin, request, pk):
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
+        "renewal": sponsorship.renewal,
     }
 
     form = SponsorshipReviewAdminForm(initial=initial, force_required=True)
@@ -119,6 +120,7 @@ def approve_signed_sponsorship_view(model_admin, request, pk):
         "start_date": sponsorship.start_date,
         "end_date": sponsorship.end_date,
         "sponsorship_fee": sponsorship.sponsorship_fee,
+        "renewal": sponsorship.renewal,
     }
 
     form = SignedSponsorshipReviewAdminForm(initial=initial, force_required=True)
