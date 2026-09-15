@@ -1,0 +1,111 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Sponsors | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Sponsors</span>
+</div>
+{% endblock %}
+
+{% block topbar_actions %}
+    <a href="{% url 'manage_sponsor_create' %}" class="btn btn-sm btn-primary">+ New Sponsor</a>
+{% endblock %}
+
+{% block manage_content %}
+    <!-- Search bar -->
+    <div class="manage-filter-bar" style="padding:12px 20px;">
+        <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="filter-field">
+                <input type="text" name="search" placeholder="Search by name..." value="{{ filter_search }}" style="width:240px;" autofocus>
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-sm btn-secondary">Search</button>
+                {% if filter_search %}
+                <a href="{% url 'manage_sponsors' %}" class="btn btn-sm btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+            <div style="margin-left:auto;font-size:12px;color:#777;">
+                {{ page_obj.paginator.count }} sponsor{{ page_obj.paginator.count|pluralize }}
+            </div>
+        </form>
+    </div>
+
+    {% if sponsors %}
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th>Company</th>
+                <th>Location</th>
+                <th style="text-align:center;">Contacts</th>
+                <th style="text-align:center;">Sponsorships</th>
+                <th>Website</th>
+                <th style="width:140px;text-align:right;">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sponsor in sponsors %}
+            <tr>
+                <td>
+                    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {{ sponsor.name }}
+                    </a>
+                </td>
+                <td style="font-size:12px;color:#777;">
+                    {% if sponsor.city %}{{ sponsor.city }}{% endif %}{% if sponsor.city and sponsor.country %}, {% endif %}{% if sponsor.country %}{{ sponsor.country }}{% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if sponsor.contact_count %}
+                    <span class="tag tag-blue" style="font-size:10px;">{{ sponsor.contact_count }}</span>
+                    {% else %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:center;">
+                    {% if sponsor.sponsorship_count %}
+                    <a href="{% url 'manage_sponsorships' %}?search={{ sponsor.name|urlencode }}" class="tag tag-green" style="font-size:10px;text-decoration:none;">{{ sponsor.sponsorship_count }}</a>
+                    {% else %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;">
+                    {% if sponsor.landing_page_url %}
+                    <a href="{{ sponsor.landing_page_url }}" target="_blank" rel="noopener noreferrer" style="color:#3776ab;text-decoration:none;">{{ sponsor.landing_page_url|truncatechars:30 }}</a>
+                    {% else %}
+                    <span style="color:#ccc;">&mdash;</span>
+                    {% endif %}
+                </td>
+                <td style="text-align:right;white-space:nowrap;">
+                    <a href="{% url 'manage_sponsor_edit' sponsor.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;margin-right:10px;">Edit</a>
+                    <a href="{% url 'manage_composer' %}?new=1&sponsor_id={{ sponsor.pk }}" style="font-size:12px;color:#3776ab;text-decoration:none;white-space:nowrap;">+ Sponsorship</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        {% endif %}
+        <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#127970;</div>
+        <p>{% if filter_search %}No sponsors match "{{ filter_search }}"{% else %}No sponsors found{% endif %}</p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}
