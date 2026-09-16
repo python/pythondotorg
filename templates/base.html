@@ -9,8 +9,8 @@
 
     <meta charset="utf-8">
 
-    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
-    <link rel="prefetch" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js">
+    <link rel="prefetch" href="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js">
+    <link rel="prefetch" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js">
 
     <meta name="application-name" content="{{ SITE_INFO.site_name }}">
     <meta name="apple-mobile-web-app-title" content="{{ SITE_INFO.site_name }}">
@@ -37,7 +37,7 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}stylesheets/mq.css" media="not print, speech">
     {% endcomment %}
 
-    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
 
     {# Place icon files in the root if possible (let browsers look for them where they expect them to be) #}
     <link rel="icon" type="image/x-icon" href="{{ STATIC_URL }}favicon.ico">
@@ -307,10 +307,10 @@
     </div><!-- end #touchnav-wrapper -->
 
     {% block javascript %}
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
-    <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-ui-1.12.1.min.js"><\/script>')</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script nonce="{{ request.csp_nonce }}">window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.8.2.min.js"><\/script>')</script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+    <script nonce="{{ request.csp_nonce }}">window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-ui-1.12.1.min.js"><\/script>')</script>
 
     <script src="{{ STATIC_URL }}js/libs/masonry.pkgd.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/html-includes.js"></script>

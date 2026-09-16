@@ -1,8 +1,9 @@
 import datetime
 
+from django.conf import settings
 from django.test import TestCase
 
-from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind
+from apps.nominations.models import DEFAULT_ACCENT_COLOR, Election, ElectionKind, Nomination
 
 
 class ElectionKindModelTests(TestCase):
@@ -50,3 +51,56 @@ class ElectionAccentColorTests(TestCase):
 
         self.assertIsNone(self.election.kind)
         self.assertEqual(self.election.accent_color, DEFAULT_ACCENT_COLOR)
+
+
+class MarkupSanitizationTests(TestCase):
+    def _render(self, markup_type, text):
+        renderers = {entry[0]: entry[1] for entry in settings.MARKUP_FIELD_TYPES}
+        return renderers[markup_type](text)
+
+    def test_markdown_strips_javascript_uri(self):
+        rendered = self._render("markdown", "[x](javascript:alert(document.domain))")
+        self.assertNotIn("javascript:", rendered)
+
+    def test_markdown_preserves_safe_links_and_formatting(self):
+        rendered = self._render("markdown", "[ok](https://www.python.org) **bold**")
+        self.assertIn('href="https://www.python.org"', rendered)
+        self.assertIn("<strong>bold</strong>", rendered)
+
+    def test_restructuredtext_strips_javascript_uri(self):
+        rendered = self._render("restructuredtext", "`x <javascript:alert(1)>`_")
+        self.assertNotIn("javascript:", rendered)
+
+
+class NominationStatementRenderingTests(TestCase):
+    """The statement pipeline must allow markdown but never raw HTML."""
+
+    def render(self, text):
+        return Nomination.render_statement(text)
+
+    def test_blockquote_renders(self):
+        self.assertIn("<blockquote>", self.render("> quoted"))
+
+    def test_lists_render(self):
+        html = self.render("- one\n- two")
+        self.assertIn("<ul>", html)
+        self.assertEqual(html.count("<li>"), 2)
+
+    def test_headings_and_emphasis_render(self):
+        html = self.render("# Title\n\n**bold** and *italic*")
+        self.assertIn("<h1>Title</h1>", html)
+        self.assertIn("<strong>bold</strong>", html)
+        self.assertIn("<em>italic</em>", html)
+
+    def test_script_is_dropped(self):
+        html = self.render("<script>alert(1)</script>")
+        self.assertNotIn("script", html)
+        self.assertNotIn("alert(1)", html)
+
+    def test_event_handler_inside_blockquote_is_dropped(self):
+        html = self.render("> <img src=x onerror=alert(1)>")
+        self.assertIn("<blockquote>", html)
+        self.assertNotIn("onerror", html)
+
+    def test_unsafe_link_scheme_is_dropped(self):
+        self.assertNotIn("javascript:", self.render("[x](javascript:alert(1))"))
