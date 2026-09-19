@@ -10,14 +10,18 @@
   <p style="text-align: center;">Visionary sponsors help to host Python downloads.</p>
   <div style="display: grid; grid-gap: 2em; grid-template-columns: repeat(auto-fit, minmax(150px, 0fr)); align-items: center; justify-content: center; margin-top: 1.5em;">
   {% for sponsorship in sponsorships %}
-  {% thumbnail sponsorship.sponsor.web_logo "x150" format="PNG" quality=100 as im %}
     <div style="text-align: center;">
       <a href="{{ sponsorship.sponsor.landing_page_url }}" rel="sponsored noopener" target="_blank" style="border-bottom: 0;">
+        {% if sponsorship.sponsor.web_logo.name|lower|slice:"-4:" == ".svg" %}
+        <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:150px;max-width:150px;height:auto;width:auto;">
+        {% else %}
+        {% thumbnail sponsorship.sponsor.web_logo "x150" format="PNG" quality=100 as im %}
         <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:150px;max-width:150px;height:auto;width:auto;">
+        {% endthumbnail %}
+        {% endif %}
       </a>
       <p style="margin-top: 0.5em; margin-bottom: 0; font-size: 0.875em; color: #4d4d4d;">{{ sponsorship.sponsor.name }}</p>
     </div>
-  {% endthumbnail %}
   {% endfor %}
   </div>
 {% endcache CACHED_DOWNLOAD_SPONSORS_LIST %}
@@ -28,11 +32,15 @@
   <h3 class="widget-title">Job Board Sponsors</h3>
   <div style="display: grid; grid-gap: 1em; grid-template-columns: repeat(auto-fit, minmax(100px, 0fr)); grid-template-rows: repeat(1, minmax(50px, 0fr)); align-items: center; justify-content: center; margin-top: 1em;">
   {% for sponsorship in sponsorships %}
-  {% thumbnail sponsorship.sponsor.web_logo "x100" format="PNG" quality=100 as im %}
     <div>
+      {% if sponsorship.sponsor.web_logo.name|lower|slice:"-4:" == ".svg" %}
+      <img src="{{ sponsorship.sponsor.web_logo.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:100px;max-width:100px;height:auto;width:auto;">
+      {% else %}
+      {% thumbnail sponsorship.sponsor.web_logo "x100" format="PNG" quality=100 as im %}
       <img src="{{ im.url }}" alt="{{ sponsorship.sponsor.name }} logo" style="max-height:100px;max-width:100px;height:auto;width:auto;">
+      {% endthumbnail %}
+      {% endif %}
     </div>
-  {% endthumbnail %}
   {% endfor %}
   </div>
 {% endcache CACHED_JOBS_SPONSORS_LIST %}

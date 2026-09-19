@@ -6,8 +6,7 @@ import re
 import requests
 from django import template
 from django.core.cache import cache
-from django.utils.html import format_html
-from django.utils.safestring import mark_safe
+from django.utils.html import format_html, format_html_join, mark_safe
 
 from apps.downloads.models import Release
 
@@ -111,11 +110,11 @@ def wbr_wrap(value: str | None) -> str:
 
     # Split into two halves, each half has internal <wbr> breaks
     midpoint = len(chunks) // 2
-    first_half = "<wbr>".join(chunks[:midpoint])
-    second_half = "<wbr>".join(chunks[midpoint:])
+    first_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[:midpoint]])
+    second_half = format_html_join(mark_safe("<wbr>"), "{}", [(chunk,) for chunk in chunks[midpoint:]])
 
-    return mark_safe(
-        f'<span class="checksum-half">{first_half}</span><wbr><span class="checksum-half">{second_half}</span>'
+    return format_html(
+        '<span class="checksum-half">{}</span><wbr><span class="checksum-half">{}</span>', first_half, second_half
     )
 
 
@@ -188,14 +187,18 @@ def render_active_releases():
 
         found_eol = False
         for release in sorted_releases:
+            minor = int(release.split(".")[1])
             info = release_cycle[release]
             status = info.get("status", "")
             first_release = info.get("first_release", "")
 
-            if status == "feature" and first_release:
-                first_release = f"{first_release} (planned)"
-
-            if status == "feature":
+            if status in ("planned", "feature", "prerelease"):
+                # Only show pre-release entries once at least one alpha/beta/rc
+                # has actually shipped (i.e. a published Release exists in the DB).
+                if not Release.objects.latest_python3(minor):
+                    continue
+                if first_release:
+                    first_release = f"{first_release} (planned)"
                 status = "pre-release"
 
             if status == "end-of-life":
@@ -205,7 +208,6 @@ def render_active_releases():
                 found_eol = True
 
                 # Get last release for EOL versions
-                minor = int(release.split(".")[1])
                 last_release = Release.objects.latest_python3(minor)
                 if last_release:
                     status = format_html(

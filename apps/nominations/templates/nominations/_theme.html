@@ -1,0 +1,20 @@
+{% comment %}
+Per-election theming. Expects `election` in context (pass via
+`{% include "nominations/_theme.html" with election=object.election %}`
+where only the nomination object is available). Colors key headings
+with the election's accent so Board vs. Packaging Council pages are
+visually distinct. See Election.accent_color / the ElectionKind model.
+{% endcomment %}
+{% if election %}
+<style>
+    :root {
+        --election-accent: {{ election.accent_color }};
+    }
+    /* Scoped to #content; this <style> only renders on themed election
+       pages, so these selectors never leak to the rest of the site. */
+    #content h1,
+    #content .page-title {
+        color: var(--election-accent);
+    }
+</style>
+{% endif %}

@@ -42,8 +42,29 @@ class LogoPlacementeAPIListTests(APITestCase):
         for sponsor in Sponsor.objects.all():
             if sponsor.web_logo:
                 sponsor.web_logo.delete()
+            if sponsor.white_logo:
+                sponsor.white_logo.delete()
             if sponsor.print_logo:
                 sponsor.print_logo.delete()
+
+    def test_white_logo_null_when_not_set(self):
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
+        data = response.json()
+        self.assertEqual(200, response.status_code)
+        for placement in data:
+            self.assertIn("white_logo", placement)
+            self.assertIsNone(placement["white_logo"])
+
+    def test_white_logo_url_when_set(self):
+        sponsor = self.sponsors[0]
+        sponsor.white_logo = SimpleUploadedFile(name="white.png", content=b"img", content_type="image/png")
+        sponsor.save()
+        response = self.client.get(self.url, headers={"authorization": self.authorization})
+        data = response.json()
+        sponsor_placements = [p for p in data if p["sponsor"] == sponsor.name]
+        for placement in sponsor_placements:
+            self.assertIsNotNone(placement["white_logo"])
+            self.assertIn("white.png", placement["white_logo"])
 
     def test_list_logo_placement_as_expected(self):
         response = self.client.get(self.url, headers={"authorization": self.authorization})

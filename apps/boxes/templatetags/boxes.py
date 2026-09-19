@@ -15,7 +15,7 @@ register = template.Library()
 def box(label):
     """Render the content of a Box identified by its label slug."""
     try:
-        return mark_safe(Box.objects.only("content").get(label=label).content.rendered)
+        return mark_safe(Box.objects.only("content").get(label=label).content.rendered)  # noqa: S308
     except Box.DoesNotExist:
         log.warning("WARNING: box not found: label=%s", label)
         return ""

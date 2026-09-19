@@ -1,4 +1,6 @@
-FROM python:3.12.6-bookworm
+FROM ghcr.io/astral-sh/uv:0.12.17@sha256:10787c682e4184e4f290de1171fd4703dc63de99221f10fe1c99002ce7fa9acc AS uv
+
+FROM python:3.14.7-bookworm
 ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 
@@ -32,16 +34,19 @@ RUN case $(uname -m) in \
 RUN mkdir /code
 WORKDIR /code
 
-RUN pip --no-cache-dir --disable-pip-version-check install --upgrade pip setuptools wheel
+COPY --from=uv /uv /uvx /usr/local/bin/
 
-COPY pyproject.toml /code/
+COPY pyproject.toml uv.lock /code/
 
-RUN --mount=type=cache,target=/root/.cache/pip \
+RUN --mount=type=cache,target=/root/.cache \
     set -x \
-    && pip --disable-pip-version-check \
-        install --group dev \
-        .
+    && uv sync \
+         --frozen \
+         --no-editable \
+         --no-install-project
 
 COPY . /code/
 
-RUN pip --disable-pip-version-check install --no-deps -e '.'
+RUN uv sync \
+      --frozen \
+      --no-editable

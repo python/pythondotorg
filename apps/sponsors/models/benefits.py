@@ -1,7 +1,7 @@
 """Benefit feature and configuration models for the sponsors app."""
 
 from django import forms
-from django.db import models
+from django.db import IntegrityError, models, transaction
 from django.db.models import UniqueConstraint
 from django.urls import reverse
 from polymorphic.models import PolymorphicModel
@@ -15,7 +15,7 @@ from apps.sponsors.models.enums import (
 
 ########################################
 # Benefit features abstract classes
-from apps.sponsors.models.managers import BenefitFeatureQuerySet
+from apps.sponsors.models.managers import BenefitFeatureQuerySet, NonPolymorphicManager
 
 
 ########################################
@@ -155,11 +155,16 @@ class AssetConfigurationMixin:
 
         asset_qs = content_object.assets.filter(internal_name=self.internal_name)
         if not asset_qs.exists():
-            asset = self.ASSET_CLASS(
-                content_object=content_object,
-                internal_name=self.internal_name,
-            )
-            asset.save()
+            try:
+                with transaction.atomic():
+                    asset = self.ASSET_CLASS(
+                        content_object=content_object,
+                        internal_name=self.internal_name,
+                    )
+                    asset.save()
+            except IntegrityError:
+                if not content_object.assets.filter(internal_name=self.internal_name).exists():
+                    raise
 
         return benefit_feature
 
@@ -348,7 +353,7 @@ class BenefitFeatureConfiguration(PolymorphicModel):
 
     objects = BenefitFeatureQuerySet.as_manager()
     benefit = models.ForeignKey("sponsors.SponsorshipBenefit", on_delete=models.CASCADE)
-    non_polymorphic = models.Manager()
+    non_polymorphic = NonPolymorphicManager()
 
     class Meta:
         """Meta configuration for BenefitFeatureConfiguration."""
@@ -601,7 +606,7 @@ class BenefitFeature(PolymorphicModel):
     """Base class for sponsor benefits features."""
 
     objects = BenefitFeatureQuerySet.as_manager()
-    non_polymorphic = models.Manager()
+    non_polymorphic = NonPolymorphicManager()
 
     sponsor_benefit = models.ForeignKey("sponsors.SponsorBenefit", on_delete=models.CASCADE)
 
