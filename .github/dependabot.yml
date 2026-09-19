@@ -2,6 +2,10 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
+  groups:
+    pip:
+      patterns:
+        - "*"
   schedule:
     interval: quarterly
   cooldown:
@@ -19,6 +23,10 @@ updates:
     default-days: 7
 - package-ecosystem: docker
   directory: "/"
+  groups:
+    docker:
+      patterns:
+        - "*"
   schedule:
     interval: quarterly
   cooldown:
