@@ -1,0 +1,134 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Assets | Sponsor Management{% endblock %}
+
+{% with active_tab="more" %}
+
+{% block manage_breadcrumbs %}
+<div class="manage-crumbs">
+    <a href="{% url 'manage_dashboard' %}">Dashboard</a>
+    <span class="sep">/</span>
+    <span class="current">Assets</span>
+</div>
+{% endblock %}
+
+{% block manage_content %}
+    <!-- Filter bar -->
+    <div class="manage-filter-bar" style="padding:12px 20px;">
+        <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            <div class="filter-field">
+                <select name="type" onchange="this.form.submit()">
+                    <option value="">All types</option>
+                    {% for val, label in type_choices %}
+                    <option value="{{ val }}" {% if val == filter_type %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <select name="related" onchange="this.form.submit()">
+                    <option value="">All objects</option>
+                    {% for val, label in content_type_choices %}
+                    <option value="{{ val }}" {% if val|slugify == filter_related %}selected{% endif %}>{{ label }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <select name="value" onchange="this.form.submit()">
+                    <option value="">Any status</option>
+                    <option value="with" {% if filter_value == "with" %}selected{% endif %}>Submitted</option>
+                    <option value="without" {% if filter_value == "without" %}selected{% endif %}>Missing</option>
+                </select>
+            </div>
+            <div class="filter-field">
+                <input type="text" name="search" placeholder="Search internal name..." value="{{ filter_search }}" style="width:180px;">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-sm btn-secondary">Go</button>
+                {% if filter_type or filter_related or filter_value or filter_search %}
+                <a href="{% url 'manage_assets' %}" class="btn btn-sm btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+            <div style="margin-left:auto;font-size:12px;color:#777;">
+                {{ company_count }} sponsor{{ company_count|pluralize }} &middot; {{ asset_count }} asset{{ asset_count|pluralize }}{% if asset_count >= 200 %} (first 200){% endif %}
+            </div>
+        </form>
+    </div>
+
+    {% if grouped_assets %}
+    {% for company_name, group in grouped_assets.items %}
+    <div class="manage-section{% if not filter_value and not filter_search and not filter_type %} collapsed{% endif %}">
+        <div class="manage-section-header collapse-toggle" onclick="this.parentElement.classList.toggle('collapsed')" style="cursor:pointer;user-select:none;">
+            <h2>
+                <span class="collapse-arrow">&#9662;</span>
+                {{ company_name }}
+                <span class="badge" style="{% if group.submitted == group.total %}background:#4caf50{% elif group.submitted == 0 %}background:#e74c3c{% else %}background:#e67e22{% endif %}">{{ group.submitted }}/{{ group.total }}</span>
+            </h2>
+            {% if group.submitted < group.total and group.sponsorship_id %}
+            <a href="{% url 'manage_sponsorship_notify' group.sponsorship_id %}" class="btn btn-xs btn-secondary" onclick="event.stopPropagation();" title="Send asset reminder to this sponsor">Send Reminder</a>
+            {% endif %}
+        </div>
+        <div class="collapse-body">
+            <table class="manage-table">
+                <thead>
+                    <tr>
+                        <th>Internal Name</th>
+                        <th>Type</th>
+                        <th>Belongs To</th>
+                        <th style="text-align:center;">Status</th>
+                        <th>Value</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for asset in group.assets %}
+                    <tr>
+                        <td style="font-size:13px;">{{ asset.internal_name }}</td>
+                        <td>
+                            <span class="tag tag-gray" style="font-size:10px;">{{ asset.polymorphic_ctype.name|title }}</span>
+                        </td>
+                        <td>
+                            {% if asset.owner_type == "sponsorship" and asset.resolved_owner %}
+                            <a href="{% url 'manage_sponsorship_detail' asset.resolved_owner.pk %}" style="text-decoration:none;">
+                                {% if asset.resolved_owner.package %}<span class="tag tag-gold" style="font-size:10px;">{{ asset.resolved_owner.package.name }}</span>{% endif %}
+                                {% if asset.resolved_owner.status == 'applied' %}<span class="tag tag-blue" style="font-size:10px;">Applied</span>
+                                {% elif asset.resolved_owner.status == 'approved' %}<span class="tag tag-gold" style="font-size:10px;">Approved</span>
+                                {% elif asset.resolved_owner.status == 'finalized' %}<span class="tag tag-green" style="font-size:10px;">Finalized</span>
+                                {% endif %}
+                            </a>
+                            {% else %}
+                            <span style="color:#ccc;font-size:11px;">company-level</span>
+                            {% endif %}
+                        </td>
+                        <td style="text-align:center;">
+                            {% if asset.has_value %}
+                            <span class="tag tag-green" style="font-size:10px;">Submitted</span>
+                            {% else %}
+                            <span class="tag tag-red" style="font-size:10px;">Missing</span>
+                            {% endif %}
+                        </td>
+                        <td style="font-size:12px;color:#555;max-width:250px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                            {% if asset.has_value %}
+                                {% if asset.is_file %}
+                                <a href="{{ asset.value.url }}" target="_blank" rel="noopener noreferrer" style="color:#3776ab;text-decoration:none;">{{ asset.value.name|truncatechars:40 }}</a>
+                                {% else %}
+                                {{ asset.value|truncatechars:80 }}
+                                {% endif %}
+                            {% else %}
+                            <span style="color:#ccc;">&mdash;</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endfor %}
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128193;</div>
+        <p>No assets match your filters.</p>
+    </div>
+    {% endif %}
+{% endblock %}
+
+{% endwith %}

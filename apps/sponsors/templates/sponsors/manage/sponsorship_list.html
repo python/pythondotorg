@@ -1,0 +1,238 @@
+{% extends "sponsors/manage/_base.html" %}
+
+{% block page_title %}Sponsorships | Sponsor Management{% endblock %}
+
+{% with active_tab="sponsorships" %}
+
+{% block manage_content %}
+    {% load sponsors_manage %}
+    <!-- Combined toolbar: status pills + filters + actions in one bar -->
+    <div class="manage-filter-bar" style="padding:12px 20px;">
+        <form method="get" style="display:flex;gap:10px;align-items:flex-end;flex-wrap:wrap;">
+            {% if filter_status %}<input type="hidden" name="status" value="{{ filter_status }}">{% endif %}
+            <!-- Status pills inline -->
+            <div style="display:flex;gap:4px;align-items:center;margin-right:8px;">
+                <a href="{% url 'manage_sponsorships' %}{% if filter_year %}?year={{ filter_year }}{% endif %}" class="year-pill {% if not filter_status %}active{% endif %}" style="padding:4px 10px;font-size:12px;">All</a>
+                <a href="?status=applied{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'applied' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Applied {{ count_applied }}</a>
+                <a href="?status=approved{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'approved' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Approved {{ count_approved }}</a>
+                <a href="?status=finalized{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'finalized' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Finalized {{ count_finalized }}</a>
+                <a href="?status=rejected{% if filter_year %}&year={{ filter_year }}{% endif %}" class="year-pill {% if filter_status == 'rejected' %}active{% endif %}" style="padding:4px 10px;font-size:12px;">Rejected {{ count_rejected }}</a>
+            </div>
+            <div class="filter-field">
+                <select name="year" onchange="this.form.submit()">
+                    <option value="">All years</option>
+                    {% for val, label in filter_form.year.field.choices %}
+                    {% if val %}<option value="{{ val }}" {% if val|slugify == filter_year %}selected{% endif %}>{{ label }}</option>{% endif %}
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <input type="text" name="search" id="live-search" placeholder="Search..." value="{{ filter_search }}" autocomplete="off" style="width:140px;">
+            </div>
+            <div class="filter-actions">
+                <button type="submit" class="btn btn-sm btn-secondary">Go</button>
+                {% if filter_year or filter_search or filter_status %}
+                <a href="{% url 'manage_sponsorships' %}" class="btn btn-sm btn-secondary">Clear</a>
+                {% endif %}
+            </div>
+            <div style="margin-left:auto;display:flex;gap:6px;">
+                <a href="{% url 'manage_sponsorship_export' %}{% if filter_status or filter_year or filter_search %}?{% endif %}{% if filter_status %}status={{ filter_status }}{% endif %}{% if filter_status and filter_year %}&{% endif %}{% if filter_year %}year={{ filter_year }}{% endif %}{% if filter_year and filter_search or filter_status and filter_search %}&{% endif %}{% if filter_search %}search={{ filter_search }}{% endif %}" class="btn btn-secondary">CSV</a>
+                <a href="{% url 'manage_composer' %}?new=1" class="btn btn-primary">+ Sponsorship</a>
+                <a href="{% url 'manage_sponsor_create' %}" class="btn btn-secondary" style="border:1px solid #ccc !important;">+ Sponsor</a>
+            </div>
+        </form>
+    </div>
+
+    {% if sponsorships %}
+    <form method="post" action="{% url 'manage_bulk_action' %}" id="bulk-action-form">
+        {% csrf_token %}
+        <!-- Bulk action bar -->
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">
+            <select name="action" style="all:unset !important;height:28px !important;padding:0 8px !important;font-size:12px !important;border:1px solid #aaa !important;border-radius:3px !important;box-sizing:border-box !important;background:#fff !important;color:#333 !important;cursor:pointer !important;-webkit-appearance:menulist !important;appearance:menulist !important;">
+                <option value="">Bulk action...</option>
+                <option value="export_csv">Export CSV</option>
+                <option value="export_assets">Export Assets ZIP</option>
+                <option value="send_notification">Send Notification</option>
+            </select>
+            <button type="submit" onclick="return validateBulkAction();" style="all:unset !important;height:28px !important;padding:0 12px !important;font-size:12px !important;font-weight:600 !important;border:1px solid #aaa !important;border-radius:3px !important;background:#e8e8e8 !important;color:#333 !important;cursor:pointer !important;box-sizing:border-box !important;font-family:inherit !important;display:inline-flex !important;align-items:center !important;">Apply</button>
+            <span style="font-size:11px;color:#999;" id="bulk-count">0 selected</span>
+        </div>
+
+    <table class="manage-table">
+        <thead>
+            <tr>
+                <th style="width:30px;text-align:center;">
+                    <input type="checkbox" id="select-all" title="Select all">
+                </th>
+                <th style="width:25%;">Sponsor</th>
+                <th>Package</th>
+                <th style="text-align:right;">Fee</th>
+                <th>Year</th>
+                <th style="text-align:center;">Status</th>
+                <th>Applied</th>
+                <th>Period</th>
+                <th style="width:50px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sp in sponsorships %}
+            <tr class="sp-row" data-search="{% if sp.sponsor %}{{ sp.sponsor.name|lower }}{% endif %} {% if sp.package %}{{ sp.package.name|lower }}{% endif %} {{ sp.status|lower }} {{ sp.year|default:'' }} {% if sp.sponsorship_fee %}{{ sp.sponsorship_fee|floatformat:"0" }}{% endif %}">
+                <td style="text-align:center;">
+                    <input type="checkbox" name="selected_ids" value="{{ sp.pk }}" class="row-select">
+                </td>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-weight:600;color:#1a1a2e;text-decoration:none;">
+                        {% if sp.sponsor %}{{ sp.sponsor.name }}{% else %}Unknown{% endif %}
+                    </a>
+                    {% if sp.for_modified_package %}<span class="tag tag-gold" style="margin-left:4px;">Custom</span>{% endif %}
+                    {% if sp.renewal %}<span class="tag tag-blue" style="margin-left:4px;">Renewal</span>{% endif %}
+                </td>
+                <td>
+                    {% if sp.package %}<a href="{% url 'manage_package_edit' sp.package.pk %}" class="tag tag-blue" style="text-decoration:none;">{{ sp.package.name }}</a>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td style="text-align:right;font-variant-numeric:tabular-nums;">
+                    {% if sp.sponsorship_fee %}<span style="font-weight:600;">${{ sp.sponsorship_fee|floatformat:"0" }}</span>{% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td>{{ sp.year|default:"&mdash;" }}</td>
+                <td style="text-align:center;">
+                    {% if sp.status == 'applied' %}<span class="tag tag-blue">Applied</span>
+                    {% elif sp.status == 'approved' %}<span class="tag tag-gold">Approved</span>
+                    {% elif sp.status == 'finalized' %}<span class="tag tag-green">Finalized</span>
+                    {% elif sp.status == 'rejected' %}<span class="tag tag-red">Rejected</span>
+                    {% endif %}
+                    {% if not sp.locked and sp.status != 'applied' %}
+                    <span title="Unlocked" style="color:#ffd43b;font-size:10px;vertical-align:super;">&#128275;</span>
+                    {% endif %}
+                </td>
+                <td style="font-size:12px;color:#777;">{{ sp.applied_on|date:"M j, Y" }}</td>
+                <td style="font-size:12px;color:#777;">
+                    {% if sp.start_date and sp.end_date %}
+                    {{ sp.start_date|date:"M j" }} &ndash; {{ sp.end_date|date:"M j, Y" }}
+                    {% if sp.status == 'finalized' and sp.end_date %}
+                        {% days_until sp.end_date today as days_left %}
+                        {% if days_left < 0 %}<span class="tag tag-red" style="margin-left:4px;font-size:10px;">Expired</span>
+                        {% elif days_left <= 30 %}<span class="tag tag-red" style="margin-left:4px;font-size:10px;">{{ days_left }}d left</span>
+                        {% elif days_left <= 90 %}<span class="tag tag-gold" style="margin-left:4px;font-size:10px;">{{ days_left }}d left</span>
+                        {% endif %}
+                    {% endif %}
+                    {% else %}<span style="color:#ccc;">&mdash;</span>{% endif %}
+                </td>
+                <td>
+                    <a href="{% url 'manage_sponsorship_detail' sp.pk %}" style="font-size:12px;color:#3776ab;text-decoration:none;">Review</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </form>
+
+    {% if is_paginated %}
+    <div style="display:flex;justify-content:center;gap:4px;margin-top:20px;">
+        {% if page_obj.has_previous %}
+        <a href="?page={{ page_obj.previous_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">&larr; Prev</a>
+        {% endif %}
+        <span style="padding:6px 12px;font-size:13px;color:#555;">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+        <a href="?page={{ page_obj.next_page_number }}{% if filter_status %}&status={{ filter_status }}{% endif %}{% if filter_year %}&year={{ filter_year }}{% endif %}{% if filter_search %}&search={{ filter_search }}{% endif %}" class="btn btn-sm btn-secondary">Next &rarr;</a>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-icon">&#128203;</div>
+        <p>No sponsorships match your filters.</p>
+    </div>
+    {% endif %}
+
+<script>
+(function() {
+    var selectAll = document.getElementById('select-all');
+    var bulkCount = document.getElementById('bulk-count');
+
+    function updateCount() {
+        var checked = document.querySelectorAll('.row-select:checked').length;
+        bulkCount.textContent = checked + ' selected';
+    }
+
+    if (selectAll) {
+        selectAll.addEventListener('change', function() {
+            var boxes = document.querySelectorAll('.row-select');
+            for (var i = 0; i < boxes.length; i++) {
+                boxes[i].checked = selectAll.checked;
+            }
+            updateCount();
+        });
+    }
+
+    var rows = document.querySelectorAll('.row-select');
+    for (var i = 0; i < rows.length; i++) {
+        rows[i].addEventListener('change', updateCount);
+    }
+})();
+
+function validateBulkAction() {
+    var action = document.querySelector('[name="action"]').value;
+    if (!action) {
+        alert('Please select a bulk action.');
+        return false;
+    }
+    var checked = document.querySelectorAll('.row-select:checked').length;
+    if (checked === 0) {
+        alert('Please select at least one sponsorship.');
+        return false;
+    }
+    return true;
+}
+
+// Live search filtering
+(function() {
+    var input = document.getElementById('live-search');
+    if (!input) return;
+    var rows = document.querySelectorAll('tr.sp-row');
+    var debounceTimer;
+
+    input.addEventListener('input', function() {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(function() {
+            var q = input.value.toLowerCase().trim();
+            var visible = 0;
+            for (var i = 0; i < rows.length; i++) {
+                var haystack = rows[i].getAttribute('data-search') || '';
+                var match = !q || haystack.indexOf(q) !== -1;
+                rows[i].style.display = match ? '' : 'none';
+                if (match) visible++;
+            }
+            // Update empty state
+            var emptyRow = document.getElementById('live-search-empty');
+            if (visible === 0 && q) {
+                if (!emptyRow) {
+                    emptyRow = document.createElement('tr');
+                    emptyRow.id = 'live-search-empty';
+                    var td = document.createElement('td');
+                    td.setAttribute('colspan', '9');
+                    td.style.cssText = 'text-align:center;padding:20px;color:#999;';
+                    td.textContent = 'No sponsorships match \u201C' + q + '\u201D';
+                    emptyRow.appendChild(td);
+                    rows[0].parentNode.appendChild(emptyRow);
+                } else {
+                    emptyRow.firstChild.textContent = 'No sponsorships match \u201C' + q + '\u201D';
+                    emptyRow.style.display = '';
+                }
+            } else if (emptyRow) {
+                emptyRow.style.display = 'none';
+            }
+        }, 100);
+    });
+
+    // Prevent form submit on Enter in search field — just filter live
+    input.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+        }
+    });
+})();
+</script>
+{% endblock %}
+
+{% endwith %}
