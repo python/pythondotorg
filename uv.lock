@@ -1448,7 +1448,7 @@ requires-dist = [
     { name = "python3-openid", specifier = "==3.2.0" },
     { name = "requests", specifier = ">=2.26.0" },
     { name = "sentry-sdk", extras = ["django"], marker = "extra == 'prod'", specifier = "==2.53.0" },
-    { name = "sorl-thumbnail", specifier = "==12.11.0" },
+    { name = "sorl-thumbnail", specifier = "==13.1.0" },
     { name = "unidecode", specifier = "==1.4.0" },
     { name = "whitenoise", marker = "extra == 'prod'", specifier = "==6.11.0" },
 ]
@@ -1648,11 +1648,11 @@ wheels = [
 
 [[package]]
 name = "sorl-thumbnail"
-version = "12.11.0"
+version = "13.1.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/28/e9/38491b3556c2ec19b53d0dcc5474359fb9344ce24a26745d3ca88237b848/sorl_thumbnail-12.11.0.tar.gz", hash = "sha256:191b89c27ecb40b5c2a35549d557d17c4841c6aff439b2e17b938b91eea463b3", size = 667102, upload-time = "2024-09-21T17:12:08.585Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/75/d5/1b12e3c06866e979070b4f9b13361a530a4b6710e97f4b5119d0481fff60/sorl_thumbnail-13.1.0.tar.gz", hash = "sha256:4bf2d3e5c211f9d3d754273af067c7664df361bfcc4722f778acef054352eefa", size = 672147, upload-time = "2026-08-19T19:31:50.755Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/bf/b4/4ff585c7b096fe82e55ee8d1dbae74f5f7cedacbf08cb25c9a83755e4ef3/sorl_thumbnail-12.11.0-py3-none-any.whl", hash = "sha256:e3e375013ca3f14bca9f98fe9861153adac3a6ea4af5e9dc3f31cb605df765b5", size = 42789, upload-time = "2024-09-21T17:11:54.11Z" },
+    { url = "https://files.pythonhosted.org/packages/5c/88/fb47437f6e8c707b138974effe4cb44ee833d2bdbe150a719b79304943fc/sorl_thumbnail-13.1.0-py3-none-any.whl", hash = "sha256:ddd8b359dbf98c806c88702986a819f77f48e0a68c9d719b9faf692216ebd219", size = 43314, upload-time = "2026-08-19T19:31:38.322Z" },
 ]
 
 [[package]]
