@@ -6,6 +6,10 @@ updates:
     pip:
       patterns:
         - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
     interval: quarterly
   cooldown:
@@ -27,6 +31,10 @@ updates:
     docker:
       patterns:
         - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
     interval: quarterly
   cooldown:
