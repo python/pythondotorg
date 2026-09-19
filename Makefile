@@ -57,8 +57,14 @@ clean: ## Clean up the environment
 lint: ## Run ruff linter (--fix enabled)
 	@if command -v ruff >/dev/null 2>&1; then ruff check --fix .; else docker compose run --rm web ruff check --fix .; fi
 
-fmt: ## Run ruff formatter
+fmt: ## Format Python and pyproject.toml
 	@if command -v ruff >/dev/null 2>&1; then ruff format .; else docker compose run --rm web ruff format .; fi
+	@# pyproject-fmt exits 1 after edits; check again to distinguish edits from errors.
+	@if command -v pyproject-fmt >/dev/null 2>&1; then \
+		pyproject-fmt pyproject.toml || pyproject-fmt --check pyproject.toml; \
+	else \
+		docker compose run --rm web sh -c 'uv run --frozen pyproject-fmt pyproject.toml || uv run --frozen pyproject-fmt --check pyproject.toml'; \
+	fi
 
 test: .state/db-initialized ## Run test suite
 	docker compose run --rm web uv run python ./manage.py test
