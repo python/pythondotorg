@@ -4,6 +4,7 @@ import email
 from pathlib import Path
 
 import chardet
+from chardet.enums import EncodingEra
 
 
 def read_content_file(dirpath):
@@ -21,7 +22,8 @@ def read_content_file(dirpath):
 
     if c_ht.exists():
         raw_input = c_ht.read_bytes()
-        detection = chardet.detect(raw_input)
+        # Legacy web pages should not be mistaken for Mac/DOS text encodings.
+        detection = chardet.detect(raw_input, encoding_era=EncodingEra.MODERN_WEB)
 
         with c_ht.open(encoding=detection["encoding"], errors="ignore") as file_handle:
             msg = email.message_from_file(file_handle)
