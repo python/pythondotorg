@@ -50,7 +50,7 @@ class BlogViewTest(TestCase):
             "https://blog.python.org/",
             "https://pyfound.blogspot.com/",
             "https://pycon.blogspot.com/",
-            "https://planetpython.org/",
+            "https://blog.pypi.org/",
         ):
             self.assertContains(resp, f'href="{url}"')
 
