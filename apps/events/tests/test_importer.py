@@ -24,8 +24,7 @@ class EventsImporterTestCase(TestCase):
 
     def test_injest(self):
         importer = ICSImporter(self.calendar)
-        with Path(EVENTS_CALENDAR).open() as fh:
-            ical = fh.read()
+        ical = Path(EVENTS_CALENDAR).read_bytes()
         importer.import_events_from_text(ical)
 
         self.assertEqual(Event.objects.filter(calendar=self.calendar).count(), FIXTURE_EVENT_COUNT)

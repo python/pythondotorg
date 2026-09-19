@@ -25,6 +25,7 @@ class SponsorThumbnailTests(TestCase):
     def setUp(self):
         media = TemporaryDirectory()
         self.addCleanup(media.cleanup)
+        self.addCleanup(self.reset_storage)
         self.enterContext(
             self.settings(
                 MEDIA_ROOT=media.name,
@@ -32,7 +33,6 @@ class SponsorThumbnailTests(TestCase):
             )
         )
         self.reset_storage()
-        self.addCleanup(self.reset_storage)
         source = BytesIO()
         image = Image.new("RGBA", (300, 300), (30, 144, 255, 255))
         image.paste((0, 0, 0, 0), (0, 0, 150, 150))
