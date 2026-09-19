@@ -9,7 +9,7 @@ requires-python = ">=3.14"
 dependencies = [
     "beautifulsoup4==4.15.0",
     "celery[redis]==5.6.3",
-    "chardet==4.0.0",
+    "chardet==7.6.0",
     "cmarkgfm==2024.11.20",
     "cssselect==1.5.0",
     "dj-database-url==3.1.2",
