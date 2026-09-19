@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.test import TestCase, override_settings
 from django.urls import reverse
+from rest_framework.authtoken.models import Token
 from rest_framework.test import APITestCase
 
 from apps.downloads.models import (
@@ -179,7 +180,8 @@ class BaseDownloadApiViewsTest(BaseDownloadTests, BaseAPITestCase):
             password="passworduser",
             is_staff=True,
         )
-        self.Authorization = f"Token {self.staff_user.api_v2_token}"
+        token = Token.objects.get(user=self.staff_user)
+        self.Authorization = f"Token {token.key}"
         self.Authorization_invalid = "Token invalid-token"
 
     def get_json(self, response):
