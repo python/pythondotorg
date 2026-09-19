@@ -46,7 +46,7 @@ dependencies = [
     "django-allauth==65.14.1",
     "django-waffle==5.0.0",
     "djangorestframework==3.17.2",
-    "django-filter==25.1",
+    "django-filter==26.1",
     "django-ordered-model==3.7.4",
     "django-widget-tweaks==1.5.0",
     "django-countries==8.2.0",
