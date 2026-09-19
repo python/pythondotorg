@@ -674,11 +674,14 @@ sdist = { url = "https://files.pythonhosted.org/packages/7e/1b/1eb7b457e08147a87
 
 [[package]]
 name = "django-waffle"
-version = "2.2.1"
+version = "5.0.0"
 source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/f1/bb/8eafdbe8dfcca0c3708116df2d32faae2e14e43faf582d2718fae2d318fe/django-waffle-2.2.1.tar.gz", hash = "sha256:ded418a3404e22a77342293b61e7e04d92de500ce724a8c26a6782f2fbcff01c", size = 31851, upload-time = "2021-07-13T15:28:25.64Z" }
+dependencies = [
+    { name = "django" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/22/e1/6f533da0d4ac89f427dfd9410e39bfc14ae3a23335ecd549d76be4b2a834/django_waffle-5.0.0.tar.gz", hash = "sha256:62f9d00eedf68dafb82657beab56e601bddedc1ea1ccfef91d83df8658708509", size = 37761, upload-time = "2025-06-12T07:38:54.895Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/47/56/0b136ce4c8fb6a901cd62b1a5f0844294bb235d35c30cccf4c4d0c93f55d/django_waffle-2.2.1-py2.py3-none-any.whl", hash = "sha256:c078c212b58899d3a1b87ffeec86ea058fe4dd94e8155d8547622899954862e0", size = 44206, upload-time = "2021-07-13T15:28:24.185Z" },
+    { url = "https://files.pythonhosted.org/packages/7a/d2/6f0d664bd35a3fdd0403655c7c32ec290704923f11541ef356b180cd8fbf/django_waffle-5.0.0-py3-none-any.whl", hash = "sha256:3312851d9d926b76b9e90712355781700a383b82b5bf2b61e1f1be97532c0f3d", size = 48137, upload-time = "2025-06-12T07:38:53.698Z" },
 ]
 
 [[package]]
@@ -1419,7 +1422,7 @@ requires-dist = [
     { name = "django-storages", marker = "extra == 'prod'", specifier = "==1.14.6" },
     { name = "django-tastypie", specifier = "==0.15.1" },
     { name = "django-translation-aliases", specifier = "==0.1.0" },
-    { name = "django-waffle", specifier = "==2.2.1" },
+    { name = "django-waffle", specifier = "==5.0.0" },
     { name = "django-widget-tweaks", specifier = "==1.5.0" },
     { name = "djangorestframework", specifier = "==3.17.2" },
     { name = "docutils", specifier = "==0.21.2" },
