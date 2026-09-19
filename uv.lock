@@ -1,6 +1,11 @@
 version = 1
 revision = 3
 requires-python = ">=3.14"
+resolution-markers = [
+    "sys_platform == 'win32'",
+    "sys_platform == 'emscripten'",
+    "sys_platform != 'emscripten' and sys_platform != 'win32'",
+]
 
 [[package]]
 name = "accessible-pygments"
@@ -568,16 +573,30 @@ wheels = [
 
 [[package]]
 name = "django-import-export"
-version = "2.7.1"
+version = "4.4.1"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "diff-match-patch" },
     { name = "django" },
-    { name = "tablib", extra = ["ods", "xls", "xlsx", "yaml"] },
+    { name = "tablib" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/a1/ba/8d90744faee1b7c677075e225639101257ba314c83085ed3db1684e5678e/django-import-export-2.7.1.tar.gz", hash = "sha256:4bc65943a5ce66aeaf2b5d0d6f75b1863b63b10323bf235e46500bef5d6dd85b", size = 54036, upload-time = "2021-12-23T13:45:29.62Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/92/32/5b83cc46a70ac94c1d17144097bf8aee7d9bb401d0863652c8d5ce1d2e50/django_import_export-4.4.1.tar.gz", hash = "sha256:165dc7fdcd56a6356342eef3f88f3f3682b64b6f67e9a259a137e8b57aeff10c", size = 2238690, upload-time = "2026-05-05T12:42:44.295Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/9c/ea/4d9abd95a657909d20e507bdb19b60dd9581d7421aabbd28ef04df8890cb/django_import_export-2.7.1-py3-none-any.whl", hash = "sha256:254ca359782efca932c398edabc15dd51d31da241e85cc03af5b720173e0b2fe", size = 100354, upload-time = "2021-12-23T13:45:27.98Z" },
+    { url = "https://files.pythonhosted.org/packages/91/d1/110aeb2acffea56d4222861b5678c2643f0bda00081e40d687077348bb7c/django_import_export-4.4.1-py3-none-any.whl", hash = "sha256:8be2782e505ae303ccb02070a1b4c528995922126fca9ee449eb28666835dd4b", size = 157691, upload-time = "2026-05-05T12:42:42.554Z" },
+]
+
+[package.optional-dependencies]
+ods = [
+    { name = "tablib", extra = ["ods"] },
+]
+xls = [
+    { name = "tablib", extra = ["xls"] },
+]
+xlsx = [
+    { name = "tablib", extra = ["xlsx"] },
+]
+yaml = [
+    { name = "tablib", extra = ["yaml"] },
 ]
 
 [[package]]
@@ -1334,7 +1353,7 @@ dependencies = [
     { name = "django-haystack" },
     { name = "django-honeypot" },
     { name = "django-imagekit" },
-    { name = "django-import-export" },
+    { name = "django-import-export", extra = ["ods", "xls", "xlsx", "yaml"] },
     { name = "django-markupfield" },
     { name = "django-ordered-model" },
     { name = "django-pipeline" },
@@ -1416,7 +1435,7 @@ requires-dist = [
     { name = "django-haystack", specifier = "==3.4.0" },
     { name = "django-honeypot", specifier = "==1.3.0" },
     { name = "django-imagekit", specifier = "==6.1.0" },
-    { name = "django-import-export", specifier = "==2.7.1" },
+    { name = "django-import-export", extras = ["ods", "xls", "xlsx", "yaml"], specifier = "==4.4.1" },
     { name = "django-markupfield", specifier = "==2.0.1" },
     { name = "django-ordered-model", specifier = "==3.7.4" },
     { name = "django-pipeline", specifier = "==4.1.0" },
