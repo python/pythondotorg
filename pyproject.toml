@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=83.0.0"]
+requires = ["setuptools>=84.0.0"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
@@ -19,10 +19,10 @@ dependencies = [
     "django-admin-interface==0.32.0",
     "django-translation-aliases==0.1.0",
     "Django==5.2.16",
-    "docutils==0.23",
+    "docutils==0.22.4",
     "Markdown==3.10.3",
     "cmarkgfm==2024.11.20",
-    "Pygments>=2.17,<3",
+    "Pygments>=2.21.0,<3",
     "Pillow==12.3.0",
     "psycopg2-binary==2.9.13",
     "python3-openid==3.2.0",
@@ -40,13 +40,13 @@ dependencies = [
     "elasticsearch>=7,<8",
     "django-tastypie==0.15.1",
     "python-dateutil==2.9.0.post0",
-    "requests>=2.26.0",
+    "requests>=2.34.2",
     "django-honeypot==1.3.0",
     "django-markupfield==2.0.1",
     "django-allauth==65.19.3",
     "django-waffle==5.0.0",
     "djangorestframework==3.18.1",
-    "django-filter==25.1",
+    "django-filter==26.1",
     "django-ordered-model==3.7.4",
     "django-widget-tweaks==1.5.1",
     "django-countries==8.2.0",
@@ -54,7 +54,7 @@ dependencies = [
     "django-polymorphic==4.11.7",
     "sorl-thumbnail==13.1.0",
     "django-extensions==4.1",
-    "django-import-export==2.7.1",
+    "django-import-export[ods,xls,xlsx,yaml]==4.4.1",
     "pypandoc==1.17",
     "panflute==2.3.1",
     "Unidecode==1.4.0",
@@ -76,7 +76,7 @@ dev = [
     "Faker==40.38.0",
     "tblib==1.7.0",
     "responses==0.26.3",
-    "django-debug-toolbar==6.2.0",
+    "django-debug-toolbar==8.0.0",
     "coverage",
     "ddt",
     "model-bakery==1.24.0",
@@ -129,6 +129,8 @@ ignore = [
     # Conflicting docstring rules (pick one style)
     "D203",    # one-blank-line-before-class (conflicts with D211)
     "D213",    # multi-line-summary-second-line (conflicts with D212 - we want summary on first line)
+    # Copyright headers are not required by the project's existing source policy
+    "CPY001", # missing-copyright-notice
     # Line length handled by formatter
     "E501",    # line too long
     # Type annotations - separate project, not practical to add to entire legacy codebase at once
