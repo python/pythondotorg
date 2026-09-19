@@ -303,6 +303,9 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         }
 
     def test_display_confirmation_form_on_get(self):
+        self.sponsorship.renewal = True
+        self.sponsorship.save(update_fields=["renewal"])
+
         response = self.client.get(self.url)
         context = response.context
         form = context["form"]
@@ -315,6 +318,7 @@ class ApproveSponsorshipAdminViewTests(TestCase):
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee)
+        self.assertTrue(form.initial["renewal"])
         self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)  # did not update
 
     def test_approve_sponsorship_on_post(self):
@@ -405,6 +409,9 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         }
 
     def test_display_confirmation_form_on_get(self):
+        self.sponsorship.renewal = True
+        self.sponsorship.save(update_fields=["renewal"])
+
         response = self.client.get(self.url)
         context = response.context
         form = context["form"]
@@ -417,6 +424,7 @@ class ApproveSignedSponsorshipAdminViewTests(TestCase):
         self.assertEqual(form.initial["start_date"], self.sponsorship.start_date)
         self.assertEqual(form.initial["end_date"], self.sponsorship.end_date)
         self.assertEqual(form.initial["sponsorship_fee"], self.sponsorship.sponsorship_fee)
+        self.assertTrue(form.initial["renewal"])
         self.assertNotEqual(self.sponsorship.status, Sponsorship.APPROVED)  # did not update
 
     def test_approve_sponsorship_and_execute_contract_on_post(self):

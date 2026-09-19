@@ -2,8 +2,16 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
+  groups:
+    pip:
+      patterns:
+        - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
-    interval: weekly
+    interval: quarterly
   cooldown:
     default-days: 7
   open-pull-requests-limit: 10
@@ -14,12 +22,20 @@ updates:
       patterns:
         - "*"  # Group all Actions updates into a single larger pull request
   schedule:
-    interval: weekly
+    interval: quarterly
   cooldown:
     default-days: 7
 - package-ecosystem: docker
   directory: "/"
+  groups:
+    docker:
+      patterns:
+        - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
-    interval: weekly
+    interval: quarterly
   cooldown:
     default-days: 7

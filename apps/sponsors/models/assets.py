@@ -14,7 +14,7 @@ from django.db import models
 from django.db.models.fields.files import FileField, ImageFieldFile
 from polymorphic.models import PolymorphicModel
 
-from apps.sponsors.models.managers import GenericAssetQuerySet
+from apps.sponsors.models.managers import GenericAssetQuerySet, NonPolymorphicManager
 
 
 def generic_asset_path(instance, filename):
@@ -29,7 +29,7 @@ class GenericAsset(PolymorphicModel):
     """Base class used to add required assets to Sponsor or Sponsorship objects."""
 
     objects = GenericAssetQuerySet.as_manager()
-    non_polymorphic = models.Manager()
+    non_polymorphic = NonPolymorphicManager()
 
     # UUID can't be the object ID because Polymorphic expects default django integer ID
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)

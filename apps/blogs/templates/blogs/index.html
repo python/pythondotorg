@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load boxes %}
+{% load boxes cms %}
 
 {% block page_title %}Our Blogs | {{ SITE_INFO.site_name }}{% endblock %}
 {% block og_title %}Our Blogs{% endblock %}
@@ -27,14 +27,9 @@
                     <div class="most-recent-posts">
                         <div class="shrubbery">
                             <h2 class="widget-title"><span aria-hidden="true" class="icon-news"></span>Latest News</h2>
-                            <p class="give-me-more"><a href="{{ BLOG_URL }}" title="More News">More</a></p>
-                            <ul class="list-recent-posts menu">
-
+                            <ul class="menu">
                                 {% for entry in entries %}
-                                <li>
-                                    <h3 class="event-title"><a href="{{ entry.url }}">{{ entry.title }}</a></h3>
-                                    <p><time datetime="{{ entry.pub_date|date:"Y-m-d" }}">{{ entry.pub_date|date }}</time></p>
-                                </li>
+                                <li>{% iso_time_tag entry.pub_date %} <h3><a href="{{ entry.url }}">{{ entry.title }}</a></h3></li>
                                 {% endfor %}
                             </ul>
                         </div>
@@ -42,6 +37,16 @@
 
                     <div class="small-widget subscribe-widget last">
                         {% box 'blogs-subscriptions' %}
+                    </div>
+
+                    <div class="small-widget news-sources-widget last">
+                        <h2 class="widget-title">News Sources</h2>
+                        <ul class="menu">
+                            <li><a href="https://blog.python.org/">Python Insider</a></li>
+                            <li><a href="https://pyfound.blogspot.com/">PSF Blog</a></li>
+                            <li><a href="https://pycon.blogspot.com/">PyCon Blog</a></li>
+                            <li><a href="https://blog.pypi.org/">PyPI Blog</a></li>
+                        </ul>
                     </div>
 
                     <div class="small-widget copyright-widget last">
