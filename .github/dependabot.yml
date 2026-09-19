@@ -2,6 +2,14 @@ version: 2
 updates:
 - package-ecosystem: pip
   directory: "/"
+  groups:
+    pip:
+      patterns:
+        - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
     interval: quarterly
   cooldown:
@@ -19,6 +27,14 @@ updates:
     default-days: 7
 - package-ecosystem: docker
   directory: "/"
+  groups:
+    docker:
+      patterns:
+        - "*"
+      # Review major upgrades separately.
+      update-types:
+        - minor
+        - patch
   schedule:
     interval: quarterly
   cooldown:
