@@ -253,7 +253,7 @@ class Nominee(models.Model):
 
         # A nominator can see the person they nominated, so that the links
         # in the nominee list preview work while nominations are open.
-        return self.nominations.filter(nominator=user).exists()
+        return self.nominations.filter(nominator=user, election=self.election).exists()
 
 
 class Nomination(models.Model):
