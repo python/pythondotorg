@@ -186,7 +186,9 @@ class Event(ContentManageable):
             if occurring_rule and occurring_rule.dt_start > now:
                 occurring_start = (occurring_rule.dt_start, occurring_rule)
 
-        rrules = self.recurring_rules.filter(finish__gt=now)
+        # Filter in Python so a prefetched `recurring_rules` cache is reused; calling
+        # .filter() on the related manager would issue a query for every event.
+        rrules = [rule for rule in self.recurring_rules.all() if rule.finish > now]
         recurring_starts = [(rule.dt_start, rule) for rule in rrules if rule.dt_start is not None]
         recurring_starts.sort(key=itemgetter(0))
 
@@ -230,7 +232,8 @@ class Event(ContentManageable):
             if occurring_rule and occurring_rule.dt_end < now:
                 occurring_end = (occurring_rule.dt_end, occurring_rule)
 
-        rrules = self.recurring_rules.filter(begin__lt=now)
+        # Filter in Python so a prefetched `recurring_rules` cache is reused.
+        rrules = [rule for rule in self.recurring_rules.all() if rule.begin < now]
         recurring_ends = [(rule.dt_end, rule) for rule in rrules if rule.dt_end is not None]
         recurring_ends.sort(key=itemgetter(0), reverse=True)
 
