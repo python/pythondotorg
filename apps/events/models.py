@@ -102,8 +102,8 @@ class EventLocation(models.Model):
         return reverse("events:eventlist_location", kwargs={"calendar_slug": self.calendar.slug, "pk": self.pk})
 
 
-class EventManager(models.Manager):
-    """Custom manager for querying events by time boundaries."""
+class EventQuerySet(models.QuerySet):
+    """Queryset for events, with the time boundaries and eager loading the views need."""
 
     def for_datetime(self, dt=None):
         """Return events occurring after the given datetime."""
@@ -114,6 +114,13 @@ class EventManager(models.Manager):
         """Return events that ended before the given datetime."""
         dt = timezone.now() if dt is None else convert_dt_to_aware(dt)
         return self.filter(Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
+
+    def with_related(self):
+        """Fetch what the event templates read for each row, so rendering does not query per event."""
+        return self.select_related("occurring_rule", "venue", "calendar").prefetch_related("recurring_rules")
+
+
+EventManager = models.Manager.from_queryset(EventQuerySet)
 
 
 class Event(ContentManageable):
@@ -186,7 +193,9 @@ class Event(ContentManageable):
             if occurring_rule and occurring_rule.dt_start > now:
                 occurring_start = (occurring_rule.dt_start, occurring_rule)
 
-        rrules = self.recurring_rules.filter(finish__gt=now)
+        # Filter in Python so a prefetched `recurring_rules` cache is reused; calling
+        # .filter() on the related manager would issue a query for every event.
+        rrules = [rule for rule in self.recurring_rules.all() if rule.finish > now]
         recurring_starts = [(rule.dt_start, rule) for rule in rrules if rule.dt_start is not None]
         recurring_starts.sort(key=itemgetter(0))
 
@@ -230,7 +239,8 @@ class Event(ContentManageable):
             if occurring_rule and occurring_rule.dt_end < now:
                 occurring_end = (occurring_rule.dt_end, occurring_rule)
 
-        rrules = self.recurring_rules.filter(begin__lt=now)
+        # Filter in Python so a prefetched `recurring_rules` cache is reused.
+        rrules = [rule for rule in self.recurring_rules.all() if rule.begin < now]
         recurring_ends = [(rule.dt_end, rule) for rule in rrules if rule.dt_end is not None]
         recurring_ends.sort(key=itemgetter(0), reverse=True)
 

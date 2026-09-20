@@ -2,7 +2,9 @@ import datetime
 
 from django.contrib.auth import get_user_model
 from django.core import mail
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 
@@ -292,3 +294,59 @@ class EventSubmitTests(TestCase):
         messages = list(response.context["messages"])
         self.assertEqual(len(messages), 1)
         self.assertEqual(messages[0].message, "Invalid header found.")
+
+
+class EventHomepageQueryCountTests(TestCase):
+    """The events homepage must not run queries per event. See #3125."""
+
+    @classmethod
+    def setUpTestData(cls):
+        cls.user = get_user_model().objects.create_user(username="query-count", password="password")
+        cls.calendar = Calendar.objects.create(creator=cls.user, slug="query-count-calendar")
+        now = timezone.now()
+        for index in range(10):
+            past = Event.objects.create(title=f"Past {index}", creator=cls.user, calendar=cls.calendar)
+            OccurringRule.objects.create(
+                event=past,
+                dt_start=now - datetime.timedelta(days=index + 10),
+                dt_end=now - datetime.timedelta(days=index + 9),
+            )
+            upcoming = Event.objects.create(title=f"Upcoming {index}", creator=cls.user, calendar=cls.calendar)
+            OccurringRule.objects.create(
+                event=upcoming,
+                dt_start=now + datetime.timedelta(days=index + 1),
+                dt_end=now + datetime.timedelta(days=index + 2),
+            )
+            recurring = Event.objects.create(title=f"Recurring {index}", creator=cls.user, calendar=cls.calendar)
+            RecurringRule.objects.create(
+                event=recurring,
+                begin=now - datetime.timedelta(days=1),
+                finish=now + datetime.timedelta(days=30),
+            )
+
+    def _homepage_query_count(self):
+        with CaptureQueriesContext(connection) as queries:
+            response = self.client.get(reverse("events:events"))
+        self.assertEqual(response.status_code, 200)
+        return len(queries)
+
+    def test_query_count_does_not_grow_with_the_number_of_events(self):
+        """Adding events must not add queries, otherwise the page is querying per row again."""
+        before = self._homepage_query_count()
+
+        now = timezone.now()
+        extra = Event.objects.bulk_create(
+            [Event(title=f"Extra {index}", creator=self.user, calendar=self.calendar) for index in range(50)]
+        )
+        OccurringRule.objects.bulk_create(
+            [
+                OccurringRule(
+                    event=event,
+                    dt_start=now + datetime.timedelta(days=index + 100),
+                    dt_end=now + datetime.timedelta(days=index + 101),
+                )
+                for index, event in enumerate(extra)
+            ]
+        )
+
+        self.assertLessEqual(self._homepage_query_count(), before)
