@@ -49,27 +49,33 @@ class EventHomepage(ListView):
 
     template_name = "events/event_list.html"
 
+    @staticmethod
+    def with_related(queryset):
+        """Fetch what the list template reads per event, so rendering does not query per row."""
+        return queryset.select_related("occurring_rule", "venue", "calendar").prefetch_related("recurring_rules")
+
     def get_queryset(self) -> Event:
         """Queryset to return all events, ordered by START date."""
-        return Event.objects.all().order_by("occurring_rule__dt_start")
+        return self.with_related(Event.objects.all()).order_by("occurring_rule__dt_start")
 
     def get_context_data(self, **kwargs: dict) -> dict:
         """Add more ctx, specifically events that are happening now, just missed, and upcoming."""
         context = super().get_context_data(**kwargs)
+        now = timezone.now()
 
         # past events, most recent first
-        past_events = list(Event.objects.until_datetime(timezone.now()))
-        past_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
+        past_events = list(self.with_related(Event.objects.until_datetime(now)))
+        past_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else now, reverse=True)
         context["events_just_missed"] = past_events[:2]
 
         # upcoming events, soonest first
-        upcoming = list(Event.objects.for_datetime(timezone.now()))
-        upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else timezone.now())
+        upcoming = list(self.with_related(Event.objects.for_datetime(now)))
+        upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else now)
         context["upcoming_events"] = upcoming
 
         # right now, soonest first
-        context["events_now"] = Event.objects.filter(
-            occurring_rule__dt_start__lte=timezone.now(), occurring_rule__dt_end__gte=timezone.now()
+        context["events_now"] = self.with_related(
+            Event.objects.filter(occurring_rule__dt_start__lte=now, occurring_rule__dt_end__gte=now)
         ).order_by("occurring_rule__dt_start")[:2]
         return context
 
