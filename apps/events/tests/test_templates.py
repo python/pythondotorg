@@ -28,12 +28,8 @@ class TimeTagTemplateTests(TestCase):
         # Use timezone-aware datetimes to match the project's USE_TZ = True setting.
         class MockTime:
             def __init__(self):
-                self.dt_start = datetime.datetime(
-                    future_year, 5, 25, 12, 0, tzinfo=datetime.UTC
-                )
-                self.dt_end = datetime.datetime(
-                    future_year, 5, 25, 14, 0, tzinfo=datetime.UTC
-                )
+                self.dt_start = datetime.datetime(future_year, 5, 25, 12, 0, tzinfo=datetime.UTC)
+                self.dt_end = datetime.datetime(future_year, 5, 25, 14, 0, tzinfo=datetime.UTC)
                 self.single_day = True
                 self.all_day = False
                 self.valid_dt_end = True
@@ -51,12 +47,9 @@ class TimeTagTemplateTests(TestCase):
         # This avoids brittle exact-whitespace matching and ignores the
         # year inside the <time datetime="..."> ISO attribute.
         year_str = str(future_year)
-        year_in_span = re.findall(
-            r"<span[^>]*>\s*" + re.escape(year_str) + r"\s*</span>", rendered
-        )
+        year_in_span = re.findall(r"<span[^>]*>\s*" + re.escape(year_str) + r"\s*</span>", rendered)
         self.assertEqual(
             len(year_in_span),
             1,
-            f"Expected the year {year_str} to appear in exactly one <span>, "
-            f"but found {len(year_in_span)}: {rendered}",
+            f"Expected the year {year_str} to appear in exactly one <span>, but found {len(year_in_span)}: {rendered}",
         )
