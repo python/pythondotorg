@@ -5,6 +5,7 @@ import datetime
 
 from django.contrib import messages
 from django.core.mail import BadHeaderError
+from django.db.models import QuerySet
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
@@ -13,6 +14,18 @@ from django.views.generic import DetailView, FormView, ListView
 from apps.events.forms import EventForm
 from apps.events.models import Calendar, Event, EventCategory, EventLocation
 from pydotorg.mixins import LoginRequiredMixin
+
+
+def next_start(event, default):
+    """Return when an event next starts, computing the `next_time` property only once."""
+    next_time = event.next_time
+    return next_time.dt_start if next_time else default
+
+
+def previous_start(event, default):
+    """Return when an event last started, computing the `previous_time` property only once."""
+    previous_time = event.previous_time
+    return previous_time.dt_start if previous_time else default
 
 
 class CalendarList(ListView):
@@ -49,14 +62,9 @@ class EventHomepage(ListView):
 
     template_name = "events/event_list.html"
 
-    @staticmethod
-    def with_related(queryset):
-        """Fetch what the list template reads per event, so rendering does not query per row."""
-        return queryset.select_related("occurring_rule", "venue", "calendar").prefetch_related("recurring_rules")
-
-    def get_queryset(self) -> Event:
+    def get_queryset(self) -> QuerySet[Event]:
         """Queryset to return all events, ordered by START date."""
-        return self.with_related(Event.objects.all()).order_by("occurring_rule__dt_start")
+        return Event.objects.with_related().order_by("occurring_rule__dt_start")
 
     def get_context_data(self, **kwargs: dict) -> dict:
         """Add more ctx, specifically events that are happening now, just missed, and upcoming."""
@@ -64,19 +72,21 @@ class EventHomepage(ListView):
         now = timezone.now()
 
         # past events, most recent first
-        past_events = list(self.with_related(Event.objects.until_datetime(now)))
-        past_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else now, reverse=True)
+        past_events = list(Event.objects.until_datetime(now).with_related())
+        past_events.sort(key=lambda event: previous_start(event, now), reverse=True)
         context["events_just_missed"] = past_events[:2]
 
         # upcoming events, soonest first
-        upcoming = list(self.with_related(Event.objects.for_datetime(now)))
-        upcoming.sort(key=lambda e: e.next_time.dt_start if e.next_time else now)
+        upcoming = list(Event.objects.for_datetime(now).with_related())
+        upcoming.sort(key=lambda event: next_start(event, now))
         context["upcoming_events"] = upcoming
 
         # right now, soonest first
-        context["events_now"] = self.with_related(
+        context["events_now"] = (
             Event.objects.filter(occurring_rule__dt_start__lte=now, occurring_rule__dt_end__gte=now)
-        ).order_by("occurring_rule__dt_start")[:2]
+            .with_related()
+            .order_by("occurring_rule__dt_start")[:2]
+        )
         return context
 
 
@@ -87,7 +97,7 @@ class EventDetail(DetailView):
 
     def get_queryset(self):
         """Return events with related data prefetched."""
-        return super().get_queryset().select_related()
+        return super().get_queryset().with_related()
 
     def get_context_data(self, **kwargs):
         """Add 7/30/90/365-day date windows for the next occurrence."""
@@ -113,6 +123,7 @@ class EventList(EventListBase):
         return (
             Event.objects.for_datetime(timezone.now())
             .filter(calendar__slug=self.kwargs["calendar_slug"])
+            .with_related()
             .order_by("occurring_rule__dt_start")
         )
 
@@ -121,10 +132,11 @@ class EventList(EventListBase):
         context = super().get_context_data(**kwargs)
 
         # today's events, most recent first
+        now = timezone.now()
         today_events = list(
-            Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs["calendar_slug"])
+            Event.objects.until_datetime(now).filter(calendar__slug=self.kwargs["calendar_slug"]).with_related()
         )
-        today_events.sort(key=lambda e: e.previous_time.dt_start if e.previous_time else timezone.now(), reverse=True)
+        today_events.sort(key=lambda event: previous_start(event, now), reverse=True)
         context["events_today"] = today_events[:2]
         context["calendar"] = get_object_or_404(Calendar, slug=self.kwargs["calendar_slug"])
         context["upcoming_events"] = context["object_list"]
@@ -139,7 +151,11 @@ class PastEventList(EventList):
 
     def get_queryset(self):
         """Return past events for the calendar specified in the URL."""
-        return Event.objects.until_datetime(timezone.now()).filter(calendar__slug=self.kwargs["calendar_slug"])
+        return (
+            Event.objects.until_datetime(timezone.now())
+            .filter(calendar__slug=self.kwargs["calendar_slug"])
+            .with_related()
+        )
 
 
 class EventListByDate(EventList):
@@ -154,7 +170,11 @@ class EventListByDate(EventList):
 
     def get_queryset(self):
         """Return events on or after the specified date."""
-        return Event.objects.for_datetime(self.get_object()).filter(calendar__slug=self.kwargs["calendar_slug"])
+        return (
+            Event.objects.for_datetime(self.get_object())
+            .filter(calendar__slug=self.kwargs["calendar_slug"])
+            .with_related()
+        )
 
 
 class EventListByCategory(EventList):

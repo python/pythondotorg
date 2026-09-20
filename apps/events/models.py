@@ -102,8 +102,8 @@ class EventLocation(models.Model):
         return reverse("events:eventlist_location", kwargs={"calendar_slug": self.calendar.slug, "pk": self.pk})
 
 
-class EventManager(models.Manager):
-    """Custom manager for querying events by time boundaries."""
+class EventQuerySet(models.QuerySet):
+    """Queryset for events, with the time boundaries and eager loading the views need."""
 
     def for_datetime(self, dt=None):
         """Return events occurring after the given datetime."""
@@ -114,6 +114,13 @@ class EventManager(models.Manager):
         """Return events that ended before the given datetime."""
         dt = timezone.now() if dt is None else convert_dt_to_aware(dt)
         return self.filter(Q(occurring_rule__dt_end__lt=dt) | Q(recurring_rules__begin__lt=dt))
+
+    def with_related(self):
+        """Fetch what the event templates read for each row, so rendering does not query per event."""
+        return self.select_related("occurring_rule", "venue", "calendar").prefetch_related("recurring_rules")
+
+
+EventManager = models.Manager.from_queryset(EventQuerySet)
 
 
 class Event(ContentManageable):
