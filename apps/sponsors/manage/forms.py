@@ -345,13 +345,12 @@ class SponsorshipEditForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         """Initialize form with year-filtered packages."""
         super().__init__(*args, **kwargs)
-        # Filter packages to bound year first (allows changing year + package together)
-        filter_year = None
-        if self.is_bound and self.data.get("year"):
+        filter_year = self.instance.year
+        if self.instance.pk and filter_year:
+            self.fields["year"].disabled = True
+        elif self.is_bound and self.data.get("year"):
             with contextlib.suppress(ValueError):
                 filter_year = int(self.data["year"])
-        if not filter_year and self.instance and self.instance.year:
-            filter_year = self.instance.year
         if filter_year:
             self.fields["package"].queryset = SponsorshipPackage.objects.filter(year=filter_year).order_by(
                 "-sponsorship_amount"
